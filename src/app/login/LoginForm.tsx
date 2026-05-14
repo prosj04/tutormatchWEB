@@ -5,10 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { normalizePhoneDigits } from "@/lib/phone-login";
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -19,14 +21,19 @@ export function LoginForm() {
     setError("");
     setLoading(true);
     try {
+      const loginId = normalizePhoneDigits(phone);
+      if (loginId.length < 10) {
+        setError("전화번호를 올바르게 입력해 주세요.");
+        return;
+      }
       const result = await signIn("credentials", {
-        email,
+        loginId,
         password,
         redirectTo,
         redirect: false,
       });
       if (result?.error) {
-        setError("이메일 또는 비밀번호가 올바르지 않습니다");
+        setError("전화번호 또는 비밀번호가 올바르지 않습니다");
         return;
       }
       if (result?.ok) {
@@ -48,17 +55,18 @@ export function LoginForm() {
 
         <div className="mt-8 space-y-5">
           <div>
-            <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-navy/80">
-              이메일
+            <label htmlFor="login-phone" className="mb-1.5 block text-sm font-medium text-navy/80">
+              전화번호
             </label>
             <input
-              id="login-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="login-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="010-0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
-              className="w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy outline-none ring-gold/40 transition focus:border-gold focus:ring-2"
+              className="w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy outline-none ring-gold/40 transition placeholder:text-navy/35 focus:border-gold focus:ring-2"
             />
           </div>
           <div>

@@ -37,8 +37,8 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
 
   return (
     <article>
-      <section className="border-b border-gray-100 bg-white">
-        <div className="mx-auto grid max-w-6xl gap-10 px-8 py-16 md:grid-cols-2 md:gap-14 md:py-20">
+      <section className="border-b border-gray-100 bg-background">
+        <div className="mx-auto grid max-w-6xl gap-10 px-8 py-16 md:grid-cols-2 md:gap-14 md:py-24">
           <div className="relative aspect-[3/4] max-h-[520px] w-full overflow-hidden rounded-2xl md:max-h-none">
             <Image
               src={t.image}
@@ -50,10 +50,10 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="text-xs font-medium uppercase tracking-wider text-text-mid">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-light">
               Tutor profile
             </p>
-            <h1 className="mt-4 text-4xl font-black tracking-tight text-text-dark md:text-5xl">
+            <h1 className="mt-4 text-5xl font-black leading-tight tracking-tight text-text-dark sm:text-6xl">
               {t.name}
             </h1>
             <p className="mt-4 text-lg text-text-mid">{t.tagline}</p>

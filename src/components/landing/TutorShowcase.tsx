@@ -12,15 +12,13 @@ export function TutorShowcase() {
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-mid">
+              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
                 04 강사진
               </p>
               <h2 className="text-5xl font-black leading-tight text-text-dark sm:text-6xl">
                 Tutor showcase
               </h2>
-              <p className="mt-4 text-lg text-text-mid">
-                대표 강사 라인업
-              </p>
+              <p className="mt-4 text-lg text-text-mid">대표 강사 라인업</p>
             </div>
             <Link
               href="/tutors"
@@ -30,7 +28,7 @@ export function TutorShowcase() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
             {showcaseTutors.map((t, i) => {
               const primarySubject = t.subject.split(" · ")[0] ?? t.subject;
               return (
@@ -71,7 +69,7 @@ export function TutorShowcase() {
           </div>
 
           <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-            <span>04 / 06</span>
+            <span className="text-text-light">04 / 06</span>
             <span className="text-text-mid">전원 프로필 검증 · 경력 서류 보관</span>
           </div>
         </div>

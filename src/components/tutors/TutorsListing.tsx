@@ -63,17 +63,15 @@ export function TutorsListing() {
 
   return (
     <>
-      <div className="border-b border-gray-100 bg-white py-10">
+      <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-mid">
-            Directory
-          </p>
-          <h1 className="mt-3 text-4xl font-black text-text-dark md:text-5xl">강사진</h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-mid">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Directory</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">강사진</h1>
+          <p className="mt-4 max-w-2xl text-lg text-text-mid">
             과목 · 지역 · 예산에 맞춰 검증된 강사를 찾아보세요.
           </p>
 
-          <div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
             <FilterPills
               label="과목"
               value={subject}
@@ -102,9 +100,9 @@ export function TutorsListing() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
         <p className="text-sm text-text-light">{filtered.length}명 표시 중</p>
-        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {filtered.map((t) => (
             <TutorCard key={t.id} tutor={t} />
           ))}

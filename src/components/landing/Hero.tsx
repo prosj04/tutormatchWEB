@@ -19,7 +19,7 @@ export function Hero() {
               transition={{ duration: 0.5 }}
               className="mb-16"
             >
-              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-mid">
+              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
                 01 메인
               </p>
               <h1 className="mb-4 text-5xl font-black leading-tight tracking-tight text-text-dark sm:text-6xl">
@@ -101,7 +101,7 @@ export function Hero() {
         </div>
 
         <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-          <span>01 / 06</span>
+          <span className="text-text-light">01 / 06</span>
           <span className="text-text-mid">검증 강사 · 맞춤 일정 · 학습 리포트</span>
         </div>
       </div>

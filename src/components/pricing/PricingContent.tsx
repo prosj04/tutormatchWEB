@@ -28,18 +28,18 @@ export function PricingContent() {
 
   return (
     <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-white py-14 md:py-16">
+      <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-mid">Plans</p>
-          <h1 className="mt-4 text-5xl font-black text-text-dark md:text-6xl">요금제</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Plans</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">요금제</h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
             가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요. 모든 플랜에 학습관리 시스템이 포함됩니다.
           </p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-8 py-16 md:py-20">
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+      <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
           <article className="flex flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
             <p className="text-xs font-medium uppercase tracking-wider text-text-light">Plan A</p>
             <h2 className="mt-4 text-2xl font-black text-text-dark md:text-3xl">월 4회</h2>

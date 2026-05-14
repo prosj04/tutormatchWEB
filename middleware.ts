@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 
-/** Protected routes: STUDENT-only checkout; TEACHER-only dashboard. All other paths pass through. */
+/**
+ * Protected routes:
+ * - /checkout → STUDENT only → else /login?redirect=/checkout
+ * - /teacher-portal/dashboard → TEACHER only → else /teacher-portal (로그인)
+ * - /teacher-portal, /teacher-portal/apply → 공개 (미들웨어 제외)
+ */
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;

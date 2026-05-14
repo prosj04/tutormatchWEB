@@ -3,13 +3,16 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import {
+  normalizePhoneDigits,
+  studentSyntheticEmailFromDigits,
+} from "@/lib/phone-login";
 
 type StudentBody = {
   name?: unknown;
   grade?: unknown;
   subjects?: unknown;
   phone?: unknown;
-  email?: unknown;
   password?: unknown;
 };
 
@@ -25,16 +28,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { name, grade, subjects, phone, email, password } = body;
+  const { name, grade, subjects, phone, password } = body;
 
   if (
     !isNonEmptyString(name) ||
     !isNonEmptyString(grade) ||
     !isNonEmptyString(phone) ||
-    !isNonEmptyString(email) ||
     !isNonEmptyString(password)
   ) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  const phoneDigits = normalizePhoneDigits(phone);
+  if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+    return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
   }
 
   if (!Array.isArray(subjects) || subjects.length === 0) {
@@ -47,6 +54,20 @@ export async function POST(request: Request) {
   }
 
   const subjectsCsv = subjectStrings.join(",");
+  const email = studentSyntheticEmailFromDigits(phoneDigits);
+
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email },
+        { student: { phone: phoneDigits } },
+        { student: { phone: phone.trim() } },
+      ],
+    },
+  });
+  if (existing) {
+    return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
+  }
 
   const passwordHash = await bcrypt.hash(password, 12);
 
@@ -62,17 +83,17 @@ export async function POST(request: Request) {
               name,
               grade,
               subjects: subjectsCsv,
-              phone,
+              phone: phoneDigits,
             },
           },
         },
       });
     });
 
-    return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
+    return NextResponse.json({ id: user.id }, { status: 201 });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+      return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
     }
     throw e;
   }

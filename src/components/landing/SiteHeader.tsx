@@ -13,6 +13,8 @@ function sectionMeta(pathname: string): { label: string; title: string } {
   if (pathname === "/success") return { label: "05", title: "완료" };
   if (pathname === "/login") return { label: "—", title: "로그인" };
   if (pathname === "/register") return { label: "—", title: "회원가입" };
+  if (pathname === "/teacher-portal") return { label: "—", title: "선생님 포털" };
+  if (pathname === "/teacher-portal/apply") return { label: "—", title: "선생님 지원" };
   return { label: "—", title: "Concord" };
 }
 
@@ -32,8 +34,8 @@ export function SiteHeader() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-gray-100 bg-background/90 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:gap-6 sm:px-8">
-        <p className="min-w-0 flex-1 truncate text-xs font-medium uppercase tracking-wider text-text-mid">
-          <span className="text-text-light">{label}</span> {title}
+        <p className="min-w-0 flex-1 truncate text-xs font-medium uppercase tracking-wider text-text-light">
+          <span className="text-text-mid">{label}</span> {title}
         </p>
         <div className="flex shrink-0 items-center gap-3 sm:gap-6">
           <nav className="hidden items-center gap-6 text-xs font-medium uppercase tracking-wider text-text-mid md:flex">
@@ -42,6 +44,12 @@ export function SiteHeader() {
             </Link>
             <Link href="/pricing" className="transition hover:text-primary">
               요금제
+            </Link>
+            <Link
+              href="/teacher-portal"
+              className="transition hover:text-primary"
+            >
+              선생님
             </Link>
             <Link
               href="/checkout"
@@ -54,7 +62,7 @@ export function SiteHeader() {
           {status === "loading" ? (
             <div className="flex items-center gap-2">
               <span className="h-7 w-14 animate-pulse rounded-full bg-gray-200/80" />
-              <span className="h-7 w-16 animate-pulse rounded-full bg-gold/30" />
+              <span className="h-7 w-16 animate-pulse rounded-full bg-accent/25" />
             </div>
           ) : status === "authenticated" && session?.user ? (
             <div className="flex items-center gap-2 sm:gap-3">
@@ -64,8 +72,8 @@ export function SiteHeader() {
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                   session.user.role === "TEACHER"
-                    ? "bg-navy/10 text-navy"
-                    : "bg-gold/20 text-navy"
+                    ? "bg-gray-100 text-text-mid"
+                    : "bg-accent/15 text-accent"
                 }`}
               >
                 {session.user.role === "TEACHER" ? "선생님" : "학생"}
@@ -73,7 +81,7 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => void signOut({ redirectTo: "/" })}
-                className="whitespace-nowrap rounded-full border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-text-mid transition hover:border-navy hover:text-navy sm:px-3 sm:text-xs"
+                className="whitespace-nowrap rounded-full border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-text-mid transition hover:border-gray-300 hover:text-text-dark sm:px-3 sm:text-xs"
               >
                 로그아웃
               </button>
@@ -82,13 +90,13 @@ export function SiteHeader() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="whitespace-nowrap rounded-full border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-text-mid transition hover:border-navy hover:text-navy sm:px-3 sm:text-xs"
+                className="whitespace-nowrap rounded-full border border-gray-300 px-2.5 py-1 text-[11px] font-semibold text-text-dark transition hover:border-gray-400 hover:bg-white sm:px-3 sm:text-xs"
               >
                 로그인
               </Link>
               <Link
                 href="/register"
-                className="whitespace-nowrap rounded-full bg-gold px-2.5 py-1 text-[11px] font-semibold text-navy transition hover:bg-gold/90 sm:px-3 sm:text-xs"
+                className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:bg-accent/90 sm:px-3 sm:text-xs"
               >
                 회원가입
               </Link>

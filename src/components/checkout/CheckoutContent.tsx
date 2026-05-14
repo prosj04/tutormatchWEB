@@ -127,14 +127,14 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
 
   return (
     <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-white py-12 md:py-14">
+      <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-mid">Checkout</p>
-          <h1 className="mt-3 text-4xl font-black text-text-dark md:text-5xl">결제</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Checkout</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">결제</h1>
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-8 py-12 md:py-16">
+      <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
         <div className="mb-10">
           <Link
             href={tutor ? `/tutors/${tutorId}` : "/tutors"}
@@ -144,7 +144,7 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
           </Link>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
           <div className="space-y-10">
             <section className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
               <h2 className="text-xl font-black text-text-dark">주문 요약</h2>

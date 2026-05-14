@@ -22,10 +22,11 @@ export default function SuccessPage({ searchParams }: PageProps) {
   const amount = amountRaw ? Number(amountRaw) : NaN;
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-20 md:py-28">
-      <div className="rounded-2xl border border-gray-100 bg-white px-8 py-12 text-center shadow-sm md:px-12 md:py-16">
-        <p className="text-xs font-medium uppercase tracking-wider text-text-mid">Payment</p>
-        <h1 className="mt-4 text-4xl font-black text-text-dark md:text-5xl">결제가 완료되었습니다</h1>
+    <div className="bg-background px-8 py-24 md:py-28">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-2xl border border-gray-100 bg-white px-8 py-12 text-center shadow-sm md:px-12 md:py-16">
+        <p className="text-xs font-medium uppercase tracking-wider text-text-light">Payment</p>
+        <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">결제가 완료되었습니다</h1>
         <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-text-mid">
           주문이 정상적으로 접수되었습니다. 담당 매니저가 곧 연락드릴 예정입니다.
         </p>
@@ -64,6 +65,7 @@ export default function SuccessPage({ searchParams }: PageProps) {
           >
             강사진
           </Link>
+        </div>
         </div>
       </div>
     </div>

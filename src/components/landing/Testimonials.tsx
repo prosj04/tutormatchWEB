@@ -26,19 +26,18 @@ export function Testimonials() {
       <section className="bg-background px-8 py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 text-center">
-            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-mid">
-              Voices
+            <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
+              06 후기
             </p>
-            <h2 className="text-5xl font-black leading-tight text-text-dark sm:text-6xl">
-              가정의 말씀
-            </h2>
+            <h2 className="text-5xl font-black leading-tight text-text-dark sm:text-6xl">Reviews</h2>
+            <p className="mt-4 text-lg text-text-mid">Reiviews</p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
             {quotes.map((q, i) => (
               <FadeSection key={i} delay={i * 0.08}>
                 <blockquote className="flex h-full flex-col rounded-2xl bg-white p-8 shadow-sm">
-                  <p className="text-base font-medium leading-relaxed text-text-dark">
+                  <p className="text-base font-normal leading-relaxed text-text-dark">
                     &ldquo;{q.quote}&rdquo;
                   </p>
                   <footer className="mt-8 border-t border-gray-100 pt-6 text-xs font-medium uppercase tracking-wider text-text-light">
@@ -50,8 +49,8 @@ export function Testimonials() {
           </div>
 
           <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-            <span>06 / 06</span>
-            <span className="text-text-mid">...</span>
+            <span className="text-text-light">06 / 06</span>
+            <span className="text-text-mid">실명 검증 가정 · 익명 인용</span>
           </div>
         </div>
       </section>

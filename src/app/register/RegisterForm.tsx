@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { normalizePhoneDigits } from "@/lib/phone-login";
+
 const GRADES = [
   "초등 4학년",
   "초등 5학년",
@@ -21,7 +23,6 @@ const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] 
 
 type FieldKey =
   | "name"
-  | "email"
   | "password"
   | "passwordConfirm"
   | "grade"
@@ -31,7 +32,6 @@ type FieldKey =
 export function RegisterForm() {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [grade, setGrade] = useState<string>(GRADES[0]);
@@ -50,8 +50,6 @@ export function RegisterForm() {
   function validate(): boolean {
     const next: Partial<Record<FieldKey, string>> = {};
     if (!name.trim()) next.name = "이름을 입력해 주세요.";
-    if (!email.trim()) next.email = "이메일을 입력해 주세요.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "올바른 이메일 형식이 아닙니다.";
     if (!password) next.password = "비밀번호를 입력해 주세요.";
     else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
     if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
@@ -59,6 +57,10 @@ export function RegisterForm() {
     if (!grade) next.grade = "학년을 선택해 주세요.";
     if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
     if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
+    else {
+      const d = normalizePhoneDigits(phone);
+      if (d.length < 10 || d.length > 11) next.phone = "올바른 휴대전화 번호를 입력해 주세요.";
+    }
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -73,7 +75,6 @@ export function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          email: email.trim(),
           password,
           grade,
           subjects: selectedSubjects,
@@ -82,16 +83,19 @@ export function RegisterForm() {
       });
       if (res.status === 409) {
         setFieldErrors({});
-        setConflictError("이미 사용 중인 이메일입니다");
+        setConflictError("이미 가입된 전화번호입니다");
         return;
       }
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        setFieldErrors({ email: data?.error ?? "가입에 실패했습니다. 다시 시도해 주세요." });
+        setFieldErrors({
+          phone: data?.error ?? "가입에 실패했습니다. 다시 시도해 주세요.",
+        });
         return;
       }
+      const loginId = normalizePhoneDigits(phone);
       const signResult = await signIn("credentials", {
-        email: email.trim(),
+        loginId,
         password,
         redirectTo: "/",
         redirect: false,
@@ -99,7 +103,7 @@ export function RegisterForm() {
       if (signResult?.error) {
         setConflictError("");
         setFieldErrors({
-          email: "가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인 페이지에서 시도해 주세요.",
+          phone: "가입은 완료되었으나 자동 로그인에 실패했습니다. 로그인 페이지에서 시도해 주세요.",
         });
         router.push("/login");
         return;
@@ -134,23 +138,6 @@ export function RegisterForm() {
             />
             {fieldErrors.name ? (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <label htmlFor="reg-email" className="mb-1.5 block text-sm font-medium text-navy/80">
-              이메일
-            </label>
-            <input
-              id="reg-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-navy/15 px-4 py-3 text-sm text-navy outline-none ring-gold/40 focus:border-gold focus:ring-2"
-            />
-            {fieldErrors.email ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
             ) : null}
           </div>
 

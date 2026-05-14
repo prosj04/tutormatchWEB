@@ -21,7 +21,7 @@ export function TutorBookingSidebar({ tutorId }: TutorBookingSidebarProps) {
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-text-mid">
+      <p className="text-xs font-medium uppercase tracking-wider text-text-light">
         Enrollment
       </p>
       <h2 className="mt-3 text-xl font-black text-text-dark">수업 플랜</h2>
