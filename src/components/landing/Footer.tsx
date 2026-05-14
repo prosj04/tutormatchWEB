@@ -1,0 +1,60 @@
+"use client";
+
+import Link from "next/link";
+import { FadeSection } from "./FadeSection";
+
+const links = [
+  { href: "/tutors", label: "강사진" },
+  { href: "/pricing", label: "요금제" },
+  { href: "/checkout", label: "등록 · 결제" },
+];
+
+export function Footer() {
+  return (
+    <FadeSection>
+      <footer className="border-t border-gray-100 bg-white">
+        <div className="mx-auto max-w-6xl px-8 py-20">
+          <div className="flex flex-col gap-12 border-b border-gray-100 pb-12 md:flex-row md:justify-between">
+            <div>
+              <p className="text-2xl font-black italic text-text-dark">Concord.</p>
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-text-mid">
+                검증된 강사진과 1:1 학습관리. 가정을 위한 프라이빗 튜터링 오피스.
+              </p>
+            </div>
+            <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-text-mid">
+              {links.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="transition hover:text-primary"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="pt-10 text-xs leading-relaxed text-text-light">
+            <p>
+              <span className="font-medium text-text-mid">상호</span> 주식회사 컨코드에듀케이션
+              <span className="mx-2 text-gray-200">|</span>
+              <span className="font-medium text-text-mid">대표</span> 홍길동
+            </p>
+            <p className="mt-2">
+              <span className="font-medium text-text-mid">사업자등록번호</span> 123-45-67890
+              <span className="mx-2 text-gray-200">|</span>
+              <span className="font-medium text-text-mid">주소</span> 서울특별시 강남구 테헤란로 000, 00층
+            </p>
+            <p className="mt-2">
+              <span className="font-medium text-text-mid">통신판매업 신고번호</span>{" "}
+              제2024-서울강남-00000호
+            </p>
+            <p className="mt-8 text-text-light">
+              © {new Date().getFullYear()} Concord Private Tutoring. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </FadeSection>
+  );
+}
