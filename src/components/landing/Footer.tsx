@@ -35,10 +35,18 @@ export function Footer() {
           </div>
 
           <div className="pt-10 text-xs leading-relaxed text-text-light">
-            <p>
-              <span className="font-medium text-text-mid">상호</span> 주식회사 컨코드에듀케이션
-              <span className="mx-2 text-gray-200">|</span>
-              <span className="font-medium text-text-mid">대표</span> 홍길동
+            <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <span className="min-w-0">
+                <span className="font-medium text-text-mid">상호</span> 주식회사 컨코드에듀케이션
+                <span className="mx-2 text-gray-200">|</span>
+                <span className="font-medium text-text-mid">대표</span> 홍길동
+              </span>
+              <Link
+                href="/teacher-portal"
+                className="shrink-0 text-gray-400 no-underline transition hover:text-gray-500 hover:underline"
+              >
+                선생님이신가요?
+              </Link>
             </p>
             <p className="mt-2">
               <span className="font-medium text-text-mid">사업자등록번호</span> 123-45-67890

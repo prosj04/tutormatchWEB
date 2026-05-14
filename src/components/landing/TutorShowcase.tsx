@@ -19,7 +19,7 @@ export function TutorShowcase() {
                 Tutor showcase
               </h2>
               <p className="mt-4 text-lg text-text-mid">
-                검증된 20·30대 강사 라인업 일부를 소개합니다.
+                대표 강사 라인업
               </p>
             </div>
             <Link

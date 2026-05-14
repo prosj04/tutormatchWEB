@@ -51,7 +51,7 @@ export function Testimonials() {
 
           <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
             <span>06 / 06</span>
-            <span className="text-text-mid">실명 대신 익명 표기 원칙을 준수합니다.</span>
+            <span className="text-text-mid">...</span>
           </div>
         </div>
       </section>

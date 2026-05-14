@@ -93,7 +93,7 @@ export const tutors: Tutor[] = [
     tagline: "읽기·쓰기 균형을 잡는 영어 리터러시",
     subjects: ["영어", "토플", "SAT Reading"],
     image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1000&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1000&fit=crop&q=75",
     hourlyMin: 8,
     hourlyMax: 10,
     rating: 5.0,

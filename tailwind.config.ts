@@ -13,6 +13,8 @@ const config: Config = {
         card: "#FFFFFF",
         primary: "#2563EB",
         accent: "#E91E8C",
+        navy: "#0F1E3C",
+        gold: "#C9A84C",
         "text-dark": "#111827",
         "text-mid": "#6B7280",
         "text-light": "#9CA3AF",
@@ -25,6 +27,7 @@ const config: Config = {
           "system-ui",
           "sans-serif",
         ],
+        display: ["var(--font-playfair)", "Georgia", "serif"],
       },
       maxWidth: {
         content: "72rem",

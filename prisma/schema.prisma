@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   @default("STUDENT")
+  student   Student?
+  teacher   Teacher?
+  createdAt DateTime @default(now())
+}
+
+model Student {
+  id       String @id @default(uuid())
+  userId   String @unique
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name     String
+  grade    String
+  subjects String
+  phone    String
+}
+
+model Teacher {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String
+  subjects   String
+  bio        String
+  education  String
+  experience String
+  approved   Boolean @default(false)
+}
