@@ -9,41 +9,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      String   @default("STUDENT") // "STUDENT" | "TEACHER" | "ADMIN"
-  student   Student?
-  teacher   Teacher?
-  createdAt DateTime @default(now())
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  role          String         @default("STUDENT") // "STUDENT" | "TEACHER" | "MANAGER" | "ADMIN"
+  student       Student?
+  teacher       Teacher?
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
 }
 
 model Student {
-  id        String       @id @default(uuid())
-  userId    String       @unique
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String
-  grade     String
-  subjects  String
-  phone     String
-  plans     StudyPlan[]
-  questions Question[]
-  teachers  TeacherStudent[]
+  id            String                @id @default(uuid())
+  userId        String                @unique
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  grade         String
+  subjects      String
+  phone         String
+  plans         StudyPlan[]
+  questions     Question[]
+  teachers      TeacherStudent[]
+  bookings      ConsultationBooking[]
+  managerLinks  ManagerStudent[]
 }
 
 model Teacher {
-  id         String          @id @default(uuid())
-  userId     String          @unique
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name       String
-  phone      String
-  subjects   String
-  bio        String
-  education  String
-  experience String
-  approved   Boolean          @default(false)
-  profile    TeacherProfile?
-  students   TeacherStudent[]
+  id              String             @id @default(uuid())
+  userId          String             @unique
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  phone           String
+  subjects        String
+  bio             String
+  education       String
+  experience      String
+  approved        Boolean            @default(false)
+  profile         TeacherProfile?
+  students        TeacherStudent[]
+  managerSlots    ConsultationSlot[] @relation("ManagerSlots")
+  managerStudents ManagerStudent[]   @relation("ManagerStudents")
 }
 
 model TeacherStudent {
@@ -107,4 +112,55 @@ model TeacherProfile {
   education    String?  // JSON string array
   certificates String?  // JSON string array
   updatedAt    DateTime @default(now()) @updatedAt
+}
+
+model ConsultationSlot {
+  id        String               @id @default(uuid())
+  managerId String
+  manager   Teacher              @relation("ManagerSlots", fields: [managerId], references: [id], onDelete: Cascade)
+  date      String               // "2024-01-15"
+  startTime String               // "14:00"
+  endTime   String               // "14:30"
+  isBooked  Boolean              @default(false)
+  booking   ConsultationBooking?
+  createdAt DateTime             @default(now())
+}
+
+model ConsultationBooking {
+  id          String           @id @default(uuid())
+  slotId      String           @unique
+  slot        ConsultationSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  managerId   String
+  status      String           @default("PENDING")
+  // "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED"
+  note        String?
+  managerNote String?
+  createdAt   DateTime         @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  // "QUESTION_UNANSWERED" | "PROGRESS_WARNING" | "PROGRESS_DANGER"
+  // | "NEW_BOOKING" | "BOOKING_CONFIRMED" | "TEACHER_ANSWERED"
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  relatedId String?
+  createdAt DateTime @default(now())
+}
+
+model ManagerStudent {
+  id        String   @id @default(uuid())
+  managerId String
+  manager   Teacher  @relation("ManagerStudents", fields: [managerId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([managerId, studentId])
 }

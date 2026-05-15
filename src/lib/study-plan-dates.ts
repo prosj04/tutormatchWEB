@@ -32,6 +32,17 @@ export function formatCalendarDayLabel(date: string): string {
   return `${month}/${day} (${weekday})`;
 }
 
+export function formatConsultationDateLabel(date: string): string {
+  const { year, month, day } = parseDateKey(date);
+  const weekday = WEEKDAYS_KO[new Date(date + "T12:00:00").getDay()];
+  return `${year}년 ${month}월 ${day}일 (${weekday})`;
+}
+
+export function todayDateKey(): string {
+  const now = new Date();
+  return formatDateKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
+}
+
 export function getCalendarCells(year: number, month: number) {
   const firstDay = new Date(year, month - 1, 1).getDay();
   const daysInMonth = new Date(year, month, 0).getDate();

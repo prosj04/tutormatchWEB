@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { isValidDateString, requireStudent } from "@/lib/student-auth";
 
@@ -57,6 +58,23 @@ export async function POST(request: Request) {
       imageUrl: typeof imageUrl === "string" ? imageUrl : null,
     },
   });
+
+  const matches = await prisma.teacherStudent.findMany({
+    where: { studentId: student.id, isActive: true },
+    include: { teacher: { include: { user: true } } },
+  });
+
+  await Promise.all(
+    matches.map((m) =>
+      createNotification({
+        userId: m.teacher.userId,
+        type: "NEW_QUESTION",
+        title: "새 질문이 등록되었습니다",
+        body: `${student.name} 학생이 새 질문을 등록했습니다.`,
+        relatedId: question.id,
+      }),
+    ),
+  );
 
   return NextResponse.json({ question }, { status: 201 });
 }

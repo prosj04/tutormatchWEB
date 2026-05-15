@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { TeacherStudentsManager } from "@/components/teacher-portal/TeacherStudentsManager";
 import { auth } from "@/auth";
+import { isPortalTeacherRole } from "@/lib/portal-roles";
 import { prisma } from "@/lib/prisma";
 import type { StudentListItem } from "@/components/teacher-portal/teacher-students-types";
 
@@ -11,7 +12,7 @@ export const metadata = {
 
 export default async function TeacherStudentsPage() {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "TEACHER") {
+  if (!session?.user?.id || !isPortalTeacherRole(session.user.role)) {
     redirect("/teacher-portal");
   }
 

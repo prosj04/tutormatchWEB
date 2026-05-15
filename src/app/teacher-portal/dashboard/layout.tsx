@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 
 import { TeacherPortalShell } from "@/components/teacher-portal/TeacherPortalShell";
 import { auth } from "@/auth";
+import { isPortalTeacherRole } from "@/lib/portal-roles";
+import type { PortalTeacherRole } from "@/lib/portal-roles";
 import { prisma } from "@/lib/prisma";
 
 export default async function TeacherDashboardLayout({
@@ -10,7 +12,7 @@ export default async function TeacherDashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "TEACHER") {
+  if (!session?.user?.id || !isPortalTeacherRole(session.user.role)) {
     redirect("/teacher-portal");
   }
 
@@ -22,5 +24,12 @@ export default async function TeacherDashboardLayout({
     redirect("/teacher-portal");
   }
 
-  return <TeacherPortalShell teacherName={teacher.name}>{children}</TeacherPortalShell>;
+  return (
+    <TeacherPortalShell
+      teacherName={teacher.name}
+      role={session.user.role as PortalTeacherRole}
+    >
+      {children}
+    </TeacherPortalShell>
+  );
 }

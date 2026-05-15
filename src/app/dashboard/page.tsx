@@ -21,10 +21,15 @@ export default async function DashboardPage() {
 
   const student = await prisma.student.findUnique({
     where: { userId: session.user.id },
+    include: { teachers: { where: { isActive: true } } },
   });
 
   if (!student) {
     redirect("/register");
+  }
+
+  if (student.teachers.length === 0) {
+    redirect("/dashboard/consultation");
   }
 
   const now = new Date();

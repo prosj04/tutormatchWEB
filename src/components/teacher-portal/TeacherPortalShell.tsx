@@ -4,24 +4,42 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-const NAV_ITEMS = [
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+import type { PortalTeacherRole } from "@/lib/portal-roles";
+
+const BASE_NAV = [
   { href: "/teacher-portal/dashboard", label: "대시보드", exact: true as const },
   { href: "/teacher-portal/dashboard/profile", label: "프로필 관리" },
   { href: "/teacher-portal/dashboard/students", label: "학생 관리" },
-];
+] as const;
+
+const MANAGER_NAV = [
+  { href: "/teacher-portal/dashboard/matching", label: "매칭 관리" },
+  { href: "/teacher-portal/dashboard/consultations", label: "상담 관리" },
+  { href: "/teacher-portal/dashboard/monitoring", label: "모니터링" },
+] as const;
 
 type TeacherPortalShellProps = {
   teacherName: string;
+  role: PortalTeacherRole;
   children: React.ReactNode;
 };
 
-export function TeacherPortalShell({ teacherName, children }: TeacherPortalShellProps) {
+export function TeacherPortalShell({
+  teacherName,
+  role,
+  children,
+}: TeacherPortalShellProps) {
   const pathname = usePathname();
+  const navItems =
+    role === "MANAGER" ? [...BASE_NAV, ...MANAGER_NAV] : [...BASE_NAV];
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
   }
+
+  const portalLabel = role === "MANAGER" ? "매니저 포털" : "선생님 포털";
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,10 +52,11 @@ export function TeacherPortalShell({ teacherName, children }: TeacherPortalShell
           </div>
           <div className="flex flex-1 justify-center">
             <p className="truncate text-sm font-semibold text-text-dark sm:text-base">
-              {teacherName}님 · 선생님 포털
+              {teacherName}님 · {portalLabel}
             </p>
           </div>
-          <div className="flex w-40 shrink-0 justify-end">
+          <div className="flex w-44 shrink-0 items-center justify-end gap-1">
+            <NotificationBell />
             <button
               type="button"
               onClick={() => signOut({ redirectTo: "/" })}
@@ -47,9 +66,10 @@ export function TeacherPortalShell({ teacherName, children }: TeacherPortalShell
             </button>
           </div>
         </div>
-        <nav className="flex gap-6 overflow-x-auto border-t border-gray-100 px-4">
-          {NAV_ITEMS.map((item) => {
-            const active = isActive(item.href, "exact" in item ? item.exact : false);
+        <nav className="flex gap-4 overflow-x-auto border-t border-gray-100 px-4 md:gap-6">
+          {navItems.map((item) => {
+            const exact = "exact" in item ? item.exact : false;
+            const active = isActive(item.href, exact);
             return (
               <Link
                 key={item.href}

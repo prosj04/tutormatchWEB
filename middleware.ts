@@ -20,7 +20,7 @@ export default auth((req) => {
     }
   }
 
-  if (session && role === "TEACHER") {
+  if (session && (role === "TEACHER" || role === "MANAGER")) {
     if (!pathname.startsWith("/teacher-portal") && !pathname.startsWith("/api")) {
       return NextResponse.redirect(new URL("/teacher-portal/dashboard", req.url));
     }

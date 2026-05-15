@@ -32,9 +32,10 @@ export function TeacherPortalLoginClient() {
       }
       if (result?.ok) {
         const nextSession = await getSession();
-        if (nextSession?.user?.role !== "TEACHER") {
+        const role = nextSession?.user?.role;
+        if (role !== "TEACHER" && role !== "MANAGER") {
           await signOut({ redirect: false });
-          setError("선생님 계정으로만 로그인할 수 있습니다.");
+          setError("선생님·매니저 계정으로만 로그인할 수 있습니다.");
           return;
         }
         router.push(result.url ?? "/teacher-portal/dashboard");

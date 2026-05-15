@@ -17,6 +17,8 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<RecentStudent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cronLoading, setCronLoading] = useState(false);
+  const [cronResult, setCronResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/stats")
@@ -89,6 +91,50 @@ export function AdminDashboard() {
           <p className="mt-2 text-sm text-text-mid">선생님 답변이 없는 질문 수</p>
         </section>
       </div>
+
+      <section className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <h3 className="font-bold text-text-dark">알림 자동 체크</h3>
+        <p className="mt-2 text-sm text-text-mid">
+          미답변 질문·주간 완료율 알림을 수동으로 실행합니다 (개발/테스트용).
+        </p>
+        <button
+          type="button"
+          disabled={cronLoading}
+          onClick={async () => {
+            setCronLoading(true);
+            setCronResult(null);
+            try {
+              const res = await fetch("/api/admin/check-alerts", {
+                method: "POST",
+              });
+              const data = (await res.json()) as {
+                checked?: number;
+                notificationsCreated?: number;
+                error?: string;
+              };
+              if (!res.ok) {
+                setCronResult(data.error ?? "실행 실패");
+                return;
+              }
+              setCronResult(
+                `질문 ${data.checked ?? 0}개 확인, 알림 ${data.notificationsCreated ?? 0}개 생성됨`,
+              );
+            } catch {
+              setCronResult("실행 중 오류가 발생했습니다.");
+            } finally {
+              setCronLoading(false);
+            }
+          }}
+          className="mt-4 rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy/90 disabled:opacity-50"
+        >
+          {cronLoading ? "실행 중…" : "알림 체크 실행"}
+        </button>
+        {cronResult ? (
+          <p className="mt-3 text-sm text-text-dark" role="status">
+            {cronResult}
+          </p>
+        ) : null}
+      </section>
     </div>
   );
 }

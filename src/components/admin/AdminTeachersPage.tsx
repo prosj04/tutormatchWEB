@@ -8,6 +8,7 @@ type TeacherRow = {
   subjects: string;
   phone: string;
   email: string;
+  role: string;
   approved: boolean;
   bio: string;
   education: string;
@@ -15,6 +16,19 @@ type TeacherRow = {
   studentCount: number;
   createdAt: string;
 };
+
+function roleBadge(role: string) {
+  if (role === "MANAGER") {
+    return {
+      label: "매니저",
+      className: "bg-navy/10 text-navy",
+    };
+  }
+  return {
+    label: "선생님",
+    className: "bg-gray-100 text-text-mid",
+  };
+}
 
 type Pagination = { page: number; limit: number; total: number; totalPages: number };
 
@@ -91,6 +105,29 @@ export function AdminTeachersPage() {
     if (res.ok) fetchList();
   }
 
+  async function updateRole(id: string, role: "TEACHER" | "MANAGER") {
+    const res = await fetch(`/api/admin/teachers/${id}/role`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role }),
+    });
+    if (res.ok) fetchList();
+  }
+
+  function grantManager(row: TeacherRow) {
+    const ok = confirm(
+      "이 선생님에게 매니저 권한을 부여하시겠습니까?\n\n매니저는 상담 예약, 학생 매칭, 진도 모니터링 권한을 갖습니다.",
+    );
+    if (!ok) return;
+    void updateRole(row.id, "MANAGER");
+  }
+
+  function revokeManager(row: TeacherRow) {
+    const ok = confirm(`${row.name} 선생님의 매니저 권한을 해제하시겠습니까?`);
+    if (!ok) return;
+    void updateRole(row.id, "TEACHER");
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-black text-text-dark">선생님 관리</h2>
@@ -127,13 +164,14 @@ export function AdminTeachersPage() {
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <table className="w-full min-w-[900px] text-left text-sm">
+        <table className="w-full min-w-[1000px] text-left text-sm">
           <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-light">
             <tr>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">담당과목</th>
               <th className="px-4 py-3">이메일</th>
               <th className="px-4 py-3">전화번호</th>
+              <th className="px-4 py-3">역할</th>
               <th className="px-4 py-3">승인상태</th>
               <th className="px-4 py-3">담당학생수</th>
               <th className="px-4 py-3">가입일</th>
@@ -143,17 +181,26 @@ export function AdminTeachersPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-light">
+                <td colSpan={9} className="px-4 py-8 text-center text-text-light">
                   불러오는 중…
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
+              rows.map((row) => {
+                const badge = roleBadge(row.role);
+                return (
                 <tr key={row.id} className="border-b border-gray-50">
                   <td className="px-4 py-3 font-medium">{row.name}</td>
                   <td className="px-4 py-3">{row.subjects}</td>
                   <td className="px-4 py-3">{row.email}</td>
                   <td className="px-4 py-3">{row.phone}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}
+                    >
+                      {badge.label}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -177,6 +224,23 @@ export function AdminTeachersPage() {
                     >
                       {row.approved ? "승인취소" : "승인"}
                     </button>
+                    {row.role === "TEACHER" ? (
+                      <button
+                        type="button"
+                        onClick={() => grantManager(row)}
+                        className="mr-2 text-navy hover:underline"
+                      >
+                        매니저 권한 부여
+                      </button>
+                    ) : row.role === "MANAGER" ? (
+                      <button
+                        type="button"
+                        onClick={() => revokeManager(row)}
+                        className="mr-2 text-text-mid hover:underline"
+                      >
+                        매니저 권한 해제
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => openEdit(row)}
@@ -193,7 +257,8 @@ export function AdminTeachersPage() {
                     </button>
                   </td>
                 </tr>
-              ))
+              );
+              })
             )}
           </tbody>
         </table>

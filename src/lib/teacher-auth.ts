@@ -10,7 +10,7 @@ export async function requireTeacher() {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
-  if (session.user.role !== "TEACHER") {
+  if (session.user.role !== "TEACHER" && session.user.role !== "MANAGER") {
     return {
       error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
     } as const;

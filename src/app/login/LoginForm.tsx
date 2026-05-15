@@ -171,7 +171,7 @@ export function LoginForm() {
         const destination =
           role === "ADMIN"
             ? "/admin"
-            : role === "TEACHER"
+            : role === "TEACHER" || role === "MANAGER"
               ? "/teacher-portal/dashboard"
               : "/dashboard";
         router.push(destination);

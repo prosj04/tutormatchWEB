@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+
 type DashboardTopBarProps = {
   studentName: string;
 };
@@ -20,7 +22,8 @@ export function DashboardTopBar({ studentName }: DashboardTopBarProps) {
           {studentName}님의 학습 플래너
         </p>
       </div>
-      <div className="flex w-40 shrink-0 justify-end">
+      <div className="flex w-44 shrink-0 items-center justify-end gap-1">
+        <NotificationBell />
         <button
           type="button"
           onClick={() => signOut({ redirectTo: "/" })}

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { TeacherDashboardContent } from "@/components/teacher-portal/TeacherDashboardContent";
 import { auth } from "@/auth";
+import { isPortalTeacherRole } from "@/lib/portal-roles";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = {
@@ -10,7 +11,7 @@ export const metadata = {
 
 export default async function TeacherDashboardPage() {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "TEACHER") {
+  if (!session?.user?.id || !isPortalTeacherRole(session.user.role)) {
     redirect("/teacher-portal");
   }
 

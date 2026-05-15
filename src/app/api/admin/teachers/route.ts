@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       take: limit,
       orderBy: { user: { createdAt: "desc" } },
       include: {
-        user: { select: { email: true, createdAt: true } },
+        user: { select: { email: true, createdAt: true, role: true } },
         _count: { select: { students: { where: { isActive: true } } } },
       },
     }),
@@ -48,6 +48,7 @@ export async function GET(request: Request) {
       subjects: t.subjects,
       phone: t.phone,
       email: t.user.email,
+      role: t.user.role,
       approved: t.approved,
       bio: t.bio,
       education: t.education,
