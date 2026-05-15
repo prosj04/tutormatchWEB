@@ -2,29 +2,40 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 
-/**
- * Protected routes:
- * - /checkout → STUDENT only → else /login?redirect=/checkout
- * - /teacher-portal/dashboard → TEACHER only → else /teacher-portal (로그인)
- * - /teacher-portal, /teacher-portal/apply → 공개 (미들웨어 제외)
- */
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
+  const role = session?.user?.role;
 
-  if (pathname.startsWith("/checkout")) {
-    const role = session?.user?.role;
-    if (!session?.user?.id || role !== "STUDENT") {
-      const url = new URL("/login", req.nextUrl.origin);
-      url.searchParams.set("redirect", "/checkout");
-      return NextResponse.redirect(url);
+  if (pathname.startsWith("/admin")) {
+    if (!session || role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (session && role === "STUDENT") {
+    if (!pathname.startsWith("/dashboard") && !pathname.startsWith("/api")) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }
 
-  if (pathname.startsWith("/teacher-portal/dashboard")) {
-    const role = session?.user?.role;
-    if (!session?.user?.id || role !== "TEACHER") {
-      return NextResponse.redirect(new URL("/teacher-portal", req.nextUrl));
+  if (session && role === "TEACHER") {
+    if (!pathname.startsWith("/teacher-portal") && !pathname.startsWith("/api")) {
+      return NextResponse.redirect(new URL("/teacher-portal/dashboard", req.url));
+    }
+  }
+
+  if (session && role === "ADMIN") {
+    return NextResponse.next();
+  }
+
+  if (!session) {
+    if (pathname.startsWith("/dashboard")) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    if (pathname.startsWith("/teacher-portal/dashboard")) {
+      return NextResponse.redirect(new URL("/teacher-portal", req.url));
     }
   }
 
@@ -32,5 +43,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/checkout/:path*", "/teacher-portal/dashboard/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|fonts|images).*)"],
 };

@@ -3,20 +3,23 @@
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
-import { TeacherPortalEntryTopBar } from "./TeacherPortalEntryTopBar";
-
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
+
+const inputClass =
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
+const textareaClass = inputClass + " resize-y leading-relaxed";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
 
 function SuccessCheckLarge() {
   return (
     <div
-      className="mx-auto flex size-20 items-center justify-center rounded-full border-2 border-gold/40 bg-gold/10"
+      className="mx-auto flex size-20 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/10"
       aria-hidden
     >
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M10 20l7 7 13-14"
-          stroke="#C9A84C"
+          stroke="#2563EB"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -98,25 +101,28 @@ export function TeacherPortalApplyClient() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] text-navy">
-      <TeacherPortalEntryTopBar />
-      <div className="mx-auto max-w-lg px-4 pb-16 pt-[4.5rem] sm:px-6 sm:pt-20">
-        <div className="border border-navy/10 bg-white shadow-sm">
+    <div className="pb-24 md:pb-32">
+      <div className="border-b border-gray-100 bg-background py-24">
+        <div className="mx-auto max-w-6xl px-8">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Apply</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">선생님 가입 신청</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+            제출 후 관리자 검토를 거쳐 안내드립니다.
+          </p>
+        </div>
+      </div>
+      <div className="mx-auto max-w-lg px-8 py-16 md:py-24">
+        <article className="rounded-2xl border border-gray-100 bg-white shadow-sm">
           {!registerSuccess ? (
-            <div className="p-6 sm:p-8">
-              <h1 className="text-center font-display text-2xl font-semibold text-navy">선생님 가입 신청</h1>
-              <p className="mt-2 text-center text-xs text-navy/55">
-                제출 후 관리자 검토를 거쳐 안내드립니다.
-              </p>
-
-              <div className="mt-8 space-y-5">
+            <div className="p-8 md:p-10">
+              <div className="space-y-5">
                 <Field label="이름" htmlFor="apply-name" error={fieldErrors.name}>
                   <input
                     id="apply-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={inputClass}
                   />
                 </Field>
                 <Field label="이메일" htmlFor="apply-email" error={fieldErrors.email}>
@@ -125,7 +131,7 @@ export function TeacherPortalApplyClient() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={inputClass}
                   />
                 </Field>
                 <Field label="비밀번호" htmlFor="apply-pw" error={fieldErrors.password}>
@@ -134,7 +140,7 @@ export function TeacherPortalApplyClient() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={inputClass}
                   />
                 </Field>
                 <Field label="비밀번호 확인" htmlFor="apply-pw2" error={fieldErrors.passwordConfirm}>
@@ -143,7 +149,7 @@ export function TeacherPortalApplyClient() {
                     type="password"
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
-                    className="w-full border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={inputClass}
                   />
                 </Field>
                 <Field label="전화번호" htmlFor="apply-phone" error={fieldErrors.phone}>
@@ -153,14 +159,12 @@ export function TeacherPortalApplyClient() {
                     placeholder="010-0000-0000"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm outline-none placeholder:text-navy/35 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={inputClass}
                   />
                 </Field>
                 <div>
-                  <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-navy/55">
-                    담당 과목
-                  </span>
-                  <div className="flex flex-wrap gap-2">
+                  <span className={labelClass}>담당 과목</span>
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {SUBJECTS.map((s) => {
                       const on = subjects.includes(s);
                       return (
@@ -168,10 +172,10 @@ export function TeacherPortalApplyClient() {
                           key={s}
                           type="button"
                           onClick={() => toggleSubject(s)}
-                          className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                          className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
                             on
-                              ? "border-gold bg-gold text-navy"
-                              : "border-navy/25 bg-white text-navy/80 hover:border-navy/45"
+                              ? "border-primary bg-primary text-white"
+                              : "border-gray-200 bg-white text-text-mid hover:border-gray-300"
                           }`}
                         >
                           {s}
@@ -190,7 +194,7 @@ export function TeacherPortalApplyClient() {
                     placeholder="예) 서울대학교 수학교육과 졸업"
                     value={education}
                     onChange={(e) => setEducation(e.target.value)}
-                    className="w-full resize-y border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm leading-relaxed outline-none placeholder:text-navy/35 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={textareaClass}
                   />
                 </Field>
                 <Field label="주요 경력" htmlFor="apply-exp" error={fieldErrors.experience}>
@@ -200,7 +204,7 @@ export function TeacherPortalApplyClient() {
                     placeholder="예) 대치동 OO학원 수학 강사 3년"
                     value={experience}
                     onChange={(e) => setExperience(e.target.value)}
-                    className="w-full resize-y border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm leading-relaxed outline-none placeholder:text-navy/35 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={textareaClass}
                   />
                 </Field>
                 <Field label="자기소개" htmlFor="apply-bio" error={fieldErrors.bio}>
@@ -210,18 +214,18 @@ export function TeacherPortalApplyClient() {
                     placeholder="학생들에게 어떤 선생님인지 소개해주세요"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className="w-full resize-y border border-navy/15 bg-[#FAFAF8] px-3 py-2.5 text-sm leading-relaxed outline-none placeholder:text-navy/35 focus:border-gold focus:ring-1 focus:ring-gold/30"
+                    className={textareaClass}
                   />
                 </Field>
                 <button
                   type="button"
                   disabled={registerLoading}
                   onClick={() => void handleRegister()}
-                  className="flex w-full items-center justify-center gap-2 border border-gold/30 bg-gold py-3 text-sm font-semibold text-navy transition hover:bg-gold/90 disabled:opacity-70"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {registerLoading ? (
                     <>
-                      <span className="size-4 animate-spin rounded-full border-2 border-navy/25 border-t-navy" />
+                      <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                       처리 중…
                     </>
                   ) : (
@@ -235,9 +239,9 @@ export function TeacherPortalApplyClient() {
                 ) : null}
               </div>
 
-              <p className="mt-8 text-center text-xs text-navy/60">
+              <p className="mt-8 text-center text-sm text-text-mid">
                 이미 계정이 있으신가요?{" "}
-                <Link href="/teacher-portal" className="font-semibold text-gold underline-offset-2 hover:underline">
+                <Link href="/teacher-portal" className="font-semibold text-primary underline-offset-4 hover:underline">
                   로그인
                 </Link>
               </p>
@@ -245,21 +249,21 @@ export function TeacherPortalApplyClient() {
           ) : (
             <div className="flex flex-col items-center px-6 py-14 text-center sm:px-10 sm:py-16">
               <SuccessCheckLarge />
-              <h2 className="mt-8 font-display text-2xl font-semibold text-navy sm:text-3xl">
+              <h2 className="mt-8 text-2xl font-black text-text-dark sm:text-3xl">
                 신청이 완료되었습니다
               </h2>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-navy/65">
+              <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-mid">
                 관리자 검토 후 1-2 영업일 내에 안내드립니다.
               </p>
               <Link
                 href="/"
-                className="mt-10 inline-flex items-center justify-center border border-navy/15 bg-white px-6 py-3 text-sm font-semibold text-navy transition hover:border-navy/30 hover:bg-navy/[0.03]"
+                className="mt-10 inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-text-dark transition hover:border-gray-300 hover:bg-gray-50"
               >
                 ← 메인으로 돌아가기
               </Link>
             </div>
           )}
-        </div>
+        </article>
       </div>
     </div>
   );
@@ -278,7 +282,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1 block text-xs font-semibold uppercase tracking-wide text-navy/55">
+      <label htmlFor={htmlFor} className={labelClass}>
         {label}
       </label>
       {children}

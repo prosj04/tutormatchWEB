@@ -1,0 +1,235 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { parseDateKey } from "@/lib/study-plan-dates";
+
+import { DashboardCalendar } from "./DashboardCalendar";
+import { DashboardTopBar } from "./DashboardTopBar";
+import { DailyPlanView } from "./DailyPlanView";
+import type { RecentPlanOption, StudyPlan, StudyTask } from "./types";
+
+type StudentDashboardProps = {
+  studentName: string;
+  studentId: string;
+  initialDate: string;
+  aiAnswerEnabled: boolean;
+};
+
+export function StudentDashboard({
+  studentName,
+  studentId,
+  initialDate,
+  aiAnswerEnabled,
+}: StudentDashboardProps) {
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  const parsed = parseDateKey(selectedDate);
+  const [calendarYear, setCalendarYear] = useState(parsed.year);
+  const [calendarMonth, setCalendarMonth] = useState(parsed.month);
+  const [planDates, setPlanDates] = useState<Set<string>>(new Set());
+  const [plan, setPlan] = useState<StudyPlan | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [copyOptions, setCopyOptions] = useState<RecentPlanOption[]>([]);
+  const [copyLoading, setCopyLoading] = useState(false);
+  const [copySource, setCopySource] = useState<string | null>(null);
+
+  const monthKey = useMemo(
+    () => `${calendarYear}-${String(calendarMonth).padStart(2, "0")}`,
+    [calendarYear, calendarMonth],
+  );
+
+  const fetchMonthDates = useCallback(async () => {
+    const res = await fetch(`/api/plans?month=${monthKey}`);
+    if (!res.ok) return;
+    const data = (await res.json()) as { dates: string[] };
+    setPlanDates(new Set(data.dates));
+  }, [monthKey]);
+
+  const fetchPlan = useCallback(async (date: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/plans?date=${date}`);
+      if (!res.ok) return;
+      const data = (await res.json()) as { plan: StudyPlan | null };
+      setPlan(data.plan);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMonthDates();
+  }, [fetchMonthDates]);
+
+  useEffect(() => {
+    fetchPlan(selectedDate);
+  }, [selectedDate, fetchPlan]);
+
+  function handleSelectDate(date: string) {
+    setSelectedDate(date);
+    const { year, month } = parseDateKey(date);
+    setCalendarYear(year);
+    setCalendarMonth(month);
+  }
+
+  function handleMonthChange(year: number, month: number) {
+    setCalendarYear(year);
+    setCalendarMonth(month);
+  }
+
+  async function ensurePlan(): Promise<StudyPlan | null> {
+    if (plan) return plan;
+    const res = await fetch("/api/plans", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date: selectedDate }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { plan: StudyPlan };
+    setPlan(data.plan);
+    setPlanDates((prev) => new Set(prev).add(selectedDate));
+    return data.plan;
+  }
+
+  async function handleCreatePlan() {
+    setLoading(true);
+    try {
+      await ensurePlan();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleAddTask() {
+    const current = await ensurePlan();
+    if (!current) return;
+
+    const res = await fetch(`/api/plans/${current.id}/tasks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "" }),
+    });
+    if (!res.ok) return;
+    const data = (await res.json()) as { task: StudyTask };
+    setPlan((p) =>
+      p ? { ...p, tasks: [...p.tasks, data.task] } : p,
+    );
+  }
+
+  async function patchTask(
+    taskId: string,
+    patch: { isDone?: boolean; title?: string; order?: number },
+  ) {
+    const res = await fetch(`/api/plans/tasks/${taskId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    if (!res.ok) return;
+    const data = (await res.json()) as { task: StudyTask };
+    setPlan((p) =>
+      p
+        ? { ...p, tasks: p.tasks.map((t) => (t.id === taskId ? data.task : t)) }
+        : p,
+    );
+  }
+
+  async function handleToggle(taskId: string, isDone: boolean) {
+    await patchTask(taskId, { isDone });
+  }
+
+  async function handleTitleChange(taskId: string, title: string) {
+    await patchTask(taskId, { title });
+  }
+
+  async function handleDelete(taskId: string) {
+    const res = await fetch(`/api/plans/tasks/${taskId}`, { method: "DELETE" });
+    if (!res.ok) return;
+    setPlan((p) =>
+      p ? { ...p, tasks: p.tasks.filter((t) => t.id !== taskId) } : p,
+    );
+  }
+
+  async function handleReorder(reordered: StudyTask[]) {
+    setPlan((p) => (p ? { ...p, tasks: reordered } : p));
+    await Promise.all(
+      reordered.map((t) => patchTask(t.id, { order: t.order })),
+    );
+  }
+
+  async function handleOpenCopyModal() {
+    setCopyModalOpen(true);
+    setCopySource(null);
+    setCopyLoading(true);
+    try {
+      const res = await fetch(
+        `/api/plans?before=${selectedDate}&recent=7`,
+      );
+      if (!res.ok) return;
+      const data = (await res.json()) as { plans: RecentPlanOption[] };
+      setCopyOptions(data.plans.filter((p) => p.taskCount > 0));
+    } finally {
+      setCopyLoading(false);
+    }
+  }
+
+  async function handleConfirmCopy() {
+    if (!copySource) return;
+    const res = await fetch("/api/plans/copy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sourceDate: copySource, targetDate: selectedDate }),
+    });
+    if (!res.ok) return;
+    const data = (await res.json()) as { plan: StudyPlan };
+    setPlan(data.plan);
+    setPlanDates((prev) => new Set(prev).add(selectedDate));
+    setCopyModalOpen(false);
+    setCopySource(null);
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <DashboardTopBar studentName={studentName} />
+
+      <div className="flex pt-14">
+        <aside className="fixed left-0 top-14 z-30 h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-card p-4">
+          <DashboardCalendar
+            year={calendarYear}
+            month={calendarMonth}
+            selectedDate={selectedDate}
+            planDates={planDates}
+            onSelectDate={handleSelectDate}
+            onMonthChange={handleMonthChange}
+          />
+        </aside>
+
+        <main className="ml-64 flex-1">
+          <DailyPlanView
+            selectedDate={selectedDate}
+            studentId={studentId}
+            aiAnswerEnabled={aiAnswerEnabled}
+            plan={plan}
+            loading={loading}
+            copyModalOpen={copyModalOpen}
+            copyOptions={copyOptions}
+            copyLoading={copyLoading}
+            copySource={copySource}
+            onCreatePlan={handleCreatePlan}
+            onToggle={handleToggle}
+            onTitleChange={handleTitleChange}
+            onDelete={handleDelete}
+            onAddTask={handleAddTask}
+            onReorder={handleReorder}
+            onOpenCopyModal={handleOpenCopyModal}
+            onCloseCopyModal={() => setCopyModalOpen(false)}
+            onSelectCopySource={setCopySource}
+            onConfirmCopy={handleConfirmCopy}
+          />
+        </main>
+      </div>
+    </div>
+  );
+}

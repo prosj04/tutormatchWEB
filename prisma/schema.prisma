@@ -12,31 +12,99 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  role      String   @default("STUDENT")
+  role      String   @default("STUDENT") // "STUDENT" | "TEACHER" | "ADMIN"
   student   Student?
   teacher   Teacher?
   createdAt DateTime @default(now())
 }
 
 model Student {
-  id       String @id @default(uuid())
-  userId   String @unique
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name     String
-  grade    String
-  subjects String
-  phone    String
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  grade     String
+  subjects  String
+  phone     String
+  plans     StudyPlan[]
+  questions Question[]
+  teachers  TeacherStudent[]
 }
 
 model Teacher {
-  id         String  @id @default(uuid())
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String          @id @default(uuid())
+  userId     String          @unique
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   name       String
   phone      String
   subjects   String
   bio        String
   education  String
   experience String
-  approved   Boolean @default(false)
+  approved   Boolean          @default(false)
+  profile    TeacherProfile?
+  students   TeacherStudent[]
+}
+
+model TeacherStudent {
+  id        String   @id @default(uuid())
+  teacherId String
+  studentId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjects  String   // 이 매칭에서 담당하는 과목 (comma-separated)
+  startDate String   // "2024-01-01"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, studentId])
+}
+
+model StudyPlan {
+  id        String      @id @default(uuid())
+  studentId String
+  student   Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date      String      // "2024-01-15" format
+  tasks     StudyTask[]
+  comment   String?     // 강사 코멘트
+  commentAt DateTime?
+  commentBy String?     // Teacher id
+  createdAt DateTime    @default(now())
+}
+
+model StudyTask {
+  id     String    @id @default(uuid())
+  planId String
+  plan   StudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  title  String
+  isDone Boolean   @default(false)
+  doneAt DateTime?
+  order  Int       @default(0)
+}
+
+model Question {
+  id              String    @id @default(uuid())
+  studentId       String
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date            String    // 연결된 날짜 "2024-01-15"
+  content         String
+  imageUrl        String?   // Supabase Storage URL
+  aiAnswer        String?
+  teacherAnswer   String?
+  teacherAnswerAt DateTime?
+  answeredBy      String?   // Teacher id
+  isResolved      Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+}
+
+model TeacherProfile {
+  id           String   @id @default(uuid())
+  teacherId    String   @unique
+  teacher      Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  photoUrl     String?
+  intro        String?
+  career       String?  // JSON string array
+  education    String?  // JSON string array
+  certificates String?  // JSON string array
+  updatedAt    DateTime @default(now()) @updatedAt
 }

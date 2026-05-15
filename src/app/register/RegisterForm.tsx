@@ -21,6 +21,10 @@ const GRADES = [
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
+const inputClass =
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+
 type FieldKey =
   | "name"
   | "password"
@@ -93,11 +97,9 @@ export function RegisterForm() {
         });
         return;
       }
-      const loginId = normalizePhoneDigits(phone);
       const signResult = await signIn("credentials", {
-        loginId,
+        identifier: normalizePhoneDigits(phone),
         password,
-        redirectTo: "/",
         redirect: false,
       });
       if (signResult?.error) {
@@ -108,7 +110,7 @@ export function RegisterForm() {
         router.push("/login");
         return;
       }
-      router.push(signResult?.url ?? "/");
+      router.push("/dashboard");
       router.refresh();
     } finally {
       setLoading(false);
@@ -116,162 +118,95 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-navy px-4 py-16">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-[0_24px_60px_rgba(15,30,60,0.18)] sm:p-10">
-        <p className="text-center text-xl font-bold italic text-navy">Concord.</p>
-        <h1 className="mt-6 text-center font-display text-3xl font-semibold text-navy">
-          학생 회원가입
-        </h1>
-
-        <div className="mt-8 space-y-5">
-          <div>
-            <label htmlFor="reg-name" className="mb-1.5 block text-sm font-medium text-navy/80">
-              이름
-            </label>
-            <input
-              id="reg-name"
-              type="text"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-navy/15 px-4 py-3 text-sm text-navy outline-none ring-gold/40 focus:border-gold focus:ring-2"
-            />
-            {fieldErrors.name ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <label htmlFor="reg-password" className="mb-1.5 block text-sm font-medium text-navy/80">
-              비밀번호
-            </label>
-            <input
-              id="reg-password"
-              type="password"
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-navy/15 px-4 py-3 text-sm text-navy outline-none ring-gold/40 focus:border-gold focus:ring-2"
-            />
-            {fieldErrors.password ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <label htmlFor="reg-password2" className="mb-1.5 block text-sm font-medium text-navy/80">
-              비밀번호 확인
-            </label>
-            <input
-              id="reg-password2"
-              type="password"
-              autoComplete="new-password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="w-full rounded-lg border border-navy/15 px-4 py-3 text-sm text-navy outline-none ring-gold/40 focus:border-gold focus:ring-2"
-            />
-            {fieldErrors.passwordConfirm ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.passwordConfirm}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <label htmlFor="reg-grade" className="mb-1.5 block text-sm font-medium text-navy/80">
-              학년
-            </label>
-            <select
-              id="reg-grade"
-              value={grade}
-              onChange={(e) => setGrade(e.target.value)}
-              className="w-full appearance-none rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy outline-none ring-gold/40 focus:border-gold focus:ring-2"
-            >
-              {GRADES.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.grade ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.grade}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <span className="mb-2 block text-sm font-medium text-navy/80">희망 과목</span>
-            <div className="flex flex-wrap gap-2">
-              {SUBJECTS.map((s) => {
-                const on = selectedSubjects.includes(s);
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => toggleSubject(s)}
-                    className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
-                      on
-                        ? "border-gold bg-gold text-navy"
-                        : "border-navy/40 bg-white text-navy hover:border-navy/70"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                );
-              })}
-            </div>
-            {fieldErrors.subjects ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.subjects}</p>
-            ) : null}
-          </div>
-
-          <div>
-            <label htmlFor="reg-phone" className="mb-1.5 block text-sm font-medium text-navy/80">
-              전화번호
-            </label>
-            <input
-              id="reg-phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="010-0000-0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border border-navy/15 px-4 py-3 text-sm text-navy outline-none ring-gold/40 placeholder:text-navy/35 focus:border-gold focus:ring-2"
-            />
-            {fieldErrors.phone ? (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.phone}</p>
-            ) : null}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void handleSubmit()}
-          className="mt-8 flex w-full items-center justify-center gap-2 rounded-lg bg-gold py-3.5 text-sm font-semibold text-navy shadow-sm transition hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {loading ? (
-            <>
-              <span
-                className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-navy/30 border-t-navy"
-                aria-hidden
-              />
-              <span>처리 중…</span>
-            </>
-          ) : (
-            "회원가입"
-          )}
-        </button>
-
-        {conflictError ? (
-          <p className="mt-3 text-center text-sm text-red-600" role="alert">
-            {conflictError}
+    <div className="pb-24 md:pb-32">
+      <div className="border-b border-gray-100 bg-background py-24">
+        <div className="mx-auto max-w-6xl px-8">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Sign up</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">회원가입</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+            학년과 희망 과목을 선택하고 Concord 학습 계정을 만드세요.
           </p>
-        ) : null}
-
-        <p className="mt-8 text-center text-sm text-navy/60">
-          이미 계정이 있으신가요? →{" "}
-          <Link href="/login" className="font-semibold text-gold underline-offset-2 hover:underline">
-            로그인
-          </Link>
-        </p>
+        </div>
+      </div>
+      <div className="mx-auto max-w-md px-8 py-16 md:py-24">
+        <article className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
+          <div className="space-y-5">
+            <div>
+              <label htmlFor="reg-name" className={labelClass}>이름</label>
+              <input id="reg-name" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+              {fieldErrors.name ? <p className="mt-2 text-xs text-accent">{fieldErrors.name}</p> : null}
+            </div>
+            <div>
+              <label htmlFor="reg-password" className={labelClass}>비밀번호</label>
+              <input id="reg-password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} />
+              {fieldErrors.password ? <p className="mt-2 text-xs text-accent">{fieldErrors.password}</p> : null}
+            </div>
+            <div>
+              <label htmlFor="reg-password2" className={labelClass}>비밀번호 확인</label>
+              <input id="reg-password2" type="password" autoComplete="new-password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} className={inputClass} />
+              {fieldErrors.passwordConfirm ? <p className="mt-2 text-xs text-accent">{fieldErrors.passwordConfirm}</p> : null}
+            </div>
+            <div>
+              <label htmlFor="reg-grade" className={labelClass}>학년</label>
+              <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)} className={inputClass}>
+                {GRADES.map((g) => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+              {fieldErrors.grade ? <p className="mt-2 text-xs text-accent">{fieldErrors.grade}</p> : null}
+            </div>
+            <div>
+              <span className={labelClass}>희망 과목</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {SUBJECTS.map((s) => {
+                  const on = selectedSubjects.includes(s);
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => toggleSubject(s)}
+                      className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
+                        on
+                          ? "border-primary bg-primary text-white"
+                          : "border-gray-200 bg-white text-text-mid hover:border-gray-300"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+              {fieldErrors.subjects ? <p className="mt-2 text-xs text-accent">{fieldErrors.subjects}</p> : null}
+            </div>
+            <div>
+              <label htmlFor="reg-phone" className={labelClass}>전화번호</label>
+              <input id="reg-phone" type="tel" autoComplete="tel" placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} />
+              {fieldErrors.phone ? <p className="mt-2 text-xs text-accent">{fieldErrors.phone}</p> : null}
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleSubmit()}
+            className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-accent py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <span className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />
+                <span>처리 중…</span>
+              </>
+            ) : (
+              "회원가입"
+            )}
+          </button>
+          {conflictError ? (
+            <p className="mt-4 text-center text-sm text-accent" role="alert">{conflictError}</p>
+          ) : null}
+          <p className="mt-8 text-center text-sm text-text-mid">
+            이미 계정이 있으신가요?{" "}
+            <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">로그인</Link>
+          </p>
+        </article>
       </div>
     </div>
   );

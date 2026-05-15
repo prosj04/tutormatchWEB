@@ -34,38 +34,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        loginId: { label: "이메일 또는 전화번호", type: "text" },
+        identifier: { label: "Email or Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const loginId = (credentials?.loginId as string | undefined)?.trim();
+        const identifier = (credentials?.identifier as string | undefined)?.trim();
         const password = credentials?.password as string | undefined;
-        if (!loginId || !password) return null;
+        if (!identifier || !password) return null;
 
         const { prisma } = await import("@/lib/prisma");
 
-        let user = null;
+        const orConditions: {
+          email?: string;
+          student?: { phone: string };
+          teacher?: { phone: string };
+        }[] = [];
 
-        if (loginId.includes("@")) {
-          user = await prisma.user.findUnique({
-            where: { email: loginId },
-            include: { student: true, teacher: true },
-          });
+        if (identifier.includes("@")) {
+          orConditions.push({ email: identifier.toLowerCase() });
         } else {
-          const digits = normalizePhoneDigits(loginId);
-          if (digits.length < 10) return null;
-          const synthetic = studentSyntheticEmailFromDigits(digits);
-          user = await prisma.user.findFirst({
-            where: {
-              OR: [
-                { email: synthetic },
-                { student: { phone: digits } },
-                { student: { phone: loginId } },
-              ],
-            },
-            include: { student: true, teacher: true },
-          });
+          const digits = normalizePhoneDigits(identifier);
+          orConditions.push(
+            { student: { phone: identifier } },
+            { teacher: { phone: identifier } },
+          );
+          if (digits.length >= 10) {
+            orConditions.push(
+              { email: studentSyntheticEmailFromDigits(digits) },
+              { student: { phone: digits } },
+              { teacher: { phone: digits } },
+            );
+          }
         }
+
+        const user = await prisma.user.findFirst({
+          where: { OR: orConditions },
+          include: { student: true, teacher: true },
+        });
 
         if (!user) return null;
         const valid = await bcrypt.compare(password, user.password);

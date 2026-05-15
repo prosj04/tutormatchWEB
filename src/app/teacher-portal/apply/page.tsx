@@ -1,3 +1,4 @@
+import { PublicShell } from "@/components/layout/PublicShell";
 import { TeacherPortalApplyClient } from "@/components/teacher-portal/TeacherPortalApplyClient";
 
 export const metadata = {
@@ -5,5 +6,9 @@ export const metadata = {
 };
 
 export default function TeacherPortalApplyPage() {
-  return <TeacherPortalApplyClient />;
+  return (
+    <PublicShell>
+      <TeacherPortalApplyClient />
+    </PublicShell>
+  );
 }

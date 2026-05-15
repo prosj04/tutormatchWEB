@@ -4,9 +4,15 @@ import { LoginForm } from "./LoginForm";
 
 function LoginFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-navy px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-[0_24px_60px_rgba(15,30,60,0.18)]">
-        <p className="text-center text-sm text-navy/50">불러오는 중…</p>
+    <div className="pb-24 md:pb-32">
+      <div className="border-b border-gray-100 bg-background py-24">
+        <div className="mx-auto max-w-6xl px-8">
+          <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+          <div className="mt-4 h-12 w-48 animate-pulse rounded bg-gray-200" />
+        </div>
+      </div>
+      <div className="mx-auto max-w-md px-8 py-16">
+        <div className="h-64 animate-pulse rounded-2xl bg-gray-100" />
       </div>
     </div>
   );

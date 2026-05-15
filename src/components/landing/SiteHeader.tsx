@@ -15,6 +15,7 @@ function sectionMeta(pathname: string): { label: string; title: string } {
   if (pathname === "/register") return { label: "—", title: "회원가입" };
   if (pathname === "/teacher-portal") return { label: "—", title: "선생님 포털" };
   if (pathname === "/teacher-portal/apply") return { label: "—", title: "선생님 지원" };
+  if (pathname.startsWith("/teacher-portal/dashboard")) return { label: "—", title: "선생님 대시보드" };
   return { label: "—", title: "Concord" };
 }
 

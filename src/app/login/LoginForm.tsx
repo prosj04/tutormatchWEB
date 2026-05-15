@@ -2,42 +2,179 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useState } from "react";
 
-import { normalizePhoneDigits } from "@/lib/phone-login";
+const inputClass =
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+
+function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  async function handleCreate() {
+    setError("");
+    if (password !== passwordConfirm) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, secretKey }),
+      });
+      if (res.status === 201) {
+        setSuccess(true);
+        onSuccess();
+        return;
+      }
+      if (res.status === 403) {
+        setError("이미 관리자 계정이 존재합니다");
+        return;
+      }
+      if (res.status === 401) {
+        setError("비밀키가 올바르지 않습니다");
+        return;
+      }
+      setError("계정 생성에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (success) {
+    return (
+      <p className="mt-6 text-center text-sm text-green-700" role="status">
+        관리자 계정이 생성되었습니다
+      </p>
+    );
+  }
+
+  return (
+    <section className="mt-8 border-t border-gray-100 pt-8">
+      <h2 className="text-center text-xs font-medium text-text-light">관리자 계정 생성</h2>
+      <div className="mt-4 space-y-4">
+        <div>
+          <label htmlFor="admin-email" className={labelClass}>
+            관리자 이메일
+          </label>
+          <input
+            id="admin-email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="admin-password" className={labelClass}>
+            비밀번호
+          </label>
+          <input
+            id="admin-password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="admin-password-confirm" className={labelClass}>
+            비밀번호 확인
+          </label>
+          <input
+            id="admin-password-confirm"
+            type="password"
+            autoComplete="new-password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="admin-secret" className={labelClass}>
+            설정 비밀키
+          </label>
+          <input
+            id="admin-secret"
+            type="text"
+            autoComplete="off"
+            value={secretKey}
+            onChange={(e) => setSecretKey(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => void handleCreate()}
+          className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-mid transition hover:border-gray-300 hover:text-text-dark disabled:opacity-50"
+        >
+          {loading ? "생성 중…" : "생성하기"}
+        </button>
+        {error ? (
+          <p className="text-center text-sm text-accent" role="alert">
+            {error}
+          </p>
+        ) : null}
+      </div>
+    </section>
+  );
+}
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [phone, setPhone] = useState("");
+  const showAdminSetup = searchParams.get("setup") === "admin";
+
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const redirectTo = searchParams.get("redirect") ?? "/";
+  const [adminSetupHidden, setAdminSetupHidden] = useState(false);
 
   async function handleSubmit() {
     setError("");
+    const trimmed = identifier.trim();
+    if (!trimmed) {
+      setError("이메일 또는 전화번호를 입력해 주세요.");
+      return;
+    }
     setLoading(true);
     try {
-      const loginId = normalizePhoneDigits(phone);
-      if (loginId.length < 10) {
-        setError("전화번호를 올바르게 입력해 주세요.");
-        return;
-      }
       const result = await signIn("credentials", {
-        loginId,
+        identifier: trimmed,
         password,
-        redirectTo,
         redirect: false,
       });
       if (result?.error) {
-        setError("전화번호 또는 비밀번호가 올바르지 않습니다");
+        setError("이메일·전화번호 또는 비밀번호가 올바르지 않습니다");
         return;
       }
       if (result?.ok) {
-        router.push(result.url ?? redirectTo);
+        const nextSession = await getSession();
+        const role = nextSession?.user?.role;
+        const destination =
+          role === "ADMIN"
+            ? "/admin"
+            : role === "TEACHER"
+              ? "/teacher-portal/dashboard"
+              : "/dashboard";
+        router.push(destination);
         router.refresh();
       }
     } finally {
@@ -46,76 +183,86 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-navy px-4 py-16">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-[0_24px_60px_rgba(15,30,60,0.18)] sm:p-10">
-        <p className="text-center text-xl font-bold italic text-navy">Concord.</p>
-        <h1 className="mt-6 text-center font-display text-3xl font-semibold text-navy">
-          로그인
-        </h1>
-
-        <div className="mt-8 space-y-5">
-          <div>
-            <label htmlFor="login-phone" className="mb-1.5 block text-sm font-medium text-navy/80">
-              전화번호
-            </label>
-            <input
-              id="login-phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="010-0000-0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
-              className="w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy outline-none ring-gold/40 transition placeholder:text-navy/35 focus:border-gold focus:ring-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-navy/80">
-              비밀번호
-            </label>
-            <input
-              id="login-password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
-              className="w-full rounded-lg border border-navy/15 bg-white px-4 py-3 text-sm text-navy outline-none ring-gold/40 transition focus:border-gold focus:ring-2"
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void handleSubmit()}
-          className="mt-8 flex w-full items-center justify-center gap-2 rounded-lg bg-gold py-3.5 text-sm font-semibold text-navy shadow-sm transition hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {loading ? (
-            <>
-              <span
-                className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-navy/30 border-t-navy"
-                aria-hidden
-              />
-              <span>로그인 중…</span>
-            </>
-          ) : (
-            "로그인"
-          )}
-        </button>
-
-        {error ? (
-          <p className="mt-3 text-center text-sm text-red-600" role="alert">
-            {error}
+    <div className="pb-24 md:pb-32">
+      <div className="border-b border-gray-100 bg-background py-24">
+        <div className="mx-auto max-w-6xl px-8">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Account</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">로그인</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+            이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.
           </p>
-        ) : null}
+        </div>
+      </div>
+      <div className="mx-auto max-w-md px-8 py-16 md:py-24">
+        <article className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
+          <div className="space-y-5">
+            <div>
+              <label htmlFor="login-identifier" className={labelClass}>
+                이메일 또는 전화번호
+              </label>
+              <input
+                id="login-identifier"
+                type="text"
+                autoComplete="username"
+                placeholder="이메일 또는 010-0000-0000"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="login-password" className={labelClass}>
+                비밀번호
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
+                className={inputClass}
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleSubmit()}
+            className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <span
+                  className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                  aria-hidden
+                />
+                <span>로그인 중…</span>
+              </>
+            ) : (
+              "로그인"
+            )}
+          </button>
+          {error ? (
+            <p className="mt-4 text-center text-sm text-accent" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <p className="mt-8 text-center text-sm text-text-mid">
+            아직 계정이 없으신가요?{" "}
+            <Link
+              href="/register"
+              className="font-semibold text-primary underline-offset-4 hover:underline"
+            >
+              회원가입
+            </Link>
+          </p>
 
-        <p className="mt-8 text-center text-sm text-navy/60">
-          아직 계정이 없으신가요? →{" "}
-          <Link href="/register" className="font-semibold text-gold underline-offset-2 hover:underline">
-            회원가입
-          </Link>
-        </p>
+          {showAdminSetup && !adminSetupHidden ? (
+            <AdminSetupSection onSuccess={() => setAdminSetupHidden(true)} />
+          ) : null}
+        </article>
       </div>
     </div>
   );
