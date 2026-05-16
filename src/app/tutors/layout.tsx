@@ -8,7 +8,7 @@ export default function TutorsLayout({
   return (
     <>
       <SiteHeader />
-      <div className="min-h-screen bg-background pt-16">{children}</div>
+      <div className="min-h-screen bg-background pt-16 md:pt-[100px]">{children}</div>
     </>
   );
 }

@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,7 +10,8 @@
   body {
     background-color: #F5F5F5;
     color: #111111;
-    font-family: "Inter", sans-serif;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
     @apply text-base font-normal leading-relaxed antialiased;
   }
 
@@ -23,5 +22,54 @@
   h5,
   h6 {
     @apply font-sans font-extrabold text-text-primary;
+  }
+}
+
+@keyframes fadeIn { 0%{opacity:0} to{opacity:1} }
+@keyframes slide-left { 0%{transform:translate(0)} to{transform:translate(-50%)} }
+@keyframes floatUpDown { 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} to{transform:translateY(0)} }
+@keyframes slide { 0%{transform:translate(0)} to{transform:translate(-25%)} }
+
+@layer utilities {
+  .animate-slide {
+    animation: slide var(--speed, 28s) linear infinite;
+  }
+
+  .animate-slide-left {
+    animation: slide-left var(--speed, 24s) linear infinite;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.45s ease-out both;
+  }
+
+  .animate-float-up-down {
+    animation: floatUpDown 3s ease-in-out infinite;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .faq-toggle:checked ~ .faq-header .chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  .content-wrapper {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-in-out;
+  }
+
+  .faq-toggle:checked ~ .content-wrapper {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-content {
+    min-height: 0;
   }
 }

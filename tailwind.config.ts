@@ -13,6 +13,16 @@ const config: Config = {
         surface: "#FFFFFF",
         primary: "#2563EB",
         accent: "#E91E8C",
+        "brand-blue": "#2563EB",
+        "neutral-100": "#111111",
+        "neutral-90": "#1a1a1a",
+        "neutral-80": "#2a2a2a",
+        "neutral-0": "#ffffff",
+        "neutral-10": "#f5f5f5",
+        "neutral-20": "#e5e5e5",
+        "neutral-30": "#aaaaaa",
+        "neutral-40": "#888888",
+        "neutral-50": "#666666",
         text: {
           primary: "#111111",
           secondary: "#6B7280",
@@ -21,8 +31,8 @@ const config: Config = {
         border: "#E5E7EB",
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        display: ["Inter", "sans-serif"],
+        sans: ["Pretendard", "-apple-system", "sans-serif"],
+        display: ["Pretendard", "-apple-system", "sans-serif"],
       },
       maxWidth: {
         content: "72rem",

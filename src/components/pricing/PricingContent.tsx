@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { formatKRW } from "@/lib/format-won";
 
 const faqs = [
   {
@@ -24,119 +23,112 @@ const faqs = [
 ];
 
 export function PricingContent() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [activePlan, setActivePlan] = useState(1);
 
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-24">
+    <div className="bg-white">
+      <div className="border-b border-neutral-20 bg-white py-20">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Plans</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">요금제</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
+          <p className="text-sm font-black uppercase tracking-wider text-primary">Plans</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight tracking-[-0.04em] text-neutral-100 sm:text-7xl">
+            1:1 맞춤 과외,
+            <br />
+            월 40만원부터
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg font-medium leading-relaxed text-neutral-50">
             가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요. 모든 플랜에 학습관리 시스템이 포함됩니다.
           </p>
         </div>
       </div>
 
       <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <article className="flex flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
-            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Plan A</p>
-            <h2 className="mt-4 text-2xl font-black text-text-primary md:text-3xl">월 4회</h2>
-            <p className="mt-4 text-4xl font-black tracking-tight text-primary md:text-5xl">
-              {formatKRW(400_000)}
-            </p>
-            <ul className="mt-10 space-y-4 text-sm leading-relaxed text-text-secondary">
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                주 1회 수업 (50분)
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                학습 진도 관리
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                과제 관리
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                AI 질답 무제한
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                강사 첨삭 월 4회
-              </li>
-            </ul>
-            <Link
-              href="/checkout?sessions=4&tutor=1"
-              className="mt-10 inline-flex w-full items-center justify-center rounded-2xl border border-gray-300 py-4 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50"
+        <div className="mb-6 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
+          {["월 4회", "월 8회"].map((label, index) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setActivePlan(index)}
+              className={`rounded-full py-3 text-sm font-black transition ${
+                activePlan === index ? "bg-primary text-white" : "text-neutral-50"
+              }`}
             >
-              이 플랜으로 시작
-            </Link>
-          </article>
+              {label}
+            </button>
+          ))}
+        </div>
 
-          <article className="relative flex flex-col rounded-2xl border-2 border-primary bg-white p-8 shadow-md md:p-10">
-            <span className="absolute right-8 top-8 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-              Recommended
-            </span>
-            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Plan B</p>
-            <h2 className="mt-4 text-2xl font-black text-text-primary md:text-3xl">월 8회</h2>
-            <p className="mt-4 text-4xl font-black tracking-tight text-primary md:text-5xl">
-              {formatKRW(720_000)}
-            </p>
-            <ul className="mt-10 space-y-4 text-sm leading-relaxed text-text-secondary">
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                주 2회 수업 (50분)
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                위 혜택 모두 포함
-              </li>
-              <li className="flex gap-3">
-                <span className="text-primary">·</span>
-                우선 강사 배정
-              </li>
-            </ul>
-            <Link
-              href="/checkout?sessions=8&tutor=1"
-              className="mt-10 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90"
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+          {[
+            ["월 4회", "400,000원", "주 1회 수업 (50분)", "4"],
+            ["월 8회", "720,000원", "주 2회 수업 (50분)", "8"],
+          ].map(([title, price, cadence, sessions], index) => (
+            <article
+              key={title}
+              className={`${activePlan === index ? "block" : "hidden md:block"} overflow-hidden rounded-[32px] bg-neutral-20`}
             >
-              이 플랜으로 시작
-            </Link>
-          </article>
+              <div className="h-10 bg-neutral-20" />
+              <div className="relative flex min-h-[520px] flex-col rounded-t-[32px] bg-neutral-100 p-8 text-white md:p-10">
+                {index === 1 ? (
+                  <span className="absolute right-8 top-8 rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                    Recommended
+                  </span>
+                ) : null}
+                <p className="text-xs font-black uppercase tracking-wider text-neutral-30">
+                  1:1 맞춤 과외
+                </p>
+                <h2 className="mt-5 text-3xl font-black text-white">{title}</h2>
+                <p className="mt-6 text-5xl font-black tracking-tight text-white md:text-6xl">
+                  {price}
+                </p>
+                <ul className="mt-10 space-y-4 text-sm font-medium leading-relaxed text-neutral-30">
+                  {[cadence, "학습 진도 관리", "과제 관리", "AI 질답 무제한", "강사 첨삭 포함"].map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span className="text-primary">·</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={`/checkout?sessions=${sessions}&tutor=1`}
+                  className="mt-auto inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
+                >
+                  이 플랜으로 시작
+                </Link>
+                <div className="absolute -bottom-3 left-0 flex w-full justify-around">
+                  {Array.from({ length: 16 }).map((_, i) => (
+                    <span key={i} className="h-6 w-6 rounded-full bg-white" />
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
 
         <section className="mt-24 md:mt-32">
-          <h2 className="text-3xl font-black text-text-primary md:text-4xl">자주 묻는 질문</h2>
-          <p className="mt-3 text-sm text-text-muted">FAQ</p>
-          <div className="mt-10 divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-100 bg-white">
-            {faqs.map((item, i) => {
-              const isOpen = open === i;
-              return (
-                <div key={item.q}>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(isOpen ? null : i)}
-                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-gray-50 md:py-6"
-                  >
-                    <span className="font-semibold text-text-primary">{item.q}</span>
-                    <span
-                      className={`inline-block shrink-0 text-primary transition ${isOpen ? "rotate-180" : ""}`}
-                      aria-hidden
-                    >
-                      ▼
-                    </span>
-                  </button>
-                  {isOpen ? (
-                    <div className="border-t border-gray-100 bg-background px-6 py-5 text-sm leading-relaxed text-text-secondary md:py-6">
+          <h2 className="text-3xl font-black text-neutral-100 md:text-5xl">자주 묻는 질문</h2>
+          <p className="mt-3 text-sm font-bold text-neutral-50">FAQ</p>
+          <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
+            {faqs.map((item, i) => (
+              <div key={item.q}>
+                <input id={`pricing-faq-${i}`} type="checkbox" className="faq-toggle sr-only" defaultChecked={i === 0} />
+                <label
+                  htmlFor={`pricing-faq-${i}`}
+                  className="faq-header flex cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-neutral-10 md:py-6"
+                >
+                  <span className="font-black text-neutral-100">{item.q}</span>
+                  <span className="chevron-icon inline-block shrink-0 text-primary transition" aria-hidden>
+                    ▼
+                  </span>
+                </label>
+                <div className="content-wrapper grid border-t border-neutral-20 bg-neutral-10">
+                  <div className="faq-content overflow-hidden">
+                    <p className="px-6 py-5 text-sm font-medium leading-relaxed text-neutral-50 md:py-6">
                       {item.a}
-                    </div>
-                  ) : null}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </section>
       </div>
