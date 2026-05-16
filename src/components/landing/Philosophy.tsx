@@ -9,7 +9,7 @@ const PARAGRAPHS = [
 ];
 
 function GoldLine() {
-  return <div className="mx-auto h-0.5 w-[60px] bg-gold" aria-hidden />;
+  return <div className="mx-auto h-0.5 w-[60px] bg-primary" aria-hidden />;
 }
 
 export function Philosophy() {
@@ -33,7 +33,7 @@ export function Philosophy() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 0.5, delay: i * 0.3 }}
-              className="whitespace-pre-line font-sans text-lg leading-[1.9] text-navy md:text-xl"
+              className="whitespace-pre-line font-sans text-lg leading-[1.9] text-text-primary md:text-xl"
             >
               {text}
             </motion.p>

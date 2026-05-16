@@ -21,12 +21,12 @@ function roleBadge(role: string) {
   if (role === "MANAGER") {
     return {
       label: "매니저",
-      className: "bg-navy/10 text-navy",
+      className: "bg-surface/10 text-text-primary",
     };
   }
   return {
     label: "선생님",
-    className: "bg-gray-100 text-text-mid",
+    className: "bg-gray-100 text-text-secondary",
   };
 }
 
@@ -130,7 +130,7 @@ export function AdminTeachersPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-black text-text-dark">선생님 관리</h2>
+      <h2 className="text-2xl font-black text-text-primary">선생님 관리</h2>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <input
@@ -157,7 +157,7 @@ export function AdminTeachersPage() {
         <button
           type="button"
           onClick={() => fetchList()}
-          className="rounded-xl bg-navy px-4 py-2 text-sm font-medium text-white"
+          className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-white"
         >
           검색
         </button>
@@ -165,7 +165,7 @@ export function AdminTeachersPage() {
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
         <table className="w-full min-w-[1000px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-light">
+          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
             <tr>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">담당과목</th>
@@ -181,7 +181,7 @@ export function AdminTeachersPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-text-light">
+                <td colSpan={9} className="px-4 py-8 text-center text-text-muted">
                   불러오는 중…
                 </td>
               </tr>
@@ -220,7 +220,7 @@ export function AdminTeachersPage() {
                     <button
                       type="button"
                       onClick={() => toggleApprove(row)}
-                      className="mr-2 text-gold hover:underline"
+                      className="mr-2 text-primary hover:underline"
                     >
                       {row.approved ? "승인취소" : "승인"}
                     </button>
@@ -228,7 +228,7 @@ export function AdminTeachersPage() {
                       <button
                         type="button"
                         onClick={() => grantManager(row)}
-                        className="mr-2 text-navy hover:underline"
+                        className="mr-2 text-text-primary hover:underline"
                       >
                         매니저 권한 부여
                       </button>
@@ -236,7 +236,7 @@ export function AdminTeachersPage() {
                       <button
                         type="button"
                         onClick={() => revokeManager(row)}
-                        className="mr-2 text-text-mid hover:underline"
+                        className="mr-2 text-text-secondary hover:underline"
                       >
                         매니저 권한 해제
                       </button>
@@ -336,7 +336,7 @@ export function AdminTeachersPage() {
               <button
                 type="button"
                 onClick={() => void saveEdit()}
-                className="flex-1 rounded-xl bg-gold py-2 text-sm font-semibold text-white"
+                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
               >
                 저장
               </button>

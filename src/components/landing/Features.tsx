@@ -27,13 +27,13 @@ export function Features() {
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
             <div>
-              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
+              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-muted">
                 05 서비스
               </p>
-              <h2 className="mb-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">
+              <h2 className="mb-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
                 학습관리 시스템
               </h2>
-              <p className="text-lg leading-relaxed text-text-mid">
+              <p className="text-lg leading-relaxed text-text-secondary">
                 수업 외 시간까지 이어지는 학습 루프를 설계했습니다. 진도·질문·첨삭이
                 한 화면에서 연결됩니다.
               </p>
@@ -46,21 +46,21 @@ export function Features() {
                       <span className="text-5xl font-black text-primary">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-text-mid">
+                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-text-secondary">
                         {s.tag}
                       </span>
                     </div>
-                    <h3 className="mb-3 text-xl font-bold text-text-dark">{s.title}</h3>
-                    <p className="text-sm leading-relaxed text-text-mid">{s.body}</p>
+                    <h3 className="mb-3 text-xl font-bold text-text-primary">{s.title}</h3>
+                    <p className="text-sm leading-relaxed text-text-secondary">{s.body}</p>
                   </div>
                 </FadeSection>
               ))}
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-            <span className="text-text-light">05 / 06</span>
-            <span className="text-text-mid">가정·강사·매니저가 같은 데이터를 봅니다.</span>
+          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-muted sm:flex-row sm:items-center">
+            <span className="text-text-muted">05 / 06</span>
+            <span className="text-text-secondary">가정·강사·매니저가 같은 데이터를 봅니다.</span>
           </div>
         </div>
       </section>

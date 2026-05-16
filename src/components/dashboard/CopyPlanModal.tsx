@@ -34,20 +34,20 @@ export function CopyPlanModal({
       aria-modal="true"
       aria-labelledby="copy-plan-title"
     >
-      <div className="w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl">
-        <h2 id="copy-plan-title" className="text-lg font-bold text-text-dark">
+      <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl">
+        <h2 id="copy-plan-title" className="text-lg font-bold text-text-primary">
           이전 날짜에서 복사
         </h2>
-        <p className="mt-1 text-sm text-text-mid">
+        <p className="mt-1 text-sm text-text-secondary">
           {formatPlanHeader(targetDate)}에 복사할 이전 날짜를 선택하세요. 할 일은 미완료 상태로
           가져옵니다.
         </p>
 
         <ul className="mt-4 max-h-56 space-y-2 overflow-y-auto">
           {loading ? (
-            <li className="py-4 text-center text-sm text-text-light">불러오는 중…</li>
+            <li className="py-4 text-center text-sm text-text-muted">불러오는 중…</li>
           ) : options.length === 0 ? (
-            <li className="py-4 text-center text-sm text-text-light">
+            <li className="py-4 text-center text-sm text-text-muted">
               복사할 수 있는 이전 계획이 없습니다.
             </li>
           ) : (
@@ -62,8 +62,8 @@ export function CopyPlanModal({
                       : "border-gray-100 hover:border-gray-200"
                   }`}
                 >
-                  <span className="text-text-dark">{formatCalendarDayLabel(opt.date)}</span>
-                  <span className="ml-2 text-text-light">할 일 {opt.taskCount}개</span>
+                  <span className="text-text-primary">{formatCalendarDayLabel(opt.date)}</span>
+                  <span className="ml-2 text-text-muted">할 일 {opt.taskCount}개</span>
                 </button>
               </li>
             ))
@@ -74,7 +74,7 @@ export function CopyPlanModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-text-mid hover:bg-background"
+            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-text-secondary hover:bg-background"
           >
             취소
           </button>

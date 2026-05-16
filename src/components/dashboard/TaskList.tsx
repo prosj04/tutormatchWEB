@@ -77,7 +77,7 @@ export function TaskList({
       <button
         type="button"
         onClick={onAddTask}
-        className="mt-3 w-full rounded-xl border border-dashed border-gray-200 py-3 text-sm font-medium text-text-mid transition hover:border-primary hover:text-primary"
+        className="mt-3 w-full rounded-xl border border-dashed border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-primary hover:text-primary"
       >
         할 일 추가
       </button>

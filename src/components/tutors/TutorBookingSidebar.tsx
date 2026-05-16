@@ -21,10 +21,10 @@ export function TutorBookingSidebar({ tutorId }: TutorBookingSidebarProps) {
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-text-light">
+      <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
         Enrollment
       </p>
-      <h2 className="mt-3 text-xl font-black text-text-dark">수업 플랜</h2>
+      <h2 className="mt-3 text-xl font-black text-text-primary">수업 플랜</h2>
 
       <div className="mt-8 space-y-3">
         <button
@@ -32,8 +32,8 @@ export function TutorBookingSidebar({ tutorId }: TutorBookingSidebarProps) {
           onClick={() => setPlan("4")}
           className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm transition ${
             plan === "4"
-              ? "border-primary bg-primary/5 text-text-dark"
-              : "border-gray-200 text-text-mid hover:border-gray-300"
+              ? "border-primary bg-primary/5 text-text-primary"
+              : "border-gray-200 text-text-secondary hover:border-gray-300"
           }`}
         >
           <span className="font-semibold">4회 패키지</span>
@@ -44,8 +44,8 @@ export function TutorBookingSidebar({ tutorId }: TutorBookingSidebarProps) {
           onClick={() => setPlan("8")}
           className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm transition ${
             plan === "8"
-              ? "border-primary bg-primary/5 text-text-dark"
-              : "border-gray-200 text-text-mid hover:border-gray-300"
+              ? "border-primary bg-primary/5 text-text-primary"
+              : "border-gray-200 text-text-secondary hover:border-gray-300"
           }`}
         >
           <span className="font-semibold">8회 패키지</span>
@@ -54,9 +54,9 @@ export function TutorBookingSidebar({ tutorId }: TutorBookingSidebarProps) {
       </div>
 
       <div className="mt-8 border-t border-gray-100 pt-6">
-        <p className="text-xs uppercase tracking-wider text-text-light">선택 금액</p>
-        <p className="mt-2 text-3xl font-black tracking-tight text-text-dark">{prices[plan]}</p>
-        <p className="mt-2 text-xs leading-relaxed text-text-light">
+        <p className="text-xs uppercase tracking-wider text-text-muted">선택 금액</p>
+        <p className="mt-2 text-3xl font-black tracking-tight text-text-primary">{prices[plan]}</p>
+        <p className="mt-2 text-xs leading-relaxed text-text-muted">
           VAT 별도 · 매니저 배정 후 일정 확정
         </p>
       </div>

@@ -56,7 +56,7 @@ export function DailyPlanView({
     <div className="min-h-[calc(100vh-3.5rem)] flex-1 overflow-y-auto bg-background p-6 md:p-8">
       <div className="mx-auto max-w-2xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-xl font-bold text-text-dark sm:text-2xl">
+          <h1 className="text-xl font-bold text-text-primary sm:text-2xl">
             {formatPlanHeader(selectedDate)}
           </h1>
           {!plan && (
@@ -72,11 +72,11 @@ export function DailyPlanView({
         </div>
 
         {loading ? (
-          <p className="mt-12 text-center text-sm text-text-light">불러오는 중…</p>
+          <p className="mt-12 text-center text-sm text-text-muted">불러오는 중…</p>
         ) : !plan ? (
-          <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-card p-10 text-center">
-            <p className="text-sm text-text-mid">이 날짜의 학습 계획이 없습니다.</p>
-            <p className="mt-1 text-xs text-text-light">
+          <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-10 text-center">
+            <p className="text-sm text-text-secondary">이 날짜의 학습 계획이 없습니다.</p>
+            <p className="mt-1 text-xs text-text-muted">
               계획 추가 버튼을 눌러 시작하거나, 이전 날짜에서 복사해 보세요.
             </p>
             <button
@@ -93,13 +93,13 @@ export function DailyPlanView({
               <button
                 type="button"
                 onClick={onOpenCopyModal}
-                className="rounded-lg border border-gray-200 bg-card px-3 py-1.5 text-xs font-medium text-text-mid hover:border-gray-300"
+                className="rounded-lg border border-gray-200 bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary hover:border-gray-300"
               >
                 이전 날짜에서 복사
               </button>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-gray-100 bg-card p-4 shadow-sm sm:p-6">
+            <div className="mt-6 rounded-2xl border border-gray-100 bg-surface p-4 shadow-sm sm:p-6">
               <TaskList
                 tasks={tasks}
                 onReorder={onReorder}
@@ -112,22 +112,22 @@ export function DailyPlanView({
 
             <section className="mt-8">
               {plan.comment ? (
-                <div className="rounded-2xl border-2 border-gold/60 bg-gold/5 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gold">
+                <div className="rounded-2xl border-2 border-primary/60 bg-primary/5 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                     선생님 코멘트
                   </p>
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-dark">
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
                     {plan.comment}
                   </p>
                   {plan.commentAt && (
-                    <p className="mt-3 text-xs text-text-light">
+                    <p className="mt-3 text-xs text-text-muted">
                       {formatCommentDate(plan.commentAt)}
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-gray-100 bg-card p-5 text-center">
-                  <p className="text-sm text-text-light">아직 코멘트가 없습니다</p>
+                <div className="rounded-2xl border border-gray-100 bg-surface p-5 text-center">
+                  <p className="text-sm text-text-muted">아직 코멘트가 없습니다</p>
                 </div>
               )}
             </section>

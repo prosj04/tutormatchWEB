@@ -51,11 +51,11 @@ function TeacherQuestionCard({
 
   return (
     <article className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-      <span className="inline-block rounded-full bg-background px-2.5 py-0.5 text-xs font-medium text-text-mid">
+      <span className="inline-block rounded-full bg-background px-2.5 py-0.5 text-xs font-medium text-text-secondary">
         {formatCalendarDayLabel(question.date)}
       </span>
 
-      <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-dark">
+      <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
         {question.content}
       </p>
 
@@ -79,14 +79,14 @@ function TeacherQuestionCard({
           <button
             type="button"
             onClick={() => setAiOpen((o) => !o)}
-            className="text-xs font-semibold text-gold hover:underline"
+            className="text-xs font-semibold text-primary hover:underline"
           >
             {aiOpen ? "AI 답변 숨기기" : "AI 답변 보기"}
           </button>
           {aiOpen && (
-            <div className="mt-2 rounded-xl bg-gold/10 p-4">
-              <span className="text-xs font-semibold text-gold">AI 답변</span>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-text-dark">
+            <div className="mt-2 rounded-xl bg-primary/10 p-4">
+              <span className="text-xs font-semibold text-primary">AI 답변</span>
+              <p className="mt-2 whitespace-pre-wrap text-sm text-text-primary">
                 {question.aiAnswer}
               </p>
             </div>
@@ -94,7 +94,7 @@ function TeacherQuestionCard({
         </div>
       )}
 
-      <section className="mt-4 rounded-xl bg-navy/95 p-4 text-white">
+      <section className="mt-4 rounded-xl bg-surface/95 p-4 text-white">
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-semibold">선생님 답변</span>
           {question.teacherAnswer && !editing && (
@@ -125,7 +125,7 @@ function TeacherQuestionCard({
               type="button"
               disabled={saving || !draft.trim()}
               onClick={() => void handleSave()}
-              className="mt-3 rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="mt-3 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
               {saving ? "등록 중…" : "답변 등록"}
             </button>
@@ -195,8 +195,8 @@ export function TeacherStudentQuestionsTab({ studentId }: TeacherStudentQuestion
             onClick={() => setFilter(f.key)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
               filter === f.key
-                ? "bg-gold text-white"
-                : "border border-gray-200 bg-white text-text-mid hover:border-gold"
+                ? "bg-primary text-white"
+                : "border border-gray-200 bg-white text-text-secondary hover:border-primary"
             }`}
           >
             {f.label}
@@ -205,9 +205,9 @@ export function TeacherStudentQuestionsTab({ studentId }: TeacherStudentQuestion
       </div>
 
       {loading ? (
-        <p className="py-12 text-center text-sm text-text-light">질문을 불러오는 중…</p>
+        <p className="py-12 text-center text-sm text-text-muted">질문을 불러오는 중…</p>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-background py-12 text-center text-sm text-text-mid">
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-background py-12 text-center text-sm text-text-secondary">
           {filter === "all" ? "등록된 질문이 없습니다." : "해당 조건의 질문이 없습니다."}
         </div>
       ) : (

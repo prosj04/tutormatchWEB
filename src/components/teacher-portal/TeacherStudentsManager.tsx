@@ -61,20 +61,20 @@ export function TeacherStudentsManager({
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-text-dark sm:text-3xl">학생 관리</h1>
-      <p className="mt-2 text-sm text-text-mid">
+      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">학생 관리</h1>
+      <p className="mt-2 text-sm text-text-secondary">
         학생의 학습 계획을 확인하고 코멘트·질문 답변을 남길 수 있습니다.
       </p>
 
       <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
         <aside className="w-full shrink-0 lg:w-72">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-light">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
             학생 목록
           </h2>
           {loading ? (
-            <p className="text-sm text-text-light">불러오는 중…</p>
+            <p className="text-sm text-text-muted">불러오는 중…</p>
           ) : students.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-text-mid">
+            <p className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-text-secondary">
               배정된 학생이 없습니다.
             </p>
           ) : (
@@ -92,20 +92,20 @@ export function TeacherStudentsManager({
                       }}
                       className={`w-48 rounded-xl border px-4 py-3 text-left transition lg:w-full ${
                         active
-                          ? "border-gold bg-gold/10 shadow-sm"
+                          ? "border-primary bg-primary/10 shadow-sm"
                           : "border-gray-100 bg-white hover:border-gray-200"
                       }`}
                     >
                       <p
-                        className={`font-semibold ${active ? "text-gold" : "text-text-dark"}`}
+                        className={`font-semibold ${active ? "text-primary" : "text-text-primary"}`}
                       >
                         {student.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-text-mid">{student.grade}</p>
+                      <p className="mt-0.5 text-xs text-text-secondary">{student.grade}</p>
                       {subjects ? (
-                        <p className="mt-1 truncate text-xs text-text-light">{subjects}</p>
+                        <p className="mt-1 truncate text-xs text-text-muted">{subjects}</p>
                       ) : null}
-                      <p className="mt-1 text-[10px] text-text-light">
+                      <p className="mt-1 text-[10px] text-text-muted">
                         수업 시작 {formatStartDate(student.startDate)}
                       </p>
                     </button>
@@ -118,20 +118,20 @@ export function TeacherStudentsManager({
 
         <section className="min-w-0 flex-1 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm md:p-6">
           {!selected ? (
-            <p className="py-16 text-center text-sm text-text-mid">
+            <p className="py-16 text-center text-sm text-text-secondary">
               학생을 선택해 주세요.
             </p>
           ) : (
             <>
               <div className="border-b border-gray-100 pb-4">
-                <h2 className="text-lg font-bold text-text-dark">{selected.name}</h2>
-                <p className="text-sm text-text-mid">
+                <h2 className="text-lg font-bold text-text-primary">{selected.name}</h2>
+                <p className="text-sm text-text-secondary">
                   {selected.grade}
                   {formatSubjects(selected.subjects)
                     ? ` · ${formatSubjects(selected.subjects)}`
                     : ""}
                 </p>
-                <p className="mt-0.5 text-xs text-text-light">
+                <p className="mt-0.5 text-xs text-text-muted">
                   수업 시작일 {formatStartDate(selected.startDate)}
                 </p>
               </div>
@@ -149,8 +149,8 @@ export function TeacherStudentsManager({
                     onClick={() => setDetailTab(tab.key)}
                     className={`border-b-2 pb-3 text-sm font-semibold transition ${
                       detailTab === tab.key
-                        ? "border-gold text-text-dark"
-                        : "border-transparent text-text-mid hover:text-text-dark"
+                        ? "border-primary text-text-primary"
+                        : "border-transparent text-text-secondary hover:text-text-primary"
                     }`}
                   >
                     {tab.label}

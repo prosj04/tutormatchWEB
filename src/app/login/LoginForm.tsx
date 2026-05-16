@@ -6,8 +6,8 @@ import { getSession, signIn } from "next-auth/react";
 import { useState } from "react";
 
 const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("");
@@ -64,7 +64,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <section className="mt-8 border-t border-gray-100 pt-8">
-      <h2 className="text-center text-xs font-medium text-text-light">관리자 계정 생성</h2>
+      <h2 className="text-center text-xs font-medium text-text-muted">관리자 계정 생성</h2>
       <div className="mt-4 space-y-4">
         <div>
           <label htmlFor="admin-email" className={labelClass}>
@@ -122,7 +122,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
           type="button"
           disabled={loading}
           onClick={() => void handleCreate()}
-          className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-mid transition hover:border-gray-300 hover:text-text-dark disabled:opacity-50"
+          className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-gray-300 hover:text-text-primary disabled:opacity-50"
         >
           {loading ? "생성 중…" : "생성하기"}
         </button>
@@ -186,9 +186,9 @@ export function LoginForm() {
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Account</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">로그인</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Account</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">로그인</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
             이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.
           </p>
         </div>
@@ -249,7 +249,7 @@ export function LoginForm() {
               {error}
             </p>
           ) : null}
-          <p className="mt-8 text-center text-sm text-text-mid">
+          <p className="mt-8 text-center text-sm text-text-secondary">
             아직 계정이 없으신가요?{" "}
             <Link
               href="/register"

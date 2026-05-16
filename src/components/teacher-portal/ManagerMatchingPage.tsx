@@ -122,20 +122,20 @@ export function ManagerMatchingPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-text-dark sm:text-3xl">매칭 관리</h1>
-      <p className="mt-2 text-sm text-text-mid">
+      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">매칭 관리</h1>
+      <p className="mt-2 text-sm text-text-secondary">
         상담 완료 학생을 담당 선생님에게 배정합니다.
       </p>
 
       <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
         <aside className="w-full shrink-0 lg:w-80">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-light">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
             상담 완료 학생
           </h2>
           {loading ? (
-            <p className="text-sm text-text-mid">불러오는 중…</p>
+            <p className="text-sm text-text-secondary">불러오는 중…</p>
           ) : students.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-gray-200 bg-card p-6 text-center text-sm text-text-mid">
+            <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-6 text-center text-sm text-text-secondary">
               매칭 대기 학생이 없습니다.
             </p>
           ) : (
@@ -147,13 +147,13 @@ export function ManagerMatchingPage() {
                     onClick={() => setSelectedId(s.id)}
                     className={`w-full rounded-xl border p-4 text-left transition ${
                       selectedId === s.id
-                        ? "border-gold bg-gold/10 shadow-sm"
-                        : "border-gray-200 bg-card hover:border-gold/40"
+                        ? "border-primary bg-primary/10 shadow-sm"
+                        : "border-gray-200 bg-surface hover:border-primary/40"
                     }`}
                   >
-                    <p className="font-semibold text-text-dark">{s.name}</p>
-                    <p className="mt-0.5 text-xs text-text-mid">{s.grade}</p>
-                    <p className="mt-1 text-xs text-gold">{s.subjects}</p>
+                    <p className="font-semibold text-text-primary">{s.name}</p>
+                    <p className="mt-0.5 text-xs text-text-secondary">{s.grade}</p>
+                    <p className="mt-1 text-xs text-primary">{s.subjects}</p>
                   </button>
                 </li>
               ))}
@@ -161,26 +161,26 @@ export function ManagerMatchingPage() {
           )}
         </aside>
 
-        <section className="min-w-0 flex-1 rounded-2xl border border-gray-200 bg-card p-6">
+        <section className="min-w-0 flex-1 rounded-2xl border border-gray-200 bg-surface p-6">
           {!selected ? (
-            <p className="text-sm text-text-mid">학생을 선택해주세요.</p>
+            <p className="text-sm text-text-secondary">학생을 선택해주세요.</p>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-navy">{selected.name}</h2>
-              <p className="mt-1 text-sm text-text-mid">
+              <h2 className="text-lg font-bold text-text-primary">{selected.name}</h2>
+              <p className="mt-1 text-sm text-text-secondary">
                 {selected.grade} · 희망과목: {selected.subjects}
               </p>
               {selected.consultationNote ? (
-                <p className="mt-3 rounded-lg bg-background px-3 py-2 text-sm text-text-mid">
+                <p className="mt-3 rounded-lg bg-background px-3 py-2 text-sm text-text-secondary">
                   상담 메모: {selected.consultationNote}
                 </p>
               ) : null}
 
-              <h3 className="mt-8 text-sm font-semibold text-text-dark">
+              <h3 className="mt-8 text-sm font-semibold text-text-primary">
                 선생님 선택
               </h3>
               {filteredTeachers.length === 0 ? (
-                <p className="mt-2 text-sm text-text-mid">
+                <p className="mt-2 text-sm text-text-secondary">
                   조건에 맞는 선생님이 없습니다.
                 </p>
               ) : (
@@ -192,13 +192,13 @@ export function ManagerMatchingPage() {
                         onClick={() => setTeacherId(t.id)}
                         className={`w-full rounded-xl border p-4 text-left ${
                           teacherId === t.id
-                            ? "border-gold bg-gold/10"
-                            : "border-gray-100 hover:border-gold/30"
+                            ? "border-primary bg-primary/10"
+                            : "border-gray-100 hover:border-primary/30"
                         }`}
                       >
-                        <p className="font-medium text-text-dark">{t.name}</p>
-                        <p className="mt-0.5 text-xs text-text-mid">{t.subjects}</p>
-                        <p className="mt-1 text-xs text-text-light">
+                        <p className="font-medium text-text-primary">{t.name}</p>
+                        <p className="mt-0.5 text-xs text-text-secondary">{t.subjects}</p>
+                        <p className="mt-1 text-xs text-text-muted">
                           담당 학생 {t.activeStudentCount}명
                         </p>
                       </button>
@@ -207,7 +207,7 @@ export function ManagerMatchingPage() {
                 </ul>
               )}
 
-              <h3 className="mt-8 text-sm font-semibold text-text-dark">
+              <h3 className="mt-8 text-sm font-semibold text-text-primary">
                 담당 과목
               </h3>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -218,8 +218,8 @@ export function ManagerMatchingPage() {
                     onClick={() => toggleSubject(s)}
                     className={`rounded-full px-3 py-1.5 text-sm font-medium ${
                       matchSubjects.includes(s)
-                        ? "bg-gold text-white"
-                        : "bg-gray-100 text-text-mid"
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 text-text-secondary"
                     }`}
                   >
                     {s}
@@ -237,7 +237,7 @@ export function ManagerMatchingPage() {
                 type="button"
                 disabled={!teacherId || matchSubjects.length === 0 || submitting}
                 onClick={() => void handleMatch()}
-                className="mt-8 w-full rounded-xl bg-gold py-3 text-sm font-semibold text-white hover:bg-gold/90 disabled:opacity-50 sm:w-auto sm:px-10"
+                className="mt-8 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 sm:w-auto sm:px-10"
               >
                 {submitting ? "등록 중…" : "매칭 등록"}
               </button>

@@ -22,8 +22,8 @@ const GRADES = [
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
 const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 type FieldKey =
   | "name"
@@ -121,9 +121,9 @@ export function RegisterForm() {
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Sign up</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">회원가입</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Sign up</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">회원가입</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
             학년과 희망 과목을 선택하고 Concord 학습 계정을 만드세요.
           </p>
         </div>
@@ -168,7 +168,7 @@ export function RegisterForm() {
                       className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
                         on
                           ? "border-primary bg-primary text-white"
-                          : "border-gray-200 bg-white text-text-mid hover:border-gray-300"
+                          : "border-gray-200 bg-white text-text-secondary hover:border-gray-300"
                       }`}
                     >
                       {s}
@@ -202,7 +202,7 @@ export function RegisterForm() {
           {conflictError ? (
             <p className="mt-4 text-center text-sm text-accent" role="alert">{conflictError}</p>
           ) : null}
-          <p className="mt-8 text-center text-sm text-text-mid">
+          <p className="mt-8 text-center text-sm text-text-secondary">
             이미 계정이 있으신가요?{" "}
             <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">로그인</Link>
           </p>

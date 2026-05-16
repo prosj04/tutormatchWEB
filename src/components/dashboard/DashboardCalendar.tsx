@@ -38,23 +38,23 @@ export function DashboardCalendar({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-card p-4 shadow-sm">
+    <div className="rounded-2xl border border-gray-100 bg-surface p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
           onClick={goPrev}
-          className="rounded-lg px-2 py-1 text-sm text-text-mid hover:bg-background"
+          className="rounded-lg px-2 py-1 text-sm text-text-secondary hover:bg-background"
           aria-label="이전 달"
         >
           ‹
         </button>
-        <p className="text-sm font-semibold text-text-dark">
+        <p className="text-sm font-semibold text-text-primary">
           {year}년 {month}월
         </p>
         <button
           type="button"
           onClick={goNext}
-          className="rounded-lg px-2 py-1 text-sm text-text-mid hover:bg-background"
+          className="rounded-lg px-2 py-1 text-sm text-text-secondary hover:bg-background"
           aria-label="다음 달"
         >
           ›
@@ -66,7 +66,7 @@ export function DashboardCalendar({
           <span
             key={label}
             className={`py-1 text-[10px] font-medium ${
-              i === 0 ? "text-accent" : i === 6 ? "text-primary" : "text-text-light"
+              i === 0 ? "text-accent" : i === 6 ? "text-primary" : "text-text-muted"
             }`}
           >
             {label}
@@ -92,14 +92,14 @@ export function DashboardCalendar({
               className={`relative flex aspect-square flex-col items-center justify-center rounded-lg text-xs transition ${
                 isSelected
                   ? "bg-primary font-semibold text-white"
-                  : "text-text-dark hover:bg-background"
+                  : "text-text-primary hover:bg-background"
               }`}
             >
               {day}
               {hasPlan && (
                 <span
                   className={`absolute bottom-1 h-1 w-1 rounded-full ${
-                    isSelected ? "bg-white" : "bg-gold"
+                    isSelected ? "bg-white" : "bg-primary"
                   }`}
                 />
               )}

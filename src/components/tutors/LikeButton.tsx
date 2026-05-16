@@ -57,7 +57,7 @@ export function LikeButton({
   return (
     <div className={`relative inline-flex flex-col items-center ${className}`}>
       {tooltip ? (
-        <span className="absolute -top-10 left-1/2 z-10 w-max max-w-[200px] -translate-x-1/2 rounded-lg bg-navy px-2 py-1 text-center text-xs text-white shadow-md">
+        <span className="absolute -top-10 left-1/2 z-10 w-max max-w-[200px] -translate-x-1/2 rounded-lg bg-surface px-2 py-1 text-center text-xs text-white shadow-md">
           로그인 후 찜하기 가능합니다
         </span>
       ) : null}
@@ -67,7 +67,7 @@ export function LikeButton({
         aria-label={liked ? "찜 해제" : "찜하기"}
         aria-pressed={liked}
         className={`rounded-full transition ${btnPad} ${
-          liked ? "bg-gold/15 text-gold" : "bg-white/90 text-text-mid hover:text-gold"
+          liked ? "bg-primary/15 text-primary" : "bg-white/90 text-text-secondary hover:text-primary"
         }`}
       >
         <svg
@@ -82,12 +82,12 @@ export function LikeButton({
         </svg>
       </button>
       {label ? (
-        <span className="mt-2 text-sm font-medium text-text-dark">
+        <span className="mt-2 text-sm font-medium text-text-primary">
           {liked ? "찜 완료" : "찜하기"}
         </span>
       ) : null}
       {showCount ? (
-        <span className="mt-1 text-xs text-text-mid">
+        <span className="mt-1 text-xs text-text-secondary">
           {mockLikeCount(tutorId)}명이 찜함
         </span>
       ) : null}

@@ -9,25 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#F2F1EF",
-        card: "#FFFFFF",
+        background: "#F5F5F5",
+        surface: "#FFFFFF",
         primary: "#2563EB",
         accent: "#E91E8C",
-        navy: "#0F1E3C",
-        gold: "#C9A84C",
-        "text-dark": "#111827",
-        "text-mid": "#6B7280",
-        "text-light": "#9CA3AF",
+        text: {
+          primary: "#111111",
+          secondary: "#6B7280",
+          muted: "#9CA3AF",
+        },
+        border: "#E5E7EB",
       },
       fontFamily: {
-        sans: [
-          "Pretendard",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "system-ui",
-          "sans-serif",
-        ],
-        display: ["var(--font-playfair)", "Georgia", "serif"],
+        sans: ["Inter", "sans-serif"],
+        display: ["Inter", "sans-serif"],
       },
       maxWidth: {
         content: "72rem",

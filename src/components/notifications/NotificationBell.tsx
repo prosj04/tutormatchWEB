@@ -92,7 +92,7 @@ export function NotificationBell() {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="relative rounded-lg p-2 text-text-mid transition hover:bg-background hover:text-text-dark"
+        className="relative rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-text-primary"
         aria-label="알림"
       >
         <svg
@@ -115,15 +115,15 @@ export function NotificationBell() {
       {open ? (
         <div
           ref={panelRef}
-          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-card shadow-lg sm:w-96"
+          className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-surface shadow-lg sm:w-96"
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <span className="text-sm font-semibold text-text-dark">알림</span>
+            <span className="text-sm font-semibold text-text-primary">알림</span>
             {unreadCount > 0 ? (
               <button
                 type="button"
                 onClick={() => void markAllRead()}
-                className="text-xs font-medium text-gold hover:underline"
+                className="text-xs font-medium text-primary hover:underline"
               >
                 모두 읽음
               </button>
@@ -131,11 +131,11 @@ export function NotificationBell() {
           </div>
           <ul className="max-h-96 overflow-y-auto">
             {loading && items.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-text-mid">
+              <li className="px-4 py-8 text-center text-sm text-text-secondary">
                 불러오는 중…
               </li>
             ) : items.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-text-mid">
+              <li className="px-4 py-8 text-center text-sm text-text-secondary">
                 알림이 없습니다.
               </li>
             ) : (
@@ -157,16 +157,16 @@ export function NotificationBell() {
                       <span
                         className={`block text-sm ${
                           item.isRead
-                            ? "text-text-mid"
-                            : "font-semibold text-text-dark"
+                            ? "text-text-secondary"
+                            : "font-semibold text-text-primary"
                         }`}
                       >
                         {item.title}
                       </span>
-                      <span className="mt-0.5 block line-clamp-2 text-xs text-text-mid">
+                      <span className="mt-0.5 block line-clamp-2 text-xs text-text-secondary">
                         {item.body}
                       </span>
-                      <span className="mt-1 block text-xs text-text-light">
+                      <span className="mt-1 block text-xs text-text-muted">
                         {item.timeAgo}
                       </span>
                     </span>

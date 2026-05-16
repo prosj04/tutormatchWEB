@@ -21,10 +21,10 @@ export function AdminShell({ email, children }: AdminShellProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside className="flex w-56 shrink-0 flex-col bg-navy text-white">
+    <div className="flex min-h-screen bg-background">
+      <aside className="flex w-56 shrink-0 flex-col bg-text-primary text-white">
         <div className="border-b border-white/10 px-5 py-6">
-          <p className="font-display text-lg font-bold italic">Concord.</p>
+          <p className="text-lg font-bold">과외플랫폼</p>
           <p className="mt-1 text-xs text-white/60">Admin</p>
         </div>
         <nav className="flex-1 space-y-0.5 px-3 py-4">
@@ -37,7 +37,7 @@ export function AdminShell({ email, children }: AdminShellProps) {
                 key={item.href}
                 href={item.href}
                 className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  active ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
+                  active ? "bg-primary text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {item.label}
@@ -49,13 +49,13 @@ export function AdminShell({ email, children }: AdminShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 items-center justify-between border-b border-gray-200 bg-white px-6">
-          <h1 className="text-sm font-semibold text-text-dark">관리자 패널</h1>
+          <h1 className="text-sm font-semibold text-text-primary">관리자 패널</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-text-mid">{email}</span>
+            <span className="text-sm text-text-secondary">{email}</span>
             <button
               type="button"
               onClick={() => signOut({ redirectTo: "/login" })}
-              className="text-sm font-medium text-text-mid hover:text-text-dark"
+              className="text-sm font-medium text-text-secondary hover:text-text-primary"
             >
               로그아웃
             </button>

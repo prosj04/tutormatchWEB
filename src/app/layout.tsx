@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
 
 import { AppSessionProvider } from "@/components/providers/AppSessionProvider";
 
 import "./globals.css";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`min-h-screen ${playfair.variable}`}>
+      <body className="min-h-screen">
         <AppSessionProvider>{children}</AppSessionProvider>
       </body>
     </html>

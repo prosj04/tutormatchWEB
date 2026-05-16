@@ -195,7 +195,7 @@ export function StudentDashboard({
       <DashboardTopBar studentName={studentName} />
 
       <div className="flex pt-14">
-        <aside className="fixed left-0 top-14 z-30 h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-card p-4">
+        <aside className="fixed left-0 top-14 z-30 h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-4">
           <DashboardCalendar
             year={calendarYear}
             month={calendarMonth}

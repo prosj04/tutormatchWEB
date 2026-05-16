@@ -1,23 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-
-function sectionMeta(pathname: string): { label: string; title: string } {
-  if (pathname === "/") return { label: "01", title: "홈" };
-  if (pathname.startsWith("/tutors/")) return { label: "02", title: "강사 프로필" };
-  if (pathname === "/tutors") return { label: "02", title: "강사진" };
-  if (pathname === "/pricing") return { label: "03", title: "요금제" };
-  if (pathname === "/checkout") return { label: "04", title: "결제" };
-  if (pathname === "/success") return { label: "05", title: "완료" };
-  if (pathname === "/login") return { label: "—", title: "로그인" };
-  if (pathname === "/register") return { label: "—", title: "회원가입" };
-  if (pathname === "/teacher-portal") return { label: "—", title: "선생님 포털" };
-  if (pathname === "/teacher-portal/apply") return { label: "—", title: "선생님 지원" };
-  if (pathname.startsWith("/teacher-portal/dashboard")) return { label: "—", title: "선생님 대시보드" };
-  return { label: "—", title: "Concord" };
-}
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -28,86 +12,58 @@ function displayName(session: { user?: { name?: string | null; email?: string | 
 }
 
 export function SiteHeader() {
-  const pathname = usePathname();
-  const { label, title } = sectionMeta(pathname);
   const { data: session, status } = useSession();
+  const role = session?.user?.role;
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-gray-100 bg-background/90 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:gap-6 sm:px-8">
-        <p className="min-w-0 flex-1 truncate text-xs font-medium uppercase tracking-wider text-text-light">
-          <span className="text-text-mid">{label}</span> {title}
-        </p>
-        <div className="flex shrink-0 items-center gap-3 sm:gap-6">
-          <nav className="hidden items-center gap-6 text-xs font-medium uppercase tracking-wider text-text-mid md:flex">
-            <Link href="/tutors" className="transition hover:text-primary">
-              강사진
-            </Link>
-            <Link href="/pricing" className="transition hover:text-primary">
-              요금제
+    <header className="fixed top-0 z-50 w-full border-b border-border bg-surface">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-8">
+        <Link href="/" className="text-lg font-bold text-text-primary">
+          과외플랫폼
+        </Link>
+
+        {status === "loading" ? (
+          <div className="flex items-center gap-2">
+            <span className="h-8 w-16 animate-pulse rounded-lg bg-gray-200" />
+            <span className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />
+          </div>
+        ) : status === "authenticated" && session?.user ? (
+          <div className="flex items-center gap-4">
+            <span className="hidden text-sm font-medium text-text-primary sm:inline">
+              {displayName(session)}님
+            </span>
+            {role === "TEACHER" || role === "MANAGER" ? (
+              <Link
+                href="/teacher-portal/dashboard"
+                className="text-sm font-medium text-text-secondary transition hover:text-text-primary"
+              >
+                선생님 포털
+              </Link>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => void signOut({ redirectTo: "/" })}
+              className="text-sm font-medium text-text-secondary transition hover:text-text-primary"
+            >
+              로그아웃
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-text-secondary transition hover:text-text-primary"
+            >
+              로그인
             </Link>
             <Link
-              href="/teacher-portal"
-              className="transition hover:text-primary"
+              href="/dashboard/consultation"
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
             >
-              선생님
+              무료 상담 예약
             </Link>
-            <Link
-              href="/checkout"
-              className="rounded-full border border-gray-200 px-3 py-1.5 transition hover:border-primary hover:text-primary"
-            >
-              등록
-            </Link>
-          </nav>
-
-          {status === "loading" ? (
-            <div className="flex items-center gap-2">
-              <span className="h-7 w-14 animate-pulse rounded-full bg-gray-200/80" />
-              <span className="h-7 w-16 animate-pulse rounded-full bg-accent/25" />
-            </div>
-          ) : status === "authenticated" && session?.user ? (
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="hidden max-w-[8rem] truncate text-xs font-medium text-text-dark sm:inline">
-                {displayName(session)}님
-              </span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                  session.user.role === "TEACHER"
-                    ? "bg-gray-100 text-text-mid"
-                    : "bg-accent/15 text-accent"
-                }`}
-              >
-                {session.user.role === "TEACHER" ? "선생님" : "학생"}
-              </span>
-              <button
-                type="button"
-                onClick={() => void signOut({ redirectTo: "/" })}
-                className="whitespace-nowrap rounded-full border border-gray-200 px-2.5 py-1 text-[11px] font-semibold text-text-mid transition hover:border-gray-300 hover:text-text-dark sm:px-3 sm:text-xs"
-              >
-                로그아웃
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/login"
-                className="whitespace-nowrap rounded-full border border-gray-300 px-2.5 py-1 text-[11px] font-semibold text-text-dark transition hover:border-gray-400 hover:bg-white sm:px-3 sm:text-xs"
-              >
-                로그인
-              </Link>
-              <Link
-                href="/register"
-                className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:bg-accent/90 sm:px-3 sm:text-xs"
-              >
-                회원가입
-              </Link>
-            </div>
-          )}
-
-          <Link href="/" className="text-lg font-bold italic text-text-dark">
-            Concord.
-          </Link>
-        </div>
+          </div>
+        )}
       </div>
     </header>
   );

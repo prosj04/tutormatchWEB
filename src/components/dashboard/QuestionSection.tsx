@@ -113,22 +113,22 @@ export function QuestionSection({
   return (
     <section className="mt-10 border-t border-gray-200 pt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-text-dark">질문</h2>
+        <h2 className="text-lg font-bold text-text-primary">질문</h2>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-white hover:bg-gold/90"
+          className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
         >
           질문 등록
         </button>
       </div>
 
       {loading ? (
-        <p className="mt-8 text-center text-sm text-text-light">질문을 불러오는 중…</p>
+        <p className="mt-8 text-center text-sm text-text-muted">질문을 불러오는 중…</p>
       ) : questions.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-card p-8 text-center">
-          <p className="text-sm text-text-mid">이 날짜에 등록된 질문이 없습니다.</p>
-          <p className="mt-1 text-xs text-text-light">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center">
+          <p className="text-sm text-text-secondary">이 날짜에 등록된 질문이 없습니다.</p>
+          <p className="mt-1 text-xs text-text-muted">
             학습 중 궁금한 점을 질문해 보세요.
           </p>
         </div>

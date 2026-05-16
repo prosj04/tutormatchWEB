@@ -16,8 +16,8 @@ import {
 import { TeacherProfilePreview } from "./TeacherProfilePreview";
 
 const inputClass =
-  "mt-1 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm text-text-dark outline-none focus:border-gold";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+  "mt-1 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm text-text-primary outline-none focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 type TeacherProfileEditorProps = {
   teacherId: string;
@@ -135,7 +135,7 @@ export function TeacherProfileEditor({
 
         <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
           <section>
-            <h2 className="text-sm font-bold text-text-dark">프로필 사진</h2>
+            <h2 className="text-sm font-bold text-text-primary">프로필 사진</h2>
             <div className="mt-4 flex items-center gap-4">
               <div className="relative h-20 w-20 overflow-hidden rounded-full bg-gray-100">
                 {displayPhoto ? (
@@ -146,7 +146,7 @@ export function TeacherProfileEditor({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-2xl text-text-light">
+                  <div className="flex h-full w-full items-center justify-center text-2xl text-text-muted">
                     👤
                   </div>
                 )}
@@ -162,7 +162,7 @@ export function TeacherProfileEditor({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-text-mid hover:border-gold hover:text-gold"
+                  className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-text-secondary hover:border-primary hover:text-primary"
                 >
                   사진 변경
                 </button>
@@ -183,7 +183,7 @@ export function TeacherProfileEditor({
 
           <section>
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-dark">학력</h2>
+              <h2 className="text-sm font-bold text-text-primary">학력</h2>
               <button
                 type="button"
                 onClick={() =>
@@ -192,14 +192,14 @@ export function TeacherProfileEditor({
                     education: [...f.education, emptyEducation()],
                   }))
                 }
-                className="text-xs font-semibold text-gold hover:underline"
+                className="text-xs font-semibold text-primary hover:underline"
               >
                 항목 추가
               </button>
             </div>
             <ul className="mt-4 space-y-4">
               {form.education.length === 0 ? (
-                <li className="text-sm text-text-light">학력 항목이 없습니다.</li>
+                <li className="text-sm text-text-muted">학력 항목이 없습니다.</li>
               ) : (
                 form.education.map((entry, i) => (
                   <li
@@ -244,20 +244,20 @@ export function TeacherProfileEditor({
 
           <section>
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-dark">경력</h2>
+              <h2 className="text-sm font-bold text-text-primary">경력</h2>
               <button
                 type="button"
                 onClick={() =>
                   setForm((f) => ({ ...f, career: [...f.career, emptyCareer()] }))
                 }
-                className="text-xs font-semibold text-gold hover:underline"
+                className="text-xs font-semibold text-primary hover:underline"
               >
                 항목 추가
               </button>
             </div>
             <ul className="mt-4 space-y-4">
               {form.career.length === 0 ? (
-                <li className="text-sm text-text-light">경력 항목이 없습니다.</li>
+                <li className="text-sm text-text-muted">경력 항목이 없습니다.</li>
               ) : (
                 form.career.map((entry, i) => (
                   <li
@@ -302,7 +302,7 @@ export function TeacherProfileEditor({
 
           <section>
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-dark">자격증</h2>
+              <h2 className="text-sm font-bold text-text-primary">자격증</h2>
               <button
                 type="button"
                 onClick={() =>
@@ -311,14 +311,14 @@ export function TeacherProfileEditor({
                     certificates: [...f.certificates, emptyCertificate()],
                   }))
                 }
-                className="text-xs font-semibold text-gold hover:underline"
+                className="text-xs font-semibold text-primary hover:underline"
               >
                 항목 추가
               </button>
             </div>
             <ul className="mt-4 space-y-4">
               {form.certificates.length === 0 ? (
-                <li className="text-sm text-text-light">자격증 항목이 없습니다.</li>
+                <li className="text-sm text-text-muted">자격증 항목이 없습니다.</li>
               ) : (
                 form.certificates.map((entry, i) => (
                   <li
@@ -359,7 +359,7 @@ export function TeacherProfileEditor({
             type="button"
             disabled={saving}
             onClick={() => void handleSave()}
-            className="w-full rounded-xl bg-gold py-3.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             {saving ? "저장 중…" : "저장하기"}
           </button>
@@ -369,7 +369,7 @@ export function TeacherProfileEditor({
       {toast && (
         <div
           role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-navy px-6 py-3 text-sm font-medium text-white shadow-lg"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-surface px-6 py-3 text-sm font-medium text-white shadow-lg"
         >
           프로필이 저장되었습니다
         </div>

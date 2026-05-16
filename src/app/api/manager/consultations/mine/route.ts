@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { requireManager } from "@/lib/manager-auth";
+import { formatRelativeTime } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-import { requireStudent } from "@/lib/student-auth";
 
 function parsePreferredTimes(value: string): string[] {
   try {
@@ -15,27 +16,22 @@ function parsePreferredTimes(value: string): string[] {
 }
 
 export async function GET() {
-  const authResult = await requireStudent();
+  const authResult = await requireManager();
   if ("error" in authResult) return authResult.error;
-  const { student } = authResult;
+  const { teacher } = authResult;
 
-  const booking = await prisma.consultationBooking.findUnique({
-    where: { studentId: student.id },
+  const bookings = await prisma.consultationBooking.findMany({
+    where: { managerId: teacher.id },
     include: {
-      manager: {
-        include: {
-          profile: true,
-        },
+      student: {
+        select: { id: true, name: true, grade: true, subjects: true },
       },
     },
+    orderBy: [{ assignedAt: "desc" }, { createdAt: "desc" }],
   });
 
-  if (!booking) {
-    return NextResponse.json({ booking: null });
-  }
-
   return NextResponse.json({
-    booking: {
+    bookings: bookings.map((booking) => ({
       id: booking.id,
       status: booking.status,
       note: booking.note,
@@ -43,13 +39,10 @@ export async function GET() {
       preferredTimes: parsePreferredTimes(booking.preferredTimes),
       createdAt: booking.createdAt.toISOString(),
       assignedAt: booking.assignedAt?.toISOString() ?? null,
-      manager: booking.manager
-        ? {
-            id: booking.manager.id,
-            name: booking.manager.name,
-            photoUrl: booking.manager.profile?.photoUrl ?? null,
-          }
+      assignedAgo: booking.assignedAt
+        ? formatRelativeTime(booking.assignedAt.toISOString())
         : null,
-    },
+      student: booking.student,
+    })),
   });
 }

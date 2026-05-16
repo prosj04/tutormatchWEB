@@ -1,4 +1,4 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -10,7 +10,10 @@
   }
 
   body {
-    @apply bg-background font-sans text-base font-normal leading-relaxed text-text-dark antialiased;
+    background-color: #F5F5F5;
+    color: #111111;
+    font-family: "Inter", sans-serif;
+    @apply text-base font-normal leading-relaxed antialiased;
   }
 
   h1,
@@ -19,6 +22,6 @@
   h4,
   h5,
   h6 {
-    @apply font-sans font-extrabold text-text-dark;
+    @apply font-sans font-extrabold text-text-primary;
   }
 }

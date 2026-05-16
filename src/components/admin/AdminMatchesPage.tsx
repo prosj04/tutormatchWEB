@@ -116,11 +116,11 @@ export function AdminMatchesPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-black text-text-dark">매칭 관리</h2>
+      <h2 className="text-2xl font-black text-text-primary">매칭 관리</h2>
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-64">
-          <h3 className="text-xs font-semibold uppercase text-text-light">선생님 (승인됨)</h3>
+          <h3 className="text-xs font-semibold uppercase text-text-muted">선생님 (승인됨)</h3>
           <ul className="mt-3 space-y-2">
             {teachers.map((t) => {
               const count = matches.filter(
@@ -133,12 +133,12 @@ export function AdminMatchesPage() {
                     onClick={() => setSelectedTeacherId(t.id)}
                     className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
                       selectedTeacherId === t.id
-                        ? "border-gold bg-gold/10 font-semibold"
+                        ? "border-primary bg-primary/10 font-semibold"
                         : "border-gray-100 bg-white hover:border-gray-200"
                     }`}
                   >
                     {t.name}
-                    <span className="mt-0.5 block text-xs text-text-light">
+                    <span className="mt-0.5 block text-xs text-text-muted">
                       매칭 {count}명
                     </span>
                   </button>
@@ -156,7 +156,7 @@ export function AdminMatchesPage() {
                 <button
                   type="button"
                   onClick={() => openAddModal()}
-                  className="rounded-xl bg-gold px-4 py-2 text-sm font-semibold text-white"
+                  className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
                 >
                   학생 추가
                 </button>
@@ -164,7 +164,7 @@ export function AdminMatchesPage() {
 
               <ul className="mt-6 space-y-3">
                 {teacherMatches.length === 0 ? (
-                  <li className="text-sm text-text-mid">활성 매칭이 없습니다.</li>
+                  <li className="text-sm text-text-secondary">활성 매칭이 없습니다.</li>
                 ) : (
                   teacherMatches.map((m) => (
                     <li
@@ -172,11 +172,11 @@ export function AdminMatchesPage() {
                       className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 bg-background px-4 py-3"
                     >
                       <div>
-                        <p className="font-medium text-text-dark">
+                        <p className="font-medium text-text-primary">
                           {m.student.name}{" "}
-                          <span className="text-text-mid">({m.student.grade})</span>
+                          <span className="text-text-secondary">({m.student.grade})</span>
                         </p>
-                        <p className="text-xs text-text-light">
+                        <p className="text-xs text-text-muted">
                           {m.subjects} · 시작 {m.startDate}
                         </p>
                       </div>
@@ -193,7 +193,7 @@ export function AdminMatchesPage() {
               </ul>
             </>
           ) : (
-            <p className="text-sm text-text-mid">선생님을 선택해 주세요.</p>
+            <p className="text-sm text-text-secondary">선생님을 선택해 주세요.</p>
           )}
         </section>
       </div>
@@ -202,7 +202,7 @@ export function AdminMatchesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-bold">학생 매칭 등록</h3>
-            <label className="mt-4 block text-xs font-semibold text-text-light">학생</label>
+            <label className="mt-4 block text-xs font-semibold text-text-muted">학생</label>
             <select
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
@@ -214,7 +214,7 @@ export function AdminMatchesPage() {
                 </option>
               ))}
             </select>
-            <p className="mt-4 text-xs font-semibold text-text-light">담당 과목</p>
+            <p className="mt-4 text-xs font-semibold text-text-muted">담당 과목</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {SUBJECT_PILLS.map((s) => (
                 <button
@@ -223,15 +223,15 @@ export function AdminMatchesPage() {
                   onClick={() => toggleSubject(s)}
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${
                     selectedSubjects.includes(s)
-                      ? "bg-gold text-white"
-                      : "border border-gray-200 text-text-mid"
+                      ? "bg-primary text-white"
+                      : "border border-gray-200 text-text-secondary"
                   }`}
                 >
                   {s}
                 </button>
               ))}
             </div>
-            <label className="mt-4 block text-xs font-semibold text-text-light">시작일</label>
+            <label className="mt-4 block text-xs font-semibold text-text-muted">시작일</label>
             <input
               type="date"
               value={startDate}
@@ -249,7 +249,7 @@ export function AdminMatchesPage() {
               <button
                 type="button"
                 onClick={() => void createMatch()}
-                className="flex-1 rounded-xl bg-gold py-2 text-sm font-semibold text-white"
+                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
               >
                 매칭 등록
               </button>

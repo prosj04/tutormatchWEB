@@ -24,7 +24,7 @@ export default function CheckoutPage({ searchParams }: PageProps) {
   return (
     <>
       {showFailBanner ? (
-        <div className="border-b border-accent/20 bg-accent/5 px-8 py-3 text-center text-sm text-text-dark">
+        <div className="border-b border-accent/20 bg-accent/5 px-8 py-3 text-center text-sm text-text-primary">
           결제가 완료되지 않았습니다. 다시 시도하거나 다른 수단을 선택해 주세요.
         </div>
       ) : null}

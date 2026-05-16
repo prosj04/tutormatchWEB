@@ -58,7 +58,7 @@ export function SortableTaskItem({
     >
       <button
         type="button"
-        className="cursor-grab touch-none p-1 text-text-light hover:text-text-mid active:cursor-grabbing"
+        className="cursor-grab touch-none p-1 text-text-muted hover:text-text-secondary active:cursor-grabbing"
         aria-label="순서 변경"
         {...attributes}
         {...listeners}
@@ -94,21 +94,21 @@ export function SortableTaskItem({
             type="button"
             onClick={() => setEditing(true)}
             className={`block w-full truncate text-left text-sm ${
-              task.isDone ? "text-text-light line-through" : "text-text-dark"
+              task.isDone ? "text-text-muted line-through" : "text-text-primary"
             }`}
           >
             {task.title}
           </button>
         )}
         {task.isDone && task.doneAt && (
-          <p className="mt-0.5 text-xs text-text-light">{formatDoneTime(task.doneAt)}</p>
+          <p className="mt-0.5 text-xs text-text-muted">{formatDoneTime(task.doneAt)}</p>
         )}
       </div>
 
       <button
         type="button"
         onClick={() => onDelete(task.id)}
-        className="shrink-0 rounded-lg p-1.5 text-text-light opacity-0 transition hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+        className="shrink-0 rounded-lg p-1.5 text-text-muted opacity-0 transition hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
         aria-label="삭제"
       >
         <TrashIcon />

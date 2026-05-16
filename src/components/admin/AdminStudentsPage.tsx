@@ -89,7 +89,7 @@ export function AdminStudentsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-black text-text-dark">학생 관리</h2>
+      <h2 className="text-2xl font-black text-text-primary">학생 관리</h2>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <input
@@ -134,7 +134,7 @@ export function AdminStudentsPage() {
         <button
           type="button"
           onClick={() => fetchList()}
-          className="rounded-xl bg-navy px-4 py-2 text-sm font-medium text-white"
+          className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-white"
         >
           검색
         </button>
@@ -142,7 +142,7 @@ export function AdminStudentsPage() {
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
         <table className="w-full min-w-[800px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-light">
+          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
             <tr>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">학년</th>
@@ -157,13 +157,13 @@ export function AdminStudentsPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-light">
+                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
                   불러오는 중…
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-light">
+                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
                   결과 없음
                 </td>
               </tr>
@@ -178,7 +178,7 @@ export function AdminStudentsPage() {
                   <td className="px-4 py-3">
                     {new Date(row.createdAt).toLocaleDateString("ko-KR")}
                   </td>
-                  <td className="px-4 py-3 text-text-mid">{row.assignedTeachers || "—"}</td>
+                  <td className="px-4 py-3 text-text-secondary">{row.assignedTeachers || "—"}</td>
                   <td className="px-4 py-3">
                     <button
                       type="button"
@@ -212,7 +212,7 @@ export function AdminStudentsPage() {
           >
             이전
           </button>
-          <span className="px-3 py-1 text-sm text-text-mid">
+          <span className="px-3 py-1 text-sm text-text-secondary">
             {page} / {pagination.totalPages}
           </span>
           <button
@@ -229,7 +229,7 @@ export function AdminStudentsPage() {
       {editRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-bold text-text-dark">학생 수정</h3>
+            <h3 className="font-bold text-text-primary">학생 수정</h3>
             <div className="mt-4 space-y-3">
               <input
                 value={form.name}
@@ -272,7 +272,7 @@ export function AdminStudentsPage() {
               <button
                 type="button"
                 onClick={() => void saveEdit()}
-                className="flex-1 rounded-xl bg-gold py-2 text-sm font-semibold text-white"
+                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
               >
                 저장
               </button>

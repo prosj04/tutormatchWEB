@@ -18,8 +18,10 @@ export async function GET(request: Request) {
   const result = await runAlertChecks();
 
   return NextResponse.json({
-    checked: result.questionsChecked,
+    checked: result.questionsChecked + result.waitingBookingsChecked,
     notificationsCreated: result.notificationsCreated,
+    questionsChecked: result.questionsChecked,
+    waitingBookingsChecked: result.waitingBookingsChecked,
     weeklyStudentsChecked: result.weeklyStudentsChecked,
     weeklyCheckRan: result.weeklyCheckRan,
   });

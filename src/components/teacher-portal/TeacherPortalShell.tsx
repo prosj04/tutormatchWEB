@@ -43,15 +43,15 @@ export function TeacherPortalShell({
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-gray-200 bg-card shadow-sm">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-gray-200 bg-surface shadow-sm">
         <div className="flex h-14 items-center px-4">
           <div className="flex w-40 shrink-0 items-center">
-            <Link href="/" className="font-display text-lg font-bold italic text-navy">
+            <Link href="/" className="font-sans text-lg font-bold italic text-text-primary">
               Concord.
             </Link>
           </div>
           <div className="flex flex-1 justify-center">
-            <p className="truncate text-sm font-semibold text-text-dark sm:text-base">
+            <p className="truncate text-sm font-semibold text-text-primary sm:text-base">
               {teacherName}님 · {portalLabel}
             </p>
           </div>
@@ -60,7 +60,7 @@ export function TeacherPortalShell({
             <button
               type="button"
               onClick={() => signOut({ redirectTo: "/" })}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-text-mid transition hover:bg-background hover:text-text-dark"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary"
             >
               로그아웃
             </button>
@@ -76,8 +76,8 @@ export function TeacherPortalShell({
                 href={item.href}
                 className={`shrink-0 border-b-2 py-3 text-sm font-medium transition ${
                   active
-                    ? "border-gold text-text-dark"
-                    : "border-transparent text-text-mid hover:text-text-dark"
+                    ? "border-primary text-text-primary"
+                    : "border-transparent text-text-secondary hover:text-text-primary"
                 }`}
               >
                 {item.label}

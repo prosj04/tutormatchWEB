@@ -31,7 +31,7 @@ export function AdminDashboard() {
   }, []);
 
   if (loading || !stats) {
-    return <p className="text-sm text-text-mid">불러오는 중…</p>;
+    return <p className="text-sm text-text-secondary">불러오는 중…</p>;
   }
 
   const cards = [
@@ -46,35 +46,35 @@ export function AdminDashboard() {
 
   return (
     <div>
-      <h2 className="text-2xl font-black text-text-dark">대시보드</h2>
+      <h2 className="text-2xl font-black text-text-primary">대시보드</h2>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => (
           <div
             key={c.label}
             className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
           >
-            <p className="text-xs font-medium uppercase tracking-wider text-text-light">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               {c.label}
             </p>
-            <p className="mt-2 text-3xl font-black text-text-dark">{c.value}</p>
+            <p className="mt-2 text-3xl font-black text-text-primary">{c.value}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="font-bold text-text-dark">최근 가입 학생</h3>
+          <h3 className="font-bold text-text-primary">최근 가입 학생</h3>
           <ul className="mt-4 space-y-3">
             {recent.length === 0 ? (
-              <li className="text-sm text-text-light">데이터 없음</li>
+              <li className="text-sm text-text-muted">데이터 없음</li>
             ) : (
               recent.map((s, i) => (
                 <li
                   key={`${s.name}-${i}`}
                   className="flex justify-between border-b border-gray-50 pb-2 text-sm last:border-0"
                 >
-                  <span className="font-medium text-text-dark">{s.name}</span>
-                  <span className="text-text-light">
+                  <span className="font-medium text-text-primary">{s.name}</span>
+                  <span className="text-text-muted">
                     {new Date(s.createdAt).toLocaleDateString("ko-KR")}
                   </span>
                 </li>
@@ -84,17 +84,17 @@ export function AdminDashboard() {
         </section>
 
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h3 className="font-bold text-text-dark">답변 대기 질문</h3>
+          <h3 className="font-bold text-text-primary">답변 대기 질문</h3>
           <p className="mt-4 text-4xl font-black text-accent">
             {stats.unansweredQuestions}
           </p>
-          <p className="mt-2 text-sm text-text-mid">선생님 답변이 없는 질문 수</p>
+          <p className="mt-2 text-sm text-text-secondary">선생님 답변이 없는 질문 수</p>
         </section>
       </div>
 
       <section className="mt-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <h3 className="font-bold text-text-dark">알림 자동 체크</h3>
-        <p className="mt-2 text-sm text-text-mid">
+        <h3 className="font-bold text-text-primary">알림 자동 체크</h3>
+        <p className="mt-2 text-sm text-text-secondary">
           미답변 질문·주간 완료율 알림을 수동으로 실행합니다 (개발/테스트용).
         </p>
         <button
@@ -125,12 +125,12 @@ export function AdminDashboard() {
               setCronLoading(false);
             }
           }}
-          className="mt-4 rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy/90 disabled:opacity-50"
+          className="mt-4 rounded-xl bg-surface px-5 py-2.5 text-sm font-semibold text-white hover:bg-surface/90 disabled:opacity-50"
         >
           {cronLoading ? "실행 중…" : "알림 체크 실행"}
         </button>
         {cronResult ? (
-          <p className="mt-3 text-sm text-text-dark" role="status">
+          <p className="mt-3 text-sm text-text-primary" role="status">
             {cronResult}
           </p>
         ) : null}

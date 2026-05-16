@@ -25,29 +25,29 @@ export default function SuccessPage({ searchParams }: PageProps) {
     <div className="bg-background px-8 py-24 md:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="rounded-2xl border border-gray-100 bg-white px-8 py-12 text-center shadow-sm md:px-12 md:py-16">
-        <p className="text-xs font-medium uppercase tracking-wider text-text-light">Payment</p>
-        <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">결제가 완료되었습니다</h1>
-        <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-text-mid">
+        <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Payment</p>
+        <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">결제가 완료되었습니다</h1>
+        <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-text-secondary">
           주문이 정상적으로 접수되었습니다. 담당 매니저가 곧 연락드릴 예정입니다.
         </p>
 
         {paymentKey && orderId && Number.isFinite(amount) ? (
           <dl className="mx-auto mt-10 max-w-md space-y-3 border-t border-gray-100 pt-10 text-left text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-text-light">주문번호</dt>
-              <dd className="break-all font-mono text-xs text-text-dark">{orderId}</dd>
+              <dt className="text-text-muted">주문번호</dt>
+              <dd className="break-all font-mono text-xs text-text-primary">{orderId}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-text-light">결제키</dt>
-              <dd className="break-all font-mono text-xs text-text-dark">{paymentKey}</dd>
+              <dt className="text-text-muted">결제키</dt>
+              <dd className="break-all font-mono text-xs text-text-primary">{paymentKey}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-text-light">승인 금액</dt>
+              <dt className="text-text-muted">승인 금액</dt>
               <dd className="font-bold text-primary">{formatKRW(amount)}</dd>
             </div>
           </dl>
         ) : (
-          <p className="mt-10 text-sm text-text-light">
+          <p className="mt-10 text-sm text-text-muted">
             결제 확인 정보가 URL에 포함되지 않았습니다. 매니저 확인용 메일을 확인해 주세요.
           </p>
         )}
@@ -55,7 +55,7 @@ export default function SuccessPage({ searchParams }: PageProps) {
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/"
-            className="inline-flex min-w-[200px] items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-dark transition hover:bg-gray-50"
+            className="inline-flex min-w-[200px] items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50"
           >
             홈으로
           </Link>

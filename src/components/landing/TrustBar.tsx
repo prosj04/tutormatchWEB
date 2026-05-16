@@ -18,9 +18,9 @@ export function TrustBar() {
             <div key={s.label} className="text-center">
               <AnimatedCounter
                 value={s.value}
-                className="block font-display text-5xl font-bold text-gold md:text-6xl"
+                className="block font-sans text-5xl font-bold text-primary md:text-6xl"
               />
-              <p className="mt-3 text-sm font-medium text-text-mid">{s.label}</p>
+              <p className="mt-3 text-sm font-medium text-text-secondary">{s.label}</p>
             </div>
           ))}
         </div>

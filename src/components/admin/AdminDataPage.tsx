@@ -70,7 +70,7 @@ export function AdminDataPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-black text-text-dark">전체 데이터</h2>
+      <h2 className="text-2xl font-black text-text-primary">전체 데이터</h2>
 
       <div className="mt-4 flex gap-4 border-b border-gray-200">
         {(
@@ -88,7 +88,7 @@ export function AdminDataPage() {
               setExpandedQuestion(null);
             }}
             className={`border-b-2 pb-3 text-sm font-semibold ${
-              tab === t.key ? "border-gold text-text-dark" : "border-transparent text-text-mid"
+              tab === t.key ? "border-primary text-text-primary" : "border-transparent text-text-secondary"
             }`}
           >
             {t.label}
@@ -129,18 +129,18 @@ export function AdminDataPage() {
         <button
           type="button"
           onClick={() => fetchData()}
-          className="rounded-xl bg-navy px-4 py-2 text-sm text-white"
+          className="rounded-xl bg-surface px-4 py-2 text-sm text-white"
         >
           조회
         </button>
       </div>
 
       {loading ? (
-        <p className="mt-8 text-sm text-text-light">불러오는 중…</p>
+        <p className="mt-8 text-sm text-text-muted">불러오는 중…</p>
       ) : tab === "plans" ? (
         <div className="mt-6 overflow-x-auto rounded-2xl border bg-white shadow-sm">
           <table className="w-full min-w-[700px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-text-light">
+            <thead className="bg-gray-50 text-xs uppercase text-text-muted">
               <tr>
                 <th className="px-4 py-3">학생</th>
                 <th className="px-4 py-3">날짜</th>
@@ -176,7 +176,7 @@ export function AdminDataPage() {
                           ))}
                         </ul>
                         {p.comment && (
-                          <p className="mt-3 text-sm text-text-mid">
+                          <p className="mt-3 text-sm text-text-secondary">
                             코멘트: {p.comment}
                           </p>
                         )}
@@ -191,7 +191,7 @@ export function AdminDataPage() {
       ) : (
         <div className="mt-6 overflow-x-auto rounded-2xl border bg-white shadow-sm">
           <table className="w-full min-w-[800px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-text-light">
+            <thead className="bg-gray-50 text-xs uppercase text-text-muted">
               <tr>
                 <th className="px-4 py-3">학생</th>
                 <th className="px-4 py-3">날짜</th>
@@ -223,13 +223,13 @@ export function AdminDataPage() {
                       <td colSpan={6} className="space-y-3 bg-background px-6 py-4 text-sm">
                         <p className="whitespace-pre-wrap">{qrow.content}</p>
                         {qrow.aiAnswer && (
-                          <div className="rounded-lg bg-gold/10 p-3">
-                            <p className="text-xs font-semibold text-gold">AI 답변</p>
+                          <div className="rounded-lg bg-primary/10 p-3">
+                            <p className="text-xs font-semibold text-primary">AI 답변</p>
                             <p className="mt-1 whitespace-pre-wrap">{qrow.aiAnswer}</p>
                           </div>
                         )}
                         {qrow.teacherAnswer && (
-                          <div className="rounded-lg bg-navy/90 p-3 text-white">
+                          <div className="rounded-lg bg-surface/90 p-3 text-white">
                             <p className="text-xs font-semibold">선생님 답변</p>
                             <p className="mt-1 whitespace-pre-wrap">{qrow.teacherAnswer}</p>
                           </div>

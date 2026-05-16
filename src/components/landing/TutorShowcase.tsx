@@ -10,10 +10,10 @@ import { showcaseTutors } from "@/lib/landing-data";
 
 export function TutorShowcase() {
   return (
-    <section className="bg-navy px-6 py-24 md:py-28">
+    <section className="bg-surface px-6 py-24 md:py-28">
       <FadeSection className="mx-auto max-w-6xl">
         <div className="text-center">
-          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">
+          <h2 className="font-sans text-3xl font-bold text-white md:text-4xl">
             다양한 선생님을 만나보세요
           </h2>
           <p className="mt-4 text-base text-gray-400 md:text-lg">
@@ -43,24 +43,24 @@ export function TutorShowcase() {
                   sizes="80px"
                 />
               </div>
-              <h3 className="mt-4 text-center font-display text-xl font-bold text-navy">
+              <h3 className="mt-4 text-center font-sans text-xl font-bold text-text-primary">
                 {t.name}
               </h3>
-              <p className="mt-2 line-clamp-2 text-center text-sm text-text-mid">
+              <p className="mt-2 line-clamp-2 text-center text-sm text-text-secondary">
                 {t.tagline}
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-1.5">
                 {t.subjects.map((s) => (
                   <span
                     key={s}
-                    className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-medium text-navy"
+                    className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-text-primary"
                   >
                     {s}
                   </span>
                 ))}
               </div>
               {t.background ? (
-                <p className="mt-3 text-center text-xs text-text-light">
+                <p className="mt-3 text-center text-xs text-text-muted">
                   {t.background}
                 </p>
               ) : null}
@@ -71,7 +71,7 @@ export function TutorShowcase() {
         <div className="mt-12 text-center">
           <Link
             href="/tutors"
-            className="inline-flex items-center justify-center rounded-2xl border-2 border-gold px-8 py-3 text-sm font-semibold text-gold transition hover:bg-gold/10"
+            className="inline-flex items-center justify-center rounded-2xl border-2 border-primary px-8 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
           >
             선생님 전체 보기
           </Link>

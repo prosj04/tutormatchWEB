@@ -74,22 +74,22 @@ export function AddQuestionModal({
       aria-modal="true"
       aria-labelledby="add-question-title"
     >
-      <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-card p-6 shadow-xl sm:max-w-lg sm:rounded-2xl">
+      <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-6 shadow-xl sm:max-w-lg sm:rounded-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 id="add-question-title" className="text-lg font-bold text-text-dark">
+          <h2 id="add-question-title" className="text-lg font-bold text-text-primary">
             질문 등록
           </h2>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="text-sm text-text-mid hover:text-text-dark disabled:opacity-50"
+            className="text-sm text-text-secondary hover:text-text-primary disabled:opacity-50"
           >
             닫기
           </button>
         </div>
 
-        <label className="block text-xs font-semibold uppercase tracking-wider text-text-light">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
           질문 내용
         </label>
         <textarea
@@ -98,7 +98,7 @@ export function AddQuestionModal({
           placeholder="질문 내용을 입력하세요"
           rows={5}
           disabled={submitting}
-          className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none focus:border-gold"
+          className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none focus:border-primary"
         />
 
         <div className="mt-4">
@@ -113,7 +113,7 @@ export function AddQuestionModal({
             type="button"
             disabled={submitting}
             onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl border border-dashed border-gray-200 px-4 py-2.5 text-sm font-medium text-text-mid hover:border-gold hover:text-gold disabled:opacity-50"
+            className="rounded-xl border border-dashed border-gray-200 px-4 py-2.5 text-sm font-medium text-text-secondary hover:border-primary hover:text-primary disabled:opacity-50"
           >
             이미지 첨부
           </button>
@@ -129,7 +129,7 @@ export function AddQuestionModal({
                 type="button"
                 disabled={submitting}
                 onClick={() => setImageFile(null)}
-                className="mt-1 block text-xs text-text-light hover:text-accent"
+                className="mt-1 block text-xs text-text-muted hover:text-accent"
               >
                 이미지 제거
               </button>
@@ -147,7 +147,7 @@ export function AddQuestionModal({
           type="button"
           disabled={submitting}
           onClick={handleSubmit}
-          className="mt-6 w-full rounded-xl bg-gold py-3.5 text-sm font-semibold text-white disabled:opacity-50"
+          className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white disabled:opacity-50"
         >
           {submitting ? "등록 중…" : "질문 등록"}
         </button>

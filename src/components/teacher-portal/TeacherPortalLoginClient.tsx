@@ -6,8 +6,8 @@ import { getSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 
 const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 export function TeacherPortalLoginClient() {
   const router = useRouter();
@@ -50,11 +50,11 @@ export function TeacherPortalLoginClient() {
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Teachers</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Teachers</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
             선생님 로그인
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
             승인된 선생님 계정으로 로그인해 주세요.
           </p>
         </div>
@@ -117,7 +117,7 @@ export function TeacherPortalLoginClient() {
             ) : null}
           </div>
 
-          <p className="mt-8 text-center text-sm text-text-mid">
+          <p className="mt-8 text-center text-sm text-text-secondary">
             아직 계정이 없으신가요?{" "}
             <Link
               href="/teacher-portal/apply"

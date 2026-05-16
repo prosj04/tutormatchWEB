@@ -50,25 +50,25 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="text-xs font-medium uppercase tracking-wider text-text-light">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               Tutor profile
             </p>
-            <h1 className="mt-4 text-5xl font-black leading-tight tracking-tight text-text-dark sm:text-6xl">
+            <h1 className="mt-4 text-5xl font-black leading-tight tracking-tight text-text-primary sm:text-6xl">
               {t.name}
             </h1>
-            <p className="mt-4 text-lg text-text-mid">{t.tagline}</p>
-            <p className="mt-6 text-sm leading-relaxed text-text-light">{headlineCred}</p>
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-text-mid">
+            <p className="mt-4 text-lg text-text-secondary">{t.tagline}</p>
+            <p className="mt-6 text-sm leading-relaxed text-text-muted">{headlineCred}</p>
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-text-secondary">
               <span className="flex items-center gap-2">
                 <Stars value={t.rating} />
-                <span className="font-bold text-text-dark">{t.rating.toFixed(2)}</span>
+                <span className="font-bold text-text-primary">{t.rating.toFixed(2)}</span>
               </span>
               <span className="h-3 w-px bg-gray-200" aria-hidden />
               <span>{t.region}</span>
             </div>
             <Link
               href="/tutors"
-              className="mt-10 inline-flex w-fit text-xs font-semibold uppercase tracking-wider text-text-light underline-offset-4 transition hover:text-primary hover:underline"
+              className="mt-10 inline-flex w-fit text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
             >
               ← 강사 목록
             </Link>
@@ -80,8 +80,8 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,1fr)_22rem] xl:gap-16">
           <div className="space-y-16 lg:space-y-20">
             <section>
-              <h2 className="text-2xl font-black text-text-dark md:text-3xl">Credentials</h2>
-              <p className="mt-2 text-sm text-text-light">학력 · 경력 · 자격증</p>
+              <h2 className="text-2xl font-black text-text-primary md:text-3xl">Credentials</h2>
+              <p className="mt-2 text-sm text-text-muted">학력 · 경력 · 자격증</p>
               <ol className="relative mt-12 space-y-0 border-l border-primary/30 pl-8 md:pl-10">
                 {t.credentials.map((c, i) => (
                   <li key={`${c.year}-${i}`} className="relative pb-12 last:pb-0">
@@ -89,20 +89,20 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
                     <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                       {categoryLabel(c.category)}
                     </p>
-                    <p className="mt-2 text-xl font-bold text-text-dark">{c.title}</p>
+                    <p className="mt-2 text-xl font-bold text-text-primary">{c.title}</p>
                     {c.detail ? (
-                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-mid">{c.detail}</p>
+                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">{c.detail}</p>
                     ) : null}
-                    <p className="mt-3 text-xs uppercase tracking-wider text-text-light">{c.year}</p>
+                    <p className="mt-3 text-xs uppercase tracking-wider text-text-muted">{c.year}</p>
                   </li>
                 ))}
               </ol>
             </section>
 
             <section>
-              <h2 className="text-2xl font-black text-text-dark md:text-3xl">Teaching approach</h2>
-              <p className="mt-2 text-sm text-text-light">수업 철학 및 방식</p>
-              <div className="mt-10 max-w-3xl space-y-6 text-base leading-relaxed text-text-mid">
+              <h2 className="text-2xl font-black text-text-primary md:text-3xl">Teaching approach</h2>
+              <p className="mt-2 text-sm text-text-muted">수업 철학 및 방식</p>
+              <div className="mt-10 max-w-3xl space-y-6 text-base leading-relaxed text-text-secondary">
                 {t.teachingStyle.map((para, i) => (
                   <p key={i}>{para}</p>
                 ))}
@@ -110,13 +110,13 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
             </section>
 
             <section>
-              <h2 className="text-2xl font-black text-text-dark md:text-3xl">Subjects & levels</h2>
-              <p className="mt-2 text-sm text-text-light">지원 과목 및 단계</p>
+              <h2 className="text-2xl font-black text-text-primary md:text-3xl">Subjects & levels</h2>
+              <p className="mt-2 text-sm text-text-muted">지원 과목 및 단계</p>
               <div className="mt-8 flex flex-wrap gap-2">
                 {t.subjectLevels.map((label) => (
                   <span
                     key={label}
-                    className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-text-dark"
+                    className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-text-primary"
                   >
                     {label}
                   </span>
@@ -135,8 +135,8 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
             </section>
 
             <section>
-              <h2 className="text-2xl font-black text-text-dark md:text-3xl">Student reviews</h2>
-              <p className="mt-2 text-sm text-text-light">검증된 후기</p>
+              <h2 className="text-2xl font-black text-text-primary md:text-3xl">Student reviews</h2>
+              <p className="mt-2 text-sm text-text-muted">검증된 후기</p>
               <ul className="mt-10 space-y-6">
                 {t.reviews.map((r, i) => (
                   <li
@@ -145,8 +145,8 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="font-bold text-text-dark">{r.author}</p>
-                        <p className="mt-1 text-xs uppercase tracking-wider text-text-light">
+                        <p className="font-bold text-text-primary">{r.author}</p>
+                        <p className="mt-1 text-xs uppercase tracking-wider text-text-muted">
                           {r.role}
                         </p>
                       </div>
@@ -161,7 +161,7 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
                         ))}
                       </span>
                     </div>
-                    <p className="mt-5 text-sm leading-relaxed text-text-mid md:text-base">{r.text}</p>
+                    <p className="mt-5 text-sm leading-relaxed text-text-secondary md:text-base">{r.text}</p>
                   </li>
                 ))}
               </ul>

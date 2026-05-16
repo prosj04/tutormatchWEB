@@ -5,6 +5,7 @@ export type NotificationType =
   | "PROGRESS_WARNING"
   | "PROGRESS_DANGER"
   | "NEW_BOOKING"
+  | "NEW_STUDENT_WAITING"
   | "BOOKING_CONFIRMED"
   | "TEACHER_ANSWERED"
   | "TEACHER_COMMENT"
@@ -60,6 +61,7 @@ export function getNotificationIcon(type: string): string {
     case "PROGRESS_DANGER":
       return "🔴";
     case "NEW_BOOKING":
+    case "NEW_STUDENT_WAITING":
     case "BOOKING_CONFIRMED":
       return "📅";
     case "TEACHER_ANSWERED":
@@ -96,6 +98,7 @@ export function resolveNotificationHref(
     case "BOOKING_CONFIRMED":
       return "/dashboard/consultation";
     case "NEW_BOOKING":
+    case "NEW_STUDENT_WAITING":
       return "/teacher-portal/dashboard/consultations";
     case "NEW_STUDENT_ASSIGNED":
       return "/teacher-portal/dashboard/students";

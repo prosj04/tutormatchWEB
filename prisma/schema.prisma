@@ -30,7 +30,7 @@ model Student {
   plans         StudyPlan[]
   questions     Question[]
   teachers      TeacherStudent[]
-  bookings      ConsultationBooking[]
+  consultationBooking ConsultationBooking?
   managerLinks  ManagerStudent[]
 }
 
@@ -47,7 +47,7 @@ model Teacher {
   approved        Boolean            @default(false)
   profile         TeacherProfile?
   students        TeacherStudent[]
-  managerSlots    ConsultationSlot[] @relation("ManagerSlots")
+  managerBookings ConsultationBooking[]
   managerStudents ManagerStudent[]   @relation("ManagerStudents")
 }
 
@@ -114,30 +114,19 @@ model TeacherProfile {
   updatedAt    DateTime @default(now()) @updatedAt
 }
 
-model ConsultationSlot {
-  id        String               @id @default(uuid())
-  managerId String
-  manager   Teacher              @relation("ManagerSlots", fields: [managerId], references: [id], onDelete: Cascade)
-  date      String               // "2024-01-15"
-  startTime String               // "14:00"
-  endTime   String               // "14:30"
-  isBooked  Boolean              @default(false)
-  booking   ConsultationBooking?
-  createdAt DateTime             @default(now())
-}
-
 model ConsultationBooking {
-  id          String           @id @default(uuid())
-  slotId      String           @unique
-  slot        ConsultationSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  studentId   String
-  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  managerId   String
-  status      String           @default("PENDING")
-  // "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED"
-  note        String?
-  managerNote String?
-  createdAt   DateTime         @default(now())
+  id             String    @id @default(uuid())
+  studentId      String    @unique
+  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  managerId      String?
+  manager        Teacher?  @relation(fields: [managerId], references: [id])
+  preferredTimes String
+  status         String    @default("WAITING")
+  // "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED"
+  note           String?
+  managerNote    String?
+  assignedAt     DateTime?
+  createdAt      DateTime  @default(now())
 }
 
 model Notification {

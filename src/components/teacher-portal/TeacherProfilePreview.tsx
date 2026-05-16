@@ -66,7 +66,7 @@ export function TeacherProfilePreview({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-      <p className="border-b border-gray-100 bg-background px-4 py-2 text-xs font-medium text-text-mid">
+      <p className="border-b border-gray-100 bg-background px-4 py-2 text-xs font-medium text-text-secondary">
         미리보기 · /tutors/{teacherId}
       </p>
 
@@ -77,21 +77,21 @@ export function TeacherProfilePreview({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={photoSrc} alt={name} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-3xl text-text-light">
+              <div className="flex h-full w-full items-center justify-center text-3xl text-text-muted">
                 👤
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-text-light">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">
               Tutor profile
             </p>
-            <h2 className="mt-1 text-xl font-black text-text-dark">{name}</h2>
-            <p className="mt-1 text-sm text-text-mid">
+            <h2 className="mt-1 text-xl font-black text-text-primary">{name}</h2>
+            <p className="mt-1 text-sm text-text-secondary">
               {subjects.length > 0 ? subjects.join(" · ") : "담당 과목"}
             </p>
             {headlineCred ? (
-              <p className="mt-2 text-xs text-text-light">{headlineCred}</p>
+              <p className="mt-2 text-xs text-text-muted">{headlineCred}</p>
             ) : null}
           </div>
         </div>
@@ -99,8 +99,8 @@ export function TeacherProfilePreview({
 
       {introParagraphs.length > 0 && (
         <section className="border-b border-gray-100 p-4">
-          <h3 className="text-sm font-bold text-text-dark">Teaching approach</h3>
-          <div className="mt-3 space-y-2 text-xs leading-relaxed text-text-mid">
+          <h3 className="text-sm font-bold text-text-primary">Teaching approach</h3>
+          <div className="mt-3 space-y-2 text-xs leading-relaxed text-text-secondary">
             {introParagraphs.map((para, i) => (
               <p key={i}>{para}</p>
             ))}
@@ -110,7 +110,7 @@ export function TeacherProfilePreview({
 
       {credentials.length > 0 && (
         <section className="p-4">
-          <h3 className="text-sm font-bold text-text-dark">Credentials</h3>
+          <h3 className="text-sm font-bold text-text-primary">Credentials</h3>
           <ol className="relative mt-4 space-y-0 border-l border-primary/30 pl-6">
             {credentials.map((c, i) => (
               <li key={`${c.category}-${i}`} className="relative pb-6 last:pb-0">
@@ -118,9 +118,9 @@ export function TeacherProfilePreview({
                 <p className="text-[10px] font-semibold uppercase text-primary">
                   {categoryLabel(c.category)}
                 </p>
-                <p className="mt-1 text-sm font-bold text-text-dark">{c.title}</p>
-                {c.detail ? <p className="mt-0.5 text-xs text-text-mid">{c.detail}</p> : null}
-                <p className="mt-1 text-[10px] uppercase text-text-light">{c.year}</p>
+                <p className="mt-1 text-sm font-bold text-text-primary">{c.title}</p>
+                {c.detail ? <p className="mt-0.5 text-xs text-text-secondary">{c.detail}</p> : null}
+                <p className="mt-1 text-[10px] uppercase text-text-muted">{c.year}</p>
               </li>
             ))}
           </ol>

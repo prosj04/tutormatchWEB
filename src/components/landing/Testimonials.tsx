@@ -24,25 +24,25 @@ export function Testimonials() {
   return (
     <section className="bg-[#F8F8F6] px-6 py-24 md:py-28">
       <FadeSection className="mx-auto max-w-6xl">
-        <h2 className="text-center font-display text-3xl font-bold text-navy md:text-4xl">
+        <h2 className="text-center font-sans text-3xl font-bold text-text-primary md:text-4xl">
           학부모님들의 이야기
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <blockquote
               key={t.attribution}
-              className="relative rounded-2xl border-l-4 border-gold bg-white p-8 shadow-sm"
+              className="relative rounded-2xl border-l-4 border-primary bg-white p-8 shadow-sm"
             >
               <span
-                className="font-display text-5xl leading-none text-gold/40"
+                className="font-sans text-5xl leading-none text-primary/40"
                 aria-hidden
               >
                 &ldquo;
               </span>
-              <p className="mt-2 text-sm leading-relaxed text-text-dark md:text-base">
+              <p className="mt-2 text-sm leading-relaxed text-text-primary md:text-base">
                 {t.quote}
               </p>
-              <footer className="mt-6 text-xs font-medium text-text-mid">
+              <footer className="mt-6 text-xs font-medium text-text-secondary">
                 — {t.attribution}
               </footer>
             </blockquote>

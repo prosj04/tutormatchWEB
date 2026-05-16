@@ -25,7 +25,7 @@ export function HowItWorks() {
   return (
     <section className="bg-white px-6 py-24 md:py-28">
       <FadeSection className="mx-auto max-w-6xl text-center">
-        <h2 className="font-display text-3xl font-bold text-navy md:text-4xl">
+        <h2 className="font-sans text-3xl font-bold text-text-primary md:text-4xl">
           이렇게 진행됩니다
         </h2>
 
@@ -34,19 +34,19 @@ export function HowItWorks() {
             <div key={step.num} className="relative flex flex-col items-center">
               {i < STEPS.length - 1 ? (
                 <span
-                  className="absolute right-0 top-8 hidden translate-x-1/2 text-2xl text-gold/50 md:block"
+                  className="absolute right-0 top-8 hidden translate-x-1/2 text-2xl text-primary/50 md:block"
                   aria-hidden
                 >
                   →
                 </span>
               ) : null}
-              <p className="font-display text-6xl font-bold text-gold md:text-7xl">
+              <p className="font-sans text-6xl font-bold text-primary md:text-7xl">
                 {step.num}
               </p>
-              <h3 className="mt-4 font-display text-xl font-bold text-navy">
+              <h3 className="mt-4 font-sans text-xl font-bold text-text-primary">
                 {step.title}
               </h3>
-              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-text-mid md:text-base">
+              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-text-secondary md:text-base">
                 {step.body}
               </p>
             </div>
@@ -55,7 +55,7 @@ export function HowItWorks() {
 
         <Link
           href="/dashboard/consultation"
-          className="mt-14 inline-flex items-center justify-center rounded-2xl bg-gold px-10 py-4 text-base font-semibold text-navy transition hover:bg-gold/90"
+          className="mt-14 inline-flex items-center justify-center rounded-2xl bg-primary px-10 py-4 text-base font-semibold text-white transition hover:bg-primary/90"
         >
           지금 바로 시작하기
         </Link>

@@ -60,6 +60,7 @@ export async function runAlertChecks() {
   let questionsChecked = 0;
   let notificationsCreated = 0;
   let weeklyStudentsChecked = 0;
+  let waitingBookingsChecked = 0;
 
   const staleBefore = new Date(Date.now() - DAY_MS);
 
@@ -211,9 +212,46 @@ export async function runAlertChecks() {
     }
   }
 
+  const waitingBefore = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const waitingBookings = await prisma.consultationBooking.findMany({
+    where: {
+      status: "WAITING",
+      createdAt: { lt: waitingBefore },
+    },
+    include: {
+      student: true,
+    },
+  });
+
+  waitingBookingsChecked = waitingBookings.length;
+
+  if (waitingBookings.length > 0) {
+    const managers = await prisma.teacher.findMany({
+      where: {
+        approved: true,
+        user: { role: "MANAGER" },
+      },
+      select: { userId: true },
+    });
+
+    for (const booking of waitingBookings) {
+      for (const manager of managers) {
+        await createNotification({
+          userId: manager.userId,
+          type: "NEW_STUDENT_WAITING",
+          title: "대기 중인 학생이 있습니다",
+          body: `${booking.student.name}님이 매니저 배정을 기다리고 있습니다.`,
+          relatedId: booking.id,
+        });
+        notificationsCreated++;
+      }
+    }
+  }
+
   return {
     questionsChecked,
     weeklyStudentsChecked,
+    waitingBookingsChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
   };

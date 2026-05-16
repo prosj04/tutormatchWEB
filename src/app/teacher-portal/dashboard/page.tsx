@@ -26,8 +26,8 @@ export default async function TeacherDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-text-dark sm:text-3xl">선생님 대시보드</h1>
-      <p className="mt-2 text-text-mid">{teacher.name}님, 환영합니다.</p>
+      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">선생님 대시보드</h1>
+      <p className="mt-2 text-text-secondary">{teacher.name}님, 환영합니다.</p>
       <div className="mt-8 max-w-2xl">
         <TeacherDashboardContent
           email={teacher.user.email}

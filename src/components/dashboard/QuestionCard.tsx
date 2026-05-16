@@ -15,7 +15,7 @@ type QuestionCardProps = {
 function AiSpinner() {
   return (
     <span
-      className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-gold/30 border-t-gold"
+      className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
       aria-hidden
     />
   );
@@ -36,9 +36,9 @@ export function QuestionCard({
     aiAnswerEnabled && !aiLoading && Boolean(question.aiAnswer);
 
   return (
-    <article className="rounded-2xl border border-gray-100 bg-card p-5 shadow-sm">
+    <article className="rounded-2xl border border-gray-100 bg-surface p-5 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-dark">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
           {question.content}
         </p>
         {question.isResolved && (
@@ -63,41 +63,41 @@ export function QuestionCard({
         </button>
       )}
 
-      <section className="mt-4 rounded-xl bg-gold/10 p-4">
+      <section className="mt-4 rounded-xl bg-primary/10 p-4">
         <div className="flex items-center gap-2">
           <span aria-hidden>🤖</span>
           {aiAnswerEnabled ? (
-            <span className="inline-block rounded-full bg-gold/25 px-2.5 py-0.5 text-xs font-semibold text-gold">
+            <span className="inline-block rounded-full bg-primary/25 px-2.5 py-0.5 text-xs font-semibold text-primary">
               AI 답변
             </span>
           ) : (
-            <span className="inline-block rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-medium text-text-mid">
+            <span className="inline-block rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-medium text-text-secondary">
               AI 답변 준비중
             </span>
           )}
         </div>
 
         {aiLoading ? (
-          <div className="mt-3 flex items-center gap-2 text-sm text-text-mid">
+          <div className="mt-3 flex items-center gap-2 text-sm text-text-secondary">
             <AiSpinner />
             <span>AI가 답변을 생성중입니다...</span>
           </div>
         ) : showAiContent ? (
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-dark">
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
             {question.aiAnswer}
           </p>
         ) : showMockAiMessage ? (
-          <p className="mt-3 text-sm leading-relaxed text-text-mid">
+          <p className="mt-3 text-sm leading-relaxed text-text-secondary">
             {question.aiAnswer}
           </p>
         ) : !aiAnswerEnabled ? (
-          <p className="mt-3 text-sm text-text-mid">선생님의 답변을 기다려주세요</p>
+          <p className="mt-3 text-sm text-text-secondary">선생님의 답변을 기다려주세요</p>
         ) : (
-          <p className="mt-3 text-sm text-text-light">답변을 기다리는 중입니다.</p>
+          <p className="mt-3 text-sm text-text-muted">답변을 기다리는 중입니다.</p>
         )}
       </section>
 
-      <section className="mt-3 rounded-xl bg-navy p-4 text-white">
+      <section className="mt-3 rounded-xl bg-surface p-4 text-white">
         <div className="flex flex-wrap items-center gap-2">
           <span aria-hidden>👨‍🏫</span>
           <span className="inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold">

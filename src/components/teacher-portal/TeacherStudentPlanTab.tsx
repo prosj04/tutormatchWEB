@@ -119,19 +119,19 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
       />
 
       {loading ? (
-        <p className="text-center text-sm text-text-light">불러오는 중…</p>
+        <p className="text-center text-sm text-text-muted">불러오는 중…</p>
       ) : !plan ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-background p-8 text-center text-sm text-text-mid">
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-background p-8 text-center text-sm text-text-secondary">
           이 날짜에 등록된 학습 계획이 없습니다.
         </div>
       ) : (
         <>
           <div>
-            <h3 className="text-lg font-bold text-text-dark">
+            <h3 className="text-lg font-bold text-text-primary">
               {formatPlanHeader(selectedDate)}
             </h3>
             {totalCount > 0 && (
-              <p className="mt-1 text-sm text-text-mid">
+              <p className="mt-1 text-sm text-text-secondary">
                 {doneCount}/{totalCount} 완료 ({rate}%)
               </p>
             )}
@@ -139,7 +139,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
 
           <ul className="space-y-2 rounded-2xl border border-gray-100 bg-white p-4">
             {tasks.length === 0 ? (
-              <li className="py-4 text-center text-sm text-text-light">
+              <li className="py-4 text-center text-sm text-text-muted">
                 등록된 할 일이 없습니다.
               </li>
             ) : (
@@ -159,14 +159,14 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
                     <p
                       className={`text-sm ${
                         task.isDone
-                          ? "text-text-light line-through"
-                          : "text-text-dark"
+                          ? "text-text-muted line-through"
+                          : "text-text-primary"
                       }`}
                     >
                       {task.title}
                     </p>
                     {task.isDone && task.doneAt && (
-                      <p className="mt-0.5 text-xs text-text-light">
+                      <p className="mt-0.5 text-xs text-text-muted">
                         {formatDoneTime(task.doneAt)}
                       </p>
                     )}
@@ -176,14 +176,14 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
             )}
           </ul>
 
-          <section className="rounded-2xl border border-gold/40 bg-gold/5 p-5">
+          <section className="rounded-2xl border border-primary/40 bg-primary/5 p-5">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-bold text-text-dark">선생님 코멘트</h4>
+              <h4 className="text-sm font-bold text-text-primary">선생님 코멘트</h4>
               {plan.comment && !editingComment && (
                 <button
                   type="button"
                   onClick={() => setEditingComment(true)}
-                  className="text-xs font-medium text-gold hover:underline"
+                  className="text-xs font-medium text-primary hover:underline"
                 >
                   수정
                 </button>
@@ -191,7 +191,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
             </div>
 
             {plan.comment && !editingComment ? (
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-dark">
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
                 {plan.comment}
               </p>
             ) : (
@@ -201,13 +201,13 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
                   onChange={(e) => setCommentDraft(e.target.value)}
                   rows={4}
                   placeholder="이 날의 학습 계획에 코멘트를 남겨주세요"
-                  className="mt-3 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gold"
+                  className="mt-3 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary"
                 />
                 <button
                   type="button"
                   disabled={savingComment || !commentDraft.trim()}
                   onClick={() => void handleSaveComment()}
-                  className="mt-3 rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                  className="mt-3 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                 >
                   {savingComment ? "저장 중…" : "코멘트 저장"}
                 </button>
@@ -220,7 +220,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
       {commentToast && (
         <p
           role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-navy px-5 py-2.5 text-sm text-white shadow-lg"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-surface px-5 py-2.5 text-sm text-white shadow-lg"
         >
           코멘트가 저장되었습니다
         </p>

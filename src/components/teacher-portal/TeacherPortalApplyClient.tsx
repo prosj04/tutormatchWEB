@@ -6,9 +6,9 @@ import { useState, type ReactNode } from "react";
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
 const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-dark outline-none transition placeholder:text-text-light focus:border-primary";
+  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
 const textareaClass = inputClass + " resize-y leading-relaxed";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-light";
+const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 function SuccessCheckLarge() {
   return (
@@ -104,9 +104,9 @@ export function TeacherPortalApplyClient() {
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-light">Apply</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-dark sm:text-6xl">선생님 가입 신청</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-mid">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Apply</p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">선생님 가입 신청</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
             제출 후 관리자 검토를 거쳐 안내드립니다.
           </p>
         </div>
@@ -175,7 +175,7 @@ export function TeacherPortalApplyClient() {
                           className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
                             on
                               ? "border-primary bg-primary text-white"
-                              : "border-gray-200 bg-white text-text-mid hover:border-gray-300"
+                              : "border-gray-200 bg-white text-text-secondary hover:border-gray-300"
                           }`}
                         >
                           {s}
@@ -239,7 +239,7 @@ export function TeacherPortalApplyClient() {
                 ) : null}
               </div>
 
-              <p className="mt-8 text-center text-sm text-text-mid">
+              <p className="mt-8 text-center text-sm text-text-secondary">
                 이미 계정이 있으신가요?{" "}
                 <Link href="/teacher-portal" className="font-semibold text-primary underline-offset-4 hover:underline">
                   로그인
@@ -249,15 +249,15 @@ export function TeacherPortalApplyClient() {
           ) : (
             <div className="flex flex-col items-center px-6 py-14 text-center sm:px-10 sm:py-16">
               <SuccessCheckLarge />
-              <h2 className="mt-8 text-2xl font-black text-text-dark sm:text-3xl">
+              <h2 className="mt-8 text-2xl font-black text-text-primary sm:text-3xl">
                 신청이 완료되었습니다
               </h2>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-mid">
+              <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-secondary">
                 관리자 검토 후 1-2 영업일 내에 안내드립니다.
               </p>
               <Link
                 href="/"
-                className="mt-10 inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-text-dark transition hover:border-gray-300 hover:bg-gray-50"
+                className="mt-10 inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-text-primary transition hover:border-gray-300 hover:bg-gray-50"
               >
                 ← 메인으로 돌아가기
               </Link>

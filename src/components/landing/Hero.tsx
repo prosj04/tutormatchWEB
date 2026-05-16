@@ -29,12 +29,12 @@ const CARDS = [
 
 export function Hero() {
   return (
-    <section className="relative min-h-[100dvh] overflow-hidden bg-navy pt-16">
+    <section className="relative min-h-[100dvh] overflow-hidden bg-surface pt-16">
       <div
         className="pointer-events-none absolute inset-0 opacity-20"
         aria-hidden
       >
-        <div className="absolute -right-1/4 top-0 h-[120%] w-1 rotate-12 bg-gold md:-right-[10%]" />
+        <div className="absolute -right-1/4 top-0 h-[120%] w-1 rotate-12 bg-primary md:-right-[10%]" />
       </div>
 
       <div className="relative mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col px-6 py-16 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:py-24">
@@ -44,10 +44,10 @@ export function Hero() {
           transition={{ duration: 0.55 }}
           className="flex-1 text-center lg:text-left"
         >
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             1:1 맞춤 과외 플랫폼
           </p>
-          <h1 className="mt-6 font-display text-4xl font-bold leading-[1.15] text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
+          <h1 className="mt-6 font-sans text-4xl font-bold leading-[1.15] text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
             아이마다 맞는
             <br />
             선생님이 다릅니다
@@ -60,7 +60,7 @@ export function Hero() {
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
             <Link
               href="/dashboard/consultation"
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-gold px-8 py-4 text-base font-semibold text-navy shadow-lg transition hover:bg-gold/90 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-primary/90 sm:w-auto"
             >
               무료 상담 예약하기
             </Link>
@@ -85,10 +85,10 @@ export function Hero() {
               <span className="text-3xl" aria-hidden>
                 {card.icon}
               </span>
-              <p className="mt-3 font-display text-xl font-bold text-navy">
+              <p className="mt-3 font-sans text-xl font-bold text-text-primary">
                 {card.title}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-text-mid">
+              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
                 {card.body}
               </p>
             </motion.div>

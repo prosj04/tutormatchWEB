@@ -39,7 +39,7 @@ export async function GET() {
       name: booking.student.name,
       grade: booking.student.grade,
       subjects: booking.student.subjects,
-      consultationNote: booking.note ?? booking.managerNote,
+      consultationNote: booking.managerNote ?? booking.note,
       bookingId: booking.id,
     });
   }

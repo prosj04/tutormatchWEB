@@ -99,8 +99,8 @@ export function ManagerMonitoringPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black text-text-dark sm:text-3xl">모니터링</h1>
-      <p className="mt-2 text-sm text-text-mid">
+      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">모니터링</h1>
+      <p className="mt-2 text-sm text-text-secondary">
         매칭한 학생들의 학습 현황을 확인합니다.
       </p>
 
@@ -108,17 +108,17 @@ export function ManagerMonitoringPage() {
         {cards.map((c) => (
           <div
             key={c.label}
-            className="rounded-2xl border border-gray-200 bg-card p-5 shadow-sm"
+            className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm"
           >
-            <p className="text-xs font-medium text-text-mid">{c.label}</p>
-            <p className="mt-2 text-2xl font-black text-navy">{c.value}</p>
+            <p className="text-xs font-medium text-text-secondary">{c.label}</p>
+            <p className="mt-2 text-2xl font-black text-text-primary">{c.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-10 overflow-x-auto rounded-2xl border border-gray-200 bg-card">
+      <div className="mt-10 overflow-x-auto rounded-2xl border border-gray-200 bg-surface">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-background/80 text-xs uppercase text-text-light">
+          <thead className="border-b border-gray-100 bg-background/80 text-xs uppercase text-text-muted">
             <tr>
               <th className="px-4 py-3">이름</th>
               <th className="px-4 py-3">학년</th>
@@ -131,13 +131,13 @@ export function ManagerMonitoringPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-text-mid">
+                <td colSpan={6} className="px-4 py-8 text-center text-text-secondary">
                   불러오는 중…
                 </td>
               </tr>
             ) : students.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-text-mid">
+                <td colSpan={6} className="px-4 py-8 text-center text-text-secondary">
                   담당 학생이 없습니다.
                 </td>
               </tr>
@@ -146,11 +146,11 @@ export function ManagerMonitoringPage() {
                 <tr
                   key={s.id}
                   onClick={() => void openDrawer(s.id)}
-                  className="cursor-pointer border-b border-gray-50 transition hover:bg-gold/5"
+                  className="cursor-pointer border-b border-gray-50 transition hover:bg-primary/5"
                 >
-                  <td className="px-4 py-3 font-medium text-text-dark">{s.name}</td>
-                  <td className="px-4 py-3 text-text-mid">{s.grade}</td>
-                  <td className="px-4 py-3 text-text-mid">{s.teacherName}</td>
+                  <td className="px-4 py-3 font-medium text-text-primary">{s.name}</td>
+                  <td className="px-4 py-3 text-text-secondary">{s.grade}</td>
+                  <td className="px-4 py-3 text-text-secondary">{s.teacherName}</td>
                   <td className="px-4 py-3">{s.completionRate}%</td>
                   <td className="px-4 py-3">{s.unansweredStale}</td>
                   <td className="px-4 py-3">
@@ -176,33 +176,33 @@ export function ManagerMonitoringPage() {
           role="presentation"
         >
           <div
-            className="h-full w-full max-w-lg overflow-y-auto bg-card shadow-xl"
+            className="h-full w-full max-w-lg overflow-y-auto bg-surface shadow-xl"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
           >
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-card px-5 py-4">
-              <h2 className="text-lg font-bold text-navy">
+            <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-surface px-5 py-4">
+              <h2 className="text-lg font-bold text-text-primary">
                 {detail?.student?.name ?? "학생 상세"}
               </h2>
               <button
                 type="button"
                 onClick={() => setDrawerId(null)}
-                className="text-sm text-text-mid hover:text-text-dark"
+                className="text-sm text-text-secondary hover:text-text-primary"
               >
                 닫기
               </button>
             </div>
             <div className="p-5">
               {detailLoading ? (
-                <p className="text-sm text-text-mid">불러오는 중…</p>
+                <p className="text-sm text-text-secondary">불러오는 중…</p>
               ) : detail ? (
                 <div className="space-y-8">
                   <section>
-                    <h3 className="text-sm font-semibold text-text-dark">
+                    <h3 className="text-sm font-semibold text-text-primary">
                       이번 주 학습계획
                     </h3>
                     {detail.plans.length === 0 ? (
-                      <p className="mt-2 text-sm text-text-mid">계획 없음</p>
+                      <p className="mt-2 text-sm text-text-secondary">계획 없음</p>
                     ) : (
                       <ul className="mt-3 space-y-4">
                         {detail.plans.map((plan) => (
@@ -210,14 +210,14 @@ export function ManagerMonitoringPage() {
                             key={plan.id}
                             className="rounded-xl border border-gray-100 p-3"
                           >
-                            <p className="text-xs font-medium text-navy">
+                            <p className="text-xs font-medium text-text-primary">
                               {formatConsultationDateLabel(plan.date)}
                             </p>
                             <ul className="mt-2 space-y-1">
                               {plan.tasks.map((t) => (
                                 <li
                                   key={t.id}
-                                  className={`text-sm ${t.isDone ? "text-text-light line-through" : "text-text-dark"}`}
+                                  className={`text-sm ${t.isDone ? "text-text-muted line-through" : "text-text-primary"}`}
                                 >
                                   {t.title}
                                 </li>
@@ -230,11 +230,11 @@ export function ManagerMonitoringPage() {
                   </section>
 
                   <section>
-                    <h3 className="text-sm font-semibold text-text-dark">
+                    <h3 className="text-sm font-semibold text-text-primary">
                       미답변 질문 (24h+)
                     </h3>
                     {detail.unansweredQuestions.length === 0 ? (
-                      <p className="mt-2 text-sm text-text-mid">없음</p>
+                      <p className="mt-2 text-sm text-text-secondary">없음</p>
                     ) : (
                       <ul className="mt-3 space-y-2">
                         {detail.unansweredQuestions.map((q) => (
@@ -242,8 +242,8 @@ export function ManagerMonitoringPage() {
                             key={q.id}
                             className="rounded-lg bg-orange-50 px-3 py-2 text-sm"
                           >
-                            <p className="text-xs text-text-mid">{q.date}</p>
-                            <p className="mt-1 text-text-dark">{q.content}</p>
+                            <p className="text-xs text-text-secondary">{q.date}</p>
+                            <p className="mt-1 text-text-primary">{q.content}</p>
                           </li>
                         ))}
                       </ul>
@@ -251,20 +251,20 @@ export function ManagerMonitoringPage() {
                   </section>
 
                   <section>
-                    <h3 className="text-sm font-semibold text-text-dark">
+                    <h3 className="text-sm font-semibold text-text-primary">
                       최근 선생님 코멘트
                     </h3>
                     {detail.recentComments.length === 0 ? (
-                      <p className="mt-2 text-sm text-text-mid">없음</p>
+                      <p className="mt-2 text-sm text-text-secondary">없음</p>
                     ) : (
                       <ul className="mt-3 space-y-2">
                         {detail.recentComments.map((c) => (
                           <li
                             key={c.date}
-                            className="rounded-lg bg-gold/5 px-3 py-2 text-sm"
+                            className="rounded-lg bg-primary/5 px-3 py-2 text-sm"
                           >
-                            <p className="text-xs text-gold">{c.date}</p>
-                            <p className="mt-1 text-text-dark">{c.comment}</p>
+                            <p className="text-xs text-primary">{c.date}</p>
+                            <p className="mt-1 text-text-primary">{c.comment}</p>
                           </li>
                         ))}
                       </ul>
