@@ -48,7 +48,7 @@ export function Hero() {
             1:1 맞춤 과외 플랫폼
           </p>
           <h1 className="mt-6 font-sans text-4xl font-bold leading-[1.15] text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
-            아이마다 맞는
+            학생마다 맞는
             <br />
             선생님이 다릅니다
           </h1>

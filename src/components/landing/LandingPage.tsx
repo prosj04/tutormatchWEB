@@ -274,52 +274,46 @@ export function LandingPage() {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] items-center px-6 pt-16 pb-16 md:pt-[100px]"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pt-16 pb-32 text-center md:pt-[100px]"
           style={{ background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" }}
         >
           <div className="absolute inset-0 bg-black/20" />
 
-          <div className="relative mx-auto grid w-full max-w-6xl animate-fade-in gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center lg:gap-16">
-
-            {/* ── Left: stat blocks ── */}
-            <div className="flex flex-col gap-4 lg:order-first order-last">
-              {stats.map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-[20px] border border-white/10 bg-white/8 px-7 py-7 backdrop-blur-sm"
-                >
-                  <p className="text-[clamp(2.8rem,5vw,4.5rem)] font-black leading-none tracking-tight text-primary">
-                    {s.value}
-                  </p>
-                  <p className="mt-2 text-base font-medium text-white/60">{s.label}</p>
-                </div>
-              ))}
+          {/* centred content */}
+          <div className="relative mx-auto max-w-5xl animate-fade-in">
+            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
+              {"아이마다 맞는\n선생님이 다릅니다"}
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
+              10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/dashboard/consultation"
+                className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
+              >
+                무료 상담 신청
+              </Link>
+              <Link
+                href="/tutors"
+                className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
+              >
+                선생님 둘러보기
+              </Link>
             </div>
+          </div>
 
-            {/* ── Right: headline + CTA ── */}
-            <div className="order-first lg:order-last">
-              <h1 className="whitespace-pre-line text-[clamp(2.4rem,5.5vw,5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
-                {"아이마다 맞는\n선생님이 다릅니다"}
-              </h1>
-              <p className="mt-6 max-w-lg text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
-                10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/dashboard/consultation"
-                  className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
-                >
-                  무료 상담 신청
-                </Link>
-                <Link
-                  href="/tutors"
-                  className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
-                >
-                  선생님 둘러보기
-                </Link>
+          {/* ── Stats — pinned to hero bottom ── */}
+          <div className="absolute bottom-8 left-0 right-0 flex flex-wrap justify-center gap-4 px-5">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="flex flex-col items-center rounded-2xl border border-white/15 bg-white/10 px-8 py-5 backdrop-blur-sm"
+              >
+                <span className="text-3xl font-black leading-none text-primary md:text-4xl">{s.value}</span>
+                <span className="mt-1.5 text-sm font-medium text-white/70">{s.label}</span>
               </div>
-            </div>
-
+            ))}
           </div>
         </section>
 
@@ -449,12 +443,8 @@ export function LandingPage() {
                     key={`${teacher.name}-${index}`}
                     className="w-[260px] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm md:w-[300px]"
                   >
-                    {/* subject badge */}
-                    <span className="rounded-xl bg-primary/10 px-3 py-1 text-xs font-black text-primary">
-                      {teacher.subject}
-                    </span>
                     {/* teacher photo */}
-                    <div className="mx-auto mt-4 h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
+                    <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                       <Image
                         src={teacher.image}
                         alt={teacher.name}
@@ -463,14 +453,18 @@ export function LandingPage() {
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
+                    {/* name + subject inline */}
+                    <h3 className="mt-4 text-lg font-black text-neutral-100">
+                      {teacher.name} 선생님
+                      <span className="ml-1.5 text-sm font-bold text-primary">· {teacher.subject}</span>
+                    </h3>
                     {/* highlight */}
                     <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
                       {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
                       <span className="text-primary">{teacher.highlight.split(" ").slice(-2).join(" ")}</span>
                     </p>
-                    {/* career bullets */}
-                    <ul className="mt-4 space-y-2 text-xs font-medium text-neutral-50">
+                    {/* career list */}
+                    <ul className="mt-4 space-y-1.5 text-xs font-medium text-neutral-50">
                       {teacher.careers.map((c) => (
                         <li key={c}>{c}</li>
                       ))}
@@ -515,7 +509,7 @@ export function LandingPage() {
         </section>
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
-        <section id="process" className="bg-neutral-10 py-12 md:py-16">
+        <section id="process" className="bg-neutral-10 pt-16 pb-0 md:pt-20">
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
             <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
@@ -526,7 +520,7 @@ export function LandingPage() {
             </p>
           </div>
           {/* horizontal scroll driven by vertical scroll */}
-          <div ref={wrapperRef} className="relative mt-10 h-[3000px] md:h-[2400px]">
+          <div ref={wrapperRef} className="relative mt-8 h-[2600px] md:h-[2200px]">
             <div className="sticky top-0 flex h-screen items-center overflow-hidden">
               <div
                 ref={cardsRef}
@@ -535,20 +529,23 @@ export function LandingPage() {
                 {steps.map((step) => (
                   <article
                     key={step.number}
-                    className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[400px]"
+                    className="w-[300px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[420px]"
                   >
-                    <div className="relative h-[160px] w-full md:h-[200px]">
+                    <div className="relative h-[180px] w-full md:h-[220px]">
                       <Image
                         src={step.img}
                         alt={step.title}
                         fill
                         className="object-cover"
-                        sizes="(max-width:768px) 280px, 400px"
+                        sizes="(max-width:768px) 300px, 420px"
                       />
-                      {/* subtle overlay so text on top is readable */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      {/* step number overlaid on image bottom-left */}
+                      <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
+                        {step.number}
+                      </span>
                     </div>
-                    <div className="p-5 md:p-6">
+                    <div className="p-6 md:p-7">
                       <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
                       <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
                     </div>
