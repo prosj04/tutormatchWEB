@@ -15,6 +15,12 @@ const tabs = [
   { id: "pricing",    label: "요금제" },
 ];
 
+const stats = [
+  { value: "500+",    label: "누적 상담" },
+  { value: "1,200+",  label: "매칭 완료" },
+  { value: "98%",     label: "학생 만족도" },
+];
+
 const results = [
   ["고2 학생", "수학 5등급→", "2등급으로 상승"],
   ["중3 학생", "영어 64점→",  "87점으로 상승"],
@@ -151,7 +157,7 @@ function useScrollLandingState() {
 
 function useHorizontalScroll() {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef  = useRef<HTMLDivElement | null>(null);
+  const cardsRef   = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -179,17 +185,14 @@ function useHorizontalScroll() {
 
 /* ─────────────────────────────────────────── sub-components ── */
 
-/* Spiky (5-pointed star) punch-hole pattern along bottom of pricing card */
-const STAR_PATH = "polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)";
-
+/** Rounded-rectangle perforations along the card bottom (ticket effect, no stars) */
 function PunchRow() {
   return (
-    <div className="absolute -bottom-3.5 left-0 flex w-full justify-around px-1">
-      {Array.from({ length: 18 }).map((_, i) => (
+    <div className="absolute -bottom-3 left-0 flex w-full justify-around px-2">
+      {Array.from({ length: 20 }).map((_, i) => (
         <span
           key={i}
-          className="h-7 w-7 shrink-0 bg-[#F4F4F5]"
-          style={{ clipPath: STAR_PATH }}
+          className="h-6 w-3.5 shrink-0 rounded-[5px] bg-neutral-10"
         />
       ))}
     </div>
@@ -214,23 +217,24 @@ function PricingCard({
   active?: boolean;
 }) {
   return (
+    /* h-full so the grid stretches both cards to equal height */
     <article
-      className={`${active ? "block" : "hidden md:block"} overflow-hidden rounded-[28px] bg-neutral-10`}
+      className={`${active ? "flex" : "hidden md:flex"} h-full flex-col overflow-hidden rounded-[28px] bg-neutral-10`}
     >
-      {/* top "ripped" gap */}
-      <div className="h-10 rounded-t-[28px] bg-neutral-10" />
-      <div className="relative flex flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-14 text-white md:p-8 md:pb-16">
+      {/* top ripped gap */}
+      <div className="h-10 shrink-0 rounded-t-[28px] bg-neutral-10" />
+      {/* main card body — flex-1 so it fills remaining height */}
+      <div className="relative flex flex-1 flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-14 text-white md:p-8 md:pb-16">
         {recommended && (
-          <span className="absolute right-7 top-7 rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+          <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
             추천
           </span>
         )}
         <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
         <h3 className="mt-4 text-2xl font-black">{title}</h3>
-        {/* price — nowrap prevents awkward line break */}
-        <p className="mt-4 whitespace-nowrap text-5xl font-black tracking-tight md:text-6xl">{price}</p>
-        <p className="mt-3 text-sm text-neutral-40">{subtitle}</p>
-        <ul className="mt-8 space-y-3 text-sm font-medium leading-relaxed text-neutral-30">
+        <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight md:text-5xl">{price}</p>
+        <p className="mt-2 text-sm text-neutral-40">{subtitle}</p>
+        <ul className="mt-7 space-y-3 text-sm font-medium leading-relaxed text-neutral-30">
           {features.map((f) => (
             <li key={f} className="flex gap-3">
               <span className="text-primary">·</span>
@@ -238,9 +242,11 @@ function PricingCard({
             </li>
           ))}
         </ul>
+        {/* mt-auto pushes CTA to bottom regardless of feature count */}
         <Link
           href={`/checkout?sessions=${sessions}&tutor=1`}
-          className="mt-8 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
+          className="mt-auto inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
+          style={{ marginTop: "auto", paddingTop: "1rem" }}
         >
           이 플랜으로 시작
         </Link>
@@ -265,45 +271,60 @@ export function LandingPage() {
 
       <main className="text-neutral-100">
 
-        {/* ── HERO ─────────────────────────────────── */}
+        {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] items-center justify-center px-6 pt-16 text-center md:pt-[100px]"
-          style={{ background: "linear-gradient(135deg,#111111 0%,#2d2d2d 100%)" }}
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pt-16 pb-24 text-center md:pt-[100px]"
+          style={{ background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" }}
         >
           <div className="absolute inset-0 bg-black/20" />
+
+          {/* centred content */}
           <div className="relative mx-auto max-w-5xl animate-fade-in">
-            <h1 className="whitespace-pre-line text-5xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-7xl lg:text-8xl xl:text-9xl">
+            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
               {"아이마다 맞는\n선생님이 다릅니다"}
             </h1>
-            <p className="mx-auto mt-8 max-w-2xl text-lg font-medium leading-relaxed text-neutral-30 md:text-xl">
+            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
               10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/dashboard/consultation"
-                className="rounded-full bg-primary px-8 py-4 text-base font-black text-white shadow-lg transition hover:bg-primary/90"
+                className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
               >
                 무료 상담 신청
               </Link>
               <Link
                 href="/tutors"
-                className="rounded-full border border-white/30 px-8 py-4 text-base font-black text-white transition hover:bg-white/10"
+                className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
                 선생님 둘러보기
               </Link>
             </div>
           </div>
+
+          {/* ── Stats pills — pinned to hero bottom ── */}
+          <div className="absolute bottom-8 left-0 right-0 flex flex-wrap justify-center gap-3 px-5">
+            {stats.map((s) => (
+              <div
+                key={s.label}
+                className="flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-sm"
+              >
+                <span className="text-sm font-black text-primary md:text-base">{s.value}</span>
+                <span className="text-sm font-medium text-white/70">{s.label}</span>
+              </div>
+            ))}
+          </div>
         </section>
 
-        {/* ── STICKY TAB NAV ───────────────────────── */}
+        {/* ═══ STICKY TAB NAV ══════════════════════════ */}
         <nav className="sticky top-16 z-40 border-b border-neutral-20 bg-white shadow-sm md:top-[100px]">
           <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-5">
             {tabs.map((tab) => (
               <a
                 key={tab.id}
                 href={`#${tab.id}`}
-                className={`relative shrink-0 px-5 py-4 text-sm transition md:px-8 ${
+                className={`relative shrink-0 px-5 py-4 text-sm transition md:px-7 ${
                   activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-40"
                 }`}
               >
@@ -318,28 +339,27 @@ export function LandingPage() {
           </div>
         </nav>
 
-        {/* ── RESULTS CAROUSEL (intro) ─────────────── */}
-        {/* light bg — dark text */}
+        {/* ═══ RESULTS CAROUSEL (intro) ════════════════ */}
         <section id="intro" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">RESULTS</p>
-            <h2 className="mt-3 text-4xl font-black leading-tight tracking-[-0.03em] text-neutral-100 md:text-5xl lg:text-6xl">
+            <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
               <span className="text-primary">결과로 증명</span>합니다
             </h2>
           </div>
-          <div className="animation-container mt-12 overflow-hidden">
+          <div className="animation-container mt-10 overflow-hidden">
             <div className="animate-slide flex w-max gap-5 px-5 [--speed:28s]">
               {doubledResults.map(([student, before, after], index) => (
                 <article
                   key={`${student}-${index}`}
-                  className="w-[280px] shrink-0 overflow-hidden rounded-[24px] border border-neutral-20 bg-white shadow-sm md:w-[340px]"
+                  className="w-[260px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[320px]"
                 >
-                  <div className="flex h-40 items-center justify-center bg-gradient-to-br from-primary/90 to-accent/80 p-6">
-                    <span className="text-4xl font-black text-white/20">RESULT</span>
+                  <div className="flex h-36 items-center justify-center bg-gradient-to-br from-primary/90 to-accent/80 p-6">
+                    <span className="text-3xl font-black text-white/20">RESULT</span>
                   </div>
-                  <div className="p-6">
+                  <div className="p-5">
                     <p className="text-xs font-bold uppercase tracking-wider text-neutral-40">{student}</p>
-                    <p className="mt-3 text-xl font-black leading-snug text-neutral-100">
+                    <p className="mt-2 text-lg font-black leading-snug text-neutral-100">
                       {before}
                       <span className="text-primary">{after}</span>
                     </p>
@@ -350,49 +370,101 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── TEACHERS ─────────────────────────────── */}
-        {/* dark bg maintained */}
-        <section id="teachers" className="overflow-hidden bg-neutral-100 py-20 text-white md:py-28">
-          <div className="mx-auto grid max-w-[1200px] gap-12 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+        {/* ═══ TESTIMONIALS — moved here, between results and teachers ═══ */}
+        <section id="testimonials" className="bg-white py-20 md:py-28">
+          <div className="mx-auto max-w-[1200px] px-5">
+            <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
+            <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+              학습 후기
+            </h2>
+            <div className="mt-10 space-y-5">
+              {testimonials.map((t) => (
+                <article
+                  key={t.info}
+                  className="grid overflow-hidden rounded-[24px] border border-neutral-20 bg-neutral-10 shadow-sm md:grid-cols-[1fr_340px]"
+                >
+                  <div className="p-8 md:p-10">
+                    {/* Quote mark SVG — not a star */}
+                    <svg width="40" height="32" viewBox="0 0 48 38" fill="none" className="text-primary">
+                      <path
+                        d="M18.5 0C7.8 5.1 1.7 12.8 0 23.1C-1.1 31.1 3.3 37.3 10.9 37.3C16.2 37.3 20.1 33.7 20.1 28.6C20.1 24 17.1 20.7 12.5 20.1C14 14.9 17.5 10.9 23 8L18.5 0ZM43.2 0C32.5 5.1 26.4 12.8 24.7 23.1C23.6 31.1 28 37.3 35.6 37.3C40.9 37.3 44.8 33.7 44.8 28.6C44.8 24 41.8 20.7 37.2 20.1C38.7 14.9 42.2 10.9 47.7 8L43.2 0Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <p className="mt-6 text-lg font-black leading-relaxed text-neutral-100 md:text-xl lg:text-2xl">
+                      {t.quote}
+                    </p>
+                    <p className="mt-6 text-sm font-bold text-neutral-50">{t.info}</p>
+                  </div>
+                  <div className="relative min-h-[240px]">
+                    <Image
+                      src={t.img}
+                      alt={t.info}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width:768px) 100vw, 340px"
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ TEACHERS — light bg ═════════════════════ */}
+        <section id="teachers" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
+          <div className="mx-auto grid max-w-[1200px] gap-10 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+            {/* sticky heading column */}
             <div className="lg:sticky lg:top-40 lg:self-start">
               <p className="text-sm font-black uppercase tracking-wider text-primary">TEACHERS</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.03em] md:text-5xl lg:text-6xl">
+              <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
                 명문대 출신부터
                 <br />
                 <span className="text-primary">경력 5년 이상</span>
                 <br />
                 전문가까지
               </h2>
-              <p className="mt-5 text-base font-medium leading-relaxed text-neutral-40">
+              <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
                 학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.
               </p>
+              <Link
+                href="/tutors"
+                className="mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+              >
+                전체 선생님 보기
+              </Link>
             </div>
+
+            {/* scrolling teacher cards — light card style */}
             <div className="overflow-hidden">
-              <div className="animate-slide flex w-max gap-5 [--speed:32s]">
+              <div className="animate-slide flex w-max gap-5 [--speed:34s]">
                 {doubledTeachers.map((teacher, index) => (
                   <article
                     key={`${teacher.name}-${index}`}
-                    className="w-[280px] shrink-0 rounded-[24px] border border-neutral-80 bg-neutral-90 p-6 md:w-[320px]"
+                    className="w-[260px] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 shadow-sm md:w-[300px]"
                   >
-                    <span className="rounded-full border border-neutral-80 px-3 py-1 text-xs font-bold text-white">
+                    {/* subject badge */}
+                    <span className="rounded-xl bg-primary/10 px-3 py-1 text-xs font-black text-primary">
                       {teacher.subject}
                     </span>
-                    <h3 className="mt-5 text-xl font-black">{teacher.name} 선생님</h3>
-                    {/* real teacher photo */}
-                    <div className="mx-auto mt-5 h-28 w-28 overflow-hidden rounded-full ring-4 ring-primary/40">
+                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
+                    {/* teacher photo */}
+                    <div className="mx-auto mt-4 h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                       <Image
                         src={teacher.image}
                         alt={teacher.name}
-                        width={112}
-                        height={112}
+                        width={96}
+                        height={96}
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <p className="mt-6 text-lg font-black leading-snug">
+                    {/* highlight */}
+                    <p className="mt-5 text-base font-black leading-snug text-neutral-100">
                       {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
                       <span className="text-primary">{teacher.highlight.split(" ").slice(-2).join(" ")}</span>
                     </p>
-                    <ul className="mt-6 space-y-2.5 text-sm font-medium text-neutral-40">
+                    {/* career bullets */}
+                    <ul className="mt-5 space-y-2 text-sm font-medium text-neutral-50">
                       {teacher.careers.map((c) => (
                         <li key={c} className="flex gap-2">
                           <span className="text-primary">·</span>
@@ -407,32 +479,31 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── MANAGEMENT ───────────────────────────── */}
-        {/* light bg */}
-        <section id="management" className="bg-neutral-10 py-20 md:py-28">
+        {/* ═══ MANAGEMENT ══════════════════════════════ */}
+        <section id="management" className="bg-white py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">LEARNING CARE</p>
-                <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.03em] text-neutral-100 md:text-5xl lg:text-6xl">
+                <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
                   수업 밖에서도
                   <br />
                   이어지는 학습 관리
                 </h2>
-                <p className="mt-5 max-w-lg text-base font-medium leading-relaxed text-neutral-50">
+                <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-neutral-50">
                   진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 {[
-                  { label: "진도 관리",  desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다." },
-                  { label: "질문 관리",  desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다." },
-                  { label: "리포트",     desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다." },
+                  { label: "진도 관리", desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다." },
+                  { label: "질문 관리", desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다." },
+                  { label: "리포트",    desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다." },
                 ].map((item, index) => (
-                  <div key={item.label} className="rounded-[24px] bg-white p-6 shadow-sm">
-                    <p className="text-4xl font-black text-primary">0{index + 1}</p>
-                    <h3 className="mt-6 text-lg font-black text-neutral-100">{item.label}</h3>
-                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-50">{item.desc}</p>
+                  <div key={item.label} className="rounded-[20px] bg-neutral-10 p-6">
+                    <p className="text-3xl font-black text-primary">0{index + 1}</p>
+                    <h3 className="mt-5 text-base font-black text-neutral-100">{item.label}</h3>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -440,17 +511,19 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── PROCESS (horizontal scroll) ──────────── */}
-        {/* dark bg maintained */}
-        <section id="process" className="bg-neutral-90 py-20 text-white md:py-28">
+        {/* ═══ PROCESS — light bg ══════════════════════ */}
+        <section id="process" className="bg-neutral-10 py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.03em] md:text-5xl lg:text-6xl">이렇게 진행됩니다</h2>
-            <p className="mt-5 max-w-2xl text-base font-medium text-neutral-40">
+            <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+              이렇게 진행됩니다
+            </h2>
+            <p className="mt-4 max-w-2xl text-base font-medium text-neutral-50">
               상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.
             </p>
           </div>
-          <div ref={wrapperRef} className="relative mt-14 h-[3200px] md:h-[2600px]">
+          {/* horizontal scroll driven by vertical scroll */}
+          <div ref={wrapperRef} className="relative mt-12 h-[3200px] md:h-[2600px]">
             <div className="sticky top-0 flex h-screen items-center overflow-hidden">
               <div
                 ref={cardsRef}
@@ -459,26 +532,26 @@ export function LandingPage() {
                 {steps.map((step, index) => (
                   <article
                     key={step.number}
-                    className="w-[300px] shrink-0 overflow-hidden rounded-[24px] border border-neutral-80 bg-neutral-100 md:w-[420px]"
+                    className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[400px]"
                   >
-                    {/* step image */}
-                    <div className="relative h-[180px] w-full md:h-[220px]">
+                    <div className="relative h-[160px] w-full md:h-[200px]">
                       <Image
                         src={step.img}
                         alt={step.title}
                         fill
                         className="object-cover"
-                        sizes="(max-width:768px) 300px, 420px"
+                        sizes="(max-width:768px) 280px, 400px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-100/60 to-transparent" />
+                      {/* subtle overlay so text on top is readable */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                     </div>
-                    <div className="p-5 md:p-7">
-                      <span className="inline-flex rounded-full bg-primary px-4 py-1.5 text-sm font-black text-white">
+                    <div className="p-5 md:p-6">
+                      <span className="inline-flex rounded-xl bg-primary px-3.5 py-1 text-sm font-black text-white">
                         {step.number}
                       </span>
-                      <h3 className="mt-4 text-xl font-black md:text-2xl">{step.title}</h3>
-                      <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-40">{step.desc}</p>
-                      <p className="mt-8 text-6xl font-black text-white/5 md:mt-10">0{index + 1}</p>
+                      <h3 className="mt-4 text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                      <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
+                      <p className="mt-8 text-5xl font-black text-neutral-100/5">0{index + 1}</p>
                     </div>
                   </article>
                 ))}
@@ -487,25 +560,24 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── PRICING ──────────────────────────────── */}
-        {/* light bg */}
-        <section id="pricing" className="bg-neutral-10 py-20 md:py-28">
+        {/* ═══ PRICING ═════════════════════════════════ */}
+        <section id="pricing" className="bg-white py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">PRICE</p>
-                <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.03em] text-neutral-100 md:text-5xl lg:text-6xl">
+                <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
                   1:1 맞춤 과외,
                   <br />
                   월 40만원부터
                 </h2>
-                <p className="mt-5 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
+                <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
                   가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.
                 </p>
               </div>
               <div>
                 {/* mobile tab switcher */}
-                <div className="mb-5 grid grid-cols-2 rounded-full bg-white p-1 shadow-sm md:hidden">
+                <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
                   {["월 4회", "월 8회"].map((label, index) => (
                     <button
                       key={label}
@@ -519,7 +591,8 @@ export function LandingPage() {
                     </button>
                   ))}
                 </div>
-                <div className="grid gap-6 md:grid-cols-2">
+                {/* equal-height grid — items-stretch is default on grid, enforced via h-full on articles */}
+                <div className="grid items-stretch gap-6 md:grid-cols-2">
                   <PricingCard
                     title="월 4회"
                     price="400,000원"
@@ -556,26 +629,26 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── BENEFITS CTA ─────────────────────────── */}
-        {/* primary color bg — explicit text-white on h2 */}
+        {/* ═══ BENEFITS CTA ════════════════════════════ */}
         <section className="bg-primary py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
-            <h2 className="text-4xl font-black tracking-[-0.03em] text-white md:text-5xl lg:text-6xl">
+            <h2 className="text-[clamp(1.8rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-white">
               지금 신청하면 받을 수 있는 혜택이에요
             </h2>
             <div className="mt-10 grid gap-5 sm:grid-cols-3">
               {[
-                { title: "무료 상담 1회",       desc: "매니저가 직접 학생 상황을 파악합니다." },
-                { title: "매니저 직접 배정",     desc: "10년 경력 매니저가 처음부터 함께합니다." },
+                { title: "무료 상담 1회",        desc: "매니저가 직접 학생 상황을 파악합니다." },
+                { title: "매니저 직접 배정",      desc: "10년 경력 매니저가 처음부터 함께합니다." },
                 { title: "학습 리포트 무료 제공", desc: "첫 달 학습 리포트를 무료로 제공합니다." },
               ].map((b) => (
-                <div key={b.title} className="rounded-[24px] bg-white/15 p-7 backdrop-blur">
-                  <p className="text-xl font-black text-white">{b.title}</p>
+                <div key={b.title} className="rounded-[20px] bg-white/15 p-6 backdrop-blur md:p-7">
+                  <p className="text-lg font-black text-white">{b.title}</p>
                   <p className="mt-3 text-sm font-medium text-white/80">{b.desc}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-12">
+            {/* CTA button — centred */}
+            <div className="mt-12 flex justify-center">
               <Link
                 href="/dashboard/consultation"
                 className="inline-flex items-center justify-center rounded-full bg-white px-10 py-4 text-base font-black text-primary shadow-lg transition hover:bg-neutral-10"
@@ -586,55 +659,16 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── TESTIMONIALS ─────────────────────────── */}
-        {/* light bg */}
-        <section id="testimonials" className="bg-neutral-10 py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.03em] text-neutral-100 md:text-5xl">학습 후기</h2>
-            <div className="mt-10 space-y-6">
-              {testimonials.map((t) => (
-                <article
-                  key={t.info}
-                  className="grid overflow-hidden rounded-[28px] border border-neutral-20 bg-white shadow-sm md:grid-cols-[1fr_360px]"
-                >
-                  <div className="p-8 md:p-12">
-                    <svg width="44" height="34" viewBox="0 0 48 38" fill="none" className="text-primary">
-                      <path
-                        d="M18.5 0C7.8 5.1 1.7 12.8 0 23.1C-1.1 31.1 3.3 37.3 10.9 37.3C16.2 37.3 20.1 33.7 20.1 28.6C20.1 24 17.1 20.7 12.5 20.1C14 14.9 17.5 10.9 23 8L18.5 0ZM43.2 0C32.5 5.1 26.4 12.8 24.7 23.1C23.6 31.1 28 37.3 35.6 37.3C40.9 37.3 44.8 33.7 44.8 28.6C44.8 24 41.8 20.7 37.2 20.1C38.7 14.9 42.2 10.9 47.7 8L43.2 0Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <p className="mt-7 text-xl font-black leading-relaxed text-neutral-100 md:text-2xl">{t.quote}</p>
-                    <p className="mt-7 text-sm font-bold text-neutral-50">{t.info}</p>
-                  </div>
-                  {/* real photo instead of numbered box */}
-                  <div className="relative min-h-[260px]">
-                    <Image
-                      src={t.img}
-                      alt={t.info}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width:768px) 100vw, 360px"
-                    />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── FAQ ──────────────────────────────────── */}
-        {/* dark bg maintained — flat list (no accordion) */}
+        {/* ═══ FAQ ═════════════════════════════════════ */}
         <section id="faq" className="bg-neutral-80 py-20 text-white md:py-28">
           <div className="mx-auto max-w-[900px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
-            <h2 className="mt-4 text-4xl font-black text-white md:text-5xl">자주 묻는 질문</h2>
+            <h2 className="mt-4 text-[clamp(2rem,4vw,3rem)] font-black text-white">자주 묻는 질문</h2>
             <div className="mt-10 divide-y divide-white/10">
               {faqs.map(({ q, a }) => (
-                <div key={q} className="py-8">
-                  <p className="text-lg font-black text-white md:text-xl">Q. {q}</p>
-                  <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-30 md:text-base">
+                <div key={q} className="py-7">
+                  <p className="text-base font-black text-white md:text-lg">Q. {q}</p>
+                  <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-30 md:text-base">
                     A. {a}
                   </p>
                 </div>
@@ -643,51 +677,25 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* ── STATS ────────────────────────────────── */}
-        {/* light bg */}
-        <section className="bg-neutral-10 py-20 text-center md:py-28">
-          <div className="mx-auto max-w-[1000px] px-5">
-            <p className="text-4xl font-black italic text-neutral-100">Concord.</p>
-            <h2 className="mx-auto mt-6 max-w-3xl bg-gradient-to-r from-primary to-accent bg-clip-text text-3xl font-black leading-tight tracking-[-0.03em] text-transparent md:text-5xl">
-              학생들에게 꼭 필요한 수업을 제공합니다
-            </h2>
-            <div className="mt-14 grid gap-8 sm:grid-cols-3">
-              {[
-                ["누적 상담", "500+"],
-                ["매칭 완료", "1,200+"],
-                ["학생 만족도", "98%"],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-[24px] bg-white py-10 shadow-sm">
-                  <p className="bg-gradient-to-r from-primary to-accent bg-clip-text text-5xl font-black text-transparent">
-                    {value}
-                  </p>
-                  <p className="mt-3 text-sm font-black text-neutral-50">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOOTER ───────────────────────────────── */}
-        {/* light bg */}
+        {/* ═══ FOOTER ══════════════════════════════════ */}
         <footer className="border-t border-neutral-20 bg-neutral-10">
           <div className="mx-auto max-w-[1200px] px-5 py-16">
             <div className="grid gap-10 border-b border-neutral-20 pb-12 md:grid-cols-2">
               <div>
-                <h2 className="text-2xl font-black text-neutral-100">상담이 필요하신가요?</h2>
-                <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-50">
+                <h2 className="text-xl font-black text-neutral-100">상담이 필요하신가요?</h2>
+                <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-50">
                   채팅문의 10:00~22:00 · 전화문의 평일 10:00~19:00
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-5 flex flex-wrap gap-3">
                   <Link
                     href="/dashboard/consultation"
-                    className="rounded-full bg-primary px-5 py-3 text-sm font-black text-white transition hover:bg-primary/90"
+                    className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-white transition hover:bg-primary/90"
                   >
                     채팅 문의
                   </Link>
                   <a
                     href="tel:010-0000-0000"
-                    className="rounded-full border border-neutral-20 bg-white px-5 py-3 text-sm font-black text-neutral-100 transition hover:border-neutral-30"
+                    className="rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-neutral-30"
                   >
                     전화 문의
                   </a>
@@ -696,9 +704,9 @@ export function LandingPage() {
               <div className="grid grid-cols-2 gap-8 text-sm font-bold text-neutral-50">
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">서비스</p>
-                  <Link href="/tutors"                    className="block transition hover:text-primary">강사진</Link>
-                  <Link href="/pricing"                   className="block transition hover:text-primary">요금제</Link>
-                  <Link href="/dashboard/consultation"    className="block transition hover:text-primary">상담 신청</Link>
+                  <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
+                  <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
+                  <Link href="/dashboard/consultation" className="block transition hover:text-primary">상담 신청</Link>
                 </div>
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">SNS</p>
@@ -709,20 +717,15 @@ export function LandingPage() {
               </div>
             </div>
             <div className="pt-8 text-xs font-medium leading-relaxed text-neutral-40">
-              <p className="flex flex-wrap items-start justify-between gap-4">
-                <span>
-                  상호 주식회사 컨코드에듀케이션 | 대표 홍길동 | 사업자등록번호 123-45-67890
-                  <br className="hidden sm:block" />
-                  주소 서울특별시 강남구 테헤란로 000, 00층
-                </span>
+              <p>
+                상호 주식회사 컨코드에듀케이션 · 대표 홍길동 · 사업자등록번호 123-45-67890
+                <br className="hidden sm:block" />
+                주소 서울특별시 강남구 테헤란로 000, 00층
               </p>
-              <p className="mt-2">이용약관 | 개인정보처리방침 | 환불정책</p>
+              <p className="mt-2">이용약관 · 개인정보처리방침 · 환불정책</p>
               <div className="mt-6 flex items-center justify-between">
                 <p>© {new Date().getFullYear()} Concord Private Tutoring. All rights reserved.</p>
-                <Link
-                  href="/teacher-portal"
-                  className="text-[11px] text-neutral-40 transition hover:text-primary"
-                >
+                <Link href="/teacher-portal" className="text-[11px] text-neutral-40 transition hover:text-primary">
                   선생님이신가요?
                 </Link>
               </div>
@@ -731,13 +734,11 @@ export function LandingPage() {
         </footer>
       </main>
 
-      {/* ── FLOATING CTA ─────────────────────────── */}
+      {/* ═══ FLOATING CTA ════════════════════════════ */}
       <Link
         href="/dashboard/consultation"
-        className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary px-6 py-4 text-sm font-black text-white shadow-2xl transition duration-300 ${
-          showFloating
-            ? "translate-y-0 opacity-100"
-            : "pointer-events-none translate-y-4 opacity-0"
+        className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 ${
+          showFloating ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
         무료 상담 신청
