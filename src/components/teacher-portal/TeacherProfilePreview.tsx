@@ -75,7 +75,15 @@ export function TeacherProfilePreview({
           <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
             {photoSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={photoSrc} alt={name} className="h-full w-full object-cover" />
+              <img
+                src={photoSrc}
+                alt={name}
+                width={96}
+                height={112}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-3xl text-text-muted">
                 👤

@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getTutorById, tutors } from "@/lib/tutors-data";
 import { TutorProfile } from "@/components/tutors/TutorProfile";
 
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
 type PageProps = {
   params: { id: string };
 };
