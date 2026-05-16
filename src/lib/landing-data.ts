@@ -6,6 +6,8 @@ function toShowcase(t: (typeof tutors)[0]): ShowcaseTutor {
     id: t.id,
     name: t.name,
     subject: t.subjects.slice(0, 2).join(" · "),
+    subjects: t.subjects.slice(0, 3),
+    tagline: t.tagline,
     background: t.credentials.find((c) => c.category === "학력")?.title ?? "",
     rating: t.rating,
     image: t.image,

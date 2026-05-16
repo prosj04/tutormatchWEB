@@ -1,108 +1,98 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { heroSampleTutor } from "@/lib/landing-data";
+
+const CARDS = [
+  {
+    icon: "💬",
+    title: "1:1 맞춤 상담",
+    body: "우리 아이의 성향과 목표를 파악합니다",
+    className: "z-30 -rotate-2",
+    delay: 0.2,
+  },
+  {
+    icon: "✨",
+    title: "최적의 선생님 매칭",
+    body: "수백 명 중 딱 맞는 한 명",
+    className: "z-20 mt-8 rotate-1 md:ml-8",
+    delay: 0.4,
+  },
+  {
+    icon: "📈",
+    title: "체계적인 학습 관리",
+    body: "매니저가 지속적으로 모니터링",
+    className: "z-10 mt-8 -rotate-1 md:ml-16",
+    delay: 0.6,
+  },
+] as const;
 
 export function Hero() {
-  const t = heroSampleTutor;
-
   return (
-    <section className="relative min-h-[100dvh] bg-background pt-16">
-      <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col px-8 py-24">
-        <div className="grid flex-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-16"
-            >
-              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
-                01 메인
-              </p>
-              <h1 className="mb-4 text-5xl font-black leading-tight tracking-tight text-text-dark sm:text-6xl">
-                검증된 선생님,
-                <br />
-                체계적인 학습관리
-              </h1>
-              <p className="text-lg text-text-mid">
-                최상위 강사진과 1:1 맞춤 수업을 경험하세요
-              </p>
-            </motion.div>
+    <section className="relative min-h-[100dvh] overflow-hidden bg-navy pt-16">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        aria-hidden
+      >
+        <div className="absolute -right-1/4 top-0 h-[120%] w-1 rotate-12 bg-gold md:-right-[10%]" />
+      </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.15 }}
-              className="flex flex-col gap-4 sm:flex-row sm:items-center"
+      <div className="relative mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col px-6 py-16 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:py-24">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          className="flex-1 text-center lg:text-left"
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            1:1 맞춤 과외 플랫폼
+          </p>
+          <h1 className="mt-6 font-display text-4xl font-bold leading-[1.15] text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
+            아이마다 맞는
+            <br />
+            선생님이 다릅니다
+          </h1>
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-gray-300 sm:text-lg lg:mx-0 lg:max-w-md">
+            10년 경력의 매니저가 직접 상담하고,
+            <br className="hidden sm:inline" />
+            우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+          </p>
+          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+            <Link
+              href="/dashboard/consultation"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-gold px-8 py-4 text-base font-semibold text-navy shadow-lg transition hover:bg-gold/90 sm:w-auto"
             >
-              <Link
-                href="/tutors"
-                className="inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
-              >
-                강사 둘러보기
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center justify-center rounded-2xl border border-gray-300 px-8 py-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-white"
-              >
-                수업 상담하기
-              </Link>
-            </motion.div>
+              무료 상담 예약하기
+            </Link>
+            <Link
+              href="/tutors"
+              className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-white/80 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"
+            >
+              선생님 둘러보기
+            </Link>
           </div>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none"
-          >
-            <div className="rounded-2xl bg-white p-8 shadow-sm">
-              <div className="flex gap-5">
-                <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-28">
-                  <Image
-                    src={t.image}
-                    alt={`${t.name} 프로필 사진`}
-                    fill
-                    className="object-cover"
-                    sizes="112px"
-                    priority
-                  />
-                </div>
-                <div className="min-w-0 flex-1 pt-1">
-                  <p className="text-xs font-medium uppercase tracking-wider text-text-mid">
-                    Featured tutor
-                  </p>
-                  <p className="mt-2 text-2xl font-black text-text-dark">{t.name}</p>
-                  <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
-                    {t.subject.split(" · ")[0] ?? t.subject}
-                  </span>
-                  <p className="mt-3 text-xs leading-relaxed text-text-light">
-                    {t.background}
-                  </p>
-                  <div className="mt-4 flex items-center gap-2 text-sm text-text-mid">
-                    <span className="text-primary">★</span>
-                    <span className="font-semibold text-text-dark">{t.rating}</span>
-                    <span className="text-text-light">·</span>
-                    <span className="text-text-light">응답률 상위 5%</span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-8 border-t border-gray-100 pt-6">
-                <p className="text-xs uppercase tracking-wider text-text-light">
-                  Next availability
-                </p>
-                <p className="mt-2 text-lg font-bold text-text-dark">이번 주 화 · 목 저녁</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-          <span className="text-text-light">01 / 06</span>
-          <span className="text-text-mid">검증 강사 · 맞춤 일정 · 학습 리포트</span>
+        <div className="relative mx-auto mt-14 w-full max-w-sm flex-1 lg:mt-0 lg:max-w-md">
+          {CARDS.map((card) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 40, x: 20 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              transition={{ duration: 0.55, delay: card.delay, ease: [0.22, 1, 0.36, 1] }}
+              className={`relative rounded-2xl border border-white/10 bg-white/95 p-6 shadow-xl backdrop-blur ${card.className}`}
+            >
+              <span className="text-3xl" aria-hidden>
+                {card.icon}
+              </span>
+              <p className="mt-3 font-display text-xl font-bold text-navy">
+                {card.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-text-mid">
+                {card.body}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

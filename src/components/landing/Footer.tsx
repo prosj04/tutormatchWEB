@@ -18,7 +18,7 @@ export function Footer() {
             <div>
               <p className="text-2xl font-black italic text-text-dark">Concord.</p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-text-mid">
-                검증된 강사진과 1:1 학습관리. 가정을 위한 프라이빗 튜터링 오피스.
+                매니저 상담으로 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
               </p>
             </div>
             <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-text-mid">

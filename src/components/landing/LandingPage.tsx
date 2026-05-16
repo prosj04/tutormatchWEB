@@ -2,11 +2,12 @@
 
 import { SiteHeader } from "./SiteHeader";
 import { Hero } from "./Hero";
-import { TrustBar } from "./TrustBar";
+import { Philosophy } from "./Philosophy";
 import { HowItWorks } from "./HowItWorks";
 import { TutorShowcase } from "./TutorShowcase";
-import { Features } from "./Features";
+import { TrustBar } from "./TrustBar";
 import { Testimonials } from "./Testimonials";
+import { FinalCTA } from "./FinalCTA";
 import { Footer } from "./Footer";
 
 export function LandingPage() {
@@ -15,11 +16,12 @@ export function LandingPage() {
       <SiteHeader />
       <main>
         <Hero />
-        <TrustBar />
+        <Philosophy />
         <HowItWorks />
         <TutorShowcase />
-        <Features />
+        <TrustBar />
         <Testimonials />
+        <FinalCTA />
         <Footer />
       </main>
     </>

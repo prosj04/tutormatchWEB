@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Tutor } from "@/lib/tutors-data";
-import { TutorBookingSidebar } from "./TutorBookingSidebar";
+import { TutorConsultSidebar } from "./TutorConsultSidebar";
 
 function Stars({ value }: { value: number }) {
   const full = Math.min(5, Math.round(value));
@@ -65,10 +65,6 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
               </span>
               <span className="h-3 w-px bg-gray-200" aria-hidden />
               <span>{t.region}</span>
-              <span className="h-3 w-px bg-gray-200" aria-hidden />
-              <span>
-                시간당 {t.hourlyMin}~{t.hourlyMax}만원
-              </span>
             </div>
             <Link
               href="/tutors"
@@ -176,7 +172,7 @@ export function TutorProfile({ tutor: t }: TutorProfileProps) {
             id="booking"
             className="mt-12 shrink-0 lg:sticky lg:top-24 lg:mt-0 lg:self-start"
           >
-            <TutorBookingSidebar tutorId={t.id} />
+            <TutorConsultSidebar tutorId={t.id} />
           </aside>
         </div>
       </div>

@@ -2,78 +2,81 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+import { LikeButton } from "@/components/tutors/LikeButton";
 import { FadeSection } from "./FadeSection";
 import { showcaseTutors } from "@/lib/landing-data";
 
 export function TutorShowcase() {
   return (
-    <FadeSection>
-      <section className="bg-background px-8 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-            <div>
-              <p className="mb-4 text-xs font-medium uppercase tracking-wider text-text-light">
-                04 강사진
-              </p>
-              <h2 className="text-5xl font-black leading-tight text-text-dark sm:text-6xl">
-                Tutor showcase
-              </h2>
-              <p className="mt-4 text-lg text-text-mid">대표 강사 라인업</p>
-            </div>
-            <Link
-              href="/tutors"
-              className="text-sm font-semibold text-primary underline-offset-4 transition hover:underline"
-            >
-              전체 강사 보기
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
-            {showcaseTutors.map((t, i) => {
-              const primarySubject = t.subject.split(" · ")[0] ?? t.subject;
-              return (
-                <FadeSection key={t.id} delay={i * 0.06}>
-                  <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-md">
-                    <div className="relative aspect-[4/5] w-full">
-                      <Image
-                        src={t.image}
-                        alt={t.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 100vw, 50vw"
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col p-8">
-                      <p className="text-xl font-bold text-text-dark">{t.name}</p>
-                      <span className="mt-3 inline-flex w-fit rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
-                        {primarySubject}
-                      </span>
-                      <span className="mt-3 inline-flex w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-text-mid">
-                        {t.background}
-                      </span>
-                      <div className="mt-4 flex items-center gap-2 text-sm text-text-mid">
-                        <span className="text-primary">★</span>
-                        <span className="font-semibold text-text-dark">{t.rating}</span>
-                      </div>
-                      <Link
-                        href={`/tutors/${t.id}`}
-                        className="mt-6 inline-flex w-full items-center justify-center rounded-2xl border border-gray-200 py-3 text-xs font-semibold uppercase tracking-wider text-text-dark transition hover:border-primary hover:text-primary"
-                      >
-                        프로필 보기
-                      </Link>
-                    </div>
-                  </article>
-                </FadeSection>
-              );
-            })}
-          </div>
-
-          <div className="mt-12 flex flex-col justify-between gap-4 border-t border-gray-100 pt-8 text-xs text-text-light sm:flex-row sm:items-center">
-            <span className="text-text-light">04 / 06</span>
-            <span className="text-text-mid">전원 프로필 검증 · 경력 서류 보관</span>
-          </div>
+    <section className="bg-navy px-6 py-24 md:py-28">
+      <FadeSection className="mx-auto max-w-6xl">
+        <div className="text-center">
+          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">
+            다양한 선생님을 만나보세요
+          </h2>
+          <p className="mt-4 text-base text-gray-400 md:text-lg">
+            마음에 드는 선생님을 찜해두면, 상담 시 매니저가 반영합니다.
+          </p>
         </div>
-      </section>
-    </FadeSection>
+
+        <div className="-mx-6 mt-12 flex gap-5 overflow-x-auto px-6 pb-4 snap-x snap-mandatory md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-4 lg:gap-6">
+          {showcaseTutors.map((t, i) => (
+            <motion.article
+              key={t.id}
+              initial={{ opacity: 0, x: 48 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative w-[280px] shrink-0 snap-center rounded-2xl bg-white p-6 shadow-lg md:w-auto"
+            >
+              <div className="absolute right-4 top-4">
+                <LikeButton tutorId={t.id} size="sm" />
+              </div>
+              <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full bg-gray-100">
+                <Image
+                  src={t.image}
+                  alt={t.name}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                />
+              </div>
+              <h3 className="mt-4 text-center font-display text-xl font-bold text-navy">
+                {t.name}
+              </h3>
+              <p className="mt-2 line-clamp-2 text-center text-sm text-text-mid">
+                {t.tagline}
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-1.5">
+                {t.subjects.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-medium text-navy"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+              {t.background ? (
+                <p className="mt-3 text-center text-xs text-text-light">
+                  {t.background}
+                </p>
+              ) : null}
+            </motion.article>
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link
+            href="/tutors"
+            className="inline-flex items-center justify-center rounded-2xl border-2 border-gold px-8 py-3 text-sm font-semibold text-gold transition hover:bg-gold/10"
+          >
+            선생님 전체 보기
+          </Link>
+        </div>
+      </FadeSection>
+    </section>
   );
 }
