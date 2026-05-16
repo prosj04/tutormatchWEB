@@ -1,12 +1,46 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 
 import { AppSessionProvider } from "@/components/providers/AppSessionProvider";
-import { FontLoader } from "@/components/providers/FontLoader";
 
 import "./globals.css";
 
-const FONT_HREF =
-  "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-dynamic-subset.css";
+const pretendard = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Pretendard-Regular.subset.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-Medium.subset.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-SemiBold.subset.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-Bold.subset.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-ExtraBold.subset.woff2",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-Black.subset.woff2",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,23 +57,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <head>
-        {/* Warm up the CDN connection before the font CSS is requested */}
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        {/* Preload hint so the browser queues the download as soon as possible */}
-        <link rel="preload" href={FONT_HREF} as="style" />
-        {/* Fallback for JS-disabled environments */}
-        <noscript>
-          <link rel="stylesheet" href={FONT_HREF} />
-        </noscript>
-      </head>
+    <html lang="ko" className={pretendard.variable}>
       <body className="min-h-screen">
-        <AppSessionProvider>
-          {/* Injects the font stylesheet after first render — non-blocking */}
-          <FontLoader />
-          {children}
-        </AppSessionProvider>
+        <AppSessionProvider>{children}</AppSessionProvider>
       </body>
     </html>
   );

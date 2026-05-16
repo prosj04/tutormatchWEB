@@ -10,9 +10,8 @@
   body {
     background-color: #F5F5F5;
     color: #111111;
-    /* System fonts render immediately; Pretendard swaps in once loaded */
-    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
-      Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     overflow-x: hidden;
     @apply text-base font-normal leading-relaxed antialiased;
   }

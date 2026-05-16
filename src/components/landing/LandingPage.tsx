@@ -274,46 +274,52 @@ export function LandingPage() {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pt-16 pb-24 text-center md:pt-[100px]"
+          className="relative flex min-h-[100dvh] items-center px-6 pt-16 pb-16 md:pt-[100px]"
           style={{ background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" }}
         >
           <div className="absolute inset-0 bg-black/20" />
 
-          {/* centred content */}
-          <div className="relative mx-auto max-w-5xl animate-fade-in">
-            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
-              {"아이마다 맞는\n선생님이 다릅니다"}
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
-              10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/dashboard/consultation"
-                className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
-              >
-                무료 상담 신청
-              </Link>
-              <Link
-                href="/tutors"
-                className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
-              >
-                선생님 둘러보기
-              </Link>
-            </div>
-          </div>
+          <div className="relative mx-auto grid w-full max-w-6xl animate-fade-in gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center lg:gap-16">
 
-          {/* ── Stats pills — pinned to hero bottom ── */}
-          <div className="absolute bottom-8 left-0 right-0 flex flex-wrap justify-center gap-3 px-5">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-sm"
-              >
-                <span className="text-sm font-black text-primary md:text-base">{s.value}</span>
-                <span className="text-sm font-medium text-white/70">{s.label}</span>
+            {/* ── Left: stat blocks ── */}
+            <div className="flex flex-col gap-4 lg:order-first order-last">
+              {stats.map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-[20px] border border-white/10 bg-white/8 px-7 py-7 backdrop-blur-sm"
+                >
+                  <p className="text-[clamp(2.8rem,5vw,4.5rem)] font-black leading-none tracking-tight text-primary">
+                    {s.value}
+                  </p>
+                  <p className="mt-2 text-base font-medium text-white/60">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Right: headline + CTA ── */}
+            <div className="order-first lg:order-last">
+              <h1 className="whitespace-pre-line text-[clamp(2.4rem,5.5vw,5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
+                {"아이마다 맞는\n선생님이 다릅니다"}
+              </h1>
+              <p className="mt-6 max-w-lg text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
+                10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href="/dashboard/consultation"
+                  className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
+                >
+                  무료 상담 신청
+                </Link>
+                <Link
+                  href="/tutors"
+                  className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
+                >
+                  선생님 둘러보기
+                </Link>
               </div>
-            ))}
+            </div>
+
           </div>
         </section>
 
@@ -441,13 +447,12 @@ export function LandingPage() {
                 {doubledTeachers.map((teacher, index) => (
                   <article
                     key={`${teacher.name}-${index}`}
-                    className="w-[260px] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 shadow-sm md:w-[300px]"
+                    className="w-[260px] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm md:w-[300px]"
                   >
                     {/* subject badge */}
                     <span className="rounded-xl bg-primary/10 px-3 py-1 text-xs font-black text-primary">
                       {teacher.subject}
                     </span>
-                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
                     {/* teacher photo */}
                     <div className="mx-auto mt-4 h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                       <Image
@@ -458,18 +463,16 @@ export function LandingPage() {
                         className="h-full w-full object-cover"
                       />
                     </div>
+                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
                     {/* highlight */}
-                    <p className="mt-5 text-base font-black leading-snug text-neutral-100">
+                    <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
                       {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
                       <span className="text-primary">{teacher.highlight.split(" ").slice(-2).join(" ")}</span>
                     </p>
                     {/* career bullets */}
-                    <ul className="mt-5 space-y-2 text-sm font-medium text-neutral-50">
+                    <ul className="mt-4 space-y-2 text-xs font-medium text-neutral-50">
                       {teacher.careers.map((c) => (
-                        <li key={c} className="flex gap-2">
-                          <span className="text-primary">·</span>
-                          {c}
-                        </li>
+                        <li key={c}>{c}</li>
                       ))}
                     </ul>
                   </article>
@@ -512,7 +515,7 @@ export function LandingPage() {
         </section>
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
-        <section id="process" className="bg-neutral-10 py-20 md:py-28">
+        <section id="process" className="bg-neutral-10 py-12 md:py-16">
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
             <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
@@ -523,13 +526,13 @@ export function LandingPage() {
             </p>
           </div>
           {/* horizontal scroll driven by vertical scroll */}
-          <div ref={wrapperRef} className="relative mt-12 h-[3200px] md:h-[2600px]">
+          <div ref={wrapperRef} className="relative mt-10 h-[3000px] md:h-[2400px]">
             <div className="sticky top-0 flex h-screen items-center overflow-hidden">
               <div
                 ref={cardsRef}
                 className="flex gap-5 px-5 transition-transform duration-100 will-change-transform md:gap-6 md:px-10"
               >
-                {steps.map((step, index) => (
+                {steps.map((step) => (
                   <article
                     key={step.number}
                     className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[400px]"
@@ -546,12 +549,8 @@ export function LandingPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                     </div>
                     <div className="p-5 md:p-6">
-                      <span className="inline-flex rounded-xl bg-primary px-3.5 py-1 text-sm font-black text-white">
-                        {step.number}
-                      </span>
-                      <h3 className="mt-4 text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                      <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
                       <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
-                      <p className="mt-8 text-5xl font-black text-neutral-100/5">0{index + 1}</p>
                     </div>
                   </article>
                 ))}

@@ -31,8 +31,8 @@ const config: Config = {
         border: "#E5E7EB",
       },
       fontFamily: {
-        sans: ["Pretendard", "-apple-system", "sans-serif"],
-        display: ["Pretendard", "-apple-system", "sans-serif"],
+        sans: ["var(--font-pretendard)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        display: ["var(--font-pretendard)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
       },
       maxWidth: {
         content: "72rem",
