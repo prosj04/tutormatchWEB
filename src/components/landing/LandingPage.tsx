@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { LandingCmsContent } from "@/lib/cms";
 import { SiteHeader } from "./SiteHeader";
 
 /* ─────────────────────────────────────────── data ── */
@@ -271,12 +272,49 @@ function PricingCard({
 
 /* ─────────────────────────────────────────── main ── */
 
-export function LandingPage() {
+export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
   const { wrapperRef, cardsRef }    = useHorizontalScroll();
   const [priceTab, setPriceTab]     = useState(0);
   const doubledResults  = useMemo(() => [...results, ...results], []);
   const doubledTeachers = useMemo(() => [...teachers, ...teachers], []);
+  const getCmsValue = (section: string, key: string, fallback: string) =>
+    cms?.siteContent[section]?.[key] ?? fallback;
+  const cmsStats = [
+    {
+      value: getCmsValue("stats", "stat1_number", stats[0].value),
+      label: getCmsValue("stats", "stat1_label", stats[0].label),
+    },
+    {
+      value: getCmsValue("stats", "stat2_number", stats[1].value),
+      label: getCmsValue("stats", "stat2_label", stats[1].label),
+    },
+    {
+      value: getCmsValue("stats", "stat3_number", stats[2].value),
+      label: getCmsValue("stats", "stat3_label", stats[2].label),
+    },
+  ];
+  const cmsTestimonials =
+    cms && cms.testimonials.length > 0 ? cms.testimonials : testimonials;
+  const cmsFaqs = cms && cms.faqs.length > 0 ? cms.faqs : faqs;
+  const cmsSteps = steps.map((step, index) => {
+    const stepNumber = index + 1;
+    return stepNumber <= 3
+      ? {
+          ...step,
+          title: getCmsValue("features", `step${stepNumber}_title`, step.title),
+          desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
+        }
+      : step;
+  });
+  const heroBgImage = getCmsValue("hero", "bg_image_url", "");
+  const heroStyle = heroBgImage
+    ? {
+        backgroundImage: `linear-gradient(135deg,rgba(17,17,17,0.78),rgba(42,42,42,0.78)), url("${heroBgImage}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    : { background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" };
 
   return (
     <>
@@ -288,37 +326,37 @@ export function LandingPage() {
         <section
           id="hero"
           className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pt-16 pb-32 text-center md:pt-[100px]"
-          style={{ background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" }}
+          style={heroStyle}
         >
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
           <div className="relative mx-auto max-w-5xl animate-fade-in">
             <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
-              {"아이마다 맞는\n선생님이 다릅니다"}
+              {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
-            전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+              {getCmsValue("hero", "subtext", "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/dashboard/consultation"
                 className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
               >
-                무료 상담 신청
+                {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
               </Link>
               <Link
                 href="/tutors"
                 className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
-                선생님 둘러보기
+                {getCmsValue("hero", "cta_secondary", "선생님 둘러보기")}
               </Link>
             </div>
           </div>
 
           {/* ── Stats — pinned to hero bottom ── */}
           <div className="absolute bottom-8 left-0 right-0 flex flex-wrap justify-center gap-4 px-5">
-            {stats.map((s) => (
+            {cmsStats.map((s) => (
               <div
                 key={s.label}
                 className="flex flex-col items-center rounded-2xl border border-white/15 bg-white/10 px-8 py-5 backdrop-blur-sm"
@@ -391,7 +429,7 @@ export function LandingPage() {
               학습 후기
             </h2>
             <div className="mt-10 space-y-5">
-              {testimonials.map((t) => (
+              {cmsTestimonials.map((t) => (
                 <article
                   key={t.info}
                   className="grid overflow-hidden rounded-[24px] border border-neutral-20 bg-neutral-10 shadow-sm md:grid-cols-[1fr_340px]"
@@ -526,10 +564,10 @@ export function LandingPage() {
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
             <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-              이렇게 진행됩니다
+              {getCmsValue("features", "section_title", "이렇게 진행됩니다")}
             </h2>
             <p className="mt-4 max-w-2xl text-base font-medium text-neutral-50">
-              상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.
+              {getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
             </p>
           </div>
           {/* horizontal scroll driven by vertical scroll */}
@@ -539,7 +577,7 @@ export function LandingPage() {
                 ref={cardsRef}
                 className="flex gap-5 px-5 transition-transform duration-100 will-change-transform md:gap-6 md:px-10"
               >
-                {steps.map((step) => (
+                {cmsSteps.map((step) => (
                   <article
                     key={step.number}
                     className="w-[300px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[420px]"
@@ -643,8 +681,11 @@ export function LandingPage() {
         <section className="bg-primary py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <h2 className="text-[clamp(1.8rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-white">
-              지금 신청하면 받을 수 있는 혜택이에요
+              {getCmsValue("cta", "headline", "지금 신청하면 받을 수 있는 혜택이에요")}
             </h2>
+            <p className="mt-4 max-w-2xl text-base font-bold leading-relaxed text-white/80">
+              {getCmsValue("cta", "subtext", "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
+            </p>
             <div className="mt-10 grid gap-5 sm:grid-cols-3">
               {[
                 { title: "무료 상담 1회",        desc: "매니저가 직접 학생 상황을 파악합니다." },
@@ -663,7 +704,7 @@ export function LandingPage() {
                 href="/dashboard/consultation"
                 className="inline-flex items-center justify-center rounded-full bg-white px-10 py-4 text-base font-black text-primary shadow-lg transition hover:bg-neutral-10"
               >
-                무료 상담 신청하기
+                {getCmsValue("cta", "button", "무료 상담 신청하기")}
               </Link>
             </div>
           </div>
@@ -675,7 +716,7 @@ export function LandingPage() {
             <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
             <h2 className="mt-4 text-[clamp(2rem,4vw,3rem)] font-black text-white">자주 묻는 질문</h2>
             <div className="mt-10 divide-y divide-white/10">
-              {faqs.map(({ q, a }) => (
+              {cmsFaqs.map(({ q, a }) => (
                 <div key={q} className="py-7">
                   <p className="text-base font-black text-white md:text-lg">Q. {q}</p>
                   <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-30 md:text-base">

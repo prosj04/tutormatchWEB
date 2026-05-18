@@ -9,6 +9,7 @@ const NAV = [
   { href: "/admin/students", label: "학생 관리" },
   { href: "/admin/teachers", label: "선생님 관리" },
   { href: "/admin/matches", label: "매칭 관리" },
+  { href: "/admin/cms", label: "홈페이지 관리" },
   { href: "/admin/data", label: "전체 데이터" },
 ];
 

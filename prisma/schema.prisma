@@ -180,3 +180,38 @@ model ManagerStudent {
   @@index([managerId])
   @@index([studentId])
 }
+
+model SiteContent {
+  id        String   @id @default(uuid())
+  section   String   // "hero" | "stats" | "testimonials" | "faq" | "cta" | "features"
+  key       String   // e.g. "headline", "subtext", "stat1_number"
+  value     String   // actual content (text or image URL)
+  type      String   @default("text") // "text" | "image" | "number"
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  updatedBy String?  // admin user id
+
+  @@unique([section, key])
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  quote     String
+  author    String   // e.g. "고2 · 수학 · 학부모"
+  imageUrl  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FaqItem {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
