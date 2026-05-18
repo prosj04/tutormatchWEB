@@ -15,11 +15,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type Tab = "content" | "testimonials" | "faq" | "images";
 type SaveStatus = "idle" | "saving" | "saved" | "error";
-
 type CmsContent = Record<string, Record<string, string>>;
 
 type TestimonialRow = {
@@ -39,82 +38,194 @@ type FaqRow = {
   isActive: boolean;
 };
 
+type TextFieldConfig = {
+  label: string;
+  section: string;
+  keyName: string;
+  defaultValue: string;
+  kind?: "input" | "textarea";
+  rows?: number;
+};
+
+type ImageFieldConfig = {
+  label: string;
+  section: string;
+  keyName: string;
+  defaultValue: string;
+};
+
 const inputClass =
   "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary";
 const textareaClass = `${inputClass} resize-y`;
 
-const tabs: Array<{ id: Tab; label: string }> = [
-  { id: "content", label: "텍스트 콘텐츠" },
-  { id: "testimonials", label: "후기 관리" },
-  { id: "faq", label: "FAQ 관리" },
-  { id: "images", label: "이미지 관리" },
+const heroFields: TextFieldConfig[] = [
+  {
+    label: "메인 헤드라인",
+    section: "hero",
+    keyName: "headline",
+    defaultValue: "아이마다 맞는\n선생님이 다릅니다",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "설명 문구",
+    section: "hero",
+    keyName: "subtext",
+    defaultValue: "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+  { label: "주요 버튼", section: "hero", keyName: "cta_primary", defaultValue: "무료 상담 신청" },
+  { label: "보조 버튼", section: "hero", keyName: "cta_secondary", defaultValue: "선생님 둘러보기" },
 ];
 
-const contentSections = [
+const statsFields: TextFieldConfig[] = [
+  { label: "통계 1 숫자", section: "stats", keyName: "stat1_number", defaultValue: "500+" },
+  { label: "통계 1 문구", section: "stats", keyName: "stat1_label", defaultValue: "누적 상담" },
+  { label: "통계 2 숫자", section: "stats", keyName: "stat2_number", defaultValue: "1,200+" },
+  { label: "통계 2 문구", section: "stats", keyName: "stat2_label", defaultValue: "매칭 완료" },
+  { label: "통계 3 숫자", section: "stats", keyName: "stat3_number", defaultValue: "98%" },
+  { label: "통계 3 문구", section: "stats", keyName: "stat3_label", defaultValue: "학생 만족도" },
+];
+
+const resultDefaults = [
+  ["고2 학생", "수학 5등급→", "2등급으로 상승"],
+  ["중3 학생", "영어 64점→", "87점으로 상승"],
+  ["고1 학생", "국어 55점→", "78점으로 상승"],
+];
+
+const teacherDefaults = [
   {
-    id: "hero",
-    title: "HERO 섹션",
-    fields: [
-      { label: "메인 헤드라인", section: "hero", keyName: "headline", kind: "textarea", rows: 2 },
-      { label: "서브텍스트", section: "hero", keyName: "subtext", kind: "textarea", rows: 3 },
-      { label: "버튼1 텍스트", section: "hero", keyName: "cta_primary", kind: "input" },
-      { label: "버튼2 텍스트", section: "hero", keyName: "cta_secondary", kind: "input" },
-    ],
+    subject: "수학",
+    name: "Teacher Noah",
+    image: "/images/teachers/default-male.png",
+    highlight: "전교꼴등에서 서울대학교 입학했어요",
+    careers: "서울대학교 수리과학부\n입시 수학 7년\n최상위권 심화반 운영",
   },
   {
-    id: "stats",
-    title: "통계 섹션",
-    fields: [
-      { label: "통계 1 숫자", section: "stats", keyName: "stat1_number", kind: "input" },
-      { label: "통계 1 레이블", section: "stats", keyName: "stat1_label", kind: "input" },
-      { label: "통계 2 숫자", section: "stats", keyName: "stat2_number", kind: "input" },
-      { label: "통계 2 레이블", section: "stats", keyName: "stat2_label", kind: "input" },
-      { label: "통계 3 숫자", section: "stats", keyName: "stat3_number", kind: "input" },
-      { label: "통계 3 레이블", section: "stats", keyName: "stat3_label", kind: "input" },
-    ],
+    subject: "영어",
+    name: "Teacher Olivia",
+    image: "/images/teachers/default-female.png",
+    highlight: "읽기 습관만 바꿔도 점수는 달라집니다",
+    careers: "연세대학교 영어영문학과\n국제학교/토플 지도\n첨삭 1,800시간+",
   },
   {
-    id: "features",
-    title: "진행 방식 섹션",
-    fields: [
-      { label: "섹션 제목", section: "features", keyName: "section_title", kind: "input" },
-      { label: "Step 1 제목", section: "features", keyName: "step1_title", kind: "input" },
-      { label: "Step 1 설명", section: "features", keyName: "step1_desc", kind: "textarea", rows: 2 },
-      { label: "Step 2 제목", section: "features", keyName: "step2_title", kind: "input" },
-      { label: "Step 2 설명", section: "features", keyName: "step2_desc", kind: "textarea", rows: 2 },
-      { label: "Step 3 제목", section: "features", keyName: "step3_title", kind: "input" },
-      { label: "Step 3 설명", section: "features", keyName: "step3_desc", kind: "textarea", rows: 2 },
-    ],
+    subject: "물리",
+    name: "Teacher Peter",
+    image: "/images/teachers/default-male.png",
+    highlight: "공식보다 먼저 직관을 세워요",
+    careers: "KAIST 전기및전자공학부\n물리·수학 통합 지도\nSTEM 멘토 수상",
   },
   {
-    id: "cta",
-    title: "하단 CTA 섹션",
-    fields: [
-      { label: "헤드라인", section: "cta", keyName: "headline", kind: "textarea", rows: 2 },
-      { label: "서브텍스트", section: "cta", keyName: "subtext", kind: "input" },
-      { label: "버튼 텍스트", section: "cta", keyName: "button", kind: "input" },
-    ],
+    subject: "국어",
+    name: "Teacher Jiwoo",
+    image: "/images/teachers/default-female.png",
+    highlight: "지문을 읽는 규칙을 훈련합니다",
+    careers: "서울대학교 국어국문학과\n논술 전문 프라이빗\n내신 국어 맞춤 관리",
   },
-] as const;
+];
+
+const stepDefaults = [
+  {
+    title: "무료 상담 신청",
+    desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요.",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=840&h=380&fit=crop&q=80",
+  },
+  {
+    title: "매니저 배정 및 전화 상담",
+    desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다.",
+    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=840&h=380&fit=crop&q=80",
+  },
+  {
+    title: "선생님 추천 및 매칭",
+    desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다.",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=840&h=380&fit=crop&q=80",
+  },
+  {
+    title: "수업 시작",
+    desc: "첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다.",
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=840&h=380&fit=crop&q=80",
+  },
+  {
+    title: "학습 리포트 & 관리",
+    desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=840&h=380&fit=crop&q=80",
+  },
+];
+
+const managementFields: TextFieldConfig[] = [
+  {
+    label: "제목",
+    section: "management",
+    keyName: "headline",
+    defaultValue: "수업 밖에서도\n이어지는 학습 관리",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "설명",
+    section: "management",
+    keyName: "subtext",
+    defaultValue: "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+  { label: "관리 카드 1 제목", section: "management", keyName: "item1_title", defaultValue: "진도 관리" },
+  {
+    label: "관리 카드 1 설명",
+    section: "management",
+    keyName: "item1_desc",
+    defaultValue: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+  { label: "관리 카드 2 제목", section: "management", keyName: "item2_title", defaultValue: "질문 관리" },
+  {
+    label: "관리 카드 2 설명",
+    section: "management",
+    keyName: "item2_desc",
+    defaultValue: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+  { label: "관리 카드 3 제목", section: "management", keyName: "item3_title", defaultValue: "리포트" },
+  {
+    label: "관리 카드 3 설명",
+    section: "management",
+    keyName: "item3_desc",
+    defaultValue: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+];
+
+const ctaFields: TextFieldConfig[] = [
+  {
+    label: "하단 CTA 제목",
+    section: "cta",
+    keyName: "headline",
+    defaultValue: "지금 신청하면 받을 수 있는 혜택이에요",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "하단 CTA 설명",
+    section: "cta",
+    keyName: "subtext",
+    defaultValue: "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공",
+    kind: "textarea",
+    rows: 2,
+  },
+  { label: "하단 CTA 버튼", section: "cta", keyName: "button", defaultValue: "무료 상담 신청하기" },
+];
 
 export function AdminCmsPage() {
   const sensors = useSensors(useSensor(PointerSensor));
-  const [tab, setTab] = useState<Tab>("content");
   const [content, setContent] = useState<CmsContent>({});
   const [testimonials, setTestimonials] = useState<TestimonialRow[]>([]);
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    hero: true,
-    stats: true,
-    features: true,
-    cta: true,
-  });
-  const [modal, setModal] = useState<
-    | { kind: "testimonial"; item: TestimonialRow | null }
-    | { kind: "faq"; item: FaqRow | null }
-    | null
-  >(null);
+
   const hasNoContent =
     !loading &&
     Object.keys(content).length === 0 &&
@@ -131,9 +242,7 @@ export function AdminCmsPage() {
       ]);
 
       if (contentRes.ok) setContent((await contentRes.json()) as CmsContent);
-      if (testimonialRes.ok) {
-        setTestimonials((await testimonialRes.json()) as TestimonialRow[]);
-      }
+      if (testimonialRes.ok) setTestimonials((await testimonialRes.json()) as TestimonialRow[]);
       if (faqRes.ok) setFaqs((await faqRes.json()) as FaqRow[]);
     } finally {
       setLoading(false);
@@ -143,6 +252,9 @@ export function AdminCmsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const getValue = (section: string, keyName: string, defaultValue: string) =>
+    content[section]?.[keyName] ?? defaultValue;
 
   async function patchContent(section: string, key: string, value: string) {
     const res = await fetch("/api/admin/cms/content", {
@@ -162,20 +274,46 @@ export function AdminCmsPage() {
     if (res.ok) await load();
   }
 
-  async function toggleTestimonial(item: TestimonialRow) {
-    const res = await fetch(`/api/admin/cms/testimonials/${item.id}`, {
+  async function patchTestimonial(id: string, payload: Partial<TestimonialRow>) {
+    const res = await fetch(`/api/admin/cms/testimonials/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !item.isActive }),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Testimonial save failed");
+    setTestimonials((current) =>
+      current.map((item) => (item.id === id ? { ...item, ...payload } : item)),
+    );
+  }
+
+  async function patchFaq(id: string, payload: Partial<FaqRow>) {
+    const res = await fetch(`/api/admin/cms/faq/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("FAQ save failed");
+    setFaqs((current) => current.map((item) => (item.id === id ? { ...item, ...payload } : item)));
+  }
+
+  async function addTestimonial() {
+    const res = await fetch("/api/admin/cms/testimonials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        quote: "새 후기를 입력하세요.",
+        author: "학년 · 과목 · 작성자",
+        imageUrl: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+      }),
     });
     if (res.ok) await load();
   }
 
-  async function toggleFaq(item: FaqRow) {
-    const res = await fetch(`/api/admin/cms/faq/${item.id}`, {
-      method: "PATCH",
+  async function addFaq() {
+    const res = await fetch("/api/admin/cms/faq", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !item.isActive }),
+      body: JSON.stringify({ question: "새 질문을 입력하세요.", answer: "답변을 입력하세요." }),
     });
     if (res.ok) await load();
   }
@@ -202,16 +340,7 @@ export function AdminCmsPage() {
       order: index + 1,
     }));
     setTestimonials(next);
-
-    await Promise.all(
-      next.map((item) =>
-        fetch(`/api/admin/cms/testimonials/${item.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ order: item.order }),
-        }),
-      ),
-    );
+    await Promise.all(next.map((item) => patchTestimonial(item.id, { order: item.order })));
   }
 
   async function reorderFaqs(activeId: string, overId: string) {
@@ -224,16 +353,7 @@ export function AdminCmsPage() {
       order: index + 1,
     }));
     setFaqs(next);
-
-    await Promise.all(
-      next.map((item) =>
-        fetch(`/api/admin/cms/faq/${item.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ order: item.order }),
-        }),
-      ),
-    );
+    await Promise.all(next.map((item) => patchFaq(item.id, { order: item.order })));
   }
 
   function handleTestimonialDragEnd(event: DragEndEvent) {
@@ -247,7 +367,7 @@ export function AdminCmsPage() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative pb-16">
       <a
         href="/"
         target="_blank"
@@ -260,202 +380,331 @@ export function AdminCmsPage() {
       <div>
         <h2 className="text-2xl font-black text-text-primary">홈페이지 관리</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          변경사항은 최대 60초 내에 홈페이지에 반영됩니다.
+          홈페이지와 같은 순서로 문구와 사진을 바로 편집합니다. 변경사항은 최대 60초 내에 반영됩니다.
         </p>
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => void initDefaults()}
+          className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
+        >
+          기본값으로 초기화
+        </button>
       </div>
 
       {hasNoContent ? (
         <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
           <p className="font-bold text-amber-950">기본 콘텐츠가 없습니다.</p>
-          <button
-            type="button"
-            onClick={() => void initDefaults()}
-            className="mt-3 rounded-xl bg-amber-900 px-4 py-2 text-sm font-semibold text-white"
-          >
-            기본값으로 초기화
-          </button>
+          <p className="mt-1 text-sm text-amber-900">기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</p>
         </div>
       ) : null}
-
-      <div className="mt-8 flex flex-wrap gap-2 border-b border-gray-200">
-        {tabs.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setTab(item.id)}
-            className={`border-b-2 px-4 py-3 text-sm font-bold ${
-              tab === item.id
-                ? "border-primary text-primary"
-                : "border-transparent text-text-muted"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
 
       {loading ? (
-        <p className="mt-8 text-sm text-text-secondary">불러오는 중…</p>
+        <p className="mt-8 text-sm text-text-secondary">불러오는 중...</p>
       ) : (
-        <div className="mt-8">
-          {tab === "content" ? (
-            <div className="space-y-4">
-              {contentSections.map((section) => (
-                <section
-                  key={section.id}
-                  className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOpenSections((current) => ({
-                        ...current,
-                        [section.id]: !current[section.id],
-                      }))
-                    }
-                    className="flex w-full items-center justify-between px-6 py-4 text-left"
-                  >
-                    <span className="text-lg font-black text-text-primary">
-                      {section.title}
-                    </span>
-                    <span className="text-text-muted">
-                      {openSections[section.id] ? "접기" : "펼치기"}
-                    </span>
-                  </button>
-                  {openSections[section.id] ? (
-                    <div className="grid gap-4 border-t border-gray-100 p-6 lg:grid-cols-2">
-                      {section.fields.map((field) => (
-                        <AutoSaveField
-                          key={`${field.section}-${field.keyName}`}
-                          label={field.label}
-                          section={field.section}
-                          fieldKey={field.keyName}
-                          value={content[field.section]?.[field.keyName] ?? ""}
-                          kind={field.kind}
-                          rows={"rows" in field ? field.rows : undefined}
-                          onSave={patchContent}
-                        />
-                      ))}
-                    </div>
-                  ) : null}
-                </section>
+        <div className="mt-8 space-y-8">
+          <EditorSection eyebrow="HERO" title="첫 화면">
+            <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="grid gap-4">
+                {heroFields.map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+              <ImageField
+                field={{ label: "히어로 배경 이미지", section: "hero", keyName: "bg_image_url", defaultValue: "" }}
+                value={getValue("hero", "bg_image_url", "")}
+                onSave={patchContent}
+              />
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="STATS" title="히어로 하단 통계">
+            <div className="grid gap-4 md:grid-cols-3">
+              {[0, 2, 4].map((start, index) => (
+                <div key={index} className="rounded-2xl bg-background p-4">
+                  <p className="mb-3 text-sm font-black text-primary">통계 {index + 1}</p>
+                  <div className="space-y-3">
+                    {statsFields.slice(start, start + 2).map((field) => (
+                      <ContentField
+                        key={`${field.section}-${field.keyName}`}
+                        field={field}
+                        value={getValue(field.section, field.keyName, field.defaultValue)}
+                        onSave={patchContent}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
-          ) : null}
+          </EditorSection>
 
-          {tab === "testimonials" ? (
-            <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-text-primary">후기 관리</h3>
-                <button
-                  type="button"
-                  onClick={() => setModal({ kind: "testimonial", item: null })}
-                  className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
-                >
-                  후기 추가
-                </button>
+          <EditorSection eyebrow="RESULTS" title="결과 카드">
+            <div className="grid gap-4">
+              <ContentField
+                field={{
+                  label: "섹션 제목",
+                  section: "results",
+                  keyName: "section_title",
+                  defaultValue: "결과로 증명합니다",
+                }}
+                value={getValue("results", "section_title", "결과로 증명합니다")}
+                onSave={patchContent}
+              />
+              <div className="grid gap-4 md:grid-cols-3">
+                {resultDefaults.map(([student, before, after], index) => {
+                  const number = index + 1;
+                  const fields: TextFieldConfig[] = [
+                    {
+                      label: "학생",
+                      section: "results",
+                      keyName: `result${number}_student`,
+                      defaultValue: student,
+                    },
+                    {
+                      label: "이전",
+                      section: "results",
+                      keyName: `result${number}_before`,
+                      defaultValue: before,
+                    },
+                    {
+                      label: "결과",
+                      section: "results",
+                      keyName: `result${number}_after`,
+                      defaultValue: after,
+                    },
+                  ];
+                  return (
+                    <div key={number} className="rounded-2xl bg-background p-4">
+                      <p className="mb-3 text-sm font-black text-primary">결과 {number}</p>
+                      <div className="space-y-3">
+                        {fields.map((field) => (
+                          <ContentField
+                            key={field.keyName}
+                            field={field}
+                            value={getValue(field.section, field.keyName, field.defaultValue)}
+                            onSave={patchContent}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleTestimonialDragEnd}
-              >
-                <SortableContext
-                  items={testimonials.map((item) => item.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="mt-5 space-y-3">
-                    {testimonials.map((item) => (
-                      <SortableTestimonial
-                        key={item.id}
-                        item={item}
-                        onToggle={() => void toggleTestimonial(item)}
-                        onEdit={() => setModal({ kind: "testimonial", item })}
-                        onDelete={() => void deleteTestimonial(item.id)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </section>
-          ) : null}
+            </div>
+          </EditorSection>
 
-          {tab === "faq" ? (
-            <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-text-primary">FAQ 관리</h3>
-                <button
-                  type="button"
-                  onClick={() => setModal({ kind: "faq", item: null })}
-                  className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
-                >
-                  FAQ 추가
-                </button>
+          <EditorSection
+            eyebrow="REVIEWS"
+            title="학습 후기"
+            action={
+              <button type="button" onClick={() => void addTestimonial()} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
+                후기 추가
+              </button>
+            }
+          >
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTestimonialDragEnd}>
+              <SortableContext items={testimonials.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-4">
+                  {testimonials.map((item) => (
+                    <SortableTestimonial
+                      key={item.id}
+                      item={item}
+                      onSave={patchTestimonial}
+                      onDelete={() => void deleteTestimonial(item.id)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </EditorSection>
+
+          <EditorSection eyebrow="TEACHERS" title="선생님 카드">
+            <div className="grid gap-4">
+              <ContentField
+                field={{
+                  label: "섹션 제목",
+                  section: "teachers",
+                  keyName: "section_title",
+                  defaultValue: "명문대 출신부터\n경력 5년 이상\n전문가까지",
+                  kind: "textarea",
+                  rows: 3,
+                }}
+                value={getValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
+                onSave={patchContent}
+              />
+              <ContentField
+                field={{
+                  label: "섹션 설명",
+                  section: "teachers",
+                  keyName: "section_subtext",
+                  defaultValue: "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.",
+                  kind: "textarea",
+                  rows: 2,
+                }}
+                value={getValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
+                onSave={patchContent}
+              />
+              <div className="grid gap-4 xl:grid-cols-2">
+                {teacherDefaults.map((teacher, index) => (
+                  <TeacherCardEditor
+                    key={index}
+                    index={index}
+                    defaults={teacher}
+                    getValue={getValue}
+                    onSave={patchContent}
+                  />
+                ))}
               </div>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleFaqDragEnd}
-              >
-                <SortableContext
-                  items={faqs.map((item) => item.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="mt-5 space-y-3">
-                    {faqs.map((item) => (
-                      <SortableFaq
-                        key={item.id}
-                        item={item}
-                        onToggle={() => void toggleFaq(item)}
-                        onEdit={() => setModal({ kind: "faq", item })}
-                        onDelete={() => void deleteFaq(item.id)}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </section>
-          ) : null}
+            </div>
+          </EditorSection>
 
-          {tab === "images" ? (
-            <ImageManager
-              imageUrl={content.hero?.bg_image_url ?? ""}
-              onSave={(value) => patchContent("hero", "bg_image_url", value)}
-            />
-          ) : null}
+          <EditorSection eyebrow="LEARNING CARE" title="학습 관리">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {managementFields.map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={patchContent}
+                />
+              ))}
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="PROCESS" title="진행 방식">
+            <div className="grid gap-4">
+              <ContentField
+                field={{
+                  label: "섹션 제목",
+                  section: "features",
+                  keyName: "section_title",
+                  defaultValue: "이렇게 진행됩니다",
+                }}
+                value={getValue("features", "section_title", "이렇게 진행됩니다")}
+                onSave={patchContent}
+              />
+              <ContentField
+                field={{
+                  label: "섹션 설명",
+                  section: "features",
+                  keyName: "section_subtext",
+                  defaultValue: "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.",
+                  kind: "textarea",
+                  rows: 2,
+                }}
+                value={getValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
+                onSave={patchContent}
+              />
+              <div className="grid gap-4 xl:grid-cols-2">
+                {stepDefaults.map((step, index) => (
+                  <StepEditor key={index} index={index} defaults={step} getValue={getValue} onSave={patchContent} />
+                ))}
+              </div>
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="CTA" title="혜택 안내">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {ctaFields.map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={patchContent}
+                />
+              ))}
+            </div>
+          </EditorSection>
+
+          <EditorSection
+            eyebrow="FAQ"
+            title="자주 묻는 질문"
+            action={
+              <button type="button" onClick={() => void addFaq()} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
+                FAQ 추가
+              </button>
+            }
+          >
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleFaqDragEnd}>
+              <SortableContext items={faqs.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-4">
+                  {faqs.map((item) => (
+                    <SortableFaq key={item.id} item={item} onSave={patchFaq} onDelete={() => void deleteFaq(item.id)} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </EditorSection>
         </div>
       )}
-
-      {modal ? (
-        <EditModal
-          modal={modal}
-          onClose={() => setModal(null)}
-          onSaved={() => {
-            setModal(null);
-            void load();
-          }}
-        />
-      ) : null}
     </div>
   );
 }
 
-function AutoSaveField({
-  label,
-  section,
-  fieldKey,
+function EditorSection({
+  eyebrow,
+  title,
+  action,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-5">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wider text-primary">{eyebrow}</p>
+          <h3 className="mt-1 text-xl font-black text-text-primary">{title}</h3>
+        </div>
+        {action}
+      </div>
+      <div className="p-6">{children}</div>
+    </section>
+  );
+}
+
+function ContentField({
+  field,
   value,
-  kind,
+  onSave,
+}: {
+  field: TextFieldConfig;
+  value: string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  return (
+    <AutoSaveInput
+      label={field.label}
+      value={value}
+      kind={field.kind ?? "input"}
+      rows={field.rows}
+      onSave={(nextValue) => onSave(field.section, field.keyName, nextValue)}
+    />
+  );
+}
+
+function AutoSaveInput({
+  label,
+  value,
+  kind = "input",
   rows,
   onSave,
 }: {
   label: string;
-  section: string;
-  fieldKey: string;
   value: string;
-  kind: "input" | "textarea";
+  kind?: "input" | "textarea";
   rows?: number;
-  onSave: (section: string, key: string, value: string) => Promise<void>;
+  onSave: (value: string) => Promise<void>;
 }) {
   const [localValue, setLocalValue] = useState(value);
   const [status, setStatus] = useState<SaveStatus>("idle");
@@ -472,14 +721,14 @@ function AutoSaveField({
       if (nextValue === latestSavedValue.current) return;
       setStatus("saving");
       try {
-        await onSave(section, fieldKey, nextValue);
+        await onSave(nextValue);
         latestSavedValue.current = nextValue;
         setStatus("saved");
       } catch {
         setStatus("error");
       }
     },
-    [fieldKey, onSave, section],
+    [onSave],
   );
 
   useEffect(() => {
@@ -496,11 +745,9 @@ function AutoSaveField({
   }, [localValue, save]);
 
   return (
-    <label className="block rounded-xl bg-background p-4">
+    <label className="block rounded-2xl bg-background p-4">
       <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">
-          {label}
-        </span>
+        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</span>
         <SaveIndicator status={status} />
       </div>
       {kind === "textarea" ? (
@@ -523,140 +770,44 @@ function AutoSaveField({
   );
 }
 
-function SaveIndicator({ status }: { status: SaveStatus }) {
-  if (status === "saving") return <span className="text-xs text-text-muted">저장 중...</span>;
-  if (status === "saved") return <span className="text-xs font-semibold text-emerald-700">저장됨 ✓</span>;
-  if (status === "error") return <span className="text-xs font-semibold text-accent">저장 실패</span>;
-  return <span className="text-xs text-text-muted">자동 저장</span>;
-}
-
-function SortableTestimonial({
-  item,
-  onToggle,
-  onEdit,
-  onDelete,
+function ImageField({
+  field,
+  value,
+  onSave,
 }: {
-  item: TestimonialRow;
-  onToggle: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  field: ImageFieldConfig;
+  value: string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="grid items-center gap-4 rounded-xl border border-gray-100 bg-background p-4 md:grid-cols-[2rem_1fr_12rem_8rem_8rem]"
-    >
-      <button
-        type="button"
-        className="cursor-grab text-xl text-text-muted"
-        {...attributes}
-        {...listeners}
-      >
-        ⋮⋮
-      </button>
-      <p className="line-clamp-2 text-sm text-text-secondary">{item.quote}</p>
-      <p className="text-sm font-semibold text-text-primary">{item.author}</p>
-      <ToggleButton active={item.isActive} onClick={onToggle} />
-      <div className="flex gap-2">
-        <button type="button" onClick={onEdit} className="text-sm font-semibold text-primary hover:underline">
-          수정
-        </button>
-        <button type="button" onClick={onDelete} className="text-sm font-semibold text-accent hover:underline">
-          삭제
-        </button>
-      </div>
-    </div>
-  );
+  return <ImageUploader label={field.label} value={value || field.defaultValue} onSave={(next) => onSave(field.section, field.keyName, next)} />;
 }
 
-function SortableFaq({
-  item,
-  onToggle,
-  onEdit,
-  onDelete,
+function ImageUploader({
+  label,
+  value,
+  onSave,
 }: {
-  item: FaqRow;
-  onToggle: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  label: string;
+  value: string;
+  onSave: (value: string) => Promise<void>;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: item.id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="grid items-center gap-4 rounded-xl border border-gray-100 bg-background p-4 md:grid-cols-[2rem_1fr_8rem_8rem]"
-    >
-      <button
-        type="button"
-        className="cursor-grab text-xl text-text-muted"
-        {...attributes}
-        {...listeners}
-      >
-        ⋮⋮
-      </button>
-      <p className="line-clamp-2 text-sm font-semibold text-text-primary">{item.question}</p>
-      <ToggleButton active={item.isActive} onClick={onToggle} />
-      <div className="flex gap-2">
-        <button type="button" onClick={onEdit} className="text-sm font-semibold text-primary hover:underline">
-          수정
-        </button>
-        <button type="button" onClick={onDelete} className="text-sm font-semibold text-accent hover:underline">
-          삭제
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ToggleButton({ active, onClick }: { active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-3 py-1 text-xs font-bold ${
-        active ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-text-muted"
-      }`}
-    >
-      {active ? "활성" : "비활성"}
-    </button>
-  );
-}
-
-function EditModal({
-  modal,
-  onClose,
-  onSaved,
-}: {
-  modal:
-    | { kind: "testimonial"; item: TestimonialRow | null }
-    | { kind: "faq"; item: FaqRow | null };
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const [quote, setQuote] = useState(
-    modal.kind === "testimonial" ? modal.item?.quote ?? "" : "",
-  );
-  const [author, setAuthor] = useState(
-    modal.kind === "testimonial" ? modal.item?.author ?? "" : "",
-  );
-  const [imageUrl, setImageUrl] = useState(
-    modal.kind === "testimonial" ? modal.item?.imageUrl ?? "" : "",
-  );
-  const [question, setQuestion] = useState(
-    modal.kind === "faq" ? modal.item?.question ?? "" : "",
-  );
-  const [answer, setAnswer] = useState(modal.kind === "faq" ? modal.item?.answer ?? "" : "");
-  const [saving, setSaving] = useState(false);
+  const [localValue, setLocalValue] = useState(value);
+  const [status, setStatus] = useState<SaveStatus>("idle");
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  async function save(nextValue: string) {
+    setStatus("saving");
+    try {
+      await onSave(nextValue);
+      setStatus("saved");
+    } catch {
+      setStatus("error");
+    }
+  }
 
   async function uploadImage(file: File | undefined) {
     if (!file) return;
@@ -670,214 +821,263 @@ function EditModal({
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = (await res.json()) as { imageUrl: string };
-      setImageUrl(data.imageUrl);
+      setLocalValue(data.imageUrl);
+      await save(data.imageUrl);
     } catch {
-      alert("이미지 업로드에 실패했습니다.");
+      setStatus("error");
     } finally {
       setUploading(false);
     }
   }
 
-  async function save() {
-    setSaving(true);
-    try {
-      if (modal.kind === "testimonial") {
-        const payload = { quote, author, imageUrl: imageUrl || null };
-        const url = modal.item
-          ? `/api/admin/cms/testimonials/${modal.item.id}`
-          : "/api/admin/cms/testimonials";
-        const method = modal.item ? "PATCH" : "POST";
-        const res = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error("Save failed");
-      } else {
-        const payload = { question, answer };
-        const url = modal.item ? `/api/admin/cms/faq/${modal.item.id}` : "/api/admin/cms/faq";
-        const method = modal.item ? "PATCH" : "POST";
-        const res = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error("Save failed");
-      }
-      onSaved();
-    } catch {
-      alert("저장에 실패했습니다.");
-    } finally {
-      setSaving(false);
-    }
-  }
+  return (
+    <div className="rounded-2xl bg-background p-4">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</span>
+        <SaveIndicator status={status} />
+      </div>
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        {localValue ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={localValue} alt={label} className="h-48 w-full object-cover" />
+        ) : (
+          <div className="flex h-48 items-center justify-center text-sm text-text-muted">이미지 없음</div>
+        )}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <label className="cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
+          {uploading ? "업로드 중..." : "이미지 업로드"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              void uploadImage(e.target.files?.[0]);
+              e.currentTarget.value = "";
+            }}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            setLocalValue("");
+            void save("");
+          }}
+          className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-secondary"
+        >
+          이미지 삭제
+        </button>
+      </div>
+      <input
+        value={localValue}
+        onChange={(e) => setLocalValue(e.target.value)}
+        onBlur={() => void save(localValue)}
+        className={`${inputClass} mt-3`}
+        placeholder="이미지 URL"
+      />
+    </div>
+  );
+}
+
+function TeacherCardEditor({
+  index,
+  defaults,
+  getValue,
+  onSave,
+}: {
+  index: number;
+  defaults: (typeof teacherDefaults)[number];
+  getValue: (section: string, keyName: string, defaultValue: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  const number = index + 1;
+  const textFields: TextFieldConfig[] = [
+    { label: "과목", section: "teachers", keyName: `teacher${number}_subject`, defaultValue: defaults.subject },
+    { label: "이름", section: "teachers", keyName: `teacher${number}_name`, defaultValue: defaults.name },
+    {
+      label: "강조 문구",
+      section: "teachers",
+      keyName: `teacher${number}_highlight`,
+      defaultValue: defaults.highlight,
+      kind: "textarea",
+      rows: 2,
+    },
+    {
+      label: "이력 (줄바꿈으로 구분)",
+      section: "teachers",
+      keyName: `teacher${number}_careers`,
+      defaultValue: defaults.careers,
+      kind: "textarea",
+      rows: 3,
+    },
+  ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
-        <h3 className="text-lg font-black text-text-primary">
-          {modal.kind === "testimonial" ? "후기 편집" : "FAQ 편집"}
-        </h3>
-        {modal.kind === "testimonial" ? (
-          <div className="mt-4 space-y-3">
-            <textarea
-              value={quote}
-              onChange={(e) => setQuote(e.target.value)}
-              className={textareaClass}
-              rows={5}
-              placeholder="후기 내용"
+    <div className="rounded-2xl bg-background p-4">
+      <p className="mb-4 text-sm font-black text-primary">선생님 {number}</p>
+      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+        <ImageField
+          field={{
+            label: "프로필 이미지",
+            section: "teachers",
+            keyName: `teacher${number}_image`,
+            defaultValue: defaults.image,
+          }}
+          value={getValue("teachers", `teacher${number}_image`, defaults.image)}
+          onSave={onSave}
+        />
+        <div className="space-y-3">
+          {textFields.map((field) => (
+            <ContentField
+              key={field.keyName}
+              field={field}
+              value={getValue(field.section, field.keyName, field.defaultValue)}
+              onSave={onSave}
             />
-            <input
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              className={inputClass}
-              placeholder="작성자 (예: 고2 · 수학 · 학부모)"
-            />
-            <div>
-              <input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className={inputClass}
-                placeholder="이미지 URL"
-              />
-              <label className="mt-2 inline-flex cursor-pointer rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-secondary">
-                {uploading ? "업로드 중..." : "사진 업로드"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    void uploadImage(e.target.files?.[0]);
-                    e.currentTarget.value = "";
-                  }}
-                />
-              </label>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4 space-y-3">
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className={textareaClass}
-              rows={2}
-              placeholder="질문"
-            />
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              className={textareaClass}
-              rows={5}
-              placeholder="답변"
-            />
-          </div>
-        )}
-        <div className="mt-6 flex gap-2">
-          <button type="button" onClick={onClose} className="flex-1 rounded-xl border py-2 text-sm">
-            취소
-          </button>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => void save()}
-            className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {saving ? "저장 중..." : "저장"}
-          </button>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function ImageManager({
-  imageUrl,
+function StepEditor({
+  index,
+  defaults,
+  getValue,
   onSave,
 }: {
-  imageUrl: string;
-  onSave: (value: string) => Promise<void>;
+  index: number;
+  defaults: (typeof stepDefaults)[number];
+  getValue: (section: string, keyName: string, defaultValue: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
 }) {
-  const [preview, setPreview] = useState(imageUrl);
-  const [status, setStatus] = useState<SaveStatus>("idle");
-
-  useEffect(() => {
-    setPreview(imageUrl);
-  }, [imageUrl]);
-
-  async function upload(file: File | undefined) {
-    if (!file) return;
-    setStatus("saving");
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/admin/cms/upload-image", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      const data = (await res.json()) as { imageUrl: string };
-      setPreview(data.imageUrl);
-      await onSave(data.imageUrl);
-      setStatus("saved");
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  async function remove() {
-    setStatus("saving");
-    try {
-      setPreview("");
-      await onSave("");
-      setStatus("saved");
-    } catch {
-      setStatus("error");
-    }
-  }
-
+  const number = index + 1;
   return (
-    <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-      <h3 className="text-lg font-black text-text-primary">이미지 관리</h3>
-      <div className="mt-5 grid gap-6 md:grid-cols-[32rem_1fr]">
-        <div className="flex aspect-square max-w-[512px] items-center justify-center overflow-hidden rounded-2xl bg-gray-100">
-          {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Hero background" className="h-full w-full object-cover" />
-          ) : (
-            <span className="text-sm font-semibold text-text-muted">이미지 없음</span>
-          )}
-        </div>
-        <div>
-          <p className="text-sm font-black text-text-primary">Hero 배경 이미지</p>
-          <p className="mt-2 text-sm text-text-secondary">권장: 1920x1080, JPG/WebP</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <label className="cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
-              Upload
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  void upload(e.target.files?.[0]);
-                  e.currentTarget.value = "";
-                }}
-              />
-            </label>
-            {preview ? (
-              <button
-                type="button"
-                onClick={() => void remove()}
-                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-accent"
-              >
-                이미지 삭제
-              </button>
-            ) : null}
-          </div>
-          <div className="mt-4">
-            <SaveIndicator status={status} />
-          </div>
+    <div className="rounded-2xl bg-background p-4">
+      <p className="mb-4 text-sm font-black text-primary">STEP {number}</p>
+      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+        <ImageField
+          field={{
+            label: "단계 이미지",
+            section: "features",
+            keyName: `step${number}_image`,
+            defaultValue: defaults.image,
+          }}
+          value={getValue("features", `step${number}_image`, defaults.image)}
+          onSave={onSave}
+        />
+        <div className="space-y-3">
+          <ContentField
+            field={{
+              label: "제목",
+              section: "features",
+              keyName: `step${number}_title`,
+              defaultValue: defaults.title,
+            }}
+            value={getValue("features", `step${number}_title`, defaults.title)}
+            onSave={onSave}
+          />
+          <ContentField
+            field={{
+              label: "설명",
+              section: "features",
+              keyName: `step${number}_desc`,
+              defaultValue: defaults.desc,
+              kind: "textarea",
+              rows: 3,
+            }}
+            value={getValue("features", `step${number}_desc`, defaults.desc)}
+            onSave={onSave}
+          />
         </div>
       </div>
-    </section>
+    </div>
   );
+}
+
+function SortableTestimonial({
+  item,
+  onSave,
+  onDelete,
+}: {
+  item: TestimonialRow;
+  onSave: (id: string, payload: Partial<TestimonialRow>) => Promise<void>;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+
+  return (
+    <div ref={setNodeRef} style={style} className="grid gap-4 rounded-2xl bg-background p-4 lg:grid-cols-[2rem_1fr_260px]">
+      <button type="button" className="cursor-grab self-start text-xl text-text-muted" {...attributes} {...listeners}>
+        ⋮⋮
+      </button>
+      <div className="grid gap-3">
+        <AutoSaveInput label="후기 문구" value={item.quote} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { quote: value })} />
+        <AutoSaveInput label="작성자" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void onSave(item.id, { isActive: !item.isActive })}
+            className={`rounded-full px-3 py-1 text-xs font-bold ${
+              item.isActive ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-text-muted"
+            }`}
+          >
+            {item.isActive ? "활성" : "비활성"}
+          </button>
+          <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+            삭제
+          </button>
+        </div>
+      </div>
+      <ImageUploader label="후기 이미지" value={item.imageUrl ?? ""} onSave={(value) => onSave(item.id, { imageUrl: value || null })} />
+    </div>
+  );
+}
+
+function SortableFaq({
+  item,
+  onSave,
+  onDelete,
+}: {
+  item: FaqRow;
+  onSave: (id: string, payload: Partial<FaqRow>) => Promise<void>;
+  onDelete: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+
+  return (
+    <div ref={setNodeRef} style={style} className="grid gap-4 rounded-2xl bg-background p-4 lg:grid-cols-[2rem_1fr_auto]">
+      <button type="button" className="cursor-grab self-start text-xl text-text-muted" {...attributes} {...listeners}>
+        ⋮⋮
+      </button>
+      <div className="grid gap-3">
+        <AutoSaveInput label="질문" value={item.question} kind="textarea" rows={2} onSave={(value) => onSave(item.id, { question: value })} />
+        <AutoSaveInput label="답변" value={item.answer} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { answer: value })} />
+      </div>
+      <div className="flex gap-2 lg:flex-col">
+        <button
+          type="button"
+          onClick={() => void onSave(item.id, { isActive: !item.isActive })}
+          className={`rounded-full px-3 py-1 text-xs font-bold ${
+            item.isActive ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-text-muted"
+          }`}
+        >
+          {item.isActive ? "활성" : "비활성"}
+        </button>
+        <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+          삭제
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SaveIndicator({ status }: { status: SaveStatus }) {
+  if (status === "saving") return <span className="text-xs text-text-muted">저장 중...</span>;
+  if (status === "saved") return <span className="text-xs font-semibold text-emerald-700">저장됨 ✓</span>;
+  if (status === "error") return <span className="text-xs font-semibold text-accent">저장 실패</span>;
+  return <span className="text-xs text-text-muted">자동 저장</span>;
 }

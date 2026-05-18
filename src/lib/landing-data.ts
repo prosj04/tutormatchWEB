@@ -11,7 +11,7 @@ export const showcaseTutors: ShowcaseTutor[] = [
     tagline: "전교꼴등에서 서울대학교 입학했어요",
     background: "서울대학교 수리과학부",
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-male.png",
   },
   {
     id: "english-olivia",
@@ -21,7 +21,7 @@ export const showcaseTutors: ShowcaseTutor[] = [
     tagline: "읽기 습관만 바꿔도 점수는 달라집니다",
     background: "연세대학교 영어영문학과",
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-female.png",
   },
   {
     id: "physics-peter",
@@ -31,7 +31,7 @@ export const showcaseTutors: ShowcaseTutor[] = [
     tagline: "공식보다 먼저 직관을 세워요",
     background: "KAIST 전기및전자공학부",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-male.png",
   },
   {
     id: "korean-jiwoo",
@@ -41,7 +41,7 @@ export const showcaseTutors: ShowcaseTutor[] = [
     tagline: "지문을 읽는 규칙을 훈련합니다",
     background: "서울대학교 국어국문학과",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-female.png",
   },
 ];
 

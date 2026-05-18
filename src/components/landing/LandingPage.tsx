@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { SiteHeader } from "./SiteHeader";
 
@@ -35,28 +35,28 @@ const teachers = [
   {
     subject: "수학",
     name: "Teacher Noah",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-male.png",
     highlight: "전교꼴등에서 서울대학교 입학했어요",
     careers: ["서울대학교 수리과학부", "입시 수학 7년", "최상위권 심화반 운영"],
   },
   {
     subject: "영어",
     name: "Teacher Olivia",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-female.png",
     highlight: "읽기 습관만 바꿔도 점수는 달라집니다",
     careers: ["연세대학교 영어영문학과", "국제학교/토플 지도", "첨삭 1,800시간+"],
   },
   {
     subject: "물리",
     name: "Teacher Peter",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-male.png",
     highlight: "공식보다 먼저 직관을 세워요",
     careers: ["KAIST 전기및전자공학부", "물리·수학 통합 지도", "STEM 멘토 수상"],
   },
   {
     subject: "국어",
     name: "Teacher Jiwoo",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
+    image: "/images/teachers/default-female.png",
     highlight: "지문을 읽는 규칙을 훈련합니다",
     careers: ["서울대학교 국어국문학과", "논술 전문 프라이빗", "내신 국어 맞춤 관리"],
   },
@@ -199,20 +199,6 @@ function useHorizontalScroll() {
 
 /* ─────────────────────────────────────────── sub-components ── */
 
-/** Rounded-rectangle perforations along the card bottom (ticket effect, no stars) */
-function PunchRow() {
-  return (
-    <div className="absolute -bottom-3 left-0 flex w-full justify-around px-2">
-      {Array.from({ length: 20 }).map((_, i) => (
-        <span
-          key={i}
-          className="h-6 w-3.5 shrink-0 rounded-[5px] bg-neutral-10"
-        />
-      ))}
-    </div>
-  );
-}
-
 function PricingCard({
   title,
   price,
@@ -238,7 +224,7 @@ function PricingCard({
       {/* top ripped gap */}
       <div className="h-10 shrink-0 rounded-t-[28px] bg-neutral-10" />
       {/* main card body — flex-1 so it fills remaining height */}
-      <div className="relative flex flex-1 flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-14 text-white md:p-8 md:pb-16">
+      <div className="relative flex flex-1 flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-8 text-white md:p-8 md:pb-10">
         {recommended && (
           <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
             추천
@@ -264,7 +250,6 @@ function PricingCard({
         >
           이 플랜으로 시작
         </Link>
-        <PunchRow />
       </div>
     </article>
   );
@@ -276,10 +261,37 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
   const { wrapperRef, cardsRef }    = useHorizontalScroll();
   const [priceTab, setPriceTab]     = useState(0);
-  const doubledResults  = useMemo(() => [...results, ...results], []);
-  const doubledTeachers = useMemo(() => [...teachers, ...teachers], []);
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
+  const cmsResults = results.map(([student, before, after], index) => {
+    const itemNumber = index + 1;
+    return [
+      getCmsValue("results", `result${itemNumber}_student`, student),
+      getCmsValue("results", `result${itemNumber}_before`, before),
+      getCmsValue("results", `result${itemNumber}_after`, after),
+    ];
+  });
+  const doubledResults = [...cmsResults, ...cmsResults];
+  const cmsTeachers = teachers.map((teacher, index) => {
+    const itemNumber = index + 1;
+    const careers = getCmsValue(
+      "teachers",
+      `teacher${itemNumber}_careers`,
+      teacher.careers.join("\n"),
+    )
+      .split("\n")
+      .map((career) => career.trim())
+      .filter(Boolean);
+
+    return {
+      subject: getCmsValue("teachers", `teacher${itemNumber}_subject`, teacher.subject),
+      name: getCmsValue("teachers", `teacher${itemNumber}_name`, teacher.name),
+      image: getCmsValue("teachers", `teacher${itemNumber}_image`, teacher.image),
+      highlight: getCmsValue("teachers", `teacher${itemNumber}_highlight`, teacher.highlight),
+      careers: careers.length > 0 ? careers : teacher.careers,
+    };
+  });
+  const doubledTeachers = [...cmsTeachers, ...cmsTeachers];
   const cmsStats = [
     {
       value: getCmsValue("stats", "stat1_number", stats[0].value),
@@ -299,13 +311,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const cmsFaqs = cms && cms.faqs.length > 0 ? cms.faqs : faqs;
   const cmsSteps = steps.map((step, index) => {
     const stepNumber = index + 1;
-    return stepNumber <= 3
-      ? {
-          ...step,
-          title: getCmsValue("features", `step${stepNumber}_title`, step.title),
-          desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
-        }
-      : step;
+    return {
+      ...step,
+      title: getCmsValue("features", `step${stepNumber}_title`, step.title),
+      desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
+      img: getCmsValue("features", `step${stepNumber}_image`, step.img),
+    };
   });
   const heroBgImage = getCmsValue("hero", "bg_image_url", "");
   const heroStyle = heroBgImage
@@ -395,7 +406,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">RESULTS</p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-              <span className="text-primary">결과로 증명</span>합니다
+              {getCmsValue("results", "section_title", "결과로 증명합니다")}
             </h2>
           </div>
           <div className="animation-container mt-10 overflow-hidden">
@@ -468,21 +479,17 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             {/* sticky heading column */}
             <div className="lg:sticky lg:top-40 lg:self-start">
               <p className="text-sm font-black uppercase tracking-wider text-primary">TEACHERS</p>
-              <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-                명문대 출신부터
-                <br />
-                <span className="text-primary">경력 5년 이상</span>
-                <br />
-                전문가까지
+              <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+                {getCmsValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
               </h2>
               <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
-                학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.
+                {getCmsValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
               </p>
               <Link
                 href="/tutors"
                 className="mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
               >
-                전체 선생님 보기
+                {getCmsValue("teachers", "cta", "전체 선생님 보기")}
               </Link>
             </div>
 
@@ -533,20 +540,27 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">LEARNING CARE</p>
-                <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-                  수업 밖에서도
-                  <br />
-                  이어지는 학습 관리
+                <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+                  {getCmsValue("management", "headline", "수업 밖에서도\n이어지는 학습 관리")}
                 </h2>
                 <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-neutral-50">
-                  진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.
+                  {getCmsValue("management", "subtext", "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.")}
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 {[
-                  { label: "진도 관리", desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다." },
-                  { label: "질문 관리", desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다." },
-                  { label: "리포트",    desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다." },
+                  {
+                    label: getCmsValue("management", "item1_title", "진도 관리"),
+                    desc: getCmsValue("management", "item1_desc", "주간 진도와 목표 달성률을 매니저·가정과 공유합니다."),
+                  },
+                  {
+                    label: getCmsValue("management", "item2_title", "질문 관리"),
+                    desc: getCmsValue("management", "item2_desc", "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다."),
+                  },
+                  {
+                    label: getCmsValue("management", "item3_title", "리포트"),
+                    desc: getCmsValue("management", "item3_desc", "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다."),
+                  },
                 ].map((item, index) => (
                   <div key={item.label} className="rounded-[20px] bg-neutral-10 p-6">
                     <p className="text-3xl font-black text-primary">0{index + 1}</p>

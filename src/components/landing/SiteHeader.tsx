@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -21,9 +21,11 @@ const navLinks = [
 function SessionActions({
   mobile = false,
   onNavigate,
+  scrolled = true,
 }: {
   mobile?: boolean;
   onNavigate?: () => void;
+  scrolled?: boolean;
 }) {
   const { data: session, status } = useSession();
   const role = session?.user?.role;
@@ -45,18 +47,28 @@ function SessionActions({
     return (
       <div className={mobile ? "space-y-3" : "flex items-center gap-2"}>
         <Link
-          href="/dashboard/consultation"
+          href="/login"
           onClick={onNavigate}
-          className={`${buttonBase} border border-neutral-20 bg-white text-neutral-100 hover:border-primary hover:text-primary`}
+          className={`${buttonBase} ${
+            mobile
+              ? "text-neutral-100 hover:bg-neutral-10"
+              : scrolled
+                ? "text-neutral-100 hover:text-primary"
+                : "text-white hover:bg-white/10"
+          }`}
         >
-          상담 신청
+          로그인
         </Link>
         <Link
           href="/register"
           onClick={onNavigate}
-          className={`${buttonBase} bg-primary text-white shadow-sm hover:bg-primary/90`}
+          className={`${buttonBase} shadow-sm ${
+            mobile || scrolled
+              ? "bg-primary text-white hover:bg-primary/90"
+              : "bg-white text-neutral-100 hover:bg-white/90"
+          }`}
         >
-          바로 시작
+          회원가입
         </Link>
       </div>
     );
@@ -98,17 +110,45 @@ function SessionActions({
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(variant === "light");
+
+  useEffect(() => {
+    if (variant === "light") {
+      setScrolled(true);
+      return;
+    }
+
+    function handleScroll() {
+      const hero = document.getElementById("hero");
+      const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
+      setScrolled(window.scrollY >= heroBottom);
+    }
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [variant]);
+
+  const headerTone = scrolled
+    ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
+    : "border-white/10 bg-neutral-100/80 text-white backdrop-blur";
+  const topBarTone = scrolled
+    ? "bg-neutral-10 text-neutral-50"
+    : "bg-black/20 text-white/70";
+  const hoverTone = scrolled ? "hover:text-neutral-100" : "hover:text-white";
 
   return (
-    <header className="fixed left-0 top-0 z-50 flex w-full flex-col border-b border-neutral-20 bg-white">
-      <div className="hidden h-9 w-full bg-neutral-10 md:block">
-        <div className="mx-auto flex h-full max-w-[1200px] items-center justify-end px-5 text-xs font-medium text-neutral-50">
-          <Link href="/#faq" className="px-3 transition hover:text-neutral-100">
+    <header
+      className={`fixed left-0 top-0 z-50 flex w-full flex-col border-b transition-all duration-300 ease-in-out ${headerTone}`}
+    >
+      <div className={`hidden h-9 w-full transition-all duration-300 ease-in-out md:block ${topBarTone}`}>
+        <div className="mx-auto flex h-full max-w-[1200px] items-center justify-end px-5 text-xs font-medium">
+          <Link href="/#faq" className={`px-3 transition ${hoverTone}`}>
             자주 묻는 질문
           </Link>
-          <Link href="/teacher-portal" className="px-3 transition hover:text-neutral-100">
+          <Link href="/register/teacher" className={`px-3 transition ${hoverTone}`}>
             선생님 지원
           </Link>
         </div>
@@ -116,7 +156,7 @@ export function SiteHeader() {
 
       <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-5">
         <div className="flex min-w-0 items-center gap-8">
-          <Link href="/" className="shrink-0 text-xl font-black tracking-tight text-neutral-100">
+          <Link href="/" className="shrink-0 text-xl font-black tracking-tight transition-colors">
             Concord.
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
@@ -124,7 +164,9 @@ export function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-2xl px-3 py-3 text-sm font-semibold text-neutral-100 transition hover:bg-neutral-10"
+                className={`rounded-2xl px-3 py-3 text-sm font-semibold transition ${
+                  scrolled ? "hover:bg-neutral-10" : "hover:bg-white/10"
+                }`}
               >
                 {link.label}
               </Link>
@@ -133,13 +175,15 @@ export function SiteHeader() {
         </div>
 
         <div className="hidden md:block">
-          <SessionActions />
+          <SessionActions scrolled={scrolled} />
         </div>
 
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-20 text-neutral-100 md:hidden"
+          className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition md:hidden ${
+            scrolled ? "border-neutral-20 text-neutral-100" : "border-white/30 text-white"
+          }`}
           aria-label="메뉴 열기"
         >
           <span className="space-y-1.5">
@@ -174,7 +218,7 @@ export function SiteHeader() {
               <Link href="/#faq" onClick={() => setOpen(false)}>
                 자주 묻는 질문
               </Link>
-              <Link href="/teacher-portal" onClick={() => setOpen(false)}>
+              <Link href="/register/teacher" onClick={() => setOpen(false)}>
                 선생님 지원
               </Link>
             </div>
