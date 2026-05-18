@@ -308,7 +308,7 @@ export function LandingPage() {
                 무료 상담 신청
               </Link>
               <Link
-                href="#teachers"
+                href="/tutors"
                 className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
                 선생님 둘러보기
@@ -441,10 +441,10 @@ export function LandingPage() {
                 학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.
               </p>
               <Link
-                href="/dashboard/consultation"
+                href="/tutors"
                 className="mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
               >
-                맞춤 선생님 상담받기
+                전체 선생님 보기
               </Link>
             </div>
 
@@ -714,7 +714,7 @@ export function LandingPage() {
               <div className="grid grid-cols-2 gap-8 text-sm font-bold text-neutral-50">
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">서비스</p>
-                  <Link href="/#teachers"              className="block transition hover:text-primary">강사진</Link>
+                  <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
                   <Link href="/dashboard/consultation" className="block transition hover:text-primary">상담 신청</Link>
                 </div>

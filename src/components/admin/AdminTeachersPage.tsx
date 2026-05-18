@@ -59,7 +59,7 @@ export function AdminTeachersPage() {
   const [loading, setLoading] = useState(true);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<TeacherRow | null>(null);
-  const [editTab, setEditTab] = useState<"profile" | "documents">("profile");
+  const [editTab, setEditTab] = useState<"card" | "documents">("card");
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [documentDeleting, setDocumentDeleting] = useState<string | null>(null);
   const [documents, setDocuments] = useState<DocumentsResponse>({
@@ -114,7 +114,7 @@ export function AdminTeachersPage() {
 
   function openEdit(row: TeacherRow) {
     setEditRow(row);
-    setEditTab("profile");
+    setEditTab("card");
     setDocuments({ resumeFiles: [], documentFiles: [] });
     setForm({
       name: row.name,
@@ -415,7 +415,7 @@ export function AdminTeachersPage() {
 
             <div className="mt-4 flex gap-2 border-b border-gray-100">
               {[
-                { id: "profile" as const, label: "기본 정보" },
+                { id: "card" as const, label: "강사 카드 내용" },
                 { id: "documents" as const, label: "서류 확인" },
               ].map((tab) => (
                 <button
@@ -433,8 +433,42 @@ export function AdminTeachersPage() {
               ))}
             </div>
 
-            {editTab === "profile" ? (
+            {editTab === "card" ? (
               <div className="mt-4 space-y-3">
+                <div className="rounded-2xl border border-gray-100 bg-background p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    카드 미리보기
+                  </p>
+                  <div className="mt-3 flex gap-4 rounded-2xl bg-white p-4">
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                      {editRow.photoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={editRow.photoUrl}
+                          alt={`${form.name} 프로필 사진`}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <DefaultAvatar size={64} className="rounded-2xl" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-black text-text-primary">
+                        {form.name || "선생님 이름"} 선생님
+                      </h4>
+                      <p className="mt-1 text-xs font-semibold text-primary">
+                        {form.subjects || "담당 과목"}
+                      </p>
+                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">
+                        {form.bio || form.experience || "강사 카드 소개 문구"}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-text-muted">
+                    이 탭의 이름, 담당 과목, 자기소개, 학력, 경력은 `/tutors` 강사 카드와 상세 페이지에 반영됩니다.
+                    사진은 목록의 카메라 버튼으로 변경할 수 있습니다.
+                  </p>
+                </div>
                 <input
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -539,7 +573,7 @@ export function AdminTeachersPage() {
               <button
                 type="button"
                 onClick={() => void saveEdit()}
-                disabled={editTab !== "profile"}
+                disabled={editTab !== "card"}
                 className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
               >
                 저장

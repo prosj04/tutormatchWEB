@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FadeSection } from "./FadeSection";
 
 const links = [
-  { href: "/#teachers", label: "강사진" },
+  { href: "/tutors", label: "강사진" },
   { href: "/pricing", label: "요금제" },
   { href: "/checkout", label: "등록 · 결제" },
 ];

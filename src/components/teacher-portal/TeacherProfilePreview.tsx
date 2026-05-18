@@ -58,7 +58,6 @@ function categoryLabel(c: CredentialItem["category"]) {
 }
 
 export function TeacherProfilePreview({
-  teacherId,
   name,
   subjects,
   form,

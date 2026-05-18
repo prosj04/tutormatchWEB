@@ -135,10 +135,10 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
       <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
         <div className="mb-10">
           <Link
-            href="/dashboard/consultation"
+            href="/tutors"
             className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
           >
-            ← 상담 신청으로 돌아가기
+            ← 강사 목록
           </Link>
         </div>
 

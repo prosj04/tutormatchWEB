@@ -65,7 +65,7 @@ export function Hero() {
               무료 상담 예약하기
             </Link>
             <Link
-              href="/#teachers"
+              href="/tutors"
               className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-white/80 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"
             >
               선생님 둘러보기

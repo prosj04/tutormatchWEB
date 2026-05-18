@@ -257,9 +257,13 @@ export async function runAlertChecks() {
           recentWeeklyNotifs.map((n) => `${n.userId}:${n.relatedId}`),
         );
 
-        const weeklyToCreate: typeof alerts[0] extends infer A
-          ? Array<{ userId: string; type: string; title: string; body: string; relatedId: string }>
-          : never = [];
+        const weeklyToCreate: Array<{
+          userId: string;
+          type: string;
+          title: string;
+          body: string;
+          relatedId: string;
+        }> = [];
 
         for (const { type, title, body, weekKey, managerUserIds } of alerts) {
           for (const userId of managerUserIds) {

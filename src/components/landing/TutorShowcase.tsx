@@ -66,10 +66,10 @@ export function TutorShowcase() {
 
         <div className="mt-12 text-center">
           <Link
-            href="/dashboard/consultation"
+            href="/tutors"
             className="inline-flex items-center justify-center rounded-2xl border-2 border-primary px-8 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
           >
-            맞춤 선생님 상담받기
+            선생님 전체 보기
           </Link>
         </div>
       </FadeSection>
