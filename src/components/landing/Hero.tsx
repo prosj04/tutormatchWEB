@@ -53,7 +53,7 @@ export function Hero() {
             선생님이 다릅니다
           </h1>
           <p className="mt-6 max-w-lg text-base leading-relaxed text-gray-300 sm:text-lg lg:mx-0 lg:max-w-md">
-            10년 경력의 매니저가 직접 상담하고,
+            전문 매니저가 직접 상담하고,
             <br className="hidden sm:inline" />
             우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
           </p>
@@ -65,7 +65,7 @@ export function Hero() {
               무료 상담 예약하기
             </Link>
             <Link
-              href="/tutors"
+              href="/#teachers"
               className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-white/80 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"
             >
               선생님 둘러보기

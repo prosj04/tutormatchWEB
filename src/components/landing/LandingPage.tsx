@@ -115,13 +115,26 @@ const faqs = [
 
 const testimonials = [
   {
-    quote: "아이가 처음으로 공부 계획을 직접 설명했어요. 선생님 매칭보다 매니저 상담이 먼저라 훨씬 안심됐습니다.",
+    quote: "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 무조건 아무 선생님이나 매칭하는것이 아니라 정말 아이에 맞는 선생님을 고민하고 찾아주셔서 훨씬 안심됐습니다.",
     info: "고2 수학 · 학부모",
     img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=640&h=520&fit=crop&q=80",
   },
+
   {
-    quote: "수업 후 리포트가 있어서 무엇을 복습해야 하는지 분명했습니다. 성적보다 습관이 먼저 바뀌었어요.",
+    quote: "공부 잘 하는 선생님보다도 방황하는 아들의 방향을 잡아 줄 만한 선생님이 필요했는데, 정확히 맞는 선생님을 찾아줬어요.\n 무엇보다 아이가 과외쌤처럼 되고 싶다며 열심히 하려고 하는 모습이 보여 정말 만족합니다",
+    info: "고3 수학 · 학부모",
+    img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+  },
+
+  {
+    quote: "숙제와 공부 계획을 등록하고 선생님이랑 같이 점검하니 자연스럽게 매일 공부하게 되더라구요. 성적보다 습관이 먼저 바뀌었어요.",
     info: "중3 영어 · 학생",
+    img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+  },
+
+  {
+    quote: "제 공부 방법이 맞는지 고민중에 있었는데 저랑 비슷한 공부법의 선생님을 만나니 정말 도움이 많이 되었어요. 조언을 듣고 공부 방법을 개선할 수 있었던 것이 성적 향상에 가장 도움이 된 것 같아요.",
+    info: "고3 국어 · 학생",
     img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
   },
 ];
@@ -285,7 +298,7 @@ export function LandingPage() {
               {"아이마다 맞는\n선생님이 다릅니다"}
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
-              10년 경력의 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+            전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
@@ -295,7 +308,7 @@ export function LandingPage() {
                 무료 상담 신청
               </Link>
               <Link
-                href="/tutors"
+                href="#teachers"
                 className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
                 선생님 둘러보기
@@ -428,10 +441,10 @@ export function LandingPage() {
                 학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.
               </p>
               <Link
-                href="/tutors"
+                href="/dashboard/consultation"
                 className="mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
               >
-                전체 선생님 보기
+                맞춤 선생님 상담받기
               </Link>
             </div>
 
@@ -568,7 +581,7 @@ export function LandingPage() {
                   월 40만원부터
                 </h2>
                 <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
-                  가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.
+                  월 4회 또는 8회 패키지를 선택하세요.
                 </p>
               </div>
               <div>
@@ -597,8 +610,8 @@ export function LandingPage() {
                       "주 1회 수업 (50분)",
                       "학습 진도 관리",
                       "과제 관리",
-                      "AI 질답 무제한",
-                      "강사 첨삭 월 4회",
+                      "AI 질답 이용 가능",
+                      "수시 강사 첨삭, 질답",
                     ]}
                     sessions="4"
                     active={priceTab === 0}
@@ -609,11 +622,12 @@ export function LandingPage() {
                     subtitle="주 2회 · 집중 관리"
                     features={[
                       "주 2회 수업 (50분)",
-                      "주 2회 집중 관리",
-                      "우선 강사 배정",
-                      "AI 질답 무제한",
-                      "강사 첨삭 무제한",
-                      "월간 심층 리포트",
+                      "복수 과목 선택 가능",
+                      "학습 진도 관리",
+                      "과제 관리",
+                      "AI 질답 횟수 2배 제공",
+                      "수시 강사 첨삭, 질답",
+
                     ]}
                     sessions="8"
                     recommended
@@ -634,7 +648,7 @@ export function LandingPage() {
             <div className="mt-10 grid gap-5 sm:grid-cols-3">
               {[
                 { title: "무료 상담 1회",        desc: "매니저가 직접 학생 상황을 파악합니다." },
-                { title: "매니저 직접 배정",      desc: "10년 경력 매니저가 처음부터 함께합니다." },
+                { title: "매니저 직접 배정",      desc: "전문 매니저가 처음부터 함께합니다." },
                 { title: "학습 리포트 무료 제공", desc: "첫 달 학습 리포트를 무료로 제공합니다." },
               ].map((b) => (
                 <div key={b.title} className="rounded-[20px] bg-white/15 p-6 backdrop-blur md:p-7">
@@ -700,7 +714,7 @@ export function LandingPage() {
               <div className="grid grid-cols-2 gap-8 text-sm font-bold text-neutral-50">
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">서비스</p>
-                  <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
+                  <Link href="/#teachers"              className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
                   <Link href="/dashboard/consultation" className="block transition hover:text-primary">상담 신청</Link>
                 </div>

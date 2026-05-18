@@ -36,6 +36,8 @@ export async function GET() {
           education: parseJsonArray<EducationEntry>(profile.education),
           career: parseJsonArray<CareerEntry>(profile.career),
           certificates: parseJsonArray<CertificateEntry>(profile.certificates),
+          resumeUrls: parseJsonArray<string>(profile.resumeUrls),
+          documentUrls: parseJsonArray<string>(profile.documentUrls),
           updatedAt: profile.updatedAt,
         }
       : null,
@@ -103,6 +105,8 @@ export async function PATCH(request: Request) {
       education: parseJsonArray<EducationEntry>(profile.education),
       career: parseJsonArray<CareerEntry>(profile.career),
       certificates: parseJsonArray<CertificateEntry>(profile.certificates),
+      resumeUrls: parseJsonArray<string>(profile.resumeUrls),
+      documentUrls: parseJsonArray<string>(profile.documentUrls),
       updatedAt: profile.updatedAt,
     },
   });

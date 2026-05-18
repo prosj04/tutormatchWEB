@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FadeSection } from "./FadeSection";
 
 const links = [
-  { href: "/tutors", label: "강사진" },
+  { href: "/#teachers", label: "강사진" },
   { href: "/pricing", label: "요금제" },
   { href: "/checkout", label: "등록 · 결제" },
 ];
@@ -18,7 +18,7 @@ export function Footer() {
             <div>
               <p className="text-2xl font-black italic text-text-primary">Concord.</p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-text-secondary">
-                매니저 상담으로 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
+                전문 매니저 상담으로 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
               </p>
             </div>
             <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-text-secondary">

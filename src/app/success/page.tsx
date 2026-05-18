@@ -60,10 +60,10 @@ export default function SuccessPage({ searchParams }: PageProps) {
             홈으로
           </Link>
           <Link
-            href="/tutors"
+            href="/dashboard/consultation"
             className="inline-flex min-w-[200px] items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90"
           >
-            강사진
+            상담 신청
           </Link>
         </div>
         </div>

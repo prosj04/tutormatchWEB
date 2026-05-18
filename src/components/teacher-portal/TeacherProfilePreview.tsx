@@ -1,7 +1,14 @@
 "use client";
 
-import type { CredentialItem } from "@/lib/tutors-data";
+import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
 import type { TeacherProfileFormData } from "@/lib/teacher-profile-types";
+
+type CredentialItem = {
+  category: "학력" | "경력" | "자격증";
+  year: string;
+  title: string;
+  detail: string;
+};
 
 type TeacherProfilePreviewProps = {
   teacherId: string;
@@ -67,7 +74,7 @@ export function TeacherProfilePreview({
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
       <p className="border-b border-gray-100 bg-background px-4 py-2 text-xs font-medium text-text-secondary">
-        미리보기 · /tutors/{teacherId}
+        미리보기 · 선생님 프로필
       </p>
 
       <div className="border-b border-gray-100 bg-background p-4">
@@ -85,8 +92,8 @@ export function TeacherProfilePreview({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-3xl text-text-muted">
-                👤
+              <div className="flex h-full w-full items-center justify-center">
+                <DefaultAvatar size={64} />
               </div>
             )}
           </div>

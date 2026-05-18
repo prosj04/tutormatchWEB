@@ -2,12 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+
 const SUBJECT_PILLS = ["국어", "영어", "수학", "사회탐구", "과학탐구"];
 
 type TeacherItem = {
   id: string;
   name: string;
   approved: boolean;
+  photoUrl: string | null;
   _count?: { students: number };
 };
 
@@ -137,9 +140,23 @@ export function AdminMatchesPage() {
                         : "border-gray-100 bg-white hover:border-gray-200"
                     }`}
                   >
-                    {t.name}
-                    <span className="mt-0.5 block text-xs text-text-muted">
-                      매칭 {count}명
+                    <span className="flex items-center gap-3">
+                      {t.photoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={t.photoUrl}
+                          alt={`${t.name} 프로필 사진`}
+                          className="h-9 w-9 rounded-full object-cover"
+                        />
+                      ) : (
+                        <DefaultAvatar size={36} />
+                      )}
+                      <span>
+                        <span className="block">{t.name}</span>
+                        <span className="mt-0.5 block text-xs text-text-muted">
+                          매칭 {count}명
+                        </span>
+                      </span>
                     </span>
                   </button>
                 </li>

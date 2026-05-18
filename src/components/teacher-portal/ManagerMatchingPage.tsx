@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
 import { todayDateKey } from "@/lib/study-plan-dates";
 
 type MatchStudent = {
@@ -16,6 +17,7 @@ type MatchTeacher = {
   id: string;
   name: string;
   subjects: string;
+  photoUrl: string | null;
   activeStudentCount: number;
 };
 
@@ -196,11 +198,25 @@ export function ManagerMatchingPage() {
                             : "border-gray-100 hover:border-primary/30"
                         }`}
                       >
-                        <p className="font-medium text-text-primary">{t.name}</p>
-                        <p className="mt-0.5 text-xs text-text-secondary">{t.subjects}</p>
-                        <p className="mt-1 text-xs text-text-muted">
-                          담당 학생 {t.activeStudentCount}명
-                        </p>
+                        <span className="flex items-start gap-3">
+                          {t.photoUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={t.photoUrl}
+                              alt={`${t.name} 프로필 사진`}
+                              className="h-10 w-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <DefaultAvatar size={40} />
+                          )}
+                          <span>
+                            <span className="block font-medium text-text-primary">{t.name}</span>
+                            <span className="mt-0.5 block text-xs text-text-secondary">{t.subjects}</span>
+                            <span className="mt-1 block text-xs text-text-muted">
+                              담당 학생 {t.activeStudentCount}명
+                            </span>
+                          </span>
+                        </span>
                       </button>
                     </li>
                   ))}

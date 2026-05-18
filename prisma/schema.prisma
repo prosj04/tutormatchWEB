@@ -125,6 +125,8 @@ model TeacherProfile {
   career       String?  // JSON string array
   education    String?  // JSON string array
   certificates String?  // JSON string array
+  resumeUrls   String?  // JSON string array, 이력서 파일 URL들
+  documentUrls String?  // JSON string array, 인증서류 파일 URL들
   updatedAt    DateTime @default(now()) @updatedAt
 }
 

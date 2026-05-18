@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
 import { uploadTeacherPhoto } from "@/lib/supabase-client";
 import {
   emptyCareer,
@@ -18,6 +19,20 @@ import { TeacherProfilePreview } from "./TeacherProfilePreview";
 const inputClass =
   "mt-1 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm text-text-primary outline-none focus:border-primary";
 const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
+const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
+
+type DocumentType = "resume" | "document";
+
+type UploadedDocumentFile = {
+  url: string;
+  signedUrl: string;
+  name: string;
+};
+
+type DocumentsResponse = {
+  resumeFiles: UploadedDocumentFile[];
+  documentFiles: UploadedDocumentFile[];
+};
 
 type TeacherProfileEditorProps = {
   teacherId: string;
@@ -35,6 +50,10 @@ export function TeacherProfileEditor({
   const [form, setForm] = useState<TeacherProfileFormData>(initialForm);
   const [pendingPhoto, setPendingPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const [documentLoading, setDocumentLoading] = useState(false);
+  const [documentUploading, setDocumentUploading] = useState<DocumentType | null>(null);
+  const [resumeFiles, setResumeFiles] = useState<UploadedDocumentFile[]>([]);
+  const [documentFiles, setDocumentFiles] = useState<UploadedDocumentFile[]>([]);
   const [toast, setToast] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +61,30 @@ export function TeacherProfileEditor({
     setForm(initialForm);
     setPendingPhoto(null);
   }, [initialForm]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadDocuments() {
+      setDocumentLoading(true);
+      try {
+        const res = await fetch("/api/teacher/profile/documents");
+        if (!res.ok) return;
+        const data = (await res.json()) as DocumentsResponse;
+        if (cancelled) return;
+        setResumeFiles(data.resumeFiles);
+        setDocumentFiles(data.documentFiles);
+      } finally {
+        if (!cancelled) setDocumentLoading(false);
+      }
+    }
+
+    void loadDocuments();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function updateEducation(index: number, patch: Partial<EducationEntry>) {
     setForm((f) => ({
@@ -105,6 +148,8 @@ export function TeacherProfileEditor({
         education: data.profile.education ?? [],
         career: data.profile.career ?? [],
         certificates: data.profile.certificates ?? [],
+        resumeUrls: data.profile.resumeUrls ?? [],
+        documentUrls: data.profile.documentUrls ?? [],
       });
       setPendingPhoto(null);
       setToast(true);
@@ -113,6 +158,67 @@ export function TeacherProfileEditor({
       alert("프로필 저장에 실패했습니다. 다시 시도해 주세요.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  function handleDocumentsResponse(data: DocumentsResponse) {
+    setResumeFiles(data.resumeFiles);
+    setDocumentFiles(data.documentFiles);
+    setForm((f) => ({
+      ...f,
+      resumeUrls: data.resumeFiles.map((file) => file.url),
+      documentUrls: data.documentFiles.map((file) => file.url),
+    }));
+  }
+
+  async function uploadDocument(file: File | undefined, type: DocumentType) {
+    if (!file) return;
+    if (file.size > MAX_DOCUMENT_SIZE) {
+      alert("10MB 이하 파일만 업로드할 수 있습니다.");
+      return;
+    }
+    if (file.type !== "application/pdf" && !file.type.startsWith("image/")) {
+      alert("PDF 또는 이미지 파일만 업로드할 수 있습니다.");
+      return;
+    }
+
+    setDocumentUploading(type);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", type);
+
+      const res = await fetch("/api/teacher/profile/documents", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Document upload failed");
+      handleDocumentsResponse((await res.json()) as DocumentsResponse);
+    } catch {
+      alert("서류 업로드에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setDocumentUploading(null);
+    }
+  }
+
+  async function deleteDocument(url: string, type: DocumentType) {
+    if (!confirm("이 파일을 삭제하시겠습니까?")) return;
+
+    setDocumentUploading(type);
+    try {
+      const res = await fetch("/api/teacher/profile/documents", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, type }),
+      });
+
+      if (!res.ok) throw new Error("Document delete failed");
+      handleDocumentsResponse((await res.json()) as DocumentsResponse);
+    } catch {
+      alert("서류 삭제에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setDocumentUploading(null);
     }
   }
 
@@ -146,9 +252,7 @@ export function TeacherProfileEditor({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-2xl text-text-muted">
-                    👤
-                  </div>
+                  <DefaultAvatar size={80} />
                 )}
               </div>
               <div>
@@ -353,6 +457,90 @@ export function TeacherProfileEditor({
                 ))
               )}
             </ul>
+          </section>
+
+          <section>
+            <div>
+              <h2 className="text-sm font-bold text-text-primary">서류 업로드</h2>
+              <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+                PDF 또는 이미지 파일을 업로드할 수 있습니다. 파일당 최대 10MB까지 허용됩니다.
+              </p>
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {[
+                {
+                  type: "resume" as const,
+                  title: "이력서",
+                  files: resumeFiles,
+                  empty: "업로드된 이력서가 없습니다.",
+                },
+                {
+                  type: "document" as const,
+                  title: "인증서류",
+                  files: documentFiles,
+                  empty: "업로드된 인증서류가 없습니다.",
+                },
+              ].map((group) => (
+                <div
+                  key={group.type}
+                  className="rounded-xl border border-gray-100 bg-background p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-sm font-bold text-text-primary">{group.title}</h3>
+                    <label className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary hover:border-primary hover:text-primary">
+                      {documentUploading === group.type ? "업로드 중…" : "파일 추가"}
+                      <input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        className="hidden"
+                        disabled={documentUploading !== null}
+                        onChange={(e) => {
+                          void uploadDocument(e.target.files?.[0], group.type);
+                          e.currentTarget.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <ul className="mt-3 space-y-2">
+                    {documentLoading ? (
+                      <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
+                    ) : group.files.length === 0 ? (
+                      <li className="text-xs text-text-muted">{group.empty}</li>
+                    ) : (
+                      group.files.map((file) => (
+                        <li
+                          key={file.url}
+                          className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
+                        >
+                          <span className="min-w-0 truncate text-text-secondary">
+                            {file.name}
+                          </span>
+                          <span className="flex shrink-0 gap-2">
+                            <a
+                              href={file.signedUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-semibold text-primary hover:underline"
+                            >
+                              열기
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => void deleteDocument(file.url, group.type)}
+                              className="font-semibold text-accent hover:underline"
+                            >
+                              삭제
+                            </button>
+                          </span>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </section>
 
           <button

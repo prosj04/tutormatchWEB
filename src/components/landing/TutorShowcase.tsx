@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import { LikeButton } from "@/components/tutors/LikeButton";
 import { FadeSection } from "./FadeSection";
 import { showcaseTutors } from "@/lib/landing-data";
 
@@ -31,9 +30,6 @@ export function TutorShowcase() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="relative w-[280px] shrink-0 snap-center rounded-2xl bg-white p-6 shadow-lg md:w-auto"
             >
-              <div className="absolute right-4 top-4">
-                <LikeButton tutorId={t.id} size="sm" />
-              </div>
               <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-full bg-gray-100">
                 <Image
                   src={t.image}
@@ -70,10 +66,10 @@ export function TutorShowcase() {
 
         <div className="mt-12 text-center">
           <Link
-            href="/tutors"
+            href="/dashboard/consultation"
             className="inline-flex items-center justify-center rounded-2xl border-2 border-primary px-8 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
           >
-            선생님 전체 보기
+            맞춤 선생님 상담받기
           </Link>
         </div>
       </FadeSection>

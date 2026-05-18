@@ -15,7 +15,6 @@ import {
   type SessionPlan,
 } from "@/lib/order-pricing";
 import { TOSS_WIDGET_CLIENT_KEY } from "@/lib/toss-client";
-import { getTutorById } from "@/lib/tutors-data";
 
 type PMW = ReturnType<PaymentWidgetInstance["renderPaymentMethods"]>;
 
@@ -28,8 +27,7 @@ type CheckoutContentProps = {
 };
 
 export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
-  const tutor = getTutorById(tutorId);
-  const tutorName = tutor?.name ?? "강사 미지정";
+  const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
 
   const { total, platformFee, lessonFee } = getPriceBreakdown(sessions);
 
@@ -137,10 +135,10 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
       <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
         <div className="mb-10">
           <Link
-            href={tutor ? `/tutors/${tutorId}` : "/tutors"}
+            href="/dashboard/consultation"
             className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
           >
-            ← {tutor ? "강사 프로필로 돌아가기" : "강사 목록"}
+            ← 상담 신청으로 돌아가기
           </Link>
         </div>
 

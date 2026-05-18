@@ -36,6 +36,7 @@ export async function GET(request: Request) {
       orderBy: { user: { createdAt: "desc" } },
       include: {
         user: { select: { email: true, createdAt: true, role: true } },
+        profile: { select: { photoUrl: true } },
         _count: { select: { students: { where: { isActive: true } } } },
       },
     }),
@@ -53,6 +54,7 @@ export async function GET(request: Request) {
       bio: t.bio,
       education: t.education,
       experience: t.experience,
+      photoUrl: t.profile?.photoUrl ?? null,
       studentCount: t._count.students,
       createdAt: t.user.createdAt,
     })),

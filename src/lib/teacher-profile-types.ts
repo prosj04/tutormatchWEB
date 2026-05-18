@@ -21,6 +21,8 @@ export type TeacherProfileFormData = {
   education: EducationEntry[];
   career: CareerEntry[];
   certificates: CertificateEntry[];
+  resumeUrls: string[];
+  documentUrls: string[];
 };
 
 export function emptyEducation(): EducationEntry {
@@ -52,6 +54,8 @@ export function profileToFormData(
     education: string | null;
     career: string | null;
     certificates: string | null;
+    resumeUrls?: string | null;
+    documentUrls?: string | null;
   } | null,
 ): TeacherProfileFormData {
   return {
@@ -60,5 +64,7 @@ export function profileToFormData(
     education: parseJsonArray<EducationEntry>(profile?.education ?? null),
     career: parseJsonArray<CareerEntry>(profile?.career ?? null),
     certificates: parseJsonArray<CertificateEntry>(profile?.certificates ?? null),
+    resumeUrls: parseJsonArray<string>(profile?.resumeUrls ?? null),
+    documentUrls: parseJsonArray<string>(profile?.documentUrls ?? null),
   };
 }

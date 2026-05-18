@@ -58,6 +58,7 @@ export async function GET() {
       user: { role: { in: ["TEACHER", "MANAGER"] } },
     },
     include: {
+      profile: { select: { photoUrl: true } },
       _count: {
         select: {
           students: { where: { isActive: true } },
@@ -73,6 +74,7 @@ export async function GET() {
       id: t.id,
       name: t.name,
       subjects: t.subjects,
+      photoUrl: t.profile?.photoUrl ?? null,
       activeStudentCount: t._count.students,
     })),
   });

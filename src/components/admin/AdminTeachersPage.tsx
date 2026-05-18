@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
 
 type TeacherRow = {
   id: string;
@@ -13,6 +16,7 @@ type TeacherRow = {
   bio: string;
   education: string;
   experience: string;
+  photoUrl: string | null;
   studentCount: number;
   createdAt: string;
 };
@@ -32,14 +36,36 @@ function roleBadge(role: string) {
 
 type Pagination = { page: number; limit: number; total: number; totalPages: number };
 
+type DocumentType = "resume" | "document";
+
+type UploadedDocumentFile = {
+  url: string;
+  signedUrl: string;
+  name: string;
+};
+
+type DocumentsResponse = {
+  resumeFiles: UploadedDocumentFile[];
+  documentFiles: UploadedDocumentFile[];
+};
+
 export function AdminTeachersPage() {
+  const router = useRouter();
   const [rows, setRows] = useState<TeacherRow[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<TeacherRow | null>(null);
+  const [editTab, setEditTab] = useState<"profile" | "documents">("profile");
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [documentDeleting, setDocumentDeleting] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<DocumentsResponse>({
+    resumeFiles: [],
+    documentFiles: [],
+  });
   const [form, setForm] = useState({
     name: "",
     subjects: "",
@@ -75,8 +101,21 @@ export function AdminTeachersPage() {
     fetchList();
   }
 
+  async function loadDocuments(teacherId: string) {
+    setDocumentsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/teachers/${teacherId}/documents`);
+      if (!res.ok) return;
+      setDocuments((await res.json()) as DocumentsResponse);
+    } finally {
+      setDocumentsLoading(false);
+    }
+  }
+
   function openEdit(row: TeacherRow) {
     setEditRow(row);
+    setEditTab("profile");
+    setDocuments({ resumeFiles: [], documentFiles: [] });
     setForm({
       name: row.name,
       subjects: row.subjects,
@@ -84,6 +123,7 @@ export function AdminTeachersPage() {
       experience: row.experience,
       bio: row.bio,
     });
+    void loadDocuments(row.id);
   }
 
   async function saveEdit() {
@@ -112,6 +152,52 @@ export function AdminTeachersPage() {
       body: JSON.stringify({ role }),
     });
     if (res.ok) fetchList();
+  }
+
+  async function uploadPhoto(row: TeacherRow, file: File | undefined) {
+    if (!file || !file.type.startsWith("image/")) return;
+
+    setUploadingId(row.id);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`/api/admin/teachers/${row.id}/photo`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Photo upload failed");
+      }
+
+      router.refresh();
+      await fetchList();
+    } catch {
+      alert("사진 업로드에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setUploadingId(null);
+    }
+  }
+
+  async function deleteDocument(url: string, type: DocumentType) {
+    if (!editRow || !confirm("이 서류 파일을 삭제하시겠습니까?")) return;
+
+    setDocumentDeleting(url);
+    try {
+      const res = await fetch(`/api/admin/teachers/${editRow.id}/documents`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, type }),
+      });
+
+      if (!res.ok) throw new Error("Document delete failed");
+      setDocuments((await res.json()) as DocumentsResponse);
+    } catch {
+      alert("서류 삭제에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setDocumentDeleting(null);
+    }
   }
 
   function grantManager(row: TeacherRow) {
@@ -190,7 +276,23 @@ export function AdminTeachersPage() {
                 const badge = roleBadge(row.role);
                 return (
                 <tr key={row.id} className="border-b border-gray-50">
-                  <td className="px-4 py-3 font-medium">{row.name}</td>
+                  <td className="px-4 py-3 font-medium">
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-100">
+                        {row.photoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={row.photoUrl}
+                            alt={`${row.name} 프로필 사진`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <DefaultAvatar size={40} />
+                        )}
+                      </div>
+                      <span>{row.name}</span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{row.subjects}</td>
                   <td className="px-4 py-3">{row.email}</td>
                   <td className="px-4 py-3">{row.phone}</td>
@@ -217,6 +319,24 @@ export function AdminTeachersPage() {
                     {new Date(row.createdAt).toLocaleDateString("ko-KR")}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
+                    <label
+                      className={`mr-2 inline-flex cursor-pointer items-center gap-1 text-text-secondary hover:text-primary ${
+                        uploadingId === row.id ? "pointer-events-none opacity-50" : ""
+                      }`}
+                      title="프로필 사진 업로드"
+                    >
+                      <span aria-hidden="true">📷</span>
+                      <span className="sr-only">사진 업로드</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          void uploadPhoto(row, e.target.files?.[0]);
+                          e.currentTarget.value = "";
+                        }}
+                      />
+                    </label>
                     <button
                       type="button"
                       onClick={() => toggleApprove(row)}
@@ -290,41 +410,124 @@ export function AdminTeachersPage() {
 
       {editRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-bold">선생님 수정</h3>
-            <div className="mt-4 space-y-3">
-              <input
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="이름"
-              />
-              <input
-                value={form.subjects}
-                onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="담당 과목"
-              />
-              <input
-                value={form.education}
-                onChange={(e) => setForm((f) => ({ ...f, education: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="학력"
-              />
-              <input
-                value={form.experience}
-                onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="경력"
-              />
-              <textarea
-                value={form.bio}
-                onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-                rows={3}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="자기소개"
-              />
+
+            <div className="mt-4 flex gap-2 border-b border-gray-100">
+              {[
+                { id: "profile" as const, label: "기본 정보" },
+                { id: "documents" as const, label: "서류 확인" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setEditTab(tab.id)}
+                  className={`border-b-2 px-3 py-2 text-sm font-semibold ${
+                    editTab === tab.id
+                      ? "border-primary text-primary"
+                      : "border-transparent text-text-muted"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
+
+            {editTab === "profile" ? (
+              <div className="mt-4 space-y-3">
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
+                  placeholder="이름"
+                />
+                <input
+                  value={form.subjects}
+                  onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
+                  placeholder="담당 과목"
+                />
+                <input
+                  value={form.education}
+                  onChange={(e) => setForm((f) => ({ ...f, education: e.target.value }))}
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
+                  placeholder="학력"
+                />
+                <input
+                  value={form.experience}
+                  onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))}
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
+                  placeholder="경력"
+                />
+                <textarea
+                  value={form.bio}
+                  onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+                  rows={3}
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
+                  placeholder="자기소개"
+                />
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {[
+                  {
+                    type: "resume" as const,
+                    title: "이력서",
+                    files: documents.resumeFiles,
+                    empty: "등록된 이력서가 없습니다.",
+                  },
+                  {
+                    type: "document" as const,
+                    title: "인증서류",
+                    files: documents.documentFiles,
+                    empty: "등록된 인증서류가 없습니다.",
+                  },
+                ].map((group) => (
+                  <section
+                    key={group.type}
+                    className="rounded-xl border border-gray-100 bg-background p-4"
+                  >
+                    <h4 className="text-sm font-bold text-text-primary">{group.title}</h4>
+                    <ul className="mt-3 space-y-2">
+                      {documentsLoading ? (
+                        <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
+                      ) : group.files.length === 0 ? (
+                        <li className="text-xs text-text-muted">{group.empty}</li>
+                      ) : (
+                        group.files.map((file) => (
+                          <li
+                            key={file.url}
+                            className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
+                          >
+                            <span className="min-w-0 truncate text-text-secondary">
+                              {file.name}
+                            </span>
+                            <span className="flex shrink-0 gap-2">
+                              <a
+                                href={file.signedUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-semibold text-primary hover:underline"
+                              >
+                                열기
+                              </a>
+                              <button
+                                type="button"
+                                disabled={documentDeleting === file.url}
+                                onClick={() => void deleteDocument(file.url, group.type)}
+                                className="font-semibold text-accent hover:underline disabled:opacity-50"
+                              >
+                                삭제
+                              </button>
+                            </span>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            )}
             <div className="mt-6 flex gap-2">
               <button
                 type="button"
@@ -336,6 +539,7 @@ export function AdminTeachersPage() {
               <button
                 type="button"
                 onClick={() => void saveEdit()}
+                disabled={editTab !== "profile"}
                 className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
               >
                 저장
