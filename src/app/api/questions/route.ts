@@ -61,7 +61,7 @@ export async function POST(request: Request) {
 
   const matches = await prisma.teacherStudent.findMany({
     where: { studentId: student.id, isActive: true },
-    include: { teacher: { include: { user: true } } },
+    select: { teacher: { select: { userId: true } } },
   });
 
   await Promise.all(
@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       }),
     ),
   );
+
 
   return NextResponse.json({ question }, { status: 201 });
 }

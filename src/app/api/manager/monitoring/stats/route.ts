@@ -49,6 +49,7 @@ export async function GET(request: Request) {
         teacherAnswer: null,
         createdAt: { lt: staleBefore },
       },
+      select: { id: true, date: true, content: true, createdAt: true },
       orderBy: { createdAt: "desc" },
       take: 20,
     }),

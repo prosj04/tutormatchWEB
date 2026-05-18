@@ -11,38 +11,46 @@ export async function GET() {
   const { teacher } = authResult;
 
   const completedBookings = await prisma.consultationBooking.findMany({
-    where: {
-      managerId: teacher.id,
-      status: "COMPLETED",
-    },
-    include: {
-      student: true,
+    where: { managerId: teacher.id, status: "COMPLETED" },
+    select: {
+      id: true,
+      studentId: true,
+      note: true,
+      managerNote: true,
+      student: { select: { id: true, name: true, grade: true, subjects: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 
+  // De-duplicate by studentId (keep most recent booking per student)
   const seen = new Set<string>();
-  const students = [];
-
+  const candidates: typeof completedBookings = [];
   for (const booking of completedBookings) {
     if (seen.has(booking.studentId)) continue;
     seen.add(booking.studentId);
-
-    const activeMatches = await prisma.teacherStudent.count({
-      where: { studentId: booking.studentId, isActive: true },
-    });
-
-    if (activeMatches > 0) continue;
-
-    students.push({
-      id: booking.student.id,
-      name: booking.student.name,
-      grade: booking.student.grade,
-      subjects: booking.student.subjects,
-      consultationNote: booking.managerNote ?? booking.note,
-      bookingId: booking.id,
-    });
+    candidates.push(booking);
   }
+
+  // Single query replaces N per-booking prisma.teacherStudent.count() calls
+  const alreadyMatchedIds = new Set(
+    (
+      await prisma.teacherStudent.findMany({
+        where: { studentId: { in: candidates.map((c) => c.studentId) }, isActive: true },
+        select: { studentId: true },
+      })
+    ).map((m) => m.studentId),
+  );
+
+  const students = candidates
+    .filter((b) => !alreadyMatchedIds.has(b.studentId))
+    .map((b) => ({
+      id: b.student.id,
+      name: b.student.name,
+      grade: b.student.grade,
+      subjects: b.student.subjects,
+      consultationNote: b.managerNote ?? b.note,
+      bookingId: b.id,
+    }));
 
   const teachers = await prisma.teacher.findMany({
     where: {

@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       orderBy: { date: "desc" },
       include: {
         student: { select: { name: true } },
-        tasks: true,
+        tasks: { select: { id: true, title: true, isDone: true, doneAt: true, order: true, planId: true } },
       },
     }),
   ]);

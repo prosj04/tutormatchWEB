@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { TeacherStudentsManager } from "@/components/teacher-portal/TeacherStudentsManager";
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
+import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 import { prisma } from "@/lib/prisma";
 import type { StudentListItem } from "@/components/teacher-portal/teacher-students-types";
 
@@ -16,22 +17,26 @@ export default async function TeacherStudentsPage() {
     redirect("/teacher-portal");
   }
 
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      students: {
-        where: { isActive: true },
-        include: { student: true },
-        orderBy: { student: { name: "asc" } },
-      },
-    },
-  });
+  // getTeacherByUserId is React-cached: no extra DB round-trip when layout.tsx
+  // already called it with the same userId in this request.
+  const teacher = await getTeacherByUserId(session.user.id);
 
   if (!teacher) {
     redirect("/teacher-portal");
   }
 
-  const initialStudents: StudentListItem[] = teacher.students.map((m) => ({
+  // Students are page-specific; fetch separately using the cached teacher.id.
+  const matches = await prisma.teacherStudent.findMany({
+    where: { teacherId: teacher.id, isActive: true },
+    select: {
+      subjects: true,
+      startDate: true,
+      student: { select: { id: true, name: true, grade: true, phone: true } },
+    },
+    orderBy: { student: { name: "asc" } },
+  });
+
+  const initialStudents: StudentListItem[] = matches.map((m) => ({
     id: m.student.id,
     name: m.student.name,
     grade: m.student.grade,

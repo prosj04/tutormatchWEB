@@ -13,13 +13,18 @@ export async function GET() {
   if ("error" in authResult) return authResult.error;
   const { userId, role } = authResult;
 
-  const notifications = await prisma.notification.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  // Run both queries in parallel. count() uses the (userId, isRead) index and
+  // gives an accurate total across all notifications, not just the top-50 page.
+  const [notifications, unreadCount] = await Promise.all([
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    prisma.notification.count({
+      where: { userId, isRead: false },
+    }),
+  ]);
 
   return NextResponse.json({
     unreadCount,

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { TeacherDashboardContent } from "@/components/teacher-portal/TeacherDashboardContent";
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
-import { prisma } from "@/lib/prisma";
+import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 
 export const metadata = {
   title: "선생님 대시보드",
@@ -15,10 +15,7 @@ export default async function TeacherDashboardPage() {
     redirect("/teacher-portal");
   }
 
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
-    include: { user: { select: { email: true } } },
-  });
+  const teacher = await getTeacherByUserId(session.user.id);
 
   if (!teacher) {
     redirect("/teacher-portal");

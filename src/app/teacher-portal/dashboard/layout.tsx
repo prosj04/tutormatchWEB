@@ -4,7 +4,7 @@ import { TeacherPortalShell } from "@/components/teacher-portal/TeacherPortalShe
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
 import type { PortalTeacherRole } from "@/lib/portal-roles";
-import { prisma } from "@/lib/prisma";
+import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 
 export default async function TeacherDashboardLayout({
   children,
@@ -16,9 +16,7 @@ export default async function TeacherDashboardLayout({
     redirect("/teacher-portal");
   }
 
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
-  });
+  const teacher = await getTeacherByUserId(session.user.id);
 
   if (!teacher) {
     redirect("/teacher-portal");

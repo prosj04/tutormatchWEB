@@ -49,6 +49,8 @@ model Teacher {
   students        TeacherStudent[]
   managerBookings ConsultationBooking[]
   managerStudents ManagerStudent[]   @relation("ManagerStudents")
+
+  @@index([approved])
 }
 
 model TeacherStudent {
@@ -63,6 +65,9 @@ model TeacherStudent {
   createdAt DateTime @default(now())
 
   @@unique([teacherId, studentId])
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([isActive])
 }
 
 model StudyPlan {
@@ -75,6 +80,10 @@ model StudyPlan {
   commentAt DateTime?
   commentBy String?     // Teacher id
   createdAt DateTime    @default(now())
+
+  @@index([studentId])
+  @@index([date])
+  @@index([studentId, date])
 }
 
 model StudyTask {
@@ -100,6 +109,11 @@ model Question {
   answeredBy      String?   // Teacher id
   isResolved      Boolean   @default(false)
   createdAt       DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([studentId, date])
+  @@index([isResolved])
+  @@index([createdAt])
 }
 
 model TeacherProfile {
@@ -127,6 +141,11 @@ model ConsultationBooking {
   managerNote    String?
   assignedAt     DateTime?
   createdAt      DateTime  @default(now())
+
+  @@index([managerId])
+  @@index([status])
+  @@index([managerId, status])
+  @@index([status, createdAt])
 }
 
 model Notification {
@@ -141,6 +160,10 @@ model Notification {
   isRead    Boolean  @default(false)
   relatedId String?
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
 }
 
 model ManagerStudent {
@@ -152,4 +175,6 @@ model ManagerStudent {
   createdAt DateTime @default(now())
 
   @@unique([managerId, studentId])
+  @@index([managerId])
+  @@index([studentId])
 }
