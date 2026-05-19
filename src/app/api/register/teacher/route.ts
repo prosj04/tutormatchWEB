@@ -13,6 +13,7 @@ type TeacherBody = {
   experience?: unknown;
   email?: unknown;
   password?: unknown;
+  careerEntries?: unknown;
 };
 
 function isNonEmptyString(v: unknown): v is string {
@@ -70,17 +71,86 @@ export async function POST(request: Request) {
               education,
               experience,
               approved: false,
+              profile: {
+                create: {
+                  intro: bio,
+                  education: JSON.stringify([
+                    {
+                      school: education,
+                      major: "",
+                      year: "",
+                    },
+                  ]),
+                  career: JSON.stringify(
+                    Array.isArray(body.careerEntries)
+                      ? body.careerEntries
+                      : [
+                          {
+                            org: experience,
+                            role: "",
+                            period: "",
+                          },
+                        ],
+                  ),
+                  certificates: JSON.stringify([]),
+                  resumeUrls: JSON.stringify([]),
+                  documentUrls: JSON.stringify([]),
+                },
+              },
             },
           },
         },
+        include: { teacher: { select: { id: true } } },
       });
     });
 
-    return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
+    return NextResponse.json(
+      { id: user.id, email: user.email, teacherId: user.teacher?.id },
+      { status: 201 },
+    );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
       return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
     throw e;
   }
+}
+
+export async function PATCH(request: Request) {
+  let body: {
+    teacherId?: unknown;
+    resumeUrls?: unknown;
+    documentUrls?: unknown;
+  };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (typeof body.teacherId !== "string") {
+    return NextResponse.json({ error: "Invalid teacher id" }, { status: 400 });
+  }
+
+  const resumeUrls = Array.isArray(body.resumeUrls)
+    ? body.resumeUrls.filter(isNonEmptyString)
+    : [];
+  const documentUrls = Array.isArray(body.documentUrls)
+    ? body.documentUrls.filter(isNonEmptyString)
+    : [];
+
+  await prisma.teacherProfile.upsert({
+    where: { teacherId: body.teacherId },
+    create: {
+      teacherId: body.teacherId,
+      resumeUrls: JSON.stringify(resumeUrls),
+      documentUrls: JSON.stringify(documentUrls),
+    },
+    update: {
+      resumeUrls: JSON.stringify(resumeUrls),
+      documentUrls: JSON.stringify(documentUrls),
+    },
+  });
+
+  return NextResponse.json({ ok: true });
 }
