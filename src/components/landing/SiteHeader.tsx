@@ -15,7 +15,7 @@ function displayName(session: { user?: { name?: string | null; email?: string | 
 const navLinks = [
   { href: "/tutors", label: "강사진" },
   { href: "/pricing", label: "요금제" },
-  { href: "/#testimonials", label: "학습후기" },
+  { href: "/reviews", label: "학습후기" },
 ];
 
 function SessionActions({

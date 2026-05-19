@@ -2,9 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
+import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { SiteHeader } from "./SiteHeader";
+
+const HOME_TESTIMONIAL_PREVIEW = 3;
+
+const DEFAULT_RESULT_IMAGES = [
+  "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
+  "/images/teachers/default-male.png",
+];
 
 /* ─────────────────────────────────────────── data ── */
 
@@ -169,34 +178,6 @@ function useScrollLandingState() {
   return { activeTab, showFloating };
 }
 
-function useHorizontalScroll() {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef   = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const wrapper = wrapperRef.current;
-      const cards   = cardsRef.current;
-      if (!wrapper || !cards) return;
-      const rect       = wrapper.getBoundingClientRect();
-      const scrollable = wrapper.offsetHeight - window.innerHeight;
-      const progress   = Math.min(Math.max(-rect.top / scrollable, 0), 1);
-      const maxT       = Math.max(cards.scrollWidth - window.innerWidth, 0);
-      cards.style.transform = `translateX(${-progress * maxT}px)`;
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, []);
-
-  return { wrapperRef, cardsRef };
-}
-
 /* ─────────────────────────────────────────── sub-components ── */
 
 function PricingCard({
@@ -259,17 +240,21 @@ function PricingCard({
 
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
-  const { wrapperRef, cardsRef }    = useHorizontalScroll();
   const [priceTab, setPriceTab]     = useState(0);
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
   const cmsResults = results.map(([student, before, after], index) => {
     const itemNumber = index + 1;
-    return [
-      getCmsValue("results", `result${itemNumber}_student`, student),
-      getCmsValue("results", `result${itemNumber}_before`, before),
-      getCmsValue("results", `result${itemNumber}_after`, after),
-    ];
+    return {
+      student: getCmsValue("results", `result${itemNumber}_student`, student),
+      before: getCmsValue("results", `result${itemNumber}_before`, before),
+      after: getCmsValue("results", `result${itemNumber}_after`, after),
+      image: getCmsValue(
+        "results",
+        `result${itemNumber}_image`,
+        DEFAULT_RESULT_IMAGES[index] ?? DEFAULT_RESULT_IMAGES[0],
+      ),
+    };
   });
   const doubledResults = [...cmsResults, ...cmsResults];
   const cmsTeachers = teachers.map((teacher, index) => {
@@ -308,6 +293,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   ];
   const cmsTestimonials =
     cms && cms.testimonials.length > 0 ? cms.testimonials : testimonials;
+  const homeTestimonials = cmsTestimonials.slice(0, HOME_TESTIMONIAL_PREVIEW);
   const cmsFaqs = cms && cms.faqs.length > 0 ? cms.faqs : faqs;
   const cmsSteps = steps.map((step, index) => {
     const stepNumber = index + 1;
@@ -411,19 +397,25 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
           <div className="animation-container mt-10 overflow-hidden">
             <div className="animate-slide flex w-max gap-5 px-5 [--speed:28s]">
-              {doubledResults.map(([student, before, after], index) => (
+              {doubledResults.map((item, index) => (
                 <article
-                  key={`${student}-${index}`}
+                  key={`${item.student}-${index}`}
                   className="w-[260px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[320px]"
                 >
-                  <div className="flex h-36 items-center justify-center bg-gradient-to-br from-primary/90 to-accent/80 p-6">
-                    <span className="text-3xl font-black text-white/20">RESULT</span>
+                  <div className="relative h-36 w-full">
+                    <Image
+                      src={item.image}
+                      alt={item.student}
+                      fill
+                      className="object-cover"
+                      sizes="320px"
+                    />
                   </div>
                   <div className="p-5">
-                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-40">{student}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-40">{item.student}</p>
                     <p className="mt-2 text-lg font-black leading-snug text-neutral-100">
-                      {before}
-                      <span className="text-primary">{after}</span>
+                      {item.before}
+                      <span className="text-primary">{item.after}</span>
                     </p>
                   </div>
                 </article>
@@ -440,35 +432,17 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               학습 후기
             </h2>
             <div className="mt-10 space-y-5">
-              {cmsTestimonials.map((t) => (
-                <article
-                  key={t.info}
-                  className="grid overflow-hidden rounded-[24px] border border-neutral-20 bg-neutral-10 shadow-sm md:grid-cols-[1fr_340px]"
-                >
-                  <div className="p-8 md:p-10">
-                    {/* Quote mark SVG — not a star */}
-                    <svg width="40" height="32" viewBox="0 0 48 38" fill="none" className="text-primary">
-                      <path
-                        d="M18.5 0C7.8 5.1 1.7 12.8 0 23.1C-1.1 31.1 3.3 37.3 10.9 37.3C16.2 37.3 20.1 33.7 20.1 28.6C20.1 24 17.1 20.7 12.5 20.1C14 14.9 17.5 10.9 23 8L18.5 0ZM43.2 0C32.5 5.1 26.4 12.8 24.7 23.1C23.6 31.1 28 37.3 35.6 37.3C40.9 37.3 44.8 33.7 44.8 28.6C44.8 24 41.8 20.7 37.2 20.1C38.7 14.9 42.2 10.9 47.7 8L43.2 0Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    <p className="mt-6 text-base font-bold leading-relaxed text-neutral-100 md:text-lg lg:text-xl">
-                      {t.quote}
-                    </p>
-                    <p className="mt-6 text-sm font-semibold text-neutral-50">{t.info}</p>
-                  </div>
-                  <div className="relative min-h-[240px]">
-                    <Image
-                      src={t.img}
-                      alt={t.info}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width:768px) 100vw, 340px"
-                    />
-                  </div>
-                </article>
+              {homeTestimonials.map((t) => (
+                <TestimonialCard key={t.info} item={t} />
               ))}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/reviews"
+                className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+              >
+                학습 후기 더보기
+              </Link>
             </div>
           </div>
         </section>
@@ -574,54 +548,47 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </section>
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
-        <section id="process" className="bg-neutral-10 pt-16 pb-0 md:pt-20">
+        <section id="process" className="bg-neutral-10 py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
-            <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+            <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
               {getCmsValue("features", "section_title", "이렇게 진행됩니다")}
             </h2>
-            <p className="mt-4 max-w-2xl text-base font-medium text-neutral-50">
+            <p className="mt-3 max-w-2xl text-base font-medium text-neutral-50">
               {getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
             </p>
           </div>
-          {/* horizontal scroll driven by vertical scroll */}
-          <div ref={wrapperRef} className="relative mt-8 h-[2600px] md:h-[2200px]">
-            <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-              <div
-                ref={cardsRef}
-                className="flex gap-5 px-5 transition-transform duration-100 will-change-transform md:gap-6 md:px-10"
-              >
-                {cmsSteps.map((step) => (
-                  <article
-                    key={step.number}
-                    className="w-[300px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[420px]"
-                  >
-                    <div className="relative h-[180px] w-full md:h-[220px]">
-                      <Image
-                        src={step.img}
-                        alt={step.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width:768px) 300px, 420px"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      {/* step number overlaid on image bottom-left */}
-                      <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
-                        {step.number}
-                      </span>
-                    </div>
-                    <div className="p-6 md:p-7">
-                      <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
-                      <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
+          <div className="scrollbar-hide mt-8 overflow-x-auto px-5 pb-2">
+            <div className="flex w-max gap-5 md:gap-6">
+              {cmsSteps.map((step) => (
+                <article
+                  key={step.number}
+                  className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+                >
+                  <div className="relative h-[180px] w-full md:h-[200px]">
+                    <Image
+                      src={step.img}
+                      alt={step.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width:768px) 280px, 380px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
+                      {step.number}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ═══ PRICING ═════════════════════════════════ */}
+                {/* ═══ PRICING ═════════════════════════════════ */}
         <section id="pricing" className="bg-white py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">

@@ -47,6 +47,9 @@ const siteContentDefaults = [
   { section: "results", key: "result3_student", value: "고1 학생", type: "text", order: 8 },
   { section: "results", key: "result3_before", value: "국어 55점→", type: "text", order: 9 },
   { section: "results", key: "result3_after", value: "78점으로 상승", type: "text", order: 10 },
+  { section: "results", key: "result1_image", value: "/images/teachers/default-male.png", type: "image", order: 11 },
+  { section: "results", key: "result2_image", value: "/images/teachers/default-female.png", type: "image", order: 12 },
+  { section: "results", key: "result3_image", value: "/images/teachers/default-male.png", type: "image", order: 13 },
 
   { section: "teachers", key: "section_title", value: "명문대 출신부터\n경력 5년 이상\n전문가까지", type: "text", order: 1 },
   { section: "teachers", key: "section_subtext", value: "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.", type: "text", order: 2 },

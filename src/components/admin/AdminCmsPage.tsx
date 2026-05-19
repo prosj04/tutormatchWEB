@@ -89,9 +89,24 @@ const statsFields: TextFieldConfig[] = [
 ];
 
 const resultDefaults = [
-  ["고2 학생", "수학 5등급→", "2등급으로 상승"],
-  ["중3 학생", "영어 64점→", "87점으로 상승"],
-  ["고1 학생", "국어 55점→", "78점으로 상승"],
+  {
+    student: "고2 학생",
+    before: "수학 5등급→",
+    after: "2등급으로 상승",
+    image: "/images/teachers/default-male.png",
+  },
+  {
+    student: "중3 학생",
+    before: "영어 64점→",
+    after: "87점으로 상승",
+    image: "/images/teachers/default-female.png",
+  },
+  {
+    student: "고1 학생",
+    before: "국어 55점→",
+    after: "78점으로 상승",
+    image: "/images/teachers/default-male.png",
+  },
 ];
 
 const teacherDefaults = [
@@ -638,40 +653,52 @@ export function AdminCmsPage() {
                 onSave={patchContent}
               />
               <div className="grid gap-4 md:grid-cols-3">
-                {resultDefaults.map(([student, before, after], index) => {
+                {resultDefaults.map((result, index) => {
                   const number = index + 1;
                   const fields: TextFieldConfig[] = [
                     {
                       label: "학생",
                       section: "results",
                       keyName: `result${number}_student`,
-                      defaultValue: student,
+                      defaultValue: result.student,
                     },
                     {
                       label: "이전",
                       section: "results",
                       keyName: `result${number}_before`,
-                      defaultValue: before,
+                      defaultValue: result.before,
                     },
                     {
                       label: "결과",
                       section: "results",
                       keyName: `result${number}_after`,
-                      defaultValue: after,
+                      defaultValue: result.after,
                     },
                   ];
                   return (
                     <div key={number} className="rounded-2xl bg-background p-4">
                       <p className="mb-3 text-sm font-black text-primary">결과 {number}</p>
-                      <div className="space-y-3">
-                        {fields.map((field) => (
-                          <ContentField
-                            key={field.keyName}
-                            field={field}
-                            value={getValue(field.section, field.keyName, field.defaultValue)}
-                            onSave={patchContent}
-                          />
-                        ))}
+                      <div className="grid gap-4">
+                        <ImageField
+                          field={{
+                            label: "카드 상단 이미지",
+                            section: "results",
+                            keyName: `result${number}_image`,
+                            defaultValue: result.image,
+                          }}
+                          value={getValue("results", `result${number}_image`, result.image)}
+                          onSave={patchContent}
+                        />
+                        <div className="space-y-3">
+                          {fields.map((field) => (
+                            <ContentField
+                              key={field.keyName}
+                              field={field}
+                              value={getValue(field.section, field.keyName, field.defaultValue)}
+                              onSave={patchContent}
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
                   );
