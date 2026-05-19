@@ -1,5 +1,10 @@
 import { CheckoutContent } from "@/components/checkout/CheckoutContent";
-import { parseSessionsParam, type SessionPlan } from "@/lib/order-pricing";
+import {
+  parseSessionsParam,
+  parseSubjectsParam,
+  type SessionPlan,
+  type SubjectCount,
+} from "@/lib/order-pricing";
 
 type Search = Record<string, string | string[] | undefined>;
 
@@ -19,6 +24,7 @@ export default function CheckoutPage({ searchParams }: PageProps) {
   const tutorId = first(searchParams.tutor) ?? "1";
   const sessionsRaw = first(searchParams.sessions);
   const sessions: SessionPlan = parseSessionsParam(sessionsRaw);
+  const subjects: SubjectCount = parseSubjectsParam(first(searchParams.subjects));
   const showFailBanner = first(searchParams.error) === "1";
 
   return (
@@ -28,7 +34,7 @@ export default function CheckoutPage({ searchParams }: PageProps) {
           결제가 완료되지 않았습니다. 다시 시도하거나 다른 수단을 선택해 주세요.
         </div>
       ) : null}
-      <CheckoutContent tutorId={tutorId} sessions={sessions} />
+      <CheckoutContent tutorId={tutorId} sessions={sessions} subjects={subjects} />
     </>
   );
 }

@@ -5,7 +5,7 @@ export const pricingPageDefaults = [
   {
     section: "pricing_page",
     key: "header_subtext",
-    value: "가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.\n모든 플랜에 학습관리 시스템이 포함됩니다.",
+    value: "주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.\n1과목·2과목(선생님 2명) 패키지를 선택하세요.",
     type: "text",
     order: 2,
   },

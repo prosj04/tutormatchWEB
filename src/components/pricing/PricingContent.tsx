@@ -2,37 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
+
+import { PricingPlanActions } from "@/components/pricing/PricingPlanActions";
 import { getCmsSectionValue, parseMultilineList } from "@/lib/cms-page-defaults";
-
-const PLAN_A_FALLBACK = {
-  title: "월 4회",
-  price: "400,000원",
-  subtitle: "주 1회 · 기본 집중",
-  features: [
-    "주 1회 수업 (50분)",
-    "학습 진도 관리",
-    "과제 관리",
-    "AI 질답 무제한",
-    "강사 첨삭 월 4회",
-  ],
-  sessions: "4",
-};
-
-const PLAN_B_FALLBACK = {
-  title: "월 8회",
-  price: "720,000원",
-  subtitle: "주 2회 · 집중 관리",
-  features: [
-    "주 2회 수업 (50분)",
-    "주 2회 집중 관리",
-    "우선 강사 배정",
-    "AI 질답 무제한",
-    "강사 첨삭 무제한",
-    "월간 심층 리포트",
-  ],
-  sessions: "8",
-  recommended: true,
-};
+import {
+  CONSULTATION_HREF,
+  formatPlanPrice,
+  PRICING_PLANS,
+  type PricingPlanDefinition,
+} from "@/lib/pricing-plans";
 
 const FAQ_FALLBACK = [
   {
@@ -70,20 +48,21 @@ function PunchRow() {
   );
 }
 
-type Plan = {
+function PlanCard({
+  plan,
+  title,
+  subtitle,
+  price,
+  features,
+}: {
+  plan: PricingPlanDefinition;
   title: string;
-  price: string;
   subtitle: string;
+  price: string;
   features: string[];
-  sessions: string;
-  recommended?: boolean;
-};
-
-function PlanCard({ plan, visible }: { plan: Plan; visible: boolean }) {
+}) {
   return (
-    <article
-      className={`${visible ? "block" : "hidden lg:block"} overflow-hidden rounded-[32px] bg-neutral-10`}
-    >
+    <article className="overflow-hidden rounded-[32px] bg-neutral-10">
       <div className="h-10 rounded-t-[32px] bg-neutral-10" />
       <div className="relative flex flex-col rounded-t-[32px] bg-neutral-100 pb-14 pl-8 pr-8 pt-8 text-white md:pb-16 md:pl-10 md:pr-10 md:pt-10">
         {plan.recommended ? (
@@ -92,23 +71,18 @@ function PlanCard({ plan, visible }: { plan: Plan; visible: boolean }) {
           </span>
         ) : null}
         <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
-        <h2 className="mt-5 text-3xl font-black text-white">{plan.title}</h2>
-        <p className="mt-5 whitespace-nowrap text-5xl font-black tracking-tight md:text-6xl">{plan.price}</p>
-        <p className="mt-3 text-sm text-neutral-40">{plan.subtitle}</p>
+        <h2 className="mt-5 text-3xl font-black text-white">{title}</h2>
+        <p className="mt-5 whitespace-nowrap text-5xl font-black tracking-tight md:text-6xl">{price}</p>
+        <p className="mt-3 text-sm text-neutral-40">{subtitle}</p>
         <ul className="mt-8 space-y-4 text-sm font-medium leading-relaxed text-neutral-30">
-          {plan.features.map((f) => (
+          {features.map((f) => (
             <li key={f} className="flex gap-3">
               <span className="text-primary">·</span>
               {f}
             </li>
           ))}
         </ul>
-        <Link
-          href={`/checkout?sessions=${plan.sessions}&tutor=1`}
-          className="mt-auto mt-10 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
-        >
-          이 플랜으로 시작
-        </Link>
+        <PricingPlanActions sessions={plan.sessions} subjects={plan.subjects} compact />
         <PunchRow />
       </div>
     </article>
@@ -124,22 +98,52 @@ export function PricingContent({
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "pricing_page", key, fallback);
 
-  const planA: Plan = {
-    title: get("plan4_title", PLAN_A_FALLBACK.title),
-    price: get("plan4_price", PLAN_A_FALLBACK.price),
-    subtitle: get("plan4_subtitle", PLAN_A_FALLBACK.subtitle),
-    features: parseMultilineList(get("plan4_features", PLAN_A_FALLBACK.features.join("\n")), PLAN_A_FALLBACK.features),
-    sessions: PLAN_A_FALLBACK.sessions,
+  const cmsPlanOverrides: Partial<
+    Record<string, { title?: string; subtitle?: string; features?: string[] }>
+  > = {
+    "4-1": {
+      title: get("plan4_title", "월 4회"),
+      subtitle: get("plan4_subtitle", "1과목 · 주 1회"),
+      features: parseMultilineList(
+        get(
+          "plan4_features",
+          "주 1회 수업 (50분)\n학습 진도 관리\n과제 관리\nAI 질답 무제한\n강사 첨삭 월 4회",
+        ),
+        PRICING_PLANS[0].features,
+      ),
+    },
+    "8-1": {
+      title: get("plan8_title", "월 8회"),
+      subtitle: get("plan8_subtitle", "1과목 · 주 2회"),
+      features: parseMultilineList(
+        get(
+          "plan8_features",
+          "주 2회 수업 (50분)\n주 2회 집중 관리\n우선 강사 배정\nAI 질답 무제한\n강사 첨삭 무제한\n월간 심층 리포트",
+        ),
+        PRICING_PLANS[1].features,
+      ),
+    },
   };
 
-  const planB: Plan = {
-    title: get("plan8_title", PLAN_B_FALLBACK.title),
-    price: get("plan8_price", PLAN_B_FALLBACK.price),
-    subtitle: get("plan8_subtitle", PLAN_B_FALLBACK.subtitle),
-    features: parseMultilineList(get("plan8_features", PLAN_B_FALLBACK.features.join("\n")), PLAN_B_FALLBACK.features),
-    sessions: PLAN_B_FALLBACK.sessions,
-    recommended: true,
-  };
+  const plans = PRICING_PLANS.map((plan) => {
+    const override = cmsPlanOverrides[plan.id];
+    const cmsPrice =
+      plan.id === "4-1"
+        ? get("plan4_price", "")
+        : plan.id === "8-1"
+          ? get("plan8_price", "")
+          : "";
+    return {
+      plan,
+      title: override?.title ?? plan.title,
+      subtitle: override?.subtitle ?? plan.subtitle,
+      features: override?.features ?? plan.features,
+      price:
+        cmsPrice && (plan.id === "4-1" || plan.id === "8-1")
+          ? cmsPrice
+          : formatPlanPrice(plan.sessions, plan.subjects),
+    };
+  });
 
   const faqs = FAQ_FALLBACK.map((item, index) => {
     const n = index + 1;
@@ -160,31 +164,55 @@ export function PricingContent({
           <p className="mt-6 max-w-2xl whitespace-pre-line text-lg font-medium leading-relaxed text-neutral-50">
             {get(
               "header_subtext",
-              "가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.\n모든 플랜에 학습관리 시스템이 포함됩니다.",
+              "주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.\n1과목·2과목(선생님 2명) 패키지를 선택하세요.",
             )}
+          </p>
+          <p className="mt-4 text-sm font-medium text-neutral-50">
+            결제 후 매니저 배정 또는 상담 먼저 신청 중 선택하실 수 있습니다.
           </p>
         </div>
       </div>
 
       <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
-        <div className="mb-7 grid grid-cols-2 rounded-full bg-white p-1 shadow-sm lg:hidden">
-          {[planA.title, planB.title].map((label, index) => (
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-bold text-neutral-50">
+            주 1회(월 4회) · 회당 10만원 / 주 2회 이상(월 8회) · 회당 9만원
+          </p>
+          <Link
+            href={CONSULTATION_HREF}
+            className="inline-flex shrink-0 items-center justify-center rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+          >
+            상담 먼저 신청하기
+          </Link>
+        </div>
+
+        <div className="mb-7 grid grid-cols-2 gap-2 rounded-full bg-white p-1 shadow-sm lg:hidden">
+          {plans.map((item, index) => (
             <button
-              key={label}
+              key={item.plan.id}
               type="button"
               onClick={() => setActivePlan(index)}
-              className={`rounded-full py-3 text-sm font-black transition ${
+              className={`rounded-full py-2.5 text-xs font-black transition sm:text-sm ${
                 activePlan === index ? "bg-primary text-white" : "text-neutral-50"
               }`}
             >
-              {label}
+              {item.subtitle}
             </button>
           ))}
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <PlanCard plan={planA} visible={activePlan === 0} />
-          <PlanCard plan={planB} visible={activePlan === 1} />
+        <div className="grid gap-6 md:grid-cols-2 lg:gap-8">
+          {plans.map((item, index) => (
+            <div key={item.plan.id} className={activePlan === index ? "block" : "hidden lg:block"}>
+              <PlanCard
+                plan={item.plan}
+                title={item.title}
+                subtitle={item.subtitle}
+                price={item.price}
+                features={item.features}
+              />
+            </div>
+          ))}
         </div>
 
         <section className="mt-24 md:mt-32">

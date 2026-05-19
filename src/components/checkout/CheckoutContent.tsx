@@ -10,10 +10,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { formatKRW } from "@/lib/format-won";
 import {
+  getPlanLabel,
   getPriceBreakdown,
-  PLAN_LABEL,
   type SessionPlan,
+  type SubjectCount,
 } from "@/lib/order-pricing";
+import { CONSULTATION_HREF } from "@/lib/pricing-plans";
 import { TOSS_WIDGET_CLIENT_KEY } from "@/lib/toss-client";
 
 type PMW = ReturnType<PaymentWidgetInstance["renderPaymentMethods"]>;
@@ -24,12 +26,14 @@ const AGREEMENT_SELECTOR = "#concord-agreement";
 type CheckoutContentProps = {
   tutorId: string;
   sessions: SessionPlan;
+  subjects: SubjectCount;
 };
 
-export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
+export function CheckoutContent({ tutorId, sessions, subjects }: CheckoutContentProps) {
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
+  const planLabel = getPlanLabel(sessions, subjects);
 
-  const { total, platformFee, lessonFee } = getPriceBreakdown(sessions);
+  const { total, platformFee, lessonFee } = getPriceBreakdown(sessions, subjects);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -101,7 +105,7 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
     }
 
     const orderId = `CONCORD_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-    const orderName = `Concord ${PLAN_LABEL[sessions]} · ${tutorName}`;
+    const orderName = `Concord ${planLabel} · ${tutorName}`;
 
     setPaying(true);
     try {
@@ -113,7 +117,7 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
         customerEmail: email.trim(),
         customerMobilePhone: phone.replace(/\D/g, ""),
         successUrl: `${origin}/success`,
-        failUrl: `${origin}/checkout?tutor=${encodeURIComponent(tutorId)}&sessions=${sessions}&error=1`,
+        failUrl: `${origin}/checkout?tutor=${encodeURIComponent(tutorId)}&sessions=${sessions}&subjects=${subjects}&error=1`,
       });
     } catch (e) {
       console.error(e);
@@ -121,7 +125,7 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
     } finally {
       setPaying(false);
     }
-  }, [name, phone, email, termsAgreed, sessions, tutorName, tutorId]);
+  }, [name, phone, email, termsAgreed, sessions, subjects, planLabel, tutorName, tutorId]);
 
   return (
     <div className="pb-24 md:pb-32">
@@ -133,12 +137,18 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
       </div>
 
       <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
-        <div className="mb-10">
+        <div className="mb-10 flex flex-wrap items-center gap-4">
           <Link
-            href="/tutors"
+            href="/pricing"
             className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
           >
-            ← 강사 목록
+            ← 요금제
+          </Link>
+          <Link
+            href={CONSULTATION_HREF}
+            className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
+          >
+            상담 먼저 신청하기
           </Link>
         </div>
 
@@ -149,7 +159,11 @@ export function CheckoutContent({ tutorId, sessions }: CheckoutContentProps) {
               <dl className="mt-6 space-y-4 text-sm">
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
                   <dt className="text-text-secondary">플랜</dt>
-                  <dd className="font-semibold text-text-primary">{PLAN_LABEL[sessions]}</dd>
+                  <dd className="font-semibold text-text-primary">{planLabel}</dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
+                  <dt className="text-text-secondary">과목 수</dt>
+                  <dd className="font-semibold text-text-primary">{subjects}과목</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
                   <dt className="text-text-secondary">강사</dt>

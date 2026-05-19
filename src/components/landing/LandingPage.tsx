@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
+import { PricingPlanActions } from "@/components/pricing/PricingPlanActions";
+import {
+  formatPlanPrice,
+  HOME_PRICING_PLANS,
+  type PricingPlanDefinition,
+} from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -181,56 +187,37 @@ function useScrollLandingState() {
 /* ─────────────────────────────────────────── sub-components ── */
 
 function PricingCard({
-  title,
-  price,
-  subtitle,
-  features,
-  sessions,
-  recommended,
+  plan,
   active = true,
 }: {
-  title: string;
-  price: string;
-  subtitle: string;
-  features: string[];
-  sessions: string;
-  recommended?: boolean;
+  plan: PricingPlanDefinition;
   active?: boolean;
 }) {
+  const price = formatPlanPrice(plan.sessions, plan.subjects);
   return (
-    /* h-full so the grid stretches both cards to equal height */
     <article
       className={`${active ? "flex" : "hidden md:flex"} h-full flex-col overflow-hidden rounded-[28px] bg-neutral-10`}
     >
-      {/* top ripped gap */}
       <div className="h-10 shrink-0 rounded-t-[28px] bg-neutral-10" />
-      {/* main card body — flex-1 so it fills remaining height */}
       <div className="relative flex flex-1 flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-8 text-white md:p-8 md:pb-10">
-        {recommended && (
+        {plan.recommended ? (
           <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
             추천
           </span>
-        )}
+        ) : null}
         <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
-        <h3 className="mt-4 text-2xl font-black">{title}</h3>
+        <h3 className="mt-4 text-2xl font-black">{plan.title}</h3>
         <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight md:text-5xl">{price}</p>
-        <p className="mt-2 text-sm text-neutral-40">{subtitle}</p>
+        <p className="mt-2 text-sm text-neutral-40">{plan.subtitle}</p>
         <ul className="mt-7 space-y-3 text-sm font-medium leading-relaxed text-neutral-30">
-          {features.map((f) => (
+          {plan.features.map((f) => (
             <li key={f} className="flex gap-3">
               <span className="text-primary">·</span>
               {f}
             </li>
           ))}
         </ul>
-        {/* mt-auto pushes CTA to bottom regardless of feature count */}
-        <Link
-          href={`/checkout?sessions=${sessions}&tutor=1`}
-          className="mt-auto inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
-          style={{ marginTop: "auto", paddingTop: "1rem" }}
-        >
-          이 플랜으로 시작
-        </Link>
+        <PricingPlanActions sessions={plan.sessions} subjects={plan.subjects} compact />
       </div>
     </article>
   );
@@ -600,58 +587,36 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   월 40만원부터
                 </h2>
                 <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
-                  월 4회 또는 8회 패키지를 선택하세요.
+                  주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.
+                  <br />
+                  2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.
                 </p>
+                <Link
+                  href="/pricing"
+                  className="mt-6 inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+                >
+                  요금제 더보기
+                </Link>
               </div>
               <div>
-                {/* mobile tab switcher */}
                 <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
-                  {["월 4회", "월 8회"].map((label, index) => (
+                  {HOME_PRICING_PLANS.map((plan, index) => (
                     <button
-                      key={label}
+                      key={plan.id}
                       type="button"
                       onClick={() => setPriceTab(index)}
                       className={`rounded-full py-3 text-sm font-black transition ${
                         priceTab === index ? "bg-primary text-white" : "text-neutral-50"
                       }`}
                     >
-                      {label}
+                      {plan.title}
                     </button>
                   ))}
                 </div>
-                {/* equal-height grid — items-stretch is default on grid, enforced via h-full on articles */}
                 <div className="grid items-stretch gap-6 md:grid-cols-2">
-                  <PricingCard
-                    title="월 4회"
-                    price="400,000원"
-                    subtitle="주 1회 · 기본 집중"
-                    features={[
-                      "주 1회 수업 (50분)",
-                      "학습 진도 관리",
-                      "과제 관리",
-                      "AI 질답 이용 가능",
-                      "수시 강사 첨삭, 질답",
-                    ]}
-                    sessions="4"
-                    active={priceTab === 0}
-                  />
-                  <PricingCard
-                    title="월 8회"
-                    price="720,000원"
-                    subtitle="주 2회 · 집중 관리"
-                    features={[
-                      "주 2회 수업 (50분)",
-                      "복수 과목 선택 가능",
-                      "학습 진도 관리",
-                      "과제 관리",
-                      "AI 질답 횟수 2배 제공",
-                      "수시 강사 첨삭, 질답",
-
-                    ]}
-                    sessions="8"
-                    recommended
-                    active={priceTab === 1}
-                  />
+                  {HOME_PRICING_PLANS.map((plan, index) => (
+                    <PricingCard key={plan.id} plan={plan} active={priceTab === index} />
+                  ))}
                 </div>
               </div>
             </div>
