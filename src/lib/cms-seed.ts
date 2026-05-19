@@ -1,3 +1,4 @@
+import { pricingPageDefaults, tutorsPageDefaults } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
 
 const siteContentDefaults = [
@@ -79,6 +80,9 @@ const siteContentDefaults = [
   { section: "management", key: "item2_desc", value: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다.", type: "text", order: 6 },
   { section: "management", key: "item3_title", value: "리포트", type: "text", order: 7 },
   { section: "management", key: "item3_desc", value: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다.", type: "text", order: 8 },
+
+  ...pricingPageDefaults,
+  ...tutorsPageDefaults,
 ];
 
 const testimonialDefaults = [

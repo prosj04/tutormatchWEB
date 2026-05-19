@@ -1,11 +1,13 @@
 import { PricingContent } from "@/components/pricing/PricingContent";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
-export const dynamic = "force-static";
+export const revalidate = 60;
 
 export const metadata = {
   title: "요금제",
 };
 
-export default function PricingPage() {
-  return <PricingContent />;
+export default async function PricingPage() {
+  const siteContent = await getGroupedSiteContent();
+  return <PricingContent siteContent={siteContent} />;
 }

@@ -199,6 +199,164 @@ const managementFields: TextFieldConfig[] = [
   },
 ];
 
+const AUTOSAVE_DELAY_MS = 10_000;
+
+const pricingPageFields: TextFieldConfig[] = [
+  {
+    label: "페이지 제목",
+    section: "pricing_page",
+    keyName: "header_title",
+    defaultValue: "1:1 맞춤 과외,\n월 40만원부터",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "페이지 설명",
+    section: "pricing_page",
+    keyName: "header_subtext",
+    defaultValue:
+      "가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.\n모든 플랜에 학습관리 시스템이 포함됩니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+  { label: "월 4회 제목", section: "pricing_page", keyName: "plan4_title", defaultValue: "월 4회" },
+  { label: "월 4회 가격", section: "pricing_page", keyName: "plan4_price", defaultValue: "400,000원" },
+  {
+    label: "월 4회 부제",
+    section: "pricing_page",
+    keyName: "plan4_subtitle",
+    defaultValue: "주 1회 · 기본 집중",
+  },
+  {
+    label: "월 4회 혜택 (줄바꿈)",
+    section: "pricing_page",
+    keyName: "plan4_features",
+    defaultValue: "주 1회 수업 (50분)\n학습 진도 관리\n과제 관리\nAI 질답 무제한\n강사 첨삭 월 4회",
+    kind: "textarea",
+    rows: 5,
+  },
+  { label: "월 8회 제목", section: "pricing_page", keyName: "plan8_title", defaultValue: "월 8회" },
+  { label: "월 8회 가격", section: "pricing_page", keyName: "plan8_price", defaultValue: "720,000원" },
+  {
+    label: "월 8회 부제",
+    section: "pricing_page",
+    keyName: "plan8_subtitle",
+    defaultValue: "주 2회 · 집중 관리",
+  },
+  {
+    label: "월 8회 혜택 (줄바꿈)",
+    section: "pricing_page",
+    keyName: "plan8_features",
+    defaultValue:
+      "주 2회 수업 (50분)\n주 2회 집중 관리\n우선 강사 배정\nAI 질답 무제한\n강사 첨삭 무제한\n월간 심층 리포트",
+    kind: "textarea",
+    rows: 6,
+  },
+  { label: "FAQ 섹션 제목", section: "pricing_page", keyName: "faq_title", defaultValue: "자주 묻는 질문" },
+  {
+    label: "FAQ 1 질문",
+    section: "pricing_page",
+    keyName: "faq1_q",
+    defaultValue: "수업 시간과 환불 규정은 어떻게 되나요?",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "FAQ 1 답변",
+    section: "pricing_page",
+    keyName: "faq1_a",
+    defaultValue:
+      "1회 수업은 50분 기준이며, 개강 전 결제 취소는 전액 환불됩니다. 개강 후에는 잔여 횟수에 비례하여 산정되며, 세부 약관은 계약서에 명시됩니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+  {
+    label: "FAQ 2 질문",
+    section: "pricing_page",
+    keyName: "faq2_q",
+    defaultValue: "강사 변경이 가능한가요?",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "FAQ 2 답변",
+    section: "pricing_page",
+    keyName: "faq2_a",
+    defaultValue:
+      "첫 2회 수업 이내에만 동일 요금제 범위에서 1회에 한해 변경이 가능합니다. 이후에는 매니저와 별도 협의가 필요합니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+  {
+    label: "FAQ 3 질문",
+    section: "pricing_page",
+    keyName: "faq3_q",
+    defaultValue: "AI 질답은 어떻게 이용하나요?",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "FAQ 3 답변",
+    section: "pricing_page",
+    keyName: "faq3_a",
+    defaultValue:
+      "가입 시 발급되는 학습 계정으로 24시간 질문이 가능하며, 강사 첨삭 횟수는 선택하신 플랜에 따라 월 4회 또는 무제한 혜택이 적용됩니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+  {
+    label: "FAQ 4 질문",
+    section: "pricing_page",
+    keyName: "faq4_q",
+    defaultValue: "결제 수단은 무엇이 있나요?",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "FAQ 4 답변",
+    section: "pricing_page",
+    keyName: "faq4_a",
+    defaultValue: "체크아웃 페이지에서 카드, 간편결제 등 토스페이먼츠에서 제공하는 수단을 선택하실 수 있습니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+];
+
+const tutorsPageFields: TextFieldConfig[] = [
+  { label: "페이지 제목", section: "tutors_page", keyName: "header_title", defaultValue: "강사진" },
+  {
+    label: "페이지 설명",
+    section: "tutors_page",
+    keyName: "header_subtext",
+    defaultValue:
+      "관리자 승인이 완료된 선생님을 확인할 수 있습니다. 카드 내용은 관리자 페이지에서 수정한 정보가 바로 반영됩니다.",
+    kind: "textarea",
+    rows: 3,
+  },
+  {
+    label: "빈 목록 제목",
+    section: "tutors_page",
+    keyName: "empty_title",
+    defaultValue: "등록된 강사진이 없습니다.",
+  },
+  {
+    label: "빈 목록 설명",
+    section: "tutors_page",
+    keyName: "empty_desc",
+    defaultValue: "승인된 선생님이 생기면 이곳에 표시됩니다.",
+    kind: "textarea",
+    rows: 2,
+  },
+];
+
+const CMS_PAGES = [
+  { id: "home", label: "홈", previewHref: "/" },
+  { id: "pricing", label: "요금제", previewHref: "/pricing" },
+  { id: "tutors", label: "강사진", previewHref: "/tutors" },
+] as const;
+
+type CmsPageId = (typeof CMS_PAGES)[number]["id"];
+
 const ctaFields: TextFieldConfig[] = [
   {
     label: "하단 CTA 제목",
@@ -221,10 +379,12 @@ const ctaFields: TextFieldConfig[] = [
 
 export function AdminCmsPage() {
   const sensors = useSensors(useSensor(PointerSensor));
+  const [activePage, setActivePage] = useState<CmsPageId>("home");
   const [content, setContent] = useState<CmsContent>({});
   const [testimonials, setTestimonials] = useState<TestimonialRow[]>([]);
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const previewHref = CMS_PAGES.find((page) => page.id === activePage)?.previewHref ?? "/";
 
   const hasNoContent =
     !loading &&
@@ -369,19 +529,37 @@ export function AdminCmsPage() {
   return (
     <div className="relative pb-16">
       <a
-        href="/"
+        href={previewHref}
         target="_blank"
         rel="noreferrer"
         className="fixed right-6 top-20 z-40 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg"
       >
-        홈페이지 미리보기
+        페이지 미리보기
       </a>
 
       <div>
-        <h2 className="text-2xl font-black text-text-primary">홈페이지 관리</h2>
+        <h2 className="text-2xl font-black text-text-primary">사이트 콘텐츠 관리</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          홈페이지와 같은 순서로 문구와 사진을 바로 편집합니다. 변경사항은 최대 60초 내에 반영됩니다.
+          각 페이지 문구와 사진을 바로 편집합니다. 자동 저장은 입력 후 약 10초 뒤에 반영되며, 공개 페이지에는 최대 60초 내에
+          적용됩니다.
         </p>
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-2 border-b border-gray-200 pb-1">
+        {CMS_PAGES.map((page) => (
+          <button
+            key={page.id}
+            type="button"
+            onClick={() => setActivePage(page.id)}
+            className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
+              activePage === page.id
+                ? "border-primary text-primary"
+                : "border-transparent text-text-muted hover:text-text-secondary"
+            }`}
+          >
+            {page.label}
+          </button>
+        ))}
       </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
@@ -405,6 +583,8 @@ export function AdminCmsPage() {
         <p className="mt-8 text-sm text-text-secondary">불러오는 중...</p>
       ) : (
         <div className="mt-8 space-y-8">
+          {activePage === "home" ? (
+            <>
           <EditorSection eyebrow="HERO" title="첫 화면">
             <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="grid gap-4">
@@ -642,6 +822,38 @@ export function AdminCmsPage() {
               </SortableContext>
             </DndContext>
           </EditorSection>
+            </>
+          ) : null}
+
+          {activePage === "pricing" ? (
+            <EditorSection eyebrow="PRICING" title="요금제 페이지">
+              <div className="grid gap-4 lg:grid-cols-2">
+                {pricingPageFields.map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
+          ) : null}
+
+          {activePage === "tutors" ? (
+            <EditorSection eyebrow="TUTORS" title="강사진 페이지">
+              <div className="grid gap-4 lg:grid-cols-2">
+                {tutorsPageFields.map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
+          ) : null}
         </div>
       )}
     </div>
@@ -739,7 +951,7 @@ function AutoSaveInput({
 
     const timeout = window.setTimeout(() => {
       void save(localValue);
-    }, 500);
+    }, AUTOSAVE_DELAY_MS);
 
     return () => window.clearTimeout(timeout);
   }, [localValue, save]);

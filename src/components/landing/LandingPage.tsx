@@ -343,10 +343,10 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
           {/* centred content */}
           <div className="relative mx-auto max-w-5xl animate-fade-in">
-            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.04em] text-white">
+            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
               {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed text-neutral-30 md:text-lg">
+            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed tracking-[0.01em] text-neutral-30 md:text-lg">
               {getCmsValue("hero", "subtext", "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -453,10 +453,10 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                         fill="currentColor"
                       />
                     </svg>
-                    <p className="mt-6 text-lg font-black leading-relaxed text-neutral-100 md:text-xl lg:text-2xl">
+                    <p className="mt-6 text-base font-bold leading-relaxed text-neutral-100 md:text-lg lg:text-xl">
                       {t.quote}
                     </p>
-                    <p className="mt-6 text-sm font-bold text-neutral-50">{t.info}</p>
+                    <p className="mt-6 text-sm font-semibold text-neutral-50">{t.info}</p>
                   </div>
                   <div className="relative min-h-[240px]">
                     <Image

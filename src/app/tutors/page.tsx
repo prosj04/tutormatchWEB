@@ -1,6 +1,7 @@
 import { PublicShell } from "@/components/layout/PublicShell";
 import { TutorsListing } from "@/components/tutors/TutorsListing";
 import { prisma } from "@/lib/prisma";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const metadata = {
   title: "강사진",
@@ -16,7 +17,8 @@ function splitSubjects(value: string): string[] {
 }
 
 export default async function TutorsPage() {
-  const teachers = await prisma.teacher.findMany({
+  const [teachers, siteContent] = await Promise.all([
+    prisma.teacher.findMany({
     where: {
       approved: true,
       user: { role: { in: ["TEACHER", "MANAGER"] } },
@@ -31,7 +33,9 @@ export default async function TutorsPage() {
       experience: true,
       profile: { select: { photoUrl: true, intro: true } },
     },
-  });
+  }),
+    getGroupedSiteContent(),
+  ]);
 
   const tutors = teachers.map((teacher) => ({
     id: teacher.id,
@@ -45,7 +49,7 @@ export default async function TutorsPage() {
 
   return (
     <PublicShell>
-      <TutorsListing tutors={tutors} />
+      <TutorsListing tutors={tutors} siteContent={siteContent} />
     </PublicShell>
   );
 }
