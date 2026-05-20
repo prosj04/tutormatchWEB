@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-import { buildCheckoutHref, formatPlanPrice, type PricingPlanDefinition } from "@/lib/pricing-plans";
+import {
+  buildInstantSignupHref,
+  formatPlanPrice,
+  type PricingPlanDefinition,
+} from "@/lib/pricing-plans";
 
 type PricingPlanCardProps = {
   plan: PricingPlanDefinition;
@@ -49,7 +53,7 @@ export function PricingPlanCard({
           ))}
         </ul>
         <Link
-          href={buildCheckoutHref(plan.sessions, plan.subjects)}
+          href={buildInstantSignupHref(plan.sessions, plan.subjects)}
           className="mt-auto inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
           style={{ marginTop: "auto", paddingTop: "1rem" }}
         >

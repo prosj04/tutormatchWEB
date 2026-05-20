@@ -18,6 +18,8 @@ import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { extraPublicPagesDefaults } from "@/lib/cms-page-defaults";
+
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
 
@@ -364,10 +366,86 @@ const tutorsPageFields: TextFieldConfig[] = [
   },
 ];
 
+const EXTRA_PAGE_LABELS: Record<string, Record<string, string>> = {
+  faq_page: {
+    kicker: "꼬리글",
+    title: "제목",
+    subtext: "설명",
+    empty_text: "FAQ 없을 때 안내",
+  },
+  reviews_page: {
+    kicker: "꼬리글",
+    title: "제목",
+    subtext: "설명",
+    empty_text: "후기 없을 때 안내",
+  },
+  login_page: {
+    kicker: "꼬리글",
+    title: "제목",
+    subtext: "설명",
+    signup_prompt: "회원가입 유도 (버튼 앞)",
+    signup_cta: "상담 신청 버튼",
+  },
+  checkout_page: {
+    header_kicker: "상단 꼬리글",
+    header_title: "페이지 제목",
+    link_pricing: "요금제 링크",
+    link_consultation: "상담 링크",
+    section_order_title: "주문 요약 제목",
+    dt_plan: "플랜 항목",
+    dt_subjects: "과목 수 항목",
+    dt_tutor: "강사 항목",
+    dt_platform: "플랫폼 이용료",
+    dt_lesson: "수업료",
+    dt_total: "총 결제금액",
+    section_payment_title: "결제 수단 제목",
+    payment_note: "결제 수단 안내",
+    section_customer_title: "주문자 정보 제목",
+    label_name: "이름 라벨",
+    label_phone: "연락처 라벨",
+    label_email: "이메일 라벨",
+    terms_text: "약관 동의 문구",
+    pay_button: "결제 버튼",
+    paying_label: "결제 중 표시",
+    widget_loading: "위젯 로딩 문구",
+    fail_banner: "결제 실패 배너",
+  },
+  success_page: {
+    kicker: "꼬리글",
+    title: "제목",
+    body: "본문",
+    label_order: "주문번호 라벨",
+    label_payment_key: "결제키 라벨",
+    label_amount: "승인 금액 라벨",
+    missing_payment_info: "결제 정보 없을 때",
+    link_home: "홈 버튼",
+    link_consultation: "상담 버튼",
+  },
+};
+
+function buildExtraFields(section: string): TextFieldConfig[] {
+  return extraPublicPagesDefaults
+    .filter((row) => row.section === section)
+    .map((row) => {
+      const long = row.value.includes("\n") || row.value.length > 100;
+      return {
+        label: EXTRA_PAGE_LABELS[section]?.[row.key] ?? row.key,
+        section: row.section,
+        keyName: row.key,
+        defaultValue: row.value,
+        ...(long ? { kind: "textarea" as const, rows: 3 } : {}),
+      };
+    });
+}
+
 const CMS_PAGES = [
   { id: "home", label: "홈", previewHref: "/" },
   { id: "pricing", label: "요금제", previewHref: "/pricing" },
   { id: "tutors", label: "강사진", previewHref: "/tutors" },
+  { id: "faq", label: "FAQ", previewHref: "/faq" },
+  { id: "reviews", label: "학습 후기", previewHref: "/reviews" },
+  { id: "login", label: "로그인", previewHref: "/login" },
+  { id: "commerce", label: "결제·완료", previewHref: "/checkout" },
 ] as const;
 
 type CmsPageId = (typeof CMS_PAGES)[number]["id"];
@@ -879,7 +957,111 @@ export function AdminCmsPage() {
                   />
                 ))}
               </div>
+              <p className="mt-6 text-sm text-text-secondary">
+                공개 강사진 목록·상세의 프로필 사진은 업로드 사진 대신, 아래 성별 기본 이미지를 사용합니다. 선생님별 성별은
+                강사 관리 → 수정에서 설정합니다.
+              </p>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <ImageField
+                  field={{
+                    label: "공개용 기본 사진 (남)",
+                    section: "tutors_page",
+                    keyName: "public_photo_male",
+                    defaultValue: "/images/teachers/default-male.png",
+                  }}
+                  value={getValue("tutors_page", "public_photo_male", "/images/teachers/default-male.png")}
+                  onSave={patchContent}
+                />
+                <ImageField
+                  field={{
+                    label: "공개용 기본 사진 (여)",
+                    section: "tutors_page",
+                    keyName: "public_photo_female",
+                    defaultValue: "/images/teachers/default-female.png",
+                  }}
+                  value={getValue("tutors_page", "public_photo_female", "/images/teachers/default-female.png")}
+                  onSave={patchContent}
+                />
+              </div>
             </EditorSection>
+          ) : null}
+
+          {activePage === "faq" ? (
+            <EditorSection eyebrow="FAQ" title="FAQ 페이지 (고정 영역)">
+              <p className="mb-4 text-sm text-text-secondary">
+                질문·답변 목록은 홈 탭 하단 또는 이 목록과 동일한 DB를 사용합니다.
+              </p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                {buildExtraFields("faq_page").map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
+          ) : null}
+
+          {activePage === "reviews" ? (
+            <EditorSection eyebrow="REVIEWS" title="학습 후기 페이지 (고정 영역)">
+              <p className="mb-4 text-sm text-text-secondary">후기 카드는 홈 탭의 후기 목록과 같은 DB입니다.</p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                {buildExtraFields("reviews_page").map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
+          ) : null}
+
+          {activePage === "login" ? (
+            <EditorSection eyebrow="LOGIN" title="로그인 페이지">
+              <div className="grid gap-4 lg:grid-cols-2">
+                {buildExtraFields("login_page").map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
+          ) : null}
+
+          {activePage === "commerce" ? (
+            <>
+              <EditorSection eyebrow="CHECKOUT" title="결제 페이지">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildExtraFields("checkout_page").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={patchContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+              <EditorSection eyebrow="SUCCESS" title="결제 완료 페이지">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildExtraFields("success_page").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={patchContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+            </>
           ) : null}
         </div>
       )}

@@ -1,4 +1,4 @@
-import { pricingPageDefaults, tutorsPageDefaults } from "@/lib/cms-page-defaults";
+import { extraPublicPagesDefaults, pricingPageDefaults, tutorsPageDefaults } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
 
 const siteContentDefaults = [
@@ -86,6 +86,7 @@ const siteContentDefaults = [
 
   ...pricingPageDefaults,
   ...tutorsPageDefaults,
+  ...extraPublicPagesDefaults,
 ];
 
 const testimonialDefaults = [

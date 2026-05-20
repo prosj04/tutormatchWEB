@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import { assignDefaultManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
 import {
   normalizePhoneDigits,
@@ -14,6 +15,8 @@ type StudentBody = {
   subjects?: unknown;
   phone?: unknown;
   password?: unknown;
+  /** true: 상담 대기 없이 대표 매니저 즉시 배정 */
+  instantEnroll?: unknown;
 };
 
 function isNonEmptyString(v: unknown): v is string {
@@ -72,6 +75,8 @@ export async function POST(request: Request) {
   const passwordHash = await bcrypt.hash(password, 12);
 
   try {
+    const instantEnroll = body.instantEnroll === true;
+
     const user = await prisma.$transaction(async (tx) => {
       return tx.user.create({
         data: {
@@ -80,17 +85,40 @@ export async function POST(request: Request) {
           role: "STUDENT",
           student: {
             create: {
-              name,
+              name: name.trim(),
               grade,
               subjects: subjectsCsv,
               phone: phoneDigits,
             },
           },
         },
+        include: { student: true },
       });
     });
 
-    return NextResponse.json({ id: user.id }, { status: 201 });
+    if (instantEnroll && user.student) {
+      try {
+        await assignDefaultManagerToStudent({
+          studentId: user.student.id,
+          studentName: user.student.name,
+          studentGrade: user.student.grade,
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "";
+        if (msg === "NO_DEFAULT_MANAGER") {
+          return NextResponse.json(
+            { error: "대표 매니저가 설정되지 않았습니다. 관리자에게 문의해 주세요." },
+            { status: 503 },
+          );
+        }
+        throw e;
+      }
+    }
+
+    return NextResponse.json(
+      { id: user.id, instantEnroll },
+      { status: 201 },
+    );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
       return NextResponse.json({ error: "Phone already registered" }, { status: 409 });

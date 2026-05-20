@@ -1,6 +1,7 @@
 import { FaqPageContent } from "@/components/faq/FaqPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
 import { LANDING_FAQ_FALLBACK } from "@/lib/faq-defaults";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const revalidate = 60;
 
@@ -9,8 +10,11 @@ export const metadata = {
 };
 
 export default async function FaqPage() {
-  const cms = await getLandingCmsContent();
+  const [cms, siteContent] = await Promise.all([
+    getLandingCmsContent(),
+    getGroupedSiteContent(),
+  ]);
   const faqs = cms.faqs.length > 0 ? cms.faqs : [...LANDING_FAQ_FALLBACK];
 
-  return <FaqPageContent faqs={faqs} />;
+  return <FaqPageContent faqs={faqs} siteContent={siteContent} />;
 }

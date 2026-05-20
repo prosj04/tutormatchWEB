@@ -5,6 +5,8 @@ import { getSession, signIn } from "next-auth/react";
 import { useState } from "react";
 
 import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
+import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import type { GroupedSiteContent } from "@/lib/site-content";
 
 const inputClass =
   "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
@@ -137,11 +139,12 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function LoginForm() {
+export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { open: openConsultationSignup } = useConsultationSignup();
   const showAdminSetup = searchParams.get("setup") === "admin";
+  const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "login_page", key, fb);
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -188,10 +191,14 @@ export function LoginForm() {
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-24">
         <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Account</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">로그인</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
+            {get("kicker", "Account")}
+          </p>
+          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
+            {get("title", "로그인")}
+          </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-            이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.
+            {get("subtext", "이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.")}
           </p>
         </div>
       </div>
@@ -252,13 +259,13 @@ export function LoginForm() {
             </p>
           ) : null}
           <p className="mt-8 text-center text-sm text-text-secondary">
-            아직 계정이 없으신가요?{" "}
+            {get("signup_prompt", "아직 계정이 없으신가요? ")}{" "}
             <button
               type="button"
               onClick={openConsultationSignup}
               className="font-semibold text-primary underline-offset-4 hover:underline"
             >
-              상담 신청
+              {get("signup_cta", "상담 신청")}
             </button>
           </p>
 

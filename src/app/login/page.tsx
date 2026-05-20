@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 
+import { getGroupedSiteContent } from "@/lib/site-content";
+
 import { LoginForm } from "./LoginForm";
 
 function LoginFallback() {
@@ -18,10 +20,11 @@ function LoginFallback() {
   );
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const siteContent = await getGroupedSiteContent();
   return (
     <Suspense fallback={<LoginFallback />}>
-      <LoginForm />
+      <LoginForm siteContent={siteContent} />
     </Suspense>
   );
 }

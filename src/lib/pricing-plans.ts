@@ -30,6 +30,20 @@ export function buildCheckoutHref(sessions: SessionPlan, subjects: SubjectCount)
   return `/checkout?${params.toString()}`;
 }
 
+/** 상담 대기 없이 즉시 등록 (대표 매니저 배정) */
+export function buildInstantSignupHref(
+  sessions: SessionPlan,
+  subjects: SubjectCount,
+): string {
+  const params = new URLSearchParams({
+    signup: "1",
+    instant: "1",
+    sessions: String(sessions),
+    subjects: String(subjects),
+  });
+  return `/?${params.toString()}`;
+}
+
 export type PricingPlanDefinition = {
   id: string;
   sessions: SessionPlan;

@@ -3,17 +3,7 @@ import { NextResponse } from "next/server";
 import { requireManager } from "@/lib/manager-auth";
 import { formatRelativeTime } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-
-function parsePreferredTimes(value: string): string[] {
-  try {
-    const parsed = JSON.parse(value) as unknown;
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
+import { parseVisitTimes } from "@/lib/visit-consultation";
 
 export async function GET() {
   const authResult = await requireManager();
@@ -36,7 +26,8 @@ export async function GET() {
       status: booking.status,
       note: booking.note,
       managerNote: booking.managerNote,
-      preferredTimes: parsePreferredTimes(booking.preferredTimes),
+      preferredTimes: [],
+      visitPreferredTimes: parseVisitTimes(booking.visitPreferredTimes),
       createdAt: booking.createdAt.toISOString(),
       assignedAt: booking.assignedAt?.toISOString() ?? null,
       assignedAgo: booking.assignedAt

@@ -55,6 +55,7 @@ export async function GET(request: Request) {
       education: t.education,
       experience: t.experience,
       photoUrl: t.profile?.photoUrl ?? null,
+      gender: t.gender ?? null,
       studentCount: t._count.students,
       createdAt: t.user.createdAt,
     })),

@@ -5,19 +5,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { normalizePhoneDigits } from "@/lib/phone-login";
-
-const GRADES = [
-  "초등 4학년",
-  "초등 5학년",
-  "초등 6학년",
-  "중학교 1학년",
-  "중학교 2학년",
-  "중학교 3학년",
-  "고등학교 1학년",
-  "고등학교 2학년",
-  "고등학교 3학년",
-] as const;
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
@@ -27,28 +16,31 @@ const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-mut
 
 type FieldKey =
   | "name"
+  | "phone"
   | "password"
   | "passwordConfirm"
   | "grade"
-  | "subjects"
-  | "phone";
+  | "subjects";
 
 type ConsultationSignupFormProps = {
   onSuccess?: () => void;
   showLoginLink?: boolean;
+  /** 즉시 등록: 대표 매니저 배정 후 방문 시간 입력 */
+  instantEnroll?: boolean;
 };
 
 export function ConsultationSignupForm({
   onSuccess,
   showLoginLink = true,
+  instantEnroll = false,
 }: ConsultationSignupFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [grade, setGrade] = useState<string>(GRADES[0]);
+  const [grade, setGrade] = useState<string>(STUDENT_GRADES[0]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [phone, setPhone] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,17 +54,17 @@ export function ConsultationSignupForm({
   function validate(): boolean {
     const next: Partial<Record<FieldKey, string>> = {};
     if (!name.trim()) next.name = "이름을 입력해 주세요.";
+    if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
+    else {
+      const d = normalizePhoneDigits(phone);
+      if (d.length < 10 || d.length > 11) next.phone = "올바른 휴대전화 번호를 입력해 주세요.";
+    }
     if (!password) next.password = "비밀번호를 입력해 주세요.";
     else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
     if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
     else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
     if (!grade) next.grade = "학년을 선택해 주세요.";
     if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
-    if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
-    else {
-      const d = normalizePhoneDigits(phone);
-      if (d.length < 10 || d.length > 11) next.phone = "올바른 휴대전화 번호를 입력해 주세요.";
-    }
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -91,6 +83,7 @@ export function ConsultationSignupForm({
           grade,
           subjects: selectedSubjects,
           phone: phone.trim(),
+          instantEnroll,
         }),
       });
       if (res.status === 409) {
@@ -120,7 +113,8 @@ export function ConsultationSignupForm({
         return;
       }
       onSuccess?.();
-      router.push("/dashboard/consultation");
+      const visitQuery = instantEnroll ? "?visit=1" : "";
+      router.push(`/dashboard/consultation${visitQuery}`);
       router.refresh();
     } finally {
       setLoading(false);
@@ -135,7 +129,9 @@ export function ConsultationSignupForm({
           상담 신청
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-          학년과 희망 과목을 입력하시면 매니저가 연락드립니다.
+          {instantEnroll
+            ? "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다."
+            : "학년과 희망 과목을 입력하시면 매니저가 연락드립니다."}
         </p>
       </div>
       <div className="space-y-5">
@@ -152,6 +148,21 @@ export function ConsultationSignupForm({
             className={inputClass}
           />
           {fieldErrors.name ? <p className="mt-2 text-xs text-accent">{fieldErrors.name}</p> : null}
+        </div>
+        <div>
+          <label htmlFor="reg-phone" className={labelClass}>
+            전화번호
+          </label>
+          <input
+            id="reg-phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="010-0000-0000"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={inputClass}
+          />
+          {fieldErrors.phone ? <p className="mt-2 text-xs text-accent">{fieldErrors.phone}</p> : null}
         </div>
         <div>
           <label htmlFor="reg-password" className={labelClass}>
@@ -195,7 +206,7 @@ export function ConsultationSignupForm({
             onChange={(e) => setGrade(e.target.value)}
             className={inputClass}
           >
-            {GRADES.map((g) => (
+            {STUDENT_GRADES.map((g) => (
               <option key={g} value={g}>
                 {g}
               </option>
@@ -228,21 +239,6 @@ export function ConsultationSignupForm({
             <p className="mt-2 text-xs text-accent">{fieldErrors.subjects}</p>
           ) : null}
         </div>
-        <div>
-          <label htmlFor="reg-phone" className={labelClass}>
-            전화번호
-          </label>
-          <input
-            id="reg-phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="010-0000-0000"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className={inputClass}
-          />
-          {fieldErrors.phone ? <p className="mt-2 text-xs text-accent">{fieldErrors.phone}</p> : null}
-        </div>
       </div>
       <button
         type="button"
@@ -259,7 +255,7 @@ export function ConsultationSignupForm({
             <span>처리 중…</span>
           </>
         ) : (
-          "상담 신청"
+          instantEnroll ? "등록하고 시작하기" : "상담 신청"
         )}
       </button>
       {conflictError ? (

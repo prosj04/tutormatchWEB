@@ -2,13 +2,23 @@ import { redirect } from "next/navigation";
 
 import { ConsultationBookingPage } from "@/components/dashboard/ConsultationBookingPage";
 import { auth } from "@/auth";
+import { getConsultationBookingDto } from "@/lib/consultation-booking-dto";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "상담 예약",
 };
 
-export default async function ConsultationPage() {
+function isVisitOpenFlag(visit: string | string[] | undefined): boolean {
+  if (visit === "1") return true;
+  return Array.isArray(visit) && visit[0] === "1";
+}
+
+export default async function ConsultationPage({
+  searchParams,
+}: {
+  searchParams: { visit?: string | string[] };
+}) {
   const session = await auth();
   if (!session) {
     redirect("/login");
@@ -30,5 +40,14 @@ export default async function ConsultationPage() {
     redirect("/dashboard");
   }
 
-  return <ConsultationBookingPage studentName={student.name} />;
+  const initialBooking = await getConsultationBookingDto(student.id);
+  const openVisitFromUrl = isVisitOpenFlag(searchParams.visit);
+
+  return (
+    <ConsultationBookingPage
+      studentName={student.name}
+      initialBooking={initialBooking}
+      openVisitFromUrl={openVisitFromUrl}
+    />
+  );
 }

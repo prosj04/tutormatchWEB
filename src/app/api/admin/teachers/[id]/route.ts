@@ -22,6 +22,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     education?: unknown;
     experience?: unknown;
     bio?: unknown;
+    gender?: unknown;
   };
   try {
     body = await request.json();
@@ -36,6 +37,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     education?: string;
     experience?: string;
     bio?: string;
+    gender?: string | null;
   } = {};
 
   if (typeof body.approved === "boolean") data.approved = body.approved;
@@ -44,6 +46,10 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (typeof body.education === "string") data.education = body.education.trim();
   if (typeof body.experience === "string") data.experience = body.experience.trim();
   if (typeof body.bio === "string") data.bio = body.bio.trim();
+  if ("gender" in body) {
+    if (body.gender === "FEMALE") data.gender = "FEMALE";
+    else data.gender = null;
+  }
 
   const updated = await prisma.teacher.update({ where: { id }, data });
   return NextResponse.json({ teacher: updated });

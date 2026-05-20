@@ -44,6 +44,8 @@ model Teacher {
   bio             String
   education       String
   experience      String
+  /// 공개 강사진 사진 구분: "MALE" | "FEMALE" (미설정 시 남성 기본 이미지)
+  gender          String?
   approved        Boolean            @default(false)
   profile         TeacherProfile?
   students        TeacherStudent[]
@@ -136,8 +138,9 @@ model ConsultationBooking {
   student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   managerId      String?
   manager        Teacher?  @relation(fields: [managerId], references: [id])
-  preferredTimes String
-  status         String    @default("WAITING")
+  preferredTimes      String    @default("[]")
+  visitPreferredTimes String    @default("{}")
+  status              String    @default("WAITING")
   // "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED"
   note           String?
   managerNote    String?

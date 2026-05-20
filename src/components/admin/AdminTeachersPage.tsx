@@ -17,6 +17,7 @@ type TeacherRow = {
   education: string;
   experience: string;
   photoUrl: string | null;
+  gender: string | null;
   studentCount: number;
   createdAt: string;
 };
@@ -72,6 +73,7 @@ export function AdminTeachersPage() {
     education: "",
     experience: "",
     bio: "",
+    gender: "" as "" | "FEMALE",
   });
 
   const fetchList = useCallback(async () => {
@@ -122,6 +124,7 @@ export function AdminTeachersPage() {
       education: row.education,
       experience: row.experience,
       bio: row.bio,
+      gender: row.gender === "FEMALE" ? "FEMALE" : "",
     });
     void loadDocuments(row.id);
   }
@@ -131,7 +134,10 @@ export function AdminTeachersPage() {
     const res = await fetch(`/api/admin/teachers/${editRow.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        gender: form.gender === "FEMALE" ? "FEMALE" : null,
+      }),
     });
     if (res.ok) {
       setEditRow(null);
@@ -466,7 +472,8 @@ export function AdminTeachersPage() {
                   </div>
                   <p className="mt-3 text-xs leading-relaxed text-text-muted">
                     이 탭의 이름, 담당 과목, 자기소개, 학력, 경력은 `/tutors` 강사 카드와 상세 페이지에 반영됩니다.
-                    사진은 목록의 카메라 버튼으로 변경할 수 있습니다.
+                    공개 강사진 사진은 성별에 따라 사이트 콘텐츠 → 강사진 탭의 기본 이미지를 씁니다. 내부용 프로필
+                    사진은 목록의 카메라 버튼으로 업로드할 수 있습니다.
                   </p>
                 </div>
                 <input
@@ -500,6 +507,27 @@ export function AdminTeachersPage() {
                   className="w-full rounded-xl border px-3 py-2 text-sm"
                   placeholder="자기소개"
                 />
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-text-muted">
+                    공개 강사진용 성별
+                  </label>
+                  <select
+                    value={form.gender}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        gender: (e.target.value === "FEMALE" ? "FEMALE" : "") as "" | "FEMALE",
+                      }))
+                    }
+                    className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm"
+                  >
+                    <option value="">남성 기본 이미지</option>
+                    <option value="FEMALE">여성 기본 이미지</option>
+                  </select>
+                  <p className="mt-1 text-xs text-text-muted">
+                    공개 페이지 프로필 사진은 이 설정과 CMS 기본 이미지로 표시됩니다.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="mt-4 grid gap-4 md:grid-cols-2">

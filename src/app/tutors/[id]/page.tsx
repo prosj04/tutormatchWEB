@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PublicShell } from "@/components/layout/PublicShell";
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
+import { getGroupedSiteContent } from "@/lib/site-content";
 import {
   parseJsonArray,
   type CareerEntry,
@@ -38,32 +39,38 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function TutorProfilePage({ params }: PageProps) {
   const { id } = await params;
-  const teacher = await prisma.teacher.findFirst({
-    where: {
-      id,
-      approved: true,
-      user: { role: { in: ["TEACHER", "MANAGER"] } },
-    },
-    select: {
-      id: true,
-      name: true,
-      subjects: true,
-      bio: true,
-      education: true,
-      experience: true,
-      profile: {
-        select: {
-          photoUrl: true,
-          intro: true,
-          career: true,
-          education: true,
-          certificates: true,
+  const [teacher, siteContent] = await Promise.all([
+    prisma.teacher.findFirst({
+      where: {
+        id,
+        approved: true,
+        user: { role: { in: ["TEACHER", "MANAGER"] } },
+      },
+      select: {
+        id: true,
+        name: true,
+        subjects: true,
+        bio: true,
+        education: true,
+        experience: true,
+        gender: true,
+        profile: {
+          select: {
+            photoUrl: true,
+            intro: true,
+            career: true,
+            education: true,
+            certificates: true,
+          },
         },
       },
-    },
-  });
+    }),
+    getGroupedSiteContent(),
+  ]);
 
   if (!teacher) notFound();
+
+  const publicPhotoUrl = getTutorPublicPhotoUrl(teacher.gender, siteContent);
 
   const subjects = splitSubjects(teacher.subjects);
   const educationEntries = parseJsonArray<EducationEntry>(teacher.profile?.education);
@@ -78,16 +85,12 @@ export default async function TutorProfilePage({ params }: PageProps) {
         <section className="border-b border-gray-100 bg-white px-6 py-16 md:py-20">
           <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[14rem_1fr] md:items-center">
             <div className="h-48 w-48 overflow-hidden rounded-3xl bg-gray-100">
-              {teacher.profile?.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={teacher.profile.photoUrl}
-                  alt={`${teacher.name} 프로필 사진`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <DefaultAvatar size={192} className="rounded-3xl" />
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={publicPhotoUrl}
+                alt={`${teacher.name} 프로필 사진`}
+                className="h-full w-full object-cover"
+              />
             </div>
 
             <div>

@@ -1,55 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { prisma } from "@/lib/prisma";
+import { getConsultationBookingDto } from "@/lib/consultation-booking-dto";
 import { requireStudent } from "@/lib/student-auth";
-
-function parsePreferredTimes(value: string): string[] {
-  try {
-    const parsed = JSON.parse(value) as unknown;
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
 
 export async function GET() {
   const authResult = await requireStudent();
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;
 
-  const booking = await prisma.consultationBooking.findUnique({
-    where: { studentId: student.id },
-    include: {
-      manager: {
-        include: {
-          profile: true,
-        },
-      },
-    },
-  });
+  const booking = await getConsultationBookingDto(student.id);
 
-  if (!booking) {
-    return NextResponse.json({ booking: null });
-  }
-
-  return NextResponse.json({
-    booking: {
-      id: booking.id,
-      status: booking.status,
-      note: booking.note,
-      managerNote: booking.managerNote,
-      preferredTimes: parsePreferredTimes(booking.preferredTimes),
-      createdAt: booking.createdAt.toISOString(),
-      assignedAt: booking.assignedAt?.toISOString() ?? null,
-      manager: booking.manager
-        ? {
-            id: booking.manager.id,
-            name: booking.manager.name,
-            photoUrl: booking.manager.profile?.photoUrl ?? null,
-          }
-        : null,
-    },
-  });
+  return NextResponse.json({ booking });
 }

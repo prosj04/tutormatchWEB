@@ -1,5 +1,6 @@
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const revalidate = 60;
 
@@ -17,9 +18,12 @@ const fallbackTestimonials = [
 ];
 
 export default async function ReviewsPage() {
-  const cms = await getLandingCmsContent();
+  const [cms, siteContent] = await Promise.all([
+    getLandingCmsContent(),
+    getGroupedSiteContent(),
+  ]);
   const testimonials =
     cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
 
-  return <ReviewsPageContent testimonials={testimonials} />;
+  return <ReviewsPageContent testimonials={testimonials} siteContent={siteContent} />;
 }

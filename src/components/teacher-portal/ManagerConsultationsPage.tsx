@@ -3,12 +3,18 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import {
+  getNextWeekDates,
+  type VisitTimesByDate,
+} from "@/lib/visit-consultation";
+
 type ConsultationBooking = {
   id: string;
   status: "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED";
   note: string | null;
   managerNote?: string | null;
   preferredTimes: string[];
+  visitPreferredTimes: VisitTimesByDate;
   createdAt: string;
   timeAgo?: string;
   assignedAt?: string | null;
@@ -290,17 +296,29 @@ export function ManagerConsultationsPage() {
   );
 }
 
-function PreferredTimePills({ times }: { times: string[] }) {
+function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
+  const weekLabels = Object.fromEntries(
+    getNextWeekDates().map((d) => [d.key, `${d.label}(${d.weekday})`]),
+  );
+  const entries = Object.entries(times).filter(([, slots]) => slots.length > 0);
+  if (entries.length === 0) {
+    return (
+      <p className="mt-3 text-xs text-amber-700">
+        방문 상담 희망 시간 미입력 — 학생에게 입력을 요청해 주세요.
+      </p>
+    );
+  }
   return (
-    <div className="mt-3 flex flex-wrap gap-2">
-      {times.map((time) => (
-        <span
-          key={time}
-          className="rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-text-primary"
-        >
-          {time}
-        </span>
-      ))}
+    <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+      <p className="text-xs font-semibold text-primary">방문 상담 희망 시간</p>
+      <ul className="mt-2 space-y-1.5 text-sm text-text-primary">
+        {entries.map(([date, slots]) => (
+          <li key={date}>
+            <span className="font-semibold">{weekLabels[date] ?? date}</span>
+            <span className="text-text-secondary"> · {slots.join(", ")}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -330,7 +348,7 @@ function WaitingCard({
           {booking.timeAgo}
         </span>
       </div>
-      <PreferredTimePills times={booking.preferredTimes} />
+      <VisitPreferredBlock times={booking.visitPreferredTimes} />
       {booking.note ? (
         <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
           {booking.note}
@@ -379,7 +397,7 @@ function MineCard({
           {badge.label}
         </span>
       </div>
-      <PreferredTimePills times={booking.preferredTimes} />
+      <VisitPreferredBlock times={booking.visitPreferredTimes} />
       {booking.note ? (
         <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
           학생 메모: {booking.note}

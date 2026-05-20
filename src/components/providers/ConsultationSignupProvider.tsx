@@ -31,18 +31,24 @@ export function useConsultationSignup() {
 
 export function ConsultationSignupProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [instantEnroll, setInstantEnroll] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
   const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setInstantEnroll(false);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("signup") === "1") {
       setIsOpen(true);
+      setInstantEnroll(searchParams.get("instant") === "1");
       const params = new URLSearchParams(searchParams.toString());
       params.delete("signup");
+      params.delete("instant");
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     }
@@ -60,7 +66,7 @@ export function ConsultationSignupProvider({ children }: { children: ReactNode }
   return (
     <ConsultationSignupContext.Provider value={value}>
       {children}
-      <ConsultationSignupModal open={isOpen} onClose={close} />
+      <ConsultationSignupModal open={isOpen} onClose={close} instantEnroll={instantEnroll} />
     </ConsultationSignupContext.Provider>
   );
 }

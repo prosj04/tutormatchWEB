@@ -1,6 +1,7 @@
 import { PublicShell } from "@/components/layout/PublicShell";
 import { TutorsListing } from "@/components/tutors/TutorsListing";
 import { prisma } from "@/lib/prisma";
+import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const metadata = {
@@ -31,6 +32,7 @@ export default async function TutorsPage() {
       bio: true,
       education: true,
       experience: true,
+      gender: true,
       profile: { select: { photoUrl: true, intro: true } },
     },
   }),
@@ -44,7 +46,7 @@ export default async function TutorsPage() {
     bio: teacher.profile?.intro || teacher.bio,
     education: teacher.education,
     experience: teacher.experience,
-    photoUrl: teacher.profile?.photoUrl ?? null,
+    photoUrl: getTutorPublicPhotoUrl(teacher.gender, siteContent),
   }));
 
   return (

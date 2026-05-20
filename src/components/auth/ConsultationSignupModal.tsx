@@ -7,9 +7,14 @@ import { ConsultationSignupForm } from "@/components/auth/ConsultationSignupForm
 type ConsultationSignupModalProps = {
   open: boolean;
   onClose: () => void;
+  instantEnroll?: boolean;
 };
 
-export function ConsultationSignupModal({ open, onClose }: ConsultationSignupModalProps) {
+export function ConsultationSignupModal({
+  open,
+  onClose,
+  instantEnroll = false,
+}: ConsultationSignupModalProps) {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -48,7 +53,7 @@ export function ConsultationSignupModal({ open, onClose }: ConsultationSignupMod
         >
           ×
         </button>
-        <ConsultationSignupForm onSuccess={onClose} />
+        <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} />
       </div>
     </div>
   );
