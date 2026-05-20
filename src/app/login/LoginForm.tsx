@@ -40,11 +40,10 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
       });
       if (res.status === 201) {
         setSuccess(true);
-        onSuccess();
         return;
       }
       if (res.status === 403) {
-        setError("이미 관리자 계정이 존재합니다");
+        setError("이미 관리자 계정이 존재합니다. 위쪽「비밀번호 재설정」탭을 이용하세요.");
         return;
       }
       if (res.status === 401) {
@@ -59,16 +58,23 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
 
   if (success) {
     return (
-      <p className="mt-6 text-center text-sm text-green-700" role="status">
-        관리자 계정이 생성되었습니다
-      </p>
+      <div className="mt-6 space-y-3 text-center">
+        <p className="text-sm text-green-700" role="status">
+          관리자 계정이 생성되었습니다. 위에서 로그인하세요.
+        </p>
+        <button
+          type="button"
+          onClick={onSuccess}
+          className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+        >
+          이 안내 닫기
+        </button>
+      </div>
     );
   }
 
   return (
-    <section className="mt-8 border-t border-gray-100 pt-8">
-      <h2 className="text-center text-xs font-medium text-text-muted">관리자 계정 생성</h2>
-      <div className="mt-4 space-y-4">
+    <div className="mt-4 space-y-4">
         <div>
           <label htmlFor="admin-email" className={labelClass}>
             관리자 이메일
@@ -134,7 +140,168 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
             {error}
           </p>
         ) : null}
+    </div>
+  );
+}
+
+function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  async function handleRecover() {
+    setError("");
+    if (password !== passwordConfirm) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/recover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, newPassword: password, secretKey }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (res.ok) {
+        setSuccess(true);
+        return;
+      }
+      setError(data.error ?? "재설정에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="mt-6 space-y-3 text-center">
+        <p className="text-sm text-green-700" role="status">
+          비밀번호가 변경되었습니다. 위에서 새 비밀번호로 로그인하세요.
+        </p>
+        <button
+          type="button"
+          onClick={onSuccess}
+          className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+        >
+          이 안내 닫기
+        </button>
       </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 space-y-4">
+      <div>
+        <label htmlFor="admin-recover-email" className={labelClass}>
+          관리자 이메일 (로그인 ID)
+        </label>
+        <input
+          id="admin-recover-email"
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label htmlFor="admin-recover-password" className={labelClass}>
+          새 비밀번호
+        </label>
+        <input
+          id="admin-recover-password"
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label htmlFor="admin-recover-password-confirm" className={labelClass}>
+          새 비밀번호 확인
+        </label>
+        <input
+          id="admin-recover-password-confirm"
+          type="password"
+          autoComplete="new-password"
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label htmlFor="admin-recover-secret" className={labelClass}>
+          설정 비밀키
+        </label>
+        <input
+          id="admin-recover-secret"
+          type="password"
+          autoComplete="off"
+          value={secretKey}
+          onChange={(e) => setSecretKey(e.target.value)}
+          className={inputClass}
+        />
+      </div>
+      <button
+        type="button"
+        disabled={loading}
+        onClick={() => void handleRecover()}
+        className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-gray-300 hover:text-text-primary disabled:opacity-50"
+      >
+        {loading ? "처리 중…" : "비밀번호 재설정"}
+      </button>
+      {error ? (
+        <p className="text-center text-sm text-accent" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+const adminTabBtnBase =
+  "flex-1 rounded-lg py-2.5 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+
+function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
+  const [tab, setTab] = useState<"recover" | "create">("recover");
+
+  return (
+    <section className="mt-8 border-t border-gray-100 pt-8">
+      <p className="text-center text-xs leading-relaxed text-text-muted">
+        관리자(ADMIN)는 등록된 <span className="font-semibold text-text-primary">이메일</span>로만
+        로그인됩니다. 전화번호 로그인은 지원하지 않습니다.
+      </p>
+      <div className="mt-4 flex gap-1 rounded-xl bg-gray-100 p-1">
+        <button
+          type="button"
+          className={`${adminTabBtnBase} ${
+            tab === "recover" ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
+          }`}
+          onClick={() => setTab("recover")}
+        >
+          비밀번호 재설정
+        </button>
+        <button
+          type="button"
+          className={`${adminTabBtnBase} ${
+            tab === "create" ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
+          }`}
+          onClick={() => setTab("create")}
+        >
+          최초 생성
+        </button>
+      </div>
+      {tab === "recover" ? <AdminRecoverSection onSuccess={onDismiss} /> : <AdminSetupSection onSuccess={onDismiss} />}
     </section>
   );
 }
@@ -167,7 +334,10 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
         redirect: false,
       });
       if (result?.error) {
-        setError("이메일·전화번호 또는 비밀번호가 올바르지 않습니다");
+        const hint = !trimmed.includes("@")
+          ? " 관리자(ADMIN) 계정은 이메일 주소로만 로그인할 수 있습니다."
+          : " 비밀번호를 잊었다면 주소에 ?setup=admin 을 붙인 뒤 재설정하세요.";
+        setError(`이메일·전화번호 또는 비밀번호가 올바르지 않습니다.${hint}`);
         return;
       }
       if (result?.ok) {
@@ -254,7 +424,7 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
             )}
           </button>
           {error ? (
-            <p className="mt-4 text-center text-sm text-accent" role="alert">
+            <p className="mt-4 whitespace-pre-wrap text-center text-sm text-accent" role="alert">
               {error}
             </p>
           ) : null}
@@ -270,7 +440,7 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
           </p>
 
           {showAdminSetup && !adminSetupHidden ? (
-            <AdminSetupSection onSuccess={() => setAdminSetupHidden(true)} />
+            <AdminToolsSection onDismiss={() => setAdminSetupHidden(true)} />
           ) : null}
         </article>
       </div>
