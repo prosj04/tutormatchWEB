@@ -18,7 +18,12 @@ import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { extraPublicPagesDefaults } from "@/lib/cms-page-defaults";
+import { CmsPublicTeachersPanel } from "@/components/admin/CmsPublicTeachersPanel";
+import {
+  extraPublicPagesDefaults,
+  portalPagesDefaults,
+  portalPagesFieldLabels,
+} from "@/lib/cms-page-defaults";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
@@ -438,6 +443,29 @@ function buildExtraFields(section: string): TextFieldConfig[] {
     });
 }
 
+function buildPortalFields(section: string): TextFieldConfig[] {
+  return portalPagesDefaults
+    .filter((row) => row.section === section && row.type === "text")
+    .map((row) => {
+      const long = row.value.includes("\n") || row.value.length > 100;
+      return {
+        label: portalPagesFieldLabels[section]?.[row.key] ?? row.key,
+        section: row.section,
+        keyName: row.key,
+        defaultValue: row.value,
+        ...(long ? { kind: "textarea" as const, rows: 3 } : {}),
+      };
+    });
+}
+
+const PORTAL_STUDENT_SUBSECTIONS: { section: string; title: string }[] = [
+  { section: "student_dashboard", title: "상단 바 · 플래너" },
+  { section: "student_copy_plan", title: "이전 날짜 복사 모달" },
+  { section: "student_questions", title: "질문 섹션" },
+  { section: "student_question_modal", title: "질문 등록 모달" },
+  { section: "student_task_list", title: "할 일 목록" },
+];
+
 const CMS_PAGES = [
   { id: "home", label: "홈", previewHref: "/" },
   { id: "pricing", label: "요금제", previewHref: "/pricing" },
@@ -446,6 +474,8 @@ const CMS_PAGES = [
   { id: "reviews", label: "학습 후기", previewHref: "/reviews" },
   { id: "login", label: "로그인", previewHref: "/login" },
   { id: "commerce", label: "결제·완료", previewHref: "/checkout" },
+  { id: "portal_student", label: "학생 포털", previewHref: "/dashboard" },
+  { id: "portal_teacher", label: "선생님·매니저", previewHref: "/teacher-portal/dashboard" },
 ] as const;
 
 type CmsPageId = (typeof CMS_PAGES)[number]["id"];
@@ -958,8 +988,8 @@ export function AdminCmsPage() {
                 ))}
               </div>
               <p className="mt-6 text-sm text-text-secondary">
-                공개 강사진 목록·상세의 프로필 사진은 업로드 사진 대신, 아래 성별 기본 이미지를 사용합니다. 선생님별 성별은
-                강사 관리 → 수정에서 설정합니다.
+                공개 강사진 목록·상세에는 업로드된 내부용 사진 대신, 아래 성별 기본 이미지를 씁니다. 빈 카드 문구·승인·공개
+                프로필 필드는 아래 목록에서 바로 수정할 수 있습니다.
               </p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <ImageField
@@ -983,6 +1013,7 @@ export function AdminCmsPage() {
                   onSave={patchContent}
                 />
               </div>
+              <CmsPublicTeachersPanel />
             </EditorSection>
           ) : null}
 
@@ -1062,6 +1093,72 @@ export function AdminCmsPage() {
                 </div>
               </EditorSection>
             </>
+          ) : null}
+
+          {activePage === "portal_student" ? (
+            <>
+              <EditorSection eyebrow="STUDENT" title="대시보드 · 학습 플래너 · 질문">
+                <p className="mb-6 text-sm text-text-secondary">
+                  학생 계정의「학습 플래너」화면(/dashboard)과 동일한 문구를 편집합니다. 미리보기는 대시보드 탭을
+                  누릅니다.
+                </p>
+                {PORTAL_STUDENT_SUBSECTIONS.map(({ section, title }) => (
+                  <div key={section} className="mb-8 last:mb-0">
+                    <h4 className="mb-3 text-sm font-black text-text-primary">{title}</h4>
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      {buildPortalFields(section).map((field) => (
+                        <ContentField
+                          key={`${field.section}-${field.keyName}`}
+                          field={field}
+                          value={getValue(field.section, field.keyName, field.defaultValue)}
+                          onSave={patchContent}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </EditorSection>
+              <EditorSection eyebrow="CONSULTATION" title="상담 예약 · 방문 시간">
+                <p className="mb-6 text-sm text-text-secondary">
+                  매칭 전 학생 상담 화면(/dashboard/consultation)과 방문 시간 선택 UI 문구입니다.
+                </p>
+                {(["student_consultation", "visit_picker"] as const).map((section) => (
+                  <div key={section} className="mb-8 last:mb-0">
+                    <h4 className="mb-3 text-sm font-black text-text-primary">
+                      {section === "student_consultation" ? "상담 페이지" : "방문 시간 피커"}
+                    </h4>
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      {buildPortalFields(section).map((field) => (
+                        <ContentField
+                          key={`${field.section}-${field.keyName}`}
+                          field={field}
+                          value={getValue(field.section, field.keyName, field.defaultValue)}
+                          onSave={patchContent}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </EditorSection>
+            </>
+          ) : null}
+
+          {activePage === "portal_teacher" ? (
+            <EditorSection eyebrow="TEACHER" title="선생님 · 매니저 포털">
+              <p className="mb-6 text-sm text-text-secondary">
+                강사·매니저 로그인 후 상단 바·탭 메뉴 문구(/teacher-portal/...)와 맞춥니다.
+              </p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                {buildPortalFields("teacher_portal").map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+            </EditorSection>
           ) : null}
         </div>
       )}

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VisitTimesPicker } from "@/components/dashboard/VisitTimesPicker";
+import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import type { ConsultationBookingDto } from "@/lib/consultation-booking-dto";
 import {
   countVisitSlots,
@@ -15,28 +16,33 @@ import {
 
 type Booking = ConsultationBookingDto;
 
-const STATUS_LABELS = {
-  WAITING: {
-    label: "매니저 배정 대기중",
-    className: "bg-amber-100 text-amber-800",
-    body: "매니저 배정 후 방문 상담 희망 시간을 안내해 주세요.",
-  },
-  ASSIGNED: {
-    label: "매니저 배정 완료",
-    className: "bg-green-100 text-green-800",
-    body: "담당 매니저가 입력하신 방문 시간을 참고하여 연락드립니다.",
-  },
-  COMPLETED: {
-    label: "상담 완료",
-    className: "bg-blue-100 text-blue-800",
-    body: "선생님 매칭을 진행 중입니다.",
-  },
-  CANCELLED: {
-    label: "취소됨",
-    className: "bg-gray-100 text-gray-600",
-    body: "상담 신청이 취소되었습니다.",
-  },
-} as const;
+const STATUS_BADGE_CLASS: Record<Booking["status"], string> = {
+  WAITING: "bg-amber-100 text-amber-800",
+  ASSIGNED: "bg-green-100 text-green-800",
+  COMPLETED: "bg-blue-100 text-blue-800",
+  CANCELLED: "bg-gray-100 text-gray-600",
+};
+
+const STATUS_CMS_KEYS: Record<Booking["status"], { label: string; body: string }> = {
+  WAITING: { label: "st_waiting_label", body: "st_waiting_body" },
+  ASSIGNED: { label: "st_assigned_label", body: "st_assigned_body" },
+  COMPLETED: { label: "st_completed_label", body: "st_completed_body" },
+  CANCELLED: { label: "st_cancelled_label", body: "st_cancelled_body" },
+};
+
+const STATUS_FALLBACK_LABEL: Record<Booking["status"], string> = {
+  WAITING: "매니저 배정 대기중",
+  ASSIGNED: "매니저 배정 완료",
+  COMPLETED: "상담 완료",
+  CANCELLED: "취소됨",
+};
+
+const STATUS_FALLBACK_BODY: Record<Booking["status"], string> = {
+  WAITING: "매니저 배정 후 방문 상담 희망 시간을 안내해 주세요.",
+  ASSIGNED: "담당 매니저가 입력하신 방문 시간을 참고하여 연락드립니다.",
+  COMPLETED: "선생님 매칭을 진행 중입니다.",
+  CANCELLED: "상담 신청이 취소되었습니다.",
+};
 
 type ConsultationBookingPageProps = {
   studentName: string;
@@ -60,6 +66,45 @@ export function ConsultationBookingPage({
   const [showVisitPicker, setShowVisitPicker] = useState(false);
   const [assignedToast, setAssignedToast] = useState(false);
   const previousStatus = useRef<string | null>(initialBooking?.status ?? null);
+
+  const brand = usePortalCopy("student_consultation", "brand", "Concord.");
+  const welcomeTpl = usePortalCopy("student_consultation", "welcome_template", "{name}님 환영합니다");
+  const logoutLabel = usePortalCopy("student_consultation", "logout", "로그아웃");
+  const toastAssigned = usePortalCopy("student_consultation", "toast_assigned", "매니저가 배정되었습니다!");
+  const noBookingTitle = usePortalCopy(
+    "student_consultation",
+    "no_booking_title",
+    "수업 시작 전 상담을 신청해주세요",
+  );
+  const noBookingDesc = usePortalCopy(
+    "student_consultation",
+    "no_booking_desc",
+    "상담 신청 후 방문 상담 희망 시간대를 입력해 주세요. 매니저가 확인 후 연락드립니다.",
+  );
+  const noteLabel = usePortalCopy("student_consultation", "note_label", "상담 내용 미리 적기 (선택)");
+  const notePlaceholder = usePortalCopy(
+    "student_consultation",
+    "note_placeholder",
+    "학년, 목표 성적, 고민 등을 적어주시면 더 도움이 되는 상담이 가능합니다.",
+  );
+  const btnSubmit = usePortalCopy("student_consultation", "btn_submit", "상담 신청하기");
+  const btnSubmitting = usePortalCopy("student_consultation", "btn_submitting", "신청 중...");
+  const errSubmitDefault = usePortalCopy("student_consultation", "err_submit", "상담 신청에 실패했습니다.");
+  const errSubmitNetwork = usePortalCopy(
+    "student_consultation",
+    "err_submit_network",
+    "상담 신청에 실패했습니다. 다시 시도해주세요.",
+  );
+  const successTitle = usePortalCopy("student_consultation", "success_title", "상담 신청이 완료되었습니다");
+  const successDesc = usePortalCopy(
+    "student_consultation",
+    "success_desc",
+    "아래에서 방문 상담 희망 시간대를 입력해 주세요.",
+  );
+  const btnVisitInput = usePortalCopy("student_consultation", "btn_visit_input", "방문 상담 희망 시간대 입력");
+  const btnClose = usePortalCopy("student_consultation", "btn_close", "닫기");
+  const btnVisitEdit = usePortalCopy("student_consultation", "btn_visit_edit", "방문 상담 희망 시간대 수정");
+  const errSaveDefault = usePortalCopy("student_consultation", "err_save", "저장에 실패했습니다.");
 
   const fetchBooking = useCallback(async () => {
     const res = await fetch("/api/consultation/my-booking");
@@ -98,14 +143,14 @@ export function ConsultationBookingPage({
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(data.error ?? "상담 신청에 실패했습니다.");
+        setError(data.error ?? errSubmitDefault);
         return;
       }
       setSuccess(true);
       setShowVisitPicker(true);
       await fetchBooking();
     } catch {
-      setError("상담 신청에 실패했습니다. 다시 시도해주세요.");
+      setError(errSubmitNetwork);
     } finally {
       setSubmitting(false);
     }
@@ -122,13 +167,13 @@ export function ConsultationBookingPage({
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(data.error ?? "저장에 실패했습니다.");
+        setError(data.error ?? errSaveDefault);
         return;
       }
       setShowVisitPicker(false);
       await fetchBooking();
     } catch {
-      setError("저장에 실패했습니다.");
+      setError(errSaveDefault);
     } finally {
       setVisitSubmitting(false);
     }
@@ -139,20 +184,22 @@ export function ConsultationBookingPage({
   const hasVisitTimes =
     activeBooking && countVisitSlots(activeBooking.visitPreferredTimes) > 0;
 
+  const welcomeText = welcomeTpl.replace(/\{name\}/g, studentName);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-text-primary/10 bg-surface px-4 py-3 shadow-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <Link href="/" className="font-sans text-lg font-bold italic text-primary">
-            Concord.
+            {brand}
           </Link>
-          <p className="truncate text-sm font-medium text-white">{studentName}님 환영합니다</p>
+          <p className="truncate text-sm font-medium text-white">{welcomeText}</p>
           <button
             type="button"
             onClick={() => signOut({ redirectTo: "/" })}
             className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-primary/90 transition hover:bg-white/10 hover:text-primary"
           >
-            로그아웃
+            {logoutLabel}
           </button>
         </div>
       </header>
@@ -166,7 +213,7 @@ export function ConsultationBookingPage({
               exit={{ opacity: 0, y: -16 }}
               className="mb-5 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-center font-semibold text-green-800 shadow-sm"
             >
-              매니저가 배정되었습니다!
+              {toastAssigned}
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -174,15 +221,13 @@ export function ConsultationBookingPage({
         {!activeBooking ? (
           <>
             <section className="rounded-2xl border-2 border-primary bg-surface p-6 shadow-sm">
-              <h1 className="text-lg font-bold text-text-primary">수업 시작 전 상담을 신청해주세요</h1>
-              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                상담 신청 후 방문 상담 희망 시간대를 입력해 주세요. 매니저가 확인 후 연락드립니다.
-              </p>
+              <h1 className="text-lg font-bold text-text-primary">{noBookingTitle}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-text-secondary">{noBookingDesc}</p>
             </section>
 
             <section className="mt-8 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm">
               <label htmlFor="consultation-note" className="block text-sm font-semibold text-text-primary">
-                상담 내용 미리 적기 (선택)
+                {noteLabel}
               </label>
               <textarea
                 id="consultation-note"
@@ -190,7 +235,7 @@ export function ConsultationBookingPage({
                 onChange={(e) => setNote(e.target.value)}
                 rows={5}
                 className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-primary"
-                placeholder="학년, 목표 성적, 고민 등을 적어주시면 더 도움이 되는 상담이 가능합니다."
+                placeholder={notePlaceholder}
               />
               {error ? (
                 <p className="mt-3 text-sm text-accent" role="alert">
@@ -203,7 +248,7 @@ export function ConsultationBookingPage({
                 onClick={() => void submitRequest()}
                 className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
               >
-                {submitting ? "신청 중..." : "상담 신청하기"}
+                {submitting ? btnSubmitting : btnSubmit}
               </button>
             </section>
           </>
@@ -218,10 +263,8 @@ export function ConsultationBookingPage({
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
                   ✓
                 </div>
-                <h1 className="text-xl font-bold text-text-primary">상담 신청이 완료되었습니다</h1>
-                <p className="mt-4 text-sm leading-relaxed text-text-secondary">
-                  아래에서 방문 상담 희망 시간대를 입력해 주세요.
-                </p>
+                <h1 className="text-xl font-bold text-text-primary">{successTitle}</h1>
+                <p className="mt-4 text-sm leading-relaxed text-text-secondary">{successDesc}</p>
               </motion.section>
             ) : null}
 
@@ -233,7 +276,7 @@ export function ConsultationBookingPage({
                 onClick={() => setShowVisitPicker(true)}
                 className="mt-6 w-full rounded-xl border-2 border-primary bg-primary/5 py-4 text-sm font-black text-primary transition hover:bg-primary/10"
               >
-                방문 상담 희망 시간대 입력
+                {btnVisitInput}
               </button>
             ) : null}
 
@@ -250,7 +293,7 @@ export function ConsultationBookingPage({
                     onClick={() => setShowVisitPicker(false)}
                     className="mt-3 w-full text-center text-sm font-medium text-text-muted hover:text-text-primary"
                   >
-                    닫기
+                    {btnClose}
                   </button>
                 ) : null}
               </div>
@@ -262,7 +305,7 @@ export function ConsultationBookingPage({
                 onClick={() => setShowVisitPicker(true)}
                 className="mt-4 w-full text-center text-sm font-semibold text-primary underline-offset-4 hover:underline"
               >
-                방문 상담 희망 시간대 수정
+                {btnVisitEdit}
               </button>
             ) : null}
 
@@ -285,7 +328,32 @@ function BookingStatusCard({
   booking: Booking;
   hasVisitTimes: boolean;
 }) {
-  const status = STATUS_LABELS[booking.status];
+  const keys = STATUS_CMS_KEYS[booking.status];
+  const label = usePortalCopy(
+    "student_consultation",
+    keys.label,
+    STATUS_FALLBACK_LABEL[booking.status],
+  );
+  const body = usePortalCopy(
+    "student_consultation",
+    keys.body,
+    STATUS_FALLBACK_BODY[booking.status],
+  );
+  const cardTitle = usePortalCopy("student_consultation", "card_status_title", "내 상담 현황");
+  const managerSuffix = usePortalCopy("student_consultation", "manager_suffix", " 매니저");
+  const managerRole = usePortalCopy("student_consultation", "manager_role", "담당 매니저");
+  const visitSectionTitle = usePortalCopy(
+    "student_consultation",
+    "visit_section_title",
+    "방문 상담 희망 시간",
+  );
+  const visitPrompt = usePortalCopy(
+    "student_consultation",
+    "visit_prompt",
+    "방문 상담 희망 시간대를 입력해 주세요.",
+  );
+
+  const badgeClass = STATUS_BADGE_CLASS[booking.status];
 
   return (
     <motion.section
@@ -294,13 +362,13 @@ function BookingStatusCard({
       className="mt-10 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-text-primary">내 상담 현황</h2>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}>
-          {status.label}
+        <h2 className="text-sm font-semibold text-text-primary">{cardTitle}</h2>
+        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
+          {label}
         </span>
       </div>
 
-      <p className="mt-4 text-sm text-text-secondary">{status.body}</p>
+      <p className="mt-4 text-sm text-text-secondary">{body}</p>
 
       {booking.status === "ASSIGNED" && booking.manager ? (
         <div className="mt-5 flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3">
@@ -320,8 +388,11 @@ function BookingStatusCard({
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold text-text-primary">{booking.manager.name} 매니저</p>
-            <p className="text-xs text-text-secondary">담당 매니저</p>
+            <p className="text-sm font-semibold text-text-primary">
+              {booking.manager.name}
+              {managerSuffix}
+            </p>
+            <p className="text-xs text-text-secondary">{managerRole}</p>
           </div>
         </div>
       ) : null}
@@ -335,7 +406,7 @@ function BookingStatusCard({
       {hasVisitTimes ? (
         <div className="mt-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-            방문 상담 희망 시간
+            {visitSectionTitle}
           </p>
           <div className="mt-2 space-y-2">
             {Object.entries(booking.visitPreferredTimes).map(([date, slots]) =>
@@ -349,9 +420,7 @@ function BookingStatusCard({
           </div>
         </div>
       ) : (
-        <p className="mt-5 text-sm text-amber-700">
-          방문 상담 희망 시간대를 입력해 주세요.
-        </p>
+        <p className="mt-5 text-sm text-amber-700">{visitPrompt}</p>
       )}
     </motion.section>
   );

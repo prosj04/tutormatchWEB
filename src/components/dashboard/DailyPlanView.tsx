@@ -1,5 +1,6 @@
 "use client";
 
+import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
 
 import { CopyPlanModal } from "./CopyPlanModal";
@@ -52,6 +53,18 @@ export function DailyPlanView({
 }: DailyPlanViewProps) {
   const tasks = plan?.tasks ?? [];
 
+  const btnAddPlan = usePortalCopy("student_dashboard", "btn_add_plan", "계획 추가");
+  const loadingLabel = usePortalCopy("student_dashboard", "loading", "불러오는 중…");
+  const emptyNoPlan = usePortalCopy("student_dashboard", "empty_no_plan", "이 날짜의 학습 계획이 없습니다.");
+  const emptyHint = usePortalCopy(
+    "student_dashboard",
+    "empty_hint",
+    "계획 추가 버튼을 눌러 시작하거나, 이전 날짜에서 복사해 보세요.",
+  );
+  const btnCopyPrev = usePortalCopy("student_dashboard", "btn_copy_prev", "이전 날짜에서 복사");
+  const labelTeacherComment = usePortalCopy("student_dashboard", "label_teacher_comment", "선생님 코멘트");
+  const emptyComment = usePortalCopy("student_dashboard", "empty_comment", "아직 코멘트가 없습니다");
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] flex-1 overflow-y-auto bg-background p-6 md:p-8">
       <div className="mx-auto max-w-2xl">
@@ -66,25 +79,23 @@ export function DailyPlanView({
               disabled={loading}
               className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
-              계획 추가
+              {btnAddPlan}
             </button>
           )}
         </div>
 
         {loading ? (
-          <p className="mt-12 text-center text-sm text-text-muted">불러오는 중…</p>
+          <p className="mt-12 text-center text-sm text-text-muted">{loadingLabel}</p>
         ) : !plan ? (
           <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-10 text-center">
-            <p className="text-sm text-text-secondary">이 날짜의 학습 계획이 없습니다.</p>
-            <p className="mt-1 text-xs text-text-muted">
-              계획 추가 버튼을 눌러 시작하거나, 이전 날짜에서 복사해 보세요.
-            </p>
+            <p className="text-sm text-text-secondary">{emptyNoPlan}</p>
+            <p className="mt-1 text-xs text-text-muted">{emptyHint}</p>
             <button
               type="button"
               onClick={onOpenCopyModal}
               className="mt-4 text-sm font-medium text-primary hover:underline"
             >
-              이전 날짜에서 복사
+              {btnCopyPrev}
             </button>
           </div>
         ) : (
@@ -95,7 +106,7 @@ export function DailyPlanView({
                 onClick={onOpenCopyModal}
                 className="rounded-lg border border-gray-200 bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary hover:border-gray-300"
               >
-                이전 날짜에서 복사
+                {btnCopyPrev}
               </button>
             </div>
 
@@ -114,7 +125,7 @@ export function DailyPlanView({
               {plan.comment ? (
                 <div className="rounded-2xl border-2 border-primary/60 bg-primary/5 p-5">
                   <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    선생님 코멘트
+                    {labelTeacherComment}
                   </p>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
                     {plan.comment}
@@ -127,7 +138,7 @@ export function DailyPlanView({
                 </div>
               ) : (
                 <div className="rounded-2xl border border-gray-100 bg-surface p-5 text-center">
-                  <p className="text-sm text-text-muted">아직 코멘트가 없습니다</p>
+                  <p className="text-sm text-text-muted">{emptyComment}</p>
                 </div>
               )}
             </section>

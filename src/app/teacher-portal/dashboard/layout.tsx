@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 
+import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";
 import { TeacherPortalShell } from "@/components/teacher-portal/TeacherPortalShell";
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
 import type { PortalTeacherRole } from "@/lib/portal-roles";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
 export default async function TeacherDashboardLayout({
   children,
@@ -22,12 +24,16 @@ export default async function TeacherDashboardLayout({
     redirect("/teacher-portal");
   }
 
+  const siteContent = await getGroupedSiteContent();
+
   return (
-    <TeacherPortalShell
-      teacherName={teacher.name}
-      role={session.user.role as PortalTeacherRole}
-    >
-      {children}
-    </TeacherPortalShell>
+    <PortalSiteContentProvider value={siteContent}>
+      <TeacherPortalShell
+        teacherName={teacher.name}
+        role={session.user.role as PortalTeacherRole}
+      >
+        {children}
+      </TeacherPortalShell>
+    </PortalSiteContentProvider>
   );
 }

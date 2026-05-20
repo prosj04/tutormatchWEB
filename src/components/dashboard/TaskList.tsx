@@ -16,6 +16,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
+
 import { SortableTaskItem } from "./SortableTaskItem";
 import type { StudyTask } from "./types";
 
@@ -36,6 +38,8 @@ export function TaskList({
   onDelete,
   onAddTask,
 }: TaskListProps) {
+  const btnAddTask = usePortalCopy("student_task_list", "btn_add_task", "할 일 추가");
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -79,7 +83,7 @@ export function TaskList({
         onClick={onAddTask}
         className="mt-3 w-full rounded-xl border border-dashed border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-primary hover:text-primary"
       >
-        할 일 추가
+        {btnAddTask}
       </button>
     </div>
   );

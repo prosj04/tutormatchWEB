@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import {
   countVisitSlots,
   getNextWeekDates,
@@ -25,6 +26,17 @@ export function VisitTimesPicker({
   const week = useMemo(() => getNextWeekDates(), []);
   const [selected, setSelected] = useState<VisitTimesByDate>(initial);
 
+  const title = usePortalCopy("visit_picker", "title", "방문 상담 희망 시간대 입력");
+  const desc = usePortalCopy(
+    "visit_picker",
+    "desc",
+    "방문 상담 가능 시간대를 입력해주시면 참고하여 연락드리겠습니다.",
+  );
+  const hintDays = usePortalCopy("visit_picker", "hint_days", "오늘부터 7일간 선택 가능합니다.");
+  const selectedTpl = usePortalCopy("visit_picker", "selected_count", "선택한 시간대: {count}개");
+  const btnSave = usePortalCopy("visit_picker", "btn_save", "방문 상담 희망 시간 저장");
+  const btnSubmitting = usePortalCopy("visit_picker", "btn_submitting", "저장 중...");
+
   function toggle(date: string, slot: string) {
     setSelected((prev) => {
       const daySlots = prev[date] ?? [];
@@ -44,11 +56,9 @@ export function VisitTimesPicker({
     <div className={compact ? "" : "rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm"}>
       {!compact ? (
         <>
-          <h2 className="text-sm font-semibold text-text-primary">방문 상담 희망 시간대 입력</h2>
-          <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-            방문 상담 가능 시간대를 입력해주시면 참고하여 연락드리겠습니다.
-          </p>
-          <p className="mt-1 text-xs text-text-muted">오늘부터 7일간 선택 가능합니다.</p>
+          <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-text-secondary">{desc}</p>
+          <p className="mt-1 text-xs text-text-muted">{hintDays}</p>
         </>
       ) : null}
 
@@ -90,7 +100,7 @@ export function VisitTimesPicker({
       </div>
 
       <p className="mt-4 text-center text-xs text-text-muted">
-        선택한 시간대: {total}개
+        {selectedTpl.replace(/\{count\}/g, String(total))}
       </p>
 
       <button
@@ -99,7 +109,7 @@ export function VisitTimesPicker({
         onClick={() => void onSubmit(selected)}
         className="mt-4 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
       >
-        {submitting ? "저장 중..." : "방문 상담 희망 시간 저장"}
+        {submitting ? btnSubmitting : btnSave}
       </button>
     </div>
   );

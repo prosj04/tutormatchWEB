@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { uploadQuestionImage } from "@/lib/supabase-client";
 
 import { AddQuestionModal } from "./AddQuestionModal";
@@ -19,6 +20,25 @@ export function QuestionSection({
   studentId,
   aiAnswerEnabled,
 }: QuestionSectionProps) {
+  const sectionTitle = usePortalCopy("student_questions", "section_title", "질문");
+  const btnAdd = usePortalCopy("student_questions", "btn_add", "질문 등록");
+  const loadingQuestions = usePortalCopy("student_questions", "loading", "질문을 불러오는 중…");
+  const emptyTitle = usePortalCopy(
+    "student_questions",
+    "empty_title",
+    "이 날짜에 등록된 질문이 없습니다.",
+  );
+  const emptyHint = usePortalCopy(
+    "student_questions",
+    "empty_hint",
+    "학습 중 궁금한 점을 질문해 보세요.",
+  );
+  const errUpload = usePortalCopy(
+    "student_questions",
+    "err_upload",
+    "이미지 업로드에 실패했습니다. Supabase Storage 설정을 확인해 주세요.",
+  );
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -71,7 +91,7 @@ export function QuestionSection({
         try {
           imageUrl = await uploadQuestionImage(studentId, imageFile);
         } catch {
-          throw new Error("이미지 업로드에 실패했습니다. Supabase Storage 설정을 확인해 주세요.");
+          throw new Error(errUpload);
         }
       }
 
@@ -113,24 +133,22 @@ export function QuestionSection({
   return (
     <section className="mt-10 border-t border-gray-200 pt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-text-primary">질문</h2>
+        <h2 className="text-lg font-bold text-text-primary">{sectionTitle}</h2>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
         >
-          질문 등록
+          {btnAdd}
         </button>
       </div>
 
       {loading ? (
-        <p className="mt-8 text-center text-sm text-text-muted">질문을 불러오는 중…</p>
+        <p className="mt-8 text-center text-sm text-text-muted">{loadingQuestions}</p>
       ) : questions.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center">
-          <p className="text-sm text-text-secondary">이 날짜에 등록된 질문이 없습니다.</p>
-          <p className="mt-1 text-xs text-text-muted">
-            학습 중 궁금한 점을 질문해 보세요.
-          </p>
+          <p className="text-sm text-text-secondary">{emptyTitle}</p>
+          <p className="mt-1 text-xs text-text-muted">{emptyHint}</p>
         </div>
       ) : (
         <ul className="mt-6 space-y-4">
