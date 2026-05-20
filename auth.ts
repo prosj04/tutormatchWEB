@@ -12,6 +12,9 @@ const authSecret =
   process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  /** App Router 핸들러가 `src/app/api/auth`에 있으므로 항상 이 경로와 맞춤.
+   * NEXTAUTH_URL/AUTH_URL에 `/login` 등 경로가 붙으면 basePath가 오염되어 로그인 전체가 실패할 수 있음. */
+  basePath: "/api/auth",
   ...(authSecret ? { secret: authSecret } : {}),
   trustHost: true,
   session: { strategy: "jwt" },
