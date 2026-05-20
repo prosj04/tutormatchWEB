@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { FadeSection } from "./FadeSection";
 
 const STEPS = [
@@ -53,12 +53,9 @@ export function HowItWorks() {
           ))}
         </div>
 
-        <Link
-          href="/dashboard/consultation"
-          className="mt-14 inline-flex items-center justify-center rounded-2xl bg-primary px-10 py-4 text-base font-semibold text-white transition hover:bg-primary/90"
-        >
+        <ConsultationApplyButton className="mt-14 inline-flex items-center justify-center rounded-2xl bg-primary px-10 py-4 text-base font-semibold text-white transition hover:bg-primary/90">
           지금 바로 시작하기
-        </Link>
+        </ConsultationApplyButton>
       </FadeSection>
     </section>
   );

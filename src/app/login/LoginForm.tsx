@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
+import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
@@ -304,7 +304,7 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
 
 export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent }) {
   const searchParams = useSearchParams();
-  const { open: openConsultationSignup } = useConsultationSignup();
+  const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
   const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "login_page", key, fb);
 
@@ -438,7 +438,7 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
             {get("signup_prompt", "아직 계정이 없으신가요? ")}{" "}
             <button
               type="button"
-              onClick={openConsultationSignup}
+              onClick={goConsultation}
               className="font-semibold text-primary underline-offset-4 hover:underline"
             >
               {get("signup_cta", "상담 신청")}

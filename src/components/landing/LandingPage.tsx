@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
+import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
@@ -398,12 +399,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               {getCmsValue("hero", "subtext", "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.")}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/dashboard/consultation"
-                className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base"
-              >
+              <ConsultationApplyButton className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base">
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
-              </Link>
+              </ConsultationApplyButton>
               <Link
                 href="/tutors"
                 className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
@@ -662,14 +660,13 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               </div>
               <div>
                 {homePricingItems.length > 0 ? (
-                  <div className="relative">
+                  <div>
                     <PricingTierToggle
                       value={pricingTier}
                       onChange={setPricingTier}
-                      className="absolute left-0 top-0 z-10"
+                      className="mb-5"
                     />
-                    <div className="pt-9">
-                      <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
+                    <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
                         {homePricingItems.map((item, index) => (
                           <button
                             key={`${pricingTier}-${item.plan.id}`}
@@ -683,12 +680,11 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                           </button>
                         ))}
                       </div>
-                      <PricingPlansGrid
-                        items={homePricingItems}
-                        variant="home"
-                        activeIndex={priceTab}
-                      />
-                    </div>
+                    <PricingPlansGrid
+                      items={homePricingItems}
+                      variant="home"
+                      activeIndex={priceTab}
+                    />
                   </div>
                 ) : (
                   <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-50">
@@ -737,12 +733,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               ))}
             </div>
             <div className="mt-12 flex justify-center md:mt-14">
-              <Link
-                href="/dashboard/consultation"
-                className="inline-flex items-center justify-center rounded-full bg-white px-10 py-4 text-base font-black text-primary shadow-lg transition hover:bg-neutral-10"
-              >
+              <ConsultationApplyButton className="inline-flex items-center justify-center rounded-full bg-white px-10 py-4 text-base font-black text-primary shadow-lg transition hover:bg-neutral-10">
                 {getCmsValue("cta", "button", "무료 상담 신청하기")}
-              </Link>
+              </ConsultationApplyButton>
             </div>
           </div>
         </section>
@@ -757,12 +750,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   채팅문의 10:00~22:00 · 전화문의 평일 10:00~19:00
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <Link
-                    href="/dashboard/consultation"
-                    className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-white transition hover:bg-primary/90"
-                  >
+                  <ConsultationApplyButton className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-white transition hover:bg-primary/90">
                     채팅 문의
-                  </Link>
+                  </ConsultationApplyButton>
                   <a
                     href="tel:010-0000-0000"
                     className="rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-neutral-30"
@@ -777,7 +767,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
                   <Link href="/faq"                    className="block transition hover:text-primary">FAQ</Link>
-                  <Link href="/dashboard/consultation" className="block transition hover:text-primary">상담 신청</Link>
+                  <ConsultationApplyButton className="block w-full cursor-pointer bg-transparent p-0 text-left text-sm font-bold text-neutral-50 transition hover:text-primary">
+                    상담 신청
+                  </ConsultationApplyButton>
                 </div>
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">SNS</p>
@@ -805,14 +797,13 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </footer>
       </main>
 
-      <Link
-        href="/dashboard/consultation"
+      <ConsultationApplyButton
         className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 md:bottom-8 md:right-8 ${
           showFloating ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
         무료 상담 신청
-      </Link>
+      </ConsultationApplyButton>
     </>
   );
 }

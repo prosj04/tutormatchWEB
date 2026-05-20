@@ -12,13 +12,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { DevSkipPaymentButton } from "@/components/checkout/DevSkipPaymentButton";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
+import { useConsultationCta } from "@/hooks/useConsultationCta";
 import {
   getPlanLabel,
   getPriceBreakdown,
   type SessionPlan,
   type SubjectCount,
 } from "@/lib/order-pricing";
-import { CONSULTATION_HREF } from "@/lib/pricing-plans";
 import type { GroupedSiteContent } from "@/lib/site-content";
 import { TOSS_WIDGET_CLIENT_KEY } from "@/lib/toss-client";
 
@@ -54,6 +54,7 @@ export function CheckoutContent({
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const goConsultation = useConsultationCta();
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
   const paymentMethodsRef = useRef<PMW | null>(null);
 
@@ -159,12 +160,13 @@ export function CheckoutContent({
           >
             {c("link_pricing", "← 요금제")}
           </Link>
-          <Link
-            href={CONSULTATION_HREF}
+          <button
+            type="button"
+            onClick={() => void goConsultation()}
             className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
           >
             {c("link_consultation", "상담 먼저 신청하기")}
-          </Link>
+          </button>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">

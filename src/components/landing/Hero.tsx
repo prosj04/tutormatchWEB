@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+
 const CARDS = [
   {
     icon: "💬",
@@ -58,12 +60,9 @@ export function Hero() {
             우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
-            <Link
-              href="/dashboard/consultation"
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-primary/90 sm:w-auto"
-            >
+            <ConsultationApplyButton className="inline-flex w-full items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-primary/90 sm:w-auto">
               무료 상담 예약하기
-            </Link>
+            </ConsultationApplyButton>
             <Link
               href="/tutors"
               className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-white/80 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"

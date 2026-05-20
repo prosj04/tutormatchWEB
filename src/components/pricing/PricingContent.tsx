@@ -73,15 +73,13 @@ export function PricingContent({
         </p>
 
         {planItems.length > 0 ? (
-          <div className="relative min-h-[200px]">
+          <div>
             <PricingTierToggle
               value={pricingTier}
               onChange={setPricingTier}
-              className="absolute left-0 top-0 z-10"
+              className="mb-8"
             />
-            <div className="pt-9">
-              <PricingPlansGrid items={planItems} variant="page" />
-            </div>
+            <PricingPlansGrid items={planItems} variant="page" />
           </div>
         ) : (
           <p className="rounded-2xl border border-neutral-20 bg-white px-6 py-10 text-center text-sm font-medium text-neutral-50">

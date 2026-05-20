@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
+import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { FadeSection } from "./FadeSection";
 
 export function FinalCTA() {
@@ -14,14 +13,11 @@ export function FinalCTA() {
           지금 찾아드리겠습니다.
         </h2>
         <p className="mt-6 text-base text-gray-400 md:text-lg">
-          무료 상담 예약 후 매칭까지 평균 3일
+          매니저 상담 후 즉시 매칭
         </p>
-        <Link
-          href="/dashboard/consultation"
-          className="mt-10 inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-4 text-lg font-semibold text-white shadow-lg transition hover:bg-primary/90"
-        >
+        <ConsultationApplyButton className="mt-10 inline-flex items-center justify-center rounded-2xl bg-primary px-12 py-4 text-lg font-semibold text-white shadow-lg transition hover:bg-primary/90">
           무료 상담 예약하기
-        </Link>
+        </ConsultationApplyButton>
       </FadeSection>
     </section>
   );

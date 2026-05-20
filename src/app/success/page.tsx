@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { SuccessPageActions } from "@/components/success/SuccessPageActions";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
 import { getGroupedSiteContent } from "@/lib/site-content";
@@ -63,20 +62,10 @@ export default async function SuccessPage({ searchParams }: PageProps) {
             </p>
           )}
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/"
-              className="inline-flex min-w-[200px] items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50"
-            >
-              {s("link_home", "홈으로")}
-            </Link>
-            <Link
-              href="/dashboard/consultation"
-              className="inline-flex min-w-[200px] items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90"
-            >
-              {s("link_consultation", "상담 신청")}
-            </Link>
-          </div>
+          <SuccessPageActions
+            homeLabel={s("link_home", "홈으로")}
+            consultationLabel={s("link_consultation", "상담 신청")}
+          />
         </div>
       </div>
     </div>

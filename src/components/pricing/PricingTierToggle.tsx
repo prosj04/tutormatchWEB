@@ -10,32 +10,33 @@ const OPTIONS: { value: PricingSchoolTier; label: string }[] = [
 type PricingTierToggleProps = {
   value: PricingSchoolTier;
   onChange: (tier: PricingSchoolTier) => void;
-  /** 예: 카드 영역 안 왼쪽 상단 */
   className?: string;
 };
 
+/** 사이트 콘텐츠 관리 페이지 상단 탭(홈·요금제·…)과 동일한 탭 스타일 */
 export function PricingTierToggle({ value, onChange, className = "" }: PricingTierToggleProps) {
   return (
-    <div
-      role="group"
+    <nav
+      role="tablist"
       aria-label="학년"
-      className={`inline-flex rounded-full border border-neutral-200/80 bg-neutral-100 p-0.5 text-[11px] font-black text-neutral-600 shadow-sm md:text-xs ${className}`}
+      className={`flex flex-wrap gap-2 border-b border-gray-200 pb-1 ${className}`}
     >
       {OPTIONS.map((opt) => (
         <button
           key={opt.value}
           type="button"
-          aria-pressed={value === opt.value}
-          className={`rounded-full px-2.5 py-1 tracking-normal transition md:px-3 ${
-            value === opt.value
-              ? "bg-white text-primary shadow-sm ring-1 ring-neutral-200/70"
-              : "text-neutral-500 hover:text-neutral-800"
-          }`}
+          role="tab"
+          aria-selected={value === opt.value}
           onClick={() => onChange(opt.value)}
+          className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
+            value === opt.value
+              ? "border-primary text-primary"
+              : "border-transparent text-text-muted hover:text-text-secondary"
+          }`}
         >
           {opt.label}
         </button>
       ))}
-    </div>
+    </nav>
   );
 }

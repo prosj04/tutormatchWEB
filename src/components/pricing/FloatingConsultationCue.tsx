@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { CONSULTATION_HREF } from "@/lib/pricing-plans";
+import { useConsultationCta } from "@/hooks/useConsultationCta";
 
 function ScrollChevron({ className = "" }: { className?: string }) {
   return (
@@ -47,6 +46,7 @@ export function FloatingConsultationCue({
 }: FloatingConsultationCueProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(!revealOnScroll);
+  const goConsultation = useConsultationCta();
 
   useEffect(() => {
     if (!revealOnScroll || !ref.current) return;
@@ -77,10 +77,10 @@ export function FloatingConsultationCue({
       {showChevron ? <ScrollChevron /> : null}
     </button>
   ) : (
-    <Link href={CONSULTATION_HREF} className={`flex flex-col items-center ${textClass}`}>
+    <button type="button" onClick={() => void goConsultation()} className={`flex flex-col items-center ${textClass}`}>
       <span>{label}</span>
       {showChevron ? <ScrollChevron /> : null}
-    </Link>
+    </button>
   );
 
   return (

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
+import { useConsultationCta } from "@/hooks/useConsultationCta";
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -31,7 +31,7 @@ function SessionActions({
   scrolled?: boolean;
 }) {
   const { data: session, status } = useSession();
-  const { open: openConsultationSignup } = useConsultationSignup();
+  const goConsultation = useConsultationCta();
   const role = session?.user?.role;
   const name = session ? displayName(session) : "";
   const buttonBase = mobile
@@ -65,10 +65,10 @@ function SessionActions({
         </Link>
         <button
           type="button"
-          onClick={() => {
-            onNavigate?.();
-            openConsultationSignup();
-          }}
+            onClick={() => {
+              onNavigate?.();
+              void goConsultation();
+            }}
           className={`${buttonBase} shadow-sm ${
             mobile || scrolled
               ? "bg-primary text-white hover:bg-primary/90"
