@@ -7,8 +7,10 @@ import type { LandingCmsContent } from "@/lib/cms";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
+import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
 import { parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
+import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { isHomePricingOneSubject } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
@@ -197,16 +199,22 @@ function useScrollLandingState() {
 
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
-  const [priceTab, setPriceTab]     = useState(0);
+  const [priceTab, setPriceTab] = useState(0);
+  const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
 
   const homePricingItems = useMemo(
     () =>
-      buildVisiblePricingPlanItems(cms?.siteContent).filter((item) => isHomePricingOneSubject(item.plan)),
-    [cms?.siteContent],
+      buildVisiblePricingPlanItems(cms?.siteContent, pricingTier).filter((item) =>
+        isHomePricingOneSubject(item.plan),
+      ),
+    [cms?.siteContent, pricingTier],
   );
 
+  useEffect(() => {
+    setPriceTab(0);
+  }, [pricingTier]);
   useEffect(() => {
     setPriceTab((prev) => {
       if (homePricingItems.length === 0) return 0;
@@ -654,27 +662,34 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               </div>
               <div>
                 {homePricingItems.length > 0 ? (
-                  <>
-                    <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
-                      {homePricingItems.map((item, index) => (
-                        <button
-                          key={item.plan.id}
-                          type="button"
-                          onClick={() => setPriceTab(index)}
-                          className={`rounded-full py-3 text-sm font-black transition ${
-                            priceTab === index ? "bg-primary text-white" : "text-neutral-50"
-                          }`}
-                        >
-                          {item.title ?? item.plan.title}
-                        </button>
-                      ))}
-                    </div>
-                    <PricingPlansGrid
-                      items={homePricingItems}
-                      variant="home"
-                      activeIndex={priceTab}
+                  <div className="relative">
+                    <PricingTierToggle
+                      value={pricingTier}
+                      onChange={setPricingTier}
+                      className="absolute left-0 top-0 z-10"
                     />
-                  </>
+                    <div className="pt-9">
+                      <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
+                        {homePricingItems.map((item, index) => (
+                          <button
+                            key={`${pricingTier}-${item.plan.id}`}
+                            type="button"
+                            onClick={() => setPriceTab(index)}
+                            className={`rounded-full py-3 text-sm font-black transition ${
+                              priceTab === index ? "bg-primary text-white" : "text-neutral-50"
+                            }`}
+                          >
+                            {item.title ?? item.plan.title}
+                          </button>
+                        ))}
+                      </div>
+                      <PricingPlansGrid
+                        items={homePricingItems}
+                        variant="home"
+                        activeIndex={priceTab}
+                      />
+                    </div>
+                  </div>
                 ) : (
                   <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-50">
                     표시된 요금제가 없습니다. 관리자 「사이트 콘텐츠」에서 요금제 카드를 켜 주세요.

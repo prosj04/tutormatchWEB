@@ -5,12 +5,20 @@ import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 /** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 */
 export const CMS_MANAGED_CARD_SLOT_COUNT = 6;
 
-/** 예: 요금제 CMS 박스 3 → pricing_box_3_title */
+/** 예: 요금제 CMS 박스 3 → pricing_box_3_title (고등 카드 세트 기본키) */
 export function pricingBoxFieldKey(
   boxIndex1Based: number,
   field: "title" | "subtitle" | "price" | "features" | "visible",
 ): string {
   return `pricing_box_${boxIndex1Based}_${field}`;
+}
+
+/** 예: 중등 카드 세트 pricing_middle_box_3_title — 비면 고등 키로 폴백 */
+export function pricingMiddleBoxFieldKey(
+  boxIndex1Based: number,
+  field: "title" | "subtitle" | "price" | "features" | "visible",
+): string {
+  return `pricing_middle_box_${boxIndex1Based}_${field}`;
 }
 
 /** 예: 요금 플랜 id "8-2" → plan_8_2_title */
@@ -29,40 +37,46 @@ export function parseCmsVisibility(raw: string | undefined, defaultVisible = tru
   return true;
 }
 
-function pricingBoxRowsForSlot(boxIndex: number, plan: (typeof PRICING_PLAN_SLOTS)[number], visibleDefault: string, orderStart: number) {
+function pricingBoxRowsForSlot(
+  boxIndex: number,
+  plan: (typeof PRICING_PLAN_SLOTS)[number],
+  visibleDefault: string,
+  orderStart: number,
+  keyFn: typeof pricingBoxFieldKey = pricingBoxFieldKey,
+) {
   const featuresText = plan.features.join("\n");
   return [
     {
       section: "pricing_page" as const,
-      key: pricingBoxFieldKey(boxIndex, "visible"),
+      key: keyFn(boxIndex, "visible"),
       value: visibleDefault,
       type: "text" as const,
       order: orderStart,
     },
     {
       section: "pricing_page" as const,
-      key: pricingBoxFieldKey(boxIndex, "title"),
+      key: keyFn(boxIndex, "title"),
       value: plan.title,
       type: "text" as const,
       order: orderStart + 1,
     },
     {
       section: "pricing_page" as const,
-      key: pricingBoxFieldKey(boxIndex, "subtitle"),
+      key: keyFn(boxIndex, "subtitle"),
       value: plan.subtitle,
       type: "text" as const,
       order: orderStart + 2,
     },
     {
       section: "pricing_page" as const,
-      key: pricingBoxFieldKey(boxIndex, "price"),
+      key: keyFn(boxIndex, "price"),
       value: formatPlanPrice(plan.sessions, plan.subjects),
       type: "text" as const,
       order: orderStart + 3,
     },
     {
       section: "pricing_page" as const,
-      key: pricingBoxFieldKey(boxIndex, "features"),
+      key: keyFn(boxIndex, "features"),
       value: featuresText,
       type: "text" as const,
       order: orderStart + 4,
@@ -85,6 +99,14 @@ export const pricingPageDefaults = [
   ...pricingBoxRowsForSlot(4, PRICING_PLAN_SLOTS[3], "1", 18),
   ...pricingBoxRowsForSlot(5, PRICING_PLAN_SLOTS[4], "0", 23),
   ...pricingBoxRowsForSlot(6, PRICING_PLAN_SLOTS[5], "0", 28),
+
+  /** 중등 카드 세트 — 비워 두면 고등과 동일 문구가 노출되도록 빌더에서 폴백 */
+  ...pricingBoxRowsForSlot(1, PRICING_PLAN_SLOTS[0], "1", 130, pricingMiddleBoxFieldKey),
+  ...pricingBoxRowsForSlot(2, PRICING_PLAN_SLOTS[1], "1", 135, pricingMiddleBoxFieldKey),
+  ...pricingBoxRowsForSlot(3, PRICING_PLAN_SLOTS[2], "1", 140, pricingMiddleBoxFieldKey),
+  ...pricingBoxRowsForSlot(4, PRICING_PLAN_SLOTS[3], "1", 145, pricingMiddleBoxFieldKey),
+  ...pricingBoxRowsForSlot(5, PRICING_PLAN_SLOTS[4], "0", 150, pricingMiddleBoxFieldKey),
+  ...pricingBoxRowsForSlot(6, PRICING_PLAN_SLOTS[5], "0", 155, pricingMiddleBoxFieldKey),
 
   /** 하위 호환: 구 plan id 키 + plan4_/plan8_ */
   ...PRICING_PLAN_SLOTS.slice(0, 4).flatMap((plan, idx) => {

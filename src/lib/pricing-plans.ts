@@ -1,5 +1,8 @@
 import { formatKRW } from "@/lib/format-won";
 
+/** 공개 요금 카드 학년 탭 — 중등/고등 카드 세트 분리 시 사용 */
+export type PricingSchoolTier = "middle" | "high";
+
 export type SessionPlan = 4 | 8;
 export type SubjectCount = 1 | 2;
 

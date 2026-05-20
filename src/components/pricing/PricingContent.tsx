@@ -1,9 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
+import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
+import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 
 const FAQ_FALLBACK = [
   {
@@ -32,7 +35,12 @@ export function PricingContent({
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "pricing_page", key, fallback);
 
-  const planItems = buildVisiblePricingPlanItems(siteContent);
+  const [pricingTier, setPricingTier] = usePricingSchoolTier();
+
+  const planItems = useMemo(
+    () => buildVisiblePricingPlanItems(siteContent, pricingTier),
+    [siteContent, pricingTier],
+  );
 
   const faqs = FAQ_FALLBACK.map((item, index) => {
     const n = index + 1;
@@ -65,7 +73,16 @@ export function PricingContent({
         </p>
 
         {planItems.length > 0 ? (
-          <PricingPlansGrid items={planItems} variant="page" />
+          <div className="relative min-h-[200px]">
+            <PricingTierToggle
+              value={pricingTier}
+              onChange={setPricingTier}
+              className="absolute left-0 top-0 z-10"
+            />
+            <div className="pt-9">
+              <PricingPlansGrid items={planItems} variant="page" />
+            </div>
+          </div>
         ) : (
           <p className="rounded-2xl border border-neutral-20 bg-white px-6 py-10 text-center text-sm font-medium text-neutral-50">
             표시로 설정된 요금제 카드가 없습니다. 사이트 콘텐츠 관리에서 요금제 카드를 켜 주세요.

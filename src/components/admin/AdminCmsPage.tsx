@@ -26,6 +26,7 @@ import {
   portalPagesDefaults,
   portalPagesFieldLabels,
   pricingBoxFieldKey,
+  pricingMiddleBoxFieldKey,
 } from "@/lib/cms-page-defaults";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
@@ -286,31 +287,34 @@ const pricingHeaderFields: TextFieldConfig[] = [
   },
 ];
 
-function pricingSlotInnerFields(boxIndex: number): TextFieldConfig[] {
+function pricingSlotInnerFields(
+  boxIndex: number,
+  keyFn: (index: number, field: Parameters<typeof pricingBoxFieldKey>[1]) => string = pricingBoxFieldKey,
+): TextFieldConfig[] {
   const plan = PRICING_PLAN_SLOTS[boxIndex - 1]!;
   return [
     {
       label: "제목",
       section: "pricing_page",
-      keyName: pricingBoxFieldKey(boxIndex, "title"),
+      keyName: keyFn(boxIndex, "title"),
       defaultValue: plan.title,
     },
     {
       label: "부제",
       section: "pricing_page",
-      keyName: pricingBoxFieldKey(boxIndex, "subtitle"),
+      keyName: keyFn(boxIndex, "subtitle"),
       defaultValue: plan.subtitle,
     },
     {
       label: "표시 가격",
       section: "pricing_page",
-      keyName: pricingBoxFieldKey(boxIndex, "price"),
+      keyName: keyFn(boxIndex, "price"),
       defaultValue: formatPlanPrice(plan.sessions, plan.subjects),
     },
     {
       label: "혜택 (줄바꿈으로 구분)",
       section: "pricing_page",
-      keyName: pricingBoxFieldKey(boxIndex, "features"),
+      keyName: keyFn(boxIndex, "features"),
       defaultValue: plan.features.join("\n"),
       kind: "textarea",
       rows: 6,
@@ -1122,8 +1126,8 @@ export function AdminCmsPage() {
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
               <p className="mb-5 text-sm text-text-secondary">
-                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 박스 1~4는 기본 표시, 5~6은 필요할 때만 켜면 `/pricing` 과 홈 요금제 블록에 같이
-                반영됩니다. 빈 칸은 기본 요금·혜택 텍스트로 채워집니다. 예전 plan4_/plan8_ 값은 새 필드가 비었을 때만 보조로 사용됩니다.
+                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 기존 키(pricing_box_), 「중등」은 pricing_middle_box_ 이며 중등 값이 비어 있으면
+                고등과 동일하게 보입니다. 박스 5~6은 필요할 때만 켭니다.
               </p>
               <div className="grid gap-4 lg:grid-cols-2">
                 {pricingHeaderFields.map((field) => (
@@ -1136,11 +1140,12 @@ export function AdminCmsPage() {
                 ))}
               </div>
               <div className="mt-6">
+                <p className="mb-4 text-xs font-black text-primary">고등 카드 세트</p>
                 <CmsCardBoxGrid>
                   {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
                     <CmsCardBox
                       key={slot}
-                      label={`요금 카드 박스 ${slot}`}
+                      label={`고등 요금 카드 박스 ${slot}`}
                       section="pricing_page"
                       visibilityKey={pricingBoxFieldKey(slot, "visible")}
                       visibilityDefault={slot <= 4 ? "1" : "0"}
@@ -1148,6 +1153,31 @@ export function AdminCmsPage() {
                       onToggleVisible={patchContent}
                     >
                       {pricingSlotInnerFields(slot).map((field) => (
+                        <ContentField
+                          key={`${field.section}-${field.keyName}`}
+                          field={field}
+                          value={getValue(field.section, field.keyName, field.defaultValue)}
+                          onSave={patchContent}
+                        />
+                      ))}
+                    </CmsCardBox>
+                  ))}
+                </CmsCardBoxGrid>
+              </div>
+              <div className="mt-10">
+                <p className="mb-4 text-xs font-black text-primary">중등 카드 세트 (비워 두면 고등과 동일)</p>
+                <CmsCardBoxGrid>
+                  {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
+                    <CmsCardBox
+                      key={`mid-${slot}`}
+                      label={`중등 요금 카드 박스 ${slot}`}
+                      section="pricing_page"
+                      visibilityKey={pricingMiddleBoxFieldKey(slot, "visible")}
+                      visibilityDefault={slot <= 4 ? "1" : "0"}
+                      getValue={getValue}
+                      onToggleVisible={patchContent}
+                    >
+                      {pricingSlotInnerFields(slot, pricingMiddleBoxFieldKey).map((field) => (
                         <ContentField
                           key={`${field.section}-${field.keyName}`}
                           field={field}
