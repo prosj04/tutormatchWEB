@@ -30,7 +30,7 @@ export async function GET(request: Request) {
         ? {
             OR: [
               { name: { contains: q, mode: "insensitive" as const } },
-              { user: { email: { contains: q, mode: "insensitive" as const } } },
+              { phone: { contains: q, mode: "insensitive" as const } },
             ],
           }
         : {},
@@ -47,7 +47,15 @@ export async function GET(request: Request) {
       take: limit,
       orderBy: { user: { createdAt: "desc" } },
       include: {
-        user: { select: { email: true, createdAt: true } },
+        user: { select: { createdAt: true } },
+        consultationBooking: {
+          include: { manager: { select: { name: true } } },
+        },
+        managerLinks: {
+          include: { manager: { select: { name: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
         teachers: {
           where: { isActive: true },
           include: { teacher: { select: { name: true } } },
@@ -57,16 +65,22 @@ export async function GET(request: Request) {
   ]);
 
   return NextResponse.json({
-    students: students.map((s) => ({
-      id: s.id,
-      name: s.name,
-      grade: s.grade,
-      subjects: s.subjects,
-      phone: s.phone,
-      email: s.user.email,
-      createdAt: s.user.createdAt,
-      assignedTeachers: s.teachers.map((t) => t.teacher.name).join(", "),
-    })),
+    students: students.map((s) => {
+      const managerName =
+        s.consultationBooking?.manager?.name ??
+        s.managerLinks[0]?.manager?.name ??
+        null;
+      return {
+        id: s.id,
+        name: s.name,
+        grade: s.grade,
+        subjects: s.subjects,
+        phone: s.phone,
+        managerName,
+        createdAt: s.user.createdAt,
+        assignedTeachers: s.teachers.map((t) => t.teacher.name).join(", "),
+      };
+    }),
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   });
 }

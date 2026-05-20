@@ -21,7 +21,7 @@ type StudentRow = {
   grade: string;
   subjects: string;
   phone: string;
-  email: string;
+  managerName: string | null;
   createdAt: string;
   assignedTeachers: string;
 };
@@ -98,7 +98,7 @@ export function AdminStudentsPage() {
             setQ(e.target.value);
             setPage(1);
           }}
-          placeholder="이름/이메일 검색"
+          placeholder="이름/전화번호 검색"
           className="rounded-xl border border-gray-200 px-4 py-2 text-sm"
         />
         <select
@@ -148,7 +148,7 @@ export function AdminStudentsPage() {
               <th className="px-4 py-3">학년</th>
               <th className="px-4 py-3">희망과목</th>
               <th className="px-4 py-3">전화번호</th>
-              <th className="px-4 py-3">이메일</th>
+              <th className="px-4 py-3">담당 매니저</th>
               <th className="px-4 py-3">가입일</th>
               <th className="px-4 py-3">담당선생님</th>
               <th className="px-4 py-3">액션</th>
@@ -174,7 +174,7 @@ export function AdminStudentsPage() {
                   <td className="px-4 py-3">{row.grade}</td>
                   <td className="px-4 py-3">{row.subjects}</td>
                   <td className="px-4 py-3">{row.phone}</td>
-                  <td className="px-4 py-3">{row.email}</td>
+                  <td className="px-4 py-3 text-text-secondary">{row.managerName ?? "—"}</td>
                   <td className="px-4 py-3">
                     {new Date(row.createdAt).toLocaleDateString("ko-KR")}
                   </td>
