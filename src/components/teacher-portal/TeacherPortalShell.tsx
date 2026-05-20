@@ -81,7 +81,10 @@ export function TeacherPortalShell({
       <header className="fixed inset-x-0 top-0 z-40 border-b border-gray-200 bg-surface shadow-sm">
         <div className="flex h-14 items-center px-4">
           <div className="flex w-40 shrink-0 items-center">
-            <Link href="/" className="font-sans text-lg font-bold italic text-text-primary">
+            <Link
+              href="/teacher-portal/dashboard"
+              className="font-sans text-lg font-bold italic text-text-primary"
+            >
               {brand}
             </Link>
           </div>

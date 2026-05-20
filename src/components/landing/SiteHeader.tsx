@@ -5,6 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import { useConsultationCta } from "@/hooks/useConsultationCta";
+import { portalHomeHref } from "@/lib/portal-roles";
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -131,6 +132,8 @@ export function SiteHeader({
     if (link.id === "reviews") return showReviewsLink;
     return true;
   });
+  const { data: session } = useSession();
+  const logoHref = portalHomeHref(session?.user?.role);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(variant === "light");
 
@@ -178,7 +181,7 @@ export function SiteHeader({
 
       <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-5">
         <div className="flex min-w-0 items-center gap-8">
-          <Link href="/" className="shrink-0 text-xl font-black tracking-tight transition-colors">
+          <Link href={logoHref} className="shrink-0 text-xl font-black tracking-tight transition-colors">
             Concord.
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
@@ -222,7 +225,11 @@ export function SiteHeader({
         }`}
       >
         <div className="flex h-16 items-center justify-between border-b border-neutral-20 px-5">
-          <Link href="/" onClick={() => setOpen(false)} className="text-xl font-black text-neutral-100">
+          <Link
+            href={logoHref}
+            onClick={() => setOpen(false)}
+            className="text-xl font-black text-neutral-100"
+          >
             Concord.
           </Link>
           <button

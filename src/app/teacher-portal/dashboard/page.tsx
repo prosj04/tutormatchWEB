@@ -27,7 +27,6 @@ export default async function TeacherDashboardPage() {
       <p className="mt-2 text-text-secondary">{teacher.name}님, 환영합니다.</p>
       <div className="mt-8 max-w-2xl">
         <TeacherDashboardContent
-          email={teacher.user.email}
           teacher={{
             name: teacher.name,
             phone: teacher.phone,

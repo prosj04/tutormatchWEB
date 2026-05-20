@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState, type ReactNode } from "react";
+
+import { normalizePhoneDigits } from "@/lib/phone-login";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
@@ -30,9 +34,9 @@ function SuccessCheckLarge() {
 }
 
 export function TeacherPortalApplyClient() {
+  const router = useRouter();
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
@@ -51,13 +55,12 @@ export function TeacherPortalApplyClient() {
   function validateRegister(): boolean {
     const next: Record<string, string> = {};
     if (!name.trim()) next.name = "이름을 입력해 주세요.";
-    if (!email.trim()) next.email = "이메일을 입력해 주세요.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "올바른 이메일 형식이 아닙니다.";
     if (!password) next.password = "비밀번호를 입력해 주세요.";
     else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
     if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
     else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
     if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
+    else if (normalizePhoneDigits(phone).length < 10) next.phone = "올바른 전화번호를 입력해 주세요.";
     if (subjects.length === 0) next.subjects = "담당 과목을 한 개 이상 선택해 주세요.";
     if (!education.trim()) next.education = "최종 학력을 입력해 주세요.";
     if (!experience.trim()) next.experience = "주요 경력을 입력해 주세요.";
@@ -76,7 +79,6 @@ export function TeacherPortalApplyClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          email: email.trim(),
           password,
           phone: phone.trim(),
           subjects,
@@ -87,11 +89,22 @@ export function TeacherPortalApplyClient() {
       });
       if (res.status === 409) {
         setFieldErrors({});
-        setRegisterConflict("이미 등록된 이메일입니다");
+        setRegisterConflict("이미 등록된 전화번호입니다");
         return;
       }
       if (!res.ok) {
-        setFieldErrors({ email: "가입 신청에 실패했습니다. 다시 시도해 주세요." });
+        setFieldErrors({ phone: "가입 신청에 실패했습니다. 다시 시도해 주세요." });
+        return;
+      }
+      const loginId = normalizePhoneDigits(phone);
+      const signInResult = await signIn("credentials", {
+        identifier: loginId,
+        password,
+        redirect: false,
+      });
+      if (!signInResult?.error) {
+        router.push("/teacher-portal/dashboard");
+        router.refresh();
         return;
       }
       setRegisterSuccess(true);
@@ -125,12 +138,13 @@ export function TeacherPortalApplyClient() {
                     className={inputClass}
                   />
                 </Field>
-                <Field label="이메일" htmlFor="apply-email" error={fieldErrors.email}>
+                <Field label="전화번호 (로그인 ID)" htmlFor="apply-phone" error={fieldErrors.phone}>
                   <input
-                    id="apply-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="apply-phone"
+                    type="tel"
+                    placeholder="010-0000-0000"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     className={inputClass}
                   />
                 </Field>
@@ -149,16 +163,6 @@ export function TeacherPortalApplyClient() {
                     type="password"
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label="전화번호" htmlFor="apply-phone" error={fieldErrors.phone}>
-                  <input
-                    id="apply-phone"
-                    type="tel"
-                    placeholder="010-0000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
                     className={inputClass}
                   />
                 </Field>
@@ -253,13 +257,13 @@ export function TeacherPortalApplyClient() {
                 신청이 완료되었습니다
               </h2>
               <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-secondary">
-                관리자 검토 후 1-2 영업일 내에 안내드립니다.
+                선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
               </p>
               <Link
-                href="/"
-                className="mt-10 inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-text-primary transition hover:border-gray-300 hover:bg-gray-50"
+                href="/teacher-portal/dashboard"
+                className="mt-10 inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/90"
               >
-                ← 메인으로 돌아가기
+                선생님 포털로 이동
               </Link>
             </div>
           )}

@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import {
   normalizePhoneDigits,
   studentSyntheticEmailFromDigits,
+  teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 
 /** 로그인 시 relation 전체(include) 금지 — DB에 아직 없는 컬럼까지 SELECT 하면 P2022로 전원 로그인 실패 */
@@ -84,6 +85,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (digits.length >= 10) {
               orConditions.push(
                 { email: studentSyntheticEmailFromDigits(digits) },
+                { email: teacherSyntheticEmailFromDigits(digits) },
                 { student: { phone: digits } },
                 { teacher: { phone: digits } },
               );

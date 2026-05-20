@@ -3,6 +3,10 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import {
+  normalizePhoneDigits,
+  teacherSyntheticEmailFromDigits,
+} from "@/lib/phone-login";
 
 type TeacherBody = {
   name?: unknown;
@@ -11,7 +15,6 @@ type TeacherBody = {
   bio?: unknown;
   education?: unknown;
   experience?: unknown;
-  email?: unknown;
   password?: unknown;
   careerEntries?: unknown;
 };
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { name, phone, subjects, bio, education, experience, email, password } = body;
+  const { name, phone, subjects, bio, education, experience, password } = body;
 
   if (
     !isNonEmptyString(name) ||
@@ -36,10 +39,14 @@ export async function POST(request: Request) {
     !isNonEmptyString(bio) ||
     !isNonEmptyString(education) ||
     !isNonEmptyString(experience) ||
-    !isNonEmptyString(email) ||
     !isNonEmptyString(password)
   ) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  const phoneDigits = normalizePhoneDigits(phone);
+  if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+    return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
   }
 
   if (!Array.isArray(subjects) || subjects.length === 0) {
@@ -52,6 +59,20 @@ export async function POST(request: Request) {
   }
 
   const subjectsCsv = subjectStrings.join(",");
+  const email = teacherSyntheticEmailFromDigits(phoneDigits);
+
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email },
+        { teacher: { phone: phoneDigits } },
+        { teacher: { phone: phone.trim() } },
+      ],
+    },
+  });
+  if (existing) {
+    return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
+  }
 
   const passwordHash = await bcrypt.hash(password, 12);
 
@@ -65,7 +86,7 @@ export async function POST(request: Request) {
           teacher: {
             create: {
               name,
-              phone,
+              phone: phoneDigits,
               subjects: subjectsCsv,
               bio,
               education,
@@ -110,7 +131,7 @@ export async function POST(request: Request) {
     );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+      return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
     }
     throw e;
   }

@@ -190,7 +190,7 @@ export function ConsultationBookingPage({
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-text-primary/10 bg-surface px-4 py-3 shadow-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
-          <Link href="/" className="font-sans text-lg font-bold italic text-primary">
+          <Link href="/dashboard" className="font-sans text-lg font-bold italic text-primary">
             {brand}
           </Link>
           <p className="truncate text-sm font-medium text-white">{welcomeText}</p>

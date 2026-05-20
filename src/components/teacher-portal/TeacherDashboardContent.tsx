@@ -1,5 +1,4 @@
 type TeacherDashboardContentProps = {
-  email: string;
   teacher: {
     name: string;
     phone: string;
@@ -8,7 +7,7 @@ type TeacherDashboardContentProps = {
   };
 };
 
-export function TeacherDashboardContent({ teacher, email }: TeacherDashboardContentProps) {
+export function TeacherDashboardContent({ teacher }: TeacherDashboardContentProps) {
   const subjectsLabel = teacher.subjects
     .split(",")
     .map((s) => s.trim())
@@ -33,7 +32,7 @@ export function TeacherDashboardContent({ teacher, email }: TeacherDashboardCont
             <p className="mt-4 text-sm font-medium text-text-primary">
               관리자 검토가 완료되면 수업을 시작하실 수 있습니다.
             </p>
-            <p className="mt-2 text-xs text-text-secondary">보통 1-2 영업일 소요됩니다.</p>
+            <p className="mt-2 text-xs text-text-secondary">매니저가 곧 개별 연락 드리겠습니다.</p>
           </>
         )}
       </section>
@@ -48,12 +47,6 @@ export function TeacherDashboardContent({ teacher, email }: TeacherDashboardCont
               이름
             </dt>
             <dd className="text-text-primary">{teacher.name}</dd>
-          </div>
-          <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-8">
-            <dt className="w-28 shrink-0 text-xs font-semibold uppercase tracking-wider text-text-muted">
-              이메일
-            </dt>
-            <dd className="break-all text-text-primary">{email}</dd>
           </div>
           <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-8">
             <dt className="w-28 shrink-0 text-xs font-semibold uppercase tracking-wider text-text-muted">

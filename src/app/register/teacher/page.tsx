@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { normalizePhoneDigits } from "@/lib/phone-login";
 import { uploadTeacherDocument } from "@/lib/supabase-client";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
@@ -26,7 +29,6 @@ type SelectedFile = {
 type FieldErrors = Partial<
   Record<
     | "name"
-    | "email"
     | "password"
     | "passwordConfirm"
     | "phone"
@@ -39,6 +41,7 @@ type FieldErrors = Partial<
 >;
 
 export default function TeacherRegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -46,7 +49,6 @@ export default function TeacherRegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
@@ -72,15 +74,14 @@ export default function TeacherRegisterPage() {
 
     if (targetStep === 1) {
       if (!name.trim()) next.name = "이름을 입력해 주세요.";
-      if (!email.trim()) next.email = "이메일을 입력해 주세요.";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        next.email = "올바른 이메일 형식이 아닙니다.";
-      }
       if (!password) next.password = "비밀번호를 입력해 주세요.";
       else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
       if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
       else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
       if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
+      else if (normalizePhoneDigits(phone).length < 10) {
+        next.phone = "올바른 전화번호를 입력해 주세요.";
+      }
       if (subjects.length === 0) next.subjects = "담당 과목을 한 개 이상 선택해 주세요.";
     }
 
@@ -149,7 +150,6 @@ export default function TeacherRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          email: email.trim(),
           password,
           phone: phone.trim(),
           subjects,
@@ -164,7 +164,7 @@ export default function TeacherRegisterPage() {
 
       if (registerRes.status === 409) {
         setStep(1);
-        setFieldErrors({ email: "이미 등록된 이메일입니다." });
+        setFieldErrors({ phone: "이미 등록된 전화번호입니다." });
         return;
       }
 
@@ -200,7 +200,19 @@ export default function TeacherRegisterPage() {
         });
       }
 
-      setSuccess(true);
+      const loginId = normalizePhoneDigits(phone);
+      const signInResult = await signIn("credentials", {
+        identifier: loginId,
+        password,
+        redirect: false,
+      });
+      if (signInResult?.error) {
+        setSuccess(true);
+        return;
+      }
+      router.push("/teacher-portal/dashboard");
+      router.refresh();
+      return;
     } catch {
       setError("가입 신청 중 문제가 발생했습니다. 다시 시도해 주세요.");
     } finally {
@@ -227,13 +239,13 @@ export default function TeacherRegisterPage() {
             신청이 완료되었습니다.
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-text-secondary">
-            관리자 승인 후 로그인하실 수 있습니다.
+            선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
           </p>
           <Link
-            href="/"
-            className="mt-8 inline-flex rounded-2xl border border-gray-200 px-6 py-3 text-sm font-semibold text-text-primary hover:bg-gray-50"
+            href="/teacher-portal/dashboard"
+            className="mt-8 inline-flex rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90"
           >
-            메인으로 돌아가기
+            선생님 포털로 이동
           </Link>
         </div>
       </div>
@@ -274,14 +286,12 @@ export default function TeacherRegisterPage() {
           {step === 1 ? (
             <StepOne
               name={name}
-              email={email}
               password={password}
               passwordConfirm={passwordConfirm}
               phone={phone}
               subjects={subjects}
               fieldErrors={fieldErrors}
               onName={setName}
-              onEmail={setEmail}
               onPassword={setPassword}
               onPasswordConfirm={setPasswordConfirm}
               onPhone={setPhone}
@@ -354,28 +364,24 @@ export default function TeacherRegisterPage() {
 
 function StepOne({
   name,
-  email,
   password,
   passwordConfirm,
   phone,
   subjects,
   fieldErrors,
   onName,
-  onEmail,
   onPassword,
   onPasswordConfirm,
   onPhone,
   onToggleSubject,
 }: {
   name: string;
-  email: string;
   password: string;
   passwordConfirm: string;
   phone: string;
   subjects: string[];
   fieldErrors: FieldErrors;
   onName: (value: string) => void;
-  onEmail: (value: string) => void;
   onPassword: (value: string) => void;
   onPasswordConfirm: (value: string) => void;
   onPhone: (value: string) => void;
@@ -386,11 +392,12 @@ function StepOne({
       <Field label="이름" error={fieldErrors.name}>
         <input value={name} onChange={(e) => onName(e.target.value)} className={inputClass} />
       </Field>
-      <Field label="이메일" error={fieldErrors.email}>
+      <Field label="전화번호 (로그인 ID)" error={fieldErrors.phone}>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => onEmail(e.target.value)}
+          type="tel"
+          placeholder="010-0000-0000"
+          value={phone}
+          onChange={(e) => onPhone(e.target.value)}
           className={inputClass}
         />
       </Field>
@@ -407,15 +414,6 @@ function StepOne({
           type="password"
           value={passwordConfirm}
           onChange={(e) => onPasswordConfirm(e.target.value)}
-          className={inputClass}
-        />
-      </Field>
-      <Field label="전화번호" error={fieldErrors.phone}>
-        <input
-          type="tel"
-          placeholder="010-0000-0000"
-          value={phone}
-          onChange={(e) => onPhone(e.target.value)}
           className={inputClass}
         />
       </Field>

@@ -18,7 +18,7 @@ export function DashboardTopBar({ studentName }: DashboardTopBarProps) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center border-b border-gray-200 bg-surface px-4 shadow-sm">
       <div className="flex w-40 shrink-0 items-center">
-        <Link href="/" className="font-sans text-lg font-bold italic text-text-primary">
+        <Link href="/dashboard" className="font-sans text-lg font-bold italic text-text-primary">
           {brand}
         </Link>
       </div>

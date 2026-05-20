@@ -55,7 +55,7 @@ export function TeacherPortalLoginClient() {
             선생님 로그인
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-            승인된 선생님 계정으로 로그인해 주세요.
+            전화번호와 비밀번호로 로그인해 주세요.
           </p>
         </div>
       </div>
