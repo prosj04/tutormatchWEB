@@ -4,6 +4,8 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
+
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
   if (n) return n;
@@ -29,6 +31,7 @@ function SessionActions({
   scrolled?: boolean;
 }) {
   const { data: session, status } = useSession();
+  const { open: openConsultationSignup } = useConsultationSignup();
   const role = session?.user?.role;
   const name = session ? displayName(session) : "";
   const buttonBase = mobile
@@ -60,17 +63,20 @@ function SessionActions({
         >
           로그인
         </Link>
-        <Link
-          href="/register"
-          onClick={onNavigate}
+        <button
+          type="button"
+          onClick={() => {
+            onNavigate?.();
+            openConsultationSignup();
+          }}
           className={`${buttonBase} shadow-sm ${
             mobile || scrolled
               ? "bg-primary text-white hover:bg-primary/90"
               : "bg-white text-neutral-100 hover:bg-white/90"
           }`}
         >
-          회원가입
-        </Link>
+          상담 신청
+        </button>
       </div>
     );
   }

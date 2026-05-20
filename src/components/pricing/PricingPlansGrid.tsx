@@ -1,7 +1,11 @@
 import { PricingPlanCard } from "@/components/pricing/PricingPlanCard";
 import type { PricingPlanDefinition } from "@/lib/pricing-plans";
 
-export const PRICING_GRID_GAP_CLASS = "grid items-stretch gap-6";
+export const PRICING_GRID_GAP_CLASS = "gap-6";
+
+/** 홈 2열 그리드에서 카드 1장 너비와 동일 */
+export const PRICING_CARD_WIDTH_CLASS =
+  "w-[min(348px,calc(100vw-2.5rem))] shrink-0 !flex sm:w-[348px]";
 
 export type PricingPlanItem = {
   plan: PricingPlanDefinition;
@@ -13,9 +17,8 @@ export type PricingPlanItem = {
 
 type PricingPlansGridProps = {
   items: PricingPlanItem[];
-  /** 홈: 2열 · 요금제 페이지: 2열→4열 */
+  /** 홈: 2열 그리드 · 요금제 페이지: 동일 카드 너비 가로 스크롤 4장 */
   variant?: "home" | "page";
-  /** 홈 모바일 탭 전환 */
   activeIndex?: number;
 };
 
@@ -24,13 +27,29 @@ export function PricingPlansGrid({
   variant = "page",
   activeIndex = 0,
 }: PricingPlansGridProps) {
-  const gridClass =
-    variant === "home"
-      ? `${PRICING_GRID_GAP_CLASS} md:grid-cols-2`
-      : `${PRICING_GRID_GAP_CLASS} md:grid-cols-2 xl:grid-cols-4`;
+  if (variant === "page") {
+    return (
+      <div className="scrollbar-hide -mx-5 overflow-x-auto px-5 pb-2 md:mx-0 md:px-0">
+        <div className={`flex w-max ${PRICING_GRID_GAP_CLASS}`}>
+          {items.map((item) => (
+            <PricingPlanCard
+              key={item.plan.id}
+              plan={item.plan}
+              title={item.title}
+              subtitle={item.subtitle}
+              price={item.price}
+              features={item.features}
+              active
+              className={PRICING_CARD_WIDTH_CLASS}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={gridClass}>
+    <div className={`grid items-stretch ${PRICING_GRID_GAP_CLASS} md:grid-cols-2`}>
       {items.map((item, index) => (
         <PricingPlanCard
           key={item.plan.id}
@@ -39,7 +58,7 @@ export function PricingPlansGrid({
           subtitle={item.subtitle}
           price={item.price}
           features={item.features}
-          active={variant === "page" ? true : activeIndex === index}
+          active={activeIndex === index}
         />
       ))}
     </div>

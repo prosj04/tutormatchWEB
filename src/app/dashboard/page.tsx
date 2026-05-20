@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   });
 
   if (!student) {
-    redirect("/register");
+    redirect("/?signup=1");
   }
 
   if (student._count.teachers === 0) {

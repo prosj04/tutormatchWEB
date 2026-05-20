@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 import { useState } from "react";
+
+import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
 
 const inputClass =
   "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
@@ -139,6 +140,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { open: openConsultationSignup } = useConsultationSignup();
   const showAdminSetup = searchParams.get("setup") === "admin";
 
   const [identifier, setIdentifier] = useState("");
@@ -251,12 +253,13 @@ export function LoginForm() {
           ) : null}
           <p className="mt-8 text-center text-sm text-text-secondary">
             아직 계정이 없으신가요?{" "}
-            <Link
-              href="/register"
+            <button
+              type="button"
+              onClick={openConsultationSignup}
               className="font-semibold text-primary underline-offset-4 hover:underline"
             >
-              회원가입
-            </Link>
+              상담 신청
+            </button>
           </p>
 
           {showAdminSetup && !adminSetupHidden ? (

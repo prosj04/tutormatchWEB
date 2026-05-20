@@ -23,7 +23,7 @@ export default async function ConsultationPage() {
   });
 
   if (!student) {
-    redirect("/register");
+    redirect("/?signup=1");
   }
 
   if (student.teachers.length > 0) {

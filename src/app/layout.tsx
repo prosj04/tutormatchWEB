@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 
 import { AppSessionProvider } from "@/components/providers/AppSessionProvider";
+import { ConsultationSignupProvider } from "@/components/providers/ConsultationSignupProvider";
 
 import "./globals.css";
 
@@ -59,7 +61,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="min-h-screen">
-        <AppSessionProvider>{children}</AppSessionProvider>
+        <AppSessionProvider>
+          <Suspense fallback={null}>
+            <ConsultationSignupProvider>{children}</ConsultationSignupProvider>
+          </Suspense>
+        </AppSessionProvider>
       </body>
     </html>
   );
