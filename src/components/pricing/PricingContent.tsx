@@ -123,7 +123,7 @@ export function PricingContent({
           ))}
         </div>
 
-        <FloatingConsultationCue showChevron className="py-10 md:py-14" />
+        <FloatingConsultationCue showChevron revealOnScroll className="py-10 md:py-14" />
       </div>
 
       <section className="mx-auto max-w-[1200px] px-5 pb-16 md:pb-24">

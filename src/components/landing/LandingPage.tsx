@@ -161,12 +161,12 @@ function useScrollLandingState() {
   useEffect(() => {
     const handleScroll = () => {
       const hero = document.getElementById("hero");
-      const consultation = document.getElementById("consultation");
+      const pricing = document.getElementById("pricing");
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
       const pastHero = window.scrollY > heroBottom - 120;
-      const beforeConsultation =
-        !consultation || window.scrollY < consultation.offsetTop - window.innerHeight * 0.35;
-      setShowFloating(pastHero && beforeConsultation);
+      const beforePricing =
+        !pricing || window.scrollY < pricing.offsetTop - window.innerHeight * 0.15;
+      setShowFloating(pastHero && beforePricing);
 
       const next = tabs
         .map((tab) => document.getElementById(tab.id))
@@ -587,6 +587,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             <FloatingConsultationCue
               scrollTargetId="consultation"
               showChevron
+              revealOnScroll
               className="relative z-10 -mb-2 py-8 md:py-10"
             />
           </div>
@@ -595,33 +596,54 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ BENEFITS CTA ════════════════════════════ */}
         <section
           id="consultation"
-          className="scroll-mt-24 bg-primary py-28 md:min-h-[88vh] md:py-36 lg:py-40"
+          className="scroll-mt-24 bg-primary py-28 md:min-h-[88vh] md:py-32 lg:py-36"
         >
-          <div className="mx-auto flex max-w-[1200px] flex-col justify-center px-5 md:min-h-[calc(88vh-12rem)]">
-            <h2 className="text-[clamp(2rem,5vw,4rem)] font-black leading-tight tracking-[-0.03em] text-white">
+          <div className="mx-auto flex max-w-[1200px] flex-col justify-center px-5 md:min-h-[calc(88vh-10rem)]">
+            <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-white">
               {getCmsValue("cta", "headline", "지금 신청하면 받을 수 있는 혜택이에요")}
             </h2>
-            <p className="mt-6 max-w-2xl text-lg font-bold leading-relaxed text-white/85 md:mt-8 md:text-xl">
+            <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-white/85">
               {getCmsValue("cta", "subtext", "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
             </p>
-            <div className="mt-14 grid gap-6 sm:grid-cols-3 md:mt-16 md:gap-8">
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:mt-14 md:gap-6">
               {[
-                { title: "무료 상담 1회",        desc: "매니저가 직접 학생 상황을 파악합니다." },
-                { title: "매니저 직접 배정",      desc: "전문 매니저가 처음부터 함께합니다." },
-                { title: "학습 리포트 무료 제공", desc: "첫 달 학습 리포트를 무료로 제공합니다." },
+                {
+                  title: "무료 상담 1회",
+                  desc: "매니저가 직접 학생 상황을 파악합니다.",
+                  detail: "현재 성적·목표·일정을 함께 정리하고, 가장 현실적인 학습 방향을 제안해 드립니다.",
+                },
+                {
+                  title: "매니저 직접 배정",
+                  desc: "전문 매니저가 처음부터 함께합니다.",
+                  detail: "수업 외에도 진도·숙제·질문을 챙기며 학부모님께도 정기적으로 공유합니다.",
+                },
+                {
+                  title: "학습 리포트 무료",
+                  desc: "첫 달 학습 리포트를 무료로 제공합니다.",
+                  detail: "출결, 과제 수행률, 취약 단원을 한눈에 볼 수 있는 리포트를 받아보세요.",
+                },
+                {
+                  title: "맞춤 강사 매칭",
+                  desc: "성향과 목표에 맞는 선생님을 연결합니다.",
+                  detail: "무작위 배정이 아니라 상담 내용을 바탕으로 후보를 추천하고 일정까지 조율합니다.",
+                },
               ].map((b) => (
-                <div key={b.title} className="rounded-[24px] bg-white/15 p-8 backdrop-blur md:p-10">
-                  <p className="text-xl font-black text-white md:text-2xl">{b.title}</p>
-                  <p className="mt-4 text-base font-medium leading-relaxed text-white/85 md:text-lg">
-                    {b.desc}
+                <div
+                  key={b.title}
+                  className="flex min-h-[200px] flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-7 backdrop-blur-sm md:min-h-[220px] md:p-8"
+                >
+                  <p className="text-lg font-black text-white">{b.title}</p>
+                  <p className="mt-3 text-sm font-bold leading-snug text-white/90">{b.desc}</p>
+                  <p className="mt-4 flex-1 text-sm font-medium leading-relaxed text-white/75">
+                    {b.detail}
                   </p>
                 </div>
               ))}
             </div>
-            <div className="mt-16 flex justify-center md:mt-20">
+            <div className="mt-12 flex justify-center md:mt-14">
               <Link
                 href="/dashboard/consultation"
-                className="inline-flex min-w-[280px] items-center justify-center rounded-full bg-white px-14 py-5 text-lg font-black text-primary shadow-xl transition hover:bg-neutral-10 md:min-w-[320px] md:px-16 md:py-6 md:text-xl"
+                className="inline-flex items-center justify-center rounded-full bg-white px-10 py-4 text-base font-black text-primary shadow-lg transition hover:bg-neutral-10"
               >
                 {getCmsValue("cta", "button", "무료 상담 신청하기")}
               </Link>
@@ -629,7 +651,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-        {/* ═══ FAQ ═════════════════════════════════════ */}
+                {/* ═══ FAQ ═════════════════════════════════════ */}
         <section id="faq" className="bg-neutral-80 py-20 text-white md:py-28">
           <div className="mx-auto max-w-[900px] px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
@@ -704,13 +726,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </footer>
       </main>
 
-      <FloatingConsultationCue
-        fixed
-        scrollTargetId="consultation"
-        label="무료 상담 신청"
-        showChevron
-        visible={showFloating}
-      />
+      <Link
+        href="/dashboard/consultation"
+        className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 md:bottom-8 md:right-8 ${
+          showFloating ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+        }`}
+      >
+        무료 상담 신청
+      </Link>
     </>
   );
 }
