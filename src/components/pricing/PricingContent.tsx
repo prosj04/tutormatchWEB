@@ -1,9 +1,9 @@
 "use client";
 
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
-import { PricingPlansGrid, type PricingPlanItem } from "@/components/pricing/PricingPlansGrid";
-import { getCmsSectionValue, parseMultilineList } from "@/lib/cms-page-defaults";
-import { formatPlanPrice, PRICING_PLANS } from "@/lib/pricing-plans";
+import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
+import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 
 const FAQ_FALLBACK = [
   {
@@ -32,52 +32,7 @@ export function PricingContent({
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "pricing_page", key, fallback);
 
-  const cmsPlanOverrides: Partial<
-    Record<string, { title?: string; subtitle?: string; features?: string[] }>
-  > = {
-    "4-1": {
-      title: get("plan4_title", "월 4회"),
-      subtitle: get("plan4_subtitle", "1과목 · 주 1회"),
-      features: parseMultilineList(
-        get(
-          "plan4_features",
-          "주 1회 수업 (50분)\n학습 진도 관리\n과제 관리\nAI 질답 무제한\n강사 첨삭 월 4회",
-        ),
-        PRICING_PLANS[0].features,
-      ),
-    },
-    "8-1": {
-      title: get("plan8_title", "월 8회"),
-      subtitle: get("plan8_subtitle", "1과목 · 주 2회"),
-      features: parseMultilineList(
-        get(
-          "plan8_features",
-          "주 2회 수업 (50분)\n주 2회 집중 관리\n우선 강사 배정\nAI 질답 무제한\n강사 첨삭 무제한\n월간 심층 리포트",
-        ),
-        PRICING_PLANS[1].features,
-      ),
-    },
-  };
-
-  const planItems: PricingPlanItem[] = PRICING_PLANS.map((plan) => {
-    const override = cmsPlanOverrides[plan.id];
-    const cmsPrice =
-      plan.id === "4-1"
-        ? get("plan4_price", "")
-        : plan.id === "8-1"
-          ? get("plan8_price", "")
-          : "";
-    return {
-      plan,
-      title: override?.title ?? plan.title,
-      subtitle: override?.subtitle ?? plan.subtitle,
-      features: override?.features ?? plan.features,
-      price:
-        cmsPrice && (plan.id === "4-1" || plan.id === "8-1")
-          ? cmsPrice
-          : formatPlanPrice(plan.sessions, plan.subjects),
-    };
-  });
+  const planItems = buildVisiblePricingPlanItems(siteContent);
 
   const faqs = FAQ_FALLBACK.map((item, index) => {
     const n = index + 1;
@@ -109,7 +64,13 @@ export function PricingContent({
           주 1회(월 4회) · 회당 10만원 / 주 2회 이상(월 8회) · 회당 9만원
         </p>
 
-        <PricingPlansGrid items={planItems} variant="page" />
+        {planItems.length > 0 ? (
+          <PricingPlansGrid items={planItems} variant="page" />
+        ) : (
+          <p className="rounded-2xl border border-neutral-20 bg-white px-6 py-10 text-center text-sm font-medium text-neutral-50">
+            표시로 설정된 요금제 카드가 없습니다. 사이트 콘텐츠 관리에서 요금제 카드를 켜 주세요.
+          </p>
+        )}
 
         <FloatingConsultationCue
           showChevron

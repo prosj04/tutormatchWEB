@@ -116,6 +116,3 @@ export const PRICING_PLANS: PricingPlanDefinition[] = [
     recommended: true,
   },
 ];
-
-/** 홈 미리보기용 (1과목 플랜만) */
-export const HOME_PRICING_PLANS = PRICING_PLANS.filter((p) => p.subjects === 1);

@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
-import { HOME_PRICING_PLANS } from "@/lib/pricing-plans";
+import { parseCmsVisibility } from "@/lib/cms-page-defaults";
+import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -175,6 +176,20 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const [priceTab, setPriceTab]     = useState(0);
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
+
+  const homePricingItems = useMemo(
+    () =>
+      buildVisiblePricingPlanItems(cms?.siteContent).filter((item) => item.plan.subjects === 1),
+    [cms?.siteContent],
+  );
+
+  useEffect(() => {
+    setPriceTab((prev) => {
+      if (homePricingItems.length === 0) return 0;
+      return Math.min(prev, homePricingItems.length - 1);
+    });
+  }, [homePricingItems.length]);
+
   const cmsResults = results.map(([student, before, after], index) => {
     const itemNumber = index + 1;
     return {
@@ -189,8 +204,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
     };
   });
   const doubledResults = [...cmsResults, ...cmsResults];
-  const cmsTeachers = teachers.map((teacher, index) => {
+  const cmsTeachers = teachers.flatMap((teacher, index) => {
     const itemNumber = index + 1;
+    const visFlag = getCmsValue("teachers", `teacher${itemNumber}_visible`, "1");
+    if (!parseCmsVisibility(visFlag.trim() === "" ? undefined : visFlag)) {
+      return [];
+    }
     const careers = getCmsValue(
       "teachers",
       `teacher${itemNumber}_careers`,
@@ -200,13 +219,15 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       .map((career) => career.trim())
       .filter(Boolean);
 
-    return {
-      subject: getCmsValue("teachers", `teacher${itemNumber}_subject`, teacher.subject),
-      name: getCmsValue("teachers", `teacher${itemNumber}_name`, teacher.name),
-      image: getCmsValue("teachers", `teacher${itemNumber}_image`, teacher.image),
-      highlight: getCmsValue("teachers", `teacher${itemNumber}_highlight`, teacher.highlight),
-      careers: careers.length > 0 ? careers : teacher.careers,
-    };
+    return [
+      {
+        subject: getCmsValue("teachers", `teacher${itemNumber}_subject`, teacher.subject),
+        name: getCmsValue("teachers", `teacher${itemNumber}_name`, teacher.name),
+        image: getCmsValue("teachers", `teacher${itemNumber}_image`, teacher.image),
+        highlight: getCmsValue("teachers", `teacher${itemNumber}_highlight`, teacher.highlight),
+        careers: careers.length > 0 ? careers : teacher.careers,
+      },
+    ];
   });
   const doubledTeachers = [...cmsTeachers, ...cmsTeachers];
   const cmsStats = [
@@ -543,25 +564,33 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                 </Link>
               </div>
               <div>
-                <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
-                  {HOME_PRICING_PLANS.map((plan, index) => (
-                    <button
-                      key={plan.id}
-                      type="button"
-                      onClick={() => setPriceTab(index)}
-                      className={`rounded-full py-3 text-sm font-black transition ${
-                        priceTab === index ? "bg-primary text-white" : "text-neutral-50"
-                      }`}
-                    >
-                      {plan.title}
-                    </button>
-                  ))}
-                </div>
-                <PricingPlansGrid
-                  items={HOME_PRICING_PLANS.map((plan) => ({ plan }))}
-                  variant="home"
-                  activeIndex={priceTab}
-                />
+                {homePricingItems.length > 0 ? (
+                  <>
+                    <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
+                      {homePricingItems.map((item, index) => (
+                        <button
+                          key={item.plan.id}
+                          type="button"
+                          onClick={() => setPriceTab(index)}
+                          className={`rounded-full py-3 text-sm font-black transition ${
+                            priceTab === index ? "bg-primary text-white" : "text-neutral-50"
+                          }`}
+                        >
+                          {item.title ?? item.plan.title}
+                        </button>
+                      ))}
+                    </div>
+                    <PricingPlansGrid
+                      items={homePricingItems}
+                      variant="home"
+                      activeIndex={priceTab}
+                    />
+                  </>
+                ) : (
+                  <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-50">
+                    표시된 요금제가 없습니다. 관리자 「사이트 콘텐츠」에서 요금제 카드를 켜 주세요.
+                  </p>
+                )}
               </div>
             </div>
             <FloatingConsultationCue

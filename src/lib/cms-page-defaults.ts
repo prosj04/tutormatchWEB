@@ -1,5 +1,64 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
+import { PRICING_PLANS, formatPlanPrice } from "@/lib/pricing-plans";
+
+/** 예: 요금 플랜 id "8-2" → plan_8_2_title */
+export function pricingPlanFieldKey(
+  planId: string,
+  field: "title" | "subtitle" | "price" | "features" | "visible",
+): string {
+  return `plan_${planId.replace("-", "_")}_${field}`;
+}
+
+/** 1 / true 등은 표시, 0 · false · off · 숨김 은 미표시. 빈 문자열은 defaultVisible */
+export function parseCmsVisibility(raw: string | undefined, defaultVisible = true): boolean {
+  if (raw === undefined || raw === "") return defaultVisible;
+  const v = raw.trim().toLowerCase();
+  if (v === "0" || v === "false" || v === "no" || v === "off" || v === "숨김") return false;
+  return true;
+}
+
+function pricingCardRows(plan: (typeof PRICING_PLANS)[number], orderStart: number) {
+  const featuresText = plan.features.join("\n");
+  return [
+    {
+      section: "pricing_page" as const,
+      key: pricingPlanFieldKey(plan.id, "visible"),
+      value: "1",
+      type: "text" as const,
+      order: orderStart,
+    },
+    {
+      section: "pricing_page" as const,
+      key: pricingPlanFieldKey(plan.id, "title"),
+      value: plan.title,
+      type: "text" as const,
+      order: orderStart + 1,
+    },
+    {
+      section: "pricing_page" as const,
+      key: pricingPlanFieldKey(plan.id, "subtitle"),
+      value: plan.subtitle,
+      type: "text" as const,
+      order: orderStart + 2,
+    },
+    {
+      section: "pricing_page" as const,
+      key: pricingPlanFieldKey(plan.id, "price"),
+      value: formatPlanPrice(plan.sessions, plan.subjects),
+      type: "text" as const,
+      order: orderStart + 3,
+    },
+    {
+      section: "pricing_page" as const,
+      key: pricingPlanFieldKey(plan.id, "features"),
+      value: featuresText,
+      type: "text" as const,
+      order: orderStart + 4,
+    },
+  ];
+}
+
 export const pricingPageDefaults = [
   { section: "pricing_page", key: "header_title", value: "1:1 맞춤 과외,\n월 40만원부터", type: "text", order: 1 },
   {
@@ -9,33 +68,39 @@ export const pricingPageDefaults = [
     type: "text",
     order: 2,
   },
-  { section: "pricing_page", key: "plan4_title", value: "월 4회", type: "text", order: 3 },
-  { section: "pricing_page", key: "plan4_price", value: "400,000원", type: "text", order: 4 },
-  { section: "pricing_page", key: "plan4_subtitle", value: "주 1회 · 기본 집중", type: "text", order: 5 },
+  ...pricingCardRows(PRICING_PLANS[0], 3),
+  ...pricingCardRows(PRICING_PLANS[1], 8),
+  ...pricingCardRows(PRICING_PLANS[2], 13),
+  ...pricingCardRows(PRICING_PLANS[3], 18),
+
+  /** 하위 호환: 과거 시드(plan4_/plan8_)가 있으면 buildVisiblePricingPlanItems에서 폴백 */
+  { section: "pricing_page", key: "plan4_title", value: PRICING_PLANS[0].title, type: "text", order: 100 },
+  { section: "pricing_page", key: "plan4_price", value: formatPlanPrice(4, 1), type: "text", order: 101 },
+  { section: "pricing_page", key: "plan4_subtitle", value: PRICING_PLANS[0].subtitle, type: "text", order: 102 },
   {
     section: "pricing_page",
     key: "plan4_features",
-    value: "주 1회 수업 (50분)\n학습 진도 관리\n과제 관리\nAI 질답 무제한\n강사 첨삭 월 4회",
+    value: PRICING_PLANS[0].features.join("\n"),
     type: "text",
-    order: 6,
+    order: 103,
   },
-  { section: "pricing_page", key: "plan8_title", value: "월 8회", type: "text", order: 7 },
-  { section: "pricing_page", key: "plan8_price", value: "720,000원", type: "text", order: 8 },
-  { section: "pricing_page", key: "plan8_subtitle", value: "주 2회 · 집중 관리", type: "text", order: 9 },
+  { section: "pricing_page", key: "plan8_title", value: PRICING_PLANS[1].title, type: "text", order: 104 },
+  { section: "pricing_page", key: "plan8_price", value: formatPlanPrice(8, 1), type: "text", order: 105 },
+  { section: "pricing_page", key: "plan8_subtitle", value: PRICING_PLANS[1].subtitle, type: "text", order: 106 },
   {
     section: "pricing_page",
     key: "plan8_features",
-    value: "주 2회 수업 (50분)\n주 2회 집중 관리\n우선 강사 배정\nAI 질답 무제한\n강사 첨삭 무제한\n월간 심층 리포트",
+    value: PRICING_PLANS[1].features.join("\n"),
     type: "text",
-    order: 10,
+    order: 107,
   },
-  { section: "pricing_page", key: "faq_title", value: "자주 묻는 질문", type: "text", order: 11 },
+  { section: "pricing_page", key: "faq_title", value: "자주 묻는 질문", type: "text", order: 200 },
   {
     section: "pricing_page",
     key: "faq1_q",
     value: "수업 시간과 환불 규정은 어떻게 되나요?",
     type: "text",
-    order: 12,
+    order: 201,
   },
   {
     section: "pricing_page",
@@ -43,14 +108,14 @@ export const pricingPageDefaults = [
     value:
       "1회 수업은 50분 기준이며, 개강 전 결제 취소는 전액 환불됩니다. 개강 후에는 잔여 횟수에 비례하여 산정되며, 세부 약관은 계약서에 명시됩니다.",
     type: "text",
-    order: 13,
+    order: 202,
   },
   {
     section: "pricing_page",
     key: "faq2_q",
     value: "강사 변경이 가능한가요?",
     type: "text",
-    order: 14,
+    order: 203,
   },
   {
     section: "pricing_page",
@@ -58,14 +123,14 @@ export const pricingPageDefaults = [
     value:
       "첫 2회 수업 이내에만 동일 요금제 범위에서 1회에 한해 변경이 가능합니다. 이후에는 매니저와 별도 협의가 필요합니다.",
     type: "text",
-    order: 15,
+    order: 204,
   },
   {
     section: "pricing_page",
     key: "faq3_q",
     value: "AI 질답은 어떻게 이용하나요?",
     type: "text",
-    order: 16,
+    order: 205,
   },
   {
     section: "pricing_page",
@@ -73,21 +138,21 @@ export const pricingPageDefaults = [
     value:
       "가입 시 발급되는 학습 계정으로 24시간 질문이 가능하며, 강사 첨삭 횟수는 선택하신 플랜에 따라 월 4회 또는 무제한 혜택이 적용됩니다.",
     type: "text",
-    order: 17,
+    order: 206,
   },
   {
     section: "pricing_page",
     key: "faq4_q",
     value: "결제 수단은 무엇이 있나요?",
     type: "text",
-    order: 18,
+    order: 207,
   },
   {
     section: "pricing_page",
     key: "faq4_a",
     value: "체크아웃 페이지에서 카드, 간편결제 등 토스페이먼츠에서 제공하는 수단을 선택하실 수 있습니다.",
     type: "text",
-    order: 19,
+    order: 208,
   },
 ] as const;
 

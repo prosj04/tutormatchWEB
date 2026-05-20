@@ -23,7 +23,10 @@ import {
   extraPublicPagesDefaults,
   portalPagesDefaults,
   portalPagesFieldLabels,
+  pricingPlanFieldKey,
 } from "@/lib/cms-page-defaults";
+import { ADMIN_PRICING_PLAN_SUMMARY_LABEL } from "@/lib/pricing-cms";
+import { PRICING_PLANS, formatPlanPrice } from "@/lib/pricing-plans";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
@@ -223,7 +226,7 @@ const managementFields: TextFieldConfig[] = [
 
 const AUTOSAVE_DELAY_MS = 10_000;
 
-const pricingPageFields: TextFieldConfig[] = [
+const pricingHeaderFields: TextFieldConfig[] = [
   {
     label: "페이지 제목",
     section: "pricing_page",
@@ -237,43 +240,51 @@ const pricingPageFields: TextFieldConfig[] = [
     section: "pricing_page",
     keyName: "header_subtext",
     defaultValue:
-      "가정의 일정에 맞춰 월 4회 또는 8회 패키지를 선택하세요.\n모든 플랜에 학습관리 시스템이 포함됩니다.",
+      "주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.\n1과목·2과목(선생님 2명) 패키지를 선택하세요.",
     kind: "textarea",
     rows: 3,
   },
-  { label: "월 4회 제목", section: "pricing_page", keyName: "plan4_title", defaultValue: "월 4회" },
-  { label: "월 4회 가격", section: "pricing_page", keyName: "plan4_price", defaultValue: "400,000원" },
-  {
-    label: "월 4회 부제",
-    section: "pricing_page",
-    keyName: "plan4_subtitle",
-    defaultValue: "주 1회 · 기본 집중",
-  },
-  {
-    label: "월 4회 혜택 (줄바꿈)",
-    section: "pricing_page",
-    keyName: "plan4_features",
-    defaultValue: "주 1회 수업 (50분)\n학습 진도 관리\n과제 관리\nAI 질답 무제한\n강사 첨삭 월 4회",
-    kind: "textarea",
-    rows: 5,
-  },
-  { label: "월 8회 제목", section: "pricing_page", keyName: "plan8_title", defaultValue: "월 8회" },
-  { label: "월 8회 가격", section: "pricing_page", keyName: "plan8_price", defaultValue: "720,000원" },
-  {
-    label: "월 8회 부제",
-    section: "pricing_page",
-    keyName: "plan8_subtitle",
-    defaultValue: "주 2회 · 집중 관리",
-  },
-  {
-    label: "월 8회 혜택 (줄바꿈)",
-    section: "pricing_page",
-    keyName: "plan8_features",
-    defaultValue:
-      "주 2회 수업 (50분)\n주 2회 집중 관리\n우선 강사 배정\nAI 질답 무제한\n강사 첨삭 무제한\n월간 심층 리포트",
-    kind: "textarea",
-    rows: 6,
-  },
+];
+
+const pricingPlanCardFieldsAll: TextFieldConfig[] = PRICING_PLANS.flatMap((plan) => {
+  const sum = ADMIN_PRICING_PLAN_SUMMARY_LABEL[plan.id] ?? plan.id;
+  return [
+    {
+      label: `${sum} · 표시 (1=표시, 0=숨김)`,
+      section: "pricing_page",
+      keyName: pricingPlanFieldKey(plan.id, "visible"),
+      defaultValue: "1",
+    },
+    {
+      label: `${sum} · 제목`,
+      section: "pricing_page",
+      keyName: pricingPlanFieldKey(plan.id, "title"),
+      defaultValue: plan.title,
+    },
+    {
+      label: `${sum} · 부제`,
+      section: "pricing_page",
+      keyName: pricingPlanFieldKey(plan.id, "subtitle"),
+      defaultValue: plan.subtitle,
+    },
+    {
+      label: `${sum} · 표시 가격`,
+      section: "pricing_page",
+      keyName: pricingPlanFieldKey(plan.id, "price"),
+      defaultValue: formatPlanPrice(plan.sessions, plan.subjects),
+    },
+    {
+      label: `${sum} · 혜택 (줄바꿈으로 구분)`,
+      section: "pricing_page",
+      keyName: pricingPlanFieldKey(plan.id, "features"),
+      defaultValue: plan.features.join("\n"),
+      kind: "textarea",
+      rows: 6,
+    },
+  ];
+});
+
+const pricingFaqFields: TextFieldConfig[] = [
   { label: "FAQ 섹션 제목", section: "pricing_page", keyName: "faq_title", defaultValue: "자주 묻는 질문" },
   {
     label: "FAQ 1 질문",
@@ -338,10 +349,17 @@ const pricingPageFields: TextFieldConfig[] = [
     label: "FAQ 4 답변",
     section: "pricing_page",
     keyName: "faq4_a",
-    defaultValue: "체크아웃 페이지에서 카드, 간편결제 등 토스페이먼츠에서 제공하는 수단을 선택하실 수 있습니다.",
+    defaultValue:
+      "체크아웃 페이지에서 카드, 간편결제 등 토스페이먼츠에서 제공하는 수단을 선택하실 수 있습니다.",
     kind: "textarea",
     rows: 3,
   },
+];
+
+const pricingPageFields: TextFieldConfig[] = [
+  ...pricingHeaderFields,
+  ...pricingPlanCardFieldsAll,
+  ...pricingFaqFields,
 ];
 
 const tutorsPageFields: TextFieldConfig[] = [
@@ -841,6 +859,9 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="TEACHERS" title="선생님 카드">
+            <p className="mb-4 text-sm text-text-secondary">
+              홈 「선생님」 섹션 가로 스크롤 카드 4장입니다. 표시를 0으로 두면 해당 카드만 홈에서 숨겨집니다.
+            </p>
             <div className="grid gap-4">
               <ContentField
                 field={{
@@ -962,6 +983,10 @@ export function AdminCmsPage() {
 
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
+              <p className="mb-5 text-sm text-text-secondary">
+                네 가지 요금 카드(1·2과목 × 월 4·8회)를 각각 편집합니다. 표시를 0으로 두면 `/pricing` 과 홈 요금제 블록 모두에서 해당 카드가 빠집니다. 예전에 저장된
+                plan4_/plan8_ 값은 새 필드가 비어 있을 때만 예비로 사용됩니다.
+              </p>
               <div className="grid gap-4 lg:grid-cols-2">
                 {pricingPageFields.map((field) => (
                   <ContentField
@@ -1410,6 +1435,12 @@ function TeacherCardEditor({
 }) {
   const number = index + 1;
   const textFields: TextFieldConfig[] = [
+    {
+      label: "홈 강사 카드 표시 (1=표시, 0=숨김)",
+      section: "teachers",
+      keyName: `teacher${number}_visible`,
+      defaultValue: "1",
+    },
     { label: "과목", section: "teachers", keyName: `teacher${number}_subject`, defaultValue: defaults.subject },
     { label: "이름", section: "teachers", keyName: `teacher${number}_name`, defaultValue: defaults.name },
     {
