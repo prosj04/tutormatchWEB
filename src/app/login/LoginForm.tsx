@@ -43,7 +43,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
         return;
       }
       if (res.status === 403) {
-        setError("이미 관리자 계정이 존재합니다. 위쪽「비밀번호 재설정」탭을 이용하세요.");
+        setError("이미 관리자 계정이 존재합니다");
         return;
       }
       if (res.status === 401) {
@@ -60,7 +60,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
     return (
       <div className="mt-6 space-y-3 text-center">
         <p className="text-sm text-green-700" role="status">
-          관리자 계정이 생성되었습니다. 위에서 로그인하세요.
+          관리자 계정이 생성되었습니다.
         </p>
         <button
           type="button"
@@ -185,7 +185,7 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
     return (
       <div className="mt-6 space-y-3 text-center">
         <p className="text-sm text-green-700" role="status">
-          비밀번호가 변경되었습니다. 위에서 새 비밀번호로 로그인하세요.
+          비밀번호가 변경되었습니다.
         </p>
         <button
           type="button"
@@ -202,7 +202,7 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
     <div className="mt-4 space-y-4">
       <div>
         <label htmlFor="admin-recover-email" className={labelClass}>
-          관리자 이메일 (로그인 ID)
+          관리자 이메일
         </label>
         <input
           id="admin-recover-email"
@@ -277,11 +277,7 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
 
   return (
     <section className="mt-8 border-t border-gray-100 pt-8">
-      <p className="text-center text-xs leading-relaxed text-text-muted">
-        관리자(ADMIN)는 등록된 <span className="font-semibold text-text-primary">이메일</span>로만
-        로그인됩니다. 전화번호 로그인은 지원하지 않습니다.
-      </p>
-      <div className="mt-4 flex gap-1 rounded-xl bg-gray-100 p-1">
+      <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
         <button
           type="button"
           className={`${adminTabBtnBase} ${
@@ -334,10 +330,7 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
         redirect: false,
       });
       if (result?.error) {
-        const hint = !trimmed.includes("@")
-          ? " 관리자(ADMIN) 계정은 이메일 주소로만 로그인할 수 있습니다."
-          : " 비밀번호를 잊었다면 주소에 ?setup=admin 을 붙인 뒤 재설정하세요.";
-        setError(`이메일·전화번호 또는 비밀번호가 올바르지 않습니다.${hint}`);
+        setError("이메일·전화번호 또는 비밀번호가 올바르지 않습니다");
         return;
       }
       if (result?.ok) {
@@ -424,7 +417,7 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
             )}
           </button>
           {error ? (
-            <p className="mt-4 whitespace-pre-wrap text-center text-sm text-accent" role="alert">
+            <p className="mt-4 text-center text-sm text-accent" role="alert">
               {error}
             </p>
           ) : null}

@@ -52,5 +52,6 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|fonts|images).*)"],
+  // NextAuth 쿠키/CSRF와 충돌 방지: /api/auth 는 미들웨어에서 제외
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|fonts|images).*)"],
 };
