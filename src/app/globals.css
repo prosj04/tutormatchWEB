@@ -5,6 +5,8 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    overflow-x: clip;
+    max-width: 100%;
   }
 
   body {

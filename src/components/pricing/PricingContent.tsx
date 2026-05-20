@@ -54,32 +54,32 @@ export function PricingContent({
 
   return (
     <div className="bg-neutral-10 pb-0">
-      <div className="border-b border-neutral-20 bg-white py-20">
-        <div className="mx-auto max-w-[1200px] px-5">
-          <p className="text-sm font-black uppercase tracking-wider text-primary">Plans</p>
-          <h1 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.04em] text-neutral-100">
-            {get("header_title", "1:1 맞춤 과외,\n월 40만원부터")}
-          </h1>
-          <p className="mt-6 max-w-2xl whitespace-pre-line text-base font-medium leading-relaxed text-neutral-50 md:text-lg">
-            {get(
-              "header_subtext",
-              "주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.\n1과목·2과목(선생님 2명) 패키지를 선택하세요.",
-            )}
-          </p>
+      <div className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
+        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-5">
+          <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+            <div className="min-w-0 lg:flex-1">
+              <p className="text-sm font-black uppercase tracking-wider text-primary">Plans</p>
+              <h1 className="mt-3 whitespace-pre-line text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.04em] text-neutral-100 sm:mt-4">
+                {get("header_title", "1:1 맞춤 과외,\n월 40만원부터")}
+              </h1>
+            </div>
+            <p className="min-w-0 whitespace-pre-line text-base font-medium leading-relaxed text-neutral-50 sm:text-lg lg:max-w-md lg:shrink-0 lg:text-right xl:max-w-lg">
+              {get(
+                "header_subtext",
+                "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
+              )}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:py-24">
-        <p className="mb-8 text-center text-sm font-bold text-neutral-50">
-          주 1회(월 4회) · 회당 10만원 / 주 2회 이상(월 8회) · 회당 9만원
-        </p>
-
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-12 sm:px-5 md:py-20 lg:py-24">
         {planItems.length > 0 ? (
           <div>
             <PricingTierToggle
               value={pricingTier}
               onChange={setPricingTier}
-              className="mb-8"
+              className="mb-6 md:mb-8"
             />
             <PricingPlansGrid items={planItems} variant="page" />
           </div>
@@ -97,14 +97,14 @@ export function PricingContent({
         />
       </div>
 
-      <section className="mx-auto max-w-[1200px] px-5 pb-16 md:pb-24">
-        <h2 className="text-3xl font-black text-neutral-100 md:text-5xl">
+      <section className="mx-auto w-full max-w-[1200px] px-4 pb-12 sm:px-5 md:pb-20 lg:pb-24">
+        <h2 className="text-2xl font-black text-neutral-100 sm:text-3xl md:text-5xl">
           {get("faq_title", "자주 묻는 질문")}
         </h2>
         <p className="mt-2 text-sm font-bold text-neutral-50">FAQ</p>
-        <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
+        <div className="mt-8 divide-y divide-neutral-20 overflow-hidden rounded-2xl border border-neutral-20 bg-white sm:mt-10 sm:rounded-[28px]">
           {faqs.map((item) => (
-            <div key={item.q} className="px-7 py-7 md:px-8 md:py-8">
+            <div key={item.q} className="px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
               <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
               <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
                 A. {item.a}

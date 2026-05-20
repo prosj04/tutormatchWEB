@@ -179,9 +179,9 @@ export function SiteHeader({
         </div>
       </div>
 
-      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between px-5">
-        <div className="flex min-w-0 items-center gap-8">
-          <Link href={logoHref} className="shrink-0 text-xl font-black tracking-tight transition-colors">
+      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-5">
+        <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-8">
+          <Link href={logoHref} className="shrink-0 text-lg font-black tracking-tight transition-colors sm:text-xl">
             Concord.
           </Link>
           <nav className="hidden items-center gap-1 md:flex">

@@ -17,8 +17,8 @@ export function FaqPageContent({
     getCmsSectionValue(siteContent, section, key, fb);
   return (
     <div className="bg-neutral-10 pb-24 md:pb-32">
-      <section className="border-b border-neutral-20 bg-white py-16 md:py-20">
-        <div className="mx-auto max-w-[900px] px-5">
+      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
+        <div className="mx-auto max-w-[900px] px-4 sm:px-5">
           <p className="text-sm font-black uppercase tracking-wider text-primary">
             {get("faq_page", "kicker", "FAQ")}
           </p>
@@ -31,7 +31,7 @@ export function FaqPageContent({
         </div>
       </section>
 
-      <section className="mx-auto max-w-[900px] px-5 py-12 md:py-16">
+      <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
         {faqs.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-50">
             {get("faq_page", "empty_text", "등록된 FAQ가 없습니다.")}
@@ -39,7 +39,7 @@ export function FaqPageContent({
         ) : (
           <div className="divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
             {faqs.map((item) => (
-              <div key={item.q} className="px-7 py-7 md:px-8 md:py-8">
+              <div key={item.q} className="px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
                 <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
                 <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
                   A. {item.a}

@@ -11,14 +11,14 @@ type SuccessPageActionsProps = {
 
 export function SuccessPageActions({ homeLabel, consultationLabel }: SuccessPageActionsProps) {
   return (
-    <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+    <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4">
       <Link
         href="/"
-        className="inline-flex min-w-[200px] items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50"
+        className="inline-flex w-full items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50 sm:w-auto sm:min-w-[180px]"
       >
         {homeLabel}
       </Link>
-      <ConsultationApplyButton className="inline-flex min-w-[200px] items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90">
+      <ConsultationApplyButton className="inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90 sm:w-auto sm:min-w-[180px]">
         {consultationLabel}
       </ConsultationApplyButton>
     </div>

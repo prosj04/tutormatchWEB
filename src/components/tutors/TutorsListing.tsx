@@ -12,7 +12,7 @@ export function TutorsListing({
     getCmsSectionValue(siteContent, "tutors_page", key, fallback);
   return (
     <div className="pb-24">
-      <section className="border-b border-gray-100 bg-white px-6 py-20 md:py-24">
+      <section className="border-b border-gray-100 bg-white px-4 py-12 sm:px-6 sm:py-16 md:py-24">
         <div className="mx-auto max-w-6xl">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">
             Teachers
@@ -29,7 +29,7 @@ export function TutorsListing({
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 md:py-16">
         {tutors.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-12 text-center">
             <h2 className="text-xl font-black text-text-primary">

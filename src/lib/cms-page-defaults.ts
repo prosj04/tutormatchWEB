@@ -109,7 +109,7 @@ export const pricingPageDefaults = [
   {
     section: "pricing_page",
     key: "header_subtext",
-    value: "주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.\n1과목·2과목(선생님 2명) 패키지를 선택하세요.",
+    value: "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
     type: "text",
     order: 2,
   },

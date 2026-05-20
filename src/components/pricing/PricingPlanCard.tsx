@@ -34,7 +34,7 @@ export function PricingPlanCard({
     <article
       className={`${active ? "flex" : "hidden md:flex"} h-full min-w-0 flex-col overflow-hidden rounded-[28px] bg-neutral-10 ${className}`}
     >
-      <div className="relative flex min-h-[520px] flex-1 flex-col rounded-[28px] bg-neutral-100 p-8 pb-10 text-white md:min-h-[560px] md:p-9 md:pb-11">
+      <div className="relative flex min-h-[480px] flex-1 flex-col rounded-[28px] bg-neutral-100 p-6 pb-9 text-white sm:min-h-[520px] sm:p-8 sm:pb-10 md:min-h-[560px] md:p-9 md:pb-11">
         {plan.recommended ? (
           <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
             추천
@@ -42,7 +42,7 @@ export function PricingPlanCard({
         ) : null}
         <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
         <h3 className="mt-4 text-2xl font-black">{displayTitle}</h3>
-        <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight md:text-5xl">{displayPrice}</p>
+        <p className="mt-4 break-words text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">{displayPrice}</p>
         <p className="mt-2 text-sm text-neutral-40">{displaySubtitle}</p>
         <ul className="mt-8 space-y-3.5 text-sm font-medium leading-relaxed text-neutral-30">
           {displayFeatures.map((f) => (

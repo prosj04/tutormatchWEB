@@ -361,7 +361,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-6 pt-16 pb-32 text-center md:pt-[100px]"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pt-16 pb-40 text-center sm:px-6 sm:pb-36 md:pt-[100px] md:pb-32"
           style={heroStyle}
         >
           <div className="absolute inset-0 bg-black/20" />
@@ -388,16 +388,18 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
 
           {/* ── Stats — pinned to hero bottom ── */}
-          <div className="absolute bottom-8 left-0 right-0 flex flex-wrap justify-center gap-4 px-5">
-            {cmsStats.map((s) => (
-              <div
-                key={s.label}
-                className="flex flex-col items-center rounded-2xl border border-white/15 bg-white/10 px-8 py-5 backdrop-blur-sm"
-              >
-                <span className="text-3xl font-black leading-none text-primary md:text-4xl">{s.value}</span>
-                <span className="mt-1.5 text-sm font-medium text-white/70">{s.label}</span>
-              </div>
-            ))}
+          <div className="absolute bottom-6 left-0 right-0 px-4 sm:bottom-8 sm:px-5">
+            <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
+              {cmsStats.map((s) => (
+                <div
+                  key={s.label}
+                  className="flex flex-col items-center rounded-xl border border-white/15 bg-white/10 px-2 py-3 backdrop-blur-sm sm:rounded-2xl sm:px-5 sm:py-4 md:px-8 md:py-5"
+                >
+                  <span className="text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">{s.value}</span>
+                  <span className="mt-1 text-[10px] font-medium text-white/70 sm:mt-1.5 sm:text-xs md:text-sm">{s.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -646,20 +648,18 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </section>
 
                 {/* ═══ PRICING ═════════════════════════════════ */}
-        <section id="pricing" className="bg-white py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
-            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <section id="pricing" className="bg-white py-14 sm:py-20 md:py-28">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
+            <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">PRICE</p>
-                <h2 className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+                <h2 className="mt-3 text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100 sm:mt-4">
                   1:1 맞춤 과외,
                   <br />
                   월 40만원부터
                 </h2>
                 <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
-                  주 1회 회당 10만원, 주 2회 이상 회당 9만원입니다.
-                  <br />
-                  2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.
+                  1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.
                 </p>
                 <Link
                   href="/pricing"

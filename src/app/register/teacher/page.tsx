@@ -260,21 +260,21 @@ export default function TeacherRegisterPage() {
 
   return (
     <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-24">
-        <div className="mx-auto max-w-6xl px-8">
+      <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
           <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
             Teacher Apply
           </p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
+          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
             선생님 가입 신청
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg">
             3단계 신청서를 작성해 주세요. 서류는 선택사항이며 나중에 선생님 포털에서도 수정할 수 있습니다.
           </p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-8 py-16 md:py-20">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20">
         <div className="mb-6 flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm">
           {[1, 2, 3].map((item) => (
             <div

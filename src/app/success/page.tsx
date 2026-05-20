@@ -28,7 +28,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
   const amount = amountRaw ? Number(amountRaw) : NaN;
 
   return (
-    <div className="bg-background px-8 py-24 md:py-28">
+    <div className="bg-background px-4 py-12 sm:px-6 md:px-8 md:py-20 lg:py-28">
       {orderId ? (
         <SuccessPaymentComplete
           orderId={orderId}
@@ -37,9 +37,9 @@ export default async function SuccessPage({ searchParams }: PageProps) {
         />
       ) : null}
       <div className="mx-auto max-w-6xl">
-        <div className="rounded-2xl border border-gray-100 bg-white px-8 py-12 text-center shadow-sm md:px-12 md:py-16">
+        <div className="rounded-2xl border border-gray-100 bg-white px-5 py-10 text-center shadow-sm sm:px-8 sm:py-12 md:px-12 md:py-16">
           <p className="text-xs font-medium uppercase tracking-wider text-text-muted">{s("kicker", "Payment")}</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
+          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
             {s("title", "결제가 완료되었습니다")}
           </h1>
           <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-text-secondary">

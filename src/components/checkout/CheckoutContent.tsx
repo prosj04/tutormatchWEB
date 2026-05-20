@@ -141,18 +141,18 @@ export function CheckoutContent({
 
   return (
     <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-24">
-        <div className="mx-auto max-w-6xl px-8">
+      <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
           <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
             {c("header_kicker", "Checkout")}
           </p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">
+          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
             {c("header_title", "결제")}
           </h1>
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-8 py-16 md:py-24">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20 lg:py-24">
         <div className="mb-10 flex flex-wrap items-center gap-4">
           <Link
             href="/pricing"
@@ -171,7 +171,7 @@ export function CheckoutContent({
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
           <div className="space-y-10">
-            <section className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+            <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
               <h2 className="text-xl font-black text-text-primary">{c("section_order_title", "주문 요약")}</h2>
               <dl className="mt-6 space-y-4 text-sm">
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
@@ -201,7 +201,7 @@ export function CheckoutContent({
               </dl>
             </section>
 
-            <section className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+            <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
               <h2 className="text-xl font-black text-text-primary">{c("section_payment_title", "결제 수단")}</h2>
               <p className="mt-2 text-xs text-text-muted">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
               <div
@@ -213,7 +213,7 @@ export function CheckoutContent({
           </div>
 
           <div className="space-y-8">
-            <section className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+            <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
               <h2 className="text-xl font-black text-text-primary">{c("section_customer_title", "주문자 정보")}</h2>
               <div className="mt-6 space-y-5">
                 <div>
@@ -268,7 +268,7 @@ export function CheckoutContent({
               </div>
             </section>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
               <label className="flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"

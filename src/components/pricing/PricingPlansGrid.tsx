@@ -29,7 +29,7 @@ export function PricingPlansGrid({
 }: PricingPlansGridProps) {
   if (variant === "page") {
     return (
-      <div className="scrollbar-hide -mx-5 overflow-x-auto px-5 pb-2 md:mx-0 md:px-0">
+      <div className="scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0">
         <div className={`flex w-max ${PRICING_GRID_GAP_CLASS}`}>
           {items.map((item) => (
             <PricingPlanCard

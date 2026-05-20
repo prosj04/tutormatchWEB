@@ -39,7 +39,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   return (
     <>
       {showFailBanner ? (
-        <div className="border-b border-accent/20 bg-accent/5 px-8 py-3 text-center text-sm text-text-primary">
+        <div className="border-b border-accent/20 bg-accent/5 px-4 py-3 text-center text-sm text-text-primary sm:px-6 md:px-8">
           {failBannerText}
         </div>
       ) : null}

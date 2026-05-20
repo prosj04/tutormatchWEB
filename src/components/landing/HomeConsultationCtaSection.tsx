@@ -20,10 +20,10 @@ export function HomeConsultationCtaSection({ siteContent }: HomeConsultationCtaS
   return (
     <section
       id="consultation"
-      className="scroll-mt-24 bg-primary py-28 md:min-h-[88vh] md:py-32 lg:py-36"
+      className="scroll-mt-24 bg-primary py-16 sm:py-20 md:min-h-[88vh] md:py-28 lg:py-36"
     >
-      <div className="mx-auto flex max-w-[1200px] flex-col justify-center px-5 md:min-h-[calc(88vh-10rem)]">
-        <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-white">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-center px-4 sm:px-5 md:min-h-[calc(88vh-10rem)]">
+        <h2 className="text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-white">
           {get("headline", "지금 신청하면 받을 수 있는 혜택이에요")}
         </h2>
         <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-white/85">
@@ -37,7 +37,7 @@ export function HomeConsultationCtaSection({ siteContent }: HomeConsultationCtaS
           {benefitCards.map((b) => (
             <div
               key={b.slot}
-              className="flex min-h-[200px] flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-7 backdrop-blur-sm md:min-h-[220px] md:p-8"
+              className="flex min-h-[180px] flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-5 backdrop-blur-sm sm:min-h-[200px] sm:p-6 md:min-h-[220px] md:p-8"
             >
               <p className="text-lg font-black text-white">{b.title}</p>
               <p className="mt-3 text-sm font-bold leading-snug text-white/90">{b.desc}</p>
