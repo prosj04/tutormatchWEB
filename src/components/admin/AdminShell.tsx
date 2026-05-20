@@ -8,6 +8,7 @@ const NAV = [
   { href: "/admin", label: "대시보드", exact: true },
   { href: "/admin/students", label: "학생 관리" },
   { href: "/admin/teachers", label: "선생님 관리" },
+  { href: "/tutors", label: "강사진 (공개 페이지)", external: true },
   { href: "/admin/matches", label: "매칭 관리" },
   { href: "/admin/cms", label: "사이트 콘텐츠" },
   { href: "/admin/data", label: "전체 데이터" },
@@ -30,17 +31,27 @@ export function AdminShell({ email, children }: AdminShellProps) {
         </div>
         <nav className="flex-1 space-y-0.5 px-3 py-4">
           {NAV.map((item) => {
-            const active = item.exact
-              ? pathname === item.href
-              : pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
+            const external = "external" in item && item.external;
+            const active =
+              !external &&
+              (item.exact
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(`${item.href}/`));
+            const className = `block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+              active ? "bg-primary text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
+            }`;
+            return external ? (
+              <a
                 key={item.href}
                 href={item.href}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  active ? "bg-primary text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
-                }`}
+                target="_blank"
+                rel="noreferrer"
+                className={`${className} text-white/70`}
               >
+                {item.label}
+              </a>
+            ) : (
+              <Link key={item.href} href={item.href} className={className}>
                 {item.label}
               </Link>
             );

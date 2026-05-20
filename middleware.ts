@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { isMarketingPublicPath } from "@/lib/public-routes";
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -15,13 +16,21 @@ export default auth((req) => {
   }
 
   if (session && role === "STUDENT") {
-    if (!pathname.startsWith("/dashboard") && !pathname.startsWith("/api")) {
+    const allowed =
+      isMarketingPublicPath(pathname) ||
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/api");
+    if (!allowed) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }
 
   if (session && (role === "TEACHER" || role === "MANAGER")) {
-    if (!pathname.startsWith("/teacher-portal") && !pathname.startsWith("/api")) {
+    const allowed =
+      isMarketingPublicPath(pathname) ||
+      pathname.startsWith("/teacher-portal") ||
+      pathname.startsWith("/api");
+    if (!allowed) {
       return NextResponse.redirect(new URL("/teacher-portal/dashboard", req.url));
     }
   }

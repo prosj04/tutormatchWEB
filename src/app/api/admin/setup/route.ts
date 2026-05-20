@@ -22,7 +22,8 @@ export async function POST(request: Request) {
   }
 
   const secret = process.env.ADMIN_SETUP_SECRET;
-  if (!secret) {
+  const allowWithoutSecret = process.env.NODE_ENV !== "production";
+  if (!secret && !allowWithoutSecret) {
     return NextResponse.json({ error: "Setup not configured" }, { status: 503 });
   }
 
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
   }
 
-  if (secretKey !== secret) {
+  if (secret && secretKey !== secret) {
     return NextResponse.json({ error: "Invalid secret key" }, { status: 401 });
   }
 

@@ -17,18 +17,36 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<RecentStudent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [cronLoading, setCronLoading] = useState(false);
   const [cronResult, setCronResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/stats")
-      .then((r) => r.json())
-      .then((data: { stats: Stats; recentStudents: RecentStudent[] }) => {
+      .then(async (r) => {
+        if (!r.ok) {
+          const data = (await r.json().catch(() => ({}))) as { error?: string };
+          throw new Error(data.error ?? `요청 실패 (${r.status})`);
+        }
+        return r.json() as Promise<{ stats: Stats; recentStudents: RecentStudent[] }>;
+      })
+      .then((data) => {
         setStats(data.stats);
         setRecent(data.recentStudents);
       })
+      .catch(() => {
+        setLoadError("대시보드 데이터를 불러오지 못했습니다. 관리자로 다시 로그인했는지 확인해 주세요.");
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  if (loadError) {
+    return (
+      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-sm text-accent">
+        {loadError}
+      </div>
+    );
+  }
 
   if (loading || !stats) {
     return <p className="text-sm text-text-secondary">불러오는 중…</p>;
