@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { getSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
@@ -303,7 +303,6 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
 }
 
 export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { open: openConsultationSignup } = useConsultationSignup();
   const showAdminSetup = searchParams.get("setup") === "admin";
@@ -324,27 +323,41 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
     }
     setLoading(true);
     try {
-      const result = await signIn("credentials", {
-        identifier: trimmed,
-        password,
-        redirect: false,
-      });
+      let result: Awaited<ReturnType<typeof signIn>>;
+      try {
+        result = await signIn("credentials", {
+          identifier: trimmed,
+          password,
+          redirect: false,
+        });
+      } catch {
+        setError("로그인 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
       if (result?.error) {
         setError("이메일·전화번호 또는 비밀번호가 올바르지 않습니다");
         return;
       }
-      if (result?.ok) {
-        const nextSession = await getSession();
-        const role = nextSession?.user?.role;
-        const destination =
-          role === "ADMIN"
-            ? "/admin"
-            : role === "TEACHER" || role === "MANAGER"
-              ? "/teacher-portal/dashboard"
-              : "/dashboard";
-        router.push(destination);
-        router.refresh();
+      if (!result?.ok) {
+        setError("로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
       }
+      const sessionRes = await fetch(`${window.location.origin}/api/auth/session`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      let role: string | undefined;
+      if (sessionRes.ok) {
+        const data = (await sessionRes.json()) as { user?: { role?: string } };
+        role = data?.user?.role;
+      }
+      const destination =
+        role === "ADMIN"
+          ? "/admin"
+          : role === "TEACHER" || role === "MANAGER"
+            ? "/teacher-portal/dashboard"
+            : "/dashboard";
+      window.location.assign(destination);
     } finally {
       setLoading(false);
     }

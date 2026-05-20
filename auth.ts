@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import type { Prisma } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
@@ -7,7 +8,11 @@ import {
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 
+const authSecret =
+  process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...(authSecret ? { secret: authSecret } : {}),
   trustHost: true,
   session: { strategy: "jwt" },
   pages: {
@@ -39,50 +44,58 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const identifier = (credentials?.identifier as string | undefined)?.trim();
-        const password = credentials?.password as string | undefined;
-        if (!identifier || !password) return null;
+        try {
+          const raw =
+            (credentials?.identifier as string | undefined)?.trim() ?? "";
+          const password = credentials?.password as string | undefined;
+          const invisible = /[\u200B-\u200D\uFEFF]/g;
+          const identifier = raw.replace(invisible, "").trim();
+          if (!identifier || password == null || password === "") return null;
 
-        const { prisma } = await import("@/lib/prisma");
+          const { prisma } = await import("@/lib/prisma");
 
-        const orConditions: {
-          email?: string;
-          student?: { phone: string };
-          teacher?: { phone: string };
-        }[] = [];
+          let user = null;
 
-        if (identifier.includes("@")) {
-          orConditions.push({ email: identifier.toLowerCase() });
-        } else {
-          const digits = normalizePhoneDigits(identifier);
-          orConditions.push(
-            { student: { phone: identifier } },
-            { teacher: { phone: identifier } },
-          );
-          if (digits.length >= 10) {
-            orConditions.push(
-              { email: studentSyntheticEmailFromDigits(digits) },
-              { student: { phone: digits } },
-              { teacher: { phone: digits } },
-            );
+          if (identifier.includes("@")) {
+            const email = identifier.toLowerCase();
+            user = await prisma.user.findUnique({
+              where: { email },
+              include: { student: true, teacher: true },
+            });
+          } else {
+            const digits = normalizePhoneDigits(identifier);
+            const orConditions: Prisma.UserWhereInput[] = [
+              { student: { phone: identifier } },
+              { teacher: { phone: identifier } },
+            ];
+            if (digits.length >= 10) {
+              orConditions.push(
+                { email: studentSyntheticEmailFromDigits(digits) },
+                { student: { phone: digits } },
+                { teacher: { phone: digits } },
+              );
+            }
+            user = await prisma.user.findFirst({
+              where: { OR: orConditions },
+              include: { student: true, teacher: true },
+            });
           }
+
+          if (!user) return null;
+
+          const valid = await bcrypt.compare(password, user.password);
+          if (!valid) return null;
+
+          const name =
+            user.student?.name ??
+            user.teacher?.name ??
+            user.email.split("@")[0];
+
+          return { id: user.id, email: user.email, role: user.role, name };
+        } catch (e) {
+          console.error("[auth] credentials authorize:", e);
+          return null;
         }
-
-        const user = await prisma.user.findFirst({
-          where: { OR: orConditions },
-          include: { student: true, teacher: true },
-        });
-
-        if (!user) return null;
-        const valid = await bcrypt.compare(password, user.password);
-        if (!valid) return null;
-
-        const name =
-          user.student?.name ??
-          user.teacher?.name ??
-          user.email.split("@")[0];
-
-        return { id: user.id, email: user.email, role: user.role, name };
       },
     }),
   ],
