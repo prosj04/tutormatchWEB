@@ -8,6 +8,16 @@ import {
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 
+/** 로그인 시 relation 전체(include) 금지 — DB에 아직 없는 컬럼까지 SELECT 하면 P2022로 전원 로그인 실패 */
+const userForAuthSelect = {
+  id: true,
+  email: true,
+  password: true,
+  role: true,
+  student: { select: { name: true } },
+  teacher: { select: { name: true } },
+} satisfies Prisma.UserSelect;
+
 const authSecret =
   process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim();
 
@@ -63,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const email = identifier.toLowerCase();
             user = await prisma.user.findUnique({
               where: { email },
-              include: { student: true, teacher: true },
+              select: userForAuthSelect,
             });
           } else {
             const digits = normalizePhoneDigits(identifier);
@@ -80,7 +90,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
             user = await prisma.user.findFirst({
               where: { OR: orConditions },
-              include: { student: true, teacher: true },
+              select: userForAuthSelect,
             });
           }
 
