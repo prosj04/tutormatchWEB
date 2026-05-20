@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
-
 export type TutorCardData = {
   id: string;
   name: string;
@@ -19,16 +17,12 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
     <article className="flex h-full flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-center gap-4">
         <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-          {tutor.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={tutor.photoUrl}
-              alt={`${tutor.name} 프로필 사진`}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <DefaultAvatar size={80} className="rounded-2xl" />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={tutor.photoUrl ?? "/images/teachers/default-male.png"}
+            alt={`${tutor.name} 프로필`}
+            className="h-full w-full object-cover"
+          />
         </div>
 
         <div className="min-w-0">

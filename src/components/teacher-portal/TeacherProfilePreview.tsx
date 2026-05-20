@@ -1,6 +1,6 @@
 "use client";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import type { TeacherProfileFormData } from "@/lib/teacher-profile-types";
 
 type CredentialItem = {
@@ -14,6 +14,7 @@ type TeacherProfilePreviewProps = {
   teacherId: string;
   name: string;
   subjects: string[];
+  gender: string | null;
   form: TeacherProfileFormData;
 };
 
@@ -60,11 +61,15 @@ function categoryLabel(c: CredentialItem["category"]) {
 export function TeacherProfilePreview({
   name,
   subjects,
+  gender,
   form,
 }: TeacherProfilePreviewProps) {
   const credentials = buildCredentials(form);
   const headlineCred = credentials.find((c) => c.category === "학력")?.title ?? "";
-  const photoSrc = form.photoUrl;
+  const photoSrc =
+    form.photoUrl?.startsWith("blob:") ?
+      form.photoUrl
+    : getEffectivePhotoUrl(form.photoUrl, gender);
   const introParagraphs = form.intro
     .split(/\n+/)
     .map((p) => p.trim())
@@ -79,22 +84,16 @@ export function TeacherProfilePreview({
       <div className="border-b border-gray-100 bg-background p-4">
         <div className="flex gap-4">
           <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
-            {photoSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photoSrc}
-                alt={name}
-                width={96}
-                height={112}
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <DefaultAvatar size={64} />
-              </div>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photoSrc}
+              alt={name}
+              width={96}
+              height={112}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">

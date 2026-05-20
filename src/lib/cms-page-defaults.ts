@@ -1,6 +1,11 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
+import {
+  getGenderDefaultPhotoUrl as resolveGenderDefaultPhotoUrl,
+} from "@/lib/profile-gender";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
+
+export { getGenderDefaultPhotoUrl, getEffectivePhotoUrl } from "@/lib/profile-gender";
 
 /** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 */
 export const CMS_MANAGED_CARD_SLOT_COUNT = 6;
@@ -807,23 +812,10 @@ export function getCmsSectionValue(
   return siteContent?.[section]?.[key] ?? fallback;
 }
 
-/** 강사진 공개 목록·상세: 업로드 사진 대신 CMS에서 지정한 성별 기본 얼굴 */
+/** 강사진 공개 목록·상세: 업로드 사진 없을 때 CMS 성별 기본 얼굴 */
 export function getTutorPublicPhotoUrl(
   gender: string | null | undefined,
   siteContent: Record<string, Record<string, string>> | undefined,
 ): string {
-  const male = getCmsSectionValue(
-    siteContent,
-    "tutors_page",
-    "public_photo_male",
-    "/images/teachers/default-male.png",
-  );
-  const female = getCmsSectionValue(
-    siteContent,
-    "tutors_page",
-    "public_photo_female",
-    "/images/teachers/default-female.png",
-  );
-  if (gender === "FEMALE") return female;
-  return male;
+  return resolveGenderDefaultPhotoUrl(gender, siteContent);
 }

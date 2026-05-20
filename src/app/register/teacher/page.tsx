@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { GenderSelect } from "@/components/ui/GenderSelect";
 import { normalizePhoneDigits } from "@/lib/phone-login";
+import type { ProfileGender } from "@/lib/profile-gender";
 import { uploadTeacherDocument } from "@/lib/supabase-client";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
@@ -32,6 +34,7 @@ type FieldErrors = Partial<
     | "password"
     | "passwordConfirm"
     | "phone"
+    | "gender"
     | "subjects"
     | "education"
     | "career"
@@ -52,6 +55,7 @@ export default function TeacherRegisterPage() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState<ProfileGender | "">("");
   const [subjects, setSubjects] = useState<string[]>([]);
 
   const [education, setEducation] = useState("");
@@ -82,6 +86,7 @@ export default function TeacherRegisterPage() {
       else if (normalizePhoneDigits(phone).length < 10) {
         next.phone = "올바른 전화번호를 입력해 주세요.";
       }
+      if (!gender) next.gender = "성별을 선택해 주세요.";
       if (subjects.length === 0) next.subjects = "담당 과목을 한 개 이상 선택해 주세요.";
     }
 
@@ -151,6 +156,7 @@ export default function TeacherRegisterPage() {
         body: JSON.stringify({
           name: name.trim(),
           password,
+          gender,
           phone: phone.trim(),
           subjects,
           education: education.trim(),
@@ -289,12 +295,14 @@ export default function TeacherRegisterPage() {
               password={password}
               passwordConfirm={passwordConfirm}
               phone={phone}
+              gender={gender}
               subjects={subjects}
               fieldErrors={fieldErrors}
               onName={setName}
               onPassword={setPassword}
               onPasswordConfirm={setPasswordConfirm}
               onPhone={setPhone}
+              onGender={setGender}
               onToggleSubject={toggleSubject}
             />
           ) : null}
@@ -367,24 +375,28 @@ function StepOne({
   password,
   passwordConfirm,
   phone,
+  gender,
   subjects,
   fieldErrors,
   onName,
   onPassword,
   onPasswordConfirm,
   onPhone,
+  onGender,
   onToggleSubject,
 }: {
   name: string;
   password: string;
   passwordConfirm: string;
   phone: string;
+  gender: ProfileGender | "";
   subjects: string[];
   fieldErrors: FieldErrors;
   onName: (value: string) => void;
   onPassword: (value: string) => void;
   onPasswordConfirm: (value: string) => void;
   onPhone: (value: string) => void;
+  onGender: (value: ProfileGender) => void;
   onToggleSubject: (value: string) => void;
 }) {
   return (
@@ -392,6 +404,7 @@ function StepOne({
       <Field label="이름" error={fieldErrors.name}>
         <input value={name} onChange={(e) => onName(e.target.value)} className={inputClass} />
       </Field>
+      <GenderSelect value={gender} onChange={onGender} error={fieldErrors.gender} />
       <Field label="전화번호 (로그인 ID)" error={fieldErrors.phone}>
         <input
           type="tel"

@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { GenderSelect } from "@/components/ui/GenderSelect";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
+import type { ProfileGender } from "@/lib/profile-gender";
 
 type TeacherPublicRow = {
   id: string;
@@ -56,7 +58,8 @@ export function CmsPublicTeachersPanel() {
           education: t.education,
           experience: t.experience,
           bio: t.bio,
-          gender: t.gender === "FEMALE" ? "FEMALE" : "",
+          gender:
+            t.gender === "FEMALE" ? "FEMALE" : t.gender === "MALE" ? "MALE" : "",
         };
       }
       setForms(next);
@@ -90,7 +93,8 @@ export function CmsPublicTeachersPanel() {
           education: form.education,
           experience: form.experience,
           bio: form.bio,
-          gender: form.gender === "FEMALE" ? "FEMALE" : null,
+          gender:
+            form.gender === "FEMALE" ? "FEMALE" : form.gender === "MALE" ? "MALE" : null,
         }),
       });
       if (res.ok) await loadAll();
@@ -151,7 +155,8 @@ export function CmsPublicTeachersPanel() {
           education: t.education,
           experience: t.experience,
           bio: t.bio,
-          gender: t.gender === "FEMALE" ? "FEMALE" : "",
+          gender:
+            t.gender === "FEMALE" ? "FEMALE" : t.gender === "MALE" ? "MALE" : "",
         };
         const open = openId === t.id;
         return (
@@ -163,11 +168,13 @@ export function CmsPublicTeachersPanel() {
             >
               <span className="flex min-w-0 items-center gap-3">
                 <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-gray-100">
-                  {t.photoUrl ? (
-                    <Image src={t.photoUrl} alt="" fill className="object-cover" sizes="44px" />
-                  ) : (
-                    <DefaultAvatar size={44} className="rounded-xl" />
-                  )}
+                  <Image
+                    src={getEffectivePhotoUrl(t.photoUrl, t.gender)}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="44px"
+                  />
                 </span>
                 <span className="min-w-0">
                   <span className="block truncate font-bold text-text-primary">{t.name}</span>
@@ -239,14 +246,10 @@ export function CmsPublicTeachersPanel() {
                   placeholder="자기소개 (카드 노출)"
                   onChange={(e) => setField(t.id, "bio", e.target.value)}
                 />
-                <select
-                  className={inputClass}
-                  value={form.gender ?? ""}
-                  onChange={(e) => setField(t.id, "gender", e.target.value === "FEMALE" ? "FEMALE" : "")}
-                >
-                  <option value="">공개 프로필: 남성 기본 실루엣</option>
-                  <option value="FEMALE">공개 프로필: 여성 기본 실루엣</option>
-                </select>
+                <GenderSelect
+                  value={(form.gender === "FEMALE" ? "FEMALE" : form.gender === "MALE" ? "MALE" : "") as ProfileGender | ""}
+                  onChange={(g) => setField(t.id, "gender", g)}
+                />
 
                 <button
                   type="button"

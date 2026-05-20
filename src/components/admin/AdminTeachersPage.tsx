@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { GenderSelect } from "@/components/ui/GenderSelect";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
+import type { ProfileGender } from "@/lib/profile-gender";
 
 type TeacherRow = {
   id: string;
@@ -73,7 +75,7 @@ export function AdminTeachersPage() {
     education: "",
     experience: "",
     bio: "",
-    gender: "" as "" | "FEMALE",
+    gender: "" as ProfileGender | "",
   });
 
   const fetchList = useCallback(async () => {
@@ -124,7 +126,8 @@ export function AdminTeachersPage() {
       education: row.education,
       experience: row.experience,
       bio: row.bio,
-      gender: row.gender === "FEMALE" ? "FEMALE" : "",
+      gender:
+        row.gender === "FEMALE" ? "FEMALE" : row.gender === "MALE" ? "MALE" : "",
     });
     void loadDocuments(row.id);
   }
@@ -136,7 +139,7 @@ export function AdminTeachersPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        gender: form.gender === "FEMALE" ? "FEMALE" : null,
+        gender: form.gender === "FEMALE" ? "FEMALE" : form.gender === "MALE" ? "MALE" : null,
       }),
     });
     if (res.ok) {
@@ -285,16 +288,12 @@ export function AdminTeachersPage() {
                   <td className="w-20 max-w-20 px-2 py-3 font-medium">
                     <div className="flex max-w-full flex-col items-start gap-1.5">
                       <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-gray-100">
-                        {row.photoUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={row.photoUrl}
-                            alt={`${row.name} 프로필 사진`}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <DefaultAvatar size={32} />
-                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={getEffectivePhotoUrl(row.photoUrl, row.gender)}
+                          alt={`${row.name} 프로필`}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                       <span className="whitespace-normal break-words text-xs leading-snug">
                         {row.name}
@@ -453,16 +452,12 @@ export function AdminTeachersPage() {
                   </p>
                   <div className="mt-3 flex gap-4 rounded-2xl bg-white p-4">
                     <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-                      {editRow.photoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={editRow.photoUrl}
-                          alt={`${form.name} 프로필 사진`}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <DefaultAvatar size={64} className="rounded-2xl" />
-                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getEffectivePhotoUrl(editRow.photoUrl, form.gender || editRow.gender)}
+                        alt={`${form.name} 프로필`}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                     <div className="min-w-0">
                       <h4 className="font-black text-text-primary">
@@ -513,27 +508,13 @@ export function AdminTeachersPage() {
                   className="w-full rounded-xl border px-3 py-2 text-sm"
                   placeholder="자기소개"
                 />
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-text-muted">
-                    공개 강사진용 성별
-                  </label>
-                  <select
-                    value={form.gender}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        gender: (e.target.value === "FEMALE" ? "FEMALE" : "") as "" | "FEMALE",
-                      }))
-                    }
-                    className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm"
-                  >
-                    <option value="">남성 기본 이미지</option>
-                    <option value="FEMALE">여성 기본 이미지</option>
-                  </select>
-                  <p className="mt-1 text-xs text-text-muted">
-                    공개 페이지 프로필 사진은 이 설정과 CMS 기본 이미지로 표시됩니다.
-                  </p>
-                </div>
+                <GenderSelect
+                  value={form.gender}
+                  onChange={(g) => setForm((f) => ({ ...f, gender: g }))}
+                />
+                <p className="text-xs text-text-muted">
+                  업로드 사진이 없으면 CMS 강사진 탭의 남·여 기본 이미지가 표시됩니다.
+                </p>
               </div>
             ) : (
               <div className="mt-4 grid gap-4 md:grid-cols-2">

@@ -2,18 +2,20 @@ import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
-import { assignDefaultManagerToStudent } from "@/lib/student-enrollment";
+import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
 import {
   normalizePhoneDigits,
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
+import { parseProfileGender } from "@/lib/profile-gender";
 
 type StudentBody = {
   name?: unknown;
   grade?: unknown;
   subjects?: unknown;
   phone?: unknown;
+  gender?: unknown;
   password?: unknown;
   /** true: 상담 대기 없이 대표 매니저 즉시 배정 */
   instantEnroll?: unknown;
@@ -45,6 +47,11 @@ export async function POST(request: Request) {
   const phoneDigits = normalizePhoneDigits(phone);
   if (phoneDigits.length < 10 || phoneDigits.length > 11) {
     return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
+  }
+
+  const gender = parseProfileGender(body.gender);
+  if (!gender) {
+    return NextResponse.json({ error: "Gender required" }, { status: 400 });
   }
 
   if (!Array.isArray(subjects) || subjects.length === 0) {
@@ -89,6 +96,7 @@ export async function POST(request: Request) {
               grade,
               subjects: subjectsCsv,
               phone: phoneDigits,
+              gender,
             },
           },
         },
@@ -98,7 +106,7 @@ export async function POST(request: Request) {
 
     if (instantEnroll && user.student) {
       try {
-        await assignDefaultManagerToStudent({
+        await assignChiefManagerToStudent({
           studentId: user.student.id,
           studentName: user.student.name,
           studentGrade: user.student.grade,

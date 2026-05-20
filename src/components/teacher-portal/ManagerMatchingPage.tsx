@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
 import { todayDateKey } from "@/lib/study-plan-dates";
 
 type MatchStudent = {
@@ -199,16 +198,12 @@ export function ManagerMatchingPage() {
                         }`}
                       >
                         <span className="flex items-start gap-3">
-                          {t.photoUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={t.photoUrl}
-                              alt={`${t.name} 프로필 사진`}
-                              className="h-10 w-10 rounded-full object-cover"
-                            />
-                          ) : (
-                            <DefaultAvatar size={40} />
-                          )}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={t.photoUrl ?? "/images/teachers/default-male.png"}
+                            alt={`${t.name} 프로필`}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
                           <span>
                             <span className="block font-medium text-text-primary">{t.name}</span>
                             <span className="mt-0.5 block text-xs text-text-secondary">{t.subjects}</span>

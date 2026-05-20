@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { assignDefaultManagerToStudent } from "@/lib/student-enrollment";
+import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
 
 /** DELETE ME — 임시: 결제 스킵 API (모든 환경; 제거 전 삭제) */
@@ -19,7 +19,7 @@ export async function POST() {
   }
 
   try {
-    await assignDefaultManagerToStudent({
+    await assignChiefManagerToStudent({
       studentId: student.id,
       studentName: student.name,
       studentGrade: student.grade,

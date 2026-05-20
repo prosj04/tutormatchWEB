@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 
 const SUBJECT_PILLS = ["국어", "영어", "수학", "사회탐구", "과학탐구"];
 
@@ -11,6 +11,7 @@ type TeacherItem = {
   name: string;
   approved: boolean;
   photoUrl: string | null;
+  gender: string | null;
   _count?: { students: number };
 };
 
@@ -141,16 +142,12 @@ export function AdminMatchesPage() {
                     }`}
                   >
                     <span className="flex items-center gap-3">
-                      {t.photoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={t.photoUrl}
-                          alt={`${t.name} 프로필 사진`}
-                          className="h-9 w-9 rounded-full object-cover"
-                        />
-                      ) : (
-                        <DefaultAvatar size={36} />
-                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getEffectivePhotoUrl(t.photoUrl, t.gender)}
+                        alt={`${t.name} 프로필`}
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
                       <span>
                         <span className="block">{t.name}</span>
                         <span className="mt-0.5 block text-xs text-text-muted">

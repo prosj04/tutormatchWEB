@@ -1,4 +1,5 @@
 import { SuccessPageActions } from "@/components/success/SuccessPageActions";
+import { SuccessPaymentComplete } from "@/components/success/SuccessPaymentComplete";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
 import { getGroupedSiteContent } from "@/lib/site-content";
@@ -28,6 +29,13 @@ export default async function SuccessPage({ searchParams }: PageProps) {
 
   return (
     <div className="bg-background px-8 py-24 md:py-28">
+      {orderId ? (
+        <SuccessPaymentComplete
+          orderId={orderId}
+          paymentKey={paymentKey}
+          amount={Number.isFinite(amount) ? amount : undefined}
+        />
+      ) : null}
       <div className="mx-auto max-w-6xl">
         <div className="rounded-2xl border border-gray-100 bg-white px-8 py-12 text-center shadow-sm md:px-12 md:py-16">
           <p className="text-xs font-medium uppercase tracking-wider text-text-muted">{s("kicker", "Payment")}</p>

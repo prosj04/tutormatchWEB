@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { DefaultAvatar } from "@/components/ui/DefaultAvatar";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { uploadTeacherPhoto } from "@/lib/supabase-client";
 import {
   emptyCareer,
@@ -38,6 +38,7 @@ type TeacherProfileEditorProps = {
   teacherId: string;
   teacherName: string;
   subjects: string[];
+  gender: string | null;
   initialForm: TeacherProfileFormData;
 };
 
@@ -45,6 +46,7 @@ export function TeacherProfileEditor({
   teacherId,
   teacherName,
   subjects,
+  gender,
   initialForm,
 }: TeacherProfileEditorProps) {
   const [form, setForm] = useState<TeacherProfileFormData>(initialForm);
@@ -223,9 +225,9 @@ export function TeacherProfileEditor({
   }
 
   const displayPhoto =
-    form.photoUrl && !form.photoUrl.startsWith("blob:")
-      ? form.photoUrl
-      : form.photoUrl;
+    form.photoUrl?.startsWith("blob:") ?
+      form.photoUrl
+    : getEffectivePhotoUrl(form.photoUrl, gender);
 
   return (
     <>
@@ -235,6 +237,7 @@ export function TeacherProfileEditor({
             teacherId={teacherId}
             name={teacherName}
             subjects={subjects}
+            gender={gender}
             form={form}
           />
         </div>
@@ -244,16 +247,12 @@ export function TeacherProfileEditor({
             <h2 className="text-sm font-bold text-text-primary">프로필 사진</h2>
             <div className="mt-4 flex items-center gap-4">
               <div className="relative h-20 w-20 overflow-hidden rounded-full bg-gray-100">
-                {displayPhoto ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={displayPhoto}
-                    alt="프로필"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <DefaultAvatar size={80} />
-                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={displayPhoto}
+                  alt="프로필"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <input

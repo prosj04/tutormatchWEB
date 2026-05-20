@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { GenderSelect } from "@/components/ui/GenderSelect";
 import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { normalizePhoneDigits } from "@/lib/phone-login";
+import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
@@ -20,7 +22,8 @@ type FieldKey =
   | "password"
   | "passwordConfirm"
   | "grade"
-  | "subjects";
+  | "subjects"
+  | "gender";
 
 type ConsultationSignupFormProps = {
   onSuccess?: () => void;
@@ -40,6 +43,7 @@ export function ConsultationSignupForm({
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [grade, setGrade] = useState<string>(STUDENT_GRADES[0]);
+  const [gender, setGender] = useState<ProfileGender | "">("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
@@ -64,6 +68,7 @@ export function ConsultationSignupForm({
     if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
     else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
     if (!grade) next.grade = "학년을 선택해 주세요.";
+    if (!gender) next.gender = "성별을 선택해 주세요.";
     if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
     setFieldErrors(next);
     return Object.keys(next).length === 0;
@@ -81,6 +86,7 @@ export function ConsultationSignupForm({
           name: name.trim(),
           password,
           grade,
+          gender,
           subjects: selectedSubjects,
           phone: phone.trim(),
           instantEnroll,
@@ -196,6 +202,11 @@ export function ConsultationSignupForm({
             <p className="mt-2 text-xs text-accent">{fieldErrors.passwordConfirm}</p>
           ) : null}
         </div>
+        <GenderSelect
+          value={gender}
+          onChange={setGender}
+          error={fieldErrors.gender}
+        />
         <div>
           <label htmlFor="reg-grade" className={labelClass}>
             학년

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { parseVisitTimes, type VisitTimesByDate } from "@/lib/visit-consultation";
 
 export type ConsultationBookingDto = {
@@ -46,7 +47,10 @@ export async function getConsultationBookingDto(
       ? {
           id: booking.manager.id,
           name: booking.manager.name,
-          photoUrl: booking.manager.profile?.photoUrl ?? null,
+          photoUrl: getEffectivePhotoUrl(
+            booking.manager.profile?.photoUrl,
+            booking.manager.gender,
+          ),
         }
       : null,
   };

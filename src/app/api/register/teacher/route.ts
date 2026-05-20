@@ -7,6 +7,7 @@ import {
   normalizePhoneDigits,
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
+import { parseProfileGender } from "@/lib/profile-gender";
 
 type TeacherBody = {
   name?: unknown;
@@ -16,6 +17,7 @@ type TeacherBody = {
   education?: unknown;
   experience?: unknown;
   password?: unknown;
+  gender?: unknown;
   careerEntries?: unknown;
 };
 
@@ -60,6 +62,10 @@ export async function POST(request: Request) {
 
   const subjectsCsv = subjectStrings.join(",");
   const email = teacherSyntheticEmailFromDigits(phoneDigits);
+  const gender = parseProfileGender(body.gender);
+  if (!gender) {
+    return NextResponse.json({ error: "Gender required" }, { status: 400 });
+  }
 
   const existing = await prisma.user.findFirst({
     where: {
@@ -91,6 +97,7 @@ export async function POST(request: Request) {
               bio,
               education,
               experience,
+              gender,
               approved: false,
               profile: {
                 create: {

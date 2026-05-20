@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, type ReactNode } from "react";
 
+import { GenderSelect } from "@/components/ui/GenderSelect";
 import { normalizePhoneDigits } from "@/lib/phone-login";
+import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
@@ -40,6 +42,7 @@ export function TeacherPortalApplyClient() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState<ProfileGender | "">("");
   const [subjects, setSubjects] = useState<string[]>([]);
   const [education, setEducation] = useState("");
   const [experience, setExperience] = useState("");
@@ -61,6 +64,7 @@ export function TeacherPortalApplyClient() {
     else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
     if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
     else if (normalizePhoneDigits(phone).length < 10) next.phone = "올바른 전화번호를 입력해 주세요.";
+    if (!gender) next.gender = "성별을 선택해 주세요.";
     if (subjects.length === 0) next.subjects = "담당 과목을 한 개 이상 선택해 주세요.";
     if (!education.trim()) next.education = "최종 학력을 입력해 주세요.";
     if (!experience.trim()) next.experience = "주요 경력을 입력해 주세요.";
@@ -80,6 +84,7 @@ export function TeacherPortalApplyClient() {
         body: JSON.stringify({
           name: name.trim(),
           password,
+          gender,
           phone: phone.trim(),
           subjects,
           education: education.trim(),
@@ -148,6 +153,11 @@ export function TeacherPortalApplyClient() {
                     className={inputClass}
                   />
                 </Field>
+                <GenderSelect
+                  value={gender}
+                  onChange={setGender}
+                  error={fieldErrors.gender}
+                />
                 <Field label="비밀번호" htmlFor="apply-pw" error={fieldErrors.password}>
                   <input
                     id="apply-pw"

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireManager } from "@/lib/manager-auth";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { todayDateKey } from "@/lib/study-plan-dates";
 
 export async function GET() {
@@ -74,7 +75,7 @@ export async function GET() {
       id: t.id,
       name: t.name,
       subjects: t.subjects,
-      photoUrl: t.profile?.photoUrl ?? null,
+      photoUrl: getEffectivePhotoUrl(t.profile?.photoUrl, t.gender),
       activeStudentCount: t._count.students,
     })),
   });

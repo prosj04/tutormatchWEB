@@ -48,6 +48,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (typeof body.bio === "string") data.bio = body.bio.trim();
   if ("gender" in body) {
     if (body.gender === "FEMALE") data.gender = "FEMALE";
+    else if (body.gender === "MALE") data.gender = "MALE";
     else data.gender = null;
   }
 

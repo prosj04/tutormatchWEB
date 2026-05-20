@@ -43,6 +43,7 @@ export default async function TeacherProfilePage() {
           teacherId={teacher.id}
           teacherName={teacher.name}
           subjects={subjects}
+          gender={teacher.gender}
           initialForm={initialForm}
         />
       </div>
