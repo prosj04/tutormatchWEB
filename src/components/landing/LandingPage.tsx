@@ -5,12 +5,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
-import { PricingPlanActions } from "@/components/pricing/PricingPlanActions";
-import {
-  formatPlanPrice,
-  HOME_PRICING_PLANS,
-  type PricingPlanDefinition,
-} from "@/lib/pricing-plans";
+import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
+import { PricingPlanCard } from "@/components/pricing/PricingPlanCard";
+import { HOME_PRICING_PLANS } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -185,43 +182,6 @@ function useScrollLandingState() {
 }
 
 /* ─────────────────────────────────────────── sub-components ── */
-
-function PricingCard({
-  plan,
-  active = true,
-}: {
-  plan: PricingPlanDefinition;
-  active?: boolean;
-}) {
-  const price = formatPlanPrice(plan.sessions, plan.subjects);
-  return (
-    <article
-      className={`${active ? "flex" : "hidden md:flex"} h-full flex-col overflow-hidden rounded-[28px] bg-neutral-10`}
-    >
-      <div className="h-10 shrink-0 rounded-t-[28px] bg-neutral-10" />
-      <div className="relative flex flex-1 flex-col rounded-t-[28px] bg-neutral-100 p-7 pb-8 text-white md:p-8 md:pb-10">
-        {plan.recommended ? (
-          <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-            추천
-          </span>
-        ) : null}
-        <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
-        <h3 className="mt-4 text-2xl font-black">{plan.title}</h3>
-        <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight md:text-5xl">{price}</p>
-        <p className="mt-2 text-sm text-neutral-40">{plan.subtitle}</p>
-        <ul className="mt-7 space-y-3 text-sm font-medium leading-relaxed text-neutral-30">
-          {plan.features.map((f) => (
-            <li key={f} className="flex gap-3">
-              <span className="text-primary">·</span>
-              {f}
-            </li>
-          ))}
-        </ul>
-        <PricingPlanActions sessions={plan.sessions} subjects={plan.subjects} compact />
-      </div>
-    </article>
-  );
-}
 
 /* ─────────────────────────────────────────── main ── */
 
@@ -615,16 +575,20 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                 </div>
                 <div className="grid items-stretch gap-6 md:grid-cols-2">
                   {HOME_PRICING_PLANS.map((plan, index) => (
-                    <PricingCard key={plan.id} plan={plan} active={priceTab === index} />
+                    <PricingPlanCard key={plan.id} plan={plan} active={priceTab === index} />
                   ))}
                 </div>
               </div>
             </div>
+            <FloatingConsultationCue
+              scrollTargetId="consultation"
+              className="relative z-10 -mb-2 py-8 md:py-10"
+            />
           </div>
         </section>
 
         {/* ═══ BENEFITS CTA ════════════════════════════ */}
-        <section className="bg-primary py-20 md:py-28">
+        <section id="consultation" className="scroll-mt-24 bg-primary py-20 md:py-28">
           <div className="mx-auto max-w-[1200px] px-5">
             <h2 className="text-[clamp(1.8rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-white">
               {getCmsValue("cta", "headline", "지금 신청하면 받을 수 있는 혜택이에요")}
