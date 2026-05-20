@@ -1,5 +1,8 @@
+import { notFound } from "next/navigation";
+
 import { FaqPageContent } from "@/components/faq/FaqPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
+import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { LANDING_FAQ_FALLBACK } from "@/lib/faq-defaults";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
@@ -14,6 +17,10 @@ export default async function FaqPage() {
     getLandingCmsContent(),
     getGroupedSiteContent(),
   ]);
+  if (!isPublicSectionVisible(siteContent, "faq_page", "show_page", true)) {
+    notFound();
+  }
+
   const faqs = cms.faqs.length > 0 ? cms.faqs : [...LANDING_FAQ_FALLBACK];
 
   return <FaqPageContent faqs={faqs} siteContent={siteContent} />;

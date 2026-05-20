@@ -37,6 +37,21 @@ export function parseCmsVisibility(raw: string | undefined, defaultVisible = tru
   return true;
 }
 
+export function isPublicSectionVisible(
+  siteContent: Record<string, Record<string, string>> | undefined,
+  section: string,
+  key: string,
+  defaultVisible = true,
+): boolean {
+  const raw = siteContent?.[section]?.[key];
+  return parseCmsVisibility(raw?.trim() === "" ? undefined : raw, defaultVisible);
+}
+
+/** CMS·공개 페이지 제목에서 줄바꿈 제거 */
+export function cmsPlainLine(text: string): string {
+  return text.replace(/\s*\n+\s*/g, " ").trim();
+}
+
 function pricingBoxRowsForSlot(
   boxIndex: number,
   plan: (typeof PRICING_PLAN_SLOTS)[number],
@@ -252,8 +267,15 @@ export const tutorsPageDefaults = [
   },
 ] as const;
 
+/** 홈 FAQ·후기 섹션 노출 (항목 본문은 Testimonial·FaqItem 테이블) */
+export const homePageVisibilityDefaults = [
+  { section: "home_page", key: "show_faq_section", value: "0", type: "text", order: 0 },
+  { section: "home_page", key: "show_reviews_section", value: "1", type: "text", order: 1 },
+] as const;
+
 /** FAQ·후기·로그인·결제 등 공개 페이지 고정 영역 (항목 본문은 DB 테이블) */
 export const extraPublicPagesDefaults = [
+  { section: "faq_page", key: "show_page", value: "1", type: "text", order: 0 },
   { section: "faq_page", key: "kicker", value: "FAQ", type: "text", order: 1 },
   {
     section: "faq_page",
@@ -271,6 +293,7 @@ export const extraPublicPagesDefaults = [
   },
   { section: "faq_page", key: "empty_text", value: "등록된 FAQ가 없습니다.", type: "text", order: 4 },
 
+  { section: "reviews_page", key: "show_page", value: "1", type: "text", order: 0 },
   { section: "reviews_page", key: "kicker", value: "REVIEWS", type: "text", order: 1 },
   { section: "reviews_page", key: "title", value: "학습 후기", type: "text", order: 2 },
   {

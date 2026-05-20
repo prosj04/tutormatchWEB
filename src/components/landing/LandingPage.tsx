@@ -9,13 +9,14 @@ import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
-import { parseCmsVisibility } from "@/lib/cms-page-defaults";
+import { isPublicSectionVisible, parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { isHomePricingOneSubject } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
+const HOME_FAQ_PREVIEW = 3;
 
 const DEFAULT_RESULT_IMAGES = [
   "/images/teachers/default-male.png",
@@ -286,6 +287,17 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const cmsTestimonials =
     cms && cms.testimonials.length > 0 ? cms.testimonials : testimonials;
   const homeTestimonials = cmsTestimonials.slice(0, HOME_TESTIMONIAL_PREVIEW);
+  const cmsFaqs = cms && cms.faqs.length > 0 ? cms.faqs : [];
+  const homeFaqs = cmsFaqs.slice(0, HOME_FAQ_PREVIEW);
+  const showReviewsHome = isPublicSectionVisible(
+    cms?.siteContent,
+    "home_page",
+    "show_reviews_section",
+    true,
+  );
+  const showFaqHome = isPublicSectionVisible(cms?.siteContent, "home_page", "show_faq_section", false);
+  const showFaqPage = isPublicSectionVisible(cms?.siteContent, "faq_page", "show_page", true);
+  const showReviewsPage = isPublicSectionVisible(cms?.siteContent, "reviews_page", "show_page", true);
   const cmsSteps = steps.flatMap((step, index) => {
     const stepNumber = index + 1;
     const vis = getCmsValue("features", `step${stepNumber}_visible`, "1");
@@ -378,7 +390,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader showFaqLink={showFaqPage} showReviewsLink={showReviewsPage} />
 
       <main className="text-neutral-100">
 
@@ -484,28 +496,62 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-        {/* ═══ TESTIMONIALS — moved here, between results and teachers ═══ */}
-        <section id="testimonials" className="bg-white py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
-            <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-              학습 후기
-            </h2>
-            <div className="mt-10 space-y-5">
-              {homeTestimonials.map((t) => (
-                <TestimonialCard key={t.info} item={t} />
-              ))}
+        {showFaqHome && homeFaqs.length > 0 ? (
+          <section id="faq" className="bg-neutral-10 py-20 md:py-28">
+            <div className="mx-auto max-w-[1200px] px-5">
+              <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
+              <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+                자주 묻는 질문
+              </h2>
+              <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
+                {homeFaqs.map((item) => (
+                  <div key={item.q} className="px-7 py-6 md:px-8 md:py-7">
+                    <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
+                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
+                      A. {item.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {showFaqPage ? (
+                <div className="mt-8 flex justify-center">
+                  <Link
+                    href="/faq"
+                    className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+                  >
+                    FAQ 더보기
+                  </Link>
+                </div>
+              ) : null}
             </div>
-            <div className="mt-8 flex justify-center">
-              <Link
-                href="/reviews"
-                className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
-              >
-                학습 후기 더보기
-              </Link>
+          </section>
+        ) : null}
+
+        {showReviewsHome ? (
+          <section id="testimonials" className="bg-white py-20 md:py-28">
+            <div className="mx-auto max-w-[1200px] px-5">
+              <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
+              <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+                학습 후기
+              </h2>
+              <div className="mt-10 space-y-5">
+                {homeTestimonials.map((t) => (
+                  <TestimonialCard key={t.info} item={t} />
+                ))}
+              </div>
+              {showReviewsPage ? (
+                <div className="mt-8 flex justify-center">
+                  <Link
+                    href="/reviews"
+                    className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+                  >
+                    학습 후기 더보기
+                  </Link>
+                </div>
+              ) : null}
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         {/* ═══ TEACHERS — light bg ═════════════════════ */}
         <section id="teachers" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
@@ -766,7 +812,11 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   <p className="font-black text-neutral-100">서비스</p>
                   <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
-                  <Link href="/faq"                    className="block transition hover:text-primary">FAQ</Link>
+                  {showFaqPage ? (
+                    <Link href="/faq" className="block transition hover:text-primary">
+                      FAQ
+                    </Link>
+                  ) : null}
                   <ConsultationApplyButton className="block w-full cursor-pointer bg-transparent p-0 text-left text-sm font-bold text-neutral-50 transition hover:text-primary">
                     상담 신청
                   </ConsultationApplyButton>

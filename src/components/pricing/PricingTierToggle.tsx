@@ -13,14 +13,10 @@ type PricingTierToggleProps = {
   className?: string;
 };
 
-/** 사이트 콘텐츠 관리 페이지 상단 탭(홈·요금제·…)과 동일한 탭 스타일 */
+/** 사이트 콘텐츠 관리 페이지 상단 탭과 동일한 탭 스타일 (하단 구분선 없음) */
 export function PricingTierToggle({ value, onChange, className = "" }: PricingTierToggleProps) {
   return (
-    <nav
-      role="tablist"
-      aria-label="학년"
-      className={`flex flex-wrap gap-2 border-b border-gray-200 pb-1 ${className}`}
-    >
+    <nav role="tablist" aria-label="학년" className={`flex flex-wrap gap-2 ${className}`}>
       {OPTIONS.map((opt) => (
         <button
           key={opt.value}

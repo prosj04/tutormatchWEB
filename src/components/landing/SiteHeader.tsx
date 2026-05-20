@@ -14,11 +14,11 @@ function displayName(session: { user?: { name?: string | null; email?: string | 
   return "회원";
 }
 
-const navLinks = [
-  { href: "/tutors", label: "강사진" },
-  { href: "/pricing", label: "요금제" },
-  { href: "/reviews", label: "학습후기" },
-  { href: "/faq", label: "FAQ" },
+const baseNavLinks = [
+  { href: "/tutors", label: "강사진", id: "tutors" as const },
+  { href: "/pricing", label: "요금제", id: "pricing" as const },
+  { href: "/reviews", label: "학습후기", id: "reviews" as const },
+  { href: "/faq", label: "FAQ", id: "faq" as const },
 ];
 
 function SessionActions({
@@ -117,7 +117,20 @@ function SessionActions({
   );
 }
 
-export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" }) {
+export function SiteHeader({
+  variant = "auto",
+  showFaqLink = true,
+  showReviewsLink = true,
+}: {
+  variant?: "auto" | "light";
+  showFaqLink?: boolean;
+  showReviewsLink?: boolean;
+}) {
+  const navLinks = baseNavLinks.filter((link) => {
+    if (link.id === "faq") return showFaqLink;
+    if (link.id === "reviews") return showReviewsLink;
+    return true;
+  });
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(variant === "light");
 
@@ -152,9 +165,11 @@ export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" })
     >
       <div className={`hidden h-9 w-full transition-all duration-300 ease-in-out md:block ${topBarTone}`}>
         <div className="mx-auto flex h-full max-w-[1200px] items-center justify-end px-5 text-xs font-medium">
-          <Link href="/faq" className={`px-3 transition ${hoverTone}`}>
-            자주 묻는 질문
-          </Link>
+          {showFaqLink ? (
+            <Link href="/faq" className={`px-3 transition ${hoverTone}`}>
+              자주 묻는 질문
+            </Link>
+          ) : null}
           <Link href="/register/teacher" className={`px-3 transition ${hoverTone}`}>
             선생님 지원
           </Link>
@@ -222,9 +237,11 @@ export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" })
         <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between px-6 py-8">
           <div>
             <div className="flex justify-end gap-4 text-sm font-semibold text-neutral-50">
-              <Link href="/faq" onClick={() => setOpen(false)}>
-                자주 묻는 질문
-              </Link>
+              {showFaqLink ? (
+                <Link href="/faq" onClick={() => setOpen(false)}>
+                  자주 묻는 질문
+                </Link>
+              ) : null}
               <Link href="/register/teacher" onClick={() => setOpen(false)}>
                 선생님 지원
               </Link>

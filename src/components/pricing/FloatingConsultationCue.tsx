@@ -54,7 +54,7 @@ export function FloatingConsultationCue({
       ([entry]) => {
         if (entry.isIntersecting) setRevealed(true);
       },
-      { threshold: 0.25, rootMargin: "0px 0px -10% 0px" },
+      { threshold: 0.12, rootMargin: "0px 0px -5% 0px" },
     );
     observer.observe(ref.current);
     return () => observer.disconnect();
@@ -86,8 +86,8 @@ export function FloatingConsultationCue({
   return (
     <div
       ref={ref}
-      className={`flex justify-center transition duration-500 ease-out ${
-        isShown ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+      className={`flex justify-center transition duration-700 ease-out ${
+        isShown ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
       } ${className}`}
     >
       {content}

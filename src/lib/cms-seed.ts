@@ -1,5 +1,6 @@
 import {
   extraPublicPagesDefaults,
+  homePageVisibilityDefaults,
   portalPagesDefaults,
   pricingPageDefaults,
   tutorsPageDefaults,
@@ -206,6 +207,7 @@ const siteContentDefaults = [
 
   ...pricingPageDefaults,
   ...tutorsPageDefaults,
+  ...homePageVisibilityDefaults,
   ...extraPublicPagesDefaults,
   ...portalPagesDefaults,
 ];

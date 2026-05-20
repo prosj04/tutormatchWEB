@@ -19,6 +19,7 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CmsCardBox, CmsCardBoxGrid } from "@/components/admin/CmsCardBox";
+import { CmsVisibilityToggle } from "@/components/admin/CmsVisibilityToggle";
 import { CmsPublicTeachersPanel } from "@/components/admin/CmsPublicTeachersPanel";
 import {
   CMS_MANAGED_CARD_SLOT_COUNT,
@@ -531,9 +532,11 @@ const EXTRA_PAGE_LABELS: Record<string, Record<string, string>> = {
   },
 };
 
+const CMS_VISIBILITY_FIELD_KEYS = new Set(["show_page", "show_faq_section", "show_reviews_section"]);
+
 function buildExtraFields(section: string): TextFieldConfig[] {
   return extraPublicPagesDefaults
-    .filter((row) => row.section === section)
+    .filter((row) => row.section === section && !CMS_VISIBILITY_FIELD_KEYS.has(row.key))
     .map((row) => {
       const long = row.value.includes("\n") || row.value.length > 100;
       return {
@@ -1101,6 +1104,30 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
+          <EditorSection eyebrow="VISIBILITY" title="홈 · FAQ · 후기 노출">
+            <p className="mb-4 text-sm text-text-secondary">
+              FAQ·학습 후기 목록은 아래 DB와 FAQ·후기 탭이 공유합니다. 체크를 끄면 해당 영역·페이지가 공개되지 않습니다.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:max-w-2xl">
+              <CmsVisibilityToggle
+                label="홈 화면에 FAQ 섹션 표시"
+                section="home_page"
+                visibilityKey="show_faq_section"
+                visibilityDefault="0"
+                getValue={getValue}
+                onToggleVisible={patchContent}
+              />
+              <CmsVisibilityToggle
+                label="홈 화면에 학습 후기 섹션 표시"
+                section="home_page"
+                visibilityKey="show_reviews_section"
+                visibilityDefault="1"
+                getValue={getValue}
+                onToggleVisible={patchContent}
+              />
+            </div>
+          </EditorSection>
+
           <EditorSection
             eyebrow="FAQ"
             title="자주 묻는 질문"
@@ -1247,8 +1274,17 @@ export function AdminCmsPage() {
           {activePage === "faq" ? (
             <EditorSection eyebrow="FAQ" title="FAQ 페이지 (고정 영역)">
               <p className="mb-4 text-sm text-text-secondary">
-                질문·답변 목록은 홈 탭 하단 또는 이 목록과 동일한 DB를 사용합니다.
+                질문·답변 목록은 홈 탭과 동일한 DB를 사용합니다.
               </p>
+              <div className="mb-6 max-w-md">
+                <CmsVisibilityToggle
+                  label="FAQ 개별 페이지(/faq) 표시"
+                  section="faq_page"
+                  visibilityKey="show_page"
+                  getValue={getValue}
+                  onToggleVisible={patchContent}
+                />
+              </div>
               <div className="grid gap-4 lg:grid-cols-2">
                 {buildExtraFields("faq_page").map((field) => (
                   <ContentField
@@ -1264,7 +1300,16 @@ export function AdminCmsPage() {
 
           {activePage === "reviews" ? (
             <EditorSection eyebrow="REVIEWS" title="학습 후기 페이지 (고정 영역)">
-              <p className="mb-4 text-sm text-text-secondary">후기 카드는 홈 탭의 후기 목록과 같은 DB입니다.</p>
+              <p className="mb-4 text-sm text-text-secondary">후기 카드는 홈 탭과 같은 DB입니다.</p>
+              <div className="mb-6 max-w-md">
+                <CmsVisibilityToggle
+                  label="학습 후기 개별 페이지(/reviews) 표시"
+                  section="reviews_page"
+                  visibilityKey="show_page"
+                  getValue={getValue}
+                  onToggleVisible={patchContent}
+                />
+              </div>
               <div className="grid gap-4 lg:grid-cols-2">
                 {buildExtraFields("reviews_page").map((field) => (
                   <ContentField

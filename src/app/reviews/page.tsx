@@ -1,5 +1,8 @@
+import { notFound } from "next/navigation";
+
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
+import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const revalidate = 60;
@@ -22,6 +25,10 @@ export default async function ReviewsPage() {
     getLandingCmsContent(),
     getGroupedSiteContent(),
   ]);
+  if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
+    notFound();
+  }
+
   const testimonials =
     cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
 
