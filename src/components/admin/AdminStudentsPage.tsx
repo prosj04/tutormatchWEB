@@ -148,8 +148,8 @@ export function AdminStudentsPage() {
               <th className="px-4 py-3">학년</th>
               <th className="px-4 py-3">희망과목</th>
               <th className="px-4 py-3">전화번호</th>
-              <th className="px-4 py-3">담당 매니저</th>
               <th className="px-4 py-3">가입일</th>
+              <th className="px-4 py-3">담당 매니저</th>
               <th className="px-4 py-3">담당선생님</th>
               <th className="px-4 py-3">액션</th>
             </tr>
@@ -174,10 +174,10 @@ export function AdminStudentsPage() {
                   <td className="px-4 py-3">{row.grade}</td>
                   <td className="px-4 py-3">{row.subjects}</td>
                   <td className="px-4 py-3">{row.phone}</td>
-                  <td className="px-4 py-3 text-text-secondary">{row.managerName ?? "—"}</td>
                   <td className="px-4 py-3">
                     {new Date(row.createdAt).toLocaleDateString("ko-KR")}
                   </td>
+                  <td className="px-4 py-3 text-text-secondary">{row.managerName ?? "—"}</td>
                   <td className="px-4 py-3 text-text-secondary">{row.assignedTeachers || "—"}</td>
                   <td className="px-4 py-3">
                     <button

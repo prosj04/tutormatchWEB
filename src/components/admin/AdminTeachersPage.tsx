@@ -259,15 +259,15 @@ export function AdminTeachersPage() {
         <table className="w-full min-w-[1000px] text-left text-sm">
           <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
             <tr>
-              <th className="px-4 py-3">이름</th>
-              <th className="px-4 py-3">담당과목</th>
+              <th className="w-20 max-w-20 px-2 py-3">이름</th>
+              <th className="w-20 max-w-20 px-2 py-3">담당과목</th>
               <th className="px-4 py-3">이메일</th>
               <th className="px-4 py-3">전화번호</th>
               <th className="px-4 py-3">역할</th>
               <th className="px-4 py-3">승인상태</th>
               <th className="px-4 py-3">담당학생수</th>
               <th className="px-4 py-3">가입일</th>
-              <th className="px-4 py-3">액션</th>
+              <th className="w-24 max-w-24 px-2 py-3">액션</th>
             </tr>
           </thead>
           <tbody>
@@ -282,9 +282,9 @@ export function AdminTeachersPage() {
                 const badge = roleBadge(row.role);
                 return (
                 <tr key={row.id} className="border-b border-gray-50">
-                  <td className="px-4 py-3 font-medium">
-                    <div className="flex items-center gap-3">
-                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-100">
+                  <td className="w-20 max-w-20 px-2 py-3 font-medium">
+                    <div className="flex max-w-full flex-col items-start gap-1.5">
+                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-gray-100">
                         {row.photoUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -293,13 +293,17 @@ export function AdminTeachersPage() {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <DefaultAvatar size={40} />
+                          <DefaultAvatar size={32} />
                         )}
                       </div>
-                      <span>{row.name}</span>
+                      <span className="whitespace-normal break-words text-xs leading-snug">
+                        {row.name}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3">{row.subjects}</td>
+                  <td className="w-20 max-w-20 whitespace-normal break-words px-2 py-3 text-xs leading-snug">
+                    {row.subjects}
+                  </td>
                   <td className="px-4 py-3">{row.email}</td>
                   <td className="px-4 py-3">{row.phone}</td>
                   <td className="px-4 py-3">
@@ -324,63 +328,65 @@ export function AdminTeachersPage() {
                   <td className="px-4 py-3">
                     {new Date(row.createdAt).toLocaleDateString("ko-KR")}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <label
-                      className={`mr-2 inline-flex cursor-pointer items-center gap-1 text-text-secondary hover:text-primary ${
-                        uploadingId === row.id ? "pointer-events-none opacity-50" : ""
-                      }`}
-                      title="프로필 사진 업로드"
-                    >
-                      <span aria-hidden="true">📷</span>
-                      <span className="sr-only">사진 업로드</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          void uploadPhoto(row, e.target.files?.[0]);
-                          e.currentTarget.value = "";
-                        }}
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => toggleApprove(row)}
-                      className="mr-2 text-primary hover:underline"
-                    >
-                      {row.approved ? "승인취소" : "승인"}
-                    </button>
-                    {row.role === "TEACHER" ? (
+                  <td className="w-24 max-w-24 px-2 py-3">
+                    <div className="flex max-w-full flex-col gap-1 text-xs leading-snug">
+                      <label
+                        className={`inline-flex cursor-pointer items-center gap-0.5 text-text-secondary hover:text-primary ${
+                          uploadingId === row.id ? "pointer-events-none opacity-50" : ""
+                        }`}
+                        title="프로필 사진 업로드"
+                      >
+                        <span aria-hidden="true">📷</span>
+                        <span className="sr-only">사진 업로드</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            void uploadPhoto(row, e.target.files?.[0]);
+                            e.currentTarget.value = "";
+                          }}
+                        />
+                      </label>
                       <button
                         type="button"
-                        onClick={() => grantManager(row)}
-                        className="mr-2 text-text-primary hover:underline"
+                        onClick={() => toggleApprove(row)}
+                        className="text-left text-primary hover:underline"
                       >
-                        매니저 권한 부여
+                        {row.approved ? "승인취소" : "승인"}
                       </button>
-                    ) : row.role === "MANAGER" ? (
+                      {row.role === "TEACHER" ? (
+                        <button
+                          type="button"
+                          onClick={() => grantManager(row)}
+                          className="text-left text-text-primary hover:underline"
+                        >
+                          매니저 부여
+                        </button>
+                      ) : row.role === "MANAGER" ? (
+                        <button
+                          type="button"
+                          onClick={() => revokeManager(row)}
+                          className="text-left text-text-secondary hover:underline"
+                        >
+                          매니저 해제
+                        </button>
+                      ) : null}
                       <button
                         type="button"
-                        onClick={() => revokeManager(row)}
-                        className="mr-2 text-text-secondary hover:underline"
+                        onClick={() => openEdit(row)}
+                        className="text-left text-primary hover:underline"
                       >
-                        매니저 권한 해제
+                        수정
                       </button>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={() => openEdit(row)}
-                      className="mr-2 text-primary hover:underline"
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteRow(row.id, row.name)}
-                      className="text-accent hover:underline"
-                    >
-                      삭제
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteRow(row.id, row.name)}
+                        className="text-left text-accent hover:underline"
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
