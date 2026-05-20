@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/tutors", label: "강사진" },
   { href: "/pricing", label: "요금제" },
   { href: "/reviews", label: "학습후기" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 function SessionActions({
@@ -145,7 +146,7 @@ export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" })
     >
       <div className={`hidden h-9 w-full transition-all duration-300 ease-in-out md:block ${topBarTone}`}>
         <div className="mx-auto flex h-full max-w-[1200px] items-center justify-end px-5 text-xs font-medium">
-          <Link href="/#faq" className={`px-3 transition ${hoverTone}`}>
+          <Link href="/faq" className={`px-3 transition ${hoverTone}`}>
             자주 묻는 질문
           </Link>
           <Link href="/register/teacher" className={`px-3 transition ${hoverTone}`}>
@@ -215,7 +216,7 @@ export function SiteHeader({ variant = "auto" }: { variant?: "auto" | "light" })
         <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between px-6 py-8">
           <div>
             <div className="flex justify-end gap-4 text-sm font-semibold text-neutral-50">
-              <Link href="/#faq" onClick={() => setOpen(false)}>
+              <Link href="/faq" onClick={() => setOpen(false)}>
                 자주 묻는 질문
               </Link>
               <Link href="/register/teacher" onClick={() => setOpen(false)}>

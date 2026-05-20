@@ -61,7 +61,7 @@ export function FloatingConsultationCue({
   }, [revealOnScroll]);
 
   const textClass =
-    "cursor-pointer border-0 bg-transparent p-0 text-sm font-black tracking-[0.12em] text-neutral-40 underline-offset-[6px] transition hover:text-primary hover:underline md:text-base";
+    "cursor-pointer border-0 bg-transparent p-0 text-sm font-black tracking-[0.12em] text-neutral-40 transition hover:text-primary md:text-base";
 
   const scrollToTarget = () => {
     if (scrollTargetId) {

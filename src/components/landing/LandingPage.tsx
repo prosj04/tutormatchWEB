@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
-import { PricingPlanCard } from "@/components/pricing/PricingPlanCard";
+import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { HOME_PRICING_PLANS } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
@@ -104,25 +104,6 @@ const steps = [
     title: "학습 리포트 & 관리",
     desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.",
     img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=840&h=380&fit=crop&q=80",
-  },
-];
-
-const faqs = [
-  {
-    q: "상담은 어떻게 진행되나요?",
-    a: "상담 신청 후 담당 매니저가 전화로 학생의 현재 수준, 목표, 일정, 성향을 확인합니다.",
-  },
-  {
-    q: "선생님 매칭은 얼마나 걸리나요?",
-    a: "상담 후 보통 1~3일 안에 후보 선생님을 추천드리며, 일정 조율 후 수업을 시작합니다.",
-  },
-  {
-    q: "수업 중간에 선생님을 바꿀 수 있나요?",
-    a: "첫 수업 이후 적합도가 맞지 않으면 매니저와 상의해 다른 선생님으로 조정할 수 있습니다.",
-  },
-  {
-    q: "환불 정책이 어떻게 되나요?",
-    a: "개강 전 취소는 전액 환불되며, 개강 후에는 이용한 수업 횟수를 제외하고 정산합니다.",
   },
 ];
 
@@ -245,7 +226,6 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const cmsTestimonials =
     cms && cms.testimonials.length > 0 ? cms.testimonials : testimonials;
   const homeTestimonials = cmsTestimonials.slice(0, HOME_TESTIMONIAL_PREVIEW);
-  const cmsFaqs = cms && cms.faqs.length > 0 ? cms.faqs : faqs;
   const cmsSteps = steps.map((step, index) => {
     const stepNumber = index + 1;
     return {
@@ -577,18 +557,18 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                     </button>
                   ))}
                 </div>
-                <div className="grid items-stretch gap-6 md:grid-cols-2">
-                  {HOME_PRICING_PLANS.map((plan, index) => (
-                    <PricingPlanCard key={plan.id} plan={plan} active={priceTab === index} />
-                  ))}
-                </div>
+                <PricingPlansGrid
+                  items={HOME_PRICING_PLANS.map((plan) => ({ plan }))}
+                  variant="home"
+                  activeIndex={priceTab}
+                />
               </div>
             </div>
             <FloatingConsultationCue
               scrollTargetId="consultation"
               showChevron
               revealOnScroll
-              className="relative z-10 -mb-2 py-8 md:py-10"
+              className="relative z-10 pt-14 pb-2 md:pt-20 md:pb-4"
             />
           </div>
         </section>
@@ -651,24 +631,6 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-                {/* ═══ FAQ ═════════════════════════════════════ */}
-        <section id="faq" className="bg-neutral-80 py-20 text-white md:py-28">
-          <div className="mx-auto max-w-[900px] px-5">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
-            <h2 className="mt-4 text-[clamp(2rem,4vw,3rem)] font-black text-white">자주 묻는 질문</h2>
-            <div className="mt-10 divide-y divide-white/10">
-              {cmsFaqs.map(({ q, a }) => (
-                <div key={q} className="py-7">
-                  <p className="text-base font-black text-white md:text-lg">Q. {q}</p>
-                  <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-30 md:text-base">
-                    A. {a}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ═══ FOOTER ══════════════════════════════════ */}
         <footer className="border-t border-neutral-20 bg-neutral-10">
           <div className="mx-auto max-w-[1200px] px-5 py-16">
@@ -698,6 +660,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   <p className="font-black text-neutral-100">서비스</p>
                   <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
+                  <Link href="/faq"                    className="block transition hover:text-primary">FAQ</Link>
                   <Link href="/dashboard/consultation" className="block transition hover:text-primary">상담 신청</Link>
                 </div>
                 <div className="space-y-3">

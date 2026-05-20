@@ -1,7 +1,7 @@
 "use client";
 
-import { PricingPlanCard } from "@/components/pricing/PricingPlanCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
+import { PricingPlansGrid, type PricingPlanItem } from "@/components/pricing/PricingPlansGrid";
 import { getCmsSectionValue, parseMultilineList } from "@/lib/cms-page-defaults";
 import { formatPlanPrice, PRICING_PLANS } from "@/lib/pricing-plans";
 
@@ -59,7 +59,7 @@ export function PricingContent({
     },
   };
 
-  const plans = PRICING_PLANS.map((plan) => {
+  const planItems: PricingPlanItem[] = PRICING_PLANS.map((plan) => {
     const override = cmsPlanOverrides[plan.id];
     const cmsPrice =
       plan.id === "4-1"
@@ -109,21 +109,13 @@ export function PricingContent({
           주 1회(월 4회) · 회당 10만원 / 주 2회 이상(월 8회) · 회당 9만원
         </p>
 
-        <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {plans.map((item) => (
-            <PricingPlanCard
-              key={item.plan.id}
-              plan={item.plan}
-              title={item.title}
-              subtitle={item.subtitle}
-              price={item.price}
-              features={item.features}
-              active
-            />
-          ))}
-        </div>
+        <PricingPlansGrid items={planItems} variant="page" />
 
-        <FloatingConsultationCue showChevron revealOnScroll className="py-10 md:py-14" />
+        <FloatingConsultationCue
+          showChevron
+          revealOnScroll
+          className="pt-14 pb-4 md:pt-20 md:pb-6"
+        />
       </div>
 
       <section className="mx-auto max-w-[1200px] px-5 pb-16 md:pb-24">
