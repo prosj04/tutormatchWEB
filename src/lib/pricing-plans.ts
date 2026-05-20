@@ -116,3 +116,41 @@ export const PRICING_PLANS: PricingPlanDefinition[] = [
     recommended: true,
   },
 ];
+
+/** CMS 박스 1–6 과 동일 순서로 노출되는 결제 플랜 (5·6은 기본 비노출, 문구만 커스텀 가능) */
+export const PRICING_PLAN_SLOTS: PricingPlanDefinition[] = [
+  ...PRICING_PLANS,
+  {
+    id: "box-5",
+    sessions: 4,
+    subjects: 2,
+    title: "월 4회",
+    subtitle: "2과목 · 주 1회 (추가)",
+    features: [
+      "과목별 주 1회 수업 (50분)",
+      "선생님 2명 배정",
+      "학습 진도·과제 관리",
+      "AI 질답 이용 가능",
+    ],
+    recommended: false,
+  },
+  {
+    id: "box-6",
+    sessions: 8,
+    subjects: 2,
+    title: "월 8회",
+    subtitle: "2과목 · 주 2회 (추가)",
+    features: [
+      "과목별 주 2회 수업 (50분)",
+      "선생님 2명 배정",
+      "학습 진도·과제 관리",
+      "AI 질답 횟수 2배 제공",
+    ],
+    recommended: false,
+  },
+];
+
+/** 홈 우측 열에서는 1과목 카드만 (박스 1–2에 해당할 때까지 사용) */
+export function isHomePricingOneSubject(plan: PricingPlanDefinition): boolean {
+  return plan.subjects === 1;
+}

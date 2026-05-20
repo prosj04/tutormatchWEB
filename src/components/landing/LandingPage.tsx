@@ -9,6 +9,7 @@ import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultati
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
+import { isHomePricingOneSubject } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -17,6 +18,9 @@ const DEFAULT_RESULT_IMAGES = [
   "/images/teachers/default-male.png",
   "/images/teachers/default-female.png",
   "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
+  "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
 ];
 
 /* ─────────────────────────────────────────── data ── */
@@ -73,6 +77,20 @@ const teachers = [
     highlight: "지문을 읽는 규칙을 훈련합니다",
     careers: ["서울대학교 국어국문학과", "논술 전문 프라이빗", "내신 국어 맞춤 관리"],
   },
+  {
+    subject: "화학",
+    name: "Teacher Quinn",
+    image: "/images/teachers/default-male.png",
+    highlight: "개념 연결도를 먼저 그립니다",
+    careers: ["서울대학교 화학부", "수능 화학 6년", "실험·서술형 병행"],
+  },
+  {
+    subject: "생명",
+    name: "Teacher Rachel",
+    image: "/images/teachers/default-female.png",
+    highlight: "암기를 줄이고 흐름으로 기억하게 합니다",
+    careers: ["연세대학교 생화학", "수능 생명 5년", "diagram 정리 전문"],
+  },
 ];
 
 const steps = [
@@ -105,6 +123,12 @@ const steps = [
     title: "학습 리포트 & 관리",
     desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.",
     img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=840&h=380&fit=crop&q=80",
+  },
+  {
+    number: "06",
+    title: "",
+    desc: "",
+    img: "",
   },
 ];
 
@@ -179,7 +203,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
   const homePricingItems = useMemo(
     () =>
-      buildVisiblePricingPlanItems(cms?.siteContent).filter((item) => item.plan.subjects === 1),
+      buildVisiblePricingPlanItems(cms?.siteContent).filter((item) => isHomePricingOneSubject(item.plan)),
     [cms?.siteContent],
   );
 
@@ -190,20 +214,26 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
     });
   }, [homePricingItems.length]);
 
-  const cmsResults = results.map(([student, before, after], index) => {
+  const cmsResults = results.flatMap(([student, before, after], index) => {
     const itemNumber = index + 1;
-    return {
-      student: getCmsValue("results", `result${itemNumber}_student`, student),
-      before: getCmsValue("results", `result${itemNumber}_before`, before),
-      after: getCmsValue("results", `result${itemNumber}_after`, after),
-      image: getCmsValue(
-        "results",
-        `result${itemNumber}_image`,
-        DEFAULT_RESULT_IMAGES[index] ?? DEFAULT_RESULT_IMAGES[0],
-      ),
-    };
+    const vis = getCmsValue("results", `result${itemNumber}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) {
+      return [];
+    }
+    return [
+      {
+        student: getCmsValue("results", `result${itemNumber}_student`, student),
+        before: getCmsValue("results", `result${itemNumber}_before`, before),
+        after: getCmsValue("results", `result${itemNumber}_after`, after),
+        image: getCmsValue(
+          "results",
+          `result${itemNumber}_image`,
+          DEFAULT_RESULT_IMAGES[index] ?? DEFAULT_RESULT_IMAGES[0],
+        ),
+      },
+    ];
   });
-  const doubledResults = [...cmsResults, ...cmsResults];
+  const doubledResults = cmsResults.length > 0 ? [...cmsResults, ...cmsResults] : [];
   const cmsTeachers = teachers.flatMap((teacher, index) => {
     const itemNumber = index + 1;
     const visFlag = getCmsValue("teachers", `teacher${itemNumber}_visible`, "1");
@@ -247,14 +277,86 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const cmsTestimonials =
     cms && cms.testimonials.length > 0 ? cms.testimonials : testimonials;
   const homeTestimonials = cmsTestimonials.slice(0, HOME_TESTIMONIAL_PREVIEW);
-  const cmsSteps = steps.map((step, index) => {
+  const cmsSteps = steps.flatMap((step, index) => {
     const stepNumber = index + 1;
-    return {
-      ...step,
-      title: getCmsValue("features", `step${stepNumber}_title`, step.title),
-      desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
-      img: getCmsValue("features", `step${stepNumber}_image`, step.img),
+    const vis = getCmsValue("features", `step${stepNumber}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, stepNumber <= 5)) {
+      return [];
+    }
+    return [
+      {
+        ...step,
+        title: getCmsValue("features", `step${stepNumber}_title`, step.title),
+        desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
+        img: getCmsValue("features", `step${stepNumber}_image`, step.img) || step.img || steps[0]!.img,
+      },
+    ];
+  });
+
+  const managementItems = [1, 2, 3, 4, 5, 6].flatMap((n) => {
+    const vis = getCmsValue("management", `item${n}_visible`, n <= 3 ? "1" : "0");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, n <= 3)) {
+      return [];
+    }
+    const defaults: Record<number, { label: string; desc: string }> = {
+      1: {
+        label: "진도 관리",
+        desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다.",
+      },
+      2: {
+        label: "질문 관리",
+        desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다.",
+      },
+      3: {
+        label: "리포트",
+        desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다.",
+      },
     };
+    const d = defaults[n] ?? { label: "", desc: "" };
+    return [
+      {
+        label: getCmsValue("management", `item${n}_title`, d.label),
+        desc: getCmsValue("management", `item${n}_desc`, d.desc),
+      },
+    ];
+  });
+
+  const ctaBenefitDefaults: { title: string; desc: string; detail: string }[] = [
+    {
+      title: "무료 상담 1회",
+      desc: "매니저가 직접 학생 상황을 파악합니다.",
+      detail: "현재 성적·목표·일정을 함께 정리하고, 가장 현실적인 학습 방향을 제안해 드립니다.",
+    },
+    {
+      title: "매니저 직접 배정",
+      desc: "전문 매니저가 처음부터 함께합니다.",
+      detail: "수업 외에도 진도·숙제·질문을 챙기며 학부모님께도 정기적으로 공유합니다.",
+    },
+    {
+      title: "학습 리포트 무료",
+      desc: "첫 달 학습 리포트를 무료로 제공합니다.",
+      detail: "출결, 과제 수행률, 취약 단원을 한눈에 볼 수 있는 리포트를 받아보세요.",
+    },
+    {
+      title: "맞춤 강사 매칭",
+      desc: "성향과 목표에 맞는 선생님을 연결합니다.",
+      detail: "무작위 배정이 아니라 상담 내용을 바탕으로 후보를 추천하고 일정까지 조율합니다.",
+    },
+    { title: "", desc: "", detail: "" },
+    { title: "", desc: "", detail: "" },
+  ];
+
+  const ctaBenefitCards = [1, 2, 3, 4, 5, 6].flatMap((n) => {
+    const vis = getCmsValue("cta", `cta_box_${n}_visible`, n <= 4 ? "1" : "0");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, n <= 4)) {
+      return [];
+    }
+    const def = ctaBenefitDefaults[n - 1]!;
+    const title = getCmsValue("cta", `cta_box_${n}_title`, def.title);
+    const desc = getCmsValue("cta", `cta_box_${n}_desc`, def.desc);
+    const detail = getCmsValue("cta", `cta_box_${n}_detail`, def.detail);
+    if (!title.trim()) return [];
+    return [{ slot: n, title, desc, detail }];
   });
   const heroBgImage = getCmsValue("hero", "bg_image_url", "");
   const heroStyle = heroBgImage
@@ -473,23 +575,10 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   {getCmsValue("management", "subtext", "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.")}
                 </p>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                {[
-                  {
-                    label: getCmsValue("management", "item1_title", "진도 관리"),
-                    desc: getCmsValue("management", "item1_desc", "주간 진도와 목표 달성률을 매니저·가정과 공유합니다."),
-                  },
-                  {
-                    label: getCmsValue("management", "item2_title", "질문 관리"),
-                    desc: getCmsValue("management", "item2_desc", "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다."),
-                  },
-                  {
-                    label: getCmsValue("management", "item3_title", "리포트"),
-                    desc: getCmsValue("management", "item3_desc", "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다."),
-                  },
-                ].map((item, index) => (
-                  <div key={item.label} className="rounded-[20px] bg-neutral-10 p-6">
-                    <p className="text-3xl font-black text-primary">0{index + 1}</p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {managementItems.map((item, index) => (
+                  <div key={`${item.label}-${index}`} className="rounded-[20px] bg-neutral-10 p-6">
+                    <p className="text-3xl font-black text-primary">{String(index + 1).padStart(2, "0")}</p>
                     <h3 className="mt-5 text-base font-black text-neutral-100">{item.label}</h3>
                     <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{item.desc}</p>
                   </div>
@@ -614,31 +703,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-white/85">
               {getCmsValue("cta", "subtext", "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
             </p>
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 md:mt-14 md:gap-6">
-              {[
-                {
-                  title: "무료 상담 1회",
-                  desc: "매니저가 직접 학생 상황을 파악합니다.",
-                  detail: "현재 성적·목표·일정을 함께 정리하고, 가장 현실적인 학습 방향을 제안해 드립니다.",
-                },
-                {
-                  title: "매니저 직접 배정",
-                  desc: "전문 매니저가 처음부터 함께합니다.",
-                  detail: "수업 외에도 진도·숙제·질문을 챙기며 학부모님께도 정기적으로 공유합니다.",
-                },
-                {
-                  title: "학습 리포트 무료",
-                  desc: "첫 달 학습 리포트를 무료로 제공합니다.",
-                  detail: "출결, 과제 수행률, 취약 단원을 한눈에 볼 수 있는 리포트를 받아보세요.",
-                },
-                {
-                  title: "맞춤 강사 매칭",
-                  desc: "성향과 목표에 맞는 선생님을 연결합니다.",
-                  detail: "무작위 배정이 아니라 상담 내용을 바탕으로 후보를 추천하고 일정까지 조율합니다.",
-                },
-              ].map((b) => (
+            <div
+              className={`mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 md:gap-6 ${
+                ctaBenefitCards.length > 4 ? "lg:grid-cols-3 xl:grid-cols-6" : "lg:grid-cols-4"
+              }`}
+            >
+              {ctaBenefitCards.map((b) => (
                 <div
-                  key={b.title}
+                  key={b.slot}
                   className="flex min-h-[200px] flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-7 backdrop-blur-sm md:min-h-[220px] md:p-8"
                 >
                   <p className="text-lg font-black text-white">{b.title}</p>

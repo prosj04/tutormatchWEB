@@ -18,15 +18,16 @@ import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CmsCardBox, CmsCardBoxGrid } from "@/components/admin/CmsCardBox";
 import { CmsPublicTeachersPanel } from "@/components/admin/CmsPublicTeachersPanel";
 import {
+  CMS_MANAGED_CARD_SLOT_COUNT,
   extraPublicPagesDefaults,
   portalPagesDefaults,
   portalPagesFieldLabels,
-  pricingPlanFieldKey,
+  pricingBoxFieldKey,
 } from "@/lib/cms-page-defaults";
-import { ADMIN_PRICING_PLAN_SUMMARY_LABEL } from "@/lib/pricing-cms";
-import { PRICING_PLANS, formatPlanPrice } from "@/lib/pricing-plans";
+import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
@@ -117,6 +118,24 @@ const resultDefaults = [
     after: "78점으로 상승",
     image: "/images/teachers/default-male.png",
   },
+  {
+    student: "중2 학생",
+    before: "수학 85점→",
+    after: "100점으로 상승",
+    image: "/images/teachers/default-female.png",
+  },
+  {
+    student: "고3 학생",
+    before: "영어 5등급→",
+    after: "3등급으로 상승",
+    image: "/images/teachers/default-male.png",
+  },
+  {
+    student: "고1 학생",
+    before: "수학 69점→",
+    after: "92점으로 상승",
+    image: "/images/teachers/default-female.png",
+  },
 ];
 
 const teacherDefaults = [
@@ -148,6 +167,20 @@ const teacherDefaults = [
     highlight: "지문을 읽는 규칙을 훈련합니다",
     careers: "서울대학교 국어국문학과\n논술 전문 프라이빗\n내신 국어 맞춤 관리",
   },
+  {
+    subject: "화학",
+    name: "Teacher Quinn",
+    image: "/images/teachers/default-male.png",
+    highlight: "개념 연결도를 먼저 그립니다",
+    careers: "서울대학교 화학부\n수능 화학 6년\n실험·서술형 병행",
+  },
+  {
+    subject: "생명",
+    name: "Teacher Rachel",
+    image: "/images/teachers/default-female.png",
+    highlight: "암기를 줄이고 흐름으로 기억하게 합니다",
+    careers: "연세대학교 생화학\n수능 생명 5년\ndiagram 정리 전문",
+  },
 ];
 
 const stepDefaults = [
@@ -176,9 +209,14 @@ const stepDefaults = [
     desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=840&h=380&fit=crop&q=80",
   },
+  {
+    title: "",
+    desc: "",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=840&h=380&fit=crop&q=80",
+  },
 ];
 
-const managementFields: TextFieldConfig[] = [
+const managementHeaderFields: TextFieldConfig[] = [
   {
     label: "제목",
     section: "management",
@@ -195,34 +233,36 @@ const managementFields: TextFieldConfig[] = [
     kind: "textarea",
     rows: 2,
   },
-  { label: "관리 카드 1 제목", section: "management", keyName: "item1_title", defaultValue: "진도 관리" },
-  {
-    label: "관리 카드 1 설명",
-    section: "management",
-    keyName: "item1_desc",
-    defaultValue: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다.",
-    kind: "textarea",
-    rows: 2,
-  },
-  { label: "관리 카드 2 제목", section: "management", keyName: "item2_title", defaultValue: "질문 관리" },
-  {
-    label: "관리 카드 2 설명",
-    section: "management",
-    keyName: "item2_desc",
-    defaultValue: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다.",
-    kind: "textarea",
-    rows: 2,
-  },
-  { label: "관리 카드 3 제목", section: "management", keyName: "item3_title", defaultValue: "리포트" },
-  {
-    label: "관리 카드 3 설명",
-    section: "management",
-    keyName: "item3_desc",
-    defaultValue: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다.",
-    kind: "textarea",
-    rows: 2,
-  },
 ];
+
+/** 학습 관리 섹션 박스 1–6 제목·설명 (표시 여부는 CmsCardBox 체크박스) */
+function managementSlotFields(boxIndex: number): TextFieldConfig[] {
+  const defaults = [
+    { title: "진도 관리", desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다." },
+    { title: "질문 관리", desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다." },
+    { title: "리포트", desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다." },
+    { title: "", desc: "" },
+    { title: "", desc: "" },
+    { title: "", desc: "" },
+  ];
+  const d = defaults[boxIndex - 1] ?? { title: "", desc: "" };
+  return [
+    {
+      label: "카드 제목",
+      section: "management",
+      keyName: `item${boxIndex}_title`,
+      defaultValue: d.title,
+    },
+    {
+      label: "카드 설명",
+      section: "management",
+      keyName: `item${boxIndex}_desc`,
+      defaultValue: d.desc,
+      kind: "textarea",
+      rows: 2,
+    },
+  ];
+}
 
 const AUTOSAVE_DELAY_MS = 10_000;
 
@@ -246,43 +286,90 @@ const pricingHeaderFields: TextFieldConfig[] = [
   },
 ];
 
-const pricingPlanCardFieldsAll: TextFieldConfig[] = PRICING_PLANS.flatMap((plan) => {
-  const sum = ADMIN_PRICING_PLAN_SUMMARY_LABEL[plan.id] ?? plan.id;
+function pricingSlotInnerFields(boxIndex: number): TextFieldConfig[] {
+  const plan = PRICING_PLAN_SLOTS[boxIndex - 1]!;
   return [
     {
-      label: `${sum} · 표시 (1=표시, 0=숨김)`,
+      label: "제목",
       section: "pricing_page",
-      keyName: pricingPlanFieldKey(plan.id, "visible"),
-      defaultValue: "1",
-    },
-    {
-      label: `${sum} · 제목`,
-      section: "pricing_page",
-      keyName: pricingPlanFieldKey(plan.id, "title"),
+      keyName: pricingBoxFieldKey(boxIndex, "title"),
       defaultValue: plan.title,
     },
     {
-      label: `${sum} · 부제`,
+      label: "부제",
       section: "pricing_page",
-      keyName: pricingPlanFieldKey(plan.id, "subtitle"),
+      keyName: pricingBoxFieldKey(boxIndex, "subtitle"),
       defaultValue: plan.subtitle,
     },
     {
-      label: `${sum} · 표시 가격`,
+      label: "표시 가격",
       section: "pricing_page",
-      keyName: pricingPlanFieldKey(plan.id, "price"),
+      keyName: pricingBoxFieldKey(boxIndex, "price"),
       defaultValue: formatPlanPrice(plan.sessions, plan.subjects),
     },
     {
-      label: `${sum} · 혜택 (줄바꿈으로 구분)`,
+      label: "혜택 (줄바꿈으로 구분)",
       section: "pricing_page",
-      keyName: pricingPlanFieldKey(plan.id, "features"),
+      keyName: pricingBoxFieldKey(boxIndex, "features"),
       defaultValue: plan.features.join("\n"),
       kind: "textarea",
       rows: 6,
     },
   ];
-});
+}
+
+function ctaBenefitSlotInnerFields(boxIndex: number): TextFieldConfig[] {
+  const defaults: { title: string; desc: string; detail: string }[] = [
+    {
+      title: "무료 상담 1회",
+      desc: "매니저가 직접 학생 상황을 파악합니다.",
+      detail:
+        "현재 성적·목표·일정을 함께 정리하고, 가장 현실적인 학습 방향을 제안해 드립니다.",
+    },
+    {
+      title: "매니저 직접 배정",
+      desc: "전문 매니저가 처음부터 함께합니다.",
+      detail: "수업 외에도 진도·숙제·질문을 챙기며 학부모님께도 정기적으로 공유합니다.",
+    },
+    {
+      title: "학습 리포트 무료",
+      desc: "첫 달 학습 리포트를 무료로 제공합니다.",
+      detail: "출결, 과제 수행률, 취약 단원을 한눈에 볼 수 있는 리포트를 받아보세요.",
+    },
+    {
+      title: "맞춤 강사 매칭",
+      desc: "성향과 목표에 맞는 선생님을 연결합니다.",
+      detail: "무작위 배정이 아니라 상담 내용을 바탕으로 후보를 추천하고 일정까지 조율합니다.",
+    },
+    { title: "", desc: "", detail: "" },
+    { title: "", desc: "", detail: "" },
+  ];
+  const d = defaults[boxIndex - 1] ?? { title: "", desc: "", detail: "" };
+  return [
+    {
+      label: "카드 제목",
+      section: "cta",
+      keyName: `cta_box_${boxIndex}_title`,
+      defaultValue: d.title,
+    },
+    {
+      label: "카드 부제·강조",
+      section: "cta",
+      keyName: `cta_box_${boxIndex}_desc`,
+      defaultValue: d.desc,
+      kind: "textarea",
+      rows: 2,
+    },
+    {
+      label: "상세 안내",
+      section: "cta",
+      keyName: `cta_box_${boxIndex}_detail`,
+      defaultValue: d.detail,
+      kind: "textarea",
+      rows: 3,
+    },
+  ];
+}
 
 const pricingFaqFields: TextFieldConfig[] = [
   { label: "FAQ 섹션 제목", section: "pricing_page", keyName: "faq_title", defaultValue: "자주 묻는 질문" },
@@ -354,12 +441,6 @@ const pricingFaqFields: TextFieldConfig[] = [
     kind: "textarea",
     rows: 3,
   },
-];
-
-const pricingPageFields: TextFieldConfig[] = [
-  ...pricingHeaderFields,
-  ...pricingPlanCardFieldsAll,
-  ...pricingFaqFields,
 ];
 
 const tutorsPageFields: TextFieldConfig[] = [
@@ -778,7 +859,7 @@ export function AdminCmsPage() {
                 value={getValue("results", "section_title", "결과로 증명합니다")}
                 onSave={patchContent}
               />
-              <div className="grid gap-4 md:grid-cols-3">
+              <CmsCardBoxGrid>
                 {resultDefaults.map((result, index) => {
                   const number = index + 1;
                   const fields: TextFieldConfig[] = [
@@ -802,34 +883,38 @@ export function AdminCmsPage() {
                     },
                   ];
                   return (
-                    <div key={number} className="rounded-2xl bg-background p-4">
-                      <p className="mb-3 text-sm font-black text-primary">결과 {number}</p>
-                      <div className="grid gap-4">
-                        <ImageField
-                          field={{
-                            label: "카드 상단 이미지",
-                            section: "results",
-                            keyName: `result${number}_image`,
-                            defaultValue: result.image,
-                          }}
-                          value={getValue("results", `result${number}_image`, result.image)}
-                          onSave={patchContent}
-                        />
-                        <div className="space-y-3">
-                          {fields.map((field) => (
-                            <ContentField
-                              key={field.keyName}
-                              field={field}
-                              value={getValue(field.section, field.keyName, field.defaultValue)}
-                              onSave={patchContent}
-                            />
-                          ))}
-                        </div>
+                    <CmsCardBox
+                      key={number}
+                      label={`결과 카드 박스 ${number}`}
+                      section="results"
+                      visibilityKey={`result${number}_visible`}
+                      getValue={getValue}
+                      onToggleVisible={patchContent}
+                    >
+                      <ImageField
+                        field={{
+                          label: "카드 상단 이미지",
+                          section: "results",
+                          keyName: `result${number}_image`,
+                          defaultValue: result.image,
+                        }}
+                        value={getValue("results", `result${number}_image`, result.image)}
+                        onSave={patchContent}
+                      />
+                      <div className="space-y-3">
+                        {fields.map((field) => (
+                          <ContentField
+                            key={field.keyName}
+                            field={field}
+                            value={getValue(field.section, field.keyName, field.defaultValue)}
+                            onSave={patchContent}
+                          />
+                        ))}
                       </div>
-                    </div>
+                    </CmsCardBox>
                   );
                 })}
-              </div>
+              </CmsCardBoxGrid>
             </div>
           </EditorSection>
 
@@ -860,7 +945,7 @@ export function AdminCmsPage() {
 
           <EditorSection eyebrow="TEACHERS" title="선생님 카드">
             <p className="mb-4 text-sm text-text-secondary">
-              홈 「선생님」 섹션 가로 스크롤 카드 4장입니다. 표시를 0으로 두면 해당 카드만 홈에서 숨겨집니다.
+              홈 「선생님」 섹션 스크롤 카드입니다. 박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}까지 편집할 수 있으며, 체크를 끄면 해당 카드만 숨길 수 있습니다.
             </p>
             <div className="grid gap-4">
               <ContentField
@@ -887,7 +972,7 @@ export function AdminCmsPage() {
                 value={getValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
                 onSave={patchContent}
               />
-              <div className="grid gap-4 xl:grid-cols-2">
+              <CmsCardBoxGrid>
                 {teacherDefaults.map((teacher, index) => (
                   <TeacherCardEditor
                     key={index}
@@ -897,13 +982,13 @@ export function AdminCmsPage() {
                     onSave={patchContent}
                   />
                 ))}
-              </div>
+              </CmsCardBoxGrid>
             </div>
           </EditorSection>
 
           <EditorSection eyebrow="LEARNING CARE" title="학습 관리">
             <div className="grid gap-4 lg:grid-cols-2">
-              {managementFields.map((field) => (
+              {managementHeaderFields.map((field) => (
                 <ContentField
                   key={`${field.section}-${field.keyName}`}
                   field={field}
@@ -912,10 +997,34 @@ export function AdminCmsPage() {
                 />
               ))}
             </div>
+            <div className="mt-6">
+              <CmsCardBoxGrid>
+                {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
+                  <CmsCardBox
+                    key={slot}
+                    label={`학습 관리 카드 박스 ${slot}`}
+                    section="management"
+                    visibilityKey={`item${slot}_visible`}
+                    visibilityDefault={slot <= 3 ? "1" : "0"}
+                    getValue={getValue}
+                    onToggleVisible={patchContent}
+                  >
+                    {managementSlotFields(slot).map((field) => (
+                      <ContentField
+                        key={`${field.section}-${field.keyName}`}
+                        field={field}
+                        value={getValue(field.section, field.keyName, field.defaultValue)}
+                        onSave={patchContent}
+                      />
+                    ))}
+                  </CmsCardBox>
+                ))}
+              </CmsCardBoxGrid>
+            </div>
           </EditorSection>
 
           <EditorSection eyebrow="PROCESS" title="진행 방식">
-            <div className="grid gap-4">
+            <div className="grid gap-4 lg:grid-cols-2">
               <ContentField
                 field={{
                   label: "섹션 제목",
@@ -938,11 +1047,13 @@ export function AdminCmsPage() {
                 value={getValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
                 onSave={patchContent}
               />
-              <div className="grid gap-4 xl:grid-cols-2">
+            </div>
+            <div className="mt-6">
+              <CmsCardBoxGrid>
                 {stepDefaults.map((step, index) => (
                   <StepEditor key={index} index={index} defaults={step} getValue={getValue} onSave={patchContent} />
                 ))}
-              </div>
+              </CmsCardBoxGrid>
             </div>
           </EditorSection>
 
@@ -956,6 +1067,33 @@ export function AdminCmsPage() {
                   onSave={patchContent}
                 />
               ))}
+            </div>
+            <div className="mt-6">
+              <p className="mb-4 text-sm text-text-secondary">
+                네온 카드 형태 혜택 박스입니다. 필요하면 박스 5~6을 켠 뒤 제목부터 채우면 홈에 반영됩니다.
+              </p>
+              <CmsCardBoxGrid>
+                {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
+                  <CmsCardBox
+                    key={slot}
+                    label={`혜택 카드 박스 ${slot}`}
+                    section="cta"
+                    visibilityKey={`cta_box_${slot}_visible`}
+                    visibilityDefault={slot <= 4 ? "1" : "0"}
+                    getValue={getValue}
+                    onToggleVisible={patchContent}
+                  >
+                    {ctaBenefitSlotInnerFields(slot).map((field) => (
+                      <ContentField
+                        key={`${field.section}-${field.keyName}`}
+                        field={field}
+                        value={getValue(field.section, field.keyName, field.defaultValue)}
+                        onSave={patchContent}
+                      />
+                    ))}
+                  </CmsCardBox>
+                ))}
+              </CmsCardBoxGrid>
             </div>
           </EditorSection>
 
@@ -984,11 +1122,45 @@ export function AdminCmsPage() {
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
               <p className="mb-5 text-sm text-text-secondary">
-                네 가지 요금 카드(1·2과목 × 월 4·8회)를 각각 편집합니다. 표시를 0으로 두면 `/pricing` 과 홈 요금제 블록 모두에서 해당 카드가 빠집니다. 예전에 저장된
-                plan4_/plan8_ 값은 새 필드가 비어 있을 때만 예비로 사용됩니다.
+                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 박스 1~4는 기본 표시, 5~6은 필요할 때만 켜면 `/pricing` 과 홈 요금제 블록에 같이
+                반영됩니다. 빈 칸은 기본 요금·혜택 텍스트로 채워집니다. 예전 plan4_/plan8_ 값은 새 필드가 비었을 때만 보조로 사용됩니다.
               </p>
               <div className="grid gap-4 lg:grid-cols-2">
-                {pricingPageFields.map((field) => (
+                {pricingHeaderFields.map((field) => (
+                  <ContentField
+                    key={`${field.section}-${field.keyName}`}
+                    field={field}
+                    value={getValue(field.section, field.keyName, field.defaultValue)}
+                    onSave={patchContent}
+                  />
+                ))}
+              </div>
+              <div className="mt-6">
+                <CmsCardBoxGrid>
+                  {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
+                    <CmsCardBox
+                      key={slot}
+                      label={`요금 카드 박스 ${slot}`}
+                      section="pricing_page"
+                      visibilityKey={pricingBoxFieldKey(slot, "visible")}
+                      visibilityDefault={slot <= 4 ? "1" : "0"}
+                      getValue={getValue}
+                      onToggleVisible={patchContent}
+                    >
+                      {pricingSlotInnerFields(slot).map((field) => (
+                        <ContentField
+                          key={`${field.section}-${field.keyName}`}
+                          field={field}
+                          value={getValue(field.section, field.keyName, field.defaultValue)}
+                          onSave={patchContent}
+                        />
+                      ))}
+                    </CmsCardBox>
+                  ))}
+                </CmsCardBoxGrid>
+              </div>
+              <div className="mt-8 grid gap-4 lg:grid-cols-2">
+                {pricingFaqFields.map((field) => (
                   <ContentField
                     key={`${field.section}-${field.keyName}`}
                     field={field}
@@ -1435,12 +1607,6 @@ function TeacherCardEditor({
 }) {
   const number = index + 1;
   const textFields: TextFieldConfig[] = [
-    {
-      label: "홈 강사 카드 표시 (1=표시, 0=숨김)",
-      section: "teachers",
-      keyName: `teacher${number}_visible`,
-      defaultValue: "1",
-    },
     { label: "과목", section: "teachers", keyName: `teacher${number}_subject`, defaultValue: defaults.subject },
     { label: "이름", section: "teachers", keyName: `teacher${number}_name`, defaultValue: defaults.name },
     {
@@ -1462,9 +1628,15 @@ function TeacherCardEditor({
   ];
 
   return (
-    <div className="rounded-2xl bg-background p-4">
-      <p className="mb-4 text-sm font-black text-primary">선생님 {number}</p>
-      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+    <CmsCardBox
+      label={`선생님 카드 박스 ${number}`}
+      section="teachers"
+      visibilityKey={`teacher${number}_visible`}
+      visibilityDefault={number <= 4 ? "1" : "0"}
+      getValue={getValue}
+      onToggleVisible={onSave}
+    >
+      <div className="grid gap-4">
         <ImageField
           field={{
             label: "프로필 이미지",
@@ -1486,7 +1658,7 @@ function TeacherCardEditor({
           ))}
         </div>
       </div>
-    </div>
+    </CmsCardBox>
   );
 }
 
@@ -1503,9 +1675,15 @@ function StepEditor({
 }) {
   const number = index + 1;
   return (
-    <div className="rounded-2xl bg-background p-4">
-      <p className="mb-4 text-sm font-black text-primary">STEP {number}</p>
-      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+    <CmsCardBox
+      label={`진행 단계 카드 박스 ${number}`}
+      section="features"
+      visibilityKey={`step${number}_visible`}
+      visibilityDefault={number <= 5 ? "1" : "0"}
+      getValue={getValue}
+      onToggleVisible={onSave}
+    >
+      <div className="grid gap-4">
         <ImageField
           field={{
             label: "단계 이미지",
@@ -1541,7 +1719,7 @@ function StepEditor({
           />
         </div>
       </div>
-    </div>
+    </CmsCardBox>
   );
 }
 

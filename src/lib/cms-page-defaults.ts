@@ -1,6 +1,17 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
-import { PRICING_PLANS, formatPlanPrice } from "@/lib/pricing-plans";
+import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
+
+/** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 */
+export const CMS_MANAGED_CARD_SLOT_COUNT = 6;
+
+/** 예: 요금제 CMS 박스 3 → pricing_box_3_title */
+export function pricingBoxFieldKey(
+  boxIndex1Based: number,
+  field: "title" | "subtitle" | "price" | "features" | "visible",
+): string {
+  return `pricing_box_${boxIndex1Based}_${field}`;
+}
 
 /** 예: 요금 플랜 id "8-2" → plan_8_2_title */
 export function pricingPlanFieldKey(
@@ -18,40 +29,40 @@ export function parseCmsVisibility(raw: string | undefined, defaultVisible = tru
   return true;
 }
 
-function pricingCardRows(plan: (typeof PRICING_PLANS)[number], orderStart: number) {
+function pricingBoxRowsForSlot(boxIndex: number, plan: (typeof PRICING_PLAN_SLOTS)[number], visibleDefault: string, orderStart: number) {
   const featuresText = plan.features.join("\n");
   return [
     {
       section: "pricing_page" as const,
-      key: pricingPlanFieldKey(plan.id, "visible"),
-      value: "1",
+      key: pricingBoxFieldKey(boxIndex, "visible"),
+      value: visibleDefault,
       type: "text" as const,
       order: orderStart,
     },
     {
       section: "pricing_page" as const,
-      key: pricingPlanFieldKey(plan.id, "title"),
+      key: pricingBoxFieldKey(boxIndex, "title"),
       value: plan.title,
       type: "text" as const,
       order: orderStart + 1,
     },
     {
       section: "pricing_page" as const,
-      key: pricingPlanFieldKey(plan.id, "subtitle"),
+      key: pricingBoxFieldKey(boxIndex, "subtitle"),
       value: plan.subtitle,
       type: "text" as const,
       order: orderStart + 2,
     },
     {
       section: "pricing_page" as const,
-      key: pricingPlanFieldKey(plan.id, "price"),
+      key: pricingBoxFieldKey(boxIndex, "price"),
       value: formatPlanPrice(plan.sessions, plan.subjects),
       type: "text" as const,
       order: orderStart + 3,
     },
     {
       section: "pricing_page" as const,
-      key: pricingPlanFieldKey(plan.id, "features"),
+      key: pricingBoxFieldKey(boxIndex, "features"),
       value: featuresText,
       type: "text" as const,
       order: orderStart + 4,
@@ -68,29 +79,59 @@ export const pricingPageDefaults = [
     type: "text",
     order: 2,
   },
-  ...pricingCardRows(PRICING_PLANS[0], 3),
-  ...pricingCardRows(PRICING_PLANS[1], 8),
-  ...pricingCardRows(PRICING_PLANS[2], 13),
-  ...pricingCardRows(PRICING_PLANS[3], 18),
+  ...pricingBoxRowsForSlot(1, PRICING_PLAN_SLOTS[0], "1", 3),
+  ...pricingBoxRowsForSlot(2, PRICING_PLAN_SLOTS[1], "1", 8),
+  ...pricingBoxRowsForSlot(3, PRICING_PLAN_SLOTS[2], "1", 13),
+  ...pricingBoxRowsForSlot(4, PRICING_PLAN_SLOTS[3], "1", 18),
+  ...pricingBoxRowsForSlot(5, PRICING_PLAN_SLOTS[4], "0", 23),
+  ...pricingBoxRowsForSlot(6, PRICING_PLAN_SLOTS[5], "0", 28),
 
-  /** 하위 호환: 과거 시드(plan4_/plan8_)가 있으면 buildVisiblePricingPlanItems에서 폴백 */
-  { section: "pricing_page", key: "plan4_title", value: PRICING_PLANS[0].title, type: "text", order: 100 },
+  /** 하위 호환: 구 plan id 키 + plan4_/plan8_ */
+  ...PRICING_PLAN_SLOTS.slice(0, 4).flatMap((plan, idx) => {
+    const orderStart = 90 + idx * 5;
+    return [
+      { section: "pricing_page", key: pricingPlanFieldKey(plan.id, "visible"), value: "1", type: "text" as const, order: orderStart },
+      { section: "pricing_page", key: pricingPlanFieldKey(plan.id, "title"), value: plan.title, type: "text" as const, order: orderStart + 1 },
+      {
+        section: "pricing_page",
+        key: pricingPlanFieldKey(plan.id, "subtitle"),
+        value: plan.subtitle,
+        type: "text",
+        order: orderStart + 2,
+      },
+      {
+        section: "pricing_page",
+        key: pricingPlanFieldKey(plan.id, "price"),
+        value: formatPlanPrice(plan.sessions, plan.subjects),
+        type: "text",
+        order: orderStart + 3,
+      },
+      {
+        section: "pricing_page",
+        key: pricingPlanFieldKey(plan.id, "features"),
+        value: plan.features.join("\n"),
+        type: "text",
+        order: orderStart + 4,
+      },
+    ];
+  }),
+  { section: "pricing_page", key: "plan4_title", value: PRICING_PLAN_SLOTS[0].title, type: "text", order: 100 },
   { section: "pricing_page", key: "plan4_price", value: formatPlanPrice(4, 1), type: "text", order: 101 },
-  { section: "pricing_page", key: "plan4_subtitle", value: PRICING_PLANS[0].subtitle, type: "text", order: 102 },
+  { section: "pricing_page", key: "plan4_subtitle", value: PRICING_PLAN_SLOTS[0].subtitle, type: "text", order: 102 },
   {
     section: "pricing_page",
     key: "plan4_features",
-    value: PRICING_PLANS[0].features.join("\n"),
+    value: PRICING_PLAN_SLOTS[0].features.join("\n"),
     type: "text",
     order: 103,
   },
-  { section: "pricing_page", key: "plan8_title", value: PRICING_PLANS[1].title, type: "text", order: 104 },
+  { section: "pricing_page", key: "plan8_title", value: PRICING_PLAN_SLOTS[1].title, type: "text", order: 104 },
   { section: "pricing_page", key: "plan8_price", value: formatPlanPrice(8, 1), type: "text", order: 105 },
-  { section: "pricing_page", key: "plan8_subtitle", value: PRICING_PLANS[1].subtitle, type: "text", order: 106 },
+  { section: "pricing_page", key: "plan8_subtitle", value: PRICING_PLAN_SLOTS[1].subtitle, type: "text", order: 106 },
   {
     section: "pricing_page",
     key: "plan8_features",
-    value: PRICING_PLANS[1].features.join("\n"),
+    value: PRICING_PLAN_SLOTS[1].features.join("\n"),
     type: "text",
     order: 107,
   },
