@@ -1,0 +1,6 @@
+# 로컬 시크릿은 절대 CLI 업로드 제외 (.env가 빌드 로그에 잡히면 유출 위험)
+.env
+.env.*
+!.env.example
+node_modules
+.git
