@@ -1,7 +1,9 @@
 /**
  * 서울(신) DB 샘플 데이터 — 관리자·매니저·선생님·학생
  * 실행: npm run seed:sample
- * 로그인 비밀번호(공통): Sample1234!
+ *
+ * 표시: 이름 앞 [sample]
+ * 비밀번호: 학생·선생님 11111111 / 관리자·매니저 Sample1234! (별도)
  */
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -14,19 +16,26 @@ import {
 
 const prisma = new PrismaClient();
 
-const SAMPLE_PASSWORD = "Sample1234!";
+const SAMPLE_PREFIX = "[sample]";
+const PORTAL_PASSWORD = "11111111";
+const STAFF_PASSWORD = "Sample1234!";
+
+function sampleName(base: string): string {
+  const trimmed = base.trim();
+  if (trimmed.startsWith(SAMPLE_PREFIX)) return trimmed;
+  return `${SAMPLE_PREFIX} ${trimmed}`;
+}
 
 const ADMIN = {
   email: "admin@concord.local",
-  password: SAMPLE_PASSWORD,
-  name: "관리자",
+  password: STAFF_PASSWORD,
 };
 
 const MANAGER = {
-  name: "Chief_manager",
+  name: sampleName("Chief_manager"),
   phone: "01090001000",
   subjects: "상담,매칭",
-  bio: "대표 학습 매니저",
+  bio: `${SAMPLE_PREFIX} 대표 학습 매니저`,
   education: "서울대학교 교육학과",
   experience: "10년",
   gender: "MALE" as const,
@@ -34,7 +43,7 @@ const MANAGER = {
 
 const TEACHERS = [
   {
-    name: "김도현",
+    name: sampleName("김도현"),
     phone: "01090002001",
     subjects: ["수학"],
     gender: "MALE" as const,
@@ -44,7 +53,7 @@ const TEACHERS = [
     experience: "7년",
   },
   {
-    name: "이서연",
+    name: sampleName("이서연"),
     phone: "01090002002",
     subjects: ["영어"],
     gender: "FEMALE" as const,
@@ -54,7 +63,7 @@ const TEACHERS = [
     experience: "5년",
   },
   {
-    name: "박준호",
+    name: sampleName("박준호"),
     phone: "01090002003",
     subjects: ["물리", "수학"],
     gender: "MALE" as const,
@@ -64,7 +73,7 @@ const TEACHERS = [
     experience: "6년",
   },
   {
-    name: "최지우",
+    name: sampleName("최지우"),
     phone: "01090002004",
     subjects: ["국어"],
     gender: "FEMALE" as const,
@@ -77,28 +86,28 @@ const TEACHERS = [
 
 const STUDENTS = [
   {
-    name: "홍서준",
+    name: sampleName("홍서준"),
     phone: "01090003001",
     grade: "고2",
     subjects: ["수학", "영어"],
     gender: "MALE" as const,
   },
   {
-    name: "김하은",
+    name: sampleName("김하은"),
     phone: "01090003002",
     grade: "고1",
     subjects: ["국어", "수학"],
     gender: "FEMALE" as const,
   },
   {
-    name: "이민재",
+    name: sampleName("이민재"),
     phone: "01090003003",
     grade: "중3",
     subjects: ["영어"],
     gender: "MALE" as const,
   },
   {
-    name: "박유나",
+    name: sampleName("박유나"),
     phone: "01090003004",
     grade: "고3",
     subjects: ["물리", "수학"],
@@ -106,8 +115,34 @@ const STUDENTS = [
   },
 ];
 
+const ALL_SAMPLE_PHONES = [
+  MANAGER.phone,
+  ...TEACHERS.map((t) => t.phone),
+  ...STUDENTS.map((s) => s.phone),
+];
+
 async function hashPassword(password: string) {
   return bcrypt.hash(password, 12);
+}
+
+/** 0109000* 샘플 계정만 삭제 후 재생성 */
+async function clearSampleAccounts() {
+  const phones = ALL_SAMPLE_PHONES.map((p) => normalizePhoneDigits(p));
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        { email: ADMIN.email },
+        { student: { phone: { in: phones } } },
+        { teacher: { phone: { in: phones } } },
+      ],
+    },
+    select: { id: true, email: true },
+  });
+  if (users.length === 0) return;
+  await prisma.user.deleteMany({
+    where: { id: { in: users.map((u) => u.id) } },
+  });
+  console.log(`  🗑️  기존 샘플 계정 ${users.length}건 삭제`);
 }
 
 async function createTeacher(
@@ -116,13 +151,6 @@ async function createTeacher(
 ) {
   const digits = normalizePhoneDigits(row.phone);
   const email = teacherSyntheticEmailFromDigits(digits);
-  const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { teacher: { phone: digits } }] },
-  });
-  if (existing) {
-    console.log(`  ⏭️  선생님 ${row.name} (${digits}) — 이미 있음`);
-    return existing.teacher?.id ?? null;
-  }
 
   const user = await prisma.user.create({
     data: {
@@ -161,16 +189,10 @@ async function createTeacher(
 async function createStudent(
   row: (typeof STUDENTS)[number],
   passwordHash: string,
+  managerTeacherId: string | null,
 ) {
   const digits = normalizePhoneDigits(row.phone);
   const email = studentSyntheticEmailFromDigits(digits);
-  const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { student: { phone: digits } }] },
-  });
-  if (existing?.student) {
-    console.log(`  ⏭️  학생 ${row.name} (${digits}) — 이미 있음`);
-    return existing.student.id;
-  }
 
   const user = await prisma.user.create({
     data: {
@@ -191,141 +213,105 @@ async function createStudent(
   });
   const studentId = user.student!.id;
 
-  const manager = await prisma.teacher.findFirst({
-    where: { name: MANAGER.name, user: { role: "MANAGER" } },
-    select: { id: true },
-  });
-  if (manager) {
+  if (managerTeacherId) {
     const now = new Date();
-    await prisma.consultationBooking.upsert({
-      where: { studentId },
-      create: {
+    await prisma.consultationBooking.create({
+      data: {
         studentId,
-        managerId: manager.id,
+        managerId: managerTeacherId,
         preferredTimes: "[]",
         visitPreferredTimes: "{}",
         status: "ASSIGNED",
-        note: "샘플 데이터",
+        note: `${SAMPLE_PREFIX} 샘플 데이터`,
         assignedAt: now,
-      },
-      update: {
-        managerId: manager.id,
-        status: "ASSIGNED",
-        assignedAt: now,
-        note: "샘플 데이터",
       },
     });
-    await prisma.managerStudent.upsert({
-      where: {
-        managerId_studentId: { managerId: manager.id, studentId },
-      },
-      create: { managerId: manager.id, studentId },
-      update: {},
+    await prisma.managerStudent.create({
+      data: { managerId: managerTeacherId, studentId },
     });
   }
 
-  console.log(`  ✅ 학생 ${row.name} (${digits})${manager ? " — 매니저 배정" : ""}`);
+  console.log(`  ✅ 학생 ${row.name} (${digits})${managerTeacherId ? " — 매니저 배정" : ""}`);
   return studentId;
 }
 
 async function main() {
-  const [teacherCount, studentCount] = await Promise.all([
-    prisma.teacher.count(),
-    prisma.student.count(),
-  ]);
+  console.log("==> 샘플 계정 초기화");
+  await clearSampleAccounts();
 
-  console.log("==> DB 현황");
-  console.log(`  선생님: ${teacherCount}명, 학생: ${studentCount}명`);
-
-  if (teacherCount > 0) {
-    console.log("\n  선생님 데이터가 이미 있습니다. 그대로 두었습니다 (삭제하지 않음).");
-  } else {
-    console.log("\n==> 선생님 샘플 생성");
-    const passwordHash = await hashPassword(SAMPLE_PASSWORD);
-    for (const t of TEACHERS) {
-      await createTeacher(t, passwordHash);
-    }
-  }
-
-  const passwordHash = await hashPassword(SAMPLE_PASSWORD);
+  const portalHash = await hashPassword(PORTAL_PASSWORD);
+  const staffHash = await hashPassword(STAFF_PASSWORD);
 
   console.log("\n==> 매니저·관리자");
   const managerDigits = normalizePhoneDigits(MANAGER.phone);
   const managerEmail = teacherSyntheticEmailFromDigits(managerDigits);
-  let managerUser = await prisma.user.findFirst({
-    where: { OR: [{ email: managerEmail }, { teacher: { phone: managerDigits } }] },
-    include: { teacher: true },
-  });
-  if (!managerUser) {
-    managerUser = await prisma.user.create({
-      data: {
-        email: managerEmail,
-        password: passwordHash,
-        role: "MANAGER",
-        teacher: {
-          create: {
-            name: MANAGER.name,
-            phone: managerDigits,
-            subjects: MANAGER.subjects,
-            bio: MANAGER.bio,
-            education: MANAGER.education,
-            experience: MANAGER.experience,
-            gender: MANAGER.gender,
-            approved: true,
-            profile: {
-              create: {
-                intro: MANAGER.bio,
-                education: JSON.stringify([{ school: MANAGER.education, major: "", year: "" }]),
-                career: JSON.stringify([]),
-                certificates: JSON.stringify([]),
-                resumeUrls: JSON.stringify([]),
-                documentUrls: JSON.stringify([]),
-              },
+
+  const managerUser = await prisma.user.create({
+    data: {
+      email: managerEmail,
+      password: staffHash,
+      role: "MANAGER",
+      teacher: {
+        create: {
+          name: MANAGER.name,
+          phone: managerDigits,
+          subjects: MANAGER.subjects,
+          bio: MANAGER.bio,
+          education: MANAGER.education,
+          experience: MANAGER.experience,
+          gender: MANAGER.gender,
+          approved: true,
+          profile: {
+            create: {
+              intro: MANAGER.bio,
+              education: JSON.stringify([{ school: MANAGER.education, major: "", year: "" }]),
+              career: JSON.stringify([]),
+              certificates: JSON.stringify([]),
+              resumeUrls: JSON.stringify([]),
+              documentUrls: JSON.stringify([]),
             },
           },
         },
       },
-      include: { teacher: true },
-    });
-    console.log(`  ✅ 매니저 ${MANAGER.name} (${managerDigits})`);
-  } else if (managerUser.role !== "MANAGER") {
-    await prisma.user.update({
-      where: { id: managerUser.id },
-      data: { role: "MANAGER" },
-    });
-    console.log(`  ✅ ${MANAGER.name} — MANAGER 역할로 갱신`);
-  } else {
-    console.log(`  ⏭️  매니저 ${MANAGER.name} — 이미 있음`);
+    },
+    include: { teacher: true },
+  });
+  const managerTeacherId = managerUser.teacher!.id;
+  console.log(`  ✅ 매니저 ${MANAGER.name} (${managerDigits})`);
+
+  await prisma.user.create({
+    data: {
+      email: ADMIN.email,
+      password: staffHash,
+      role: "ADMIN",
+    },
+  });
+  console.log(`  ✅ 관리자 ${ADMIN.email}`);
+
+  console.log("\n==> 선생님 샘플");
+  for (const t of TEACHERS) {
+    await createTeacher(t, portalHash);
   }
 
-  let admin = await prisma.user.findUnique({ where: { email: ADMIN.email } });
-  if (!admin) {
-    admin = await prisma.user.create({
-      data: {
-        email: ADMIN.email,
-        password: passwordHash,
-        role: "ADMIN",
-      },
-    });
-    console.log(`  ✅ 관리자 ${ADMIN.email}`);
-  } else {
-    console.log(`  ⏭️  관리자 ${ADMIN.email} — 이미 있음`);
-  }
-
-  console.log("\n==> 학생 샘플 생성");
+  console.log("\n==> 학생 샘플");
   for (const s of STUDENTS) {
-    await createStudent(s, passwordHash);
+    await createStudent(s, portalHash, managerTeacherId);
   }
 
-  const approvedTeacher = await prisma.teacher.count({ where: { approved: true } });
-  const activeStudents = await prisma.student.count();
+  const teachers = await prisma.teacher.count({
+    where: { name: { startsWith: SAMPLE_PREFIX } },
+  });
+  const students = await prisma.student.count({
+    where: { name: { startsWith: SAMPLE_PREFIX } },
+  });
 
   console.log("\n==> 완료");
-  console.log(`  승인 선생님 ${approvedTeacher}명 · 학생 ${activeStudents}명`);
-  console.log("\n  로그인 (전화번호 또는 이메일 + 비밀번호):");
-  console.log(`  비밀번호: ${SAMPLE_PASSWORD}`);
+  console.log(`  [sample] 선생님 ${teachers}명 · 학생 ${students}명`);
+  console.log("\n  로그인 비밀번호:");
+  console.log(`  학생·선생님: ${PORTAL_PASSWORD}`);
+  console.log(`  관리자·매니저: ${STAFF_PASSWORD}`);
   console.log(`  관리자: ${ADMIN.email}`);
-  console.log(`  매니저: ${managerDigits} (전화) / ${managerEmail}`);
+  console.log(`  매니저: ${managerDigits}`);
   console.log("  학생: 01090003001 ~ 01090003004");
   console.log("  선생님: 01090002001 ~ 01090002004");
 }
