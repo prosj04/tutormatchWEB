@@ -1,7 +1,7 @@
 import { PricingContent } from "@/components/pricing/PricingContent";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "요금제",

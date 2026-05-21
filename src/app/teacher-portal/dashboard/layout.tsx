@@ -8,6 +8,8 @@ import type { PortalTeacherRole } from "@/lib/portal-roles";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
+export const dynamic = "force-dynamic";
+
 export default async function TeacherDashboardLayout({
   children,
 }: {

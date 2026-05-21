@@ -5,7 +5,7 @@ import { getLandingCmsContent } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { LANDING_FAQ_FALLBACK } from "@/lib/faq-defaults";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "자주 묻는 질문",

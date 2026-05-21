@@ -4,7 +4,7 @@ import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "학습 후기",

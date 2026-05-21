@@ -1,7 +1,7 @@
 import { LandingPage } from "@/components/landing/LandingPage";
 import { getLandingCmsContent } from "@/lib/cms";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const cms = await getLandingCmsContent();
