@@ -39,34 +39,32 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function TutorProfilePage({ params }: PageProps) {
   const { id } = await params;
-  const [teacher, siteContent] = await Promise.all([
-    prisma.teacher.findFirst({
-      where: {
-        id,
-        approved: true,
-        user: { role: { in: ["TEACHER", "MANAGER"] } },
-      },
-      select: {
-        id: true,
-        name: true,
-        subjects: true,
-        bio: true,
-        education: true,
-        experience: true,
-        gender: true,
-        profile: {
-          select: {
-            photoUrl: true,
-            intro: true,
-            career: true,
-            education: true,
-            certificates: true,
-          },
+  const siteContent = await getGroupedSiteContent();
+  const teacher = await prisma.teacher.findFirst({
+    where: {
+      id,
+      approved: true,
+      user: { role: { in: ["TEACHER", "MANAGER"] } },
+    },
+    select: {
+      id: true,
+      name: true,
+      subjects: true,
+      bio: true,
+      education: true,
+      experience: true,
+      gender: true,
+      profile: {
+        select: {
+          photoUrl: true,
+          intro: true,
+          career: true,
+          education: true,
+          certificates: true,
         },
       },
-    }),
-    getGroupedSiteContent(),
-  ]);
+    },
+  });
 
   if (!teacher) notFound();
 

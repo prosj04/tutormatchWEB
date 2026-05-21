@@ -18,8 +18,8 @@ function splitSubjects(value: string): string[] {
 }
 
 export default async function TutorsPage() {
-  const [teachers, siteContent] = await Promise.all([
-    prisma.teacher.findMany({
+  const siteContent = await getGroupedSiteContent();
+  const teachers = await prisma.teacher.findMany({
     where: {
       approved: true,
       user: { role: { in: ["TEACHER", "MANAGER"] } },
@@ -35,9 +35,7 @@ export default async function TutorsPage() {
       gender: true,
       profile: { select: { photoUrl: true, intro: true } },
     },
-  }),
-    getGroupedSiteContent(),
-  ]);
+  });
 
   const tutors = teachers.map((teacher) => ({
     id: teacher.id,

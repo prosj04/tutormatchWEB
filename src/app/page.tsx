@@ -1,62 +1,15 @@
 import { LandingPage } from "@/components/landing/LandingPage";
-import type { LandingCmsContent } from "@/lib/cms";
-import { prisma } from "@/lib/prisma";
+import { getLandingCmsContent } from "@/lib/cms";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [siteContent, testimonials, faqs] = await Promise.all([
-    getCmsContent(),
-    getTestimonials(),
-    getFaqs(),
-  ]);
+  const cms = await getLandingCmsContent();
+  const testimonials =
+    cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
+  const faqs = cms.faqs.length > 0 ? cms.faqs : fallbackFaqs;
 
-  const cms: LandingCmsContent = {
-    siteContent,
-    testimonials:
-      testimonials.length > 0
-        ? testimonials.map((item) => ({
-            quote: item.quote,
-            info: item.author,
-            img: item.imageUrl || fallbackTestimonials[0].img,
-          }))
-        : fallbackTestimonials,
-    faqs:
-      faqs.length > 0
-        ? faqs.map((item) => ({ q: item.question, a: item.answer }))
-        : fallbackFaqs,
-  };
-
-  return <LandingPage cms={cms} />;
-}
-
-async function getCmsContent() {
-  const rows = await prisma.siteContent.findMany({
-    where: { isActive: true },
-    orderBy: [{ section: "asc" }, { order: "asc" }],
-  });
-  const grouped: Record<string, Record<string, string>> = {};
-
-  rows.forEach((row) => {
-    if (!grouped[row.section]) grouped[row.section] = {};
-    grouped[row.section][row.key] = row.value;
-  });
-
-  return grouped;
-}
-
-async function getTestimonials() {
-  return prisma.testimonial.findMany({
-    where: { isActive: true },
-    orderBy: { order: "asc" },
-  });
-}
-
-async function getFaqs() {
-  return prisma.faqItem.findMany({
-    where: { isActive: true },
-    orderBy: { order: "asc" },
-  });
+  return <LandingPage cms={{ siteContent: cms.siteContent, testimonials, faqs }} />;
 }
 
 const fallbackTestimonials = [

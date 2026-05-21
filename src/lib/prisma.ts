@@ -11,4 +11,5 @@ export const prisma =
         : ["error", "warn"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Vercel 서버리스: 인스턴스당 Prisma 클라이언트 1개 재사용 (연결 폭주 방지)
+globalForPrisma.prisma = prisma;

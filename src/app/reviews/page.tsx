@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getLandingCmsContent } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
-import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const revalidate = 60;
 
@@ -21,10 +20,8 @@ const fallbackTestimonials = [
 ];
 
 export default async function ReviewsPage() {
-  const [cms, siteContent] = await Promise.all([
-    getLandingCmsContent(),
-    getGroupedSiteContent(),
-  ]);
+  const cms = await getLandingCmsContent();
+  const siteContent = cms.siteContent;
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
     notFound();
   }
