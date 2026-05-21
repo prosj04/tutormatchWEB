@@ -21,10 +21,10 @@ set -euo pipefail
 #   대시보드 URL 예) https://supabase.com/dashboard/project/abcdefghijklmnop
 #   → ref = "abcdefghijklmnop"
 #
-PROJECT_REF_OLD=""
+PROJECT_REF_OLD="orvqtnrdxlfyyoscejqf"
 
 # PROJECT_REF_NEW: 신 프로젝트(서울) ref (복원 대상·확인용)
-PROJECT_REF_NEW=""
+PROJECT_REF_NEW="phesslrefylwlvdsoljm"
 
 # DIRECT_URL_NEW: 신 프로젝트 Direct connection (포트 5432, pooler 아님)
 #   Dashboard → Connect → Direct connection
@@ -39,6 +39,16 @@ DIRECT_URL_NEW=""
 # =============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+# DIRECT_URL_NEW 비어 있으면 .env 의 DIRECT_URL 사용 (비밀번호를 스크립트에 넣지 않음)
+if [[ -z "${DIRECT_URL_NEW}" && -f "${SCRIPT_DIR}/.env" ]]; then
+  _direct_line=$(grep -E '^DIRECT_URL=' "${SCRIPT_DIR}/.env" | head -1 || true)
+  if [[ -n "${_direct_line}" ]]; then
+    DIRECT_URL_NEW="${_direct_line#DIRECT_URL=}"
+    DIRECT_URL_NEW="${DIRECT_URL_NEW%\"}"
+    DIRECT_URL_NEW="${DIRECT_URL_NEW#\"}"
+  fi
+fi
 
 # backup.sql: 스키마 (Supabase CLI 기본 덤프)
 # backup_data.sql: 데이터 (공식 가이드상 별도 덤프 필요 — 복원 시 함께 사용)
