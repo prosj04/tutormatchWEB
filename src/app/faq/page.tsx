@@ -5,7 +5,7 @@ import { getActiveFaqs } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { LANDING_FAQ_FALLBACK } from "@/lib/faq-defaults";
 import { startPerfTimer } from "@/lib/perf-timer";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export const revalidate = 300;
 
@@ -15,7 +15,7 @@ export const metadata = {
 
 export default async function FaqPage() {
   const timer = startPerfTimer("page.faq.total");
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["faq_page"]);
   if (!isPublicSectionVisible(siteContent, "faq_page", "show_page", true)) {
     timer.end({ notFound: true });
     notFound();

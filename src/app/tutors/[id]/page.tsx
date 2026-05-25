@@ -5,7 +5,7 @@ import { PublicShell } from "@/components/layout/PublicShell";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
 import { getPublicTeacherById, getPublicTeacherIds } from "@/lib/public-teachers-cache";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 import {
   parseJsonArray,
   type CareerEntry,
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function TutorProfilePage({ params }: PageProps) {
   const timer = startPerfTimer("page.tutorProfile.total");
   const { id } = await params;
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["tutors_page"]);
   const teacher = await timeAsync("cache.publicTeacher.detail", () => getPublicTeacherById(id), {
     teacherId: id,
   });

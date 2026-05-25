@@ -2,7 +2,7 @@ import { SuccessPageActions } from "@/components/success/SuccessPageActions";
 import { SuccessPaymentComplete } from "@/components/success/SuccessPaymentComplete";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 type Search = Record<string, string | string[] | undefined>;
 
@@ -19,7 +19,7 @@ type PageProps = {
 };
 
 export default async function SuccessPage({ searchParams }: PageProps) {
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["success_page"]);
   const s = (key: string, fb: string) => getCmsSectionValue(siteContent, "success_page", key, fb);
 
   const paymentKey = first(searchParams.paymentKey);

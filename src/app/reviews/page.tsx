@@ -4,7 +4,7 @@ import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getActiveTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { startPerfTimer } from "@/lib/perf-timer";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export const revalidate = 300;
 
@@ -23,7 +23,7 @@ const fallbackTestimonials = [
 
 export default async function ReviewsPage() {
   const timer = startPerfTimer("page.reviews.total");
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["reviews_page"]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
     timer.end({ notFound: true });
     notFound();

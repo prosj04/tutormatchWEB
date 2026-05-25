@@ -3,7 +3,7 @@ import { TutorsListing } from "@/components/tutors/TutorsListing";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
 import { getPublicTeachers } from "@/lib/public-teachers-cache";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export const metadata = {
   title: "강사진",
@@ -20,7 +20,7 @@ function splitSubjects(value: string): string[] {
 
 export default async function TutorsPage() {
   const timer = startPerfTimer("page.tutors.total");
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["tutors_page"]);
   const teachers = await timeAsync("cache.publicTeachers.list", () => getPublicTeachers());
 
   const tutors = teachers.map((teacher) => ({

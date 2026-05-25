@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 import { LoginForm } from "./LoginForm";
 
@@ -21,7 +21,7 @@ function LoginFallback() {
 }
 
 export default async function LoginPage() {
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["login_page"]);
   return (
     <Suspense fallback={<LoginFallback />}>
       <LoginForm siteContent={siteContent} />

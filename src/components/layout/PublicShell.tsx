@@ -1,10 +1,10 @@
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export async function PublicShell({ children }: { children: React.ReactNode }) {
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["faq_page", "reviews_page"]);
   const showFaqLink = isPublicSectionVisible(siteContent, "faq_page", "show_page", true);
   const showReviewsLink = isPublicSectionVisible(siteContent, "reviews_page", "show_page", true);
 

@@ -6,7 +6,7 @@ import {
   type SessionPlan,
   type SubjectCount,
 } from "@/lib/order-pricing";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 type Search = Record<string, string | string[] | undefined>;
 
@@ -23,7 +23,7 @@ type PageProps = {
 };
 
 export default async function CheckoutPage({ searchParams }: PageProps) {
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["checkout_page"]);
   const tutorId = first(searchParams.tutor) ?? "1";
   const sessionsRaw = first(searchParams.sessions);
   const sessions: SessionPlan = parseSessionsParam(sessionsRaw);
