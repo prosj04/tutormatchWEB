@@ -68,6 +68,7 @@ export function TeacherProfileEditor({
     let cancelled = false;
 
     async function loadDocuments() {
+      console.time("[perf] client.teacherProfile.documentsFetch");
       setDocumentLoading(true);
       try {
         const res = await fetch("/api/teacher/profile/documents");
@@ -78,6 +79,7 @@ export function TeacherProfileEditor({
         setDocumentFiles(data.documentFiles);
       } finally {
         if (!cancelled) setDocumentLoading(false);
+        console.timeEnd("[perf] client.teacherProfile.documentsFetch");
       }
     }
 

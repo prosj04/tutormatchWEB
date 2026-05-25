@@ -1,20 +1,25 @@
 import { LandingPage } from "@/components/landing/LandingPage";
 import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
+import { startPerfTimer } from "@/lib/perf-timer";
 import { getLandingCmsContent } from "@/lib/cms";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
+  const timer = startPerfTimer("page.home.total");
   const cms = await getLandingCmsContent();
   const testimonials =
     cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
   const faqs = cms.faqs.length > 0 ? cms.faqs : fallbackFaqs;
 
-  return (
+  const page = (
     <PublicAppProviders>
       <LandingPage cms={{ siteContent: cms.siteContent, testimonials, faqs }} />
     </PublicAppProviders>
   );
+
+  timer.end();
+  return page;
 }
 
 const fallbackTestimonials = [

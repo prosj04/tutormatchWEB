@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { PublicShell } from "@/components/layout/PublicShell";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
+import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { prisma } from "@/lib/prisma";
 import { getGroupedSiteContent } from "@/lib/site-content";
 import {
@@ -16,8 +17,6 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
-export const dynamic = "force-dynamic";
-
 function splitSubjects(value: string): string[] {
   return value
     .split(",")
@@ -27,10 +26,15 @@ function splitSubjects(value: string): string[] {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const teacher = await prisma.teacher.findFirst({
-    where: { id, approved: true },
-    select: { name: true },
-  });
+  const teacher = await timeAsync(
+    "prisma.teacher.findFirst.tutorMetadata",
+    () =>
+      prisma.teacher.findFirst({
+        where: { id, approved: true },
+        select: { name: true },
+      }),
+    { teacherId: id },
+  );
 
   return {
     title: teacher ? `${teacher.name} 선생님` : "강사 프로필",
@@ -38,35 +42,44 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function TutorProfilePage({ params }: PageProps) {
+  const timer = startPerfTimer("page.tutorProfile.total");
   const { id } = await params;
   const siteContent = await getGroupedSiteContent();
-  const teacher = await prisma.teacher.findFirst({
-    where: {
-      id,
-      approved: true,
-      user: { role: { in: ["TEACHER", "MANAGER"] } },
-    },
-    select: {
-      id: true,
-      name: true,
-      subjects: true,
-      bio: true,
-      education: true,
-      experience: true,
-      gender: true,
-      profile: {
-        select: {
-          photoUrl: true,
-          intro: true,
-          career: true,
-          education: true,
-          certificates: true,
+  const teacher = await timeAsync(
+    "prisma.teacher.findFirst.tutorProfile",
+    () =>
+      prisma.teacher.findFirst({
+        where: {
+          id,
+          approved: true,
+          user: { role: { in: ["TEACHER", "MANAGER"] } },
         },
-      },
-    },
-  });
+        select: {
+          id: true,
+          name: true,
+          subjects: true,
+          bio: true,
+          education: true,
+          experience: true,
+          gender: true,
+          profile: {
+            select: {
+              photoUrl: true,
+              intro: true,
+              career: true,
+              education: true,
+              certificates: true,
+            },
+          },
+        },
+      }),
+    { teacherId: id },
+  );
 
-  if (!teacher) notFound();
+  if (!teacher) {
+    timer.end({ notFound: true });
+    notFound();
+  }
 
   const publicPhotoUrl = getTutorPublicPhotoUrl(teacher.gender, siteContent);
 
@@ -77,7 +90,7 @@ export default async function TutorProfilePage({ params }: PageProps) {
     teacher.profile?.certificates,
   );
 
-  return (
+  const page = (
     <PublicShell>
       <main className="pb-24">
         <section className="border-b border-gray-100 bg-white px-6 py-16 md:py-20">
@@ -144,6 +157,13 @@ export default async function TutorProfilePage({ params }: PageProps) {
       </main>
     </PublicShell>
   );
+  timer.end({
+    teacherId: teacher.id,
+    educationCount: educationEntries.length,
+    careerCount: careerEntries.length,
+    certificateCount: certificateEntries.length,
+  });
+  return page;
 }
 
 function InfoBlock({

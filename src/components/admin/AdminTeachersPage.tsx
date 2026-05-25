@@ -106,6 +106,7 @@ export function AdminTeachersPage() {
   }
 
   async function loadDocuments(teacherId: string) {
+    console.time(`[perf] client.adminTeacher.documentsFetch:${teacherId}`);
     setDocumentsLoading(true);
     try {
       const res = await fetch(`/api/admin/teachers/${teacherId}/documents`);
@@ -113,6 +114,7 @@ export function AdminTeachersPage() {
       setDocuments((await res.json()) as DocumentsResponse);
     } finally {
       setDocumentsLoading(false);
+      console.timeEnd(`[perf] client.adminTeacher.documentsFetch:${teacherId}`);
     }
   }
 

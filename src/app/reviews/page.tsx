@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getActiveTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
+import { startPerfTimer } from "@/lib/perf-timer";
 import { getGroupedSiteContent } from "@/lib/site-content";
 
 export const revalidate = 300;
@@ -21,17 +22,21 @@ const fallbackTestimonials = [
 ];
 
 export default async function ReviewsPage() {
+  const timer = startPerfTimer("page.reviews.total");
   const siteContent = await getGroupedSiteContent();
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
+    timer.end({ notFound: true });
     notFound();
   }
 
   const testimonials = await getActiveTestimonials();
 
-  return (
+  const page = (
     <ReviewsPageContent
       testimonials={testimonials.length > 0 ? testimonials : fallbackTestimonials}
       siteContent={siteContent}
     />
   );
+  timer.end({ testimonialCount: testimonials.length });
+  return page;
 }

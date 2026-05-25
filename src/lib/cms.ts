@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 
+import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { prisma } from "@/lib/prisma";
 import {
   FAQS_CACHE_TAG,
@@ -29,11 +30,13 @@ const EMPTY_LANDING_CMS: LandingCmsContent = {
 
 const getCachedActiveTestimonials = unstable_cache(
   async (): Promise<LandingCmsContent["testimonials"]> => {
-    const testimonials = await prisma.testimonial.findMany({
-      where: { isActive: true },
-      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-      select: { quote: true, author: true, imageUrl: true },
-    });
+    const testimonials = await timeAsync("prisma.testimonial.findMany.active", () =>
+      prisma.testimonial.findMany({
+        where: { isActive: true },
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        select: { quote: true, author: true, imageUrl: true },
+      }),
+    );
 
     return testimonials.map((item) => ({
       quote: item.quote,
@@ -52,11 +55,13 @@ const getCachedActiveTestimonials = unstable_cache(
 
 const getCachedActiveFaqs = unstable_cache(
   async (): Promise<LandingCmsContent["faqs"]> => {
-    const faqs = await prisma.faqItem.findMany({
-      where: { isActive: true },
-      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-      select: { question: true, answer: true },
-    });
+    const faqs = await timeAsync("prisma.faqItem.findMany.active", () =>
+      prisma.faqItem.findMany({
+        where: { isActive: true },
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        select: { question: true, answer: true },
+      }),
+    );
 
     return faqs.map((item) => ({ q: item.question, a: item.answer }));
   },
@@ -87,6 +92,7 @@ export async function getActiveFaqs(): Promise<LandingCmsContent["faqs"]> {
 
 /** connection_limit=1 환경: 병렬 Prisma 호출 금지, siteContent는 getGroupedSiteContent 재사용 */
 export async function getLandingCmsContent(): Promise<LandingCmsContent> {
+  const timer = startPerfTimer("cms.getLandingCmsContent");
   try {
     const siteContent = await getGroupedSiteContent();
     const testimonials = await getActiveTestimonials();
@@ -100,5 +106,7 @@ export async function getLandingCmsContent(): Promise<LandingCmsContent> {
   } catch (error) {
     console.error("[getLandingCmsContent]", error);
     return EMPTY_LANDING_CMS;
+  } finally {
+    timer.end();
   }
 }

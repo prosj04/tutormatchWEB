@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { TeacherProfileEditor } from "@/components/teacher-portal/TeacherProfileEditor";
 import { auth } from "@/auth";
+import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
 import { prisma } from "@/lib/prisma";
 import { profileToFormData } from "@/lib/teacher-profile-types";
@@ -11,17 +12,25 @@ export const metadata = {
 };
 
 export default async function TeacherProfilePage() {
+  const timer = startPerfTimer("page.teacherPortalProfile.total");
   const session = await auth();
   if (!session?.user?.id || !isPortalTeacherRole(session.user.role)) {
+    timer.end({ redirected: true, reason: "unauthorized" });
     redirect("/teacher-portal");
   }
 
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
-    include: { profile: true },
-  });
+  const teacher = await timeAsync(
+    "prisma.teacher.findUnique.portalProfile",
+    () =>
+      prisma.teacher.findUnique({
+        where: { userId: session.user.id },
+        include: { profile: true },
+      }),
+    { userId: session.user.id },
+  );
 
   if (!teacher) {
+    timer.end({ redirected: true, reason: "teacher-not-found" });
     redirect("/teacher-portal");
   }
 
@@ -32,7 +41,7 @@ export default async function TeacherProfilePage() {
 
   const initialForm = profileToFormData(teacher.profile);
 
-  return (
+  const page = (
     <div>
       <h1 className="text-2xl font-black text-text-primary sm:text-3xl">프로필 관리</h1>
       <p className="mt-2 text-sm text-text-secondary">
@@ -49,4 +58,6 @@ export default async function TeacherProfilePage() {
       </div>
     </div>
   );
+  timer.end({ teacherId: teacher.id });
+  return page;
 }

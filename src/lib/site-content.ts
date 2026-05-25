@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 
+import { timeAsync } from "@/lib/perf-timer";
 import { prisma } from "@/lib/prisma";
 import {
   PUBLIC_CMS_REVALIDATE_SECONDS,
@@ -12,11 +13,13 @@ const EMPTY_SITE_CONTENT: GroupedSiteContent = {};
 
 const getCachedGroupedSiteContent = unstable_cache(
   async (): Promise<GroupedSiteContent> => {
-    const rows = await prisma.siteContent.findMany({
-      where: { isActive: true },
-      orderBy: [{ section: "asc" }, { order: "asc" }],
-      select: { section: true, key: true, value: true },
-    });
+    const rows = await timeAsync("prisma.siteContent.findMany", () =>
+      prisma.siteContent.findMany({
+        where: { isActive: true },
+        orderBy: [{ section: "asc" }, { order: "asc" }],
+        select: { section: true, key: true, value: true },
+      }),
+    );
 
     return groupSiteContentRows(rows);
   },

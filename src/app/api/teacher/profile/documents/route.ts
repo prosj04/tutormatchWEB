@@ -6,6 +6,7 @@ import {
   TEACHER_DOCUMENT_BUCKET,
   uploadTeacherDocument,
 } from "@/lib/supabase-client";
+import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { parseJsonArray } from "@/lib/teacher-profile-types";
 import { requireTeacher } from "@/lib/teacher-auth";
 
@@ -31,13 +32,19 @@ function storagePathFromUrl(url: string): string {
 }
 
 async function buildDocumentFiles(resumeUrls: string[], documentUrls: string[]) {
+  const totalTimer = startPerfTimer("api.teacherProfile.documents.buildSignedUrls", {
+    resumeCount: resumeUrls.length,
+    documentCount: documentUrls.length,
+  });
   const supabase = createSupabaseBrowserClient();
 
   async function sign(url: string) {
     const path = storagePathFromUrl(url);
+    const timer = startPerfTimer("supabase.teacherDocuments.createSignedUrl", { path });
     const { data, error } = await supabase.storage
       .from(TEACHER_DOCUMENT_BUCKET)
       .createSignedUrl(path, 60 * 10);
+    timer.end();
 
     if (error) throw error;
 
@@ -48,17 +55,25 @@ async function buildDocumentFiles(resumeUrls: string[], documentUrls: string[]) 
     };
   }
 
-  return {
-    resumeFiles: await Promise.all(resumeUrls.map(sign)),
-    documentFiles: await Promise.all(documentUrls.map(sign)),
-  };
+  const [resumeFiles, documentFiles] = await Promise.all([
+    Promise.all(resumeUrls.map(sign)),
+    Promise.all(documentUrls.map(sign)),
+  ]);
+  totalTimer.end();
+
+  return { resumeFiles, documentFiles };
 }
 
 async function getDocumentPayload(teacherId: string) {
-  const profile = await prisma.teacherProfile.findUnique({
-    where: { teacherId },
-    select: { resumeUrls: true, documentUrls: true },
-  });
+  const profile = await timeAsync(
+    "prisma.teacherProfile.findUnique.documents",
+    () =>
+      prisma.teacherProfile.findUnique({
+        where: { teacherId },
+        select: { resumeUrls: true, documentUrls: true },
+      }),
+    { teacherId },
+  );
 
   const resumeUrls = parseJsonArray<string>(profile?.resumeUrls);
   const documentUrls = parseJsonArray<string>(profile?.documentUrls);
@@ -71,7 +86,11 @@ export async function GET() {
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
-  return NextResponse.json(await getDocumentPayload(teacher.id));
+  return NextResponse.json(
+    await timeAsync("api.teacherProfile.documents.GET", () => getDocumentPayload(teacher.id), {
+      teacherId: teacher.id,
+    }),
+  );
 }
 
 export async function POST(request: Request) {
@@ -92,10 +111,15 @@ export async function POST(request: Request) {
 
   const uploadedUrl = await uploadTeacherDocument(teacher.id, file, type);
 
-  const existing = await prisma.teacherProfile.findUnique({
-    where: { teacherId: teacher.id },
-    select: { resumeUrls: true, documentUrls: true },
-  });
+  const existing = await timeAsync(
+    "prisma.teacherProfile.findUnique.documentsExisting",
+    () =>
+      prisma.teacherProfile.findUnique({
+        where: { teacherId: teacher.id },
+        select: { resumeUrls: true, documentUrls: true },
+      }),
+    { teacherId: teacher.id },
+  );
 
   const resumeUrls = parseJsonArray<string>(existing?.resumeUrls);
   const documentUrls = parseJsonArray<string>(existing?.documentUrls);
@@ -106,18 +130,23 @@ export async function POST(request: Request) {
     documentUrls.push(uploadedUrl);
   }
 
-  await prisma.teacherProfile.upsert({
-    where: { teacherId: teacher.id },
-    create: {
-      teacherId: teacher.id,
-      resumeUrls: serializeUrls(resumeUrls),
-      documentUrls: serializeUrls(documentUrls),
-    },
-    update: {
-      resumeUrls: serializeUrls(resumeUrls),
-      documentUrls: serializeUrls(documentUrls),
-    },
-  });
+  await timeAsync(
+    "prisma.teacherProfile.upsert.documents",
+    () =>
+      prisma.teacherProfile.upsert({
+        where: { teacherId: teacher.id },
+        create: {
+          teacherId: teacher.id,
+          resumeUrls: serializeUrls(resumeUrls),
+          documentUrls: serializeUrls(documentUrls),
+        },
+        update: {
+          resumeUrls: serializeUrls(resumeUrls),
+          documentUrls: serializeUrls(documentUrls),
+        },
+      }),
+    { teacherId: teacher.id, type },
+  );
 
   return NextResponse.json(await getDocumentPayload(teacher.id));
 }
@@ -138,10 +167,15 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Invalid fields" }, { status: 400 });
   }
 
-  const existing = await prisma.teacherProfile.findUnique({
-    where: { teacherId: teacher.id },
-    select: { resumeUrls: true, documentUrls: true },
-  });
+  const existing = await timeAsync(
+    "prisma.teacherProfile.findUnique.documentsDelete",
+    () =>
+      prisma.teacherProfile.findUnique({
+        where: { teacherId: teacher.id },
+        select: { resumeUrls: true, documentUrls: true },
+      }),
+    { teacherId: teacher.id, type: body.type },
+  );
 
   const resumeUrls = parseJsonArray<string>(existing?.resumeUrls);
   const documentUrls = parseJsonArray<string>(existing?.documentUrls);
@@ -152,23 +186,33 @@ export async function DELETE(request: Request) {
       ? documentUrls.filter((url) => url !== body.url)
       : documentUrls;
 
-  await prisma.teacherProfile.upsert({
-    where: { teacherId: teacher.id },
-    create: {
-      teacherId: teacher.id,
-      resumeUrls: serializeUrls(nextResumeUrls),
-      documentUrls: serializeUrls(nextDocumentUrls),
-    },
-    update: {
-      resumeUrls: serializeUrls(nextResumeUrls),
-      documentUrls: serializeUrls(nextDocumentUrls),
-    },
-  });
+  await timeAsync(
+    "prisma.teacherProfile.upsert.documentsDelete",
+    () =>
+      prisma.teacherProfile.upsert({
+        where: { teacherId: teacher.id },
+        create: {
+          teacherId: teacher.id,
+          resumeUrls: serializeUrls(nextResumeUrls),
+          documentUrls: serializeUrls(nextDocumentUrls),
+        },
+        update: {
+          resumeUrls: serializeUrls(nextResumeUrls),
+          documentUrls: serializeUrls(nextDocumentUrls),
+        },
+      }),
+    { teacherId: teacher.id, type: body.type },
+  );
 
+  const removeTimer = startPerfTimer("supabase.teacherDocuments.remove", {
+    teacherId: teacher.id,
+    type: body.type,
+  });
   await createSupabaseBrowserClient()
     .storage
     .from(TEACHER_DOCUMENT_BUCKET)
     .remove([storagePathFromUrl(body.url)]);
+  removeTimer.end();
 
   return NextResponse.json(await getDocumentPayload(teacher.id));
 }
