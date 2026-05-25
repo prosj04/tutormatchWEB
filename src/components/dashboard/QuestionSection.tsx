@@ -117,7 +117,9 @@ export function QuestionSection({
       const newQuestion = data.question;
       setQuestions((prev) => [newQuestion, ...prev]);
       setModalOpen(false);
-      void requestAiAnswer(newQuestion.id);
+      if (aiAnswerEnabled && !newQuestion.aiAnswer) {
+        void requestAiAnswer(newQuestion.id);
+      }
     } finally {
       setSubmitting(false);
     }

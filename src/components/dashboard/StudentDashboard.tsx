@@ -164,9 +164,17 @@ export function StudentDashboard({
 
   async function handleReorder(reordered: StudyTask[]) {
     setPlan((p) => (p ? { ...p, tasks: reordered } : p));
-    await Promise.all(
-      reordered.map((t) => patchTask(t.id, { order: t.order })),
-    );
+    const current = plan;
+    if (!current) return;
+
+    const res = await fetch(`/api/plans/${current.id}/tasks`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ taskIds: reordered.map((task) => task.id) }),
+    });
+    if (!res.ok) return;
+    const data = (await res.json()) as { tasks: StudyTask[] };
+    setPlan((p) => (p ? { ...p, tasks: data.tasks } : p));
   }
 
   async function handleOpenCopyModal() {

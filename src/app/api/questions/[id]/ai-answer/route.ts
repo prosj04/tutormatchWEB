@@ -21,6 +21,10 @@ export async function POST(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
+  if (question.aiAnswer) {
+    return NextResponse.json({ aiAnswer: question.aiAnswer });
+  }
+
   const aiAnswer = await generateAiAnswer(question.content, question.imageUrl);
 
   await prisma.question.update({

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isAiAnswerEnabled, MOCK_AI_ANSWER } from "@/lib/ai-answer";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { isValidDateString, requireStudent } from "@/lib/student-auth";
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
       date,
       content: content.trim(),
       imageUrl: typeof imageUrl === "string" ? imageUrl : null,
+      aiAnswer: isAiAnswerEnabled() ? null : MOCK_AI_ANSWER,
     },
   });
 
