@@ -27,7 +27,7 @@ function sampleName(base: string): string {
 }
 
 const ADMIN = {
-  email: "admin@concord.local",
+  email: "admin@admin",
   password: STAFF_PASSWORD,
 };
 
