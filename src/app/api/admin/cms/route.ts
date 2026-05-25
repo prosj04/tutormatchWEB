@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import {
+  FAQS_CACHE_TAG,
+  SITE_CONTENT_CACHE_TAG,
+  TESTIMONIALS_CACHE_TAG,
+  revalidatePublicCms,
+} from "@/lib/public-cms-cache";
 
 type SiteContentInput = {
   id?: unknown;
@@ -139,6 +145,11 @@ export async function PATCH(request: Request) {
       ),
   ]);
 
+  revalidatePublicCms(
+    SITE_CONTENT_CACHE_TAG,
+    TESTIMONIALS_CACHE_TAG,
+    FAQS_CACHE_TAG,
+  );
   return GET();
 }
 
@@ -157,6 +168,7 @@ export async function POST(request: Request) {
     const created = await prisma.testimonial.create({
       data: { quote: "새 후기 내용을 입력하세요.", author: "작성자", order: 999 },
     });
+    revalidatePublicCms(TESTIMONIALS_CACHE_TAG);
     return NextResponse.json({ testimonial: created }, { status: 201 });
   }
 
@@ -164,6 +176,7 @@ export async function POST(request: Request) {
     const created = await prisma.faqItem.create({
       data: { question: "새 질문을 입력하세요.", answer: "답변을 입력하세요.", order: 999 },
     });
+    revalidatePublicCms(FAQS_CACHE_TAG);
     return NextResponse.json({ faq: created }, { status: 201 });
   }
 
@@ -184,11 +197,13 @@ export async function DELETE(request: Request) {
 
   if (kind === "testimonial") {
     await prisma.testimonial.delete({ where: { id } });
+    revalidatePublicCms(TESTIMONIALS_CACHE_TAG);
     return NextResponse.json({ ok: true });
   }
 
   if (kind === "faq") {
     await prisma.faqItem.delete({ where: { id } });
+    revalidatePublicCms(FAQS_CACHE_TAG);
     return NextResponse.json({ ok: true });
   }
 

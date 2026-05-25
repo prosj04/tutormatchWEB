@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { FAQS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 
 export async function GET() {
   const authResult = await requireAdmin();
@@ -41,5 +42,6 @@ export async function POST(request: Request) {
     },
   });
 
+  revalidatePublicCms(FAQS_CACHE_TAG);
   return NextResponse.json(faq, { status: 201 });
 }

@@ -1,7 +1,7 @@
 import { PublicShell } from "@/components/layout/PublicShell";
 import { TeacherPortalApplyClient } from "@/components/teacher-portal/TeacherPortalApplyClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata = {
   title: "선생님 가입 신청",

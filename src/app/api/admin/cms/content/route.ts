@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { SITE_CONTENT_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 
 function groupContent(
   rows: Array<{ section: string; key: string; value: string }>,
@@ -66,5 +67,6 @@ export async function PATCH(request: Request) {
     },
   });
 
+  revalidatePublicCms(SITE_CONTENT_CACHE_TAG);
   return NextResponse.json(row);
 }

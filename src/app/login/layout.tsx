@@ -1,6 +1,6 @@
 import { PublicShell } from "@/components/layout/PublicShell";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function LoginLayout({
   children,

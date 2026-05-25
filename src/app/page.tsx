@@ -1,7 +1,8 @@
 import { LandingPage } from "@/components/landing/LandingPage";
+import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
 import { getLandingCmsContent } from "@/lib/cms";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function HomePage() {
   const cms = await getLandingCmsContent();
@@ -9,7 +10,11 @@ export default async function HomePage() {
     cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
   const faqs = cms.faqs.length > 0 ? cms.faqs : fallbackFaqs;
 
-  return <LandingPage cms={{ siteContent: cms.siteContent, testimonials, faqs }} />;
+  return (
+    <PublicAppProviders>
+      <LandingPage cms={{ siteContent: cms.siteContent, testimonials, faqs }} />
+    </PublicAppProviders>
+  );
 }
 
 const fallbackTestimonials = [

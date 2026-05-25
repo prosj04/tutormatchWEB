@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   createContext,
   useCallback,
@@ -11,7 +11,13 @@ import {
   type ReactNode,
 } from "react";
 
-import { ConsultationSignupModal } from "@/components/auth/ConsultationSignupModal";
+const ConsultationSignupModal = dynamic(
+  () =>
+    import("@/components/auth/ConsultationSignupModal").then(
+      (mod) => mod.ConsultationSignupModal,
+    ),
+  { ssr: false },
+);
 
 type ConsultationSignupContextValue = {
   open: () => void;
@@ -32,9 +38,6 @@ export function useConsultationSignup() {
 export function ConsultationSignupProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [instantEnroll, setInstantEnroll] = useState(false);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
 
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => {
@@ -43,16 +46,17 @@ export function ConsultationSignupProvider({ children }: { children: ReactNode }
   }, []);
 
   useEffect(() => {
-    if (searchParams.get("signup") === "1") {
-      setIsOpen(true);
-      setInstantEnroll(searchParams.get("instant") === "1");
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("signup");
-      params.delete("instant");
-      const qs = params.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    }
-  }, [searchParams, pathname, router]);
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("signup") !== "1") return;
+
+    setIsOpen(true);
+    setInstantEnroll(url.searchParams.get("instant") === "1");
+
+    url.searchParams.delete("signup");
+    url.searchParams.delete("instant");
+    const nextHref = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState(window.history.state, "", nextHref || url.pathname);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -66,7 +70,9 @@ export function ConsultationSignupProvider({ children }: { children: ReactNode }
   return (
     <ConsultationSignupContext.Provider value={value}>
       {children}
-      <ConsultationSignupModal open={isOpen} onClose={close} instantEnroll={instantEnroll} />
+      {isOpen ? (
+        <ConsultationSignupModal open={isOpen} onClose={close} instantEnroll={instantEnroll} />
+      ) : null}
     </ConsultationSignupContext.Provider>
   );
 }

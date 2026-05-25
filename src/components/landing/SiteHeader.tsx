@@ -143,15 +143,27 @@ export function SiteHeader({
       return;
     }
 
-    function handleScroll() {
+    let frameId = 0;
+    const updateTone = () => {
+      frameId = 0;
       const hero = document.getElementById("hero");
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
       setScrolled(window.scrollY >= heroBottom);
-    }
+    };
 
-    handleScroll();
+    const handleScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(updateTone);
+    };
+
+    updateTone();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [variant]);
 
   useEffect(() => {
@@ -171,13 +183,14 @@ export function SiteHeader({
     };
   }, [open]);
 
-  const headerTone = scrolled
+  const solidHeader = scrolled || open;
+  const headerTone = solidHeader
     ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
     : "border-white/10 bg-neutral-100/80 text-white backdrop-blur";
-  const topBarTone = scrolled
+  const topBarTone = solidHeader
     ? "bg-neutral-10 text-neutral-80"
     : "bg-black/20 text-white/70";
-  const hoverTone = scrolled ? "hover:text-neutral-100" : "hover:text-white";
+  const hoverTone = solidHeader ? "hover:text-neutral-100" : "hover:text-white";
 
   return (
     <header
@@ -224,7 +237,7 @@ export function SiteHeader({
           type="button"
           onClick={() => setOpen(true)}
           className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition md:hidden ${
-            scrolled ? "border-neutral-20 text-neutral-100" : "border-white/30 text-white"
+            solidHeader ? "border-neutral-20 text-neutral-100" : "border-white/30 text-white"
           }`}
           aria-label="메뉴 열기"
         >
@@ -236,13 +249,22 @@ export function SiteHeader({
         </button>
       </div>
 
+      <button
+        type="button"
+        aria-label="메뉴 배경 닫기"
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-[58] bg-white/92 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+
       <div
-        className={`fixed inset-0 z-[60] overflow-y-auto bg-white transition-transform duration-300 md:hidden ${
-          open ? "translate-x-0" : "pointer-events-none translate-x-full"
+        className={`fixed inset-0 z-[60] overflow-y-auto bg-white shadow-2xl transition-all duration-300 md:hidden ${
+          open ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-full opacity-0"
         }`}
         aria-hidden={!open}
       >
-        <div className="flex h-16 items-center justify-between border-b border-neutral-20 px-5">
+        <div className="flex h-16 items-center justify-between border-b border-neutral-20 bg-white px-5">
           <Link
             href={logoHref}
             onClick={() => setOpen(false)}
@@ -259,7 +281,7 @@ export function SiteHeader({
             ×
           </button>
         </div>
-        <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between gap-8 px-5 py-6 sm:px-6 sm:py-8">
+        <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between gap-8 bg-white px-5 py-6 sm:px-6 sm:py-8">
           <div>
             <div className="flex flex-wrap justify-end gap-3 text-sm font-semibold text-neutral-80">
               {showFaqLink ? (

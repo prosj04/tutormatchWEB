@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
-import { getLandingCmsContent } from "@/lib/cms";
+import { getActiveTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
+import { getGroupedSiteContent } from "@/lib/site-content";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata = {
   title: "학습 후기",
@@ -20,14 +21,17 @@ const fallbackTestimonials = [
 ];
 
 export default async function ReviewsPage() {
-  const cms = await getLandingCmsContent();
-  const siteContent = cms.siteContent;
+  const siteContent = await getGroupedSiteContent();
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
     notFound();
   }
 
-  const testimonials =
-    cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
+  const testimonials = await getActiveTestimonials();
 
-  return <ReviewsPageContent testimonials={testimonials} siteContent={siteContent} />;
+  return (
+    <ReviewsPageContent
+      testimonials={testimonials.length > 0 ? testimonials : fallbackTestimonials}
+      siteContent={siteContent}
+    />
+  );
 }

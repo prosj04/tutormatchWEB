@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { TESTIMONIALS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -46,6 +47,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     data,
   });
 
+  revalidatePublicCms(TESTIMONIALS_CACHE_TAG);
   return NextResponse.json(testimonial);
 }
 
@@ -56,5 +58,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   const { id } = await context.params;
   await prisma.testimonial.delete({ where: { id } });
 
+  revalidatePublicCms(TESTIMONIALS_CACHE_TAG);
   return NextResponse.json({ ok: true });
 }

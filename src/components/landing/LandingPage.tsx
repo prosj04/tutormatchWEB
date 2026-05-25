@@ -170,30 +170,48 @@ function useScrollLandingState() {
   const [showFloating, setShowFloating] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const hero = document.getElementById("hero");
-      const pricing = document.getElementById("pricing");
+    const sections = tabs
+      .map((tab) => document.getElementById(tab.id))
+      .filter(Boolean) as HTMLElement[];
+    const hero = document.getElementById("hero");
+    const pricing = document.getElementById("pricing");
+    let frameId = 0;
+
+    const updateState = () => {
+      frameId = 0;
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
       const pastHero = window.scrollY > heroBottom - 120;
       const beforePricing =
         !pricing || window.scrollY < pricing.offsetTop - window.innerHeight * 0.15;
       setShowFloating(pastHero && beforePricing);
 
-      const next = tabs
-        .map((tab) => document.getElementById(tab.id))
-        .filter(Boolean)
+      const next = [...sections]
         .reverse()
-        .find((s) => (s as HTMLElement).offsetTop - 180 <= window.scrollY);
+        .find((section) => section.offsetTop - 180 <= window.scrollY);
 
       if (next?.id) setActiveTab(next.id);
     };
 
-    handleScroll();
+    const handleScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(updateState);
+    };
+
+    updateState();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
   return { activeTab, showFloating };
+}
+
+function canUseOptimizedHeroImage(src: string) {
+  return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
 }
 
 /* ─────────────────────────────────────────── sub-components ── */
@@ -351,8 +369,11 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   });
 
   const heroBgImage = getCmsValue("hero", "bg_image_url", "");
+  const useOptimizedHeroImage = heroBgImage !== "" && canUseOptimizedHeroImage(heroBgImage);
   const heroStyle = heroBgImage
-    ? {
+    ? useOptimizedHeroImage
+      ? { background: "linear-gradient(135deg,#111111 0%,#2a2a2a 100%)" }
+      : {
         backgroundImage: `linear-gradient(135deg,rgba(17,17,17,0.78),rgba(42,42,42,0.78)), url("${heroBgImage}")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -371,6 +392,19 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-44 pt-16 text-center sm:px-6 sm:pb-40 md:pt-[100px] md:pb-32"
           style={heroStyle}
         >
+          {useOptimizedHeroImage ? (
+            <>
+              <Image
+                src={heroBgImage}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(17,17,17,0.78),rgba(42,42,42,0.78))]" />
+            </>
+          ) : null}
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
@@ -441,7 +475,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             </h2>
           </div>
           <div className="animation-container mt-10 overflow-hidden">
-            <div className="animate-slide flex w-max gap-5 px-4 [--speed:28s] sm:px-5">
+            <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
               {doubledResults.map((item, index) => (
                 <article
                   key={`${item.student}-${index}`}
@@ -549,7 +583,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             {/* scrolling teacher cards — light card style */}
             <div className="overflow-hidden">
               <div
-                className="animate-marquee-loop flex w-max gap-[var(--marquee-gap)] [--marquee-gap:1.25rem] [--marquee-gap-half:0.625rem] md:[--marquee-gap:1.5rem] md:[--marquee-gap-half:0.75rem] [--speed:34s]"
+                className="motion-safe:animate-marquee-loop flex w-max gap-[var(--marquee-gap)] [--marquee-gap:1.25rem] [--marquee-gap-half:0.625rem] [--speed:34s] motion-reduce:animate-none will-change-transform md:[--marquee-gap:1.5rem] md:[--marquee-gap-half:0.75rem]"
               >
                 {[cmsTeachers, cmsTeachers].map((group, groupIndex) => (
                   <div key={`teacher-group-${groupIndex}`} className="flex w-max gap-[var(--marquee-gap)]">
