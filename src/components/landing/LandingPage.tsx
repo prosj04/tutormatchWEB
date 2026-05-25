@@ -557,11 +557,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    {/* name + subject inline */}
-                    <h3 className="mt-4 text-lg font-black text-neutral-100">
-                      {teacher.name} 선생님
-                      <span className="ml-1.5 text-sm font-bold text-primary">· {teacher.subject}</span>
-                    </h3>
+                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
+                    <div className="mt-2 flex justify-center">
+                      <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                        {teacher.subject}
+                      </span>
+                    </div>
                     {/* highlight */}
                     <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
                       {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}

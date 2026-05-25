@@ -18,7 +18,7 @@ function readStoredTier(): PricingSchoolTier | null {
 
 /** 홈·요금제 페이지에서 학년 탭 상태를 통일 (세션 저장) */
 export function usePricingSchoolTier(): [PricingSchoolTier, (next: PricingSchoolTier) => void] {
-  const [tier, setTierState] = useState<PricingSchoolTier>("high");
+  const [tier, setTierState] = useState<PricingSchoolTier>("middle");
 
   useEffect(() => {
     const stored = readStoredTier();

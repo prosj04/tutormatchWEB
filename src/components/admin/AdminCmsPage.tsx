@@ -1153,8 +1153,8 @@ export function AdminCmsPage() {
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
               <p className="mb-5 text-sm text-text-secondary">
-                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 기존 키(pricing_box_), 「중등」은 pricing_middle_box_ 이며 중등 값이 비어 있으면
-                고등과 동일하게 보입니다. 박스 5~6은 필요할 때만 켭니다.
+                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 기존 키(pricing_box_), 「중등」은 pricing_middle_box_ 이며
+                고등 값이 비어 있으면 중등 값을 기본으로 쓰고 가격만 5만원 올려서 보입니다. 박스 5~6은 필요할 때만 켭니다.
               </p>
               <div className="grid gap-4 lg:grid-cols-2">
                 {pricingHeaderFields.map((field) => (
@@ -1192,7 +1192,7 @@ export function AdminCmsPage() {
                 </CmsCardBoxGrid>
               </div>
               <div className="mt-10">
-                <p className="mb-4 text-xs font-black text-primary">중등 카드 세트 (비워 두면 고등과 동일)</p>
+                <p className="mb-4 text-xs font-black text-primary">중등 카드 세트 (고등 기본값의 기준)</p>
                 <CmsCardBoxGrid>
                   {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
                     <CmsCardBox

@@ -27,9 +27,22 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
 
         <div className="min-w-0">
           <h3 className="text-lg font-black text-text-primary">{tutor.name} 선생님</h3>
-          <p className="mt-1 text-sm font-semibold text-primary">
-            {tutor.subjects.length > 0 ? tutor.subjects.join(" · ") : "담당 과목 협의"}
-          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {tutor.subjects.length > 0 ? (
+              tutor.subjects.map((subject) => (
+                <span
+                  key={subject}
+                  className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary"
+                >
+                  {subject}
+                </span>
+              ))
+            ) : (
+              <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+                담당 과목 협의
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
