@@ -22,6 +22,33 @@ export async function GET(request: Request) {
     if (!isValidMonthString(month)) {
       return NextResponse.json({ error: "Invalid month" }, { status: 400 });
     }
+  }
+
+  if (month && date) {
+    if (!isValidDateString(date)) {
+      return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+    }
+
+    const [plans, plan] = await Promise.all([
+      prisma.studyPlan.findMany({
+        where: { studentId: student.id, date: { startsWith: month } },
+        select: { date: true },
+      }),
+      prisma.studyPlan.findFirst({
+        where: { studentId: student.id, date },
+        include: {
+          tasks: { orderBy: { order: "asc" } },
+        },
+      }),
+    ]);
+
+    return NextResponse.json({
+      dates: plans.map((p) => p.date),
+      plan,
+    });
+  }
+
+  if (month) {
     const plans = await prisma.studyPlan.findMany({
       where: { studentId: student.id, date: { startsWith: month } },
       select: { date: true },

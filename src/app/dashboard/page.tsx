@@ -42,12 +42,48 @@ export default async function DashboardPage() {
     now.getMonth() + 1,
     now.getDate(),
   );
+  const initialMonthKey = initialDate.slice(0, 7);
+
+  const [planDateRows, rawInitialPlan, rawInitialQuestions] = await Promise.all([
+    prisma.studyPlan.findMany({
+      where: { studentId: student.id, date: { startsWith: initialMonthKey } },
+      select: { date: true },
+    }),
+    prisma.studyPlan.findFirst({
+      where: { studentId: student.id, date: initialDate },
+      include: { tasks: { orderBy: { order: "asc" } } },
+    }),
+    prisma.question.findMany({
+      where: { studentId: student.id, date: initialDate },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const initialPlan = rawInitialPlan
+    ? {
+        ...rawInitialPlan,
+        commentAt: rawInitialPlan.commentAt?.toISOString() ?? null,
+        tasks: rawInitialPlan.tasks.map((task) => ({
+          ...task,
+          doneAt: task.doneAt?.toISOString() ?? null,
+        })),
+      }
+    : null;
+
+  const initialQuestions = rawInitialQuestions.map((question) => ({
+    ...question,
+    createdAt: question.createdAt.toISOString(),
+    teacherAnswerAt: question.teacherAnswerAt?.toISOString() ?? null,
+  }));
 
   return (
     <StudentDashboard
       studentName={student.name}
       studentId={student.id}
       initialDate={initialDate}
+      initialPlanDates={planDateRows.map((plan) => plan.date)}
+      initialPlan={initialPlan}
+      initialQuestions={initialQuestions}
       aiAnswerEnabled={isAiAnswerEnabled()}
     />
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { uploadQuestionImage } from "@/lib/supabase-client";
@@ -13,12 +13,14 @@ type QuestionSectionProps = {
   selectedDate: string;
   studentId: string;
   aiAnswerEnabled: boolean;
+  initialQuestions: Question[];
 };
 
 export function QuestionSection({
   selectedDate,
   studentId,
   aiAnswerEnabled,
+  initialQuestions,
 }: QuestionSectionProps) {
   const sectionTitle = usePortalCopy("student_questions", "section_title", "질문");
   const btnAdd = usePortalCopy("student_questions", "btn_add", "질문 등록");
@@ -39,11 +41,12 @@ export function QuestionSection({
     "이미지 업로드에 실패했습니다. Supabase Storage 설정을 확인해 주세요.",
   );
 
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [aiLoadingIds, setAiLoadingIds] = useState<Set<string>>(new Set());
+  const skipInitialFetchRef = useRef(true);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
@@ -58,7 +61,11 @@ export function QuestionSection({
   }, [selectedDate]);
 
   useEffect(() => {
-    fetchQuestions();
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+      return;
+    }
+    void fetchQuestions();
   }, [fetchQuestions]);
 
   async function requestAiAnswer(questionId: string) {
@@ -110,8 +117,7 @@ export function QuestionSection({
       const newQuestion = data.question;
       setQuestions((prev) => [newQuestion, ...prev]);
       setModalOpen(false);
-      setAiLoadingIds((prev) => new Set(prev).add(newQuestion.id));
-      await requestAiAnswer(newQuestion.id);
+      void requestAiAnswer(newQuestion.id);
     } finally {
       setSubmitting(false);
     }

@@ -123,10 +123,13 @@ export function ConsultationBookingPage({
   }, []);
 
   useEffect(() => {
-    void fetchBooking();
-    const interval = window.setInterval(() => void fetchBooking(), 30_000);
+    if (booking?.status !== "WAITING" && booking?.status !== "ASSIGNED") {
+      return;
+    }
+
+    const interval = window.setInterval(() => void fetchBooking(), 60_000);
     return () => window.clearInterval(interval);
-  }, [fetchBooking]);
+  }, [booking?.status, fetchBooking]);
 
   useEffect(() => {
     if (openVisitFromUrl) setShowVisitPicker(true);

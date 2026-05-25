@@ -217,7 +217,6 @@ export default function TeacherRegisterPage() {
         return;
       }
       router.push("/teacher-portal/dashboard");
-      router.refresh();
       return;
     } catch {
       setError("가입 신청 중 문제가 발생했습니다. 다시 시도해 주세요.");

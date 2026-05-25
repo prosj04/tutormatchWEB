@@ -54,8 +54,9 @@ export function TeacherStudentsManager({
   }, []);
 
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    if (initialStudents.length > 0) return;
+    void fetchStudents();
+  }, [fetchStudents, initialStudents.length]);
 
   const selected = students.find((s) => s.id === selectedId);
 

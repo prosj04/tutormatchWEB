@@ -8,7 +8,6 @@ import {
 } from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
 
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { DevSkipPaymentButton } from "@/components/checkout/DevSkipPaymentButton";
@@ -39,6 +38,7 @@ type CheckoutContentProps = {
   sessions: SessionPlan;
   subjects: SubjectCount;
   siteContent?: GroupedSiteContent;
+  needsSignup: boolean;
 };
 
 export function CheckoutContent({
@@ -46,11 +46,11 @@ export function CheckoutContent({
   sessions,
   subjects,
   siteContent,
+  needsSignup,
 }: CheckoutContentProps) {
   const c = (key: string, fb: string) => getCmsSectionValue(siteContent, "checkout_page", key, fb);
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
   const planLabel = getPlanLabel(sessions, subjects);
-  const { data: session, status } = useSession();
 
   const { total, platformFee, lessonFee } = getPriceBreakdown(sessions, subjects);
 
@@ -70,7 +70,6 @@ export function CheckoutContent({
   const goConsultation = useConsultationCta();
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
   const paymentMethodsRef = useRef<PMW | null>(null);
-  const needsSignup = status !== "authenticated" || session?.user?.role !== "STUDENT";
 
   useEffect(() => {
     let cancelled = false;

@@ -1,18 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { parseDateKey } from "@/lib/study-plan-dates";
 
 import { DashboardCalendar } from "./DashboardCalendar";
 import { DashboardTopBar } from "./DashboardTopBar";
 import { DailyPlanView } from "./DailyPlanView";
-import type { RecentPlanOption, StudyPlan, StudyTask } from "./types";
+import type { Question, RecentPlanOption, StudyPlan, StudyTask } from "./types";
 
 type StudentDashboardProps = {
   studentName: string;
   studentId: string;
   initialDate: string;
+  initialPlanDates: string[];
+  initialPlan: StudyPlan | null;
+  initialQuestions: Question[];
   aiAnswerEnabled: boolean;
 };
 
@@ -20,6 +23,9 @@ export function StudentDashboard({
   studentName,
   studentId,
   initialDate,
+  initialPlanDates,
+  initialPlan,
+  initialQuestions,
   aiAnswerEnabled,
 }: StudentDashboardProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -27,33 +33,35 @@ export function StudentDashboard({
   const parsed = parseDateKey(selectedDate);
   const [calendarYear, setCalendarYear] = useState(parsed.year);
   const [calendarMonth, setCalendarMonth] = useState(parsed.month);
-  const [planDates, setPlanDates] = useState<Set<string>>(new Set());
-  const [plan, setPlan] = useState<StudyPlan | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [planDates, setPlanDates] = useState<Set<string>>(
+    () => new Set(initialPlanDates),
+  );
+  const [plan, setPlan] = useState<StudyPlan | null>(initialPlan);
+  const [loading, setLoading] = useState(false);
 
   const [copyModalOpen, setCopyModalOpen] = useState(false);
   const [copyOptions, setCopyOptions] = useState<RecentPlanOption[]>([]);
   const [copyLoading, setCopyLoading] = useState(false);
   const [copySource, setCopySource] = useState<string | null>(null);
+  const skipInitialSnapshotFetchRef = useRef(true);
 
   const monthKey = useMemo(
     () => `${calendarYear}-${String(calendarMonth).padStart(2, "0")}`,
     [calendarYear, calendarMonth],
   );
 
-  const fetchMonthDates = useCallback(async () => {
-    const res = await fetch(`/api/plans?month=${monthKey}`);
-    if (!res.ok) return;
-    const data = (await res.json()) as { dates: string[] };
-    setPlanDates(new Set(data.dates));
-  }, [monthKey]);
-
-  const fetchPlan = useCallback(async (date: string) => {
+  const fetchPlanSnapshot = useCallback(async (date: string, month: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/plans?date=${date}`);
+      const res = await fetch(
+        `/api/plans?month=${month}&date=${date}`,
+      );
       if (!res.ok) return;
-      const data = (await res.json()) as { plan: StudyPlan | null };
+      const data = (await res.json()) as {
+        dates: string[];
+        plan: StudyPlan | null;
+      };
+      setPlanDates(new Set(data.dates));
       setPlan(data.plan);
     } finally {
       setLoading(false);
@@ -61,12 +69,12 @@ export function StudentDashboard({
   }, []);
 
   useEffect(() => {
-    fetchMonthDates();
-  }, [fetchMonthDates]);
-
-  useEffect(() => {
-    fetchPlan(selectedDate);
-  }, [selectedDate, fetchPlan]);
+    if (skipInitialSnapshotFetchRef.current) {
+      skipInitialSnapshotFetchRef.current = false;
+      return;
+    }
+    void fetchPlanSnapshot(selectedDate, monthKey);
+  }, [selectedDate, monthKey, fetchPlanSnapshot]);
 
   function handleSelectDate(date: string) {
     setSelectedDate(date);
@@ -244,6 +252,7 @@ export function StudentDashboard({
             aiAnswerEnabled={aiAnswerEnabled}
             plan={plan}
             loading={loading}
+            initialQuestions={initialQuestions}
             copyModalOpen={copyModalOpen}
             copyOptions={copyOptions}
             copyLoading={copyLoading}

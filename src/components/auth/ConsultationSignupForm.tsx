@@ -121,7 +121,6 @@ export function ConsultationSignupForm({
       onSuccess?.();
       const visitQuery = instantEnroll ? "?visit=1" : "";
       router.push(`/dashboard/consultation${visitQuery}`);
-      router.refresh();
     } finally {
       setLoading(false);
     }

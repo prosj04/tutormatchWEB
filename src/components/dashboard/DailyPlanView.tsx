@@ -6,7 +6,7 @@ import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
 import { CopyPlanModal } from "./CopyPlanModal";
 import { QuestionSection } from "./QuestionSection";
 import { TaskList } from "./TaskList";
-import type { RecentPlanOption, StudyPlan, StudyTask } from "./types";
+import type { Question, RecentPlanOption, StudyPlan, StudyTask } from "./types";
 
 type DailyPlanViewProps = {
   selectedDate: string;
@@ -14,6 +14,7 @@ type DailyPlanViewProps = {
   aiAnswerEnabled: boolean;
   plan: StudyPlan | null;
   loading: boolean;
+  initialQuestions: Question[];
   copyModalOpen: boolean;
   copyOptions: RecentPlanOption[];
   copyLoading: boolean;
@@ -36,6 +37,7 @@ export function DailyPlanView({
   aiAnswerEnabled,
   plan,
   loading,
+  initialQuestions,
   copyModalOpen,
   copyOptions,
   copyLoading,
@@ -149,6 +151,7 @@ export function DailyPlanView({
           selectedDate={selectedDate}
           studentId={studentId}
           aiAnswerEnabled={aiAnswerEnabled}
+          initialQuestions={initialQuestions}
         />
       </div>
 

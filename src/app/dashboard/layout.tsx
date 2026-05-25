@@ -1,9 +1,17 @@
 import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections([
+    "student_dashboard",
+    "student_task_list",
+    "student_questions",
+    "student_question_modal",
+    "student_copy_plan",
+    "student_consultation",
+    "visit_picker",
+  ]);
   return <PortalSiteContentProvider value={siteContent}>{children}</PortalSiteContentProvider>;
 }

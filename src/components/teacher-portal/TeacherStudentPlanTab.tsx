@@ -37,38 +37,29 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
     [calendarYear, calendarMonth],
   );
 
-  const fetchMonthDates = useCallback(async () => {
-    const res = await fetch(
-      `/api/teacher/students/${studentId}/plans?month=${monthKey}`,
-    );
-    if (!res.ok) return;
-    const data = (await res.json()) as { dates: string[] };
-    setPlanDates(new Set(data.dates));
-  }, [studentId, monthKey]);
-
-  const fetchPlan = useCallback(async () => {
+  const fetchPlanSnapshot = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/teacher/students/${studentId}/plans?date=${selectedDate}`,
+        `/api/teacher/students/${studentId}/plans?month=${monthKey}&date=${selectedDate}`,
       );
       if (!res.ok) return;
-      const data = (await res.json()) as { plan: StudyPlanItem | null };
+      const data = (await res.json()) as {
+        dates: string[];
+        plan: StudyPlanItem | null;
+      };
+      setPlanDates(new Set(data.dates));
       setPlan(data.plan);
       setCommentDraft(data.plan?.comment ?? "");
       setEditingComment(!data.plan?.comment);
     } finally {
       setLoading(false);
     }
-  }, [studentId, selectedDate]);
+  }, [studentId, monthKey, selectedDate]);
 
   useEffect(() => {
-    fetchMonthDates();
-  }, [fetchMonthDates]);
-
-  useEffect(() => {
-    fetchPlan();
-  }, [fetchPlan]);
+    void fetchPlanSnapshot();
+  }, [fetchPlanSnapshot]);
 
   function handleSelectDate(date: string) {
     setSelectedDate(date);

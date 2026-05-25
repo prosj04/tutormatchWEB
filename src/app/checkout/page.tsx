@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { CheckoutContent } from "@/components/checkout/CheckoutContent";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import {
@@ -23,11 +24,14 @@ type PageProps = {
 };
 
 export default async function CheckoutPage({ searchParams }: PageProps) {
+  const session = await auth();
   const siteContent = await getGroupedSiteContentBySections(["checkout_page"]);
   const tutorId = first(searchParams.tutor) ?? "1";
   const sessionsRaw = first(searchParams.sessions);
   const sessions: SessionPlan = parseSessionsParam(sessionsRaw);
   const subjects: SubjectCount = parseSubjectsParam(first(searchParams.subjects));
+  const needsSignup =
+    !session?.user?.id || session.user.role !== "STUDENT";
   const showFailBanner = first(searchParams.error) === "1";
   const failBannerText = getCmsSectionValue(
     siteContent,
@@ -43,7 +47,13 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
           {failBannerText}
         </div>
       ) : null}
-      <CheckoutContent tutorId={tutorId} sessions={sessions} subjects={subjects} siteContent={siteContent} />
+      <CheckoutContent
+        tutorId={tutorId}
+        sessions={sessions}
+        subjects={subjects}
+        siteContent={siteContent}
+        needsSignup={needsSignup}
+      />
     </>
   );
 }

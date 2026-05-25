@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
 import type { PortalTeacherRole } from "@/lib/portal-roles";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
-import { getGroupedSiteContent } from "@/lib/site-content";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export default async function TeacherDashboardLayout({
     redirect("/teacher-portal");
   }
 
-  const siteContent = await getGroupedSiteContent();
+  const siteContent = await getGroupedSiteContentBySections(["teacher_portal"]);
 
   return (
     <PortalSiteContentProvider value={siteContent}>
