@@ -8,10 +8,19 @@ import {
 import { requireNotificationUser } from "@/lib/notification-auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: Request) {
   const authResult = await requireNotificationUser();
   if ("error" in authResult) return authResult.error;
   const { userId, role } = authResult;
+  const summaryOnly = new URL(request.url).searchParams.get("summary") === "1";
+
+  if (summaryOnly) {
+    const unreadCount = await prisma.notification.count({
+      where: { userId, isRead: false },
+    });
+
+    return NextResponse.json({ unreadCount });
+  }
 
   // Run both queries in parallel. count() uses the (userId, isRead) index and
   // gives an accurate total across all notifications, not just the top-50 page.

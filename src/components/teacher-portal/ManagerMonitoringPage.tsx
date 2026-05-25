@@ -1,83 +1,54 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
+import type {
+  ManagerMonitoringDetailData,
+  ManagerMonitoringOverview,
+  ManagerMonitoringStudentRow,
+} from "@/lib/manager-portal-data";
 import { formatConsultationDateLabel } from "@/lib/study-plan-dates";
 
-type Overview = {
-  studentCount: number;
-  avgCompletionRate: number;
-  staleQuestions: number;
-  atRiskCount: number;
+type Overview = ManagerMonitoringOverview;
+type StudentRow = ManagerMonitoringStudentRow;
+type DetailData = ManagerMonitoringDetailData;
+
+type ManagerMonitoringPageProps = {
+  initialOverview: Overview;
+  initialStudents: StudentRow[];
 };
 
-type StudentRow = {
-  id: string;
-  name: string;
-  grade: string;
-  teacherName: string;
-  completionRate: number;
-  unansweredStale: number;
-  statusLabel: string;
-  statusClassName: string;
-};
-
-type DetailPlan = {
-  id: string;
-  date: string;
-  tasks: { id: string; title: string; isDone: boolean }[];
-  comment: string | null;
-};
-
-type DetailData = {
-  student: { name: string; grade: string } | null;
-  plans: DetailPlan[];
-  unansweredQuestions: {
-    id: string;
-    date: string;
-    content: string;
-    createdAt: string;
-  }[];
-  recentComments: { date: string; comment: string | null; commentAt: string | null }[];
-};
-
-export function ManagerMonitoringPage() {
-  const [overview, setOverview] = useState<Overview | null>(null);
-  const [students, setStudents] = useState<StudentRow[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ManagerMonitoringPage({
+  initialOverview,
+  initialStudents,
+}: ManagerMonitoringPageProps) {
+  const [overview] = useState<Overview | null>(initialOverview);
+  const [students] = useState<StudentRow[]>(initialStudents);
+  const [loading] = useState(false);
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/manager/monitoring");
-      if (!res.ok) return;
-      const data = (await res.json()) as {
-        overview: Overview;
-        students: StudentRow[];
-      };
-      setOverview(data.overview);
-      setStudents(data.students);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const detailCacheRef = useRef<Map<string, DetailData>>(new Map());
 
   const openDrawer = async (studentId: string) => {
     setDrawerId(studentId);
+    const cached = detailCacheRef.current.get(studentId);
+    if (cached) {
+      setDetail(cached);
+      setDetailLoading(false);
+      return;
+    }
+
+    setDetail(null);
     setDetailLoading(true);
     try {
       const res = await fetch(
         `/api/manager/monitoring/stats?studentId=${encodeURIComponent(studentId)}`,
       );
       if (res.ok) {
-        setDetail((await res.json()) as DetailData);
+        const data = (await res.json()) as DetailData;
+        detailCacheRef.current.set(studentId, data);
+        setDetail(data);
       }
     } finally {
       setDetailLoading(false);

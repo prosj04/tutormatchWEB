@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { uploadTeacherPhoto } from "@/lib/supabase-client";
@@ -56,6 +56,8 @@ export function TeacherProfileEditor({
   const [documentUploading, setDocumentUploading] = useState<DocumentType | null>(null);
   const [resumeFiles, setResumeFiles] = useState<UploadedDocumentFile[]>([]);
   const [documentFiles, setDocumentFiles] = useState<UploadedDocumentFile[]>([]);
+  const [documentsOpen, setDocumentsOpen] = useState(false);
+  const [documentsLoaded, setDocumentsLoaded] = useState(false);
   const [toast, setToast] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,31 +66,26 @@ export function TeacherProfileEditor({
     setPendingPhoto(null);
   }, [initialForm]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadDocuments() {
-      console.time("[perf] client.teacherProfile.documentsFetch");
-      setDocumentLoading(true);
-      try {
-        const res = await fetch("/api/teacher/profile/documents");
-        if (!res.ok) return;
-        const data = (await res.json()) as DocumentsResponse;
-        if (cancelled) return;
-        setResumeFiles(data.resumeFiles);
-        setDocumentFiles(data.documentFiles);
-      } finally {
-        if (!cancelled) setDocumentLoading(false);
-        console.timeEnd("[perf] client.teacherProfile.documentsFetch");
-      }
+  const loadDocuments = useCallback(async () => {
+    console.time("[perf] client.teacherProfile.documentsFetch");
+    setDocumentLoading(true);
+    try {
+      const res = await fetch("/api/teacher/profile/documents");
+      if (!res.ok) return;
+      const data = (await res.json()) as DocumentsResponse;
+      setResumeFiles(data.resumeFiles);
+      setDocumentFiles(data.documentFiles);
+      setDocumentsLoaded(true);
+    } finally {
+      setDocumentLoading(false);
+      console.timeEnd("[perf] client.teacherProfile.documentsFetch");
     }
-
-    void loadDocuments();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    if (!documentsOpen || documentsLoaded) return;
+    void loadDocuments();
+  }, [documentsLoaded, documentsOpen, loadDocuments]);
 
   function updateEducation(index: number, patch: Partial<EducationEntry>) {
     setForm((f) => ({
@@ -168,6 +165,7 @@ export function TeacherProfileEditor({
   function handleDocumentsResponse(data: DocumentsResponse) {
     setResumeFiles(data.resumeFiles);
     setDocumentFiles(data.documentFiles);
+    setDocumentsLoaded(true);
     setForm((f) => ({
       ...f,
       resumeUrls: data.resumeFiles.map((file) => file.url),
@@ -462,86 +460,101 @@ export function TeacherProfileEditor({
 
           <section>
             <div>
-              <h2 className="text-sm font-bold text-text-primary">서류 업로드</h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-sm font-bold text-text-primary">서류 업로드</h2>
+                <button
+                  type="button"
+                  onClick={() => setDocumentsOpen((prev) => !prev)}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  {documentsOpen ? "접기" : "불러오기"}
+                </button>
+              </div>
               <p className="mt-1 text-xs leading-relaxed text-text-secondary">
                 PDF 또는 이미지 파일을 업로드할 수 있습니다. 파일당 최대 10MB까지 허용됩니다.
               </p>
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {[
-                {
-                  type: "resume" as const,
-                  title: "이력서",
-                  files: resumeFiles,
-                  empty: "업로드된 이력서가 없습니다.",
-                },
-                {
-                  type: "document" as const,
-                  title: "인증서류",
-                  files: documentFiles,
-                  empty: "업로드된 인증서류가 없습니다.",
-                },
-              ].map((group) => (
-                <div
-                  key={group.type}
-                  className="rounded-xl border border-gray-100 bg-background p-4"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-sm font-bold text-text-primary">{group.title}</h3>
-                    <label className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary hover:border-primary hover:text-primary">
-                      {documentUploading === group.type ? "업로드 중…" : "파일 추가"}
-                      <input
-                        type="file"
-                        accept="application/pdf,image/*"
-                        className="hidden"
-                        disabled={documentUploading !== null}
-                        onChange={(e) => {
-                          void uploadDocument(e.target.files?.[0], group.type);
-                          e.currentTarget.value = "";
-                        }}
-                      />
-                    </label>
-                  </div>
+            {documentsOpen ? (
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {[
+                  {
+                    type: "resume" as const,
+                    title: "이력서",
+                    files: resumeFiles,
+                    empty: "업로드된 이력서가 없습니다.",
+                  },
+                  {
+                    type: "document" as const,
+                    title: "인증서류",
+                    files: documentFiles,
+                    empty: "업로드된 인증서류가 없습니다.",
+                  },
+                ].map((group) => (
+                  <div
+                    key={group.type}
+                    className="rounded-xl border border-gray-100 bg-background p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-bold text-text-primary">{group.title}</h3>
+                      <label className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary hover:border-primary hover:text-primary">
+                        {documentUploading === group.type ? "업로드 중…" : "파일 추가"}
+                        <input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          className="hidden"
+                          disabled={documentUploading !== null}
+                          onChange={(e) => {
+                            void uploadDocument(e.target.files?.[0], group.type);
+                            e.currentTarget.value = "";
+                          }}
+                        />
+                      </label>
+                    </div>
 
-                  <ul className="mt-3 space-y-2">
-                    {documentLoading ? (
-                      <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
-                    ) : group.files.length === 0 ? (
-                      <li className="text-xs text-text-muted">{group.empty}</li>
-                    ) : (
-                      group.files.map((file) => (
-                        <li
-                          key={file.url}
-                          className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
-                        >
-                          <span className="min-w-0 truncate text-text-secondary">
-                            {file.name}
-                          </span>
-                          <span className="flex shrink-0 gap-2">
-                            <a
-                              href={file.signedUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="font-semibold text-primary hover:underline"
-                            >
-                              열기
-                            </a>
-                            <button
-                              type="button"
-                              onClick={() => void deleteDocument(file.url, group.type)}
-                              className="font-semibold text-accent hover:underline"
-                            >
-                              삭제
-                            </button>
-                          </span>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
-              ))}
-            </div>
+                    <ul className="mt-3 space-y-2">
+                      {documentLoading ? (
+                        <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
+                      ) : group.files.length === 0 ? (
+                        <li className="text-xs text-text-muted">{group.empty}</li>
+                      ) : (
+                        group.files.map((file) => (
+                          <li
+                            key={file.url}
+                            className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
+                          >
+                            <span className="min-w-0 truncate text-text-secondary">
+                              {file.name}
+                            </span>
+                            <span className="flex shrink-0 gap-2">
+                              <a
+                                href={file.signedUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-semibold text-primary hover:underline"
+                              >
+                                열기
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => void deleteDocument(file.url, group.type)}
+                                className="font-semibold text-accent hover:underline"
+                              >
+                                삭제
+                              </button>
+                            </span>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-4 rounded-xl border border-dashed border-gray-200 bg-background px-4 py-5 text-sm text-text-secondary">
+                필요할 때만 서류 목록과 다운로드 링크를 불러옵니다.
+              </div>
+            )}
           </section>
 
           <button

@@ -3,29 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { ManagerConsultationBooking } from "@/lib/manager-portal-data";
 import {
   getNextWeekDates,
   type VisitTimesByDate,
 } from "@/lib/visit-consultation";
 
-type ConsultationBooking = {
-  id: string;
-  status: "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED";
-  note: string | null;
-  managerNote?: string | null;
-  preferredTimes: string[];
-  visitPreferredTimes: VisitTimesByDate;
-  createdAt: string;
-  timeAgo?: string;
-  assignedAt?: string | null;
-  assignedAgo?: string | null;
-  student: {
-    id: string;
-    name: string;
-    grade: string;
-    subjects: string;
-  };
-};
+type ConsultationBooking = ManagerConsultationBooking;
 
 type Tab = "waiting" | "mine";
 
@@ -36,18 +20,31 @@ const STATUS_BADGES = {
   WAITING: { label: "대기중", className: "bg-amber-100 text-amber-800" },
 } as const;
 
-export function ManagerConsultationsPage() {
+type ManagerConsultationsPageProps = {
+  initialWaiting: ConsultationBooking[];
+  initialMine: ConsultationBooking[];
+  initialMineLoaded?: boolean;
+};
+
+export function ManagerConsultationsPage({
+  initialWaiting,
+  initialMine,
+  initialMineLoaded = true,
+}: ManagerConsultationsPageProps) {
   const [tab, setTab] = useState<Tab>("waiting");
-  const [waiting, setWaiting] = useState<ConsultationBooking[]>([]);
-  const [mine, setMine] = useState<ConsultationBooking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [waiting, setWaiting] = useState<ConsultationBooking[]>(initialWaiting);
+  const [mine, setMine] = useState<ConsultationBooking[]>(initialMine);
+  const [mineLoaded, setMineLoaded] = useState(initialMineLoaded);
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [completeTarget, setCompleteTarget] =
     useState<ConsultationBooking | null>(null);
   const [managerNote, setManagerNote] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const waitingIdsRef = useRef<Set<string>>(new Set());
-  const initializedWaitingRef = useRef(false);
+  const waitingIdsRef = useRef<Set<string>>(
+    new Set(initialWaiting.map((booking) => booking.id)),
+  );
+  const initializedWaitingRef = useRef(true);
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -84,6 +81,7 @@ export function ManagerConsultationsPage() {
       bookings: ConsultationBooking[];
     };
     setMine(data.bookings);
+    setMineLoaded(true);
   }, []);
 
   const refreshAll = useCallback(async () => {
@@ -93,14 +91,16 @@ export function ManagerConsultationsPage() {
   }, [fetchWaiting, fetchMine]);
 
   useEffect(() => {
-    void refreshAll();
-  }, [refreshAll]);
-
-  useEffect(() => {
     if (tab !== "waiting") return;
     const interval = window.setInterval(() => void fetchWaiting(true), 30_000);
     return () => window.clearInterval(interval);
   }, [tab, fetchWaiting]);
+
+  useEffect(() => {
+    if (tab !== "mine" || mineLoaded) return;
+    setLoading(true);
+    void fetchMine().finally(() => setLoading(false));
+  }, [fetchMine, mineLoaded, tab]);
 
   async function assignBooking(booking: ConsultationBooking) {
     const ok = confirm(

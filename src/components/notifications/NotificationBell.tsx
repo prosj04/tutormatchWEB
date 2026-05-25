@@ -23,6 +23,17 @@ export function NotificationBell() {
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications?summary=1");
+      if (!res.ok) return;
+      const data = (await res.json()) as { unreadCount: number };
+      setUnreadCount(data.unreadCount);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/notifications");
@@ -39,15 +50,18 @@ export function NotificationBell() {
   }, []);
 
   useEffect(() => {
-    void fetchNotifications();
-    const interval = setInterval(() => void fetchNotifications(), 60_000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
+    const timer = window.setTimeout(() => {
+      void fetchUnreadCount();
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [fetchUnreadCount]);
 
   useEffect(() => {
     if (!open) return;
     setLoading(true);
     void fetchNotifications().finally(() => setLoading(false));
+    const interval = window.setInterval(() => void fetchNotifications(), 60_000);
+    return () => window.clearInterval(interval);
   }, [open, fetchNotifications]);
 
   useEffect(() => {

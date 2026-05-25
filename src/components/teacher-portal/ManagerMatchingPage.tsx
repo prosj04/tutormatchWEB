@@ -2,23 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import type {
+  ManagerMatchingStudent,
+  ManagerMatchingTeacher,
+} from "@/lib/manager-portal-data";
 import { todayDateKey } from "@/lib/study-plan-dates";
 
-type MatchStudent = {
-  id: string;
-  name: string;
-  grade: string;
-  subjects: string;
-  consultationNote: string | null;
-};
-
-type MatchTeacher = {
-  id: string;
-  name: string;
-  subjects: string;
-  photoUrl: string | null;
-  activeStudentCount: number;
-};
+type MatchStudent = ManagerMatchingStudent;
+type MatchTeacher = ManagerMatchingTeacher;
 
 function parseSubjects(raw: string): string[] {
   return raw
@@ -27,11 +18,21 @@ function parseSubjects(raw: string): string[] {
     .filter(Boolean);
 }
 
-export function ManagerMatchingPage() {
-  const [students, setStudents] = useState<MatchStudent[]>([]);
-  const [teachers, setTeachers] = useState<MatchTeacher[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+type ManagerMatchingPageProps = {
+  initialStudents: MatchStudent[];
+  initialTeachers: MatchTeacher[];
+};
+
+export function ManagerMatchingPage({
+  initialStudents,
+  initialTeachers,
+}: ManagerMatchingPageProps) {
+  const [students, setStudents] = useState<MatchStudent[]>(initialStudents);
+  const [teachers, setTeachers] = useState<MatchTeacher[]>(initialTeachers);
+  const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    initialStudents[0]?.id ?? null,
+  );
   const [teacherId, setTeacherId] = useState<string | null>(null);
   const [matchSubjects, setMatchSubjects] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -57,10 +58,6 @@ export function ManagerMatchingPage() {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
 
   const selected = students.find((s) => s.id === selectedId);
 

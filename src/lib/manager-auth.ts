@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 
 export async function requireManager() {
   const session = await auth();
@@ -16,9 +16,7 @@ export async function requireManager() {
     } as const;
   }
 
-  const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
-  });
+  const teacher = await getTeacherByUserId(session.user.id);
 
   if (!teacher) {
     return {

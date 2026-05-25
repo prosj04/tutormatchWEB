@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { getManagerMatchingData } from "@/lib/manager-portal-data";
 import { requireManager } from "@/lib/manager-auth";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { todayDateKey } from "@/lib/study-plan-dates";
 
 export async function GET() {
@@ -11,74 +11,7 @@ export async function GET() {
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
-  const completedBookings = await prisma.consultationBooking.findMany({
-    where: { managerId: teacher.id, status: "COMPLETED" },
-    select: {
-      id: true,
-      studentId: true,
-      note: true,
-      managerNote: true,
-      student: { select: { id: true, name: true, grade: true, subjects: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // De-duplicate by studentId (keep most recent booking per student)
-  const seen = new Set<string>();
-  const candidates: typeof completedBookings = [];
-  for (const booking of completedBookings) {
-    if (seen.has(booking.studentId)) continue;
-    seen.add(booking.studentId);
-    candidates.push(booking);
-  }
-
-  // Single query replaces N per-booking prisma.teacherStudent.count() calls
-  const alreadyMatchedIds = new Set(
-    (
-      await prisma.teacherStudent.findMany({
-        where: { studentId: { in: candidates.map((c) => c.studentId) }, isActive: true },
-        select: { studentId: true },
-      })
-    ).map((m) => m.studentId),
-  );
-
-  const students = candidates
-    .filter((b) => !alreadyMatchedIds.has(b.studentId))
-    .map((b) => ({
-      id: b.student.id,
-      name: b.student.name,
-      grade: b.student.grade,
-      subjects: b.student.subjects,
-      consultationNote: b.managerNote ?? b.note,
-      bookingId: b.id,
-    }));
-
-  const teachers = await prisma.teacher.findMany({
-    where: {
-      approved: true,
-      user: { role: { in: ["TEACHER", "MANAGER"] } },
-    },
-    include: {
-      profile: { select: { photoUrl: true } },
-      _count: {
-        select: {
-          students: { where: { isActive: true } },
-        },
-      },
-    },
-    orderBy: { name: "asc" },
-  });
-
-  return NextResponse.json({
-    students,
-    teachers: teachers.map((t) => ({
-      id: t.id,
-      name: t.name,
-      subjects: t.subjects,
-      photoUrl: getEffectivePhotoUrl(t.profile?.photoUrl, t.gender),
-      activeStudentCount: t._count.students,
-    })),
-  });
+  return NextResponse.json(await getManagerMatchingData(teacher.id));
 }
 
 export async function POST(request: Request) {
