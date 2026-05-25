@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 import {
   type CareerEntry,
@@ -98,6 +99,7 @@ export async function PATCH(request: Request) {
     },
   });
 
+  revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({
     profile: {
       photoUrl: profile.photoUrl,

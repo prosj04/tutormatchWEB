@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 
 import { PublicShell } from "@/components/layout/PublicShell";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
+import { getPublicTeacherById, getPublicTeacherIds } from "@/lib/public-teachers-cache";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
-import { prisma } from "@/lib/prisma";
 import { getGroupedSiteContent } from "@/lib/site-content";
 import {
   parseJsonArray,
@@ -17,6 +17,13 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  const ids = await getPublicTeacherIds();
+  return ids.map((id) => ({ id }));
+}
+
 function splitSubjects(value: string): string[] {
   return value
     .split(",")
@@ -26,15 +33,9 @@ function splitSubjects(value: string): string[] {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const teacher = await timeAsync(
-    "prisma.teacher.findFirst.tutorMetadata",
-    () =>
-      prisma.teacher.findFirst({
-        where: { id, approved: true },
-        select: { name: true },
-      }),
-    { teacherId: id },
-  );
+  const teacher = await timeAsync("cache.publicTeacher.metadata", () => getPublicTeacherById(id), {
+    teacherId: id,
+  });
 
   return {
     title: teacher ? `${teacher.name} 선생님` : "강사 프로필",
@@ -45,36 +46,9 @@ export default async function TutorProfilePage({ params }: PageProps) {
   const timer = startPerfTimer("page.tutorProfile.total");
   const { id } = await params;
   const siteContent = await getGroupedSiteContent();
-  const teacher = await timeAsync(
-    "prisma.teacher.findFirst.tutorProfile",
-    () =>
-      prisma.teacher.findFirst({
-        where: {
-          id,
-          approved: true,
-          user: { role: { in: ["TEACHER", "MANAGER"] } },
-        },
-        select: {
-          id: true,
-          name: true,
-          subjects: true,
-          bio: true,
-          education: true,
-          experience: true,
-          gender: true,
-          profile: {
-            select: {
-              photoUrl: true,
-              intro: true,
-              career: true,
-              education: true,
-              certificates: true,
-            },
-          },
-        },
-      }),
-    { teacherId: id },
-  );
+  const teacher = await timeAsync("cache.publicTeacher.detail", () => getPublicTeacherById(id), {
+    teacherId: id,
+  });
 
   if (!teacher) {
     timer.end({ notFound: true });

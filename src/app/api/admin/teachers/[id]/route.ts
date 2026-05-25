@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -53,6 +54,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   const updated = await prisma.teacher.update({ where: { id }, data });
+  revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({ teacher: updated });
 }
 
@@ -67,5 +69,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
   }
 
   await prisma.user.delete({ where: { id: teacher.userId } });
+  revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({ ok: true });
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
 const ALLOWED_ROLES = ["TEACHER", "MANAGER"] as const;
@@ -53,5 +54,6 @@ export async function PATCH(request: Request, context: RouteContext) {
     select: { id: true, email: true, role: true, createdAt: true },
   });
 
+  revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({ user });
 }

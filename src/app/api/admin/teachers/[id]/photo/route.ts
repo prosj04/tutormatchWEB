@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 import {
   createSupabaseBrowserClient,
@@ -84,5 +85,6 @@ export async function POST(request: Request, context: RouteContext) {
     { teacherId: id },
   );
 
+  revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({ photoUrl });
 }
