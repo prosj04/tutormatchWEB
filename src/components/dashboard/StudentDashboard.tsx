@@ -23,6 +23,7 @@ export function StudentDashboard({
   aiAnswerEnabled,
 }: StudentDashboardProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const parsed = parseDateKey(selectedDate);
   const [calendarYear, setCalendarYear] = useState(parsed.year);
   const [calendarMonth, setCalendarMonth] = useState(parsed.month);
@@ -72,6 +73,7 @@ export function StudentDashboard({
     const { year, month } = parseDateKey(date);
     setCalendarYear(year);
     setCalendarMonth(month);
+    setCalendarOpen(false);
   }
 
   function handleMonthChange(year: number, month: number) {
@@ -195,7 +197,7 @@ export function StudentDashboard({
       <DashboardTopBar studentName={studentName} />
 
       <div className="flex pt-14">
-        <aside className="fixed left-0 top-14 z-30 h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-4">
+        <aside className="fixed left-0 top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-4 lg:block">
           <DashboardCalendar
             year={calendarYear}
             month={calendarMonth}
@@ -206,7 +208,36 @@ export function StudentDashboard({
           />
         </aside>
 
-        <main className="ml-64 flex-1">
+        <main className="min-w-0 flex-1 lg:ml-64">
+          <div className="border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                  학습 일정
+                </p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">{selectedDate}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCalendarOpen((prev) => !prev)}
+                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-primary"
+              >
+                {calendarOpen ? "달력 닫기" : "날짜 선택"}
+              </button>
+            </div>
+            {calendarOpen ? (
+              <div className="mt-4">
+                <DashboardCalendar
+                  year={calendarYear}
+                  month={calendarMonth}
+                  selectedDate={selectedDate}
+                  planDates={planDates}
+                  onSelectDate={handleSelectDate}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            ) : null}
+          </div>
           <DailyPlanView
             selectedDate={selectedDate}
             studentId={studentId}

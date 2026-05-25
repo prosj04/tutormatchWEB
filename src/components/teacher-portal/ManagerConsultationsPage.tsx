@@ -182,7 +182,7 @@ export function ManagerConsultationsPage() {
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="fixed left-1/2 top-24 z-50 -translate-x-1/2 rounded-xl bg-surface px-5 py-3 text-sm font-medium text-white shadow-lg"
+            className="fixed left-1/2 top-24 z-50 -translate-x-1/2 rounded-xl bg-text-primary px-5 py-3 text-sm font-medium text-white shadow-lg"
           >
             {toast}
           </motion.div>
@@ -196,7 +196,7 @@ export function ManagerConsultationsPage() {
         상담 신청 학생을 선착순으로 담당하고 상담 완료 처리합니다.
       </p>
 
-      <div className="mt-6 flex gap-2 border-b border-gray-200">
+      <div className="mt-6 flex gap-2 overflow-x-auto border-b border-gray-200">
         {(["waiting", "mine"] as const).map((key) => (
           <button
             key={key}
@@ -418,7 +418,7 @@ function MineCard({
             type="button"
             disabled={loading}
             onClick={onComplete}
-            className="flex-1 rounded-xl bg-surface py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="flex-1 rounded-xl bg-text-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             완료 처리
           </button>

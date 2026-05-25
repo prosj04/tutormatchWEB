@@ -116,7 +116,52 @@ export function ManagerMonitoringPage() {
         ))}
       </div>
 
-      <div className="mt-10 overflow-x-auto rounded-2xl border border-gray-200 bg-surface">
+      <div className="mt-10 space-y-4 md:hidden">
+        {loading ? (
+          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-8 text-center text-sm text-text-secondary">
+            불러오는 중…
+          </div>
+        ) : students.length === 0 ? (
+          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-8 text-center text-sm text-text-secondary">
+            담당 학생이 없습니다.
+          </div>
+        ) : (
+          students.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => void openDrawer(s.id)}
+              className="w-full rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:border-primary/40"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-text-primary">{s.name}</p>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    {s.grade} · {s.teacherName}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${s.statusClassName}`}
+                >
+                  {s.statusLabel}
+                </span>
+              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-xl bg-background px-3 py-2">
+                  <dt className="text-xs text-text-muted">이번주 완료율</dt>
+                  <dd className="mt-1 font-semibold text-text-primary">{s.completionRate}%</dd>
+                </div>
+                <div className="rounded-xl bg-background px-3 py-2">
+                  <dt className="text-xs text-text-muted">미답변 질문</dt>
+                  <dd className="mt-1 font-semibold text-text-primary">{s.unansweredStale}</dd>
+                </div>
+              </dl>
+            </button>
+          ))
+        )}
+      </div>
+
+      <div className="mt-10 hidden overflow-x-auto rounded-2xl border border-gray-200 bg-surface md:block">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="border-b border-gray-100 bg-background/80 text-xs uppercase text-text-muted">
             <tr>
@@ -180,7 +225,7 @@ export function ManagerMonitoringPage() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
           >
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-surface px-5 py-4">
+            <div className="sticky top-0 flex items-center justify-between border-b border-gray-100 bg-surface px-4 py-4 sm:px-5">
               <h2 className="text-lg font-bold text-text-primary">
                 {detail?.student?.name ?? "학생 상세"}
               </h2>
@@ -192,7 +237,7 @@ export function ManagerMonitoringPage() {
                 닫기
               </button>
             </div>
-            <div className="p-5">
+            <div className="p-4 sm:p-5">
               {detailLoading ? (
                 <p className="text-sm text-text-secondary">불러오는 중…</p>
               ) : detail ? (

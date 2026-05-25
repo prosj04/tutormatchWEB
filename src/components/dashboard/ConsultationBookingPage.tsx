@@ -193,11 +193,11 @@ export function ConsultationBookingPage({
           <Link href="/dashboard" className="font-sans text-lg font-bold italic text-primary">
             {brand}
           </Link>
-          <p className="truncate text-sm font-medium text-white">{welcomeText}</p>
+          <p className="truncate text-sm font-medium text-text-secondary">{welcomeText}</p>
           <button
             type="button"
             onClick={() => signOut({ redirectTo: "/" })}
-            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-primary/90 transition hover:bg-white/10 hover:text-primary"
+            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-background"
           >
             {logoutLabel}
           </button>

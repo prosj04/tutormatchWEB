@@ -19,7 +19,7 @@ export function TestimonialCard({ item }: { item: TestimonialItem }) {
         <p className="mt-6 text-base font-bold leading-relaxed text-neutral-100 md:text-lg lg:text-xl">
           {item.quote}
         </p>
-        <p className="mt-6 text-sm font-semibold text-neutral-50">{item.info}</p>
+        <p className="mt-6 text-sm font-semibold text-neutral-80">{item.info}</p>
       </div>
       <div className="relative min-h-[240px]">
         <Image

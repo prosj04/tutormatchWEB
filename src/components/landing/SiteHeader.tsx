@@ -175,7 +175,7 @@ export function SiteHeader({
     ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
     : "border-white/10 bg-neutral-100/80 text-white backdrop-blur";
   const topBarTone = scrolled
-    ? "bg-neutral-10 text-neutral-50"
+    ? "bg-neutral-10 text-neutral-80"
     : "bg-black/20 text-white/70";
   const hoverTone = scrolled ? "hover:text-neutral-100" : "hover:text-white";
 
@@ -237,7 +237,7 @@ export function SiteHeader({
       </div>
 
       <div
-        className={`fixed inset-0 z-[60] bg-white transition-transform duration-300 md:hidden ${
+        className={`fixed inset-0 z-[60] overflow-y-auto bg-white transition-transform duration-300 md:hidden ${
           open ? "translate-x-0" : "pointer-events-none translate-x-full"
         }`}
         aria-hidden={!open}
@@ -259,9 +259,9 @@ export function SiteHeader({
             ×
           </button>
         </div>
-        <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between px-6 py-8">
+        <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between gap-8 px-5 py-6 sm:px-6 sm:py-8">
           <div>
-            <div className="flex justify-end gap-4 text-sm font-semibold text-neutral-50">
+            <div className="flex flex-wrap justify-end gap-3 text-sm font-semibold text-neutral-80">
               {showFaqLink ? (
                 <Link href="/faq" onClick={() => setOpen(false)}>
                   자주 묻는 질문
@@ -271,13 +271,13 @@ export function SiteHeader({
                 선생님 지원
               </Link>
             </div>
-            <nav className="mt-10 space-y-2">
+            <nav className="mt-8 space-y-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-3xl px-4 py-4 text-3xl font-black text-neutral-100 transition hover:bg-neutral-10"
+                  className="block rounded-3xl px-4 py-4 text-2xl font-black text-neutral-100 transition hover:bg-neutral-10 sm:text-3xl"
                 >
                   {link.label}
                 </Link>

@@ -48,7 +48,7 @@ export function ConsultationSignupModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-neutral-10 text-lg leading-none text-neutral-50 transition hover:bg-neutral-20 hover:text-neutral-100"
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-neutral-10 text-lg leading-none text-neutral-80 transition hover:bg-neutral-20 hover:text-neutral-100"
           aria-label="닫기"
         >
           ×

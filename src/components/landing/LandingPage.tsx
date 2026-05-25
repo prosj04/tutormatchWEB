@@ -203,6 +203,7 @@ function useScrollLandingState() {
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
   const [priceTab, setPriceTab] = useState(0);
+  const [processIndex, setProcessIndex] = useState(0);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
@@ -270,7 +271,6 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       },
     ];
   });
-  const doubledTeachers = [...cmsTeachers, ...cmsTeachers];
   const cmsStats = [
     {
       value: getCmsValue("stats", "stat1_number", stats[0].value),
@@ -314,6 +314,13 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       },
     ];
   });
+
+  useEffect(() => {
+    setProcessIndex((prev) => {
+      if (cmsSteps.length === 0) return 0;
+      return Math.min(prev, cmsSteps.length - 1);
+    });
+  }, [cmsSteps.length]);
 
   const managementItems = [1, 2, 3, 4, 5, 6].flatMap((n) => {
     const vis = getCmsValue("management", `item${n}_visible`, n <= 3 ? "1" : "0");
@@ -361,7 +368,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pt-16 pb-40 text-center sm:px-6 sm:pb-36 md:pt-[100px] md:pb-32"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-44 pt-16 text-center sm:px-6 sm:pb-40 md:pt-[100px] md:pb-32"
           style={heroStyle}
         >
           <div className="absolute inset-0 bg-black/20" />
@@ -374,13 +381,13 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed tracking-[0.01em] text-neutral-30 md:text-lg">
               {getCmsValue("hero", "subtext", "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.")}
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <ConsultationApplyButton className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base">
+            <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+              <ConsultationApplyButton className="w-full rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 sm:w-auto md:px-8 md:py-4 md:text-base">
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
               </ConsultationApplyButton>
               <Link
                 href="/tutors"
-                className="rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 md:px-8 md:py-4 md:text-base"
+                className="w-full rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 sm:w-auto md:px-8 md:py-4 md:text-base"
               >
                 {getCmsValue("hero", "cta_secondary", "선생님 둘러보기")}
               </Link>
@@ -396,7 +403,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   className="flex flex-col items-center rounded-xl border border-white/15 bg-white/10 px-2 py-3 backdrop-blur-sm sm:rounded-2xl sm:px-5 sm:py-4 md:px-8 md:py-5"
                 >
                   <span className="text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">{s.value}</span>
-                  <span className="mt-1 text-[10px] font-medium text-white/70 sm:mt-1.5 sm:text-xs md:text-sm">{s.label}</span>
+                  <span className="mt-1 text-[10px] font-medium text-white/85 sm:mt-1.5 sm:text-xs md:text-sm">{s.label}</span>
                 </div>
               ))}
             </div>
@@ -405,13 +412,13 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ STICKY TAB NAV ══════════════════════════ */}
         <nav className="sticky top-16 z-40 border-b border-neutral-20 bg-white shadow-sm md:top-[100px]">
-          <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-5">
+          <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
             {tabs.map((tab) => (
               <a
                 key={tab.id}
                 href={`#${tab.id}`}
-                className={`relative shrink-0 px-5 py-4 text-sm transition md:px-7 ${
-                  activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-40"
+                className={`relative shrink-0 px-4 py-3 text-sm transition md:px-7 md:py-4 ${
+                  activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
                 }`}
               >
                 {tab.label}
@@ -427,18 +434,18 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ RESULTS CAROUSEL (intro) ════════════════ */}
         <section id="intro" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">RESULTS</p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
               {getCmsValue("results", "section_title", "결과로 증명합니다")}
             </h2>
           </div>
           <div className="animation-container mt-10 overflow-hidden">
-            <div className="animate-slide flex w-max gap-5 px-5 [--speed:28s]">
+            <div className="animate-slide flex w-max gap-5 px-4 [--speed:28s] sm:px-5">
               {doubledResults.map((item, index) => (
                 <article
                   key={`${item.student}-${index}`}
-                  className="w-[260px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[320px]"
+                  className="w-[min(260px,calc(100vw-2.5rem))] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[320px]"
                 >
                   <div className="relative h-36 w-full">
                     <Image
@@ -450,7 +457,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                     />
                   </div>
                   <div className="p-5">
-                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-40">{item.student}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-80">{item.student}</p>
                     <p className="mt-2 text-lg font-black leading-snug text-neutral-100">
                       {item.before}
                       <span className="text-primary">{item.after}</span>
@@ -464,16 +471,16 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {showFaqHome && homeFaqs.length > 0 ? (
           <section id="faq" className="bg-neutral-10 py-20 md:py-28">
-            <div className="mx-auto max-w-[1200px] px-5">
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
               <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
               <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
                 자주 묻는 질문
               </h2>
               <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
                 {homeFaqs.map((item) => (
-                  <div key={item.q} className="px-7 py-6 md:px-8 md:py-7">
+                  <div key={item.q} className="px-5 py-5 sm:px-6 md:px-8 md:py-7">
                     <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
-                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
+                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
                       A. {item.a}
                     </p>
                   </div>
@@ -495,7 +502,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {showReviewsHome ? (
           <section id="testimonials" className="bg-white py-20 md:py-28">
-            <div className="mx-auto max-w-[1200px] px-5">
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
               <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
               <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
                 학습 후기
@@ -521,14 +528,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ TEACHERS — light bg ═════════════════════ */}
         <section id="teachers" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1200px] gap-10 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+          <div className="mx-auto grid max-w-[1200px] gap-10 px-4 sm:px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
             {/* sticky heading column */}
             <div className="lg:sticky lg:top-40 lg:self-start">
               <p className="text-sm font-black uppercase tracking-wider text-primary">TEACHERS</p>
               <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
                 {getCmsValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
               </h2>
-              <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
+              <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-80">
                 {getCmsValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
               </p>
               <Link
@@ -541,40 +548,45 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
             {/* scrolling teacher cards — light card style */}
             <div className="overflow-hidden">
-              <div className="animate-slide flex w-max gap-5 [--speed:34s]">
-                {doubledTeachers.map((teacher, index) => (
-                  <article
-                    key={`${teacher.name}-${index}`}
-                    className="w-[260px] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm md:w-[300px]"
-                  >
-                    {/* teacher photo */}
-                    <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
-                      <Image
-                        src={teacher.image}
-                        alt={teacher.name}
-                        width={96}
-                        height={96}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
-                    <div className="mt-2 flex justify-center">
-                      <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-                        {teacher.subject}
-                      </span>
-                    </div>
-                    {/* highlight */}
-                    <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
-                      {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
-                      <span className="text-primary">{teacher.highlight.split(" ").slice(-2).join(" ")}</span>
-                    </p>
-                    {/* career list */}
-                    <ul className="mt-4 space-y-1.5 text-xs font-medium text-neutral-50">
-                      {teacher.careers.map((c) => (
-                        <li key={c}>{c}</li>
-                      ))}
-                    </ul>
-                  </article>
+              <div
+                className="animate-marquee-loop flex w-max gap-[var(--marquee-gap)] [--marquee-gap:1.25rem] [--marquee-gap-half:0.625rem] md:[--marquee-gap:1.5rem] md:[--marquee-gap-half:0.75rem] [--speed:34s]"
+              >
+                {[cmsTeachers, cmsTeachers].map((group, groupIndex) => (
+                  <div key={`teacher-group-${groupIndex}`} className="flex w-max gap-[var(--marquee-gap)]">
+                    {group.map((teacher, index) => (
+                      <article
+                        key={`${teacher.name}-${groupIndex}-${index}`}
+                        className="w-[min(260px,calc(100vw-2.5rem))] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm md:w-[300px]"
+                      >
+                        <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
+                          <Image
+                            src={teacher.image}
+                            alt={teacher.name}
+                            width={96}
+                            height={96}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
+                        <div className="mt-2 flex justify-center">
+                          <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                            {teacher.subject}
+                          </span>
+                        </div>
+                        <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
+                          {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
+                          <span className="text-primary">
+                            {teacher.highlight.split(" ").slice(-2).join(" ")}
+                          </span>
+                        </p>
+                        <ul className="mt-4 space-y-1.5 text-xs font-medium text-neutral-80">
+                          {teacher.careers.map((c) => (
+                            <li key={c}>{c}</li>
+                          ))}
+                        </ul>
+                      </article>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
@@ -583,14 +595,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ MANAGEMENT ══════════════════════════════ */}
         <section id="management" className="bg-white py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">LEARNING CARE</p>
                 <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
                   {getCmsValue("management", "headline", "수업 밖에서도\n이어지는 학습 관리")}
                 </h2>
-                <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-neutral-50">
+                <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-neutral-80">
                   {getCmsValue("management", "subtext", "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.")}
                 </p>
               </div>
@@ -599,7 +611,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   <div key={`${item.label}-${index}`} className="rounded-[20px] bg-neutral-10 p-6">
                     <p className="text-3xl font-black text-primary">{String(index + 1).padStart(2, "0")}</p>
                     <h3 className="mt-5 text-base font-black text-neutral-100">{item.label}</h3>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{item.desc}</p>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-80">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -609,41 +621,96 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
         <section id="process" className="bg-neutral-10 py-20 md:py-28">
-          <div className="mx-auto max-w-[1200px] px-5">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
               {getCmsValue("features", "section_title", "이렇게 진행됩니다")}
             </h2>
-            <p className="mt-3 max-w-2xl text-base font-medium text-neutral-50">
+            <p className="mt-3 max-w-2xl text-base font-medium text-neutral-80">
               {getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
             </p>
           </div>
-          <div className="scrollbar-hide mt-8 overflow-x-auto px-5 pb-2">
-            <div className="flex w-max gap-5 md:gap-6">
-              {cmsSteps.map((step) => (
-                <article
-                  key={step.number}
-                  className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+          <div className="mt-8 px-4 sm:px-5">
+            <div className="mx-auto max-w-[900px]">
+              <div className="overflow-hidden rounded-[20px]">
+                <div
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ transform: `translateX(-${processIndex * 100}%)` }}
                 >
-                  <div className="relative h-[180px] w-full md:h-[200px]">
-                    <Image
-                      src={step.img}
-                      alt={step.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width:768px) 280px, 380px"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                    <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
-                      {step.number}
-                    </span>
+                  {cmsSteps.map((step) => (
+                    <article
+                      key={step.number}
+                      className="w-full shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm"
+                    >
+                      <div className="relative h-[220px] w-full sm:h-[260px] md:h-[320px]">
+                        <Image
+                          src={step.img}
+                          alt={step.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width:768px) 100vw, 900px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                        <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20 sm:text-5xl">
+                          {step.number}
+                        </span>
+                      </div>
+                      <div className="p-6 sm:p-7 md:p-8">
+                        <h3 className="text-lg font-black text-neutral-100 sm:text-xl md:text-2xl">
+                          {step.title}
+                        </h3>
+                        <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80 sm:text-base">
+                          {step.desc}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+              {cmsSteps.length > 1 ? (
+                <div className="mt-5 flex flex-col items-center gap-4">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {cmsSteps.map((step, index) => (
+                      <button
+                        key={`process-page-${step.number}`}
+                        type="button"
+                        onClick={() => setProcessIndex(index)}
+                        className={`min-w-10 rounded-full border px-3 py-1.5 text-xs font-black tracking-wider transition sm:text-sm ${
+                          processIndex === index
+                            ? "border-primary bg-primary text-white"
+                            : "border-neutral-20 bg-white text-neutral-80 hover:border-primary hover:text-primary"
+                        }`}
+                        aria-label={`${step.number}번 카드 보기`}
+                      >
+                        {step.number}
+                      </button>
+                    ))}
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-50">{step.desc}</p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProcessIndex((prev) => (prev === 0 ? cmsSteps.length - 1 : prev - 1))
+                      }
+                      className="rounded-full border border-neutral-20 bg-white px-4 py-2 text-sm font-bold text-neutral-100 transition hover:border-primary hover:text-primary"
+                    >
+                      이전
+                    </button>
+                    <p className="text-sm font-bold text-neutral-80">
+                      {cmsSteps[processIndex]?.number} / {cmsSteps[cmsSteps.length - 1]?.number}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setProcessIndex((prev) => (prev === cmsSteps.length - 1 ? 0 : prev + 1))
+                      }
+                      className="rounded-full border border-neutral-20 bg-white px-4 py-2 text-sm font-bold text-neutral-100 transition hover:border-primary hover:text-primary"
+                    >
+                      다음
+                    </button>
                   </div>
-                </article>
-              ))}
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
@@ -666,7 +733,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                       </span>
                     ))}
                 </h2>
-                <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
+                <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-80">
                   {getCmsValue(
                     "home_page",
                     "pricing_subtext",
@@ -695,7 +762,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                             type="button"
                             onClick={() => setPriceTab(index)}
                             className={`rounded-full py-3 text-sm font-black transition ${
-                              priceTab === index ? "bg-primary text-white" : "text-neutral-50"
+                              priceTab === index ? "bg-primary text-white" : "text-neutral-80"
                             }`}
                           >
                             {item.title ?? item.plan.title}
@@ -709,7 +776,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                     />
                   </div>
                 ) : (
-                  <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-50">
+                  <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-80">
                     표시된 요금제가 없습니다. 관리자 「사이트 콘텐츠」에서 요금제 카드를 켜 주세요.
                   </p>
                 )}
@@ -728,11 +795,11 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
 
         {/* ═══ FOOTER ══════════════════════════════════ */}
         <footer className="border-t border-neutral-20 bg-neutral-10">
-          <div className="mx-auto max-w-[1200px] px-5 py-16">
+          <div className="mx-auto max-w-[1200px] px-4 py-16 sm:px-5">
             <div className="grid gap-10 border-b border-neutral-20 pb-12 md:grid-cols-2">
               <div>
                 <h2 className="text-xl font-black text-neutral-100">상담이 필요하신가요?</h2>
-                <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-50">
+                <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80">
                   채팅문의 10:00~22:00 · 전화문의 평일 10:00~19:00
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
@@ -747,7 +814,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   </a>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-8 text-sm font-bold text-neutral-50">
+              <div className="grid gap-8 text-sm font-bold text-neutral-80 sm:grid-cols-2">
                 <div className="space-y-3">
                   <p className="font-black text-neutral-100">서비스</p>
                   <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
@@ -757,7 +824,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                       FAQ
                     </Link>
                   ) : null}
-                  <ConsultationApplyButton className="block w-full cursor-pointer bg-transparent p-0 text-left text-sm font-bold text-neutral-50 transition hover:text-primary">
+                  <ConsultationApplyButton className="block w-full cursor-pointer bg-transparent p-0 text-left text-sm font-bold text-neutral-80 transition hover:text-primary">
                     상담 신청
                   </ConsultationApplyButton>
                 </div>
@@ -769,16 +836,16 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                 </div>
               </div>
             </div>
-            <div className="pt-8 text-xs font-medium leading-relaxed text-neutral-40">
+            <div className="pt-8 text-xs font-medium leading-relaxed text-neutral-80">
               <p>
                 상호 주식회사 컨코드에듀케이션 · 대표 홍길동 · 사업자등록번호 123-45-67890
                 <br className="hidden sm:block" />
                 주소 서울특별시 강남구 테헤란로 000, 00층
               </p>
               <p className="mt-2">이용약관 · 개인정보처리방침 · 환불정책</p>
-              <div className="mt-6 flex items-center justify-between">
+              <div className="mt-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
                 <p>© {new Date().getFullYear()} Concord Private Tutoring. All rights reserved.</p>
-                <Link href="/teacher-portal" className="text-[11px] text-neutral-40 transition hover:text-primary">
+                <Link href="/teacher-portal" className="text-[11px] text-neutral-80 transition hover:text-primary">
                   선생님이신가요?
                 </Link>
               </div>
@@ -788,7 +855,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       </main>
 
       <ConsultationApplyButton
-        className={`fixed bottom-6 right-6 z-50 rounded-full bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 md:bottom-8 md:right-8 ${
+        className={`fixed bottom-4 left-4 right-4 z-50 rounded-2xl bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 sm:left-auto sm:right-6 sm:rounded-full md:bottom-8 md:right-8 ${
           showFloating ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >

@@ -125,17 +125,17 @@ export function AdminMatchesPage() {
       <div className="mt-6 flex flex-col gap-6 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-64">
           <h3 className="text-xs font-semibold uppercase text-text-muted">선생님 (승인됨)</h3>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible lg:pb-0">
             {teachers.map((t) => {
               const count = matches.filter(
                 (m) => m.teacherId === t.id && m.isActive,
               ).length;
               return (
-                <li key={t.id}>
+                <li key={t.id} className="shrink-0 lg:shrink">
                   <button
                     type="button"
                     onClick={() => setSelectedTeacherId(t.id)}
-                    className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
+                    className={`w-48 rounded-xl border px-4 py-3 text-left text-sm transition lg:w-full ${
                       selectedTeacherId === t.id
                         ? "border-primary bg-primary/10 font-semibold"
                         : "border-gray-100 bg-white hover:border-gray-200"
@@ -162,7 +162,7 @@ export function AdminMatchesPage() {
           </ul>
         </aside>
 
-        <section className="min-w-0 flex-1 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <section className="min-w-0 flex-1 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
           {selectedTeacher ? (
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -213,7 +213,7 @@ export function AdminMatchesPage() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-bold">학생 매칭 등록</h3>
             <label className="mt-4 block text-xs font-semibold text-text-muted">학생</label>

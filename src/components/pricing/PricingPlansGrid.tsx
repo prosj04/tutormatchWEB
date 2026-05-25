@@ -5,7 +5,7 @@ export const PRICING_GRID_GAP_CLASS = "gap-6";
 
 /** 홈 2열 그리드에서 카드 1장 너비와 동일 */
 export const PRICING_CARD_WIDTH_CLASS =
-  "w-[min(348px,calc(100vw-2.5rem))] shrink-0 !flex sm:w-[348px]";
+  "w-[min(320px,calc(100vw-2.5rem))] shrink-0 !flex sm:w-[348px]";
 
 export type PricingPlanItem = {
   plan: PricingPlanDefinition;
@@ -30,7 +30,7 @@ export function PricingPlansGrid({
   if (variant === "page") {
     return (
       <div className="scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0">
-        <div className={`flex w-max ${PRICING_GRID_GAP_CLASS}`}>
+        <div className={`flex w-max snap-x snap-mandatory ${PRICING_GRID_GAP_CLASS}`}>
           {items.map((item) => (
             <PricingPlanCard
               key={item.plan.id}

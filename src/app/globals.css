@@ -32,10 +32,15 @@
 @keyframes slide-left { 0%{transform:translate(0)} to{transform:translate(-50%)} }
 @keyframes floatUpDown { 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} to{transform:translateY(0)} }
 @keyframes slide { 0%{transform:translate(0)} to{transform:translate(-25%)} }
+@keyframes marquee-loop { 0%{transform:translateX(0)} to{transform:translateX(calc(-50% - var(--marquee-gap-half, 0px)))} }
 
 @layer utilities {
   .animate-slide {
     animation: slide var(--speed, 28s) linear infinite;
+  }
+
+  .animate-marquee-loop {
+    animation: marquee-loop var(--speed, 34s) linear infinite;
   }
 
   .animate-slide-left {

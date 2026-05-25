@@ -556,7 +556,7 @@ export function TeacherProfileEditor({
       {toast && (
         <div
           role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-surface px-6 py-3 text-sm font-medium text-white shadow-lg"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-text-primary px-6 py-3 text-sm font-medium text-white shadow-lg"
         >
           프로필이 저장되었습니다
         </div>

@@ -25,7 +25,7 @@ export function FaqPageContent({
           <h1 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
             {get("faq_page", "title", "자주 묻는 질문")}
           </h1>
-          <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-neutral-50">
+          <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-neutral-80">
             {get("faq_page", "subtext", "서비스 이용 전 궁금한 점을 모았습니다.")}
           </p>
         </div>
@@ -33,7 +33,7 @@ export function FaqPageContent({
 
       <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
         {faqs.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-50">
+          <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-80">
             {get("faq_page", "empty_text", "등록된 FAQ가 없습니다.")}
           </p>
         ) : (
@@ -41,7 +41,7 @@ export function FaqPageContent({
             {faqs.map((item) => (
               <div key={item.q} className="px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
                 <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
-                <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
+                <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
                   A. {item.a}
                 </p>
               </div>

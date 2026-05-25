@@ -143,7 +143,7 @@ export function AdminDashboard() {
               setCronLoading(false);
             }
           }}
-          className="mt-4 rounded-xl bg-surface px-5 py-2.5 text-sm font-semibold text-white hover:bg-surface/90 disabled:opacity-50"
+          className="mt-4 rounded-xl bg-text-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-neutral-90 disabled:opacity-50"
         >
           {cronLoading ? "실행 중…" : "알림 체크 실행"}
         </button>

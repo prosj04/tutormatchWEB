@@ -63,7 +63,7 @@ export function PricingContent({
                 {get("header_title", "1:1 맞춤 과외,\n월 40만원부터")}
               </h1>
             </div>
-            <p className="min-w-0 whitespace-pre-line text-base font-medium leading-relaxed text-neutral-50 sm:text-lg lg:max-w-md lg:shrink-0 lg:text-right xl:max-w-lg">
+            <p className="min-w-0 whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80 sm:text-lg lg:max-w-md lg:shrink-0 lg:text-right xl:max-w-lg">
               {get(
                 "header_subtext",
                 "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
@@ -84,7 +84,7 @@ export function PricingContent({
             <PricingPlansGrid items={planItems} variant="page" />
           </div>
         ) : (
-          <p className="rounded-2xl border border-neutral-20 bg-white px-6 py-10 text-center text-sm font-medium text-neutral-50">
+          <p className="rounded-2xl border border-neutral-20 bg-white px-6 py-10 text-center text-sm font-medium text-neutral-80">
             표시로 설정된 요금제 카드가 없습니다. 사이트 콘텐츠 관리에서 요금제 카드를 켜 주세요.
           </p>
         )}
@@ -101,12 +101,12 @@ export function PricingContent({
         <h2 className="text-2xl font-black text-neutral-100 sm:text-3xl md:text-5xl">
           {get("faq_title", "자주 묻는 질문")}
         </h2>
-        <p className="mt-2 text-sm font-bold text-neutral-50">FAQ</p>
+        <p className="mt-2 text-sm font-bold text-neutral-80">FAQ</p>
         <div className="mt-8 divide-y divide-neutral-20 overflow-hidden rounded-2xl border border-neutral-20 bg-white sm:mt-10 sm:rounded-[28px]">
           {faqs.map((item) => (
             <div key={item.q} className="px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
               <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
-              <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-50 md:text-base">
+              <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
                 A. {item.a}
               </p>
             </div>

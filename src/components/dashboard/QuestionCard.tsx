@@ -97,25 +97,25 @@ export function QuestionCard({
         )}
       </section>
 
-      <section className="mt-3 rounded-xl bg-surface p-4 text-white">
+      <section className="mt-3 rounded-xl border border-gray-200 bg-background p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span aria-hidden>👨‍🏫</span>
-          <span className="inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold">
+          <span className="inline-block rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-text-primary">
             선생님 답변
           </span>
           {!hasTeacherAnswer && (
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-white/70">
+            <span className="rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-medium text-text-secondary">
               선생님 답변 대기중
             </span>
           )}
         </div>
 
         {hasTeacherAnswer ? (
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
             {question.teacherAnswer}
           </p>
         ) : (
-          <p className="mt-3 text-sm text-white/60">아직 선생님 답변이 등록되지 않았습니다.</p>
+          <p className="mt-3 text-sm text-text-secondary">아직 선생님 답변이 등록되지 않았습니다.</p>
         )}
       </section>
 

@@ -220,7 +220,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
       {commentToast && (
         <p
           role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-surface px-5 py-2.5 text-sm text-white shadow-lg"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-text-primary px-5 py-2.5 text-sm text-white shadow-lg"
         >
           코멘트가 저장되었습니다
         </p>

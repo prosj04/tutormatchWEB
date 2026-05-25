@@ -20,7 +20,7 @@ export function ReviewsPageContent({
           <h1 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
             {get("title", "학습 후기")}
           </h1>
-          <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-neutral-50">
+          <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-neutral-80">
             {get("subtext", "실제 학부모·학생이 남긴 후기를 모았습니다.")}
           </p>
         </div>
@@ -28,7 +28,7 @@ export function ReviewsPageContent({
 
       <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
         {testimonials.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-50">
+          <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-80">
             {get("empty_text", "등록된 후기가 없습니다.")}
           </p>
         ) : (

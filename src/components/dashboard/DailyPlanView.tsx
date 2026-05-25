@@ -66,7 +66,7 @@ export function DailyPlanView({
   const emptyComment = usePortalCopy("student_dashboard", "empty_comment", "아직 코멘트가 없습니다");
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] flex-1 overflow-y-auto bg-background p-6 md:p-8">
+    <div className="min-h-[calc(100vh-3.5rem)] flex-1 overflow-y-auto bg-background p-4 sm:p-6 md:p-8">
       <div className="mx-auto max-w-2xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-bold text-text-primary sm:text-2xl">
@@ -87,7 +87,7 @@ export function DailyPlanView({
         {loading ? (
           <p className="mt-12 text-center text-sm text-text-muted">{loadingLabel}</p>
         ) : !plan ? (
-          <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-10 text-center">
+          <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center sm:p-10">
             <p className="text-sm text-text-secondary">{emptyNoPlan}</p>
             <p className="mt-1 text-xs text-text-muted">{emptyHint}</p>
             <button

@@ -235,7 +235,7 @@ export function AdminTeachersPage() {
             setPage(1);
           }}
           placeholder="이름/이메일 검색"
-          className="rounded-xl border border-gray-200 px-4 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm sm:w-auto sm:min-w-[220px]"
         />
         <select
           value={status}
@@ -243,7 +243,7 @@ export function AdminTeachersPage() {
             setStatus(e.target.value);
             setPage(1);
           }}
-          className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="all">전체</option>
           <option value="approved">승인됨</option>
@@ -252,13 +252,114 @@ export function AdminTeachersPage() {
         <button
           type="button"
           onClick={() => fetchList()}
-          className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-white"
+          className="w-full rounded-xl bg-text-primary px-4 py-2 text-sm font-medium text-white sm:w-auto"
         >
           검색
         </button>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+      <div className="mt-6 space-y-4 md:hidden">
+        {loading ? (
+          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
+            불러오는 중…
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
+            결과 없음
+          </div>
+        ) : (
+          rows.map((row) => {
+            const badge = roleBadge(row.role);
+            return (
+              <article key={row.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={getEffectivePhotoUrl(row.photoUrl, row.gender)}
+                      alt={`${row.name} 프로필`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold text-text-primary">{row.name}</h3>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}>
+                        {badge.label}
+                      </span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          row.approved
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-amber-100 text-amber-900"
+                        }`}
+                      >
+                        {row.approved ? "승인됨" : "대기중"}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-text-secondary">{row.subjects || "담당 과목 없음"}</p>
+                    <p className="mt-1 break-all text-xs text-text-muted">{row.email}</p>
+                  </div>
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-xl bg-background px-3 py-2">
+                    <dt className="text-xs text-text-muted">전화번호</dt>
+                    <dd className="mt-1 text-text-primary">{row.phone}</dd>
+                  </div>
+                  <div className="rounded-xl bg-background px-3 py-2">
+                    <dt className="text-xs text-text-muted">담당 학생수</dt>
+                    <dd className="mt-1 text-text-primary">{row.studentCount}</dd>
+                  </div>
+                </dl>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => toggleApprove(row)}
+                    className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
+                  >
+                    {row.approved ? "승인취소" : "승인"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openEdit(row)}
+                    className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
+                  >
+                    수정
+                  </button>
+                  {row.role === "TEACHER" ? (
+                    <button
+                      type="button"
+                      onClick={() => grantManager(row)}
+                      className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
+                    >
+                      매니저 부여
+                    </button>
+                  ) : row.role === "MANAGER" ? (
+                    <button
+                      type="button"
+                      onClick={() => revokeManager(row)}
+                      className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
+                    >
+                      매니저 해제
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => deleteRow(row.id, row.name)}
+                    className="rounded-xl border border-pink-200 px-3 py-2 font-medium text-accent"
+                  >
+                    삭제
+                  </button>
+                </div>
+              </article>
+            );
+          })
+        )}
+      </div>
+
+      <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm md:block">
         <table className="w-full min-w-[1000px] text-left text-sm">
           <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
             <tr>
@@ -396,7 +497,7 @@ export function AdminTeachersPage() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <button
             type="button"
             disabled={page <= 1}
@@ -420,7 +521,7 @@ export function AdminTeachersPage() {
       )}
 
       {editRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-bold">선생님 수정</h3>
 

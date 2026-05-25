@@ -99,7 +99,7 @@ export function AdminStudentsPage() {
             setPage(1);
           }}
           placeholder="이름/전화번호 검색"
-          className="rounded-xl border border-gray-200 px-4 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm sm:w-auto sm:min-w-[220px]"
         />
         <select
           value={grade}
@@ -107,7 +107,7 @@ export function AdminStudentsPage() {
             setGrade(e.target.value);
             setPage(1);
           }}
-          className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="">전체 학년</option>
           {GRADES.map((g) => (
@@ -122,7 +122,7 @@ export function AdminStudentsPage() {
             setSubject(e.target.value);
             setPage(1);
           }}
-          className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="">전체 과목</option>
           {SUBJECTS.map((s) => (
@@ -134,13 +134,73 @@ export function AdminStudentsPage() {
         <button
           type="button"
           onClick={() => fetchList()}
-          className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-white"
+          className="w-full rounded-xl bg-text-primary px-4 py-2 text-sm font-medium text-white sm:w-auto"
         >
           검색
         </button>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+      <div className="mt-6 space-y-4 md:hidden">
+        {loading ? (
+          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
+            불러오는 중…
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
+            결과 없음
+          </div>
+        ) : (
+          rows.map((row) => (
+            <article key={row.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-semibold text-text-primary">{row.name}</h3>
+                  <p className="mt-1 text-sm text-text-secondary">{row.grade}</p>
+                </div>
+                <p className="text-xs text-text-muted">
+                  {new Date(row.createdAt).toLocaleDateString("ko-KR")}
+                </p>
+              </div>
+              <dl className="mt-4 space-y-2 text-sm">
+                <div>
+                  <dt className="text-xs text-text-muted">희망과목</dt>
+                  <dd className="mt-1 text-text-primary">{row.subjects || "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted">전화번호</dt>
+                  <dd className="mt-1 text-text-primary">{row.phone}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted">담당 매니저</dt>
+                  <dd className="mt-1 text-text-secondary">{row.managerName ?? "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-text-muted">담당선생님</dt>
+                  <dd className="mt-1 text-text-secondary">{row.assignedTeachers || "—"}</dd>
+                </div>
+              </dl>
+              <div className="mt-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => openEdit(row)}
+                  className="flex-1 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-text-primary"
+                >
+                  수정
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteRow(row.id, row.name)}
+                  className="flex-1 rounded-xl border border-pink-200 px-4 py-2 text-sm font-medium text-accent"
+                >
+                  삭제
+                </button>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
+      <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm md:block">
         <table className="w-full min-w-[800px] text-left text-sm">
           <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
             <tr>
@@ -203,7 +263,7 @@ export function AdminStudentsPage() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <button
             type="button"
             disabled={page <= 1}
@@ -227,7 +287,7 @@ export function AdminStudentsPage() {
       )}
 
       {editRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="font-bold text-text-primary">학생 수정</h3>
             <div className="mt-4 space-y-3">

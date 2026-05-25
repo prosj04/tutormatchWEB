@@ -63,7 +63,7 @@ export function VisitTimesPicker({
       ) : null}
 
       <div className="mt-4 overflow-x-auto">
-        <div className="flex min-w-[640px] gap-3">
+        <div className="flex min-w-[560px] gap-2 sm:min-w-[640px] sm:gap-3">
           {week.map((day) => (
             <div
               key={day.key}

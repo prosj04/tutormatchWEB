@@ -94,14 +94,14 @@ function TeacherQuestionCard({
         </div>
       )}
 
-      <section className="mt-4 rounded-xl bg-surface/95 p-4 text-white">
+      <section className="mt-4 rounded-xl border border-gray-200 bg-background p-4">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-semibold">선생님 답변</span>
+          <span className="text-xs font-semibold text-text-primary">선생님 답변</span>
           {question.teacherAnswer && !editing && (
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="text-xs text-white/80 hover:text-white hover:underline"
+              className="text-xs text-text-secondary hover:text-text-primary hover:underline"
             >
               수정
             </button>
@@ -109,7 +109,7 @@ function TeacherQuestionCard({
         </div>
 
         {question.teacherAnswer && !editing ? (
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
             {question.teacherAnswer}
           </p>
         ) : (
@@ -119,7 +119,7 @@ function TeacherQuestionCard({
               onChange={(e) => setDraft(e.target.value)}
               rows={4}
               placeholder="답변을 입력하세요"
-              className="mt-3 w-full resize-none rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus:border-white/40"
+              className="mt-3 w-full resize-none rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-primary"
             />
             <button
               type="button"
