@@ -154,6 +154,23 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [variant]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
   const headerTone = scrolled
     ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
     : "border-white/10 bg-neutral-100/80 text-white backdrop-blur";
@@ -221,8 +238,9 @@ export function SiteHeader({
 
       <div
         className={`fixed inset-0 z-[60] bg-white transition-transform duration-300 md:hidden ${
-          open ? "translate-x-0" : "translate-x-full"
+          open ? "translate-x-0" : "pointer-events-none translate-x-full"
         }`}
+        aria-hidden={!open}
       >
         <div className="flex h-16 items-center justify-between border-b border-neutral-20 px-5">
           <Link

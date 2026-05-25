@@ -653,20 +653,31 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <div className="lg:self-center">
-                <p className="text-sm font-black uppercase tracking-wider text-primary">PRICE</p>
+                <p className="text-sm font-black uppercase tracking-wider text-primary">
+                  {getCmsValue("home_page", "pricing_kicker", "PRICE")}
+                </p>
                 <h2 className="mt-3 text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100 sm:mt-4">
-                  1:1 맞춤 과외,
-                  <br />
-                  월 40만원부터
+                  {getCmsValue("home_page", "pricing_title", "1:1 맞춤 과외,\n월 40만원부터")
+                    .split("\n")
+                    .map((line, index, arr) => (
+                      <span key={`${line}-${index}`}>
+                        {line}
+                        {index < arr.length - 1 ? <br /> : null}
+                      </span>
+                    ))}
                 </h2>
                 <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-50">
-                  1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.
+                  {getCmsValue(
+                    "home_page",
+                    "pricing_subtext",
+                    "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
+                  )}
                 </p>
                 <Link
                   href="/pricing"
                   className="mt-6 inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
                 >
-                  요금제 더보기
+                  {getCmsValue("home_page", "pricing_cta", "요금제 더보기")}
                 </Link>
               </div>
               <div>

@@ -272,10 +272,20 @@ export const tutorsPageDefaults = [
   },
 ] as const;
 
-/** 홈 FAQ·후기 섹션 노출 (항목 본문은 Testimonial·FaqItem 테이블) */
+/** 홈 FAQ·후기·요금제 섹션 기본값 */
 export const homePageVisibilityDefaults = [
   { section: "home_page", key: "show_faq_section", value: "0", type: "text", order: 0 },
   { section: "home_page", key: "show_reviews_section", value: "1", type: "text", order: 1 },
+  { section: "home_page", key: "pricing_kicker", value: "PRICE", type: "text", order: 2 },
+  { section: "home_page", key: "pricing_title", value: "1:1 맞춤 과외,\n월 40만원부터", type: "text", order: 3 },
+  {
+    section: "home_page",
+    key: "pricing_subtext",
+    value: "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
+    type: "text",
+    order: 4,
+  },
+  { section: "home_page", key: "pricing_cta", value: "요금제 더보기", type: "text", order: 5 },
 ] as const;
 
 /** FAQ·후기·로그인·결제 등 공개 페이지 고정 영역 (항목 본문은 DB 테이블) */

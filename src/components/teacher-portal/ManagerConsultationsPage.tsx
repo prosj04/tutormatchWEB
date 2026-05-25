@@ -420,7 +420,7 @@ function MineCard({
             onClick={onComplete}
             className="flex-1 rounded-xl bg-surface py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
-            상담 완료
+            완료 처리
           </button>
           <button
             type="button"

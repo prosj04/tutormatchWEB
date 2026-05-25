@@ -288,6 +288,27 @@ const pricingHeaderFields: TextFieldConfig[] = [
   },
 ];
 
+const homePricingFields: TextFieldConfig[] = [
+  { label: "홈 섹션 라벨", section: "home_page", keyName: "pricing_kicker", defaultValue: "PRICE" },
+  {
+    label: "홈 섹션 제목",
+    section: "home_page",
+    keyName: "pricing_title",
+    defaultValue: "1:1 맞춤 과외,\n월 40만원부터",
+    kind: "textarea",
+    rows: 2,
+  },
+  {
+    label: "홈 섹션 설명",
+    section: "home_page",
+    keyName: "pricing_subtext",
+    defaultValue: "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
+    kind: "textarea",
+    rows: 3,
+  },
+  { label: "홈 섹션 버튼", section: "home_page", keyName: "pricing_cta", defaultValue: "요금제 더보기" },
+];
+
 function pricingSlotInnerFields(
   boxIndex: number,
   keyFn: (index: number, field: Parameters<typeof pricingBoxFieldKey>[1]) => string = pricingBoxFieldKey,
@@ -1125,6 +1146,19 @@ export function AdminCmsPage() {
                 getValue={getValue}
                 onToggleVisible={patchContent}
               />
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="HOME PRICING" title="홈 요금제 섹션">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {homePricingFields.map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={patchContent}
+                />
+              ))}
             </div>
           </EditorSection>
 

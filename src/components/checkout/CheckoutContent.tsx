@@ -8,8 +8,11 @@ import {
 } from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 
+import { GenderSelect } from "@/components/ui/GenderSelect";
 import { DevSkipPaymentButton } from "@/components/checkout/DevSkipPaymentButton";
+import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
@@ -19,6 +22,8 @@ import {
   type SessionPlan,
   type SubjectCount,
 } from "@/lib/order-pricing";
+import { normalizePhoneDigits } from "@/lib/phone-login";
+import type { ProfileGender } from "@/lib/profile-gender";
 import type { GroupedSiteContent } from "@/lib/site-content";
 import { TOSS_WIDGET_CLIENT_KEY } from "@/lib/toss-client";
 
@@ -26,6 +31,8 @@ type PMW = ReturnType<PaymentWidgetInstance["renderPaymentMethods"]>;
 
 const PAYMENT_SELECTOR = "#concord-payment-methods";
 const AGREEMENT_SELECTOR = "#concord-agreement";
+const CHECKOUT_SIGNUP_STORAGE_KEY = "concord-checkout-signup";
+const SUBJECT_OPTIONS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
 type CheckoutContentProps = {
   tutorId: string;
@@ -43,12 +50,18 @@ export function CheckoutContent({
   const c = (key: string, fb: string) => getCmsSectionValue(siteContent, "checkout_page", key, fb);
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
   const planLabel = getPlanLabel(sessions, subjects);
+  const { data: session, status } = useSession();
 
   const { total, platformFee, lessonFee } = getPriceBreakdown(sessions, subjects);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [grade, setGrade] = useState<string>(STUDENT_GRADES[0]);
+  const [gender, setGender] = useState<ProfileGender | "">("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [widgetReady, setWidgetReady] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -57,6 +70,7 @@ export function CheckoutContent({
   const goConsultation = useConsultationCta();
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
   const paymentMethodsRef = useRef<PMW | null>(null);
+  const needsSignup = status !== "authenticated" || session?.user?.role !== "STUDENT";
 
   useEffect(() => {
     let cancelled = false;
@@ -100,11 +114,49 @@ export function CheckoutContent({
     paymentMethodsRef.current?.updateAmount(total);
   }, [total]);
 
+  const toggleSubject = useCallback(
+    (subject: string) => {
+      setSelectedSubjects((prev) => {
+        if (prev.includes(subject)) return prev.filter((item) => item !== subject);
+        if (prev.length >= subjects) return prev;
+        return [...prev, subject];
+      });
+    },
+    [subjects],
+  );
+
   const handlePay = useCallback(async () => {
     setError(null);
     if (!name.trim() || !phone.trim() || !email.trim()) {
       setError("이름, 연락처, 이메일을 모두 입력해 주세요.");
       return;
+    }
+    const phoneDigits = normalizePhoneDigits(phone);
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+      setError("올바른 연락처를 입력해 주세요.");
+      return;
+    }
+    if (needsSignup) {
+      if (!gender) {
+        setError("가입을 위해 성별을 선택해 주세요.");
+        return;
+      }
+      if (!grade) {
+        setError("가입을 위해 학년을 선택해 주세요.");
+        return;
+      }
+      if (selectedSubjects.length !== subjects) {
+        setError(`가입을 위해 희망 과목을 ${subjects}개 선택해 주세요.`);
+        return;
+      }
+      if (password.length < 8) {
+        setError("가입을 위해 비밀번호를 8자 이상 입력해 주세요.");
+        return;
+      }
+      if (password !== passwordConfirm) {
+        setError("비밀번호 확인이 일치하지 않습니다.");
+        return;
+      }
     }
     if (!termsAgreed) {
       setError("결제 진행을 위해 약관에 동의해 주세요.");
@@ -122,12 +174,28 @@ export function CheckoutContent({
     setPaying(true);
     try {
       const origin = window.location.origin;
+      if (needsSignup) {
+        sessionStorage.setItem(
+          CHECKOUT_SIGNUP_STORAGE_KEY,
+          JSON.stringify({
+            orderId,
+            name: name.trim(),
+            phone: phoneDigits,
+            grade,
+            gender,
+            password,
+            subjects: selectedSubjects,
+          }),
+        );
+      } else {
+        sessionStorage.removeItem(CHECKOUT_SIGNUP_STORAGE_KEY);
+      }
       await paymentWidget.requestPayment({
         orderId,
         orderName,
         customerName: name.trim(),
         customerEmail: email.trim(),
-        customerMobilePhone: phone.replace(/\D/g, ""),
+        customerMobilePhone: phoneDigits,
         successUrl: `${origin}/success`,
         failUrl: `${origin}/checkout?tutor=${encodeURIComponent(tutorId)}&sessions=${sessions}&subjects=${subjects}&error=1`,
       });
@@ -137,7 +205,23 @@ export function CheckoutContent({
     } finally {
       setPaying(false);
     }
-  }, [name, phone, email, termsAgreed, sessions, subjects, planLabel, tutorName, tutorId]);
+  }, [
+    email,
+    gender,
+    grade,
+    name,
+    needsSignup,
+    password,
+    passwordConfirm,
+    planLabel,
+    selectedSubjects,
+    sessions,
+    subjects,
+    termsAgreed,
+    tutorId,
+    tutorName,
+    phone,
+  ]);
 
   return (
     <div className="pb-24 md:pb-32">
@@ -214,7 +298,9 @@ export function CheckoutContent({
 
           <div className="space-y-8">
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
-              <h2 className="text-xl font-black text-text-primary">{c("section_customer_title", "주문자 정보")}</h2>
+              <h2 className="text-xl font-black text-text-primary">
+                {c("section_customer_title", needsSignup ? "주문자 · 가입 정보" : "주문자 정보")}
+              </h2>
               <div className="mt-6 space-y-5">
                 <div>
                   <label
@@ -265,6 +351,90 @@ export function CheckoutContent({
                     className="mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary"
                   />
                 </div>
+                {needsSignup ? (
+                  <>
+                    <GenderSelect value={gender} onChange={setGender} error={error?.includes("성별") ? error : undefined} />
+                    <div>
+                      <label
+                        htmlFor="checkout-grade"
+                        className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                      >
+                        학년
+                      </label>
+                      <select
+                        id="checkout-grade"
+                        value={grade}
+                        onChange={(e) => setGrade(e.target.value)}
+                        className="mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary"
+                      >
+                        {STUDENT_GRADES.map((item) => (
+                          <option key={item} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                        희망 과목
+                      </span>
+                      <p className="mt-2 text-xs text-text-muted">
+                        {subjects}과목 플랜이므로 {subjects}개를 선택해 주세요.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {SUBJECT_OPTIONS.map((subject) => {
+                          const active = selectedSubjects.includes(subject);
+                          return (
+                            <button
+                              key={subject}
+                              type="button"
+                              onClick={() => toggleSubject(subject)}
+                              className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
+                                active
+                                  ? "border-primary bg-primary text-white"
+                                  : "border-gray-200 bg-white text-text-secondary hover:border-gray-300"
+                              }`}
+                            >
+                              {subject}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="checkout-password"
+                        className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                      >
+                        비밀번호
+                      </label>
+                      <input
+                        id="checkout-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="checkout-password-confirm"
+                        className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                      >
+                        비밀번호 확인
+                      </label>
+                      <input
+                        id="checkout-password-confirm"
+                        type="password"
+                        autoComplete="new-password"
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        className="mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary"
+                      />
+                    </div>
+                  </>
+                ) : null}
               </div>
             </section>
 
