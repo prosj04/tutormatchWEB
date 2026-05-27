@@ -656,8 +656,26 @@ export function AdminCmsPage() {
       ]);
 
       if (contentRes.ok) setContent((await contentRes.json()) as CmsContent);
-      if (testimonialRes.ok) setTestimonials((await testimonialRes.json()) as TestimonialRow[]);
-      if (faqRes.ok) setFaqs((await faqRes.json()) as FaqRow[]);
+      if (testimonialRes.ok) {
+        const rows = (await testimonialRes.json()) as TestimonialRow[];
+        setTestimonials(
+          rows.map((item) => ({
+            ...item,
+            showOnHome: item.showOnHome ?? false,
+            showOnReviewsPage: item.showOnReviewsPage ?? true,
+          })),
+        );
+      }
+      if (faqRes.ok) {
+        const rows = (await faqRes.json()) as FaqRow[];
+        setFaqs(
+          rows.map((item) => ({
+            ...item,
+            showOnHome: item.showOnHome ?? false,
+            showOnFaqPage: item.showOnFaqPage ?? true,
+          })),
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -950,22 +968,6 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection eyebrow="REVIEWS" title="홈 학습 후기 (미리보기)">
-            <p className="mb-4 text-sm text-text-secondary">
-              후기 항목 추가·수정은 「학습 후기」 탭에서 합니다. 여기서는 홈에 노출되는 항목만 확인할 수 있습니다.
-            </p>
-            <CmsHomeSurfacePreview
-              emptyLabel="홈에 표시할 후기가 없습니다. 학습 후기 탭에서 「홈 표시」를 켜 주세요."
-              items={testimonials
-                .filter((item) => item.isActive && item.showOnHome)
-                .map((item) => ({
-                  id: item.id,
-                  title: item.author,
-                  body: item.quote,
-                }))}
-            />
-          </EditorSection>
-
           <EditorSection eyebrow="TEACHERS" title="선생님 카드">
             <p className="mb-4 text-sm text-text-secondary">
               홈 「선생님」 섹션 스크롤 카드입니다. 박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}까지 편집할 수 있으며, 체크를 끄면 해당 카드만 숨길 수 있습니다.
@@ -1120,10 +1122,10 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection eyebrow="VISIBILITY" title="홈 FAQ · 후기 섹션 노출">
+          <EditorSection eyebrow="VISIBILITY" title="홈 FAQ · 후기 섹션">
             <p className="mb-4 text-sm text-text-secondary">
-              홈에 FAQ·후기 영역 자체를 켜거나 끕니다. 어떤 항목이 홈에 나올지는 FAQ·학습 후기 탭의 「홈 표시」로
-              관리합니다.
+              홈에 FAQ·후기 영역만 켜거나 끕니다. 항목
+              추가·수정·홈 노출은 FAQ·학습 후기 탭에서만 할 수 있습니다.
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:max-w-2xl">
               <CmsVisibilityToggle
@@ -1143,6 +1145,23 @@ export function AdminCmsPage() {
                 onToggleVisible={patchContent}
               />
             </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setActivePage("faq")}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-text-primary transition hover:border-primary hover:text-primary"
+              >
+                FAQ 탭에서 관리 ({faqs.filter((item) => item.isActive && item.showOnHome).length}개 홈 노출)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePage("reviews")}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-text-primary transition hover:border-primary hover:text-primary"
+              >
+                학습 후기 탭에서 관리 (
+                {testimonials.filter((item) => item.isActive && item.showOnHome).length}개 홈 노출)
+              </button>
+            </div>
           </EditorSection>
 
           <EditorSection eyebrow="HOME PRICING" title="홈 요금제 섹션">
@@ -1158,21 +1177,6 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection eyebrow="FAQ" title="홈 FAQ (미리보기)">
-            <p className="mb-4 text-sm text-text-secondary">
-              FAQ 항목 추가·수정은 「FAQ」 탭에서 합니다. 여기서는 홈에 노출되는 항목만 확인할 수 있습니다.
-            </p>
-            <CmsHomeSurfacePreview
-              emptyLabel="홈에 표시할 FAQ가 없습니다. FAQ 탭에서 「홈 표시」를 켜 주세요."
-              items={faqs
-                .filter((item) => item.isActive && item.showOnHome)
-                .map((item) => ({
-                  id: item.id,
-                  title: item.question,
-                  body: item.answer,
-                }))}
-            />
-          </EditorSection>
             </>
           ) : null}
 
@@ -1883,36 +1887,6 @@ function StepEditor({
         </div>
       </div>
     </CmsCardBox>
-  );
-}
-
-function CmsHomeSurfacePreview({
-  items,
-  emptyLabel,
-}: {
-  items: Array<{ id: string; title: string; body: string }>;
-  emptyLabel: string;
-}) {
-  if (items.length === 0) {
-    return (
-      <p className="rounded-2xl border border-dashed border-gray-200 bg-background px-4 py-8 text-center text-sm text-text-muted">
-        {emptyLabel}
-      </p>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {items.map((item, index) => (
-        <div key={item.id} className="rounded-2xl border border-gray-100 bg-background p-4">
-          <p className="text-xs font-bold text-text-muted">홈 노출 {index + 1}</p>
-          <p className="mt-2 text-sm font-black text-text-primary">{item.title}</p>
-          <p className="mt-2 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
-            {item.body}
-          </p>
-        </div>
-      ))}
-    </div>
   );
 }
 
