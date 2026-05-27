@@ -544,7 +544,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-36 pt-8 text-center sm:px-6 sm:pb-32 md:pt-[72px] md:pb-24"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-[9.5rem] pt-10 text-center sm:px-6 sm:pb-[8.75rem] md:pt-20 md:pb-28"
           style={heroStyle}
         >
           {useOptimizedHeroImage ? (
@@ -563,7 +563,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
-          <div className="relative mx-auto max-w-5xl -translate-y-8 animate-fade-in sm:-translate-y-10 md:-translate-y-14">
+          <div className="relative mx-auto max-w-5xl -translate-y-6 animate-fade-in sm:-translate-y-8 md:-translate-y-11">
             <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
               {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
@@ -584,7 +584,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
 
           {/* ── Stats — pinned to hero bottom ── */}
-          <div className="absolute bottom-4 left-0 right-0 px-4 sm:bottom-5 sm:px-5">
+          <div className="absolute bottom-6 left-0 right-0 px-4 sm:bottom-7 md:bottom-8 sm:px-5">
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
               {cmsStats.map((s) => (
                 <div
