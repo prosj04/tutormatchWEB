@@ -10,7 +10,11 @@ import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
-import { isPublicSectionVisible, parseCmsVisibility } from "@/lib/cms-page-defaults";
+import {
+  formatCmsMultiline,
+  isPublicSectionVisible,
+  parseCmsVisibility,
+} from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { isHomePricingOneSubject } from "@/lib/pricing-plans";
@@ -304,7 +308,9 @@ function ProcessStepsCarousel({
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
-                <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-80">{step.desc}</p>
+                <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
+                  {step.desc}
+                </p>
               </div>
             </article>
           ))}
@@ -380,6 +386,8 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
+  const getCmsMultiline = (section: string, key: string, fallback: string) =>
+    formatCmsMultiline(getCmsValue(section, key, fallback));
 
   const homePricingItems = useMemo(
     () =>
@@ -482,7 +490,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       {
         ...step,
         title: getCmsValue("features", `step${stepNumber}_title`, step.title),
-        desc: getCmsValue("features", `step${stepNumber}_desc`, step.desc),
+        desc: getCmsMultiline("features", `step${stepNumber}_desc`, step.desc),
         img: getCmsValue("features", `step${stepNumber}_image`, step.img) || step.img || steps[0]!.img,
       },
     ];
@@ -518,7 +526,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
     return [
       {
         label: getCmsValue("management", `item${n}_title`, d.label),
-        desc: getCmsValue("management", `item${n}_desc`, d.desc),
+        desc: getCmsMultiline("management", `item${n}_desc`, d.desc),
       },
     ];
   });
@@ -544,7 +552,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-[9.5rem] pt-10 text-center sm:px-6 sm:pb-[8.75rem] md:pt-20 md:pb-28"
+          className="relative flex min-h-[100dvh] flex-col px-4 pb-6 pt-10 text-center sm:px-6 sm:pb-8 md:pt-20 md:pb-10"
           style={heroStyle}
         >
           {useOptimizedHeroImage ? (
@@ -563,12 +571,17 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
-          <div className="relative mx-auto max-w-5xl -translate-y-6 animate-fade-in sm:-translate-y-8 md:-translate-y-11">
+          <div className="relative flex flex-1 flex-col items-center justify-center">
+            <div className="mx-auto w-full max-w-5xl -translate-y-4 animate-fade-in sm:-translate-y-5 md:-translate-y-7">
             <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
-              {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
+              {getCmsMultiline("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-relaxed tracking-[0.01em] text-neutral-30 md:text-lg">
-              {getCmsValue("hero", "subtext", "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.")}
+            <p className="mx-auto mt-6 max-w-2xl whitespace-pre-line text-base font-medium leading-relaxed tracking-[0.01em] text-neutral-30 md:text-lg">
+              {getCmsMultiline(
+                "hero",
+                "subtext",
+                "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
+              )}
             </p>
             <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
               <ConsultationApplyButton className="w-full rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 sm:w-auto md:px-8 md:py-4 md:text-base">
@@ -581,18 +594,23 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                 {getCmsValue("hero", "cta_secondary", "선생님 둘러보기")}
               </Link>
             </div>
+            </div>
           </div>
 
-          {/* ── Stats — pinned to hero bottom ── */}
-          <div className="absolute bottom-6 left-0 right-0 px-4 sm:bottom-7 md:bottom-8 sm:px-5">
+          {/* ── Stats — below hero copy ── */}
+          <div className="relative mt-8 shrink-0 sm:mt-10 md:mt-12">
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
               {cmsStats.map((s) => (
                 <div
                   key={s.label}
                   className="flex flex-col items-center rounded-xl border border-white/15 bg-white/10 px-2 py-3 backdrop-blur-sm sm:rounded-2xl sm:px-5 sm:py-4 md:px-8 md:py-5"
                 >
-                  <span className="text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">{s.value}</span>
-                  <span className="mt-1 text-[10px] font-medium text-white/85 sm:mt-1.5 sm:text-xs md:text-sm">{s.label}</span>
+                  <span className="whitespace-pre-line text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">
+                    {formatCmsMultiline(s.value)}
+                  </span>
+                  <span className="mt-1 whitespace-pre-line text-center text-[10px] font-medium leading-snug text-white/85 sm:mt-1.5 sm:text-xs md:text-sm">
+                    {formatCmsMultiline(s.label)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -722,10 +740,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             <div className="lg:sticky lg:top-40 lg:self-start">
               <p className="text-sm font-black uppercase tracking-wider text-primary">TEACHERS</p>
               <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-                {getCmsValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
+                {getCmsMultiline("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
               </h2>
-              <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-80">
-                {getCmsValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
+              <p className="mt-4 max-w-sm whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80">
+                {getCmsMultiline(
+                  "teachers",
+                  "section_subtext",
+                  "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.",
+                )}
               </p>
               <Link
                 href="/tutors"
@@ -789,10 +811,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">LEARNING CARE</p>
                 <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-                  {getCmsValue("management", "headline", "수업 밖에서도\n이어지는 학습 관리")}
+                  {getCmsMultiline("management", "headline", "수업 밖에서도\n이어지는 학습 관리")}
                 </h2>
-                <p className="mt-4 max-w-lg text-base font-medium leading-relaxed text-neutral-80">
-                  {getCmsValue("management", "subtext", "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.")}
+                <p className="mt-4 max-w-lg whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80">
+                  {getCmsMultiline(
+                    "management",
+                    "subtext",
+                    "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.",
+                  )}
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -800,7 +826,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   <div key={`${item.label}-${index}`} className="rounded-[20px] bg-neutral-10 p-6">
                     <p className="text-3xl font-black text-primary">{String(index + 1).padStart(2, "0")}</p>
                     <h3 className="mt-5 text-base font-black text-neutral-100">{item.label}</h3>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-80">{item.desc}</p>
+                    <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
+                      {item.desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -812,11 +840,15 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         <section id="process" className="scroll-mt-[7.25rem] bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
-            <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-              {getCmsValue("features", "section_title", "이렇게 진행됩니다")}
+            <h2 className="mt-3 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+              {getCmsMultiline("features", "section_title", "이렇게 진행됩니다")}
             </h2>
-            <p className="mt-3 max-w-2xl text-base font-medium text-neutral-80">
-              {getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
+            <p className="mt-3 max-w-2xl whitespace-pre-line text-base font-medium text-neutral-80">
+              {getCmsMultiline(
+                "features",
+                "section_subtext",
+                "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.",
+              )}
             </p>
           </div>
           <div className="mt-8">
@@ -837,7 +869,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   {getCmsValue("home_page", "pricing_kicker", "PRICE")}
                 </p>
                 <h2 className="mt-3 text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100 sm:mt-4">
-                  {getCmsValue("home_page", "pricing_title", "1:1 맞춤 과외,\n월 40만원부터")
+                  {getCmsMultiline("home_page", "pricing_title", "1:1 맞춤 과외,\n월 40만원부터")
                     .split("\n")
                     .map((line, index, arr) => (
                       <span key={`${line}-${index}`}>

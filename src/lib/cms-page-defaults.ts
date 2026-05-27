@@ -805,8 +805,16 @@ export const portalPagesFieldLabels: Record<string, Record<string, string>> = {
   },
 };
 
+/** CMS textarea 줄바꿈(\\n, \\r\\n, literal \\n, &lt;br&gt;)을 화면 줄바꿈으로 통일 */
+export function formatCmsMultiline(value: string) {
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n");
+}
+
 export function parseMultilineList(value: string, fallback: string[]) {
-  const lines = value
+  const lines = formatCmsMultiline(value)
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
