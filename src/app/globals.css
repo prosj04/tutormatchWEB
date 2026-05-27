@@ -14,7 +14,7 @@
     color: #111111;
     font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont,
       "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    overflow-x: hidden;
+    overflow-x: clip;
     @apply text-base font-normal leading-relaxed antialiased;
   }
 

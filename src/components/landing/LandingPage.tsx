@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HomeConsultationCtaSection } from "@/components/landing/HomeConsultationCtaSection";
@@ -165,9 +165,14 @@ const testimonials = [
 
 /* ─────────────────────────────────────────── hooks ── */
 
+function landingHeaderOffset() {
+  return window.matchMedia("(min-width: 768px)").matches ? 100 : 64;
+}
+
 function useScrollLandingState() {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
   const [showFloating, setShowFloating] = useState(false);
+  const [pinTabNav, setPinTabNav] = useState(false);
 
   useEffect(() => {
     const sections = tabs
@@ -179,15 +184,17 @@ function useScrollLandingState() {
 
     const updateState = () => {
       frameId = 0;
+      const headerOffset = landingHeaderOffset();
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
       const pastHero = window.scrollY > heroBottom - 120;
       const beforePricing =
         !pricing || window.scrollY < pricing.offsetTop - window.innerHeight * 0.15;
       setShowFloating(pastHero && beforePricing);
+      setPinTabNav(window.scrollY >= heroBottom - headerOffset);
 
       const next = [...sections]
         .reverse()
-        .find((section) => section.offsetTop - 180 <= window.scrollY);
+        .find((section) => section.offsetTop - headerOffset - 8 <= window.scrollY);
 
       if (next?.id) setActiveTab(next.id);
     };
@@ -207,11 +214,160 @@ function useScrollLandingState() {
     };
   }, []);
 
-  return { activeTab, showFloating };
+  return { activeTab, showFloating, pinTabNav };
 }
 
 function canUseOptimizedHeroImage(src: string) {
   return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
+}
+
+type ProcessStepItem = {
+  number: string;
+  title: string;
+  desc: string;
+  img: string;
+};
+
+function processStepPageNumber(step: ProcessStepItem, index: number) {
+  const parsed = Number.parseInt(step.number, 10);
+  return Number.isFinite(parsed) ? parsed : index + 1;
+}
+
+function ProcessStepsCarousel({
+  steps,
+  index,
+  onIndexChange,
+}: {
+  steps: ProcessStepItem[];
+  index: number;
+  onIndexChange: (next: number) => void;
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
+  const [trackOffset, setTrackOffset] = useState(0);
+  const total = steps.length;
+
+  const alignToIndex = useCallback((next: number) => {
+    const viewport = viewportRef.current;
+    const card = cardRefs.current[next];
+    if (!viewport || !card) return;
+    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+    setTrackOffset(cardCenter - viewport.clientWidth / 2);
+  }, []);
+
+  useLayoutEffect(() => {
+    alignToIndex(index);
+  }, [index, alignToIndex, steps.length]);
+
+  useEffect(() => {
+    const onResize = () => alignToIndex(index);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [index, alignToIndex]);
+
+  const goPrev = () => onIndexChange(index === 0 ? total - 1 : index - 1);
+  const goNext = () => onIndexChange(index === total - 1 ? 0 : index + 1);
+  const prevStep = index > 0 ? steps[index - 1] : null;
+  const nextStep = index < total - 1 ? steps[index + 1] : null;
+  const currentPage = processStepPageNumber(steps[index], index);
+
+  return (
+    <>
+      <div ref={viewportRef} className="overflow-hidden">
+        <div
+          className="flex w-max gap-5 transition-transform duration-500 ease-out motion-reduce:transition-none md:gap-6"
+          style={{ transform: `translateX(-${trackOffset}px)` }}
+        >
+          <div
+            className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]"
+            aria-hidden
+          />
+          {steps.map((step, stepIndex) => (
+            <article
+              key={step.number}
+              ref={(node) => {
+                cardRefs.current[stepIndex] = node;
+              }}
+              className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+            >
+              <div className="relative h-[180px] w-full md:h-[200px]">
+                <Image
+                  src={step.img}
+                  alt={step.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width:768px) 280px, 380px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
+                  {step.number}
+                </span>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                <p className="mt-2 text-sm font-medium leading-relaxed text-neutral-80">{step.desc}</p>
+              </div>
+            </article>
+          ))}
+          <div
+            className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]"
+            aria-hidden
+          />
+        </div>
+      </div>
+      {total > 1 ? (
+        <div className="mt-6 flex items-center justify-center gap-2 tabular-nums sm:gap-3">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="px-1 py-1 text-xl font-black text-neutral-40 transition hover:text-primary sm:text-2xl"
+            aria-label="이전 단계"
+          >
+            ‹
+          </button>
+          {prevStep ? (
+            <button
+              type="button"
+              onClick={() => onIndexChange(index - 1)}
+              className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-neutral-30 transition hover:text-neutral-80 sm:text-lg"
+              aria-label={`${processStepPageNumber(prevStep, index - 1)}번 단계`}
+            >
+              {processStepPageNumber(prevStep, index - 1)}
+            </button>
+          ) : (
+            <span className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-transparent sm:text-lg" aria-hidden>
+              0
+            </span>
+          )}
+          <span className="min-w-[1.25rem] px-0.5 py-1 text-lg font-black text-neutral-100 sm:text-xl">
+            {currentPage}
+          </span>
+          {nextStep ? (
+            <button
+              type="button"
+              onClick={() => onIndexChange(index + 1)}
+              className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-neutral-30 transition hover:text-neutral-80 sm:text-lg"
+              aria-label={`${processStepPageNumber(nextStep, index + 1)}번 단계`}
+            >
+              {processStepPageNumber(nextStep, index + 1)}
+            </button>
+          ) : (
+            <span className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-transparent sm:text-lg" aria-hidden>
+              0
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={goNext}
+            className="px-1 py-1 text-xl font-black text-neutral-40 transition hover:text-primary sm:text-2xl"
+            aria-label="다음 단계"
+          >
+            ›
+          </button>
+        </div>
+      ) : null}
+    </>
+  );
 }
 
 /* ─────────────────────────────────────────── sub-components ── */
@@ -219,7 +375,21 @@ function canUseOptimizedHeroImage(src: string) {
 /* ─────────────────────────────────────────── main ── */
 
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
-  const { activeTab, showFloating } = useScrollLandingState();
+  const { activeTab, showFloating, pinTabNav } = useScrollLandingState();
+  const tabNavRef = useRef<HTMLElement>(null);
+  const [tabNavHeight, setTabNavHeight] = useState(52);
+
+  useLayoutEffect(() => {
+    const nav = tabNavRef.current;
+    if (!nav) return;
+
+    const syncHeight = () => setTabNavHeight(nav.offsetHeight);
+    syncHeight();
+
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(nav);
+    return () => observer.disconnect();
+  }, []);
   const [priceTab, setPriceTab] = useState(0);
   const [processIndex, setProcessIndex] = useState(0);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
@@ -389,7 +559,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-44 pt-16 text-center sm:px-6 sm:pb-40 md:pt-[100px] md:pb-32"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-40 pt-12 text-center sm:px-6 sm:pb-36 md:pt-[84px] md:pb-28"
           style={heroStyle}
         >
           {useOptimizedHeroImage ? (
@@ -408,7 +578,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
-          <div className="relative mx-auto max-w-5xl animate-fade-in">
+          <div className="relative mx-auto max-w-5xl -translate-y-5 animate-fade-in sm:-translate-y-6 md:-translate-y-8">
             <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
               {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
@@ -429,7 +599,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
 
           {/* ── Stats — pinned to hero bottom ── */}
-          <div className="absolute bottom-6 left-0 right-0 px-4 sm:bottom-8 sm:px-5">
+          <div className="absolute bottom-5 left-0 right-0 px-4 sm:bottom-6 sm:px-5">
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
               {cmsStats.map((s) => (
                 <div
@@ -444,27 +614,35 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-        {/* ═══ STICKY TAB NAV ══════════════════════════ */}
-        <nav className="sticky top-16 z-40 border-b border-neutral-20 bg-white shadow-sm md:top-[100px]">
-          <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
-            {tabs.map((tab) => (
-              <a
-                key={tab.id}
-                href={`#${tab.id}`}
-                className={`relative shrink-0 px-4 py-3 text-sm transition md:px-7 md:py-4 ${
-                  activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
-                }`}
-              >
-                {tab.label}
-                <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                    activeTab === tab.id ? "w-full" : "w-0"
+        {/* ═══ SECTION TAB NAV (pins under SiteHeader on scroll) ═ */}
+        <div>
+          <nav
+            ref={tabNavRef}
+            className={`z-40 border-b border-neutral-20 bg-white shadow-sm ${
+              pinTabNav ? "fixed left-0 right-0 top-16 md:top-[100px]" : "relative"
+            }`}
+          >
+            <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
+              {tabs.map((tab) => (
+                <a
+                  key={tab.id}
+                  href={`#${tab.id}`}
+                  className={`relative shrink-0 px-4 py-3 text-sm transition md:px-7 md:py-4 ${
+                    activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
                   }`}
-                />
-              </a>
-            ))}
-          </div>
-        </nav>
+                >
+                  {tab.label}
+                  <span
+                    className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                      activeTab === tab.id ? "w-full" : "w-0"
+                    }`}
+                  />
+                </a>
+              ))}
+            </div>
+          </nav>
+          {pinTabNav ? <div aria-hidden style={{ height: tabNavHeight }} /> : null}
+        </div>
 
         {/* ═══ RESULTS CAROUSEL (intro) ════════════════ */}
         <section id="intro" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
@@ -664,88 +842,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               {getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
             </p>
           </div>
-          <div className="mt-8 px-4 sm:px-5">
-            <div className="mx-auto max-w-[900px]">
-              <div className="overflow-hidden rounded-[20px]">
-                <div
-                  className="flex transition-transform duration-500 ease-out"
-                  style={{ transform: `translateX(-${processIndex * 100}%)` }}
-                >
-                  {cmsSteps.map((step) => (
-                    <article
-                      key={step.number}
-                      className="w-full shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm"
-                    >
-                      <div className="relative h-[220px] w-full sm:h-[260px] md:h-[320px]">
-                        <Image
-                          src={step.img}
-                          alt={step.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width:768px) 100vw, 900px"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                        <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20 sm:text-5xl">
-                          {step.number}
-                        </span>
-                      </div>
-                      <div className="p-6 sm:p-7 md:p-8">
-                        <h3 className="text-lg font-black text-neutral-100 sm:text-xl md:text-2xl">
-                          {step.title}
-                        </h3>
-                        <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80 sm:text-base">
-                          {step.desc}
-                        </p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-              {cmsSteps.length > 1 ? (
-                <div className="mt-5 flex flex-col items-center gap-4">
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    {cmsSteps.map((step, index) => (
-                      <button
-                        key={`process-page-${step.number}`}
-                        type="button"
-                        onClick={() => setProcessIndex(index)}
-                        className={`min-w-10 rounded-full border px-3 py-1.5 text-xs font-black tracking-wider transition sm:text-sm ${
-                          processIndex === index
-                            ? "border-primary bg-primary text-white"
-                            : "border-neutral-20 bg-white text-neutral-80 hover:border-primary hover:text-primary"
-                        }`}
-                        aria-label={`${step.number}번 카드 보기`}
-                      >
-                        {step.number}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setProcessIndex((prev) => (prev === 0 ? cmsSteps.length - 1 : prev - 1))
-                      }
-                      className="rounded-full border border-neutral-20 bg-white px-4 py-2 text-sm font-bold text-neutral-100 transition hover:border-primary hover:text-primary"
-                    >
-                      이전
-                    </button>
-                    <p className="text-sm font-bold text-neutral-80">
-                      {cmsSteps[processIndex]?.number} / {cmsSteps[cmsSteps.length - 1]?.number}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setProcessIndex((prev) => (prev === cmsSteps.length - 1 ? 0 : prev + 1))
-                      }
-                      className="rounded-full border border-neutral-20 bg-white px-4 py-2 text-sm font-bold text-neutral-100 transition hover:border-primary hover:text-primary"
-                    >
-                      다음
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+          <div className="mt-8">
+            <ProcessStepsCarousel
+              steps={cmsSteps}
+              index={processIndex}
+              onIndexChange={setProcessIndex}
+            />
           </div>
         </section>
 
