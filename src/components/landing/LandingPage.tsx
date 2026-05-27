@@ -172,7 +172,6 @@ function landingHeaderOffset() {
 function useScrollLandingState() {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
   const [showFloating, setShowFloating] = useState(false);
-  const [pinTabNav, setPinTabNav] = useState(false);
 
   useEffect(() => {
     const sections = tabs
@@ -185,16 +184,16 @@ function useScrollLandingState() {
     const updateState = () => {
       frameId = 0;
       const headerOffset = landingHeaderOffset();
+      const sectionScrollOffset = headerOffset + 52;
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight : window.innerHeight;
       const pastHero = window.scrollY > heroBottom - 120;
       const beforePricing =
         !pricing || window.scrollY < pricing.offsetTop - window.innerHeight * 0.15;
       setShowFloating(pastHero && beforePricing);
-      setPinTabNav(window.scrollY >= heroBottom - headerOffset);
 
       const next = [...sections]
         .reverse()
-        .find((section) => section.offsetTop - headerOffset - 8 <= window.scrollY);
+        .find((section) => section.offsetTop - sectionScrollOffset <= window.scrollY);
 
       if (next?.id) setActiveTab(next.id);
     };
@@ -214,7 +213,7 @@ function useScrollLandingState() {
     };
   }, []);
 
-  return { activeTab, showFloating, pinTabNav };
+  return { activeTab, showFloating };
 }
 
 function canUseOptimizedHeroImage(src: string) {
@@ -375,21 +374,7 @@ function ProcessStepsCarousel({
 /* ─────────────────────────────────────────── main ── */
 
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
-  const { activeTab, showFloating, pinTabNav } = useScrollLandingState();
-  const tabNavRef = useRef<HTMLElement>(null);
-  const [tabNavHeight, setTabNavHeight] = useState(52);
-
-  useLayoutEffect(() => {
-    const nav = tabNavRef.current;
-    if (!nav) return;
-
-    const syncHeight = () => setTabNavHeight(nav.offsetHeight);
-    syncHeight();
-
-    const observer = new ResizeObserver(syncHeight);
-    observer.observe(nav);
-    return () => observer.disconnect();
-  }, []);
+  const { activeTab, showFloating } = useScrollLandingState();
   const [priceTab, setPriceTab] = useState(0);
   const [processIndex, setProcessIndex] = useState(0);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
@@ -559,7 +544,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         {/* ═══ HERO ═══════════════════════════════════ */}
         <section
           id="hero"
-          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-40 pt-12 text-center sm:px-6 sm:pb-36 md:pt-[84px] md:pb-28"
+          className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-36 pt-8 text-center sm:px-6 sm:pb-32 md:pt-[72px] md:pb-24"
           style={heroStyle}
         >
           {useOptimizedHeroImage ? (
@@ -578,7 +563,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
-          <div className="relative mx-auto max-w-5xl -translate-y-5 animate-fade-in sm:-translate-y-6 md:-translate-y-8">
+          <div className="relative mx-auto max-w-5xl -translate-y-8 animate-fade-in sm:-translate-y-10 md:-translate-y-14">
             <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
               {getCmsValue("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
             </h1>
@@ -599,7 +584,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
 
           {/* ── Stats — pinned to hero bottom ── */}
-          <div className="absolute bottom-5 left-0 right-0 px-4 sm:bottom-6 sm:px-5">
+          <div className="absolute bottom-4 left-0 right-0 px-4 sm:bottom-5 sm:px-5">
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
               {cmsStats.map((s) => (
                 <div
@@ -614,38 +599,30 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-        {/* ═══ SECTION TAB NAV (pins under SiteHeader on scroll) ═ */}
-        <div>
-          <nav
-            ref={tabNavRef}
-            className={`z-40 border-b border-neutral-20 bg-white shadow-sm ${
-              pinTabNav ? "fixed left-0 right-0 top-16 md:top-[100px]" : "relative"
-            }`}
-          >
-            <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
-              {tabs.map((tab) => (
-                <a
-                  key={tab.id}
-                  href={`#${tab.id}`}
-                  className={`relative shrink-0 px-4 py-3 text-sm transition md:px-7 md:py-4 ${
-                    activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
+        {/* ═══ STICKY TAB NAV (under SiteHeader on scroll) ═ */}
+        <nav className="sticky top-16 z-40 border-b border-neutral-20 bg-white shadow-sm md:top-[100px]">
+          <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
+            {tabs.map((tab) => (
+              <a
+                key={tab.id}
+                href={`#${tab.id}`}
+                className={`relative shrink-0 px-4 py-3 text-sm transition md:px-7 md:py-4 ${
+                  activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
+                }`}
+              >
+                {tab.label}
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                    activeTab === tab.id ? "w-full" : "w-0"
                   }`}
-                >
-                  {tab.label}
-                  <span
-                    className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                      activeTab === tab.id ? "w-full" : "w-0"
-                    }`}
-                  />
-                </a>
-              ))}
-            </div>
-          </nav>
-          {pinTabNav ? <div aria-hidden style={{ height: tabNavHeight }} /> : null}
-        </div>
+                />
+              </a>
+            ))}
+          </div>
+        </nav>
 
         {/* ═══ RESULTS CAROUSEL (intro) ════════════════ */}
-        <section id="intro" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
+        <section id="intro" className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">RESULTS</p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
@@ -739,7 +716,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         ) : null}
 
         {/* ═══ TEACHERS — light bg ═════════════════════ */}
-        <section id="teachers" className="overflow-hidden bg-neutral-10 py-20 md:py-28">
+        <section id="teachers" className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto grid max-w-[1200px] gap-10 px-4 sm:px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
             {/* sticky heading column */}
             <div className="lg:sticky lg:top-40 lg:self-start">
@@ -806,7 +783,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </section>
 
         {/* ═══ MANAGEMENT ══════════════════════════════ */}
-        <section id="management" className="bg-white py-20 md:py-28">
+        <section id="management" className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               <div className="lg:self-center">
@@ -832,7 +809,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </section>
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
-        <section id="process" className="bg-neutral-10 py-20 md:py-28">
+        <section id="process" className="scroll-mt-[7.25rem] bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
@@ -852,7 +829,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </section>
 
                 {/* ═══ PRICING ═════════════════════════════════ */}
-        <section id="pricing" className="bg-white py-14 sm:py-20 md:py-28">
+        <section id="pricing" className="scroll-mt-[7.25rem] bg-white py-14 sm:py-20 md:scroll-mt-[9.75rem] md:py-28">
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <div className="lg:self-center">
