@@ -18,6 +18,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     imageUrl?: unknown;
     order?: unknown;
     isActive?: unknown;
+    showOnHome?: unknown;
+    showOnReviewsPage?: unknown;
   };
   try {
     body = await request.json();
@@ -31,6 +33,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     imageUrl?: string | null;
     order?: number;
     isActive?: boolean;
+    showOnHome?: boolean;
+    showOnReviewsPage?: boolean;
   } = {};
 
   if (typeof body.quote === "string") data.quote = body.quote;
@@ -41,6 +45,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     data.order = body.order;
   }
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
+  if (typeof body.showOnHome === "boolean") data.showOnHome = body.showOnHome;
+  if (typeof body.showOnReviewsPage === "boolean") data.showOnReviewsPage = body.showOnReviewsPage;
 
   const testimonial = await prisma.testimonial.update({
     where: { id },

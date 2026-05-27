@@ -1,8 +1,6 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
-import {
-  getGenderDefaultPhotoUrl as resolveGenderDefaultPhotoUrl,
-} from "@/lib/profile-gender";
+import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
 export { getGenderDefaultPhotoUrl, getEffectivePhotoUrl } from "@/lib/profile-gender";
@@ -830,10 +828,11 @@ export function getCmsSectionValue(
   return siteContent?.[section]?.[key] ?? fallback;
 }
 
-/** 강사진 공개 목록·상세: 업로드 사진 없을 때 CMS 성별 기본 얼굴 */
+/** 강사진 공개 목록·상세: 개별 photoUrl 우선, 없으면 CMS 성별 기본 얼굴 */
 export function getTutorPublicPhotoUrl(
   gender: string | null | undefined,
   siteContent: Record<string, Record<string, string>> | undefined,
+  photoUrl?: string | null,
 ): string {
-  return resolveGenderDefaultPhotoUrl(gender, siteContent);
+  return getEffectivePhotoUrl(photoUrl, gender, siteContent);
 }

@@ -41,6 +41,8 @@ type TestimonialRow = {
   imageUrl: string | null;
   order: number;
   isActive: boolean;
+  showOnHome: boolean;
+  showOnReviewsPage: boolean;
 };
 
 type FaqRow = {
@@ -49,6 +51,8 @@ type FaqRow = {
   answer: string;
   order: number;
   isActive: boolean;
+  showOnHome: boolean;
+  showOnFaqPage: boolean;
 };
 
 type TextFieldConfig = {
@@ -946,29 +950,20 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection
-            eyebrow="REVIEWS"
-            title="학습 후기"
-            action={
-              <button type="button" onClick={() => void addTestimonial()} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
-                후기 추가
-              </button>
-            }
-          >
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTestimonialDragEnd}>
-              <SortableContext items={testimonials.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
-                  {testimonials.map((item) => (
-                    <SortableTestimonial
-                      key={item.id}
-                      item={item}
-                      onSave={patchTestimonial}
-                      onDelete={() => void deleteTestimonial(item.id)}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+          <EditorSection eyebrow="REVIEWS" title="홈 학습 후기 (미리보기)">
+            <p className="mb-4 text-sm text-text-secondary">
+              후기 항목 추가·수정은 「학습 후기」 탭에서 합니다. 여기서는 홈에 노출되는 항목만 확인할 수 있습니다.
+            </p>
+            <CmsHomeSurfacePreview
+              emptyLabel="홈에 표시할 후기가 없습니다. 학습 후기 탭에서 「홈 표시」를 켜 주세요."
+              items={testimonials
+                .filter((item) => item.isActive && item.showOnHome)
+                .map((item) => ({
+                  id: item.id,
+                  title: item.author,
+                  body: item.quote,
+                }))}
+            />
           </EditorSection>
 
           <EditorSection eyebrow="TEACHERS" title="선생님 카드">
@@ -1125,9 +1120,10 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection eyebrow="VISIBILITY" title="홈 · FAQ · 후기 노출">
+          <EditorSection eyebrow="VISIBILITY" title="홈 FAQ · 후기 섹션 노출">
             <p className="mb-4 text-sm text-text-secondary">
-              FAQ·학습 후기 목록은 아래 DB와 FAQ·후기 탭이 공유합니다. 체크를 끄면 해당 영역·페이지가 공개되지 않습니다.
+              홈에 FAQ·후기 영역 자체를 켜거나 끕니다. 어떤 항목이 홈에 나올지는 FAQ·학습 후기 탭의 「홈 표시」로
+              관리합니다.
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:max-w-2xl">
               <CmsVisibilityToggle
@@ -1162,24 +1158,20 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection
-            eyebrow="FAQ"
-            title="자주 묻는 질문"
-            action={
-              <button type="button" onClick={() => void addFaq()} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
-                FAQ 추가
-              </button>
-            }
-          >
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleFaqDragEnd}>
-              <SortableContext items={faqs.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
-                  {faqs.map((item) => (
-                    <SortableFaq key={item.id} item={item} onSave={patchFaq} onDelete={() => void deleteFaq(item.id)} />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+          <EditorSection eyebrow="FAQ" title="홈 FAQ (미리보기)">
+            <p className="mb-4 text-sm text-text-secondary">
+              FAQ 항목 추가·수정은 「FAQ」 탭에서 합니다. 여기서는 홈에 노출되는 항목만 확인할 수 있습니다.
+            </p>
+            <CmsHomeSurfacePreview
+              emptyLabel="홈에 표시할 FAQ가 없습니다. FAQ 탭에서 「홈 표시」를 켜 주세요."
+              items={faqs
+                .filter((item) => item.isActive && item.showOnHome)
+                .map((item) => ({
+                  id: item.id,
+                  title: item.question,
+                  body: item.answer,
+                }))}
+            />
           </EditorSection>
             </>
           ) : null}
@@ -1276,8 +1268,8 @@ export function AdminCmsPage() {
                 ))}
               </div>
               <p className="mt-6 text-sm text-text-secondary">
-                공개 강사진 목록·상세에는 업로드된 내부용 사진 대신, 아래 성별 기본 이미지를 씁니다. 빈 카드 문구·승인·공개
-                프로필 필드는 아래 목록에서 바로 수정할 수 있습니다.
+                공개 강사진에는 선생님이 올린 프로필 사진을 우선 표시합니다. 사진이 없으면 아래 성별 기본 이미지를
+                씁니다. 빈 카드 문구·승인·공개 프로필 필드는 아래 목록에서 바로 수정할 수 있습니다.
               </p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <ImageField
@@ -1306,55 +1298,117 @@ export function AdminCmsPage() {
           ) : null}
 
           {activePage === "faq" ? (
-            <EditorSection eyebrow="FAQ" title="FAQ 페이지 (고정 영역)">
-              <p className="mb-4 text-sm text-text-secondary">
-                질문·답변 목록은 홈 탭과 동일한 DB를 사용합니다.
-              </p>
-              <div className="mb-6 max-w-md">
-                <CmsVisibilityToggle
-                  label="FAQ 개별 페이지(/faq) 표시"
-                  section="faq_page"
-                  visibilityKey="show_page"
-                  getValue={getValue}
-                  onToggleVisible={patchContent}
-                />
-              </div>
-              <div className="grid gap-4 lg:grid-cols-2">
-                {buildExtraFields("faq_page").map((field) => (
-                  <ContentField
-                    key={`${field.section}-${field.keyName}`}
-                    field={field}
-                    value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+            <>
+              <EditorSection eyebrow="FAQ" title="FAQ 페이지">
+                <p className="mb-4 text-sm text-text-secondary">
+                  질문·답변을 추가하고, FAQ 페이지·홈 화면 노출 여부를 각 항목에서 설정합니다.
+                </p>
+                <div className="mb-6 max-w-md">
+                  <CmsVisibilityToggle
+                    label="FAQ 개별 페이지(/faq) 표시"
+                    section="faq_page"
+                    visibilityKey="show_page"
+                    getValue={getValue}
+                    onToggleVisible={patchContent}
                   />
-                ))}
-              </div>
-            </EditorSection>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildExtraFields("faq_page").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={patchContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+              <EditorSection
+                eyebrow="FAQ ITEMS"
+                title="질문·답변 목록"
+                action={
+                  <button
+                    type="button"
+                    onClick={() => void addFaq()}
+                    className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
+                  >
+                    FAQ 추가
+                  </button>
+                }
+              >
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleFaqDragEnd}>
+                  <SortableContext items={faqs.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-4">
+                      {faqs.map((item) => (
+                        <SortableFaq
+                          key={item.id}
+                          item={item}
+                          onSave={patchFaq}
+                          onDelete={() => void deleteFaq(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </EditorSection>
+            </>
           ) : null}
 
           {activePage === "reviews" ? (
-            <EditorSection eyebrow="REVIEWS" title="학습 후기 페이지 (고정 영역)">
-              <p className="mb-4 text-sm text-text-secondary">후기 카드는 홈 탭과 같은 DB입니다.</p>
-              <div className="mb-6 max-w-md">
-                <CmsVisibilityToggle
-                  label="학습 후기 개별 페이지(/reviews) 표시"
-                  section="reviews_page"
-                  visibilityKey="show_page"
-                  getValue={getValue}
-                  onToggleVisible={patchContent}
-                />
-              </div>
-              <div className="grid gap-4 lg:grid-cols-2">
-                {buildExtraFields("reviews_page").map((field) => (
-                  <ContentField
-                    key={`${field.section}-${field.keyName}`}
-                    field={field}
-                    value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+            <>
+              <EditorSection eyebrow="REVIEWS" title="학습 후기 페이지">
+                <p className="mb-4 text-sm text-text-secondary">
+                  후기를 추가하고, 후기 페이지·홈 화면 노출 여부를 각 항목에서 설정합니다.
+                </p>
+                <div className="mb-6 max-w-md">
+                  <CmsVisibilityToggle
+                    label="학습 후기 개별 페이지(/reviews) 표시"
+                    section="reviews_page"
+                    visibilityKey="show_page"
+                    getValue={getValue}
+                    onToggleVisible={patchContent}
                   />
-                ))}
-              </div>
-            </EditorSection>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildExtraFields("reviews_page").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={patchContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+              <EditorSection
+                eyebrow="REVIEW ITEMS"
+                title="후기 카드 목록"
+                action={
+                  <button
+                    type="button"
+                    onClick={() => void addTestimonial()}
+                    className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
+                  >
+                    후기 추가
+                  </button>
+                }
+              >
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTestimonialDragEnd}>
+                  <SortableContext items={testimonials.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-4">
+                      {testimonials.map((item) => (
+                        <SortableTestimonial
+                          key={item.id}
+                          item={item}
+                          onSave={patchTestimonial}
+                          onDelete={() => void deleteTestimonial(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </EditorSection>
+            </>
           ) : null}
 
           {activePage === "login" ? (
@@ -1832,6 +1886,58 @@ function StepEditor({
   );
 }
 
+function CmsHomeSurfacePreview({
+  items,
+  emptyLabel,
+}: {
+  items: Array<{ id: string; title: string; body: string }>;
+  emptyLabel: string;
+}) {
+  if (items.length === 0) {
+    return (
+      <p className="rounded-2xl border border-dashed border-gray-200 bg-background px-4 py-8 text-center text-sm text-text-muted">
+        {emptyLabel}
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, index) => (
+        <div key={item.id} className="rounded-2xl border border-gray-100 bg-background p-4">
+          <p className="text-xs font-bold text-text-muted">홈 노출 {index + 1}</p>
+          <p className="mt-2 text-sm font-black text-text-primary">{item.title}</p>
+          <p className="mt-2 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
+            {item.body}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SurfaceToggleButton({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full px-3 py-1 text-xs font-bold ${
+        active ? "bg-primary/10 text-primary" : "bg-gray-100 text-text-muted"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
 function SortableTestimonial({
   item,
   onSave,
@@ -1853,15 +1959,21 @@ function SortableTestimonial({
         <AutoSaveInput label="후기 문구" value={item.quote} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { quote: value })} />
         <AutoSaveInput label="작성자" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
+          <SurfaceToggleButton
+            active={item.isActive}
+            label={item.isActive ? "사용" : "숨김"}
             onClick={() => void onSave(item.id, { isActive: !item.isActive })}
-            className={`rounded-full px-3 py-1 text-xs font-bold ${
-              item.isActive ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-text-muted"
-            }`}
-          >
-            {item.isActive ? "활성" : "비활성"}
-          </button>
+          />
+          <SurfaceToggleButton
+            active={item.showOnReviewsPage}
+            label="후기 페이지"
+            onClick={() => void onSave(item.id, { showOnReviewsPage: !item.showOnReviewsPage })}
+          />
+          <SurfaceToggleButton
+            active={item.showOnHome}
+            label="홈 표시"
+            onClick={() => void onSave(item.id, { showOnHome: !item.showOnHome })}
+          />
           <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
             삭제
           </button>
@@ -1893,16 +2005,22 @@ function SortableFaq({
         <AutoSaveInput label="질문" value={item.question} kind="textarea" rows={2} onSave={(value) => onSave(item.id, { question: value })} />
         <AutoSaveInput label="답변" value={item.answer} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { answer: value })} />
       </div>
-      <div className="flex gap-2 lg:flex-col">
-        <button
-          type="button"
+      <div className="flex flex-wrap gap-2 lg:max-w-[9rem] lg:flex-col">
+        <SurfaceToggleButton
+          active={item.isActive}
+          label={item.isActive ? "사용" : "숨김"}
           onClick={() => void onSave(item.id, { isActive: !item.isActive })}
-          className={`rounded-full px-3 py-1 text-xs font-bold ${
-            item.isActive ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-text-muted"
-          }`}
-        >
-          {item.isActive ? "활성" : "비활성"}
-        </button>
+        />
+        <SurfaceToggleButton
+          active={item.showOnFaqPage}
+          label="FAQ 페이지"
+          onClick={() => void onSave(item.id, { showOnFaqPage: !item.showOnFaqPage })}
+        />
+        <SurfaceToggleButton
+          active={item.showOnHome}
+          label="홈 표시"
+          onClick={() => void onSave(item.id, { showOnHome: !item.showOnHome })}
+        />
         <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
           삭제
         </button>

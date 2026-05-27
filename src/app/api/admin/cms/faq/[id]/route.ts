@@ -17,6 +17,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     answer?: unknown;
     order?: unknown;
     isActive?: unknown;
+    showOnHome?: unknown;
+    showOnFaqPage?: unknown;
   };
   try {
     body = await request.json();
@@ -29,6 +31,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     answer?: string;
     order?: number;
     isActive?: boolean;
+    showOnHome?: boolean;
+    showOnFaqPage?: boolean;
   } = {};
 
   if (typeof body.question === "string") data.question = body.question;
@@ -37,6 +41,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     data.order = body.order;
   }
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
+  if (typeof body.showOnHome === "boolean") data.showOnHome = body.showOnHome;
+  if (typeof body.showOnFaqPage === "boolean") data.showOnFaqPage = body.showOnFaqPage;
 
   const faq = await prisma.faqItem.update({
     where: { id },

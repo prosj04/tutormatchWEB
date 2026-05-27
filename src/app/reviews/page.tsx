@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
-import { getActiveTestimonials } from "@/lib/cms";
+import { getReviewsPageTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { startPerfTimer } from "@/lib/perf-timer";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
@@ -29,7 +29,7 @@ export default async function ReviewsPage() {
     notFound();
   }
 
-  const testimonials = await getActiveTestimonials();
+  const testimonials = await getReviewsPageTestimonials();
 
   const page = (
     <ReviewsPageContent

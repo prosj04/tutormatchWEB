@@ -30,7 +30,7 @@ export default async function TutorsPage() {
     bio: teacher.profile?.intro || teacher.bio,
     education: teacher.education,
     experience: teacher.experience,
-    photoUrl: getTutorPublicPhotoUrl(teacher.gender, siteContent),
+    photoUrl: getTutorPublicPhotoUrl(teacher.gender, siteContent, teacher.profile?.photoUrl),
   }));
 
   const page = (

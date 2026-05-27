@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { FaqPageContent } from "@/components/faq/FaqPageContent";
-import { getActiveFaqs } from "@/lib/cms";
+import { getFaqPageFaqs } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { LANDING_FAQ_FALLBACK } from "@/lib/faq-defaults";
 import { startPerfTimer } from "@/lib/perf-timer";
@@ -21,7 +21,7 @@ export default async function FaqPage() {
     notFound();
   }
 
-  const faqs = await getActiveFaqs();
+  const faqs = await getFaqPageFaqs();
 
   const page = (
     <FaqPageContent

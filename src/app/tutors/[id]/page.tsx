@@ -55,7 +55,11 @@ export default async function TutorProfilePage({ params }: PageProps) {
     notFound();
   }
 
-  const publicPhotoUrl = getTutorPublicPhotoUrl(teacher.gender, siteContent);
+  const publicPhotoUrl = getTutorPublicPhotoUrl(
+    teacher.gender,
+    siteContent,
+    teacher.profile?.photoUrl,
+  );
 
   const subjects = splitSubjects(teacher.subjects);
   const educationEntries = parseJsonArray<EducationEntry>(teacher.profile?.education);

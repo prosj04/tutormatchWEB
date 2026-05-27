@@ -28,66 +28,138 @@ const EMPTY_LANDING_CMS: LandingCmsContent = {
   faqs: [],
 };
 
-const getCachedActiveTestimonials = unstable_cache(
+function mapTestimonialRows(
+  testimonials: Array<{ quote: string; author: string; imageUrl: string | null }>,
+): LandingCmsContent["testimonials"] {
+  return testimonials.map((item) => ({
+    quote: item.quote,
+    info: item.author,
+    img:
+      item.imageUrl ||
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+  }));
+}
+
+function mapFaqRows(faqs: Array<{ question: string; answer: string }>): LandingCmsContent["faqs"] {
+  return faqs.map((item) => ({ q: item.question, a: item.answer }));
+}
+
+const getCachedHomeTestimonials = unstable_cache(
   async (): Promise<LandingCmsContent["testimonials"]> => {
-    const testimonials = await timeAsync("prisma.testimonial.findMany.active", () =>
+    const testimonials = await timeAsync("prisma.testimonial.findMany.home", () =>
       prisma.testimonial.findMany({
-        where: { isActive: true },
+        where: { isActive: true, showOnHome: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: { quote: true, author: true, imageUrl: true },
       }),
     );
-
-    return testimonials.map((item) => ({
-      quote: item.quote,
-      info: item.author,
-      img:
-        item.imageUrl ||
-        "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
-    }));
+    return mapTestimonialRows(testimonials);
   },
-  ["public-testimonials"],
+  ["public-testimonials-home"],
   {
     revalidate: PUBLIC_CMS_REVALIDATE_SECONDS,
     tags: [TESTIMONIALS_CACHE_TAG],
   },
 );
 
-const getCachedActiveFaqs = unstable_cache(
+const getCachedReviewsPageTestimonials = unstable_cache(
+  async (): Promise<LandingCmsContent["testimonials"]> => {
+    const testimonials = await timeAsync("prisma.testimonial.findMany.reviewsPage", () =>
+      prisma.testimonial.findMany({
+        where: { isActive: true, showOnReviewsPage: true },
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        select: { quote: true, author: true, imageUrl: true },
+      }),
+    );
+    return mapTestimonialRows(testimonials);
+  },
+  ["public-testimonials-reviews-page"],
+  {
+    revalidate: PUBLIC_CMS_REVALIDATE_SECONDS,
+    tags: [TESTIMONIALS_CACHE_TAG],
+  },
+);
+
+const getCachedHomeFaqs = unstable_cache(
   async (): Promise<LandingCmsContent["faqs"]> => {
-    const faqs = await timeAsync("prisma.faqItem.findMany.active", () =>
+    const faqs = await timeAsync("prisma.faqItem.findMany.home", () =>
       prisma.faqItem.findMany({
-        where: { isActive: true },
+        where: { isActive: true, showOnHome: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: { question: true, answer: true },
       }),
     );
-
-    return faqs.map((item) => ({ q: item.question, a: item.answer }));
+    return mapFaqRows(faqs);
   },
-  ["public-faqs"],
+  ["public-faqs-home"],
   {
     revalidate: PUBLIC_CMS_REVALIDATE_SECONDS,
     tags: [FAQS_CACHE_TAG],
   },
 );
 
-export async function getActiveTestimonials(): Promise<LandingCmsContent["testimonials"]> {
+const getCachedFaqPageFaqs = unstable_cache(
+  async (): Promise<LandingCmsContent["faqs"]> => {
+    const faqs = await timeAsync("prisma.faqItem.findMany.faqPage", () =>
+      prisma.faqItem.findMany({
+        where: { isActive: true, showOnFaqPage: true },
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+        select: { question: true, answer: true },
+      }),
+    );
+    return mapFaqRows(faqs);
+  },
+  ["public-faqs-page"],
+  {
+    revalidate: PUBLIC_CMS_REVALIDATE_SECONDS,
+    tags: [FAQS_CACHE_TAG],
+  },
+);
+
+export async function getHomeTestimonials(): Promise<LandingCmsContent["testimonials"]> {
   try {
-    return await getCachedActiveTestimonials();
+    return await getCachedHomeTestimonials();
   } catch (error) {
-    console.error("[getActiveTestimonials]", error);
+    console.error("[getHomeTestimonials]", error);
     return [];
   }
 }
 
-export async function getActiveFaqs(): Promise<LandingCmsContent["faqs"]> {
+export async function getReviewsPageTestimonials(): Promise<LandingCmsContent["testimonials"]> {
   try {
-    return await getCachedActiveFaqs();
+    return await getCachedReviewsPageTestimonials();
   } catch (error) {
-    console.error("[getActiveFaqs]", error);
+    console.error("[getReviewsPageTestimonials]", error);
     return [];
   }
+}
+
+export async function getHomeFaqs(): Promise<LandingCmsContent["faqs"]> {
+  try {
+    return await getCachedHomeFaqs();
+  } catch (error) {
+    console.error("[getHomeFaqs]", error);
+    return [];
+  }
+}
+
+export async function getFaqPageFaqs(): Promise<LandingCmsContent["faqs"]> {
+  try {
+    return await getCachedFaqPageFaqs();
+  } catch (error) {
+    console.error("[getFaqPageFaqs]", error);
+    return [];
+  }
+}
+
+/** @deprecated use getReviewsPageTestimonials */
+export async function getActiveTestimonials(): Promise<LandingCmsContent["testimonials"]> {
+  return getReviewsPageTestimonials();
+}
+
+/** @deprecated use getFaqPageFaqs */
+export async function getActiveFaqs(): Promise<LandingCmsContent["faqs"]> {
+  return getFaqPageFaqs();
 }
 
 /** connection_limit=1 환경: 병렬 Prisma 호출 금지, siteContent는 getGroupedSiteContent 재사용 */
@@ -95,8 +167,8 @@ export async function getLandingCmsContent(): Promise<LandingCmsContent> {
   const timer = startPerfTimer("cms.getLandingCmsContent");
   try {
     const siteContent = await getGroupedSiteContent();
-    const testimonials = await getActiveTestimonials();
-    const faqs = await getActiveFaqs();
+    const testimonials = await getHomeTestimonials();
+    const faqs = await getHomeFaqs();
 
     return {
       siteContent,
