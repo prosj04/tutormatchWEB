@@ -15,6 +15,22 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
 
   return (
     <article className="flex h-full flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <div className="flex flex-wrap gap-1.5">
+        {tutor.subjects.length > 0 ? (
+          tutor.subjects.map((subject) => (
+            <span
+              key={subject}
+              className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary"
+            >
+              {subject}
+            </span>
+          ))
+        ) : (
+          <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+            담당 과목 협의
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-4">
         <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -27,22 +43,6 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
 
         <div className="min-w-0">
           <h3 className="text-lg font-black text-text-primary">{tutor.name} 선생님</h3>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {tutor.subjects.length > 0 ? (
-              tutor.subjects.map((subject) => (
-                <span
-                  key={subject}
-                  className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary"
-                >
-                  {subject}
-                </span>
-              ))
-            ) : (
-              <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
-                담당 과목 협의
-              </span>
-            )}
-          </div>
         </div>
       </div>
 

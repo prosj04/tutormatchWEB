@@ -17,7 +17,6 @@ import {
 } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
-import { isHomePricingOneSubject } from "@/lib/pricing-plans";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -247,51 +246,72 @@ function ProcessStepsCarousel({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
-  const [trackOffset, setTrackOffset] = useState(0);
   const total = steps.length;
 
-  const alignToIndex = useCallback((next: number) => {
+  const scrollToIndex = useCallback((next: number, behavior: ScrollBehavior = "smooth") => {
     const viewport = viewportRef.current;
     const card = cardRefs.current[next];
     if (!viewport || !card) return;
-    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-    setTrackOffset(cardCenter - viewport.clientWidth / 2);
+    const left = card.offsetLeft - (viewport.clientWidth - card.clientWidth) / 2;
+    viewport.scrollTo({ left, behavior });
   }, []);
 
   useLayoutEffect(() => {
-    alignToIndex(index);
-  }, [index, alignToIndex, steps.length]);
+    scrollToIndex(index, "auto");
+  }, [index, scrollToIndex, steps.length]);
 
   useEffect(() => {
-    const onResize = () => alignToIndex(index);
+    const onResize = () => scrollToIndex(index, "auto");
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [index, alignToIndex]);
+  }, [index, scrollToIndex]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    let frameId = 0;
+    const onScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0;
+        const center = viewport.scrollLeft + viewport.clientWidth / 2;
+        let bestIndex = 0;
+        let bestDist = Number.POSITIVE_INFINITY;
+        for (let i = 0; i < total; i++) {
+          const card = cardRefs.current[i];
+          if (!card) continue;
+          const cardCenter = card.offsetLeft + card.clientWidth / 2;
+          const dist = Math.abs(cardCenter - center);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIndex = i;
+          }
+        }
+        if (bestIndex !== index) onIndexChange(bestIndex);
+      });
+    };
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      if (frameId) window.cancelAnimationFrame(frameId);
+      viewport.removeEventListener("scroll", onScroll);
+    };
+  }, [index, onIndexChange, total]);
 
   const goPrev = () => onIndexChange(index === 0 ? total - 1 : index - 1);
   const goNext = () => onIndexChange(index === total - 1 ? 0 : index + 1);
-  const prevStep = index > 0 ? steps[index - 1] : null;
-  const nextStep = index < total - 1 ? steps[index + 1] : null;
-  const currentPage = processStepPageNumber(steps[index], index);
 
   return (
     <>
-      <div ref={viewportRef} className="overflow-hidden">
-        <div
-          className="flex w-max gap-5 transition-transform duration-500 ease-out motion-reduce:transition-none md:gap-6"
-          style={{ transform: `translateX(-${trackOffset}px)` }}
-        >
-          <div
-            className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]"
-            aria-hidden
-          />
+      <div ref={viewportRef} className="scrollbar-hide overflow-x-auto overscroll-x-contain">
+        <div className="flex w-max snap-x snap-mandatory gap-5 md:gap-6">
+          <div className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]" aria-hidden />
           {steps.map((step, stepIndex) => (
             <article
               key={step.number}
               ref={(node) => {
                 cardRefs.current[stepIndex] = node;
               }}
-              className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+              className="w-[280px] shrink-0 snap-center overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
             >
               <div className="relative h-[180px] w-full md:h-[200px]">
                 <Image
@@ -314,10 +334,7 @@ function ProcessStepsCarousel({
               </div>
             </article>
           ))}
-          <div
-            className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]"
-            aria-hidden
-          />
+          <div className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]" aria-hidden />
         </div>
       </div>
       {total > 1 ? (
@@ -330,37 +347,29 @@ function ProcessStepsCarousel({
           >
             ‹
           </button>
-          {prevStep ? (
-            <button
-              type="button"
-              onClick={() => onIndexChange(index - 1)}
-              className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-neutral-30 transition hover:text-neutral-80 sm:text-lg"
-              aria-label={`${processStepPageNumber(prevStep, index - 1)}번 단계`}
-            >
-              {processStepPageNumber(prevStep, index - 1)}
-            </button>
-          ) : (
-            <span className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-transparent sm:text-lg" aria-hidden>
-              0
-            </span>
-          )}
-          <span className="min-w-[1.25rem] px-0.5 py-1 text-lg font-black text-neutral-100 sm:text-xl">
-            {currentPage}
-          </span>
-          {nextStep ? (
-            <button
-              type="button"
-              onClick={() => onIndexChange(index + 1)}
-              className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-neutral-30 transition hover:text-neutral-80 sm:text-lg"
-              aria-label={`${processStepPageNumber(nextStep, index + 1)}번 단계`}
-            >
-              {processStepPageNumber(nextStep, index + 1)}
-            </button>
-          ) : (
-            <span className="min-w-[1.25rem] px-0.5 py-1 text-base font-bold text-transparent sm:text-lg" aria-hidden>
-              0
-            </span>
-          )}
+          {steps.map((step, stepIndex) => {
+            const page = processStepPageNumber(step, stepIndex);
+            const isActive = stepIndex === index;
+            return (
+              <button
+                key={`step-page-${step.number}-${stepIndex}`}
+                type="button"
+                onClick={() => {
+                  onIndexChange(stepIndex);
+                  scrollToIndex(stepIndex);
+                }}
+                className={`min-w-[1.25rem] px-0.5 py-1 font-black transition hover:text-neutral-100 ${
+                  isActive
+                    ? "text-xl text-neutral-100 sm:text-2xl md:text-3xl"
+                    : "text-sm text-neutral-40 sm:text-base"
+                }`}
+                aria-label={`${page}번 단계`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {page}
+              </button>
+            );
+          })}
           <button
             type="button"
             onClick={goNext}
@@ -382,7 +391,7 @@ function ProcessStepsCarousel({
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
   const [priceTab, setPriceTab] = useState(0);
-  const [processIndex, setProcessIndex] = useState(0);
+  const [processIndex, setProcessIndex] = useState(1);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
@@ -390,10 +399,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
     formatCmsMultiline(getCmsValue(section, key, fallback));
 
   const homePricingItems = useMemo(
-    () =>
-      buildVisiblePricingPlanItems(cms?.siteContent, pricingTier).filter((item) =>
-        isHomePricingOneSubject(item.plan),
-      ),
+    () => {
+      const all = buildVisiblePricingPlanItems(cms?.siteContent, pricingTier);
+      const picked = all.filter((_, index) => index === 0 || index === 2);
+      if (picked.length >= 2) return picked;
+      return all.slice(0, 2);
+    },
     [cms?.siteContent, pricingTier],
   );
 
@@ -598,7 +609,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
 
           {/* ── Stats — below hero copy ── */}
-          <div className="relative mt-8 shrink-0 sm:mt-10 md:mt-12">
+          <div className="relative mt-4 shrink-0 -translate-y-6 sm:mt-6 sm:-translate-y-8 md:mt-8 md:-translate-y-10">
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
               {cmsStats.map((s) => (
                 <div

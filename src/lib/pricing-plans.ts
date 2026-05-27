@@ -103,6 +103,7 @@ export const PRICING_PLANS: PricingPlanDefinition[] = [
       "학습 진도·과제 관리",
       "AI 질답 이용 가능",
     ],
+    recommended: true,
   },
   {
     id: "8-2",
