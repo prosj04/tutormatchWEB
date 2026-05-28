@@ -631,12 +631,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               )}
             </p>
             <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
-              <ConsultationApplyButton className="w-full rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 sm:w-auto md:px-8 md:py-4 md:text-base">
+              <ConsultationApplyButton className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base">
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
               </ConsultationApplyButton>
               <Link
                 href="/tutors"
-                className="w-full rounded-full border border-white/30 px-7 py-3.5 text-sm font-black text-white transition hover:bg-white/10 sm:w-auto md:px-8 md:py-4 md:text-base"
+                className="rounded-full bg-white px-7 py-3.5 text-sm font-black text-neutral-100 transition hover:bg-neutral-10 sm:bg-transparent sm:text-white sm:border sm:border-white/30 sm:hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
                 {getCmsValue("hero", "cta_secondary", "선생님 둘러보기")}
               </Link>
@@ -650,12 +650,12 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               {cmsStats.map((s) => (
                 <div
                   key={s.label}
-                  className="flex flex-col items-center rounded-xl border border-white/15 bg-white/10 px-2 py-3 backdrop-blur-sm sm:rounded-2xl sm:px-5 sm:py-4 md:px-8 md:py-5"
+                  className="flex flex-col items-center rounded-xl border border-white/15 bg-neutral-100 px-2 py-3 sm:rounded-2xl sm:bg-white/10 sm:px-5 sm:py-4 sm:backdrop-blur-sm md:px-8 md:py-5"
                 >
                   <span className="whitespace-pre-line text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">
                     {formatCmsMultiline(s.value)}
                   </span>
-                  <span className="mt-1 whitespace-pre-line text-center text-[10px] font-medium leading-snug text-white/85 sm:mt-1.5 sm:text-xs md:text-sm">
+                  <span className="mt-1 whitespace-pre-line text-center text-[10px] font-medium leading-snug text-neutral-80 sm:mt-1.5 sm:text-xs sm:text-white/85 md:text-sm">
                     {formatCmsMultiline(s.label)}
                   </span>
                 </div>
