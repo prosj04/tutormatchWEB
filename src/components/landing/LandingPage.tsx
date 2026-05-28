@@ -347,29 +347,65 @@ function ProcessStepsCarousel({
           >
             ‹
           </button>
-          {steps.map((step, stepIndex) => {
-            const page = processStepPageNumber(step, stepIndex);
-            const isActive = stepIndex === index;
-            return (
-              <button
-                key={`step-page-${step.number}-${stepIndex}`}
-                type="button"
-                onClick={() => {
-                  onIndexChange(stepIndex);
-                  scrollToIndex(stepIndex);
-                }}
-                className={`min-w-[1.25rem] px-0.5 py-1 font-black transition hover:text-neutral-100 ${
-                  isActive
-                    ? "text-xl text-neutral-100 sm:text-2xl md:text-3xl"
-                    : "text-sm text-neutral-40 sm:text-base"
-                }`}
-                aria-label={`${page}번 단계`}
-                aria-current={isActive ? "page" : undefined}
-              >
-                {page}
-              </button>
-            );
-          })}
+          {(() => {
+            const firstIndex = 0;
+            const lastIndex = total - 1;
+            const prevIndex = (index - 1 + total) % total;
+            const nextIndex = (index + 1) % total;
+
+            const slots: Array<{ kind: "step"; stepIndex: number } | { kind: "empty"; key: string }> = [
+              { kind: "step", stepIndex: firstIndex },
+              prevIndex !== firstIndex && prevIndex !== lastIndex
+                ? { kind: "step", stepIndex: prevIndex }
+                : { kind: "empty", key: "prev-placeholder" },
+              { kind: "step", stepIndex: index },
+              nextIndex !== firstIndex && nextIndex !== lastIndex
+                ? { kind: "step", stepIndex: nextIndex }
+                : { kind: "empty", key: "next-placeholder" },
+              { kind: "step", stepIndex: lastIndex },
+            ];
+
+            return slots.map((slot, slotIndex) => {
+              if (slot.kind === "empty") {
+                return (
+                  <span
+                    key={slot.key}
+                    className="min-w-[1.25rem] px-0.5 py-1 text-sm font-black text-transparent sm:text-base"
+                    aria-hidden
+                  >
+                    0
+                  </span>
+                );
+              }
+
+              const step = steps[slot.stepIndex]!;
+              const page = processStepPageNumber(step, slot.stepIndex);
+              const isActive = slot.stepIndex === index;
+              const isEdge = slot.stepIndex === firstIndex || slot.stepIndex === lastIndex;
+
+              return (
+                <button
+                  key={`step-page-${step.number}-${slot.stepIndex}-${slotIndex}`}
+                  type="button"
+                  onClick={() => {
+                    onIndexChange(slot.stepIndex);
+                    scrollToIndex(slot.stepIndex);
+                  }}
+                  className={`min-w-[1.25rem] px-0.5 py-1 font-black transition hover:text-neutral-100 ${
+                    isActive
+                      ? "text-xl text-neutral-100 sm:text-2xl md:text-3xl"
+                      : isEdge
+                        ? "text-xs text-neutral-50 sm:text-sm"
+                        : "text-sm text-neutral-40 sm:text-base"
+                  }`}
+                  aria-label={`${page}번 단계`}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {page}
+                </button>
+              );
+            });
+          })()}
           <button
             type="button"
             onClick={goNext}
