@@ -186,7 +186,7 @@ export function SiteHeader({
   const solidHeader = scrolled || open;
   const headerTone = solidHeader
     ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
-    : "border-white/10 bg-neutral-100 text-white sm:bg-neutral-100/80 sm:backdrop-blur";
+    : "border-white/10 bg-neutral-100 text-neutral-100 sm:bg-neutral-100/80 sm:text-white sm:backdrop-blur";
   const topBarTone = solidHeader
     ? "bg-neutral-10 text-neutral-80"
     : "bg-black/20 text-white/70";
@@ -237,7 +237,9 @@ export function SiteHeader({
           type="button"
           onClick={() => setOpen(true)}
           className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition md:hidden ${
-            solidHeader ? "border-neutral-20 text-neutral-100" : "border-white/30 text-white"
+            solidHeader
+              ? "border-neutral-20 text-neutral-100"
+              : "border-neutral-20 text-neutral-100 sm:border-white/30 sm:text-white"
           }`}
           aria-label="메뉴 열기"
         >

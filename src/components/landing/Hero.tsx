@@ -60,12 +60,12 @@ export function Hero() {
             우리 아이에게 꼭 맞는 선생님을 찾아드립니다.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
-            <ConsultationApplyButton className="inline-flex w-full items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-primary/90 sm:w-auto">
+            <ConsultationApplyButton className="inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:bg-primary/90">
               무료 상담 예약하기
             </ConsultationApplyButton>
             <Link
               href="/tutors"
-              className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-white/80 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"
+              className="inline-flex items-center justify-center rounded-2xl border border-neutral-20 bg-white px-8 py-3.5 text-sm font-semibold text-neutral-100 transition hover:bg-neutral-10 sm:border-2 sm:border-white/80 sm:bg-transparent sm:text-white sm:hover:bg-white/10"
             >
               선생님 둘러보기
             </Link>
@@ -79,7 +79,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 40, x: 20 }}
               animate={{ opacity: 1, y: 0, x: 0 }}
               transition={{ duration: 0.55, delay: card.delay, ease: [0.22, 1, 0.36, 1] }}
-              className={`relative rounded-2xl border border-white/10 bg-white/95 p-6 shadow-xl backdrop-blur ${card.className}`}
+              className={`relative rounded-2xl border border-white/10 bg-white p-6 shadow-xl sm:bg-white/95 sm:backdrop-blur ${card.className}`}
             >
               <span className="text-3xl" aria-hidden>
                 {card.icon}
