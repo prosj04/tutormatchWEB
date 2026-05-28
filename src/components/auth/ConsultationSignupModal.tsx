@@ -36,7 +36,7 @@ export function ConsultationSignupModal({
       <button
         type="button"
         aria-label="닫기"
-        className="absolute inset-0 bg-neutral-100/50 backdrop-blur-md"
+        className="absolute inset-0 bg-neutral-100 sm:bg-neutral-100/50 sm:backdrop-blur-md"
         onClick={onClose}
       />
       <div
