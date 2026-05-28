@@ -1047,7 +1047,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       </main>
 
       <ConsultationApplyButton
-        className={`fixed bottom-4 left-4 right-4 z-50 rounded-2xl bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 sm:left-auto sm:right-6 sm:rounded-full md:bottom-8 md:right-8 ${
+        className={`fixed bottom-4 left-4 right-4 z-30 rounded-2xl bg-primary px-6 py-3.5 text-sm font-black text-white shadow-2xl transition duration-300 sm:left-auto sm:right-6 sm:rounded-full md:bottom-8 md:right-8 ${
           showFloating ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
       >
