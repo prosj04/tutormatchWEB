@@ -20,13 +20,13 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
           tutor.subjects.map((subject) => (
             <span
               key={subject}
-              className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary"
+              className="inline-flex rounded-full bg-neutral-10 px-2.5 py-1 text-xs font-bold text-primary"
             >
               {subject}
             </span>
           ))
         ) : (
-          <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
+          <span className="inline-flex rounded-full bg-neutral-10 px-2.5 py-1 text-xs font-bold text-primary">
             담당 과목 협의
           </span>
         )}
