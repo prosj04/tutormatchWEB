@@ -37,7 +37,7 @@ export function HomeConsultationCtaSection({ siteContent }: HomeConsultationCtaS
           {benefitCards.map((b) => (
             <div
               key={b.slot}
-              className="flex min-h-[180px] flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-5 backdrop-blur-sm sm:min-h-[200px] sm:p-6 md:min-h-[220px] md:p-8"
+              className="flex min-h-[180px] flex-col rounded-[20px] border border-sky-200 bg-sky-200 p-5 sm:min-h-[200px] sm:border-sky-200/40 sm:bg-sky-200/25 sm:p-6 sm:backdrop-blur-sm md:min-h-[220px] md:p-8"
             >
               <p className="text-lg font-black text-white">{b.title}</p>
               <p className="mt-3 text-sm font-bold leading-snug text-white/90">{b.desc}</p>

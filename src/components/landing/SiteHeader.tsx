@@ -186,7 +186,7 @@ export function SiteHeader({
   const solidHeader = scrolled || open;
   const headerTone = solidHeader
     ? "border-neutral-20 bg-white text-neutral-100 shadow-sm"
-    : "border-white/10 bg-neutral-100/80 text-white backdrop-blur";
+    : "border-white/10 bg-neutral-100 text-white sm:bg-neutral-100/80 sm:backdrop-blur";
   const topBarTone = solidHeader
     ? "bg-neutral-10 text-neutral-80"
     : "bg-black/20 text-white/70";
@@ -253,7 +253,7 @@ export function SiteHeader({
         type="button"
         aria-label="메뉴 배경 닫기"
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-[58] bg-white/92 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-[58] bg-white transition-opacity duration-300 md:hidden sm:bg-white/92 sm:backdrop-blur-sm ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
