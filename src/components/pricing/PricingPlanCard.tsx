@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { PublicCardLine } from "@/components/landing/PublicCardText";
-import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 import {
   buildCheckoutHref,
   formatPlanPrice,
@@ -34,32 +32,36 @@ export function PricingPlanCard({
 
   return (
     <article
-      className={`${active ? "flex" : "hidden md:flex"} h-full ${PUBLIC_CARD.pricingWidth} max-w-[348px] shrink-0 snap-start flex-col overflow-hidden rounded-[28px] bg-neutral-10 ${className}`}
+      className={`pricing-plan-card ${active ? "flex" : "hidden md:flex"} shrink-0 snap-center flex-col overflow-hidden rounded-[28px] bg-neutral-10 ${className}`}
     >
-      <div
-        className={`relative flex ${PUBLIC_CARD.pricingMinHeight} flex-1 flex-col rounded-[28px] bg-neutral-100 p-8 pb-10 text-white`}
-      >
+      <div className="pricing-plan-card__top shrink-0 rounded-t-[28px] bg-neutral-10" aria-hidden />
+      <div className="pricing-plan-card__body relative flex min-h-0 flex-1 flex-col rounded-t-[28px] bg-neutral-100 text-white">
         {plan.recommended ? (
-          <span className="absolute right-7 top-7 rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+          <span className="absolute right-[clamp(1.25rem,6cqi,1.75rem)] top-[clamp(1.25rem,6cqi,1.75rem)] rounded-xl bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
             추천
           </span>
         ) : null}
-        <p className="text-xs font-black uppercase tracking-wider text-neutral-30">1:1 맞춤 과외</p>
-        <PublicCardLine className="mt-4 text-2xl font-black">{displayTitle}</PublicCardLine>
-        <PublicCardLine className="mt-4 text-4xl font-black tracking-tight">{displayPrice}</PublicCardLine>
-        <PublicCardLine className="mt-2 text-sm text-neutral-30">{displaySubtitle}</PublicCardLine>
-        <ul className="mt-8 min-w-0 space-y-3.5 text-sm font-medium text-neutral-30">
+        <p className="pricing-plan-card__kicker pricing-plan-card__line font-black uppercase tracking-wider text-neutral-30">
+          1:1 맞춤 과외
+        </p>
+        <h3 className="pricing-plan-card__title pricing-plan-card__line mt-4 font-black">{displayTitle}</h3>
+        <p className="pricing-plan-card__price pricing-plan-card__line mt-4 font-black tracking-tight">
+          {displayPrice}
+        </p>
+        <p className="pricing-plan-card__subtitle pricing-plan-card__line mt-2 text-neutral-40">
+          {displaySubtitle}
+        </p>
+        <ul className="pricing-plan-card__features mt-7 min-h-0 flex-1 space-y-3 font-medium text-neutral-30">
           {displayFeatures.map((f) => (
             <li key={f} className="flex min-w-0 gap-3">
               <span className="shrink-0 text-primary">·</span>
-              <PublicCardLine className="min-w-0 flex-1">{f}</PublicCardLine>
+              <span className="pricing-plan-card__feature pricing-plan-card__line min-w-0 flex-1">{f}</span>
             </li>
           ))}
         </ul>
         <Link
           href={buildCheckoutHref(plan.sessions, plan.subjects)}
-          className="mt-auto inline-flex w-full items-center justify-center rounded-2xl bg-primary py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
-          style={{ marginTop: "auto", paddingTop: "1rem" }}
+          className="pricing-plan-card__cta pricing-plan-card__line mt-auto inline-flex w-full shrink-0 items-center justify-center rounded-2xl bg-primary py-4 font-black uppercase tracking-wider text-white transition hover:bg-primary/90"
         >
           이 플랜으로 시작
         </Link>

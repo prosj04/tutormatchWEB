@@ -1,7 +1,5 @@
 /** 공개 랜딩·요금제 카드 고정 치수 (뷰포트 무관) */
 export const PUBLIC_CARD = {
-  pricingWidth: "w-[348px]",
-  pricingMinHeight: "min-h-[520px]",
   pricingSpacer: "w-[max(1rem,calc(50%-174px))]",
   processWidth: "w-[380px]",
   processImageHeight: "h-[200px]",

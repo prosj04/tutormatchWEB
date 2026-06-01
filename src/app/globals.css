@@ -34,6 +34,47 @@
 @keyframes slide { 0%{transform:translate(0)} to{transform:translate(-25%)} }
 @keyframes marquee-loop { 0%{transform:translateX(0)} to{transform:translateX(calc(-50% - var(--marquee-gap-half, 0px)))} }
 
+@layer components {
+  /* 요금제 카드 — 348×560 비율 고정, 좁은 화면은 카드·폰트만 축소(줄바꿈 없음) */
+  .pricing-plan-card {
+    container-type: inline-size;
+    width: min(348px, calc(100vw - 2rem));
+    aspect-ratio: 348 / 560;
+  }
+
+  .pricing-plan-card__top {
+    height: 7.14%;
+    min-height: 2rem;
+  }
+
+  .pricing-plan-card__body {
+    padding: clamp(1.25rem, 6cqi, 2rem);
+    padding-bottom: clamp(1.5rem, 7cqi, 2.5rem);
+  }
+
+  .pricing-plan-card__line {
+    @apply truncate whitespace-nowrap;
+  }
+
+  .pricing-plan-card__kicker {
+    font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
+  }
+
+  .pricing-plan-card__title {
+    font-size: clamp(1.125rem, 7cqi, 1.5rem);
+  }
+
+  .pricing-plan-card__price {
+    font-size: clamp(1.75rem, 12cqi, 3rem);
+  }
+
+  .pricing-plan-card__subtitle,
+  .pricing-plan-card__feature,
+  .pricing-plan-card__cta {
+    font-size: clamp(0.75rem, 4cqi, 0.875rem);
+  }
+}
+
 @layer utilities {
   .animate-slide {
     animation: slide var(--speed, 28s) linear infinite;
