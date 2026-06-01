@@ -16,9 +16,10 @@ export function buildProcessPaginationSlots(
   const slots: ProcessPaginationSlot[] = [];
 
   if (total <= PROCESS_PAGINATION_SLOT_COUNT) {
-    const leftPad = Math.min(
-      Math.max(CENTER_OFFSET - activeIndex, 0),
-      PROCESS_PAGINATION_SLOT_COUNT - total,
+    // 예: 1단계 → ∅∅123, 5단계 → 12345 (활성은 가운데 정렬 우선, 끝에서는 창이 밀림)
+    const leftPad = Math.max(
+      0,
+      Math.min(CENTER_OFFSET - activeIndex, total - 1 - activeIndex),
     );
 
     for (let slot = 0; slot < PROCESS_PAGINATION_SLOT_COUNT; slot += 1) {
@@ -42,13 +43,6 @@ export function buildProcessPaginationSlots(
   }
 
   return slots;
-}
-
-/** 원형 캐러셀에서 활성 인덱스까지 최단 거리 */
-export function circularStepDistance(stepIndex: number, activeIndex: number, total: number): number {
-  if (total <= 0) return 0;
-  const linear = Math.abs(stepIndex - activeIndex);
-  return Math.min(linear, total - linear);
 }
 
 export function processPaginationSizeClass(distance: number, isActive: boolean): string {

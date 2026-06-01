@@ -18,7 +18,7 @@ import {
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { PublicCardLine } from "@/components/landing/PublicCardText";
-import { ProcessStepsCylinder } from "@/components/landing/ProcessStepsCylinder";
+import { ProcessStepsCarousel } from "@/components/landing/ProcessStepsCarousel";
 import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 import { SiteHeader } from "./SiteHeader";
 
@@ -709,7 +709,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             </p>
           </div>
           <div className="mt-8">
-            <ProcessStepsCylinder
+            <ProcessStepsCarousel
               steps={cmsSteps}
               index={processIndex}
               onIndexChange={setProcessIndex}
