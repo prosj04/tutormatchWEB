@@ -44,6 +44,13 @@ export function buildProcessPaginationSlots(
   return slots;
 }
 
+/** 원형 캐러셀에서 활성 인덱스까지 최단 거리 */
+export function circularStepDistance(stepIndex: number, activeIndex: number, total: number): number {
+  if (total <= 0) return 0;
+  const linear = Math.abs(stepIndex - activeIndex);
+  return Math.min(linear, total - linear);
+}
+
 export function processPaginationSizeClass(distance: number, isActive: boolean): string {
   if (isActive) {
     return "text-xl text-neutral-100 sm:text-2xl md:text-3xl";
