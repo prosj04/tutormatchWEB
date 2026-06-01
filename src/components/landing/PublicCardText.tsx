@@ -1,13 +1,17 @@
+import type { ReactNode } from "react";
+
 /** 카드 고정 너비 안에서 공간 부족 줄바꿈 대신 한 줄 말줄임 */
 export function PublicCardLine({
   children,
   className = "",
 }: {
-  children: string;
+  children: ReactNode;
   className?: string;
 }) {
+  const title = typeof children === "string" ? children : undefined;
+
   return (
-    <p className={`truncate whitespace-nowrap ${className}`} title={children}>
+    <p className={`truncate whitespace-nowrap ${className}`} title={title}>
       {children}
     </p>
   );
