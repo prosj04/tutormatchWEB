@@ -17,6 +17,12 @@ import {
 } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
+import { PublicCardLine, PublicCardMultiline } from "@/components/landing/PublicCardText";
+import { PUBLIC_CARD } from "@/lib/public-card-sizes";
+import {
+  buildProcessPaginationSlots,
+  processPaginationSizeClass,
+} from "@/lib/process-pagination";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
@@ -303,38 +309,41 @@ function ProcessStepsCarousel({
   return (
     <>
       <div ref={viewportRef} className="scrollbar-hide overflow-x-auto overscroll-x-contain">
-        <div className="flex w-max snap-x snap-mandatory gap-5 md:gap-6">
-          <div className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]" aria-hidden />
+        <div className="flex w-max snap-x snap-mandatory gap-6">
+          <div className={`${PUBLIC_CARD.processSpacer} shrink-0`} aria-hidden />
           {steps.map((step, stepIndex) => (
             <article
               key={step.number}
               ref={(node) => {
                 cardRefs.current[stepIndex] = node;
               }}
-              className="w-[280px] shrink-0 snap-center overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+              className={`${PUBLIC_CARD.processWidth} shrink-0 snap-center overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
             >
-              <div className="relative h-[180px] w-full md:h-[200px]">
+              <div className={`relative w-full ${PUBLIC_CARD.processImageHeight}`}>
                 <Image
                   src={step.img}
                   alt={step.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width:768px) 280px, 380px"
+                  sizes="380px"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
                   {step.number}
                 </span>
               </div>
-              <div className="p-6">
-                <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
-                <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
-                  {step.desc}
-                </p>
+              <div className="min-w-0 p-6">
+                <PublicCardLine className="text-xl font-black text-neutral-100">{step.title}</PublicCardLine>
+                <div className="mt-2">
+                  <PublicCardMultiline
+                    text={step.desc}
+                    lineClassName="text-sm font-medium text-neutral-80"
+                  />
+                </div>
               </div>
             </article>
           ))}
-          <div className="w-[max(1rem,calc(50%-140px))] shrink-0 md:w-[max(1.25rem,calc(50%-190px))]" aria-hidden />
+          <div className={`${PUBLIC_CARD.processSpacer} shrink-0`} aria-hidden />
         </div>
       </div>
       {total > 1 ? (
@@ -347,65 +356,43 @@ function ProcessStepsCarousel({
           >
             ‹
           </button>
-          {(() => {
-            const firstIndex = 0;
-            const lastIndex = total - 1;
-            const prevIndex = (index - 1 + total) % total;
-            const nextIndex = (index + 1) % total;
-
-            const slots: Array<{ kind: "step"; stepIndex: number } | { kind: "empty"; key: string }> = [
-              { kind: "step", stepIndex: firstIndex },
-              prevIndex !== firstIndex && prevIndex !== lastIndex
-                ? { kind: "step", stepIndex: prevIndex }
-                : { kind: "empty", key: "prev-placeholder" },
-              { kind: "step", stepIndex: index },
-              nextIndex !== firstIndex && nextIndex !== lastIndex
-                ? { kind: "step", stepIndex: nextIndex }
-                : { kind: "empty", key: "next-placeholder" },
-              { kind: "step", stepIndex: lastIndex },
-            ];
-
-            return slots.map((slot, slotIndex) => {
-              if (slot.kind === "empty") {
-                return (
-                  <span
-                    key={slot.key}
-                    className="min-w-[1.25rem] px-0.5 py-1 text-sm font-black text-transparent sm:text-base"
-                    aria-hidden
-                  >
-                    0
-                  </span>
-                );
-              }
-
-              const step = steps[slot.stepIndex]!;
-              const page = processStepPageNumber(step, slot.stepIndex);
-              const isActive = slot.stepIndex === index;
-              const isEdge = slot.stepIndex === firstIndex || slot.stepIndex === lastIndex;
-
+          {buildProcessPaginationSlots(index, total).map((slot, slotIndex) => {
+            if (slot.kind === "empty") {
               return (
-                <button
-                  key={`step-page-${step.number}-${slot.stepIndex}-${slotIndex}`}
-                  type="button"
-                  onClick={() => {
-                    onIndexChange(slot.stepIndex);
-                    scrollToIndex(slot.stepIndex);
-                  }}
-                  className={`min-w-[1.25rem] px-0.5 py-1 font-black transition hover:text-neutral-100 ${
-                    isActive
-                      ? "text-xl text-neutral-100 sm:text-2xl md:text-3xl"
-                      : isEdge
-                        ? "text-xs text-neutral-50 sm:text-sm"
-                        : "text-sm text-neutral-40 sm:text-base"
-                  }`}
-                  aria-label={`${page}번 단계`}
-                  aria-current={isActive ? "page" : undefined}
+                <span
+                  key={slot.key}
+                  className="min-w-[1.25rem] px-0.5 py-1 text-sm font-black text-transparent sm:text-base"
+                  aria-hidden
                 >
-                  {page}
-                </button>
+                  0
+                </span>
               );
-            });
-          })()}
+            }
+
+            const step = steps[slot.stepIndex]!;
+            const page = processStepPageNumber(step, slot.stepIndex);
+            const isActive = slot.stepIndex === index;
+            const distance = Math.abs(slot.stepIndex - index);
+
+            return (
+              <button
+                key={`step-page-${step.number}-${slot.stepIndex}-${slotIndex}`}
+                type="button"
+                onClick={() => {
+                  onIndexChange(slot.stepIndex);
+                  scrollToIndex(slot.stepIndex);
+                }}
+                className={`min-w-[1.25rem] px-0.5 py-1 font-black transition hover:text-neutral-100 ${processPaginationSizeClass(
+                  distance,
+                  isActive,
+                )}`}
+                aria-label={`${page}번 단계`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {page}
+              </button>
+            );
+          })}
           <button
             type="button"
             onClick={goNext}
@@ -699,9 +686,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               {doubledResults.map((item, index) => (
                 <article
                   key={`${item.student}-${index}`}
-                  className="w-[min(260px,calc(100vw-2.5rem))] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[320px]"
+                  className={`${PUBLIC_CARD.resultWidth} shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
                 >
-                  <div className="relative h-36 w-full">
+                  <div className={`relative w-full ${PUBLIC_CARD.resultImageHeight}`}>
                     <Image
                       src={item.image}
                       alt={item.student}
@@ -710,9 +697,11 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                       sizes="320px"
                     />
                   </div>
-                  <div className="p-5">
-                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-80">{item.student}</p>
-                    <p className="mt-2 text-lg font-black leading-snug text-neutral-100">
+                  <div className="min-w-0 p-5">
+                    <PublicCardLine className="text-xs font-bold uppercase tracking-wider text-neutral-80">
+                      {item.student}
+                    </PublicCardLine>
+                    <p className="mt-2 truncate whitespace-nowrap text-lg font-black leading-snug text-neutral-100">
                       {item.before}
                       <span className="text-primary">{item.after}</span>
                     </p>
@@ -814,7 +803,7 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                     {group.map((teacher, index) => (
                       <article
                         key={`${teacher.name}-${groupIndex}-${index}`}
-                        className="w-[min(260px,calc(100vw-2.5rem))] shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm md:w-[300px]"
+                        className={`${PUBLIC_CARD.teacherWidth} shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm`}
                       >
                         <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                           <Image
@@ -825,13 +814,15 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                             className="h-full w-full object-cover"
                           />
                         </div>
-                        <h3 className="mt-4 text-lg font-black text-neutral-100">{teacher.name} 선생님</h3>
+                        <PublicCardLine className="mt-4 text-lg font-black text-neutral-100">
+                          {teacher.name} 선생님
+                        </PublicCardLine>
                         <div className="mt-2 flex justify-center">
-                          <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                          <span className="inline-flex max-w-full truncate whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
                             {teacher.subject}
                           </span>
                         </div>
-                        <p className="mt-3 text-sm font-black leading-snug text-neutral-100">
+                        <p className="mt-3 truncate whitespace-nowrap text-sm font-black leading-snug text-neutral-100">
                           {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
                           <span className="text-primary">
                             {teacher.highlight.split(" ").slice(-2).join(" ")}

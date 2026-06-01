@@ -1,11 +1,11 @@
 import { PricingPlanCard } from "@/components/pricing/PricingPlanCard";
+import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 import type { PricingPlanDefinition } from "@/lib/pricing-plans";
 
 export const PRICING_GRID_GAP_CLASS = "gap-6";
 
-/** 홈 2열 그리드에서 카드 1장 너비와 동일 */
-export const PRICING_CARD_WIDTH_CLASS =
-  "w-[min(320px,calc(100vw-2.5rem))] shrink-0 !flex sm:w-[348px]";
+/** 요금제 카드 고정 너비 (뷰포트 무관) */
+export const PRICING_CARD_WIDTH_CLASS = `${PUBLIC_CARD.pricingWidth} shrink-0 !flex`;
 
 export type PricingPlanItem = {
   plan: PricingPlanDefinition;
@@ -49,7 +49,9 @@ export function PricingPlansGrid({
   }
 
   return (
-    <div className={`grid items-stretch ${PRICING_GRID_GAP_CLASS} md:grid-cols-2`}>
+    <div
+      className={`grid auto-cols-[348px] grid-cols-1 items-stretch ${PRICING_GRID_GAP_CLASS} md:grid-cols-2`}
+    >
       {items.map((item, index) => (
         <PricingPlanCard
           key={item.plan.id}

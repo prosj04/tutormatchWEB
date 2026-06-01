@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { PublicCardLine, PublicCardMultiline } from "@/components/landing/PublicCardText";
 import { buildCtaBenefitCards } from "@/lib/cta-benefits";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 
 type HomeConsultationCtaSectionProps = {
   siteContent?: Record<string, Record<string, string>>;
@@ -37,13 +39,16 @@ export function HomeConsultationCtaSection({ siteContent }: HomeConsultationCtaS
           {benefitCards.map((b) => (
             <div
               key={b.slot}
-              className="flex min-h-[180px] flex-col rounded-[20px] border border-sky-200 bg-sky-200 p-5 sm:min-h-[200px] sm:border-sky-200/40 sm:bg-sky-200/25 sm:p-6 sm:backdrop-blur-sm md:min-h-[220px] md:p-8"
+              className={`flex ${PUBLIC_CARD.ctaBenefitMinHeight} min-w-0 flex-col rounded-[20px] border border-sky-200 bg-sky-200 p-6 sm:border-sky-200/40 sm:bg-sky-200/25 sm:backdrop-blur-sm md:p-8`}
             >
-              <p className="text-lg font-black text-white">{b.title}</p>
-              <p className="mt-3 text-sm font-bold leading-snug text-white/90">{b.desc}</p>
-              <p className="mt-4 flex-1 text-sm font-medium leading-relaxed text-white/75">
-                {b.detail}
-              </p>
+              <PublicCardLine className="text-lg font-black text-white">{b.title}</PublicCardLine>
+              <PublicCardLine className="mt-3 text-sm font-bold text-white/90">{b.desc}</PublicCardLine>
+              <div className="mt-4 min-w-0 flex-1">
+                <PublicCardMultiline
+                  text={b.detail}
+                  lineClassName="text-sm font-medium text-white/75"
+                />
+              </div>
             </div>
           ))}
         </div>
