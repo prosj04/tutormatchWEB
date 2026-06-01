@@ -18,7 +18,6 @@ import {
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { PublicCardLine } from "@/components/landing/PublicCardText";
-import { ProcessStepsCarousel } from "@/components/landing/ProcessStepsCarousel";
 import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 import { SiteHeader } from "./SiteHeader";
 
@@ -233,7 +232,6 @@ function canUseOptimizedHeroImage(src: string) {
 export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   const { activeTab, showFloating } = useScrollLandingState();
   const [priceTab, setPriceTab] = useState(0);
-  const [processIndex, setProcessIndex] = useState(1);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
@@ -348,13 +346,6 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       },
     ];
   });
-
-  useEffect(() => {
-    setProcessIndex((prev) => {
-      if (cmsSteps.length === 0) return 0;
-      return Math.min(prev, cmsSteps.length - 1);
-    });
-  }, [cmsSteps.length]);
 
   const managementItems = [1, 2, 3, 4, 5, 6].flatMap((n) => {
     const vis = getCmsValue("management", `item${n}_visible`, n <= 3 ? "1" : "0");
@@ -708,12 +699,35 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               )}
             </p>
           </div>
-          <div className="mt-8">
-            <ProcessStepsCarousel
-              steps={cmsSteps}
-              index={processIndex}
-              onIndexChange={setProcessIndex}
-            />
+          <div className="scrollbar-hide mt-8 overflow-x-auto px-4 pb-2 sm:px-5">
+            <div className="flex w-max gap-5 md:gap-6">
+              {cmsSteps.map((step) => (
+                <article
+                  key={step.number}
+                  className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
+                >
+                  <div className="relative h-[180px] w-full md:h-[200px]">
+                    <Image
+                      src={step.img}
+                      alt={step.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width:768px) 280px, 380px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <span className="absolute bottom-4 left-5 text-4xl font-black leading-none text-white/20">
+                      {step.number}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                    <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
+                      {step.desc}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
