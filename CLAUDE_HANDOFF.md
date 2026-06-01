@@ -693,16 +693,17 @@ Base: `/api`. 인증은 대부분 `auth()` 세션 + 역할 체크 헬퍼(`requir
 | 항목 | 값 |
 |------|-----|
 | **호스팅** | Vercel |
-| **Vercel 프로젝트명** | `premium-tutoring` (`.vercel/project.json`) |
+| **Vercel 프로젝트명** | `tutormatch-web` (프로덕션 URL: `https://tutormatch-web.vercel.app`) |
+| **로컬 Vercel 링크** | `.vercel/project.json`, `.vercel/repo.json` |
 | **GitHub 레포** | `prosj04/tutormatchWEB` |
 | **Cron** | `vercel.json` → 매일 `GET /api/cron/check-alerts` |
 | **Prisma** | `postinstall`: `prisma generate`; migrate는 CI/수동 `migrate deploy` |
 
 ### 배포 상태
 
-- 이 문서 작성 시점에 **Vercel CLI/gh API로 라이브 배포 성공 여부는 미확인**.
-- 최근 `main` 커밋은 푸시됨 (`b0b036b` 요금제 CTA → checkout 복구 등).
-- 확인 방법: Vercel 대시보드 → `premium-tutoring` → Deployments / Build Logs.
+- `main` push 시 **tutormatch-web** 프로젝트만 자동 배포 (구 `premium-tutoring` 프로젝트는 삭제됨).
+- 확인: Vercel 대시보드 → `tutormatch-web` → Deployments / Build Logs.
+- `NEXTAUTH_URL`은 실제 접속 origin과 일치해야 함 (커스텀 도메인 사용 시 해당 URL).
 
 ### 배포 시 자주 나는 이슈
 
