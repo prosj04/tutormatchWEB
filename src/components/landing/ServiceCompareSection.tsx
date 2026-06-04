@@ -1,5 +1,3 @@
-import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-
 const COMPARISON_ROWS = [
   {
     item: "선생님 자격 검증",
@@ -56,19 +54,16 @@ function isPositiveMark(value: string) {
   return value.trim().startsWith("✓");
 }
 
-export function ComparePageContent() {
+export function ServiceCompareSection() {
   return (
-    <div className="bg-neutral-10 pb-24 md:pb-32">
-      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-          <p className="text-sm font-black uppercase tracking-wider text-primary">COMPARE</p>
-          <h1 className="mt-3 text-[clamp(1.75rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
-            개인 과외와 Concord, 무엇이 다를까요?
-          </h1>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
+    <section id="compare" className="scroll-mt-[7.25rem] bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
+        <p className="text-sm font-black uppercase tracking-wider text-primary">COMPARE</p>
+        <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+          서비스 비교
+        </h2>
+      </div>
+      <div className="mx-auto mt-8 max-w-[1200px] px-4 sm:px-5">
         <div className="overflow-x-auto rounded-[28px] border border-neutral-20 bg-white shadow-sm">
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead>
@@ -123,13 +118,7 @@ export function ComparePageContent() {
             </tbody>
           </table>
         </div>
-
-        <div className="mt-10 flex justify-center md:mt-12">
-          <ConsultationApplyButton className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-black text-white shadow-lg transition hover:bg-primary/90">
-            무료 상담 신청하기
-          </ConsultationApplyButton>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }

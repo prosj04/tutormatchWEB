@@ -19,7 +19,7 @@ const baseNavLinks = [
   { href: "/tutors", label: "강사진", id: "tutors" as const },
   { href: "/pricing", label: "요금제", id: "pricing" as const },
   { href: "/reviews", label: "학습후기", id: "reviews" as const },
-  { href: "/compare", label: "비교하기", id: "compare" as const },
+  { href: "/#compare", label: "비교하기", id: "compare" as const },
   { href: "/faq", label: "FAQ", id: "faq" as const },
 ];
 

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HomeConsultationCtaSection } from "@/components/landing/HomeConsultationCtaSection";
+import { ServiceCompareSection } from "@/components/landing/ServiceCompareSection";
 import { TestimonialCard } from "@/components/reviews/TestimonialCard";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
@@ -41,6 +42,7 @@ const tabs = [
   { id: "management", label: "학습 관리" },
   { id: "process",    label: "진행 방식" },
   { id: "pricing",    label: "요금제" },
+  { id: "compare",    label: "서비스 비교" },
 ];
 
 const stats = [
@@ -522,37 +524,6 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
-        {showFaqHome && homeFaqs.length > 0 ? (
-          <section id="faq" className="bg-neutral-10 py-20 md:py-28">
-            <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-              <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
-              <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-                자주 묻는 질문
-              </h2>
-              <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
-                {homeFaqs.map((item) => (
-                  <div key={item.q} className="px-5 py-5 sm:px-6 md:px-8 md:py-7">
-                    <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
-                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
-                      A. {item.a}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              {showFaqPage ? (
-                <div className="mt-8 flex justify-center">
-                  <Link
-                    href="/faq"
-                    className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
-                  >
-                    FAQ 더보기
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-          </section>
-        ) : null}
-
         {showReviewsHome ? (
           <section id="testimonials" className="bg-white py-20 md:py-28">
             <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
@@ -807,7 +778,40 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
           </div>
         </section>
 
+        <ServiceCompareSection />
+
         <HomeConsultationCtaSection siteContent={cms?.siteContent} />
+
+        {showFaqHome && homeFaqs.length > 0 ? (
+          <section id="faq" className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28">
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
+              <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
+              <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+                자주 묻는 질문
+              </h2>
+              <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
+                {homeFaqs.map((item) => (
+                  <div key={item.q} className="px-5 py-5 sm:px-6 md:px-8 md:py-7">
+                    <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
+                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
+                      A. {item.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {showFaqPage ? (
+                <div className="mt-8 flex justify-center">
+                  <Link
+                    href="/faq"
+                    className="inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-6 py-3 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
+                  >
+                    FAQ 더보기
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
 
         {/* ═══ FOOTER ══════════════════════════════════ */}
         <footer className="border-t border-neutral-20 bg-neutral-10">
