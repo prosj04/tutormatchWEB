@@ -10,7 +10,18 @@ export const metadata = {
   title: "학습 플래너",
 };
 
-export default async function DashboardPage() {
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   const session = await auth();
   if (!session) {
     redirect("/login");
@@ -85,6 +96,7 @@ export default async function DashboardPage() {
       initialPlan={initialPlan}
       initialQuestions={initialQuestions}
       aiAnswerEnabled={isAiAnswerEnabled()}
+      isEditMode={isEditMode}
     />
   );
 }

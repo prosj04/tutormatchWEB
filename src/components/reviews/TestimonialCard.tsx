@@ -8,7 +8,7 @@ export type TestimonialItem = {
 
 export function TestimonialCard({ item }: { item: TestimonialItem }) {
   return (
-    <article className="grid overflow-hidden rounded-[24px] border border-neutral-20 bg-neutral-10 shadow-sm md:grid-cols-[1fr_340px]">
+    <article className="overflow-hidden rounded-[24px] border border-neutral-20 bg-neutral-10 shadow-sm md:grid md:grid-cols-[1fr_340px]">
       <div className="p-8 md:p-10">
         <svg width="40" height="32" viewBox="0 0 48 38" fill="none" className="text-primary">
           <path
@@ -21,7 +21,7 @@ export function TestimonialCard({ item }: { item: TestimonialItem }) {
         </p>
         <p className="mt-6 text-sm font-semibold text-neutral-80">{item.info}</p>
       </div>
-      <div className="relative min-h-[240px]">
+      <div className="relative hidden min-h-[240px] md:block">
         <Image
           src={item.img}
           alt={item.info}

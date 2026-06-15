@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { PublicCardLine, PublicCardMultiline } from "@/components/landing/PublicCardText";
 import { buildCtaBenefitCards } from "@/lib/cta-benefits";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { composeCmsTypographyClass, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { PUBLIC_CARD } from "@/lib/public-card-sizes";
 
 type HomeConsultationCtaSectionProps = {
@@ -25,28 +25,44 @@ export function HomeConsultationCtaSection({ siteContent }: HomeConsultationCtaS
       className="scroll-mt-24 bg-primary py-16 sm:py-20 md:min-h-[88vh] md:py-28 lg:py-36"
     >
       <div className="mx-auto flex w-full max-w-[1200px] flex-col justify-center px-4 sm:px-5 md:min-h-[calc(88vh-10rem)]">
-        <h2 className="text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-white">
+        <h2
+          className={`leading-tight tracking-[-0.03em] text-white ${composeCmsTypographyClass(
+            siteContent,
+            "cta",
+            "headline",
+            "text-[clamp(1.75rem,5vw,3.5rem)]",
+            "font-black",
+          )}`}
+        >
           {get("headline", "지금 신청하면 받을 수 있는 혜택이에요")}
         </h2>
-        <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-white/85">
+        <p
+          className={`mt-4 max-w-2xl leading-relaxed text-white/85 ${composeCmsTypographyClass(
+            siteContent,
+            "cta",
+            "subtext",
+            "text-base",
+            "font-medium",
+          )}`}
+        >
           {get("subtext", "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
         </p>
         <div
-          className={`mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 md:gap-6 ${
+          className={`mt-12 grid grid-cols-2 gap-4 sm:gap-5 md:mt-14 md:gap-6 ${
             benefitCards.length > 4 ? "lg:grid-cols-3 xl:grid-cols-6" : "lg:grid-cols-4"
           }`}
         >
           {benefitCards.map((b) => (
             <div
               key={b.slot}
-              className={`flex ${PUBLIC_CARD.ctaBenefitMinHeight} min-w-0 flex-col rounded-[20px] border border-sky-200 bg-sky-200 p-6 sm:border-sky-200/40 sm:bg-sky-200/25 sm:backdrop-blur-sm md:p-8`}
+              className={`flex ${PUBLIC_CARD.ctaBenefitMinHeight} min-w-0 flex-col rounded-[20px] border border-sky-200/40 bg-sky-200/25 p-4 backdrop-blur-sm sm:p-6 md:p-8`}
             >
-              <PublicCardLine className="text-lg font-black text-white">{b.title}</PublicCardLine>
-              <PublicCardLine className="mt-3 text-sm font-bold text-white/90">{b.desc}</PublicCardLine>
-              <div className="mt-4 min-w-0 flex-1">
+              <PublicCardLine className="text-base font-black text-white sm:text-lg">{b.title}</PublicCardLine>
+              <PublicCardLine className="mt-2 text-xs font-bold text-white/90 sm:mt-3 sm:text-sm">{b.desc}</PublicCardLine>
+              <div className="mt-3 min-w-0 flex-1 sm:mt-4">
                 <PublicCardMultiline
                   text={b.detail}
-                  lineClassName="text-sm font-medium text-white/75"
+                  lineClassName="text-xs font-medium text-white/75 sm:text-sm"
                 />
               </div>
             </div>

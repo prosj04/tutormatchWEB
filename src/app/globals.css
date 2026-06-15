@@ -18,6 +18,16 @@
     @apply text-base font-normal leading-relaxed antialiased;
   }
 
+  button:not(:disabled),
+  input:where([type="button"], [type="submit"], [type="reset"]) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  a:where(.inline-flex, .flex) {
+    min-height: 44px;
+  }
+
   h1,
   h2,
   h3,
@@ -35,11 +45,11 @@
 @keyframes marquee-loop { 0%{transform:translateX(0)} to{transform:translateX(calc(-50% - var(--marquee-gap-half, 0px)))} }
 
 @layer components {
-  /* 요금제 카드 — 348×560 비율 고정, 좁은 화면은 카드·폰트만 축소(줄바꿈 없음) */
+  /* 요금제 카드 — 310×600 비율 고정, 좁은 화면은 카드·폰트만 축소(줄바꿈 없음) */
   .pricing-plan-card {
     container-type: inline-size;
-    width: min(348px, calc(100vw - 2rem));
-    aspect-ratio: 348 / 560;
+    width: min(310px, calc(100vw - 2rem));
+    aspect-ratio: 310 / 600;
   }
 
   .pricing-plan-card__top {

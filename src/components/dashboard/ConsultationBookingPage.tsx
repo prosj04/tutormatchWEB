@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VisitTimesPicker } from "@/components/dashboard/VisitTimesPicker";
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import type { ConsultationBookingDto } from "@/lib/consultation-booking-dto";
 import {
@@ -57,6 +59,8 @@ export function ConsultationBookingPage({
   initialBooking,
   openVisitFromUrl = false,
 }: ConsultationBookingPageProps) {
+  const searchParams = useSearchParams();
+  const isEditMode = searchParams.get("cms_edit") === "1";
   const [booking, setBooking] = useState<Booking | null>(initialBooking);
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -194,15 +198,23 @@ export function ConsultationBookingPage({
       <header className="sticky top-0 z-40 border-b border-text-primary/10 bg-surface px-4 py-3 shadow-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <Link href="/dashboard" className="font-sans text-lg font-bold italic text-primary">
-            {brand}
+            <CmsEdit active={isEditMode} section="student_consultation" cmsKey="brand" type="text">
+              {brand}
+            </CmsEdit>
           </Link>
-          <p className="truncate text-sm font-medium text-text-secondary">{welcomeText}</p>
+          <p className="truncate text-sm font-medium text-text-secondary">
+            <CmsEdit active={isEditMode} section="student_consultation" cmsKey="welcome_template" type="text">
+              {welcomeText}
+            </CmsEdit>
+          </p>
           <button
             type="button"
             onClick={() => signOut({ redirectTo: "/" })}
             className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-background"
           >
-            {logoutLabel}
+            <CmsEdit active={isEditMode} section="student_consultation" cmsKey="logout" type="text">
+              {logoutLabel}
+            </CmsEdit>
           </button>
         </div>
       </header>
@@ -216,7 +228,9 @@ export function ConsultationBookingPage({
               exit={{ opacity: 0, y: -16 }}
               className="mb-5 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-center font-semibold text-green-800 shadow-sm"
             >
-              {toastAssigned}
+              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="toast_assigned" type="text">
+                {toastAssigned}
+              </CmsEdit>
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -224,13 +238,23 @@ export function ConsultationBookingPage({
         {!activeBooking ? (
           <>
             <section className="rounded-2xl border-2 border-primary bg-surface p-6 shadow-sm">
-              <h1 className="text-lg font-bold text-text-primary">{noBookingTitle}</h1>
-              <p className="mt-2 text-sm leading-relaxed text-text-secondary">{noBookingDesc}</p>
+              <h1 className="text-lg font-bold text-text-primary">
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_title" type="text">
+                  {noBookingTitle}
+                </CmsEdit>
+              </h1>
+              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_desc" type="text">
+                  {noBookingDesc}
+                </CmsEdit>
+              </p>
             </section>
 
             <section className="mt-8 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm">
               <label htmlFor="consultation-note" className="block text-sm font-semibold text-text-primary">
-                {noteLabel}
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="note_label" type="text">
+                  {noteLabel}
+                </CmsEdit>
               </label>
               <textarea
                 id="consultation-note"
@@ -251,7 +275,14 @@ export function ConsultationBookingPage({
                 onClick={() => void submitRequest()}
                 className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
               >
-                {submitting ? btnSubmitting : btnSubmit}
+                <CmsEdit
+                  active={isEditMode}
+                  section="student_consultation"
+                  cmsKey={submitting ? "btn_submitting" : "btn_submit"}
+                  type="text"
+                >
+                  {submitting ? btnSubmitting : btnSubmit}
+                </CmsEdit>
               </button>
             </section>
           </>
@@ -266,12 +297,20 @@ export function ConsultationBookingPage({
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
                   ✓
                 </div>
-                <h1 className="text-xl font-bold text-text-primary">{successTitle}</h1>
-                <p className="mt-4 text-sm leading-relaxed text-text-secondary">{successDesc}</p>
+                <h1 className="text-xl font-bold text-text-primary">
+                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_title" type="text">
+                    {successTitle}
+                  </CmsEdit>
+                </h1>
+                <p className="mt-4 text-sm leading-relaxed text-text-secondary">
+                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_desc" type="text">
+                    {successDesc}
+                  </CmsEdit>
+                </p>
               </motion.section>
             ) : null}
 
-            <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} />
+            <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} isEditMode={isEditMode} />
 
             {!showVisitPicker && !hasVisitTimes ? (
               <button
@@ -279,7 +318,9 @@ export function ConsultationBookingPage({
                 onClick={() => setShowVisitPicker(true)}
                 className="mt-6 w-full rounded-xl border-2 border-primary bg-primary/5 py-4 text-sm font-black text-primary transition hover:bg-primary/10"
               >
-                {btnVisitInput}
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_input" type="text">
+                  {btnVisitInput}
+                </CmsEdit>
               </button>
             ) : null}
 
@@ -296,7 +337,9 @@ export function ConsultationBookingPage({
                     onClick={() => setShowVisitPicker(false)}
                     className="mt-3 w-full text-center text-sm font-medium text-text-muted hover:text-text-primary"
                   >
-                    {btnClose}
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_close" type="text">
+                      {btnClose}
+                    </CmsEdit>
                   </button>
                 ) : null}
               </div>
@@ -308,7 +351,9 @@ export function ConsultationBookingPage({
                 onClick={() => setShowVisitPicker(true)}
                 className="mt-4 w-full text-center text-sm font-semibold text-primary underline-offset-4 hover:underline"
               >
-                {btnVisitEdit}
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_edit" type="text">
+                  {btnVisitEdit}
+                </CmsEdit>
               </button>
             ) : null}
 
@@ -327,9 +372,11 @@ export function ConsultationBookingPage({
 function BookingStatusCard({
   booking,
   hasVisitTimes,
+  isEditMode = false,
 }: {
   booking: Booking;
   hasVisitTimes: boolean;
+  isEditMode?: boolean;
 }) {
   const keys = STATUS_CMS_KEYS[booking.status];
   const label = usePortalCopy(
@@ -365,13 +412,23 @@ function BookingStatusCard({
       className="mt-10 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-text-primary">{cardTitle}</h2>
+        <h2 className="text-sm font-semibold text-text-primary">
+          <CmsEdit active={isEditMode} section="student_consultation" cmsKey="card_status_title" type="text">
+            {cardTitle}
+          </CmsEdit>
+        </h2>
         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
-          {label}
+          <CmsEdit active={isEditMode} section="student_consultation" cmsKey={keys.label} type="text">
+            {label}
+          </CmsEdit>
         </span>
       </div>
 
-      <p className="mt-4 text-sm text-text-secondary">{body}</p>
+      <p className="mt-4 text-sm text-text-secondary">
+        <CmsEdit active={isEditMode} section="student_consultation" cmsKey={keys.body} type="text">
+          {body}
+        </CmsEdit>
+      </p>
 
       {booking.status === "ASSIGNED" && booking.manager ? (
         <div className="mt-5 flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3">
@@ -393,9 +450,15 @@ function BookingStatusCard({
           <div>
             <p className="text-sm font-semibold text-text-primary">
               {booking.manager.name}
-              {managerSuffix}
+              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="manager_suffix" type="text">
+                {managerSuffix}
+              </CmsEdit>
             </p>
-            <p className="text-xs text-text-secondary">{managerRole}</p>
+            <p className="text-xs text-text-secondary">
+              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="manager_role" type="text">
+                {managerRole}
+              </CmsEdit>
+            </p>
           </div>
         </div>
       ) : null}
@@ -409,7 +472,9 @@ function BookingStatusCard({
       {hasVisitTimes ? (
         <div className="mt-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-            {visitSectionTitle}
+            <CmsEdit active={isEditMode} section="student_consultation" cmsKey="visit_section_title" type="text">
+              {visitSectionTitle}
+            </CmsEdit>
           </p>
           <div className="mt-2 space-y-2">
             {Object.entries(booking.visitPreferredTimes).map(([date, slots]) =>
@@ -423,7 +488,11 @@ function BookingStatusCard({
           </div>
         </div>
       ) : (
-        <p className="mt-5 text-sm text-amber-700">{visitPrompt}</p>
+        <p className="mt-5 text-sm text-amber-700">
+          <CmsEdit active={isEditMode} section="student_consultation" cmsKey="visit_prompt" type="text">
+            {visitPrompt}
+          </CmsEdit>
+        </p>
       )}
     </motion.section>
   );

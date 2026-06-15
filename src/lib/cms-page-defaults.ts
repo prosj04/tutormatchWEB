@@ -1,5 +1,6 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
+import type { CSSProperties } from "react";
 import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
@@ -54,6 +55,162 @@ export function isPublicSectionVisible(
 export function cmsPlainLine(text: string): string {
   return text.replace(/\s*\n+\s*/g, " ").trim();
 }
+
+/** CMS 텍스트 크기 옵션 → Tailwind `text-*` */
+export const CMS_TEXT_SIZE_OPTIONS = ["sm", "base", "lg", "xl", "2xl", "3xl", "4xl"] as const;
+export type CmsTextSize = (typeof CMS_TEXT_SIZE_OPTIONS)[number];
+
+const CMS_TEXT_SIZE_SET = new Set<string>(CMS_TEXT_SIZE_OPTIONS);
+
+export function getCmsTextSizeClass(raw: string | undefined, fallback: string): string {
+  const value = raw?.trim();
+  if (!value) return fallback;
+  if (CMS_TEXT_SIZE_SET.has(value)) return `text-${value}`;
+  return fallback;
+}
+
+/** CMS bold: "1" → font-bold, "0" → font-normal. 빈 값이면 "" (호출부 fallback 유지) */
+export function getCmsTextWeightClass(raw: string | undefined): string {
+  const value = raw?.trim();
+  if (!value) return "";
+  if (value === "0") return "font-normal";
+  if (value === "1") return "font-bold";
+  return "";
+}
+
+export type CmsTextStyleTarget = {
+  section: string;
+  key: string;
+  defaultSize: CmsTextSize;
+  defaultBold: "0" | "1";
+};
+
+/** 폰트 크기·볼드 CMS 대상 (seed·관리자 UI 공용) */
+export const CMS_TEXT_STYLE_TARGETS: readonly CmsTextStyleTarget[] = [
+  { section: "hero", key: "headline", defaultSize: "4xl", defaultBold: "1" },
+  { section: "hero", key: "subtext", defaultSize: "lg", defaultBold: "0" },
+  { section: "management", key: "headline", defaultSize: "3xl", defaultBold: "1" },
+  { section: "management", key: "subtext", defaultSize: "base", defaultBold: "0" },
+  { section: "cta", key: "headline", defaultSize: "3xl", defaultBold: "1" },
+  { section: "cta", key: "subtext", defaultSize: "base", defaultBold: "0" },
+  { section: "pricing_page", key: "header_title", defaultSize: "3xl", defaultBold: "1" },
+  { section: "footer", key: "cta_title", defaultSize: "xl", defaultBold: "1" },
+] as const;
+
+export function getCmsTextStyleTarget(section: string, key: string): CmsTextStyleTarget | undefined {
+  return CMS_TEXT_STYLE_TARGETS.find((t) => t.section === section && t.key === key);
+}
+
+export const cmsTextStyleDefaults = CMS_TEXT_STYLE_TARGETS.flatMap((target, index) => [
+  {
+    section: target.section,
+    key: `${target.key}_size`,
+    value: target.defaultSize,
+    type: "text" as const,
+    order: 900 + index * 2,
+  },
+  {
+    section: target.section,
+    key: `${target.key}_bold`,
+    value: target.defaultBold,
+    type: "text" as const,
+    order: 901 + index * 2,
+  },
+]);
+
+export function composeCmsTypographyClass(
+  siteContent: Record<string, Record<string, string>> | undefined,
+  section: string,
+  key: string,
+  sizeFallback: string,
+  weightFallback: string,
+): string {
+  const sizeRaw = siteContent?.[section]?.[`${key}_size`];
+  const boldRaw = siteContent?.[section]?.[`${key}_bold`];
+  return [
+    getCmsTextSizeClass(sizeRaw, sizeFallback),
+    getCmsTextWeightClass(boldRaw) || weightFallback,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export type GroupedSiteContent = Record<string, Record<string, string>>;
+
+function cmsSpacingPx(raw: string | undefined): string | undefined {
+  const value = raw?.trim();
+  if (!value || !/^\d+(\.\d+)?$/.test(value)) return undefined;
+  return `${value}px`;
+}
+
+/** CMS spacing 섹션 키 → padding inline style (값 없으면 {} → Tailwind 유지) */
+export function getCmsSpacing(
+  siteContent: GroupedSiteContent | undefined,
+  sectionKey: string,
+): CSSProperties {
+  const spacing = siteContent?.spacing;
+  if (!spacing) return {};
+
+  const paddingTop = cmsSpacingPx(spacing[`${sectionKey}_pt`]);
+  const paddingBottom = cmsSpacingPx(spacing[`${sectionKey}_pb`]);
+  const paddingX = cmsSpacingPx(spacing[`${sectionKey}_px`]);
+
+  const style: CSSProperties = {};
+  if (paddingTop) style.paddingTop = paddingTop;
+  if (paddingBottom) style.paddingBottom = paddingBottom;
+  if (paddingX) {
+    style.paddingLeft = paddingX;
+    style.paddingRight = paddingX;
+  }
+  return style;
+}
+
+export const CMS_HOME_SPACING_SECTIONS = [
+  { key: "hero", label: "히어로" },
+  { key: "stats", label: "통계" },
+  { key: "results", label: "결과 (RESULTS)" },
+  { key: "teachers", label: "선생님" },
+  { key: "management", label: "학습 관리" },
+  { key: "features", label: "진행 방식 (PROCESS)" },
+  { key: "cta", label: "하단 CTA" },
+  { key: "compare", label: "서비스 비교" },
+  { key: "faq", label: "FAQ" },
+  { key: "reviews", label: "학습 후기" },
+  { key: "pricing", label: "요금제" },
+  { key: "footer", label: "푸터" },
+] as const;
+
+const CMS_SPACING_DEFAULT_PX = { pt: "80", pb: "80", px: "24" } as const;
+
+export { CMS_SPACING_DEFAULT_PX };
+
+/** 홈 섹션 여백 (section: spacing, 키: {section}_pt|pb|px) */
+export const spacingDefaults = CMS_HOME_SPACING_SECTIONS.flatMap((item, index) => {
+  const orderBase = index * 3 + 1;
+  return [
+    {
+      section: "spacing" as const,
+      key: `${item.key}_pt`,
+      value: CMS_SPACING_DEFAULT_PX.pt,
+      type: "text" as const,
+      order: orderBase,
+    },
+    {
+      section: "spacing" as const,
+      key: `${item.key}_pb`,
+      value: CMS_SPACING_DEFAULT_PX.pb,
+      type: "text" as const,
+      order: orderBase + 1,
+    },
+    {
+      section: "spacing" as const,
+      key: `${item.key}_px`,
+      value: CMS_SPACING_DEFAULT_PX.px,
+      type: "text" as const,
+      order: orderBase + 2,
+    },
+  ];
+});
 
 function pricingBoxRowsForSlot(
   boxIndex: number,
@@ -268,6 +425,91 @@ export const tutorsPageDefaults = [
     type: "image",
     order: 6,
   },
+] as const;
+
+/** 홈 푸터 */
+export const footerDefaults = [
+  { section: "footer", key: "cta_title", value: "상담이 필요하신가요?", type: "text", order: 1 },
+  { section: "footer", key: "hours_chat", value: "채팅문의 10:00~22:00", type: "text", order: 2 },
+  { section: "footer", key: "hours_call", value: "전화문의 평일 10:00~19:00", type: "text", order: 3 },
+  { section: "footer", key: "btn_chat", value: "채팅 문의", type: "text", order: 4 },
+  { section: "footer", key: "btn_phone", value: "전화 문의", type: "text", order: 5 },
+  { section: "footer", key: "phone_number", value: "010-0000-0000", type: "text", order: 6 },
+  { section: "footer", key: "sns_instagram", value: "https://instagram.com", type: "text", order: 7 },
+  { section: "footer", key: "sns_youtube", value: "https://youtube.com", type: "text", order: 8 },
+  { section: "footer", key: "sns_blog", value: "https://blog.naver.com", type: "text", order: 9 },
+  { section: "footer", key: "company_name", value: "주식회사 컨코드에듀케이션", type: "text", order: 10 },
+  { section: "footer", key: "company_rep", value: "홍길동", type: "text", order: 11 },
+  { section: "footer", key: "company_reg", value: "123-45-67890", type: "text", order: 12 },
+  {
+    section: "footer",
+    key: "company_address",
+    value: "서울특별시 강남구 테헤란로 000, 00층",
+    type: "text",
+    order: 13,
+  },
+  {
+    section: "footer",
+    key: "copyright",
+    value: "© {year} Concord Private Tutoring. All rights reserved.",
+    type: "text",
+    order: 14,
+  },
+  { section: "footer", key: "label_terms", value: "이용약관", type: "text", order: 15 },
+  { section: "footer", key: "label_privacy", value: "개인정보처리방침", type: "text", order: 16 },
+  { section: "footer", key: "label_refund", value: "환불정책", type: "text", order: 17 },
+  { section: "footer", key: "label_service", value: "서비스", type: "text", order: 18 },
+  { section: "footer", key: "label_sns", value: "SNS", type: "text", order: 19 },
+  { section: "footer", key: "label_teacher", value: "선생님이신가요?", type: "text", order: 20 },
+] as const;
+
+/** 홈 스티키 탭·섹션 kicker·제목 */
+export const homeLabelsDefaults = [
+  { section: "home_labels", key: "nav_tab_1", value: "서비스 소개", type: "text", order: 1 },
+  { section: "home_labels", key: "nav_tab_2", value: "선생님", type: "text", order: 2 },
+  { section: "home_labels", key: "nav_tab_3", value: "학습 관리", type: "text", order: 3 },
+  { section: "home_labels", key: "nav_tab_4", value: "진행 방식", type: "text", order: 4 },
+  { section: "home_labels", key: "nav_tab_5", value: "요금제", type: "text", order: 5 },
+  { section: "home_labels", key: "nav_tab_6", value: "서비스 비교", type: "text", order: 6 },
+  { section: "home_labels", key: "kicker_results", value: "RESULTS", type: "text", order: 10 },
+  { section: "home_labels", key: "kicker_teachers", value: "TEACHERS", type: "text", order: 11 },
+  { section: "home_labels", key: "kicker_reviews", value: "REVIEWS", type: "text", order: 12 },
+  { section: "home_labels", key: "kicker_management", value: "LEARNING CARE", type: "text", order: 13 },
+  { section: "home_labels", key: "kicker_process", value: "PROCESS", type: "text", order: 14 },
+  { section: "home_labels", key: "kicker_plans", value: "PLANS", type: "text", order: 15 },
+  { section: "home_labels", key: "section_title_faq", value: "자주 묻는 질문", type: "text", order: 16 },
+  { section: "home_labels", key: "section_title_reviews", value: "학습 후기", type: "text", order: 17 },
+] as const;
+
+const COMPARE_SEED_ROWS = [
+  { feature: "선생님 자격 검증", other: "✗", concord: "✓ 서류·면접" },
+  { feature: "선생님 실력 확인", other: "수업 후에야 파악", concord: "✓ 사전 검증" },
+  { feature: "학생 맞춤 매칭", other: "직접 알아봐야 함", concord: "✓ 매니저가 성향·과목 맞춰 연결" },
+  { feature: "선생님 교체 리스크", other: "맞지 않으면 1~2달 낭비", concord: "✓ 처음부터 핏 맞는 선생님" },
+  { feature: "학생 관리", other: "선생님 개인 역량 의존", concord: "✓ 관리 매뉴얼 기반" },
+  { feature: "매일 학습 점검", other: "✗", concord: "✓ 일별 플랜" },
+  { feature: "질문 답변", other: "수업 시간에만", concord: "✓ 상시 (강사·AI)" },
+  { feature: "문제 발생 대응", other: "학부모가 직접 해결", concord: "✓ 전담 매니저 조율" },
+  { feature: "학습 기록 공유", other: "✗", concord: "✓ 플랜·기록 공유" },
+] as const;
+
+function compareRowSeedRows(orderStart: number) {
+  return COMPARE_SEED_ROWS.flatMap((row, index) => {
+    const n = index + 1;
+    return [
+      { section: "compare" as const, key: `row${n}_visible`, value: "1", type: "text" as const, order: orderStart + index * 4 },
+      { section: "compare" as const, key: `row${n}_feature`, value: row.feature, type: "text" as const, order: orderStart + index * 4 + 1 },
+      { section: "compare" as const, key: `row${n}_concord`, value: row.concord, type: "text" as const, order: orderStart + index * 4 + 2 },
+      { section: "compare" as const, key: `row${n}_other`, value: row.other, type: "text" as const, order: orderStart + index * 4 + 3 },
+    ];
+  });
+}
+
+/** 홈 서비스 비교 테이블 */
+export const compareDefaults = [
+  { section: "compare", key: "kicker", value: "COMPARE", type: "text", order: 0 },
+  { section: "compare", key: "table_title", value: "서비스 비교", type: "text", order: 1 },
+  ...compareRowSeedRows(2),
 ] as const;
 
 /** 홈 FAQ·후기·요금제 섹션 기본값 */

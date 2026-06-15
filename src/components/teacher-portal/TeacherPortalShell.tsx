@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import type { PortalTeacherRole } from "@/lib/portal-roles";
@@ -42,6 +43,8 @@ export function TeacherPortalShell({
   children,
 }: TeacherPortalShellProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isEditMode = searchParams.get("cms_edit") === "1";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const navItems =
     role === "MANAGER" ? [...BASE_NAV, ...MANAGER_NAV] : [...BASE_NAV];
@@ -111,12 +114,22 @@ export function TeacherPortalShell({
               href="/teacher-portal/dashboard"
               className="truncate font-sans text-base font-bold italic text-text-primary sm:text-lg"
             >
-              {brand}
+              <CmsEdit active={isEditMode} section="teacher_portal" cmsKey="brand" type="text">
+                {brand}
+              </CmsEdit>
             </Link>
           </div>
           <div className="hidden min-w-0 flex-1 justify-center md:flex">
             <p className="truncate text-sm font-semibold text-text-primary lg:text-base">
-              {teacherName}님{titleSuffix}
+              {teacherName}님
+              <CmsEdit
+                active={isEditMode}
+                section="teacher_portal"
+                cmsKey={role === "MANAGER" ? "title_manager_suffix" : "title_teacher_suffix"}
+                type="text"
+              >
+                {titleSuffix}
+              </CmsEdit>
             </p>
           </div>
           <div className="flex min-w-0 flex-1 justify-center md:hidden">
@@ -134,7 +147,9 @@ export function TeacherPortalShell({
               onClick={() => signOut({ redirectTo: "/" })}
               className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary md:inline-flex"
             >
-              {logoutLabel}
+              <CmsEdit active={isEditMode} section="teacher_portal" cmsKey="logout" type="text">
+                {logoutLabel}
+              </CmsEdit>
             </button>
           </div>
         </div>
@@ -152,7 +167,9 @@ export function TeacherPortalShell({
                     : "border-transparent text-text-secondary hover:text-text-primary"
                 }`}
               >
-                {navLabelByKey[item.cmsKey]}
+                <CmsEdit active={isEditMode} section="teacher_portal" cmsKey={item.cmsKey} type="text">
+                  {navLabelByKey[item.cmsKey]}
+                </CmsEdit>
               </Link>
             );
           })}
@@ -174,9 +191,21 @@ export function TeacherPortalShell({
       >
         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-5">
           <div className="min-w-0">
-            <p className="truncate font-sans text-lg font-bold italic text-text-primary">{brand}</p>
+            <p className="truncate font-sans text-lg font-bold italic text-text-primary">
+              <CmsEdit active={isEditMode} section="teacher_portal" cmsKey="brand" type="text">
+                {brand}
+              </CmsEdit>
+            </p>
             <p className="mt-1 truncate text-xs text-text-secondary">
-              {teacherName}님{titleSuffix}
+              {teacherName}님
+              <CmsEdit
+                active={isEditMode}
+                section="teacher_portal"
+                cmsKey={role === "MANAGER" ? "title_manager_suffix" : "title_teacher_suffix"}
+                type="text"
+              >
+                {titleSuffix}
+              </CmsEdit>
             </p>
           </div>
           <button
@@ -203,7 +232,9 @@ export function TeacherPortalShell({
                     : "bg-background text-text-primary hover:bg-primary/5"
                 }`}
               >
-                {navLabelByKey[item.cmsKey]}
+                <CmsEdit active={isEditMode} section="teacher_portal" cmsKey={item.cmsKey} type="text">
+                  {navLabelByKey[item.cmsKey]}
+                </CmsEdit>
               </Link>
             );
           })}
@@ -214,7 +245,9 @@ export function TeacherPortalShell({
             onClick={() => signOut({ redirectTo: "/" })}
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-text-primary"
           >
-            {logoutLabel}
+            <CmsEdit active={isEditMode} section="teacher_portal" cmsKey="logout" type="text">
+              {logoutLabel}
+            </CmsEdit>
           </button>
         </div>
       </aside>

@@ -17,6 +17,7 @@ type StudentDashboardProps = {
   initialPlan: StudyPlan | null;
   initialQuestions: Question[];
   aiAnswerEnabled: boolean;
+  isEditMode?: boolean;
 };
 
 export function StudentDashboard({
@@ -27,6 +28,7 @@ export function StudentDashboard({
   initialPlan,
   initialQuestions,
   aiAnswerEnabled,
+  isEditMode = false,
 }: StudentDashboardProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -210,7 +212,7 @@ export function StudentDashboard({
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardTopBar studentName={studentName} />
+      <DashboardTopBar studentName={studentName} isEditMode={isEditMode} />
 
       <div className="flex pt-14">
         <aside className="fixed left-0 top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-4 lg:block">
@@ -265,6 +267,7 @@ export function StudentDashboard({
             copyOptions={copyOptions}
             copyLoading={copyLoading}
             copySource={copySource}
+            isEditMode={isEditMode}
             onCreatePlan={handleCreatePlan}
             onToggle={handleToggle}
             onTitleChange={handleTitleChange}

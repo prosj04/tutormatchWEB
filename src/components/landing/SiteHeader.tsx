@@ -37,8 +37,8 @@ function SessionActions({
   const role = session?.user?.role;
   const name = session ? displayName(session) : "";
   const buttonBase = mobile
-    ? "flex w-full items-center justify-center rounded-full px-5 py-3 text-base font-bold transition"
-    : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-bold transition";
+    ? "flex min-h-[44px] w-full items-center justify-center rounded-full px-5 py-3 text-base font-bold transition"
+    : "inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2 text-sm font-bold transition";
 
   if (status === "loading") {
     return (
@@ -210,7 +210,7 @@ export function SiteHeader({
         </div>
       </div>
 
-      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-5">
+      <div className="relative z-[70] mx-auto flex h-16 w-full max-w-[1200px] items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
         <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-8">
           <Link href={logoHref} className="shrink-0 text-lg font-black tracking-tight transition-colors sm:text-xl">
             Concord.
@@ -236,73 +236,71 @@ export function SiteHeader({
 
         <button
           type="button"
-          onClick={() => setOpen(true)}
-          className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition md:hidden ${
+          onClick={() => setOpen((prev) => !prev)}
+          className={`inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border transition md:hidden ${
             solidHeader
               ? "border-neutral-20 text-neutral-100"
               : "border-neutral-20 text-neutral-100 sm:border-white/30 sm:text-white"
           }`}
-          aria-label="메뉴 열기"
+          aria-expanded={open}
+          aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
         >
-          <span className="space-y-1.5">
-            <span className="block h-0.5 w-5 bg-current" />
-            <span className="block h-0.5 w-5 bg-current" />
-            <span className="block h-0.5 w-5 bg-current" />
-          </span>
+          {open ? (
+            <span className="text-2xl leading-none" aria-hidden>
+              ×
+            </span>
+          ) : (
+            <span className="space-y-1.5" aria-hidden>
+              <span className="block h-0.5 w-5 bg-current" />
+              <span className="block h-0.5 w-5 bg-current" />
+              <span className="block h-0.5 w-5 bg-current" />
+            </span>
+          )}
         </button>
       </div>
 
-      <button
-        type="button"
-        aria-label="메뉴 배경 닫기"
+      <div
+        role="presentation"
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-[58] bg-white transition-opacity duration-300 md:hidden sm:bg-white/92 sm:backdrop-blur-sm ${
+        className={`fixed inset-0 top-16 z-[55] bg-neutral-100/40 transition-opacity duration-300 md:hidden ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
 
       <div
-        className={`fixed inset-0 z-[60] overflow-y-auto bg-white shadow-2xl transition-all duration-300 md:hidden ${
-          open ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-full opacity-0"
+        id="site-header-mobile-menu"
+        className={`fixed inset-x-0 bottom-0 top-16 z-[60] overflow-y-auto bg-white shadow-2xl transition-transform duration-300 md:hidden ${
+          open ? "translate-x-0" : "pointer-events-none translate-x-full"
         }`}
         aria-hidden={!open}
       >
-        <div className="flex h-16 items-center justify-between border-b border-neutral-20 bg-white px-5">
-          <Link
-            href={logoHref}
-            onClick={() => setOpen(false)}
-            className="text-xl font-black text-neutral-100"
-          >
-            Concord.
-          </Link>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-10 text-2xl leading-none text-neutral-100"
-            aria-label="메뉴 닫기"
-          >
-            ×
-          </button>
-        </div>
-        <div className="flex min-h-[calc(100dvh-4rem)] flex-col justify-between gap-8 bg-white px-5 py-6 sm:px-6 sm:py-8">
+        <div className="flex min-h-full flex-col justify-between gap-8 px-4 py-6 md:px-6">
           <div>
-            <div className="flex flex-wrap justify-end gap-3 text-sm font-semibold text-neutral-80">
+            <div className="flex flex-wrap justify-end gap-2 text-sm font-semibold text-neutral-80">
               {showFaqLink ? (
-                <Link href="/faq" onClick={() => setOpen(false)}>
+                <Link
+                  href="/faq"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex min-h-[44px] items-center rounded-2xl px-3 transition hover:bg-neutral-10 hover:text-neutral-100"
+                >
                   자주 묻는 질문
                 </Link>
               ) : null}
-              <Link href="/register/teacher" onClick={() => setOpen(false)}>
+              <Link
+                href="/register/teacher"
+                onClick={() => setOpen(false)}
+                className="inline-flex min-h-[44px] items-center rounded-2xl px-3 transition hover:bg-neutral-10 hover:text-neutral-100"
+              >
                 선생님 지원
               </Link>
             </div>
-            <nav className="mt-8 space-y-2">
+            <nav className="mt-6 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-3xl px-4 py-4 text-2xl font-black text-neutral-100 transition hover:bg-neutral-10 sm:text-3xl"
+                  className="flex min-h-[44px] items-center rounded-3xl px-4 text-2xl font-black text-neutral-100 transition hover:bg-neutral-10 sm:text-3xl"
                 >
                   {link.label}
                 </Link>

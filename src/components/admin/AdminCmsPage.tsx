@@ -22,13 +22,20 @@ import { CmsCardBox, CmsCardBoxGrid } from "@/components/admin/CmsCardBox";
 import { CmsVisibilityToggle } from "@/components/admin/CmsVisibilityToggle";
 import { CmsPublicTeachersPanel } from "@/components/admin/CmsPublicTeachersPanel";
 import {
+  CMS_HOME_SPACING_SECTIONS,
   CMS_MANAGED_CARD_SLOT_COUNT,
+  CMS_SPACING_DEFAULT_PX,
+  CMS_TEXT_SIZE_OPTIONS,
   extraPublicPagesDefaults,
+  footerDefaults,
+  getCmsTextStyleTarget,
+  homeLabelsDefaults,
   portalPagesDefaults,
   portalPagesFieldLabels,
   pricingBoxFieldKey,
   pricingMiddleBoxFieldKey,
 } from "@/lib/cms-page-defaults";
+import { COMPARE_ROW_COUNT } from "@/lib/compare-cms";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -611,6 +618,27 @@ const CMS_PAGES = [
 
 type CmsPageId = (typeof CMS_PAGES)[number]["id"];
 
+type SelectedField = { section: string; key: string };
+
+function resolveSpacingSectionKey(section: string, key: string): string | null {
+  const wholeSection = CMS_HOME_SPACING_SECTIONS.find((item) => item.key === section && key === section);
+  if (wholeSection) return wholeSection.key;
+  if (section === "spacing") {
+    const match = key.match(/^(.+)_(pt|pb|px)$/);
+    if (match) return match[1]!;
+  }
+  return null;
+}
+
+function isImageFieldKey(key: string): boolean {
+  return /image|url/i.test(key);
+}
+
+function getIframeSrc(pageId: CmsPageId): string {
+  const href = CMS_PAGES.find((page) => page.id === pageId)?.previewHref ?? "/";
+  return `${href}?cms_edit=1`;
+}
+
 const ctaFields: TextFieldConfig[] = [
   {
     label: "하단 CTA 제목",
@@ -631,14 +659,150 @@ const ctaFields: TextFieldConfig[] = [
   { label: "하단 CTA 버튼", section: "cta", keyName: "button", defaultValue: "무료 상담 신청하기" },
 ];
 
+const FOOTER_FIELD_LABELS: Record<string, string> = {
+  cta_title: "CTA 제목",
+  hours_chat: "채팅 문의 시간",
+  hours_call: "전화 문의 시간",
+  btn_chat: "채팅 문의 버튼",
+  btn_phone: "전화 문의 버튼",
+  phone_number: "전화번호",
+  sns_instagram: "Instagram URL",
+  sns_youtube: "YouTube URL",
+  sns_blog: "Blog URL",
+  company_name: "상호",
+  company_rep: "대표자명",
+  company_reg: "사업자등록번호",
+  company_address: "주소",
+  copyright: "저작권 문구 ({year} 치환)",
+  label_terms: "이용약관 라벨",
+  label_privacy: "개인정보처리방침 라벨",
+  label_refund: "환불정책 라벨",
+  label_service: "서비스 섹션 라벨",
+  label_sns: "SNS 섹션 라벨",
+  label_teacher: "선생님 포털 링크",
+};
+
+const HOME_LABELS_FIELD_LABELS: Record<string, string> = {
+  nav_tab_1: "탭 1 (서비스 소개)",
+  nav_tab_2: "탭 2 (선생님)",
+  nav_tab_3: "탭 3 (학습 관리)",
+  nav_tab_4: "탭 4 (진행 방식)",
+  nav_tab_5: "탭 5 (요금제)",
+  nav_tab_6: "탭 6 (서비스 비교)",
+  kicker_results: "RESULTS kicker",
+  kicker_teachers: "TEACHERS kicker",
+  kicker_reviews: "REVIEWS kicker",
+  kicker_management: "LEARNING CARE kicker",
+  kicker_process: "PROCESS kicker",
+  kicker_plans: "PLANS kicker",
+  section_title_faq: "FAQ 섹션 제목",
+  section_title_reviews: "후기 섹션 제목",
+};
+
+function fieldsFromDefaults(
+  defaults: readonly { section: string; key: string; value: string }[],
+  labels: Record<string, string>,
+): TextFieldConfig[] {
+  return defaults.map((row) => ({
+    label: labels[row.key] ?? row.key,
+    section: row.section,
+    keyName: row.key,
+    defaultValue: row.value,
+    kind: row.value.includes("\n") || row.value.length > 72 ? ("textarea" as const) : ("input" as const),
+    rows: row.value.length > 72 ? 2 : undefined,
+  }));
+}
+
+const footerFields = fieldsFromDefaults(footerDefaults, FOOTER_FIELD_LABELS);
+const homeLabelsFields = fieldsFromDefaults(homeLabelsDefaults, HOME_LABELS_FIELD_LABELS);
+
+const compareKickerField: TextFieldConfig = {
+  label: "섹션 kicker",
+  section: "compare",
+  keyName: "kicker",
+  defaultValue: "COMPARE",
+};
+
+const compareTableTitleField: TextFieldConfig = {
+  label: "테이블 제목",
+  section: "compare",
+  keyName: "table_title",
+  defaultValue: "서비스 비교",
+};
+
+const compareRowDefaults = [
+  { feature: "선생님 자격 검증", concord: "✓ 서류·면접", other: "✗" },
+  { feature: "선생님 실력 확인", concord: "✓ 사전 검증", other: "수업 후에야 파악" },
+  { feature: "학생 맞춤 매칭", concord: "✓ 매니저가 성향·과목 맞춰 연결", other: "직접 알아봐야 함" },
+  { feature: "선생님 교체 리스크", concord: "✓ 처음부터 핏 맞는 선생님", other: "맞지 않으면 1~2달 낭비" },
+  { feature: "학생 관리", concord: "✓ 관리 매뉴얼 기반", other: "선생님 개인 역량 의존" },
+  { feature: "매일 학습 점검", concord: "✓ 일별 플랜", other: "✗" },
+  { feature: "질문 답변", concord: "✓ 상시 (강사·AI)", other: "수업 시간에만" },
+  { feature: "문제 발생 대응", concord: "✓ 전담 매니저 조율", other: "학부모가 직접 해결" },
+  { feature: "학습 기록 공유", concord: "✓ 플랜·기록 공유", other: "✗" },
+];
+
+function compareRowInnerFields(boxIndex: number): TextFieldConfig[] {
+  const defaults = compareRowDefaults[boxIndex - 1]!;
+  return [
+    {
+      label: "항목명",
+      section: "compare",
+      keyName: `row${boxIndex}_feature`,
+      defaultValue: defaults.feature,
+    },
+    {
+      label: "Concord",
+      section: "compare",
+      keyName: `row${boxIndex}_concord`,
+      defaultValue: defaults.concord,
+    },
+    {
+      label: "일반 과외",
+      section: "compare",
+      keyName: `row${boxIndex}_other`,
+      defaultValue: defaults.other,
+    },
+  ];
+}
+
+function findTextFieldConfig(section: string, keyName: string): TextFieldConfig | undefined {
+  const staticFields: TextFieldConfig[] = [
+    ...heroFields,
+    ...statsFields,
+    ...managementHeaderFields,
+    ...pricingHeaderFields,
+    ...homePricingFields,
+    ...pricingFaqFields,
+    ...tutorsPageFields,
+    ...ctaFields,
+    ...footerFields,
+    ...homeLabelsFields,
+    compareKickerField,
+    compareTableTitleField,
+    ...buildExtraFields("faq_page"),
+    ...buildExtraFields("reviews_page"),
+    ...buildExtraFields("login_page"),
+    ...buildExtraFields("checkout_page"),
+    ...buildExtraFields("success_page"),
+    ...PORTAL_STUDENT_SUBSECTIONS.flatMap((item) => buildPortalFields(item.section)),
+    ...buildPortalFields("student_consultation"),
+    ...buildPortalFields("visit_picker"),
+    ...buildPortalFields("teacher_portal"),
+  ];
+  return staticFields.find((field) => field.section === section && field.keyName === keyName);
+}
+
 export function AdminCmsPage() {
   const sensors = useSensors(useSensor(PointerSensor));
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activePage, setActivePage] = useState<CmsPageId>("home");
+  const [selectedField, setSelectedField] = useState<SelectedField | null>(null);
   const [content, setContent] = useState<CmsContent>({});
   const [testimonials, setTestimonials] = useState<TestimonialRow[]>([]);
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const previewHref = CMS_PAGES.find((page) => page.id === activePage)?.previewHref ?? "/";
+  const iframeSrc = getIframeSrc(activePage);
 
   const hasNoContent =
     !loading &&
@@ -685,6 +849,24 @@ export function AdminCmsPage() {
     void load();
   }, [load]);
 
+  useEffect(() => {
+    setSelectedField(null);
+  }, [activePage]);
+
+  useEffect(() => {
+    function handler(event: MessageEvent) {
+      if (event.data?.type === "cms_select") {
+        setSelectedField({ section: event.data.section, key: event.data.key });
+      }
+    }
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
+  const reloadIframe = useCallback(() => {
+    iframeRef.current?.contentWindow?.location.reload();
+  }, []);
+
   const getValue = (section: string, keyName: string, defaultValue: string) =>
     content[section]?.[keyName] ?? defaultValue;
 
@@ -699,6 +881,11 @@ export function AdminCmsPage() {
       ...current,
       [section]: { ...(current[section] ?? {}), [key]: value },
     }));
+  }
+
+  async function saveContent(section: string, key: string, value: string) {
+    await patchContent(section, key, value);
+    reloadIframe();
   }
 
   async function initDefaults() {
@@ -799,81 +986,117 @@ export function AdminCmsPage() {
   }
 
   return (
-    <div className="relative pb-16">
-      <a
-        href={previewHref}
-        target="_blank"
-        rel="noreferrer"
-        className="fixed right-6 top-20 z-40 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg"
-      >
-        페이지 미리보기
-      </a>
-
-      <div>
+    <div className="flex min-h-0 flex-col">
+      <div className="shrink-0">
         <h2 className="text-2xl font-black text-text-primary">사이트 콘텐츠 관리</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          각 페이지 문구와 사진을 바로 편집합니다. 자동 저장은 입력 후 약 10초 뒤에 반영되며, 공개 페이지에는 최대 60초 내에
-          적용됩니다.
+          왼쪽 미리보기에서 필드를 클릭하면 오른쪽 패널에서 바로 편집합니다. 자동 저장은 입력 후 약 10초 뒤에
+          반영되며, 저장 후 미리보기가 갱신됩니다.
         </p>
-      </div>
 
-      <div className="mt-6 flex flex-wrap gap-2 border-b border-gray-200 pb-1">
-        {CMS_PAGES.map((page) => (
-          <button
-            key={page.id}
-            type="button"
-            onClick={() => setActivePage(page.id)}
-            className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
-              activePage === page.id
-                ? "border-primary text-primary"
-                : "border-transparent text-text-muted hover:text-text-secondary"
-            }`}
-          >
-            {page.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={() => void initDefaults()}
-          className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
-        >
-          기본값으로 초기화
-        </button>
-      </div>
-
-      {hasNoContent ? (
-        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
-          <p className="font-bold text-amber-950">기본 콘텐츠가 없습니다.</p>
-          <p className="mt-1 text-sm text-amber-900">기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</p>
+        <div className="mt-6 flex flex-wrap gap-2 border-b border-gray-200 pb-1">
+          {CMS_PAGES.map((page) => (
+            <button
+              key={page.id}
+              type="button"
+              onClick={() => setActivePage(page.id)}
+              className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
+                activePage === page.id
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-muted hover:text-text-secondary"
+              }`}
+            >
+              {page.label}
+            </button>
+          ))}
         </div>
-      ) : null}
 
-      {loading ? (
-        <p className="mt-8 text-sm text-text-secondary">불러오는 중...</p>
-      ) : (
-        <div className="mt-8 space-y-8">
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => void initDefaults()}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
+          >
+            기본값으로 초기화
+          </button>
+        </div>
+
+        {hasNoContent ? (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+            <p className="font-bold text-amber-950">기본 콘텐츠가 없습니다.</p>
+            <p className="mt-1 text-sm text-amber-900">기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</p>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-4 flex min-h-0 flex-1 gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm" style={{ height: "calc(100vh - 15rem)" }}>
+        <div className="min-w-0 flex-[7] border-r border-gray-200 bg-neutral-10">
+          <iframe
+            ref={iframeRef}
+            key={activePage}
+            title={`${CMS_PAGES.find((page) => page.id === activePage)?.label ?? "페이지"} 미리보기`}
+            src={iframeSrc}
+            className="h-full w-full border-0 bg-white"
+          />
+        </div>
+
+        <div className="min-w-0 flex-[3] overflow-y-auto bg-background p-4">
+          {loading ? (
+            <p className="text-sm text-text-secondary">불러오는 중...</p>
+          ) : selectedField ? (
+            <div className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setSelectedField(null)}
+                className="text-sm font-bold text-primary hover:underline"
+              >
+                ← 전체 보기
+              </button>
+              <SelectedFieldEditor
+                field={selectedField}
+                getValue={getValue}
+                onSave={saveContent}
+              />
+            </div>
+          ) : (
+            <div className="space-y-8">
           {activePage === "home" ? (
             <>
           <EditorSection eyebrow="HERO" title="첫 화면">
             <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="grid gap-4">
                 {heroFields.map((field) => (
-                  <ContentField
+                  <AdminTextField
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    getValue={getValue}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
               <ImageField
                 field={{ label: "히어로 배경 이미지", section: "hero", keyName: "bg_image_url", defaultValue: "" }}
                 value={getValue("hero", "bg_image_url", "")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="SPACING" title="섹션 여백">
+            <p className="mb-5 text-sm text-text-secondary">
+              각 섹션의 상·하·좌우 여백(px)입니다. 값을 비우면 기존 Tailwind 여백이 적용됩니다.
+            </p>
+            <div className="space-y-4">
+              {CMS_HOME_SPACING_SECTIONS.map((item) => (
+                <CmsSpacingSectionRow
+                  key={item.key}
+                  sectionKey={item.key}
+                  label={item.label}
+                  getValue={getValue}
+                  onSave={saveContent}
+                />
+              ))}
             </div>
           </EditorSection>
 
@@ -888,7 +1111,7 @@ export function AdminCmsPage() {
                         key={`${field.section}-${field.keyName}`}
                         field={field}
                         value={getValue(field.section, field.keyName, field.defaultValue)}
-                        onSave={patchContent}
+                        onSave={saveContent}
                       />
                     ))}
                   </div>
@@ -907,7 +1130,7 @@ export function AdminCmsPage() {
                   defaultValue: "결과로 증명합니다",
                 }}
                 value={getValue("results", "section_title", "결과로 증명합니다")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
               <CmsCardBoxGrid>
                 {resultDefaults.map((result, index) => {
@@ -939,17 +1162,17 @@ export function AdminCmsPage() {
                       section="results"
                       visibilityKey={`result${number}_visible`}
                       getValue={getValue}
-                      onToggleVisible={patchContent}
+                      onToggleVisible={saveContent}
                     >
                       <ImageField
                         field={{
-                          label: "카드 상단 이미지",
+                          label: "카드 하단 이미지",
                           section: "results",
                           keyName: `result${number}_image`,
                           defaultValue: result.image,
                         }}
                         value={getValue("results", `result${number}_image`, result.image)}
-                        onSave={patchContent}
+                        onSave={saveContent}
                       />
                       <div className="space-y-3">
                         {fields.map((field) => (
@@ -957,7 +1180,7 @@ export function AdminCmsPage() {
                             key={field.keyName}
                             field={field}
                             value={getValue(field.section, field.keyName, field.defaultValue)}
-                            onSave={patchContent}
+                            onSave={saveContent}
                           />
                         ))}
                       </div>
@@ -983,7 +1206,7 @@ export function AdminCmsPage() {
                   rows: 3,
                 }}
                 value={getValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
               <ContentField
                 field={{
@@ -995,7 +1218,7 @@ export function AdminCmsPage() {
                   rows: 2,
                 }}
                 value={getValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
               <CmsCardBoxGrid>
                 {teacherDefaults.map((teacher, index) => (
@@ -1004,7 +1227,7 @@ export function AdminCmsPage() {
                     index={index}
                     defaults={teacher}
                     getValue={getValue}
-                    onSave={patchContent}
+                    onSave={saveContent}
                   />
                 ))}
               </CmsCardBoxGrid>
@@ -1014,11 +1237,12 @@ export function AdminCmsPage() {
           <EditorSection eyebrow="LEARNING CARE" title="학습 관리">
             <div className="grid gap-4 lg:grid-cols-2">
               {managementHeaderFields.map((field) => (
-                <ContentField
+                <AdminTextField
                   key={`${field.section}-${field.keyName}`}
                   field={field}
                   value={getValue(field.section, field.keyName, field.defaultValue)}
-                  onSave={patchContent}
+                  getValue={getValue}
+                  onSave={saveContent}
                 />
               ))}
             </div>
@@ -1032,14 +1256,14 @@ export function AdminCmsPage() {
                     visibilityKey={`item${slot}_visible`}
                     visibilityDefault={slot <= 3 ? "1" : "0"}
                     getValue={getValue}
-                    onToggleVisible={patchContent}
+                    onToggleVisible={saveContent}
                   >
                     {managementSlotFields(slot).map((field) => (
                       <ContentField
                         key={`${field.section}-${field.keyName}`}
                         field={field}
                         value={getValue(field.section, field.keyName, field.defaultValue)}
-                        onSave={patchContent}
+                        onSave={saveContent}
                       />
                     ))}
                   </CmsCardBox>
@@ -1058,7 +1282,7 @@ export function AdminCmsPage() {
                   defaultValue: "이렇게 진행됩니다",
                 }}
                 value={getValue("features", "section_title", "이렇게 진행됩니다")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
               <ContentField
                 field={{
@@ -1070,13 +1294,13 @@ export function AdminCmsPage() {
                   rows: 2,
                 }}
                 value={getValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
-                onSave={patchContent}
+                onSave={saveContent}
               />
             </div>
             <div className="mt-6">
               <CmsCardBoxGrid>
                 {stepDefaults.map((step, index) => (
-                  <StepEditor key={index} index={index} defaults={step} getValue={getValue} onSave={patchContent} />
+                  <StepEditor key={index} index={index} defaults={step} getValue={getValue} onSave={saveContent} />
                 ))}
               </CmsCardBoxGrid>
             </div>
@@ -1085,11 +1309,12 @@ export function AdminCmsPage() {
           <EditorSection eyebrow="CTA" title="혜택 안내">
             <div className="grid gap-4 lg:grid-cols-2">
               {ctaFields.map((field) => (
-                <ContentField
+                <AdminTextField
                   key={`${field.section}-${field.keyName}`}
                   field={field}
                   value={getValue(field.section, field.keyName, field.defaultValue)}
-                  onSave={patchContent}
+                  getValue={getValue}
+                  onSave={saveContent}
                 />
               ))}
             </div>
@@ -1106,14 +1331,14 @@ export function AdminCmsPage() {
                     visibilityKey={`cta_box_${slot}_visible`}
                     visibilityDefault={slot <= 4 ? "1" : "0"}
                     getValue={getValue}
-                    onToggleVisible={patchContent}
+                    onToggleVisible={saveContent}
                   >
                     {ctaBenefitSlotInnerFields(slot).map((field) => (
                       <ContentField
                         key={`${field.section}-${field.keyName}`}
                         field={field}
                         value={getValue(field.section, field.keyName, field.defaultValue)}
-                        onSave={patchContent}
+                        onSave={saveContent}
                       />
                     ))}
                   </CmsCardBox>
@@ -1134,7 +1359,7 @@ export function AdminCmsPage() {
                 visibilityKey="show_faq_section"
                 visibilityDefault="0"
                 getValue={getValue}
-                onToggleVisible={patchContent}
+                onToggleVisible={saveContent}
               />
               <CmsVisibilityToggle
                 label="홈 화면에 학습 후기 섹션 표시"
@@ -1142,7 +1367,7 @@ export function AdminCmsPage() {
                 visibilityKey="show_reviews_section"
                 visibilityDefault="1"
                 getValue={getValue}
-                onToggleVisible={patchContent}
+                onToggleVisible={saveContent}
               />
             </div>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -1171,9 +1396,75 @@ export function AdminCmsPage() {
                   key={`${field.section}-${field.keyName}`}
                   field={field}
                   value={getValue(field.section, field.keyName, field.defaultValue)}
-                  onSave={patchContent}
+                  onSave={saveContent}
                 />
               ))}
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="FOOTER" title="푸터">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {footerFields.map((field) => (
+                <AdminTextField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  getValue={getValue}
+                  onSave={saveContent}
+                />
+              ))}
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="NAVIGATION LABELS" title="스티키 탭·섹션 라벨">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {homeLabelsFields.map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={saveContent}
+                />
+              ))}
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="COMPARISON TABLE" title="서비스 비교 테이블">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <ContentField
+                field={compareKickerField}
+                value={getValue(compareKickerField.section, compareKickerField.keyName, compareKickerField.defaultValue)}
+                onSave={saveContent}
+              />
+              <ContentField
+                field={compareTableTitleField}
+                value={getValue(compareTableTitleField.section, compareTableTitleField.keyName, compareTableTitleField.defaultValue)}
+                onSave={saveContent}
+              />
+            </div>
+            <div className="mt-6">
+              <CmsCardBoxGrid>
+                {Array.from({ length: COMPARE_ROW_COUNT }, (_, idx) => idx + 1).map((slot) => (
+                  <CmsCardBox
+                    key={slot}
+                    label={`비교 행 ${slot}`}
+                    section="compare"
+                    visibilityKey={`row${slot}_visible`}
+                    visibilityDefault="1"
+                    getValue={getValue}
+                    onToggleVisible={saveContent}
+                  >
+                    {compareRowInnerFields(slot).map((field) => (
+                      <ContentField
+                        key={`${field.section}-${field.keyName}`}
+                        field={field}
+                        value={getValue(field.section, field.keyName, field.defaultValue)}
+                        onSave={saveContent}
+                      />
+                    ))}
+                  </CmsCardBox>
+                ))}
+              </CmsCardBoxGrid>
             </div>
           </EditorSection>
 
@@ -1188,11 +1479,12 @@ export function AdminCmsPage() {
               </p>
               <div className="grid gap-4 lg:grid-cols-2">
                 {pricingHeaderFields.map((field) => (
-                  <ContentField
+                  <AdminTextField
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    getValue={getValue}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
@@ -1207,14 +1499,14 @@ export function AdminCmsPage() {
                       visibilityKey={pricingBoxFieldKey(slot, "visible")}
                       visibilityDefault={slot <= 4 ? "1" : "0"}
                       getValue={getValue}
-                      onToggleVisible={patchContent}
+                      onToggleVisible={saveContent}
                     >
                       {pricingSlotInnerFields(slot).map((field) => (
                         <ContentField
                           key={`${field.section}-${field.keyName}`}
                           field={field}
                           value={getValue(field.section, field.keyName, field.defaultValue)}
-                          onSave={patchContent}
+                          onSave={saveContent}
                         />
                       ))}
                     </CmsCardBox>
@@ -1232,14 +1524,14 @@ export function AdminCmsPage() {
                       visibilityKey={pricingMiddleBoxFieldKey(slot, "visible")}
                       visibilityDefault={slot <= 4 ? "1" : "0"}
                       getValue={getValue}
-                      onToggleVisible={patchContent}
+                      onToggleVisible={saveContent}
                     >
                       {pricingSlotInnerFields(slot, pricingMiddleBoxFieldKey).map((field) => (
                         <ContentField
                           key={`${field.section}-${field.keyName}`}
                           field={field}
                           value={getValue(field.section, field.keyName, field.defaultValue)}
-                          onSave={patchContent}
+                          onSave={saveContent}
                         />
                       ))}
                     </CmsCardBox>
@@ -1252,7 +1544,7 @@ export function AdminCmsPage() {
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
@@ -1267,7 +1559,7 @@ export function AdminCmsPage() {
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
@@ -1284,7 +1576,7 @@ export function AdminCmsPage() {
                     defaultValue: "/images/teachers/default-male.png",
                   }}
                   value={getValue("tutors_page", "public_photo_male", "/images/teachers/default-male.png")}
-                  onSave={patchContent}
+                  onSave={saveContent}
                 />
                 <ImageField
                   field={{
@@ -1294,7 +1586,7 @@ export function AdminCmsPage() {
                     defaultValue: "/images/teachers/default-female.png",
                   }}
                   value={getValue("tutors_page", "public_photo_female", "/images/teachers/default-female.png")}
-                  onSave={patchContent}
+                  onSave={saveContent}
                 />
               </div>
               <CmsPublicTeachersPanel />
@@ -1313,7 +1605,7 @@ export function AdminCmsPage() {
                     section="faq_page"
                     visibilityKey="show_page"
                     getValue={getValue}
-                    onToggleVisible={patchContent}
+                    onToggleVisible={saveContent}
                   />
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
@@ -1322,7 +1614,7 @@ export function AdminCmsPage() {
                       key={`${field.section}-${field.keyName}`}
                       field={field}
                       value={getValue(field.section, field.keyName, field.defaultValue)}
-                      onSave={patchContent}
+                      onSave={saveContent}
                     />
                   ))}
                 </div>
@@ -1370,7 +1662,7 @@ export function AdminCmsPage() {
                     section="reviews_page"
                     visibilityKey="show_page"
                     getValue={getValue}
-                    onToggleVisible={patchContent}
+                    onToggleVisible={saveContent}
                   />
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
@@ -1379,7 +1671,7 @@ export function AdminCmsPage() {
                       key={`${field.section}-${field.keyName}`}
                       field={field}
                       value={getValue(field.section, field.keyName, field.defaultValue)}
-                      onSave={patchContent}
+                      onSave={saveContent}
                     />
                   ))}
                 </div>
@@ -1423,7 +1715,7 @@ export function AdminCmsPage() {
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
@@ -1439,7 +1731,7 @@ export function AdminCmsPage() {
                       key={`${field.section}-${field.keyName}`}
                       field={field}
                       value={getValue(field.section, field.keyName, field.defaultValue)}
-                      onSave={patchContent}
+                      onSave={saveContent}
                     />
                   ))}
                 </div>
@@ -1451,7 +1743,7 @@ export function AdminCmsPage() {
                       key={`${field.section}-${field.keyName}`}
                       field={field}
                       value={getValue(field.section, field.keyName, field.defaultValue)}
-                      onSave={patchContent}
+                      onSave={saveContent}
                     />
                   ))}
                 </div>
@@ -1475,7 +1767,7 @@ export function AdminCmsPage() {
                           key={`${field.section}-${field.keyName}`}
                           field={field}
                           value={getValue(field.section, field.keyName, field.defaultValue)}
-                          onSave={patchContent}
+                          onSave={saveContent}
                         />
                       ))}
                     </div>
@@ -1497,7 +1789,7 @@ export function AdminCmsPage() {
                           key={`${field.section}-${field.keyName}`}
                           field={field}
                           value={getValue(field.section, field.keyName, field.defaultValue)}
-                          onSave={patchContent}
+                          onSave={saveContent}
                         />
                       ))}
                     </div>
@@ -1518,14 +1810,131 @@ export function AdminCmsPage() {
                     key={`${field.section}-${field.keyName}`}
                     field={field}
                     value={getValue(field.section, field.keyName, field.defaultValue)}
-                    onSave={patchContent}
+                    onSave={saveContent}
                   />
                 ))}
               </div>
             </EditorSection>
           ) : null}
+            </div>
+          )}
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
+
+function SelectedFieldEditor({
+  field,
+  getValue,
+  onSave,
+}: {
+  field: SelectedField;
+  getValue: (section: string, key: string, fallback: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  const { section, key } = field;
+  const spacingSectionKey = resolveSpacingSectionKey(section, key);
+
+  if (spacingSectionKey) {
+    const spacingLabel =
+      CMS_HOME_SPACING_SECTIONS.find((item) => item.key === spacingSectionKey)?.label ?? spacingSectionKey;
+    return (
+      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+        <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">SPACING</p>
+        <h3 className="text-lg font-black text-text-primary">{spacingLabel} 여백</h3>
+        <div className="mt-4">
+          <CmsSpacingSectionRow
+            sectionKey={spacingSectionKey}
+            label={spacingLabel}
+            getValue={getValue}
+            onSave={onSave}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (key.endsWith("_size") || key.endsWith("_bold")) {
+    const baseKey = key.replace(/_(size|bold)$/, "");
+    const styleTarget = getCmsTextStyleTarget(section, baseKey);
+    if (styleTarget) {
+      return (
+        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">FONT</p>
+          <h3 className="text-lg font-black text-text-primary">
+            {section}.{baseKey} 폰트 설정
+          </h3>
+          <div className="mt-4">
+            <CmsTextStyleControls
+              section={section}
+              keyName={baseKey}
+              defaultSize={styleTarget.defaultSize}
+              defaultBold={styleTarget.defaultBold}
+              getValue={getValue}
+              onSave={onSave}
+            />
+          </div>
+        </div>
+      );
+    }
+  }
+
+  if (isImageFieldKey(key)) {
+    const known = findTextFieldConfig(section, key);
+    const imageField: ImageFieldConfig = {
+      label: known?.label ?? key,
+      section,
+      keyName: key,
+      defaultValue: known?.defaultValue ?? "",
+    };
+    return (
+      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+        <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">IMAGE</p>
+        <h3 className="text-lg font-black text-text-primary">{imageField.label}</h3>
+        <div className="mt-4">
+          <ImageField
+            field={imageField}
+            value={getValue(section, key, imageField.defaultValue)}
+            onSave={onSave}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const textField =
+    findTextFieldConfig(section, key) ??
+    ({
+      label: `${section}.${key}`,
+      section,
+      keyName: key,
+      defaultValue: "",
+      kind: "input" as const,
+    } satisfies TextFieldConfig);
+
+  const styleTarget = getCmsTextStyleTarget(section, key);
+
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+      <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">TEXT</p>
+      <h3 className="text-lg font-black text-text-primary">{textField.label}</h3>
+      <div className="mt-4">
+        {styleTarget ? (
+          <AdminTextField
+            field={textField}
+            value={getValue(section, key, textField.defaultValue)}
+            getValue={getValue}
+            onSave={onSave}
+          />
+        ) : (
+          <ContentField
+            field={textField}
+            value={getValue(section, key, textField.defaultValue)}
+            onSave={onSave}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -1555,6 +1964,53 @@ function EditorSection({
   );
 }
 
+function CmsSpacingSectionRow({
+  sectionKey,
+  label,
+  getValue,
+  onSave,
+}: {
+  sectionKey: string;
+  label: string;
+  getValue: (section: string, key: string, fallback: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  const fields = [
+    { suffix: "pt", label: "상단", defaultValue: CMS_SPACING_DEFAULT_PX.pt },
+    { suffix: "pb", label: "하단", defaultValue: CMS_SPACING_DEFAULT_PX.pb },
+    { suffix: "px", label: "좌우", defaultValue: CMS_SPACING_DEFAULT_PX.px },
+  ] as const;
+
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-background p-4">
+      <p className="mb-3 text-sm font-black text-text-primary">{label}</p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {fields.map((field) => {
+          const keyName = `${sectionKey}_${field.suffix}`;
+          const value = getValue("spacing", keyName, field.defaultValue);
+          return (
+            <label key={keyName} className="block">
+              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-text-muted">
+                {field.label}
+              </span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  value={value}
+                  onChange={(e) => void onSave("spacing", keyName, e.target.value)}
+                  className={inputClass}
+                />
+                <span className="shrink-0 text-xs font-semibold text-text-muted">px</span>
+              </div>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ContentField({
   field,
   value,
@@ -1572,6 +2028,86 @@ function ContentField({
       rows={field.rows}
       onSave={(nextValue) => onSave(field.section, field.keyName, nextValue)}
     />
+  );
+}
+
+function AdminTextField({
+  field,
+  value,
+  getValue,
+  onSave,
+}: {
+  field: TextFieldConfig;
+  value: string;
+  getValue: (section: string, key: string, fallback: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  const styleTarget = getCmsTextStyleTarget(field.section, field.keyName);
+
+  return (
+    <div className="rounded-2xl bg-background">
+      <ContentField field={field} value={value} onSave={onSave} />
+      {styleTarget ? (
+        <CmsTextStyleControls
+          section={field.section}
+          keyName={field.keyName}
+          defaultSize={styleTarget.defaultSize}
+          defaultBold={styleTarget.defaultBold}
+          getValue={getValue}
+          onSave={onSave}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function CmsTextStyleControls({
+  section,
+  keyName,
+  defaultSize,
+  defaultBold,
+  getValue,
+  onSave,
+}: {
+  section: string;
+  keyName: string;
+  defaultSize: (typeof CMS_TEXT_SIZE_OPTIONS)[number];
+  defaultBold: "0" | "1";
+  getValue: (section: string, key: string, fallback: string) => string;
+  onSave: (section: string, key: string, value: string) => Promise<void>;
+}) {
+  const sizeKey = `${keyName}_size`;
+  const boldKey = `${keyName}_bold`;
+  const sizeValue = getValue(section, sizeKey, defaultSize);
+  const boldValue = getValue(section, boldKey, defaultBold);
+  const isBold = boldValue !== "0";
+
+  return (
+    <div className="flex flex-wrap items-center gap-4 border-t border-gray-100 px-4 pb-4 pt-3">
+      <label className="flex items-center gap-2 text-xs font-semibold text-text-muted">
+        <span>크기</span>
+        <select
+          value={sizeValue}
+          onChange={(e) => void onSave(section, sizeKey, e.target.value)}
+          className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-text-primary outline-none focus:border-primary"
+        >
+          {CMS_TEXT_SIZE_OPTIONS.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-text-muted">
+        <input
+          type="checkbox"
+          checked={isBold}
+          onChange={(e) => void onSave(section, boldKey, e.target.checked ? "1" : "0")}
+          className="size-4 rounded border-gray-300 text-primary focus:ring-primary"
+        />
+        <span>볼드</span>
+      </label>
+    </div>
   );
 }
 

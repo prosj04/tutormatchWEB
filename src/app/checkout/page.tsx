@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { CheckoutContent } from "@/components/checkout/CheckoutContent";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import {
@@ -32,6 +33,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const subjects: SubjectCount = parseSubjectsParam(first(searchParams.subjects));
   const needsSignup =
     !session?.user?.id || session.user.role !== "STUDENT";
+  const isEditMode = first(searchParams.cms_edit) === "1";
   const showFailBanner = first(searchParams.error) === "1";
   const failBannerText = getCmsSectionValue(
     siteContent,
@@ -43,9 +45,11 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   return (
     <>
       {showFailBanner ? (
-        <div className="border-b border-accent/20 bg-accent/5 px-4 py-3 text-center text-sm text-text-primary sm:px-6 md:px-8">
-          {failBannerText}
-        </div>
+        <CmsEdit active={isEditMode} section="checkout_page" cmsKey="fail_banner" type="text">
+          <div className="border-b border-accent/20 bg-accent/5 px-4 py-3 text-center text-sm text-text-primary sm:px-6 md:px-8">
+            {failBannerText}
+          </div>
+        </CmsEdit>
       ) : null}
       <CheckoutContent
         tutorId={tutorId}
@@ -53,6 +57,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         subjects={subjects}
         siteContent={siteContent}
         needsSignup={needsSignup}
+        isEditMode={isEditMode}
       />
     </>
   );

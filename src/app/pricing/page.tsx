@@ -8,10 +8,21 @@ export const metadata = {
   title: "요금제",
 };
 
-export default async function PricingPage() {
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
   const timer = startPerfTimer("page.pricing.total");
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["pricing_page", "cta"]);
-  const page = <PricingContent siteContent={siteContent} />;
+  const page = <PricingContent siteContent={siteContent} isEditMode={isEditMode} />;
   timer.end();
   return page;
 }

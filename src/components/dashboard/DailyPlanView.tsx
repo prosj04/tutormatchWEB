@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
 
@@ -29,6 +30,7 @@ type DailyPlanViewProps = {
   onCloseCopyModal: () => void;
   onSelectCopySource: (date: string) => void;
   onConfirmCopy: () => void;
+  isEditMode?: boolean;
 };
 
 export function DailyPlanView({
@@ -52,6 +54,7 @@ export function DailyPlanView({
   onCloseCopyModal,
   onSelectCopySource,
   onConfirmCopy,
+  isEditMode = false,
 }: DailyPlanViewProps) {
   const tasks = plan?.tasks ?? [];
 
@@ -81,23 +84,39 @@ export function DailyPlanView({
               disabled={loading}
               className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
-              {btnAddPlan}
+              <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_add_plan" type="text">
+                {btnAddPlan}
+              </CmsEdit>
             </button>
           )}
         </div>
 
         {loading ? (
-          <p className="mt-12 text-center text-sm text-text-muted">{loadingLabel}</p>
+          <p className="mt-12 text-center text-sm text-text-muted">
+            <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="loading" type="text">
+              {loadingLabel}
+            </CmsEdit>
+          </p>
         ) : !plan ? (
           <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center sm:p-10">
-            <p className="text-sm text-text-secondary">{emptyNoPlan}</p>
-            <p className="mt-1 text-xs text-text-muted">{emptyHint}</p>
+            <p className="text-sm text-text-secondary">
+              <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_no_plan" type="text">
+                {emptyNoPlan}
+              </CmsEdit>
+            </p>
+            <p className="mt-1 text-xs text-text-muted">
+              <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_hint" type="text">
+                {emptyHint}
+              </CmsEdit>
+            </p>
             <button
               type="button"
               onClick={onOpenCopyModal}
               className="mt-4 text-sm font-medium text-primary hover:underline"
             >
-              {btnCopyPrev}
+              <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_copy_prev" type="text">
+                {btnCopyPrev}
+              </CmsEdit>
             </button>
           </div>
         ) : (
@@ -108,7 +127,9 @@ export function DailyPlanView({
                 onClick={onOpenCopyModal}
                 className="rounded-lg border border-gray-200 bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary hover:border-gray-300"
               >
-                {btnCopyPrev}
+                <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_copy_prev" type="text">
+                  {btnCopyPrev}
+                </CmsEdit>
               </button>
             </div>
 
@@ -127,7 +148,14 @@ export function DailyPlanView({
               {plan.comment ? (
                 <div className="rounded-2xl border-2 border-primary/60 bg-primary/5 p-5">
                   <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    {labelTeacherComment}
+                    <CmsEdit
+                      active={isEditMode}
+                      section="student_dashboard"
+                      cmsKey="label_teacher_comment"
+                      type="text"
+                    >
+                      {labelTeacherComment}
+                    </CmsEdit>
                   </p>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
                     {plan.comment}
@@ -140,7 +168,11 @@ export function DailyPlanView({
                 </div>
               ) : (
                 <div className="rounded-2xl border border-gray-100 bg-surface p-5 text-center">
-                  <p className="text-sm text-text-muted">{emptyComment}</p>
+                  <p className="text-sm text-text-muted">
+                    <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_comment" type="text">
+                      {emptyComment}
+                    </CmsEdit>
+                  </p>
                 </div>
               )}
             </section>
@@ -152,6 +184,7 @@ export function DailyPlanView({
           studentId={studentId}
           aiAnswerEnabled={aiAnswerEnabled}
           initialQuestions={initialQuestions}
+          isEditMode={isEditMode}
         />
       </div>
 

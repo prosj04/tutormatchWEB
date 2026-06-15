@@ -11,7 +11,9 @@ export async function PublicShell({ children }: { children: React.ReactNode }) {
   return (
     <PublicAppProviders>
       <SiteHeader variant="light" showFaqLink={showFaqLink} showReviewsLink={showReviewsLink} />
-      <div className="min-h-screen bg-background pt-16 md:pt-[100px]">{children}</div>
+      <div className="min-h-screen overflow-x-clip bg-background pt-16 md:pt-[100px]">
+        <div className="px-4 md:px-6 lg:px-0">{children}</div>
+      </div>
     </PublicAppProviders>
   );
 }

@@ -5,8 +5,19 @@ import { getLandingCmsContent } from "@/lib/cms";
 
 export const revalidate = 300;
 
-export default async function HomePage() {
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
   const timer = startPerfTimer("page.home.total");
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   const cms = await getLandingCmsContent();
   const testimonials =
     cms.testimonials.length > 0 ? cms.testimonials : fallbackTestimonials;
@@ -14,7 +25,10 @@ export default async function HomePage() {
 
   const page = (
     <PublicAppProviders>
-      <LandingPage cms={{ siteContent: cms.siteContent, testimonials, faqs }} />
+      <LandingPage
+        cms={{ siteContent: cms.siteContent, testimonials, faqs }}
+        isEditMode={isEditMode}
+      />
     </PublicAppProviders>
   );
 

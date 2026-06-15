@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -302,8 +303,15 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent }) {
+export function LoginForm({
+  siteContent,
+  isEditMode: isEditModeProp,
+}: {
+  siteContent?: GroupedSiteContent;
+  isEditMode?: boolean;
+}) {
   const searchParams = useSearchParams();
+  const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
   const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
   const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "login_page", key, fb);
@@ -367,15 +375,21 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-            {get("kicker", "Account")}
-          </p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-            {get("title", "로그인")}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-            {get("subtext", "이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.")}
-          </p>
+          <CmsEdit active={isEditMode} section="login_page" cmsKey="kicker" type="text">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
+              {get("kicker", "Account")}
+            </p>
+          </CmsEdit>
+          <CmsEdit active={isEditMode} section="login_page" cmsKey="title" type="text">
+            <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
+              {get("title", "로그인")}
+            </h1>
+          </CmsEdit>
+          <CmsEdit active={isEditMode} section="login_page" cmsKey="subtext" type="text">
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
+              {get("subtext", "이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.")}
+            </p>
+          </CmsEdit>
         </div>
       </div>
       <div className="mx-auto max-w-md px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20 lg:py-24">
@@ -434,16 +448,20 @@ export function LoginForm({ siteContent }: { siteContent?: GroupedSiteContent })
               {error}
             </p>
           ) : null}
-          <p className="mt-8 text-center text-sm text-text-secondary">
-            {get("signup_prompt", "아직 계정이 없으신가요? ")}{" "}
-            <button
-              type="button"
-              onClick={goConsultation}
-              className="font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              {get("signup_cta", "상담 신청")}
-            </button>
-          </p>
+          <CmsEdit active={isEditMode} section="login_page" cmsKey="signup_prompt" type="text">
+            <p className="mt-8 text-center text-sm text-text-secondary">
+              {get("signup_prompt", "아직 계정이 없으신가요? ")}{" "}
+              <CmsEdit active={isEditMode} section="login_page" cmsKey="signup_cta" type="text">
+                <button
+                  type="button"
+                  onClick={goConsultation}
+                  className="font-semibold text-primary underline-offset-4 hover:underline"
+                >
+                  {get("signup_cta", "상담 신청")}
+                </button>
+              </CmsEdit>
+            </p>
+          </CmsEdit>
 
           {showAdminSetup && !adminSetupHidden ? (
             <AdminToolsSection onDismiss={() => setAdminSetupHidden(true)} />

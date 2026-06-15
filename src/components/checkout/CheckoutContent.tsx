@@ -7,10 +7,12 @@ import {
   loadPaymentWidget,
 } from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-import { GenderSelect } from "@/components/ui/GenderSelect";
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { DevSkipPaymentButton } from "@/components/checkout/DevSkipPaymentButton";
+import { GenderSelect } from "@/components/ui/GenderSelect";
 import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
@@ -39,7 +41,24 @@ type CheckoutContentProps = {
   subjects: SubjectCount;
   siteContent?: GroupedSiteContent;
   needsSignup: boolean;
+  isEditMode?: boolean;
 };
+
+function CmsText({
+  active,
+  cmsKey,
+  children,
+}: {
+  active: boolean;
+  cmsKey: string;
+  children: ReactNode;
+}) {
+  return (
+    <CmsEdit active={active} section="checkout_page" cmsKey={cmsKey} type="text">
+      {children}
+    </CmsEdit>
+  );
+}
 
 export function CheckoutContent({
   tutorId,
@@ -47,7 +66,10 @@ export function CheckoutContent({
   subjects,
   siteContent,
   needsSignup,
+  isEditMode: isEditModeProp,
 }: CheckoutContentProps) {
+  const searchParams = useSearchParams();
+  const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
   const c = (key: string, fb: string) => getCmsSectionValue(siteContent, "checkout_page", key, fb);
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
   const planLabel = getPlanLabel(sessions, subjects);
@@ -226,67 +248,93 @@ export function CheckoutContent({
     <div className="pb-24 md:pb-32">
       <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-            {c("header_kicker", "Checkout")}
-          </p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-            {c("header_title", "결제")}
-          </h1>
+          <CmsText active={isEditMode} cmsKey="header_kicker">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
+              {c("header_kicker", "Checkout")}
+            </p>
+          </CmsText>
+          <CmsText active={isEditMode} cmsKey="header_title">
+            <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
+              {c("header_title", "결제")}
+            </h1>
+          </CmsText>
         </div>
       </div>
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20 lg:py-24">
         <div className="mb-10 flex flex-wrap items-center gap-4">
-          <Link
-            href="/pricing"
-            className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
-          >
-            {c("link_pricing", "← 요금제")}
-          </Link>
-          <button
-            type="button"
-            onClick={() => void goConsultation()}
-            className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
-          >
-            {c("link_consultation", "상담 먼저 신청하기")}
-          </button>
+          <CmsText active={isEditMode} cmsKey="link_pricing">
+            <Link
+              href="/pricing"
+              className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
+            >
+              {c("link_pricing", "← 요금제")}
+            </Link>
+          </CmsText>
+          <CmsText active={isEditMode} cmsKey="link_consultation">
+            <button
+              type="button"
+              onClick={() => void goConsultation()}
+              className="text-xs font-semibold uppercase tracking-wider text-text-muted underline-offset-4 transition hover:text-primary hover:underline"
+            >
+              {c("link_consultation", "상담 먼저 신청하기")}
+            </button>
+          </CmsText>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
           <div className="space-y-10">
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
-              <h2 className="text-xl font-black text-text-primary">{c("section_order_title", "주문 요약")}</h2>
+              <CmsText active={isEditMode} cmsKey="section_order_title">
+                <h2 className="text-xl font-black text-text-primary">{c("section_order_title", "주문 요약")}</h2>
+              </CmsText>
               <dl className="mt-6 space-y-4 text-sm">
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
-                  <dt className="text-text-secondary">{c("dt_plan", "플랜")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_plan">
+                    <dt className="text-text-secondary">{c("dt_plan", "플랜")}</dt>
+                  </CmsText>
                   <dd className="font-semibold text-text-primary">{planLabel}</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
-                  <dt className="text-text-secondary">{c("dt_subjects", "과목 수")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_subjects">
+                    <dt className="text-text-secondary">{c("dt_subjects", "과목 수")}</dt>
+                  </CmsText>
                   <dd className="font-semibold text-text-primary">{subjects}과목</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
-                  <dt className="text-text-secondary">{c("dt_tutor", "강사")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_tutor">
+                    <dt className="text-text-secondary">{c("dt_tutor", "강사")}</dt>
+                  </CmsText>
                   <dd className="font-semibold text-text-primary">{tutorName}</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
-                  <dt className="text-text-secondary">{c("dt_platform", "플랫폼 이용료")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_platform">
+                    <dt className="text-text-secondary">{c("dt_platform", "플랫폼 이용료")}</dt>
+                  </CmsText>
                   <dd className="text-text-primary">{formatKRW(platformFee)}</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-gray-100 pb-4">
-                  <dt className="text-text-secondary">{c("dt_lesson", "수업료")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_lesson">
+                    <dt className="text-text-secondary">{c("dt_lesson", "수업료")}</dt>
+                  </CmsText>
                   <dd className="text-text-primary">{formatKRW(lessonFee)}</dd>
                 </div>
                 <div className="flex justify-between gap-4 pt-2">
-                  <dt className="text-lg font-black text-text-primary">{c("dt_total", "총 결제금액")}</dt>
+                  <CmsText active={isEditMode} cmsKey="dt_total">
+                    <dt className="text-lg font-black text-text-primary">{c("dt_total", "총 결제금액")}</dt>
+                  </CmsText>
                   <dd className="text-xl font-black text-primary">{formatKRW(total)}</dd>
                 </div>
               </dl>
             </section>
 
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
-              <h2 className="text-xl font-black text-text-primary">{c("section_payment_title", "결제 수단")}</h2>
-              <p className="mt-2 text-xs text-text-muted">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
+              <CmsText active={isEditMode} cmsKey="section_payment_title">
+                <h2 className="text-xl font-black text-text-primary">{c("section_payment_title", "결제 수단")}</h2>
+              </CmsText>
+              <CmsText active={isEditMode} cmsKey="payment_note">
+                <p className="mt-2 text-xs text-text-muted">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
+              </CmsText>
               <div
                 id="concord-payment-methods"
                 className="mt-6 min-h-[120px] w-full"
@@ -297,17 +345,21 @@ export function CheckoutContent({
 
           <div className="space-y-8">
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
-              <h2 className="text-xl font-black text-text-primary">
-                {c("section_customer_title", needsSignup ? "주문자 · 가입 정보" : "주문자 정보")}
-              </h2>
+              <CmsText active={isEditMode} cmsKey="section_customer_title">
+                <h2 className="text-xl font-black text-text-primary">
+                  {c("section_customer_title", needsSignup ? "주문자 · 가입 정보" : "주문자 정보")}
+                </h2>
+              </CmsText>
               <div className="mt-6 space-y-5">
                 <div>
-                  <label
-                    htmlFor="checkout-name"
-                    className="text-xs font-semibold uppercase tracking-wider text-text-muted"
-                  >
-                    {c("label_name", "이름")}
-                  </label>
+                  <CmsText active={isEditMode} cmsKey="label_name">
+                    <label
+                      htmlFor="checkout-name"
+                      className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                    >
+                      {c("label_name", "이름")}
+                    </label>
+                  </CmsText>
                   <input
                     id="checkout-name"
                     type="text"
@@ -318,12 +370,14 @@ export function CheckoutContent({
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="checkout-phone"
-                    className="text-xs font-semibold uppercase tracking-wider text-text-muted"
-                  >
-                    {c("label_phone", "연락처")}
-                  </label>
+                  <CmsText active={isEditMode} cmsKey="label_phone">
+                    <label
+                      htmlFor="checkout-phone"
+                      className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                    >
+                      {c("label_phone", "연락처")}
+                    </label>
+                  </CmsText>
                   <input
                     id="checkout-phone"
                     type="tel"
@@ -335,12 +389,14 @@ export function CheckoutContent({
                   />
                 </div>
                 <div>
-                  <label
-                    htmlFor="checkout-email"
-                    className="text-xs font-semibold uppercase tracking-wider text-text-muted"
-                  >
-                    {c("label_email", "이메일")}
-                  </label>
+                  <CmsText active={isEditMode} cmsKey="label_email">
+                    <label
+                      htmlFor="checkout-email"
+                      className="text-xs font-semibold uppercase tracking-wider text-text-muted"
+                    >
+                      {c("label_email", "이메일")}
+                    </label>
+                  </CmsText>
                   <input
                     id="checkout-email"
                     type="email"
@@ -445,12 +501,14 @@ export function CheckoutContent({
                   onChange={(e) => setTermsAgreed(e.target.checked)}
                   className="mt-1 h-4 w-4 shrink-0 rounded border-gray-300 accent-primary"
                 />
-                <span className="text-sm leading-relaxed text-text-secondary">
-                  {c(
-                    "terms_text",
-                    "전자상거래 및 결제 관련 약관, 개인정보 처리방침에 동의합니다. (필수)",
-                  )}
-                </span>
+                <CmsText active={isEditMode} cmsKey="terms_text">
+                  <span className="text-sm leading-relaxed text-text-secondary">
+                    {c(
+                      "terms_text",
+                      "전자상거래 및 결제 관련 약관, 개인정보 처리방침에 동의합니다. (필수)",
+                    )}
+                  </span>
+                </CmsText>
               </label>
 
               {error ? (
@@ -459,16 +517,20 @@ export function CheckoutContent({
                 </p>
               ) : null}
 
-              <button
-                type="button"
-                disabled={paying || !widgetReady}
-                onClick={handlePay}
-                className="mt-8 w-full rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {paying ? c("paying_label", "처리 중…") : c("pay_button", "결제하기")}
-              </button>
+              <CmsText active={isEditMode} cmsKey="pay_button">
+                <button
+                  type="button"
+                  disabled={paying || !widgetReady}
+                  onClick={handlePay}
+                  className="mt-8 w-full rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {paying ? c("paying_label", "처리 중…") : c("pay_button", "결제하기")}
+                </button>
+              </CmsText>
               {!widgetReady && !error ? (
-                <p className="mt-3 text-center text-xs text-text-muted">{c("widget_loading", "결제 UI를 불러오는 중…")}</p>
+                <CmsText active={isEditMode} cmsKey="widget_loading">
+                  <p className="mt-3 text-center text-xs text-text-muted">{c("widget_loading", "결제 UI를 불러오는 중…")}</p>
+                </CmsText>
               ) : null}
               <div className="mt-3">
                 <DevSkipPaymentButton />

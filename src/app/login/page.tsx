@@ -20,11 +20,22 @@ function LoginFallback() {
   );
 }
 
-export default async function LoginPage() {
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
   const siteContent = await getGroupedSiteContentBySections(["login_page"]);
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   return (
     <Suspense fallback={<LoginFallback />}>
-      <LoginForm siteContent={siteContent} />
+      <LoginForm siteContent={siteContent} isEditMode={isEditMode} />
     </Suspense>
   );
 }

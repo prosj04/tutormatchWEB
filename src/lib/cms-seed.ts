@@ -1,8 +1,13 @@
 import {
+  compareDefaults,
+  cmsTextStyleDefaults,
   extraPublicPagesDefaults,
+  footerDefaults,
+  homeLabelsDefaults,
   homePageVisibilityDefaults,
   portalPagesDefaults,
   pricingPageDefaults,
+  spacingDefaults,
   tutorsPageDefaults,
 } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
@@ -208,6 +213,11 @@ const siteContentDefaults = [
   ...pricingPageDefaults,
   ...tutorsPageDefaults,
   ...homePageVisibilityDefaults,
+  ...footerDefaults,
+  ...homeLabelsDefaults,
+  ...compareDefaults,
+  ...cmsTextStyleDefaults,
+  ...spacingDefaults,
   ...extraPublicPagesDefaults,
   ...portalPagesDefaults,
 ];

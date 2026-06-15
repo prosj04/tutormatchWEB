@@ -2,11 +2,12 @@
 
 import { useMemo } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { HomeConsultationCtaSection } from "@/components/landing/HomeConsultationCtaSection";
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { composeCmsTypographyClass, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 
@@ -31,8 +32,10 @@ const FAQ_FALLBACK = [
 
 export function PricingContent({
   siteContent,
+  isEditMode = false,
 }: {
   siteContent?: Record<string, Record<string, string>>;
+  isEditMode?: boolean;
 }) {
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "pricing_page", key, fallback);
@@ -59,16 +62,28 @@ export function PricingContent({
           <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0 lg:flex-1">
               <p className="text-sm font-black uppercase tracking-wider text-primary">Plans</p>
-              <h1 className="mt-3 whitespace-pre-line text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.04em] text-neutral-100 sm:mt-4">
-                {get("header_title", "1:1 맞춤 과외,\n월 40만원부터")}
-              </h1>
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_title" type="text">
+                <h1
+                  className={`mt-3 whitespace-pre-line leading-tight tracking-[-0.04em] text-neutral-100 sm:mt-4 ${composeCmsTypographyClass(
+                    siteContent,
+                    "pricing_page",
+                    "header_title",
+                    "text-[clamp(1.75rem,5vw,3.5rem)]",
+                    "font-black",
+                  )}`}
+                >
+                  {get("header_title", "1:1 맞춤 과외,\n월 40만원부터")}
+                </h1>
+              </CmsEdit>
             </div>
-            <p className="min-w-0 whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80 sm:text-lg lg:max-w-md lg:shrink-0 lg:text-right xl:max-w-lg">
-              {get(
-                "header_subtext",
-                "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
-              )}
-            </p>
+            <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_subtext" type="text">
+              <p className="min-w-0 whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80 sm:text-lg lg:max-w-md lg:shrink-0 lg:text-right xl:max-w-lg">
+                {get(
+                  "header_subtext",
+                  "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
+                )}
+              </p>
+            </CmsEdit>
           </div>
         </div>
       </div>
@@ -98,19 +113,28 @@ export function PricingContent({
       </div>
 
       <section className="mx-auto w-full max-w-[1200px] px-4 pb-12 sm:px-5 md:pb-20 lg:pb-24">
-        <h2 className="text-2xl font-black text-neutral-100 sm:text-3xl md:text-5xl">
-          {get("faq_title", "자주 묻는 질문")}
-        </h2>
+        <CmsEdit active={isEditMode} section="pricing_page" cmsKey="faq_title" type="text">
+          <h2 className="text-2xl font-black text-neutral-100 sm:text-3xl md:text-5xl">
+            {get("faq_title", "자주 묻는 질문")}
+          </h2>
+        </CmsEdit>
         <p className="mt-2 text-sm font-bold text-neutral-80">FAQ</p>
         <div className="mt-8 divide-y divide-neutral-20 overflow-hidden rounded-2xl border border-neutral-20 bg-white sm:mt-10 sm:rounded-[28px]">
-          {faqs.map((item) => (
+          {faqs.map((item, index) => {
+            const n = index + 1;
+            return (
             <div key={item.q} className="px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
-              <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
-              <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
-                A. {item.a}
-              </p>
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey={`faq${n}_q`} type="text">
+                <p className="font-black text-neutral-100 md:text-lg">Q. {item.q}</p>
+              </CmsEdit>
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey={`faq${n}_a`} type="text">
+                <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-80 md:text-base">
+                  A. {item.a}
+                </p>
+              </CmsEdit>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

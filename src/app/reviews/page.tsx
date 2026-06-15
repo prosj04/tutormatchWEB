@@ -21,7 +21,18 @@ const fallbackTestimonials = [
   },
 ];
 
-export default async function ReviewsPage() {
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function ReviewsPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   const timer = startPerfTimer("page.reviews.total");
   const siteContent = await getGroupedSiteContentBySections(["reviews_page"]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
@@ -35,6 +46,7 @@ export default async function ReviewsPage() {
     <ReviewsPageContent
       testimonials={testimonials.length > 0 ? testimonials : fallbackTestimonials}
       siteContent={siteContent}
+      isEditMode={isEditMode}
     />
   );
   timer.end({ testimonialCount: testimonials.length });

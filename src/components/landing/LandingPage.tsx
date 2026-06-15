@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
+import { CmsEdit, type CmsEditType } from "@/components/admin/CmsEditOverlay";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HomeConsultationCtaSection } from "@/components/landing/HomeConsultationCtaSection";
 import { ServiceCompareSection } from "@/components/landing/ServiceCompareSection";
@@ -12,7 +13,9 @@ import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultati
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
 import {
+  composeCmsTypographyClass,
   formatCmsMultiline,
+  getCmsSpacing,
   isPublicSectionVisible,
   parseCmsVisibility,
 } from "@/lib/cms-page-defaults";
@@ -36,14 +39,17 @@ const DEFAULT_RESULT_IMAGES = [
 
 /* ─────────────────────────────────────────── data ── */
 
-const tabs = [
-  { id: "intro",      label: "서비스 소개" },
-  { id: "teachers",   label: "선생님" },
-  { id: "management", label: "학습 관리" },
-  { id: "process",    label: "진행 방식" },
-  { id: "pricing",    label: "요금제" },
-  { id: "compare",    label: "서비스 비교" },
-];
+const TAB_DEFS = [
+  { id: "intro", tabKey: "nav_tab_1", fallback: "서비스 소개" },
+  { id: "teachers", tabKey: "nav_tab_2", fallback: "선생님" },
+  { id: "management", tabKey: "nav_tab_3", fallback: "학습 관리" },
+  { id: "process", tabKey: "nav_tab_4", fallback: "진행 방식" },
+  { id: "pricing", tabKey: "nav_tab_5", fallback: "요금제" },
+  { id: "compare", tabKey: "nav_tab_6", fallback: "서비스 비교" },
+] as const;
+
+type LandingTabId = (typeof TAB_DEFS)[number]["id"];
+const TAB_IDS: LandingTabId[] = TAB_DEFS.map((tab) => tab.id);
 
 const stats = [
   { value: "500+",    label: "누적 상담" },
@@ -177,13 +183,11 @@ function landingHeaderOffset() {
 }
 
 function useScrollLandingState() {
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
+  const [activeTab, setActiveTab] = useState<LandingTabId>(TAB_IDS[0]);
   const [showFloating, setShowFloating] = useState(false);
 
   useEffect(() => {
-    const sections = tabs
-      .map((tab) => document.getElementById(tab.id))
-      .filter(Boolean) as HTMLElement[];
+    const sections = TAB_IDS.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const hero = document.getElementById("hero");
     const pricing = document.getElementById("pricing");
     let frameId = 0;
@@ -202,7 +206,10 @@ function useScrollLandingState() {
         .reverse()
         .find((section) => section.offsetTop - sectionScrollOffset <= window.scrollY);
 
-      if (next?.id) setActiveTab(next.id);
+      const tabId = next?.id;
+      if (tabId && TAB_IDS.includes(tabId as LandingTabId)) {
+        setActiveTab(tabId as LandingTabId);
+      }
     };
 
     const handleScroll = () => {
@@ -229,9 +236,35 @@ function canUseOptimizedHeroImage(src: string) {
 
 /* ─────────────────────────────────────────── sub-components ── */
 
+function Ed({
+  active,
+  section,
+  cmsKey,
+  type = "text",
+  children,
+}: {
+  active: boolean;
+  section: string;
+  cmsKey: string;
+  type?: CmsEditType;
+  children: ReactNode;
+}) {
+  return (
+    <CmsEdit active={active} section={section} cmsKey={cmsKey} type={type}>
+      {children}
+    </CmsEdit>
+  );
+}
+
 /* ─────────────────────────────────────────── main ── */
 
-export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
+export function LandingPage({
+  cms,
+  isEditMode = false,
+}: {
+  cms?: LandingCmsContent;
+  isEditMode?: boolean;
+}) {
   const { activeTab, showFloating } = useScrollLandingState();
   const [priceTab, setPriceTab] = useState(0);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
@@ -378,6 +411,16 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
   });
 
   const heroBgImage = getCmsValue("hero", "bg_image_url", "");
+  const navTabs = TAB_DEFS.map((tab) => ({
+    id: tab.id,
+    label: getCmsValue("home_labels", tab.tabKey, tab.fallback),
+  }));
+  const footerCopyright = getCmsValue(
+    "footer",
+    "copyright",
+    "© {year} Concord Private Tutoring. All rights reserved.",
+  ).replace("{year}", String(new Date().getFullYear()));
+  const cmsSpacing = (sectionKey: string) => getCmsSpacing(cms?.siteContent, sectionKey);
   const useOptimizedHeroImage = heroBgImage !== "" && canUseOptimizedHeroImage(heroBgImage);
   const heroStyle = heroBgImage
     ? useOptimizedHeroImage
@@ -396,13 +439,15 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
       <main className="text-neutral-100">
 
         {/* ═══ HERO ═══════════════════════════════════ */}
+        <Ed active={isEditMode} section="hero" cmsKey="hero" type="spacing">
         <section
           id="hero"
           className="relative flex min-h-[100dvh] flex-col px-4 pb-6 pt-10 text-center sm:px-6 sm:pb-8 md:pt-20 md:pb-10"
-          style={heroStyle}
+          style={{ ...heroStyle, ...cmsSpacing("hero") }}
         >
           {useOptimizedHeroImage ? (
             <>
+              <Ed active={isEditMode} section="hero" cmsKey="bg_image_url" type="image">
               <Image
                 src={heroBgImage}
                 alt=""
@@ -411,62 +456,103 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                 sizes="100vw"
                 className="object-cover"
               />
+              </Ed>
               <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(17,17,17,0.78),rgba(42,42,42,0.78))]" />
             </>
+          ) : heroBgImage ? (
+            <Ed active={isEditMode} section="hero" cmsKey="bg_image_url" type="image">
+              <div className="absolute inset-0" aria-hidden />
+            </Ed>
           ) : null}
           <div className="absolute inset-0 bg-black/20" />
 
           {/* centred content */}
           <div className="relative flex flex-1 flex-col items-center justify-center">
             <div className="mx-auto w-full max-w-5xl -translate-y-4 animate-fade-in sm:-translate-y-5 md:-translate-y-7">
-            <h1 className="whitespace-pre-line text-[clamp(2.6rem,6vw,5.5rem)] font-black leading-[1.05] tracking-[-0.02em] text-white">
+            <h1
+              className={`whitespace-pre-line leading-[1.05] tracking-[-0.02em] text-white ${composeCmsTypographyClass(
+                cms?.siteContent,
+                "hero",
+                "headline",
+                "text-[clamp(2.6rem,6vw,5.5rem)]",
+                "font-black",
+              )}`}
+            >
+              <Ed active={isEditMode} section="hero" cmsKey="headline">
               {getCmsMultiline("hero", "headline", "아이마다 맞는\n선생님이 다릅니다")}
+              </Ed>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl whitespace-pre-line text-base font-medium leading-relaxed tracking-[0.01em] text-neutral-30 md:text-lg">
+            <p
+              className={`mx-auto mt-6 max-w-2xl whitespace-pre-line leading-relaxed tracking-[0.01em] text-neutral-30 ${composeCmsTypographyClass(
+                cms?.siteContent,
+                "hero",
+                "subtext",
+                "text-base md:text-lg",
+                "font-medium",
+              )}`}
+            >
+              <Ed active={isEditMode} section="hero" cmsKey="subtext">
               {getCmsMultiline(
                 "hero",
                 "subtext",
                 "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
               )}
+              </Ed>
             </p>
             <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
               <ConsultationApplyButton className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base">
+                <Ed active={isEditMode} section="hero" cmsKey="cta_primary">
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
+                </Ed>
               </ConsultationApplyButton>
               <Link
                 href="/tutors"
                 className="rounded-full bg-white px-7 py-3.5 text-sm font-black text-neutral-100 transition hover:bg-neutral-10 sm:bg-transparent sm:text-white sm:border sm:border-white/30 sm:hover:bg-white/10 md:px-8 md:py-4 md:text-base"
               >
+                <Ed active={isEditMode} section="hero" cmsKey="cta_secondary">
                 {getCmsValue("hero", "cta_secondary", "선생님 둘러보기")}
+                </Ed>
               </Link>
             </div>
             </div>
           </div>
 
           {/* ── Stats — below hero copy ── */}
-          <div className="relative mt-4 shrink-0 -translate-y-6 sm:mt-6 sm:-translate-y-8 md:mt-8 md:-translate-y-10">
+          <Ed active={isEditMode} section="stats" cmsKey="stats" type="spacing">
+          <div
+            className="relative mt-4 shrink-0 -translate-y-6 sm:mt-6 sm:-translate-y-8 md:mt-8 md:-translate-y-10"
+            style={cmsSpacing("stats")}
+          >
             <div className="mx-auto grid max-w-lg grid-cols-3 gap-2 sm:max-w-xl sm:gap-3 md:gap-4">
-              {cmsStats.map((s) => (
+              {cmsStats.map((s, statIndex) => {
+                const n = statIndex + 1;
+                return (
                 <div
                   key={s.label}
                   className="flex flex-col items-center rounded-xl border border-white/15 bg-neutral-100 px-2 py-3 sm:rounded-2xl sm:bg-white/10 sm:px-5 sm:py-4 sm:backdrop-blur-sm md:px-8 md:py-5"
                 >
                   <span className="whitespace-pre-line text-xl font-black leading-none text-primary sm:text-2xl md:text-4xl">
+                    <Ed active={isEditMode} section="stats" cmsKey={`stat${n}_number`}>
                     {formatCmsMultiline(s.value)}
+                    </Ed>
                   </span>
                   <span className="mt-1 whitespace-pre-line text-center text-[10px] font-medium leading-snug text-neutral-80 sm:mt-1.5 sm:text-xs sm:text-white/85 md:text-sm">
+                    <Ed active={isEditMode} section="stats" cmsKey={`stat${n}_label`}>
                     {formatCmsMultiline(s.label)}
+                    </Ed>
                   </span>
                 </div>
-              ))}
+              );})}
             </div>
           </div>
+          </Ed>
         </section>
+        </Ed>
 
         {/* ═══ STICKY TAB NAV (under SiteHeader on scroll) ═ */}
         <nav className="sticky top-16 z-40 border-b border-neutral-20 bg-white shadow-sm md:top-[100px]">
           <div className="scrollbar-hide mx-auto flex max-w-[1200px] overflow-x-auto px-4 sm:px-5">
-            {tabs.map((tab) => (
+            {navTabs.map((tab) => (
               <a
                 key={tab.id}
                 href={`#${tab.id}`}
@@ -474,7 +560,9 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   activeTab === tab.id ? "font-black text-primary" : "font-bold text-neutral-80"
                 }`}
               >
+                <Ed active={isEditMode} section="home_labels" cmsKey={TAB_DEFS.find((t) => t.id === tab.id)!.tabKey}>
                 {tab.label}
+                </Ed>
                 <span
                   className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
                     activeTab === tab.id ? "w-full" : "w-0"
@@ -486,50 +574,84 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
         </nav>
 
         {/* ═══ RESULTS CAROUSEL (intro) ════════════════ */}
-        <section id="intro" className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
+        <Ed active={isEditMode} section="results" cmsKey="results" type="spacing">
+        <section
+          id="intro"
+          className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28"
+          style={cmsSpacing("results")}
+        >
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">RESULTS</p>
+            <p className="text-sm font-black uppercase tracking-wider text-primary">
+              <Ed active={isEditMode} section="home_labels" cmsKey="kicker_results">
+              {getCmsValue("home_labels", "kicker_results", "RESULTS")}
+              </Ed>
+            </p>
             <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+              <Ed active={isEditMode} section="results" cmsKey="section_title">
               {getCmsValue("results", "section_title", "결과로 증명합니다")}
+              </Ed>
             </h2>
           </div>
           <div className="animation-container mt-10 overflow-hidden">
             <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
-              {doubledResults.map((item, index) => (
+              {doubledResults.map((item, index) => {
+                const itemNumber =
+                  cmsResults.length > 0 ? (index % cmsResults.length) + 1 : index + 1;
+                return (
                 <article
                   key={`${item.student}-${index}`}
-                  className={`${PUBLIC_CARD.resultWidth} shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
+                  className={`${PUBLIC_CARD.resultWidth} flex shrink-0 flex-col overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
                 >
-                  <div className={`relative w-full ${PUBLIC_CARD.resultImageHeight}`}>
-                    <Image
-                      src={item.image}
-                      alt={item.student}
-                      fill
-                      className="object-cover"
-                      sizes="320px"
-                    />
-                  </div>
-                  <div className="min-w-0 p-5">
+                  <div className="min-w-0 flex-1 p-5">
                     <PublicCardLine className="text-xs font-bold uppercase tracking-wider text-neutral-80">
+                      <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_student`}>
                       {item.student}
+                      </Ed>
                     </PublicCardLine>
                     <p className="mt-2 truncate whitespace-nowrap text-lg font-black leading-snug text-neutral-100">
+                      <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_before`}>
                       {item.before}
-                      <span className="text-primary">{item.after}</span>
+                      </Ed>
+                      <span className="text-primary">
+                        <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_after`}>
+                        {item.after}
+                        </Ed>
+                      </span>
                     </p>
                   </div>
+                  {item.image.trim() ? (
+                    <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_image`} type="image">
+                    <div className={`relative w-full shrink-0 ${PUBLIC_CARD.resultImageHeight}`}>
+                      <Image
+                        src={item.image}
+                        alt={item.student}
+                        fill
+                        className="object-cover"
+                        sizes="320px"
+                      />
+                    </div>
+                    </Ed>
+                  ) : null}
                 </article>
-              ))}
+              );})}
             </div>
           </div>
         </section>
+        </Ed>
 
         {showReviewsHome ? (
-          <section id="testimonials" className="bg-white py-20 md:py-28">
+          <Ed active={isEditMode} section="reviews" cmsKey="reviews" type="spacing">
+          <section id="testimonials" className="bg-white py-20 md:py-28" style={cmsSpacing("reviews")}>
             <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-              <p className="text-sm font-black uppercase tracking-wider text-primary">REVIEWS</p>
+              <p className="text-sm font-black uppercase tracking-wider text-primary">
+                <Ed active={isEditMode} section="home_labels" cmsKey="kicker_reviews">
+                {getCmsValue("home_labels", "kicker_reviews", "REVIEWS")}
+                </Ed>
+              </p>
               <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-                학습 후기
+                <Ed active={isEditMode} section="home_labels" cmsKey="section_title_reviews">
+                {getCmsValue("home_labels", "section_title_reviews", "학습 후기")}
+                </Ed>
               </h2>
               <div className="mt-10 space-y-5">
                 {homeTestimonials.map((t) => (
@@ -548,29 +670,45 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               ) : null}
             </div>
           </section>
+          </Ed>
         ) : null}
 
         {/* ═══ TEACHERS — light bg ═════════════════════ */}
-        <section id="teachers" className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
+        <Ed active={isEditMode} section="teachers" cmsKey="teachers" type="spacing">
+        <section
+          id="teachers"
+          className="scroll-mt-[7.25rem] overflow-hidden bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28"
+          style={cmsSpacing("teachers")}
+        >
           <div className="mx-auto grid max-w-[1200px] gap-10 px-4 sm:px-5 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
             {/* sticky heading column */}
             <div className="lg:sticky lg:top-40 lg:self-start">
-              <p className="text-sm font-black uppercase tracking-wider text-primary">TEACHERS</p>
+              <p className="text-sm font-black uppercase tracking-wider text-primary">
+                <Ed active={isEditMode} section="home_labels" cmsKey="kicker_teachers">
+                {getCmsValue("home_labels", "kicker_teachers", "TEACHERS")}
+                </Ed>
+              </p>
               <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+                <Ed active={isEditMode} section="teachers" cmsKey="section_title">
                 {getCmsMultiline("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
+                </Ed>
               </h2>
               <p className="mt-4 max-w-sm whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80">
+                <Ed active={isEditMode} section="teachers" cmsKey="section_subtext">
                 {getCmsMultiline(
                   "teachers",
                   "section_subtext",
                   "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.",
                 )}
+                </Ed>
               </p>
               <Link
                 href="/tutors"
                 className="mt-7 inline-flex items-center gap-2 rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
               >
+                <Ed active={isEditMode} section="teachers" cmsKey="cta">
                 {getCmsValue("teachers", "cta", "전체 선생님 보기")}
+                </Ed>
               </Link>
             </div>
 
@@ -581,11 +719,14 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               >
                 {[cmsTeachers, cmsTeachers].map((group, groupIndex) => (
                   <div key={`teacher-group-${groupIndex}`} className="flex w-max gap-[var(--marquee-gap)]">
-                    {group.map((teacher, index) => (
+                    {group.map((teacher, index) => {
+                      const itemNumber = index + 1;
+                      return (
                       <article
                         key={`${teacher.name}-${groupIndex}-${index}`}
                         className={`${PUBLIC_CARD.teacherWidth} shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm`}
                       >
+                        <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_image`} type="image">
                         <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                           <Image
                             src={teacher.image}
@@ -595,19 +736,26 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                             className="h-full w-full object-cover"
                           />
                         </div>
+                        </Ed>
                         <PublicCardLine className="mt-4 text-lg font-black text-neutral-100">
+                          <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_name`}>
                           {teacher.name} 선생님
+                          </Ed>
                         </PublicCardLine>
                         <div className="mt-2 flex justify-center">
                           <span className="inline-flex max-w-full truncate whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                            <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_subject`}>
                             {teacher.subject}
+                            </Ed>
                           </span>
                         </div>
                         <p className="mt-3 truncate whitespace-nowrap text-sm font-black leading-snug text-neutral-100">
+                          <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_highlight`}>
                           {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}
                           <span className="text-primary">
                             {teacher.highlight.split(" ").slice(-2).join(" ")}
                           </span>
+                          </Ed>
                         </p>
                         <ul className="mt-4 space-y-1.5 text-xs font-medium text-neutral-80">
                           {teacher.careers.map((c) => (
@@ -615,68 +763,123 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                           ))}
                         </ul>
                       </article>
-                    ))}
+                    );})}
                   </div>
                 ))}
               </div>
             </div>
           </div>
         </section>
+        </Ed>
 
         {/* ═══ MANAGEMENT ══════════════════════════════ */}
-        <section id="management" className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28">
+        <Ed active={isEditMode} section="management" cmsKey="management" type="spacing">
+        <section
+          id="management"
+          className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28"
+          style={cmsSpacing("management")}
+        >
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
               <div className="lg:self-center">
-                <p className="text-sm font-black uppercase tracking-wider text-primary">LEARNING CARE</p>
-                <h2 className="mt-4 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100">
+                <p className="text-sm font-black uppercase tracking-wider text-primary">
+                  <Ed active={isEditMode} section="home_labels" cmsKey="kicker_management">
+                  {getCmsValue("home_labels", "kicker_management", "LEARNING CARE")}
+                  </Ed>
+                </p>
+                <h2
+                  className={`mt-4 whitespace-pre-line leading-tight tracking-[-0.03em] text-neutral-100 ${composeCmsTypographyClass(
+                    cms?.siteContent,
+                    "management",
+                    "headline",
+                    "text-[clamp(2rem,4vw,3.5rem)]",
+                    "font-black",
+                  )}`}
+                >
+                  <Ed active={isEditMode} section="management" cmsKey="headline">
                   {getCmsMultiline("management", "headline", "수업 밖에서도\n이어지는 학습 관리")}
+                  </Ed>
                 </h2>
-                <p className="mt-4 max-w-lg whitespace-pre-line text-base font-medium leading-relaxed text-neutral-80">
+                <p
+                  className={`mt-4 max-w-lg whitespace-pre-line leading-relaxed text-neutral-80 ${composeCmsTypographyClass(
+                    cms?.siteContent,
+                    "management",
+                    "subtext",
+                    "text-base",
+                    "font-medium",
+                  )}`}
+                >
+                  <Ed active={isEditMode} section="management" cmsKey="subtext">
                   {getCmsMultiline(
                     "management",
                     "subtext",
                     "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.",
                   )}
+                  </Ed>
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {managementItems.map((item, index) => (
+                {managementItems.map((item, index) => {
+                  const n = index + 1;
+                  return (
                   <div key={`${item.label}-${index}`} className="rounded-[20px] bg-neutral-10 p-6">
                     <p className="text-3xl font-black text-primary">{String(index + 1).padStart(2, "0")}</p>
-                    <h3 className="mt-5 text-base font-black text-neutral-100">{item.label}</h3>
+                    <h3 className="mt-5 text-base font-black text-neutral-100">
+                      <Ed active={isEditMode} section="management" cmsKey={`item${n}_title`}>
+                      {item.label}
+                      </Ed>
+                    </h3>
                     <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
+                      <Ed active={isEditMode} section="management" cmsKey={`item${n}_desc`}>
                       {item.desc}
+                      </Ed>
                     </p>
                   </div>
-                ))}
+                );})}
               </div>
             </div>
           </div>
         </section>
+        </Ed>
 
         {/* ═══ PROCESS — light bg ══════════════════════ */}
-        <section id="process" className="scroll-mt-[7.25rem] bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28">
+        <Ed active={isEditMode} section="features" cmsKey="features" type="spacing">
+        <section
+          id="process"
+          className="scroll-mt-[7.25rem] bg-neutral-10 py-20 md:scroll-mt-[9.75rem] md:py-28"
+          style={cmsSpacing("features")}
+        >
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">PROCESS</p>
+            <p className="text-sm font-black uppercase tracking-wider text-primary">
+              <Ed active={isEditMode} section="home_labels" cmsKey="kicker_process">
+              {getCmsValue("home_labels", "kicker_process", "PROCESS")}
+              </Ed>
+            </p>
             <h2 className="mt-3 whitespace-pre-line text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
+              <Ed active={isEditMode} section="features" cmsKey="section_title">
               {getCmsMultiline("features", "section_title", "이렇게 진행됩니다")}
+              </Ed>
             </h2>
             <p className="mt-3 max-w-2xl whitespace-pre-line text-base font-medium text-neutral-80">
+              <Ed active={isEditMode} section="features" cmsKey="section_subtext">
               {getCmsMultiline(
                 "features",
                 "section_subtext",
                 "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.",
               )}
+              </Ed>
             </p>
           </div>
           <div className="scrollbar-hide mt-8 overflow-x-auto px-4 pb-2 sm:px-5">
             <div className="flex w-max gap-5 md:gap-6">
-              {cmsSteps.map((step) => (
+              {cmsSteps.map((step, stepIndex) => {
+                const stepNumber = stepIndex + 1;
+                return (
                 <article
                   key={step.number}
                   className="w-[280px] shrink-0 overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm md:w-[380px]"
                 >
+                  <Ed active={isEditMode} section="features" cmsKey={`step${stepNumber}_image`} type="image">
                   <div className="relative h-[180px] w-full md:h-[200px]">
                     <Image
                       src={step.img}
@@ -690,27 +893,43 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                       {step.number}
                     </span>
                   </div>
+                  </Ed>
                   <div className="p-6">
-                    <h3 className="text-lg font-black text-neutral-100 md:text-xl">{step.title}</h3>
+                    <h3 className="text-lg font-black text-neutral-100 md:text-xl">
+                      <Ed active={isEditMode} section="features" cmsKey={`step${stepNumber}_title`}>
+                      {step.title}
+                      </Ed>
+                    </h3>
                     <p className="mt-2 whitespace-pre-line text-sm font-medium leading-relaxed text-neutral-80">
+                      <Ed active={isEditMode} section="features" cmsKey={`step${stepNumber}_desc`}>
                       {step.desc}
+                      </Ed>
                     </p>
                   </div>
                 </article>
-              ))}
+              );})}
             </div>
           </div>
         </section>
+        </Ed>
 
                 {/* ═══ PRICING ═════════════════════════════════ */}
-        <section id="pricing" className="scroll-mt-[7.25rem] bg-white py-14 sm:py-20 md:scroll-mt-[9.75rem] md:py-28">
+        <Ed active={isEditMode} section="pricing" cmsKey="pricing" type="spacing">
+        <section
+          id="pricing"
+          className="scroll-mt-[7.25rem] bg-white py-14 sm:py-20 md:scroll-mt-[9.75rem] md:py-28"
+          style={cmsSpacing("pricing")}
+        >
           <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
             <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
               <div className="lg:self-center">
                 <p className="text-sm font-black uppercase tracking-wider text-primary">
+                  <Ed active={isEditMode} section="home_page" cmsKey="pricing_kicker">
                   {getCmsValue("home_page", "pricing_kicker", "PRICE")}
+                  </Ed>
                 </p>
                 <h2 className="mt-3 text-[clamp(1.75rem,5vw,3.5rem)] font-black leading-tight tracking-[-0.03em] text-neutral-100 sm:mt-4">
+                  <Ed active={isEditMode} section="home_page" cmsKey="pricing_title">
                   {getCmsMultiline("home_page", "pricing_title", "1:1 맞춤 과외,\n월 40만원부터")
                     .split("\n")
                     .map((line, index, arr) => (
@@ -719,22 +938,27 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                         {index < arr.length - 1 ? <br /> : null}
                       </span>
                     ))}
+                  </Ed>
                 </h2>
                 <p className="mt-4 max-w-sm text-base font-medium leading-relaxed text-neutral-80">
+                  <Ed active={isEditMode} section="home_page" cmsKey="pricing_subtext">
                   {getCmsValue(
                     "home_page",
                     "pricing_subtext",
                     "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
                   )}
+                  </Ed>
                 </p>
                 <Link
                   href="/pricing"
                   className="mt-6 inline-flex items-center justify-center rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-primary hover:text-primary"
                 >
+                  <Ed active={isEditMode} section="home_page" cmsKey="pricing_cta">
                   {getCmsValue("home_page", "pricing_cta", "요금제 더보기")}
+                  </Ed>
                 </Link>
               </div>
-              <div>
+              <div className="lg:flex lg:justify-end">
                 {homePricingItems.length > 0 ? (
                   <div>
                     <PricingTierToggle
@@ -777,17 +1001,36 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
             />
           </div>
         </section>
+        </Ed>
 
-        <ServiceCompareSection />
+        <Ed active={isEditMode} section="compare" cmsKey="compare" type="spacing">
+        <div style={cmsSpacing("compare")}>
+          <ServiceCompareSection
+            siteContent={cms?.siteContent}
+            kicker={getCmsValue("compare", "kicker", "COMPARE")}
+          />
+        </div>
+        </Ed>
 
-        <HomeConsultationCtaSection siteContent={cms?.siteContent} />
+        <Ed active={isEditMode} section="cta" cmsKey="cta" type="spacing">
+        <div style={cmsSpacing("cta")}>
+          <HomeConsultationCtaSection siteContent={cms?.siteContent} />
+        </div>
+        </Ed>
 
         {showFaqHome && homeFaqs.length > 0 ? (
-          <section id="faq" className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28">
+          <Ed active={isEditMode} section="faq" cmsKey="faq" type="spacing">
+          <section
+            id="faq"
+            className="scroll-mt-[7.25rem] bg-white py-20 md:scroll-mt-[9.75rem] md:py-28"
+            style={cmsSpacing("faq")}
+          >
             <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
               <p className="text-sm font-black uppercase tracking-wider text-primary">FAQ</p>
               <h2 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-                자주 묻는 질문
+                <Ed active={isEditMode} section="home_labels" cmsKey="section_title_faq">
+                {getCmsValue("home_labels", "section_title_faq", "자주 묻는 질문")}
+                </Ed>
               </h2>
               <div className="mt-10 divide-y divide-neutral-20 overflow-hidden rounded-[28px] border border-neutral-20 bg-white">
                 {homeFaqs.map((item) => (
@@ -811,32 +1054,60 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
               ) : null}
             </div>
           </section>
+          </Ed>
         ) : null}
 
         {/* ═══ FOOTER ══════════════════════════════════ */}
-        <footer className="border-t border-neutral-20 bg-neutral-10">
+        <Ed active={isEditMode} section="footer" cmsKey="footer" type="spacing">
+        <footer className="border-t border-neutral-20 bg-neutral-10" style={cmsSpacing("footer")}>
           <div className="mx-auto max-w-[1200px] px-4 py-16 sm:px-5">
             <div className="grid gap-10 border-b border-neutral-20 pb-12 md:grid-cols-2">
               <div>
-                <h2 className="text-xl font-black text-neutral-100">상담이 필요하신가요?</h2>
+                <h2
+                  className={`text-neutral-100 ${composeCmsTypographyClass(
+                    cms?.siteContent,
+                    "footer",
+                    "cta_title",
+                    "text-xl",
+                    "font-black",
+                  )}`}
+                >
+                  <Ed active={isEditMode} section="footer" cmsKey="cta_title">
+                  {getCmsValue("footer", "cta_title", "상담이 필요하신가요?")}
+                  </Ed>
+                </h2>
                 <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-80">
-                  채팅문의 10:00~22:00 · 전화문의 평일 10:00~19:00
+                  <Ed active={isEditMode} section="footer" cmsKey="hours_chat">
+                  {getCmsValue("footer", "hours_chat", "채팅문의 10:00~22:00")}
+                  </Ed>
+                  {" · "}
+                  <Ed active={isEditMode} section="footer" cmsKey="hours_call">
+                  {getCmsValue("footer", "hours_call", "전화문의 평일 10:00~19:00")}
+                  </Ed>
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   <ConsultationApplyButton className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-white transition hover:bg-primary/90">
-                    채팅 문의
+                    <Ed active={isEditMode} section="footer" cmsKey="btn_chat">
+                    {getCmsValue("footer", "btn_chat", "채팅 문의")}
+                    </Ed>
                   </ConsultationApplyButton>
                   <a
-                    href="tel:010-0000-0000"
+                    href={`tel:${getCmsValue("footer", "phone_number", "010-0000-0000")}`}
                     className="rounded-full border border-neutral-20 bg-white px-5 py-2.5 text-sm font-black text-neutral-100 transition hover:border-neutral-30"
                   >
-                    전화 문의
+                    <Ed active={isEditMode} section="footer" cmsKey="btn_phone">
+                    {getCmsValue("footer", "btn_phone", "전화 문의")}
+                    </Ed>
                   </a>
                 </div>
               </div>
               <div className="grid gap-8 text-sm font-bold text-neutral-80 sm:grid-cols-2">
                 <div className="space-y-3">
-                  <p className="font-black text-neutral-100">서비스</p>
+                  <p className="font-black text-neutral-100">
+                    <Ed active={isEditMode} section="footer" cmsKey="label_service">
+                    {getCmsValue("footer", "label_service", "서비스")}
+                    </Ed>
+                  </p>
                   <Link href="/tutors"                 className="block transition hover:text-primary">강사진</Link>
                   <Link href="/pricing"                className="block transition hover:text-primary">요금제</Link>
                   {showFaqPage ? (
@@ -849,29 +1120,81 @@ export function LandingPage({ cms }: { cms?: LandingCmsContent }) {
                   </ConsultationApplyButton>
                 </div>
                 <div className="space-y-3">
-                  <p className="font-black text-neutral-100">SNS</p>
-                  <a href="https://instagram.com"  className="block transition hover:text-primary">Instagram</a>
-                  <a href="https://youtube.com"    className="block transition hover:text-primary">YouTube</a>
-                  <a href="https://blog.naver.com" className="block transition hover:text-primary">Blog</a>
+                  <p className="font-black text-neutral-100">
+                    <Ed active={isEditMode} section="footer" cmsKey="label_sns">
+                    {getCmsValue("footer", "label_sns", "SNS")}
+                    </Ed>
+                  </p>
+                  <a
+                    href={getCmsValue("footer", "sns_instagram", "https://instagram.com")}
+                    className="block transition hover:text-primary"
+                  >
+                    Instagram
+                  </a>
+                  <a
+                    href={getCmsValue("footer", "sns_youtube", "https://youtube.com")}
+                    className="block transition hover:text-primary"
+                  >
+                    YouTube
+                  </a>
+                  <a
+                    href={getCmsValue("footer", "sns_blog", "https://blog.naver.com")}
+                    className="block transition hover:text-primary"
+                  >
+                    Blog
+                  </a>
                 </div>
               </div>
             </div>
             <div className="pt-8 text-xs font-medium leading-relaxed text-neutral-80">
               <p>
-                상호 주식회사 컨코드에듀케이션 · 대표 홍길동 · 사업자등록번호 123-45-67890
+                상호{" "}
+                <Ed active={isEditMode} section="footer" cmsKey="company_name">
+                {getCmsValue("footer", "company_name", "주식회사 컨코드에듀케이션")}
+                </Ed>
+                {" · "}대표{" "}
+                <Ed active={isEditMode} section="footer" cmsKey="company_rep">
+                {getCmsValue("footer", "company_rep", "홍길동")}
+                </Ed>
+                {" · "}사업자등록번호{" "}
+                <Ed active={isEditMode} section="footer" cmsKey="company_reg">
+                {getCmsValue("footer", "company_reg", "123-45-67890")}
+                </Ed>
                 <br className="hidden sm:block" />
-                주소 서울특별시 강남구 테헤란로 000, 00층
+                주소{" "}
+                <Ed active={isEditMode} section="footer" cmsKey="company_address">
+                {getCmsValue("footer", "company_address", "서울특별시 강남구 테헤란로 000, 00층")}
+                </Ed>
               </p>
-              <p className="mt-2">이용약관 · 개인정보처리방침 · 환불정책</p>
+              <p className="mt-2">
+                <Ed active={isEditMode} section="footer" cmsKey="label_terms">
+                {getCmsValue("footer", "label_terms", "이용약관")}
+                </Ed>
+                {" · "}
+                <Ed active={isEditMode} section="footer" cmsKey="label_privacy">
+                {getCmsValue("footer", "label_privacy", "개인정보처리방침")}
+                </Ed>
+                {" · "}
+                <Ed active={isEditMode} section="footer" cmsKey="label_refund">
+                {getCmsValue("footer", "label_refund", "환불정책")}
+                </Ed>
+              </p>
               <div className="mt-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-                <p>© {new Date().getFullYear()} Concord Private Tutoring. All rights reserved.</p>
+                <p>
+                  <Ed active={isEditMode} section="footer" cmsKey="copyright">
+                  {footerCopyright}
+                  </Ed>
+                </p>
                 <Link href="/teacher-portal" className="text-[11px] text-neutral-80 transition hover:text-primary">
-                  선생님이신가요?
+                  <Ed active={isEditMode} section="footer" cmsKey="label_teacher">
+                  {getCmsValue("footer", "label_teacher", "선생님이신가요?")}
+                  </Ed>
                 </Link>
               </div>
             </div>
           </div>
         </footer>
+        </Ed>
       </main>
 
       <ConsultationApplyButton

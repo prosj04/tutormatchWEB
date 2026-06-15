@@ -23,9 +23,21 @@ export function PricingPlansGrid({
   variant = "page",
   activeIndex = 0,
 }: PricingPlansGridProps) {
+  const isHome = variant === "home";
+
   return (
-    <div className="scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0">
-      <div className={`flex w-max snap-x snap-mandatory ${PRICING_GRID_GAP_CLASS}`}>
+    <div
+      className={
+        isHome
+          ? "scrollbar-hide overflow-x-auto pb-2"
+          : "scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0"
+      }
+    >
+      <div
+        className={`flex w-max snap-x snap-mandatory ${PRICING_GRID_GAP_CLASS} ${
+          isHome ? "ml-auto min-w-0 pl-[18%] sm:pl-[22%] md:pl-0 lg:translate-x-6 xl:translate-x-10" : ""
+        }`}
+      >
         {items.map((item, index) => (
           <PricingPlanCard
             key={item.plan.id}

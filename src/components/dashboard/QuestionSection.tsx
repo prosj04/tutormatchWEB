@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { uploadQuestionImage } from "@/lib/supabase-client";
 
@@ -14,6 +15,7 @@ type QuestionSectionProps = {
   studentId: string;
   aiAnswerEnabled: boolean;
   initialQuestions: Question[];
+  isEditMode?: boolean;
 };
 
 export function QuestionSection({
@@ -21,6 +23,7 @@ export function QuestionSection({
   studentId,
   aiAnswerEnabled,
   initialQuestions,
+  isEditMode = false,
 }: QuestionSectionProps) {
   const sectionTitle = usePortalCopy("student_questions", "section_title", "질문");
   const btnAdd = usePortalCopy("student_questions", "btn_add", "질문 등록");
@@ -141,22 +144,40 @@ export function QuestionSection({
   return (
     <section className="mt-10 border-t border-gray-200 pt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-text-primary">{sectionTitle}</h2>
+        <h2 className="text-lg font-bold text-text-primary">
+          <CmsEdit active={isEditMode} section="student_questions" cmsKey="section_title" type="text">
+            {sectionTitle}
+          </CmsEdit>
+        </h2>
         <button
           type="button"
           onClick={() => setModalOpen(true)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
         >
-          {btnAdd}
+          <CmsEdit active={isEditMode} section="student_questions" cmsKey="btn_add" type="text">
+            {btnAdd}
+          </CmsEdit>
         </button>
       </div>
 
       {loading ? (
-        <p className="mt-8 text-center text-sm text-text-muted">{loadingQuestions}</p>
+        <p className="mt-8 text-center text-sm text-text-muted">
+          <CmsEdit active={isEditMode} section="student_questions" cmsKey="loading" type="text">
+            {loadingQuestions}
+          </CmsEdit>
+        </p>
       ) : questions.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center">
-          <p className="text-sm text-text-secondary">{emptyTitle}</p>
-          <p className="mt-1 text-xs text-text-muted">{emptyHint}</p>
+          <p className="text-sm text-text-secondary">
+            <CmsEdit active={isEditMode} section="student_questions" cmsKey="empty_title" type="text">
+              {emptyTitle}
+            </CmsEdit>
+          </p>
+          <p className="mt-1 text-xs text-text-muted">
+            <CmsEdit active={isEditMode} section="student_questions" cmsKey="empty_hint" type="text">
+              {emptyHint}
+            </CmsEdit>
+          </p>
         </div>
       ) : (
         <ul className="mt-6 space-y-4">
