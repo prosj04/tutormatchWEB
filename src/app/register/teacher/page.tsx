@@ -8,7 +8,6 @@ import { useState } from "react";
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
-import { uploadTeacherDocument } from "@/lib/supabase-client";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -185,13 +184,22 @@ export default function TeacherRegisterPage() {
         return;
       }
 
+      const uploadDocument = async (file: File, type: "resume" | "document"): Promise<string> => {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("type", type);
+        fd.append("teacherId", registerData.teacherId!);
+        const res = await fetch("/api/register/teacher/documents", { method: "POST", body: fd });
+        if (!res.ok) throw new Error("Document upload failed");
+        const data = (await res.json()) as { path: string };
+        return data.path;
+      }
+
       const resumeUrls = await Promise.all(
-        resumeFiles.map((item) => uploadTeacherDocument(registerData.teacherId!, item.file, "resume")),
+        resumeFiles.map((item) => uploadDocument(item.file, "resume")),
       );
       const documentUrls = await Promise.all(
-        documentFiles.map((item) =>
-          uploadTeacherDocument(registerData.teacherId!, item.file, "document"),
-        ),
+        documentFiles.map((item) => uploadDocument(item.file, "document")),
       );
 
       if (resumeUrls.length > 0 || documentUrls.length > 0) {

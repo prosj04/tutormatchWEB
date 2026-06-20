@@ -3,10 +3,8 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
-import {
-  createSupabaseBrowserClient,
-  TEACHER_PHOTO_BUCKET,
-} from "@/lib/supabase-client";
+import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { TEACHER_PHOTO_BUCKET } from "@/lib/supabase-client";
 import { startPerfTimer, timeAsync, timeSync } from "@/lib/perf-timer";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -37,7 +35,7 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Image file is required" }, { status: 400 });
   }
 
-  const supabase = createSupabaseBrowserClient();
+  const supabase = createSupabaseAdminClient();
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${id}/profile-${Date.now()}.${ext}`;
 

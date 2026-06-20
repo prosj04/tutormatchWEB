@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import {
-  createSupabaseBrowserClient,
-  TEACHER_DOCUMENT_BUCKET,
-  uploadTeacherDocument,
-} from "@/lib/supabase-client";
+import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { TEACHER_DOCUMENT_BUCKET } from "@/lib/supabase-client";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { parseJsonArray } from "@/lib/teacher-profile-types";
 import { requireTeacher } from "@/lib/teacher-auth";
@@ -36,7 +33,7 @@ async function buildDocumentFiles(resumeUrls: string[], documentUrls: string[]) 
     resumeCount: resumeUrls.length,
     documentCount: documentUrls.length,
   });
-  const supabase = createSupabaseBrowserClient();
+  const supabase = createSupabaseAdminClient();
 
   async function sign(url: string) {
     const path = storagePathFromUrl(url);
@@ -109,7 +106,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid document type" }, { status: 400 });
   }
 
-  const uploadedUrl = await uploadTeacherDocument(teacher.id, file, type);
+  const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
+  const storagePath = `${teacher.id}/${type}/${Date.now()}.${ext}`;
+  const { data: uploadData, error: uploadError } = await createSupabaseAdminClient()
+    .storage
+    .from(TEACHER_DOCUMENT_BUCKET)
+    .upload(storagePath, file, { contentType: file.type, upsert: false });
+  if (uploadError) {
+    return NextResponse.json({ error: uploadError.message }, { status: 500 });
+  }
+  const uploadedUrl = uploadData.path;
 
   const existing = await timeAsync(
     "prisma.teacherProfile.findUnique.documentsExisting",
@@ -208,7 +214,7 @@ export async function DELETE(request: Request) {
     teacherId: teacher.id,
     type: body.type,
   });
-  await createSupabaseBrowserClient()
+  await createSupabaseAdminClient()
     .storage
     .from(TEACHER_DOCUMENT_BUCKET)
     .remove([storagePathFromUrl(body.url)]);

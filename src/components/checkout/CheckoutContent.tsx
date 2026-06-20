@@ -11,7 +11,6 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
-import { DevSkipPaymentButton } from "@/components/checkout/DevSkipPaymentButton";
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
@@ -532,9 +531,6 @@ export function CheckoutContent({
                   <p className="mt-3 text-center text-xs text-text-muted">{c("widget_loading", "결제 UI를 불러오는 중…")}</p>
                 </CmsText>
               ) : null}
-              <div className="mt-3">
-                <DevSkipPaymentButton />
-              </div>
             </div>
           </div>
         </div>

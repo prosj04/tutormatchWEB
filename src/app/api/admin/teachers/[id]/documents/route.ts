@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import {
-  createSupabaseBrowserClient,
-  TEACHER_DOCUMENT_BUCKET,
-} from "@/lib/supabase-client";
+import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { TEACHER_DOCUMENT_BUCKET } from "@/lib/supabase-client";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { parseJsonArray } from "@/lib/teacher-profile-types";
 
@@ -32,7 +30,7 @@ async function buildDocumentFiles(resumeUrls: string[], documentUrls: string[]) 
     resumeCount: resumeUrls.length,
     documentCount: documentUrls.length,
   });
-  const supabase = createSupabaseBrowserClient();
+  const supabase = createSupabaseAdminClient();
 
   async function sign(url: string) {
     const path = storagePathFromUrl(url);
@@ -160,7 +158,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     teacherId: id,
     type: body.type,
   });
-  await createSupabaseBrowserClient()
+  await createSupabaseAdminClient()
     .storage
     .from(TEACHER_DOCUMENT_BUCKET)
     .remove([storagePathFromUrl(body.url)]);

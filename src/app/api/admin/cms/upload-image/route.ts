@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { startPerfTimer, timeSync } from "@/lib/perf-timer";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 
 const CMS_IMAGE_BUCKET = "cms-images";
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Image file is required" }, { status: 400 });
   }
 
-  const supabase = createSupabaseBrowserClient();
+  const supabase = createSupabaseAdminClient();
   const bucketTimer = startPerfTimer("supabase.cmsImages.getBucket", {
     bucket: CMS_IMAGE_BUCKET,
   });
