@@ -28,7 +28,14 @@ import { SiteHeader } from "./SiteHeader";
 const HOME_TESTIMONIAL_PREVIEW = 3;
 const HOME_FAQ_PREVIEW = 3;
 
-const DEFAULT_RESULT_IMAGES = ["", "", "", "", "", ""];
+const DEFAULT_RESULT_IMAGES = [
+  "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
+  "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
+  "/images/teachers/default-male.png",
+  "/images/teachers/default-female.png",
+];
 
 /* ─────────────────────────────────────────── data ── */
 
@@ -585,56 +592,76 @@ export function LandingPage({
               </Ed>
             </h2>
           </div>
-          <div className="animation-container mt-10 overflow-hidden">
-            <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
-              {doubledResults.map((item, index) => {
-                const itemNumber =
-                  cmsResults.length > 0 ? (index % cmsResults.length) + 1 : index + 1;
+          {isEditMode ? (
+            <div className="mt-10 flex flex-wrap gap-5 px-4 sm:px-5">
+              {cmsResults.map((item, index) => {
+                const itemNumber = index + 1;
                 return (
                 <article
-                  key={`${item.student}-${index}`}
+                  key={`result-edit-${itemNumber}`}
                   className={`${PUBLIC_CARD.resultWidth} flex shrink-0 flex-col overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
                 >
                   <div className="min-w-0 flex-1 p-5">
                     <PublicCardLine className="text-xs font-bold uppercase tracking-wider text-neutral-80">
-                      <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_student`}>
+                      <Ed active={true} section="results" cmsKey={`result${itemNumber}_student`}>
                       {item.student}
                       </Ed>
                     </PublicCardLine>
                     <p className="mt-2 truncate whitespace-nowrap text-lg font-black leading-snug text-neutral-100">
-                      <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_before`}>
+                      <Ed active={true} section="results" cmsKey={`result${itemNumber}_before`}>
                       {item.before}
                       </Ed>
                       <span className="text-primary">
-                        <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_after`}>
+                        <Ed active={true} section="results" cmsKey={`result${itemNumber}_after`}>
                         {item.after}
                         </Ed>
                       </span>
                     </p>
                   </div>
+                  <Ed active={true} section="results" cmsKey={`result${itemNumber}_image`} type="image">
                   {item.image.trim() ? (
-                    <Ed active={isEditMode} section="results" cmsKey={`result${itemNumber}_image`} type="image">
                     <div className={`relative w-full shrink-0 ${PUBLIC_CARD.resultImageHeight}`}>
-                      <Image
-                        src={item.image}
-                        alt={item.student}
-                        fill
-                        className="object-cover"
-                        sizes="320px"
-                      />
+                      <Image src={item.image} alt={item.student} fill className="object-cover" sizes="320px" />
                     </div>
-                    </Ed>
-                  ) : isEditMode ? (
-                    <Ed active={true} section="results" cmsKey={`result${itemNumber}_image`} type="image">
+                  ) : (
                     <div className={`flex w-full shrink-0 items-center justify-center bg-neutral-10 ${PUBLIC_CARD.resultImageHeight}`}>
-                      <span className="text-[10px] font-bold text-neutral-40">+ 사진 추가</span>
+                      <span className="text-xs font-bold text-neutral-40">+ 사진 추가</span>
                     </div>
-                    </Ed>
-                  ) : null}
+                  )}
+                  </Ed>
                 </article>
               );})}
             </div>
-          </div>
+          ) : (
+            <div className="animation-container mt-10 overflow-hidden">
+              <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
+                {doubledResults.map((item, index) => {
+                  const itemNumber =
+                    cmsResults.length > 0 ? (index % cmsResults.length) + 1 : index + 1;
+                  return (
+                  <article
+                    key={`${item.student}-${index}`}
+                    className={`${PUBLIC_CARD.resultWidth} flex shrink-0 flex-col overflow-hidden rounded-[20px] border border-neutral-20 bg-white shadow-sm`}
+                  >
+                    <div className="min-w-0 flex-1 p-5">
+                      <PublicCardLine className="text-xs font-bold uppercase tracking-wider text-neutral-80">
+                        {item.student}
+                      </PublicCardLine>
+                      <p className="mt-2 truncate whitespace-nowrap text-lg font-black leading-snug text-neutral-100">
+                        {item.before}
+                        <span className="text-primary">{item.after}</span>
+                      </p>
+                    </div>
+                    {item.image.trim() ? (
+                      <div className={`relative w-full shrink-0 ${PUBLIC_CARD.resultImageHeight}`}>
+                        <Image src={item.image} alt={item.student} fill className="object-cover" sizes="320px" />
+                      </div>
+                    ) : null}
+                  </article>
+                );})}
+              </div>
+            </div>
+          )}
         </section>
         </Ed>
 
@@ -712,12 +739,15 @@ export function LandingPage({
             </div>
 
             {/* scrolling teacher cards — light card style */}
-            <div className="overflow-hidden">
+            <div className={isEditMode ? "" : "overflow-hidden"}>
               <div
-                className="motion-safe:animate-marquee-loop flex w-max gap-[var(--marquee-gap)] [--marquee-gap:1.25rem] [--marquee-gap-half:0.625rem] [--speed:34s] motion-reduce:animate-none will-change-transform md:[--marquee-gap:1.5rem] md:[--marquee-gap-half:0.75rem]"
+                className={isEditMode
+                  ? "flex flex-wrap gap-5"
+                  : "motion-safe:animate-marquee-loop flex w-max gap-[var(--marquee-gap)] [--marquee-gap:1.25rem] [--marquee-gap-half:0.625rem] [--speed:34s] motion-reduce:animate-none will-change-transform md:[--marquee-gap:1.5rem] md:[--marquee-gap-half:0.75rem]"
+                }
               >
-                {[cmsTeachers, cmsTeachers].map((group, groupIndex) => (
-                  <div key={`teacher-group-${groupIndex}`} className="flex w-max gap-[var(--marquee-gap)]">
+                {(isEditMode ? [cmsTeachers] : [cmsTeachers, cmsTeachers]).map((group, groupIndex) => (
+                  <div key={`teacher-group-${groupIndex}`} className={isEditMode ? "flex flex-wrap gap-5" : "flex w-max gap-[var(--marquee-gap)]"}>
                     {group.map((teacher, index) => {
                       const itemNumber = index + 1;
                       return (

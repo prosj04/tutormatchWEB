@@ -114,12 +114,12 @@ const statsFields: TextFieldConfig[] = [
 ];
 
 const resultDefaults = [
-  { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: "" },
-  { student: "중3 학생", before: "영어 64점→",  after: "87점으로 상승",  image: "" },
-  { student: "고1 학생", before: "국어 55점→",  after: "78점으로 상승",  image: "" },
-  { student: "중2 학생", before: "수학 85점→",  after: "100점으로 상승", image: "" },
-  { student: "고3 학생", before: "영어 5등급→", after: "3등급으로 상승", image: "" },
-  { student: "고1 학생", before: "수학 69점→",  after: "92점으로 상승",  image: "" },
+  { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: "/images/teachers/default-male.png" },
+  { student: "중3 학생", before: "영어 64점→",  after: "87점으로 상승",  image: "/images/teachers/default-female.png" },
+  { student: "고1 학생", before: "국어 55점→",  after: "78점으로 상승",  image: "/images/teachers/default-male.png" },
+  { student: "중2 학생", before: "수학 85점→",  after: "100점으로 상승", image: "/images/teachers/default-female.png" },
+  { student: "고3 학생", before: "영어 5등급→", after: "3등급으로 상승", image: "/images/teachers/default-male.png" },
+  { student: "고1 학생", before: "수학 69점→",  after: "92점으로 상승",  image: "/images/teachers/default-female.png" },
 ];
 
 const teacherDefaults = [
