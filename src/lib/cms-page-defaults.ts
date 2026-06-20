@@ -153,15 +153,15 @@ export function getCmsSpacing(
 
   const paddingTop = cmsSpacingPx(spacing[`${sectionKey}_pt`]);
   const paddingBottom = cmsSpacingPx(spacing[`${sectionKey}_pb`]);
+  const paddingLeft = cmsSpacingPx(spacing[`${sectionKey}_pl`]);
+  const paddingRight = cmsSpacingPx(spacing[`${sectionKey}_pr`]);
   const paddingX = cmsSpacingPx(spacing[`${sectionKey}_px`]);
 
   const style: CSSProperties = {};
   if (paddingTop) style.paddingTop = paddingTop;
   if (paddingBottom) style.paddingBottom = paddingBottom;
-  if (paddingX) {
-    style.paddingLeft = paddingX;
-    style.paddingRight = paddingX;
-  }
+  style.paddingLeft = paddingLeft ?? paddingX ?? undefined;
+  style.paddingRight = paddingRight ?? paddingX ?? undefined;
   return style;
 }
 
@@ -180,13 +180,13 @@ export const CMS_HOME_SPACING_SECTIONS = [
   { key: "footer", label: "푸터" },
 ] as const;
 
-const CMS_SPACING_DEFAULT_PX = { pt: "80", pb: "80", px: "24" } as const;
+const CMS_SPACING_DEFAULT_PX = { pt: "80", pb: "80", px: "24", pl: "24", pr: "24" } as const;
 
 export { CMS_SPACING_DEFAULT_PX };
 
-/** 홈 섹션 여백 (section: spacing, 키: {section}_pt|pb|px) */
+/** 홈 섹션 여백 (section: spacing, 키: {section}_pt|pb|pl|pr|px) */
 export const spacingDefaults = CMS_HOME_SPACING_SECTIONS.flatMap((item, index) => {
-  const orderBase = index * 3 + 1;
+  const orderBase = index * 5 + 1;
   return [
     {
       section: "spacing" as const,
@@ -204,10 +204,24 @@ export const spacingDefaults = CMS_HOME_SPACING_SECTIONS.flatMap((item, index) =
     },
     {
       section: "spacing" as const,
+      key: `${item.key}_pl`,
+      value: CMS_SPACING_DEFAULT_PX.pl,
+      type: "text" as const,
+      order: orderBase + 2,
+    },
+    {
+      section: "spacing" as const,
+      key: `${item.key}_pr`,
+      value: CMS_SPACING_DEFAULT_PX.pr,
+      type: "text" as const,
+      order: orderBase + 3,
+    },
+    {
+      section: "spacing" as const,
       key: `${item.key}_px`,
       value: CMS_SPACING_DEFAULT_PX.px,
       type: "text" as const,
-      order: orderBase + 2,
+      order: orderBase + 4,
     },
   ];
 });

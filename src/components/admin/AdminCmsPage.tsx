@@ -989,33 +989,28 @@ export function AdminCmsPage() {
     <div className="flex min-h-0 flex-col">
       <div className="shrink-0">
         <h2 className="text-2xl font-black text-text-primary">사이트 콘텐츠 관리</h2>
-        <p className="mt-2 text-sm text-text-secondary">
-          위 미리보기에서 필드를 클릭하면 아래 편집 패널에서 바로 수정할 수 있습니다. 자동 저장은 입력 후 약 10초 뒤에
-          반영되며, 저장 후 미리보기가 갱신됩니다.
-        </p>
 
-        <div className="mt-6 flex flex-wrap gap-2 border-b border-gray-200 pb-1">
-          {CMS_PAGES.map((page) => (
-            <button
-              key={page.id}
-              type="button"
-              onClick={() => setActivePage(page.id)}
-              className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
-                activePage === page.id
-                  ? "border-primary text-primary"
-                  : "border-transparent text-text-muted hover:text-text-secondary"
-              }`}
-            >
-              {page.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-6 flex items-end justify-between gap-2 border-b border-gray-200 pb-1">
+          <div className="flex flex-wrap gap-2">
+            {CMS_PAGES.map((page) => (
+              <button
+                key={page.id}
+                type="button"
+                onClick={() => setActivePage(page.id)}
+                className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
+                  activePage === page.id
+                    ? "border-primary text-primary"
+                    : "border-transparent text-text-muted hover:text-text-secondary"
+                }`}
+              >
+                {page.label}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => void initDefaults()}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
+            className="mb-1 shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
           >
             기본값으로 초기화
           </button>
@@ -1030,7 +1025,7 @@ export function AdminCmsPage() {
       </div>
 
       <div className="mt-4 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 bg-neutral-10" style={{ height: "65vh", minHeight: "480px" }}>
+        <div className="border-b border-gray-200 bg-neutral-10" style={{ height: "72vh", minHeight: "520px" }}>
           <iframe
             ref={iframeRef}
             key={activePage}
@@ -1978,13 +1973,14 @@ function CmsSpacingSectionRow({
   const fields = [
     { suffix: "pt", label: "상단", defaultValue: CMS_SPACING_DEFAULT_PX.pt },
     { suffix: "pb", label: "하단", defaultValue: CMS_SPACING_DEFAULT_PX.pb },
-    { suffix: "px", label: "좌우", defaultValue: CMS_SPACING_DEFAULT_PX.px },
+    { suffix: "pl", label: "왼쪽", defaultValue: CMS_SPACING_DEFAULT_PX.pl },
+    { suffix: "pr", label: "오른쪽", defaultValue: CMS_SPACING_DEFAULT_PX.pr },
   ] as const;
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-background p-4">
       <p className="mb-3 text-sm font-black text-text-primary">{label}</p>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-4">
         {fields.map((field) => {
           const keyName = `${sectionKey}_${field.suffix}`;
           const value = getValue("spacing", keyName, field.defaultValue);

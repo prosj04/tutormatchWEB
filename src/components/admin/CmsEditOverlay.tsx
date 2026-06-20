@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 export type CmsEditType = "text" | "image" | "spacing";
 
@@ -49,7 +49,9 @@ export function CmsEditOverlay({
     return <>{children}</>;
   }
 
-  function handleSelect() {
+  function handleSelect(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
     window.parent.postMessage({ type: "cms_select", section, key: cmsKey }, "*");
   }
 
@@ -59,7 +61,7 @@ export function CmsEditOverlay({
       <button
         type="button"
         onClick={handleSelect}
-        className="absolute right-1 top-1 z-20 flex size-7 items-center justify-center rounded-lg border border-primary/30 bg-white text-primary opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-primary hover:text-white"
+        className="absolute right-1 top-1 z-20 flex size-5 items-center justify-center rounded-md border border-primary/30 bg-white text-primary opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-primary hover:text-white"
         aria-label={`CMS 편집: ${section}.${cmsKey}`}
       >
         <OverlayIcon type={type} />
