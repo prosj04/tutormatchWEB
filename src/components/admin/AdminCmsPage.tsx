@@ -990,7 +990,7 @@ export function AdminCmsPage() {
       <div className="shrink-0">
         <h2 className="text-2xl font-black text-text-primary">사이트 콘텐츠 관리</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          왼쪽 미리보기에서 필드를 클릭하면 오른쪽 패널에서 바로 편집합니다. 자동 저장은 입력 후 약 10초 뒤에
+          위 미리보기에서 필드를 클릭하면 아래 편집 패널에서 바로 수정할 수 있습니다. 자동 저장은 입력 후 약 10초 뒤에
           반영되며, 저장 후 미리보기가 갱신됩니다.
         </p>
 
@@ -1029,8 +1029,8 @@ export function AdminCmsPage() {
         ) : null}
       </div>
 
-      <div className="mt-4 flex min-h-0 flex-1 gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm" style={{ height: "calc(100vh - 15rem)" }}>
-        <div className="min-w-0 flex-[7] border-r border-gray-200 bg-neutral-10">
+      <div className="mt-4 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 bg-neutral-10" style={{ height: "65vh", minHeight: "480px" }}>
           <iframe
             ref={iframeRef}
             key={activePage}
@@ -1040,7 +1040,7 @@ export function AdminCmsPage() {
           />
         </div>
 
-        <div className="min-w-0 flex-[3] overflow-y-auto bg-background p-4">
+        <div className="bg-background p-4">
           {loading ? (
             <p className="text-sm text-text-secondary">불러오는 중...</p>
           ) : selectedField ? (

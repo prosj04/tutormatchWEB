@@ -11,6 +11,12 @@ export const metadata = {
 
 export const revalidate = 300;
 
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
 function splitSubjects(value: string): string[] {
   return value
     .split(",")
@@ -18,8 +24,13 @@ function splitSubjects(value: string): string[] {
     .filter(Boolean);
 }
 
-export default async function TutorsPage() {
+export default async function TutorsPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
   const timer = startPerfTimer("page.tutors.total");
+  const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["tutors_page"]);
   const teachers = await timeAsync("cache.publicTeachers.list", () => getPublicTeachers());
 
@@ -35,7 +46,7 @@ export default async function TutorsPage() {
 
   const page = (
     <PublicShell>
-      <TutorsListing tutors={tutors} siteContent={siteContent} />
+      <TutorsListing tutors={tutors} siteContent={siteContent} isEditMode={isEditMode} />
     </PublicShell>
   );
   timer.end({ tutorCount: tutors.length });
