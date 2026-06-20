@@ -281,6 +281,12 @@ const AUTOSAVE_DELAY_MS = 10_000;
 
 const pricingHeaderFields: TextFieldConfig[] = [
   {
+    label: "페이지 kicker",
+    section: "pricing_page",
+    keyName: "kicker",
+    defaultValue: "Plans",
+  },
+  {
     label: "페이지 제목",
     section: "pricing_page",
     keyName: "header_title",
@@ -410,6 +416,7 @@ function ctaBenefitSlotInnerFields(boxIndex: number): TextFieldConfig[] {
 
 const pricingFaqFields: TextFieldConfig[] = [
   { label: "FAQ 섹션 제목", section: "pricing_page", keyName: "faq_title", defaultValue: "자주 묻는 질문" },
+  { label: "FAQ kicker", section: "pricing_page", keyName: "faq_kicker", defaultValue: "FAQ" },
   {
     label: "FAQ 1 질문",
     section: "pricing_page",

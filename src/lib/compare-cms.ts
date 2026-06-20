@@ -3,12 +3,15 @@ import { getCmsSectionValue, parseCmsVisibility } from "@/lib/cms-page-defaults"
 export const COMPARE_ROW_COUNT = 9;
 
 export type CompareTableRow = {
+  rowIndex: number;
   feature: string;
   concord: string;
   other: string;
 };
 
-const COMPARE_ROW_FALLBACKS: CompareTableRow[] = [
+type CompareRowFallback = Omit<CompareTableRow, "rowIndex">;
+
+const COMPARE_ROW_FALLBACKS: CompareRowFallback[] = [
   { feature: "선생님 자격 검증", other: "✗", concord: "✓ 서류·면접" },
   { feature: "선생님 실력 확인", other: "수업 후에야 파악", concord: "✓ 사전 검증" },
   { feature: "학생 맞춤 매칭", other: "직접 알아봐야 함", concord: "✓ 매니저가 성향·과목 맞춰 연결" },
@@ -34,6 +37,7 @@ export function buildVisibleCompareRows(
     if (!feature.trim()) continue;
 
     rows.push({
+      rowIndex: n,
       feature,
       concord: getCmsSectionValue(siteContent, "compare", `row${n}_concord`, fallback.concord),
       other: getCmsSectionValue(siteContent, "compare", `row${n}_other`, fallback.other),

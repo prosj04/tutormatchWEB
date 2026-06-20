@@ -1008,13 +1008,14 @@ export function LandingPage({
           <ServiceCompareSection
             siteContent={cms?.siteContent}
             kicker={getCmsValue("compare", "kicker", "COMPARE")}
+            isEditMode={isEditMode}
           />
         </div>
         </Ed>
 
         <Ed active={isEditMode} section="cta" cmsKey="cta" type="spacing">
         <div style={cmsSpacing("cta")}>
-          <HomeConsultationCtaSection siteContent={cms?.siteContent} />
+          <HomeConsultationCtaSection siteContent={cms?.siteContent} isEditMode={isEditMode} />
         </div>
         </Ed>
 

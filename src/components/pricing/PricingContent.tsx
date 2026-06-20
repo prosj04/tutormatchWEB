@@ -61,7 +61,11 @@ export function PricingContent({
         <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-5">
           <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0 lg:flex-1">
-              <p className="text-sm font-black uppercase tracking-wider text-primary">Plans</p>
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="kicker" type="text">
+                <p className="text-sm font-black uppercase tracking-wider text-primary">
+                  {get("kicker", "Plans")}
+                </p>
+              </CmsEdit>
               <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_title" type="text">
                 <h1
                   className={`mt-3 whitespace-pre-line leading-tight tracking-[-0.04em] text-neutral-100 sm:mt-4 ${composeCmsTypographyClass(
@@ -118,7 +122,9 @@ export function PricingContent({
             {get("faq_title", "자주 묻는 질문")}
           </h2>
         </CmsEdit>
-        <p className="mt-2 text-sm font-bold text-neutral-80">FAQ</p>
+        <CmsEdit active={isEditMode} section="pricing_page" cmsKey="faq_kicker" type="text">
+          <p className="mt-2 text-sm font-bold text-neutral-80">{get("faq_kicker", "FAQ")}</p>
+        </CmsEdit>
         <div className="mt-8 divide-y divide-neutral-20 overflow-hidden rounded-2xl border border-neutral-20 bg-white sm:mt-10 sm:rounded-[28px]">
           {faqs.map((item, index) => {
             const n = index + 1;
