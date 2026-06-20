@@ -1,6 +1,6 @@
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { TutorCard, type TutorCardData } from "@/components/tutors/TutorCard";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { getCmsSpacing, getCmsSectionValue } from "@/lib/cms-page-defaults";
 
 export function TutorsListing({
   tutors,
@@ -13,9 +13,11 @@ export function TutorsListing({
 }) {
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "tutors_page", key, fallback);
+  const sp = (key: string) => getCmsSpacing(siteContent, key);
   return (
     <div className="pb-24">
-      <section className="border-b border-gray-100 bg-white px-4 py-12 sm:px-6 sm:py-16 md:py-24">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="tutors_header" type="spacing">
+      <section className="border-b border-gray-100 bg-white px-4 py-12 sm:px-6 sm:py-16 md:py-24" style={sp("tutors_header")}>
         <div className="mx-auto max-w-6xl">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">
             Teachers
@@ -35,8 +37,10 @@ export function TutorsListing({
           </CmsEdit>
         </div>
       </section>
+      </CmsEdit>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 md:py-16">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="tutors_grid" type="spacing">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12 md:py-16" style={sp("tutors_grid")}>
         {tutors.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-gray-200 bg-white p-12 text-center">
             <CmsEdit active={isEditMode} section="tutors_page" cmsKey="empty_title" type="text">
@@ -58,6 +62,7 @@ export function TutorsListing({
           </div>
         )}
       </section>
+      </CmsEdit>
     </div>
   );
 }

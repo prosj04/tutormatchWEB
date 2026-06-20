@@ -28,14 +28,7 @@ import { SiteHeader } from "./SiteHeader";
 const HOME_TESTIMONIAL_PREVIEW = 3;
 const HOME_FAQ_PREVIEW = 3;
 
-const DEFAULT_RESULT_IMAGES = [
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-];
+const DEFAULT_RESULT_IMAGES = ["", "", "", "", "", ""];
 
 /* ─────────────────────────────────────────── data ── */
 
@@ -631,6 +624,12 @@ export function LandingPage({
                       />
                     </div>
                     </Ed>
+                  ) : isEditMode ? (
+                    <Ed active={true} section="results" cmsKey={`result${itemNumber}_image`} type="image">
+                    <div className={`flex w-full shrink-0 items-center justify-center bg-neutral-10 ${PUBLIC_CARD.resultImageHeight}`}>
+                      <span className="text-[10px] font-bold text-neutral-40">+ 사진 추가</span>
+                    </div>
+                    </Ed>
                   ) : null}
                 </article>
               );})}
@@ -726,8 +725,15 @@ export function LandingPage({
                         key={`${teacher.name}-${groupIndex}-${index}`}
                         className={`${PUBLIC_CARD.teacherWidth} shrink-0 rounded-[20px] border border-neutral-20 bg-white p-6 text-center shadow-sm`}
                       >
+                        <div className="flex justify-center">
+                          <span className="inline-flex max-w-full truncate whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                            <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_subject`}>
+                            {teacher.subject}
+                            </Ed>
+                          </span>
+                        </div>
                         <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_image`} type="image">
-                        <div className="mx-auto h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
+                        <div className="mx-auto mt-4 h-24 w-24 overflow-hidden rounded-[16px] ring-2 ring-neutral-20">
                           <Image
                             src={teacher.image}
                             alt={teacher.name}
@@ -742,13 +748,6 @@ export function LandingPage({
                           {teacher.name} 선생님
                           </Ed>
                         </PublicCardLine>
-                        <div className="mt-2 flex justify-center">
-                          <span className="inline-flex max-w-full truncate whitespace-nowrap rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-                            <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_subject`}>
-                            {teacher.subject}
-                            </Ed>
-                          </span>
-                        </div>
                         <p className="mt-3 truncate whitespace-nowrap text-sm font-black leading-snug text-neutral-100">
                           <Ed active={isEditMode} section="teachers" cmsKey={`teacher${itemNumber}_highlight`}>
                           {teacher.highlight.split(" ").slice(0, -2).join(" ")}{" "}

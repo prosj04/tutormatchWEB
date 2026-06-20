@@ -1,6 +1,6 @@
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { TestimonialCard, type TestimonialItem } from "@/components/reviews/TestimonialCard";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { getCmsSpacing, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 export function ReviewsPageContent({
@@ -13,9 +13,11 @@ export function ReviewsPageContent({
   isEditMode?: boolean;
 }) {
   const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "reviews_page", key, fb);
+  const sp = (key: string) => getCmsSpacing(siteContent, key);
   return (
     <div className="pb-24 md:pb-32">
-      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="reviews_header" type="spacing">
+      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20" style={sp("reviews_header")}>
         <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
           <CmsEdit active={isEditMode} section="reviews_page" cmsKey="kicker" type="text">
             <p className="text-sm font-black uppercase tracking-wider text-primary">
@@ -34,8 +36,10 @@ export function ReviewsPageContent({
           </CmsEdit>
         </div>
       </section>
+      </CmsEdit>
 
-      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="reviews_list" type="spacing">
+      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-5 sm:py-12 md:py-16" style={sp("reviews_list")}>
         {testimonials.length === 0 ? (
           <CmsEdit active={isEditMode} section="reviews_page" cmsKey="empty_text" type="text">
             <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-80">
@@ -50,6 +54,7 @@ export function ReviewsPageContent({
           </div>
         )}
       </section>
+      </CmsEdit>
     </div>
   );
 }

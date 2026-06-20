@@ -180,6 +180,24 @@ export const CMS_HOME_SPACING_SECTIONS = [
   { key: "footer", label: "푸터" },
 ] as const;
 
+/** 홈 외 페이지 섹션 — admin UI에는 표시되지만 기본값 초기화에는 포함되지 않음 */
+export const CMS_EXTRA_SPACING_SECTIONS = [
+  { key: "pricing_header", label: "요금제 페이지 - 헤더" },
+  { key: "pricing_plans", label: "요금제 페이지 - 카드 그리드" },
+  { key: "pricing_faq_sec", label: "요금제 페이지 - FAQ" },
+  { key: "tutors_header", label: "강사진 페이지 - 헤더" },
+  { key: "tutors_grid", label: "강사진 페이지 - 카드 그리드" },
+  { key: "faq_header", label: "FAQ 페이지 - 헤더" },
+  { key: "faq_list", label: "FAQ 페이지 - 목록" },
+  { key: "reviews_header", label: "후기 페이지 - 헤더" },
+  { key: "reviews_list", label: "후기 페이지 - 목록" },
+] as const;
+
+export const CMS_ALL_SPACING_SECTIONS = [
+  ...CMS_HOME_SPACING_SECTIONS,
+  ...CMS_EXTRA_SPACING_SECTIONS,
+] as const;
+
 const CMS_SPACING_DEFAULT_PX = { pt: "80", pb: "80", px: "24", pl: "24", pr: "24" } as const;
 
 export { CMS_SPACING_DEFAULT_PX };

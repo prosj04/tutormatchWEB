@@ -1,6 +1,6 @@
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import type { GroupedSiteContent } from "@/lib/site-content";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { getCmsSpacing, getCmsSectionValue } from "@/lib/cms-page-defaults";
 
 export type FaqItem = {
   q: string;
@@ -18,9 +18,11 @@ export function FaqPageContent({
 }) {
   const get = (section: string, key: string, fb: string) =>
     getCmsSectionValue(siteContent, section, key, fb);
+  const sp = (key: string) => getCmsSpacing(siteContent, key);
   return (
     <div className="bg-neutral-10 pb-24 md:pb-32">
-      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="faq_header" type="spacing">
+      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20" style={sp("faq_header")}>
         <div className="mx-auto max-w-[900px] px-4 sm:px-5">
           <CmsEdit active={isEditMode} section="faq_page" cmsKey="kicker" type="text">
             <p className="text-sm font-black uppercase tracking-wider text-primary">
@@ -39,8 +41,10 @@ export function FaqPageContent({
           </CmsEdit>
         </div>
       </section>
+      </CmsEdit>
 
-      <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-5 sm:py-12 md:py-16">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="faq_list" type="spacing">
+      <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-5 sm:py-12 md:py-16" style={sp("faq_list")}>
         {faqs.length === 0 ? (
           <CmsEdit active={isEditMode} section="faq_page" cmsKey="empty_text" type="text">
             <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-80">
@@ -60,6 +64,7 @@ export function FaqPageContent({
           </div>
         )}
       </section>
+      </CmsEdit>
     </div>
   );
 }

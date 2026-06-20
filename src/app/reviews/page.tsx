@@ -34,7 +34,7 @@ export default async function ReviewsPage({
 }) {
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const timer = startPerfTimer("page.reviews.total");
-  const siteContent = await getGroupedSiteContentBySections(["reviews_page"]);
+  const siteContent = await getGroupedSiteContentBySections(["reviews_page", "spacing"]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
     timer.end({ notFound: true });
     notFound();

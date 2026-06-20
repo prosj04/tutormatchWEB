@@ -21,7 +21,7 @@ export default async function PricingPage({
 }) {
   const timer = startPerfTimer("page.pricing.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
-  const siteContent = await getGroupedSiteContentBySections(["pricing_page", "cta"]);
+  const siteContent = await getGroupedSiteContentBySections(["pricing_page", "cta", "spacing"]);
   const page = <PricingContent siteContent={siteContent} isEditMode={isEditMode} />;
   timer.end();
   return page;

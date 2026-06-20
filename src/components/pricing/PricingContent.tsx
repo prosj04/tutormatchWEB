@@ -7,7 +7,7 @@ import { HomeConsultationCtaSection } from "@/components/landing/HomeConsultatio
 import { FloatingConsultationCue } from "@/components/pricing/FloatingConsultationCue";
 import { PricingPlansGrid } from "@/components/pricing/PricingPlansGrid";
 import { PricingTierToggle } from "@/components/pricing/PricingTierToggle";
-import { composeCmsTypographyClass, getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { composeCmsTypographyClass, getCmsSpacing, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 
@@ -55,9 +55,12 @@ export function PricingContent({
     };
   });
 
+  const sp = (key: string) => getCmsSpacing(siteContent, key);
+
   return (
     <div className="bg-neutral-10 pb-0">
-      <div className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="pricing_header" type="spacing">
+      <div className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20" style={sp("pricing_header")}>
         <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-5">
           <div className="flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0 lg:flex-1">
@@ -91,8 +94,10 @@ export function PricingContent({
           </div>
         </div>
       </div>
+      </CmsEdit>
 
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-12 sm:px-5 md:py-20 lg:py-24">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="pricing_plans" type="spacing">
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-12 sm:px-5 md:py-20 lg:py-24" style={sp("pricing_plans")}>
         {planItems.length > 0 ? (
           <div>
             <PricingTierToggle
@@ -115,8 +120,10 @@ export function PricingContent({
           className="pt-14 pb-4 md:pt-20 md:pb-6"
         />
       </div>
+      </CmsEdit>
 
-      <section className="mx-auto w-full max-w-[1200px] px-4 pb-12 sm:px-5 md:pb-20 lg:pb-24">
+      <CmsEdit active={isEditMode} section="spacing" cmsKey="pricing_faq_sec" type="spacing">
+      <section className="mx-auto w-full max-w-[1200px] px-4 pb-12 sm:px-5 md:pb-20 lg:pb-24" style={sp("pricing_faq_sec")}>
         <CmsEdit active={isEditMode} section="pricing_page" cmsKey="faq_title" type="text">
           <h2 className="text-2xl font-black text-neutral-100 sm:text-3xl md:text-5xl">
             {get("faq_title", "자주 묻는 질문")}
@@ -143,8 +150,9 @@ export function PricingContent({
           })}
         </div>
       </section>
+      </CmsEdit>
 
-      <HomeConsultationCtaSection siteContent={siteContent} />
+      <HomeConsultationCtaSection siteContent={siteContent} isEditMode={isEditMode} />
     </div>
   );
 }

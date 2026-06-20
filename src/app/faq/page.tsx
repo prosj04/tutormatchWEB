@@ -26,7 +26,7 @@ export default async function FaqPage({
 }) {
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const timer = startPerfTimer("page.faq.total");
-  const siteContent = await getGroupedSiteContentBySections(["faq_page"]);
+  const siteContent = await getGroupedSiteContentBySections(["faq_page", "spacing"]);
   if (!isPublicSectionVisible(siteContent, "faq_page", "show_page", true)) {
     timer.end({ notFound: true });
     notFound();

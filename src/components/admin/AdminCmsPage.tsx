@@ -22,6 +22,7 @@ import { CmsCardBox, CmsCardBoxGrid } from "@/components/admin/CmsCardBox";
 import { CmsVisibilityToggle } from "@/components/admin/CmsVisibilityToggle";
 import { CmsPublicTeachersPanel } from "@/components/admin/CmsPublicTeachersPanel";
 import {
+  CMS_ALL_SPACING_SECTIONS,
   CMS_HOME_SPACING_SECTIONS,
   CMS_MANAGED_CARD_SLOT_COUNT,
   CMS_SPACING_DEFAULT_PX,
@@ -113,42 +114,12 @@ const statsFields: TextFieldConfig[] = [
 ];
 
 const resultDefaults = [
-  {
-    student: "고2 학생",
-    before: "수학 5등급→",
-    after: "2등급으로 상승",
-    image: "/images/teachers/default-male.png",
-  },
-  {
-    student: "중3 학생",
-    before: "영어 64점→",
-    after: "87점으로 상승",
-    image: "/images/teachers/default-female.png",
-  },
-  {
-    student: "고1 학생",
-    before: "국어 55점→",
-    after: "78점으로 상승",
-    image: "/images/teachers/default-male.png",
-  },
-  {
-    student: "중2 학생",
-    before: "수학 85점→",
-    after: "100점으로 상승",
-    image: "/images/teachers/default-female.png",
-  },
-  {
-    student: "고3 학생",
-    before: "영어 5등급→",
-    after: "3등급으로 상승",
-    image: "/images/teachers/default-male.png",
-  },
-  {
-    student: "고1 학생",
-    before: "수학 69점→",
-    after: "92점으로 상승",
-    image: "/images/teachers/default-female.png",
-  },
+  { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: "" },
+  { student: "중3 학생", before: "영어 64점→",  after: "87점으로 상승",  image: "" },
+  { student: "고1 학생", before: "국어 55점→",  after: "78점으로 상승",  image: "" },
+  { student: "중2 학생", before: "수학 85점→",  after: "100점으로 상승", image: "" },
+  { student: "고3 학생", before: "영어 5등급→", after: "3등급으로 상승", image: "" },
+  { student: "고1 학생", before: "수학 69점→",  after: "92점으로 상승",  image: "" },
 ];
 
 const teacherDefaults = [
@@ -1090,7 +1061,7 @@ export function AdminCmsPage() {
               각 섹션의 상·하·좌우 여백(px)입니다. 값을 비우면 기존 Tailwind 여백이 적용됩니다.
             </p>
             <div className="space-y-4">
-              {CMS_HOME_SPACING_SECTIONS.map((item) => (
+              {CMS_ALL_SPACING_SECTIONS.map((item) => (
                 <CmsSpacingSectionRow
                   key={item.key}
                   sectionKey={item.key}
@@ -1840,7 +1811,7 @@ function SelectedFieldEditor({
 
   if (spacingSectionKey) {
     const spacingLabel =
-      CMS_HOME_SPACING_SECTIONS.find((item) => item.key === spacingSectionKey)?.label ?? spacingSectionKey;
+      CMS_ALL_SPACING_SECTIONS.find((item) => item.key === spacingSectionKey)?.label ?? spacingSectionKey;
     return (
       <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
         <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">SPACING</p>

@@ -31,7 +31,7 @@ export default async function TutorsPage({
 }) {
   const timer = startPerfTimer("page.tutors.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
-  const siteContent = await getGroupedSiteContentBySections(["tutors_page"]);
+  const siteContent = await getGroupedSiteContentBySections(["tutors_page", "spacing"]);
   const teachers = await timeAsync("cache.publicTeachers.list", () => getPublicTeachers());
 
   const tutors = teachers.map((teacher) => ({
