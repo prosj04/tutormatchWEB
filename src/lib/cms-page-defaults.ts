@@ -182,6 +182,14 @@ export const CMS_HOME_SPACING_SECTIONS = [
 
 /** 홈 외 페이지 섹션 — admin UI에는 표시되지만 기본값 초기화에는 포함되지 않음 */
 export const CMS_EXTRA_SPACING_SECTIONS = [
+  { key: "hero_buttons", label: "히어로 - 버튼 그룹" },
+  { key: "results_cards", label: "결과 - 카드 목록" },
+  { key: "teachers_cards", label: "선생님 - 카드 목록" },
+  { key: "management_cards", label: "학습 관리 - 카드 그리드" },
+  { key: "features_cards", label: "진행 방식 - 카드 목록" },
+  { key: "pricing_cards", label: "홈 요금제 - 카드 영역" },
+  { key: "cta_cards", label: "상담 CTA - 혜택 카드" },
+  { key: "cta_button", label: "상담 CTA - 신청 버튼" },
   { key: "pricing_header", label: "요금제 페이지 - 헤더" },
   { key: "pricing_plans", label: "요금제 페이지 - 카드 그리드" },
   { key: "pricing_faq_sec", label: "요금제 페이지 - FAQ" },

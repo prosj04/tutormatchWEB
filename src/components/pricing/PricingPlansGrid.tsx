@@ -13,32 +13,20 @@ export type PricingPlanItem = {
 
 type PricingPlansGridProps = {
   items: PricingPlanItem[];
-  /** 홈: 탭으로 1장 표시 · 요금제 페이지: 전부 표시 */
+  /** 홈: 고정 그리드 · 요금제 페이지: 가로 스크롤 */
   variant?: "home" | "page";
-  activeIndex?: number;
 };
 
 export function PricingPlansGrid({
   items,
   variant = "page",
-  activeIndex = 0,
 }: PricingPlansGridProps) {
   const isHome = variant === "home";
 
-  return (
-    <div
-      className={
-        isHome
-          ? "scrollbar-hide overflow-x-auto pb-2"
-          : "scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0"
-      }
-    >
-      <div
-        className={`flex w-max snap-x snap-mandatory ${PRICING_GRID_GAP_CLASS} ${
-          isHome ? "ml-auto min-w-0 pl-[18%] sm:pl-[22%] md:pl-0 lg:translate-x-6 xl:translate-x-10" : ""
-        }`}
-      >
-        {items.map((item, index) => (
+  if (isHome) {
+    return (
+      <div className={`grid ${PRICING_GRID_GAP_CLASS} ${items.length > 1 ? "sm:grid-cols-2" : ""}`}>
+        {items.map((item) => (
           <PricingPlanCard
             key={item.plan.id}
             plan={item.plan}
@@ -46,7 +34,25 @@ export function PricingPlansGrid({
             subtitle={item.subtitle}
             price={item.price}
             features={item.features}
-            active={variant === "page" ? true : activeIndex === index}
+            active={true}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="scrollbar-hide -mx-4 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 md:mx-0 md:px-0">
+      <div className={`flex w-max snap-x snap-mandatory ${PRICING_GRID_GAP_CLASS}`}>
+        {items.map((item) => (
+          <PricingPlanCard
+            key={item.plan.id}
+            plan={item.plan}
+            title={item.title}
+            subtitle={item.subtitle}
+            price={item.price}
+            features={item.features}
+            active={true}
           />
         ))}
       </div>

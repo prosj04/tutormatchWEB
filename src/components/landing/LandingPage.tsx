@@ -266,7 +266,6 @@ export function LandingPage({
   isEditMode?: boolean;
 }) {
   const { activeTab, showFloating } = useScrollLandingState();
-  const [priceTab, setPriceTab] = useState(0);
   const [pricingTier, setPricingTier] = usePricingSchoolTier();
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
@@ -282,16 +281,6 @@ export function LandingPage({
     },
     [cms?.siteContent, pricingTier],
   );
-
-  useEffect(() => {
-    setPriceTab(0);
-  }, [pricingTier]);
-  useEffect(() => {
-    setPriceTab((prev) => {
-      if (homePricingItems.length === 0) return 0;
-      return Math.min(prev, homePricingItems.length - 1);
-    });
-  }, [homePricingItems.length]);
 
   const cmsResults = results.flatMap(([student, before, after], index) => {
     const itemNumber = index + 1;
@@ -499,7 +488,8 @@ export function LandingPage({
               )}
               </Ed>
             </p>
-            <div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+            <Ed active={isEditMode} section="spacing" cmsKey="hero_buttons" type="spacing">
+            <div style={cmsSpacing("hero_buttons")} className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
               <ConsultationApplyButton className="rounded-full bg-primary px-7 py-3.5 text-sm font-black text-white shadow-lg transition hover:bg-primary/90 md:px-8 md:py-4 md:text-base">
                 <Ed active={isEditMode} section="hero" cmsKey="cta_primary">
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
@@ -514,6 +504,7 @@ export function LandingPage({
                 </Ed>
               </Link>
             </div>
+            </Ed>
             </div>
           </div>
 
@@ -592,6 +583,8 @@ export function LandingPage({
               </Ed>
             </h2>
           </div>
+          <Ed active={isEditMode} section="spacing" cmsKey="results_cards" type="spacing">
+          <div style={cmsSpacing("results_cards")}>
           {isEditMode ? (
             <div className="mt-10 flex flex-wrap gap-5 px-4 sm:px-5">
               {cmsResults.map((item, index) => {
@@ -634,8 +627,7 @@ export function LandingPage({
             </div>
           ) : (
             <div className="animation-container mt-10 overflow-hidden">
-              <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
-                {doubledResults.map((item, index) => {
+              <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">{doubledResults.map((item, index) => {
                   const itemNumber =
                     cmsResults.length > 0 ? (index % cmsResults.length) + 1 : index + 1;
                   return (
@@ -662,6 +654,8 @@ export function LandingPage({
               </div>
             </div>
           )}
+          </div>
+          </Ed>
         </section>
         </Ed>
 
@@ -739,7 +733,8 @@ export function LandingPage({
             </div>
 
             {/* scrolling teacher cards — light card style */}
-            <div className={isEditMode ? "" : "overflow-hidden"}>
+            <Ed active={isEditMode} section="spacing" cmsKey="teachers_cards" type="spacing">
+            <div style={cmsSpacing("teachers_cards")} className={isEditMode ? "" : "overflow-hidden"}>
               <div
                 className={isEditMode
                   ? "flex flex-wrap gap-5"
@@ -797,6 +792,7 @@ export function LandingPage({
                 ))}
               </div>
             </div>
+            </Ed>
           </div>
         </section>
         </Ed>
@@ -847,7 +843,8 @@ export function LandingPage({
                   </Ed>
                 </p>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Ed active={isEditMode} section="spacing" cmsKey="management_cards" type="spacing">
+              <div style={cmsSpacing("management_cards")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {managementItems.map((item, index) => {
                   const n = index + 1;
                   return (
@@ -866,6 +863,7 @@ export function LandingPage({
                   </div>
                 );})}
               </div>
+              </Ed>
             </div>
           </div>
         </section>
@@ -899,7 +897,8 @@ export function LandingPage({
               </Ed>
             </p>
           </div>
-          <div className="scrollbar-hide mt-8 overflow-x-auto px-4 pb-2 sm:px-5">
+          <Ed active={isEditMode} section="spacing" cmsKey="features_cards" type="spacing">
+          <div style={cmsSpacing("features_cards")} className="scrollbar-hide mt-8 overflow-x-auto px-4 pb-2 sm:px-5">
             <div className="flex w-max gap-5 md:gap-6">
               {cmsSteps.map((step, stepIndex) => {
                 const stepNumber = stepIndex + 1;
@@ -939,6 +938,7 @@ export function LandingPage({
               );})}
             </div>
           </div>
+          </Ed>
         </section>
         </Ed>
 
@@ -989,32 +989,19 @@ export function LandingPage({
               </div>
               <div className="lg:flex lg:justify-end">
                 {homePricingItems.length > 0 ? (
-                  <div>
+                  <Ed active={isEditMode} section="spacing" cmsKey="pricing_cards" type="spacing">
+                  <div style={cmsSpacing("pricing_cards")}>
                     <PricingTierToggle
                       value={pricingTier}
                       onChange={setPricingTier}
                       className="mb-5"
                     />
-                    <div className="mb-5 grid grid-cols-2 rounded-full bg-neutral-10 p-1 md:hidden">
-                        {homePricingItems.map((item, index) => (
-                          <button
-                            key={`${pricingTier}-${item.plan.id}`}
-                            type="button"
-                            onClick={() => setPriceTab(index)}
-                            className={`rounded-full py-3 text-sm font-black transition ${
-                              priceTab === index ? "bg-primary text-white" : "text-neutral-80"
-                            }`}
-                          >
-                            {item.title ?? item.plan.title}
-                          </button>
-                        ))}
-                      </div>
                     <PricingPlansGrid
                       items={homePricingItems}
                       variant="home"
-                      activeIndex={priceTab}
                     />
                   </div>
+                  </Ed>
                 ) : (
                   <p className="rounded-2xl border border-neutral-20 bg-neutral-10 px-5 py-8 text-center text-sm text-neutral-80">
                     표시된 요금제가 없습니다. 관리자 「사이트 콘텐츠」에서 요금제 카드를 켜 주세요.
