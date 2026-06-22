@@ -627,9 +627,8 @@ export function LandingPage({
             </div>
           ) : (
             <div className="animation-container mt-10 overflow-hidden">
-              <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">{doubledResults.map((item, index) => {
-                  const itemNumber =
-                    cmsResults.length > 0 ? (index % cmsResults.length) + 1 : index + 1;
+              <div className="motion-safe:animate-slide flex w-max gap-5 px-4 [--speed:28s] motion-reduce:animate-none will-change-transform sm:px-5">
+                {doubledResults.map((item, index) => {
                   return (
                   <article
                     key={`${item.student}-${index}`}
