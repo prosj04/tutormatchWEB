@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { portalHomeHref } from "@/lib/portal-roles";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { useDesignTheme } from "@/hooks/useDesignTheme";
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -23,6 +23,64 @@ const baseNavLinks = [
   { href: "/#compare", label: "비교하기", id: "compare" as const },
   { href: "/faq", label: "FAQ", id: "faq" as const },
 ];
+
+/* ─── V2 theme controls (color picker + mode toggle) ─── */
+function V2ThemeControls({
+  color,
+  mode,
+  setColor,
+  toggleMode,
+}: {
+  color: "green" | "blue";
+  mode: "light" | "dark";
+  setColor: (c: "green" | "blue") => void;
+  toggleMode: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {/* Color picker */}
+      <div className="lp2-color-picker">
+        <button
+          type="button"
+          className={`lp2-color-btn${color === "green" ? " active" : ""}`}
+          onClick={() => setColor("green")}
+          aria-label="그린 테마"
+        >
+          <span className="lp2-color-dot" style={{ background: "#10B981" }} />
+        </button>
+        <button
+          type="button"
+          className={`lp2-color-btn${color === "blue" ? " active" : ""}`}
+          onClick={() => setColor("blue")}
+          aria-label="블루 테마"
+        >
+          <span className="lp2-color-dot" style={{ background: "#2563EB" }} />
+        </button>
+      </div>
+      {/* Mode toggle */}
+      <button
+        type="button"
+        className="lp2-theme-btn"
+        onClick={toggleMode}
+        aria-label={mode === "dark" ? "라이트 모드" : "다크 모드"}
+      >
+        {mode === "dark" ? (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}>
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 19, height: 19 }}>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        )}
+      </button>
+    </div>
+  );
+}
 
 function SessionActions({
   mobile = false,
@@ -135,6 +193,7 @@ export function SiteHeader({
     return true;
   });
   const { data: session } = useSession();
+  const { color, mode, setColor, toggleMode } = useDesignTheme();
   const logoHref = portalHomeHref(session?.user?.role);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(variant === "light");
@@ -232,7 +291,7 @@ export function SiteHeader({
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <ThemeToggle />
+          <V2ThemeControls color={color} mode={mode} setColor={setColor} toggleMode={toggleMode} />
           <SessionActions scrolled={scrolled} />
         </div>
 
@@ -310,7 +369,9 @@ export function SiteHeader({
             </nav>
           </div>
           <div className="space-y-4">
-            <ThemeToggle className="w-full justify-center" />
+            <div className="flex justify-center">
+              <V2ThemeControls color={color} mode={mode} setColor={setColor} toggleMode={toggleMode} />
+            </div>
             <SessionActions mobile onNavigate={() => setOpen(false)} />
           </div>
         </div>
