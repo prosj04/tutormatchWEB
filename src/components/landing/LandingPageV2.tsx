@@ -252,7 +252,7 @@ export function LandingPageV2({
   return (
     <div className="lp2-root">
       {/* ══ HERO ══════════════════════════════════════════ */}
-      <section className="lp2-hero" style={{ background: "var(--bg)" }}>
+      <section className="lp2-hero">
         <div className="lp2-hero-bg" />
         <div className="lp2-wrap lp2-hero-inner">
           <span className="lp2-eyebrow">Concord Private Tutoring</span>
@@ -324,7 +324,7 @@ export function LandingPageV2({
       <section
         id="teachers"
         className="lp2-sec"
-        style={{ background: "var(--bg)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -384,7 +384,7 @@ export function LandingPageV2({
       <section
         id="management"
         className="lp2-sec"
-        style={{ background: "var(--panel)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -415,7 +415,7 @@ export function LandingPageV2({
       <section
         id="process"
         className="lp2-sec"
-        style={{ background: "var(--bg)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -447,7 +447,7 @@ export function LandingPageV2({
       <section
         id="pricing"
         className="lp2-sec"
-        style={{ background: "var(--panel)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -511,7 +511,7 @@ export function LandingPageV2({
       <section
         id="compare"
         className="lp2-sec"
-        style={{ background: "var(--bg)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -573,7 +573,7 @@ export function LandingPageV2({
       <section
         id="reviews"
         className="lp2-sec"
-        style={{ background: "var(--panel)", scrollMarginTop: "80px" }}
+        style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -594,7 +594,7 @@ export function LandingPageV2({
       </section>
 
       {/* ══ CTA BAND ══════════════════════════════════════ */}
-      <section className="lp2-sec" style={{ background: "var(--bg)" }}>
+      <section className="lp2-sec">
         <div className="lp2-wrap">
           <div className="lp2-cta-band reveal">
             <div>

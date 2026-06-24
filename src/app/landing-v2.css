@@ -7,7 +7,7 @@
 .lp2-root {
   background: var(--bg);
   color: var(--fg);
-  font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  font-family: var(--font-sans, "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif);
   line-height: 1.6;
   font-weight: 400;
   letter-spacing: -.01em;
@@ -24,11 +24,12 @@
 .lp2-root ::selection { background: var(--acc); color: var(--on-acc); }
 
 /* ── layout ── */
-.lp2-wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--page-x, 32px); }
-.lp2-sec { padding: clamp(72px, 8vw, 148px) 0; position: relative; }
-.lp2-sec-head { max-width: min(820px, 100%); margin-bottom: clamp(40px, 5vw, 72px); }
+.lp2-wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--page-x, 32px); }
+@media (min-width:1500px) { .lp2-wrap { max-width: 1320px; } }
+.lp2-sec { padding: clamp(92px, 8.5vw, 168px) 0; position: relative; }
+.lp2-sec-head { max-width: min(820px, 72%); margin-bottom: clamp(48px, 5vw, 80px); }
 .lp2-sec-head h2 {
-  font-size: clamp(28px, 4vw, 58px); font-weight: 700; letter-spacing: -.03em;
+  font-size: clamp(32px, 4.4vw, 66px); font-weight: 700; letter-spacing: -.03em;
   line-height: 1.08; margin-top: 18px; color: var(--fg);
 }
 .lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; text-wrap: pretty; }
@@ -68,7 +69,7 @@
 }
 .lp2-nav { display: flex; align-items: center; gap: clamp(16px, 2.5vw, 40px); height: var(--site-header-h, 74px); }
 .lp2-logo { font-size: clamp(18px, 1rem + .55vw, 23px); font-weight: 800; letter-spacing: -.03em; color: var(--fg); flex-shrink: 0; }
-.lp2-logo span { color: var(--acc); }
+.lp2-logo span { color: var(--acc-text); }
 .lp2-nav-links { display: flex; gap: 30px; margin-left: 8px; }
 .lp2-nav-links a { color: var(--mut); font-size: 15px; font-weight: 500; transition: color .15s; }
 .lp2-nav-links a:hover { color: var(--fg); }
@@ -157,11 +158,11 @@
 [data-theme="dark"] .lp2-hero-bg::after { opacity: .4; }
 .lp2-hero-inner { position: relative; z-index: 1; }
 .lp2-hero h1 {
-  font-size: clamp(36px, 6vw, 92px); font-weight: 800; letter-spacing: -.04em;
+  font-size: clamp(46px, 7.4vw, 124px); font-weight: 800; letter-spacing: -.04em;
   line-height: 1.04; margin-top: 26px; max-width: 13ch; color: var(--fg);
 }
 .lp2-hero .lp2-lede {
-  font-size: clamp(17px, 1.35vw, 23px); color: var(--mut); margin-top: clamp(20px, 3vw, 30px);
+  font-size: clamp(18px, 1.55vw, 25px); color: var(--mut); margin-top: 30px;
   max-width: 50ch; line-height: 1.55; text-wrap: pretty;
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
@@ -172,7 +173,7 @@
 .lp2-stat { padding: 34px 44px 34px 0; margin-right: 44px; border-right: 1px solid var(--line); }
 .lp2-stat:last-child { border-right: 0; margin-right: 0; }
 .lp2-stat .n {
-  font-size: clamp(32px, 4vw, 64px); font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  font-size: clamp(40px, 4.6vw, 72px); font-weight: 800; letter-spacing: -.03em; line-height: 1;
   font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; color: var(--fg);
 }
 .lp2-stat .n em { color: var(--acc-text); font-style: normal; }
