@@ -305,6 +305,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   .page-head h1{ font-size:clamp(30px, 7.5vw, 52px); }
   .nav-right{ gap:8px; } }
 @media (max-width:680px){
+  .wrap{ padding:0 20px; }
   .price-grid{ grid-template-columns:1fr; } .tutor-grid{ grid-template-columns:1fr; } .rev-masonry{ columns:1; }
   .mobile-drawer{ width:100%; border-left:0; box-shadow:none; }
   .mobile-drawer-inner{ padding:16px var(--page-x, 20px) 24px; }

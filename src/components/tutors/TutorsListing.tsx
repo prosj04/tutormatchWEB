@@ -28,6 +28,21 @@ const FILTERS = [
   { val: "kor", label: "국어" },
 ] as const;
 
+const FILTER_KEYWORDS: Record<string, string[]> = {
+  math: ["수학", "math"],
+  eng: ["영어", "english", "eng"],
+  sci: ["과학", "물리", "화학", "생물", "지구과학", "science", "physics", "chemistry", "biology"],
+  kor: ["국어", "korean", "kor", "논술"],
+};
+
+function matchesFilter(tutor: TutorCardData, filter: string): boolean {
+  if (filter === "all") return true;
+  const keywords = FILTER_KEYWORDS[filter] ?? [];
+  return tutor.subjects.some((s) =>
+    keywords.some((k) => s.toLowerCase().includes(k.toLowerCase())),
+  );
+}
+
 function splitBullets(value?: string | null): string[] {
   if (!value?.trim()) return [];
   return value
@@ -133,7 +148,7 @@ export function TutorsListing({
           </ConcordReveal>
 
           <div className="tutor-grid">
-            {tutors.map((tutor) => (
+            {tutors.filter((t) => matchesFilter(t, activeFilter)).map((tutor) => (
               <ConcordTutorCard key={tutor.id} tutor={tutor} />
             ))}
           </div>
