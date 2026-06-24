@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import "./globals.css";
-import "./landing-v2.css";
 import "./concord.css";
+import "./dark-mode-bridge.css";
+import "./responsive.css";
+
+import { getPortalDesign } from "@/lib/portal-design";
 
 const pretendard = localFont({
   src: [
@@ -90,10 +93,10 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={pretendard.variable} data-portal-design={getPortalDesign()}>
       {/* Prevent flash-of-wrong-theme: read localStorage before first paint */}
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');var po=localStorage.getItem('portal-design-override');var pd=po==='legacy'?'legacy':po==='concord'?'concord':'${getPortalDesign()}';document.documentElement.setAttribute('data-portal-design',pd);}catch(e){document.documentElement.setAttribute('data-portal-design','${getPortalDesign()}');}})();` }} />
       </head>
       <body className="min-h-screen [word-break:keep-all]">
         <script

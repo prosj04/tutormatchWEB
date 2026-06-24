@@ -36,22 +36,23 @@ export function ConsultationSignupModal({
       <button
         type="button"
         aria-label="닫기"
-        className="absolute inset-0 bg-neutral-100/50 backdrop-blur-md"
+        className="absolute inset-0 border-0 bg-black/45 p-0 backdrop-blur-md"
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="consultation-signup-title"
-        className="relative z-10 max-h-[min(90vh,720px)] w-full max-w-md overflow-y-auto rounded-[24px] border border-neutral-20 bg-white p-7 shadow-2xl sm:p-8"
+        className="concord-surface auth-card relative z-10 max-h-[min(90vh,720px)] w-full max-w-md overflow-y-auto p-7 sm:p-8"
+        style={{ margin: 0 }}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-neutral-10 text-lg leading-none text-neutral-80 transition hover:bg-neutral-20 hover:text-neutral-100"
+          className="theme-toggle absolute right-4 top-4"
           aria-label="닫기"
         >
-          ×
+          <span style={{ fontSize: 18, lineHeight: 1 }}>×</span>
         </button>
         <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} />
       </div>

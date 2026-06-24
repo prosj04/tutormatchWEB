@@ -1,5 +1,4 @@
 import { unstable_cache } from "next/cache";
-import { cache } from "react";
 
 import { timeAsync } from "@/lib/perf-timer";
 import { prisma } from "@/lib/prisma";
@@ -41,34 +40,16 @@ const getCachedGroupedSiteContent = unstable_cache(
   },
 );
 
-const getCachedGroupedSiteContentBySections = cache(
-  async (sectionsKey: string): Promise<GroupedSiteContent> =>
-    unstable_cache(
-      async () => {
-        const sections = JSON.parse(sectionsKey) as string[];
-        const rows = await timeAsync(
-          "prisma.siteContent.findMany.sections",
-          () =>
-            prisma.siteContent.findMany({
-              where: {
-                isActive: true,
-                section: { in: sections },
-              },
-              orderBy: [{ section: "asc" }, { order: "asc" }],
-              select: { section: true, key: true, value: true },
-            }),
-          { sections },
-        );
-
-        return groupSiteContentRows(rows);
-      },
-      ["public-site-content-sections", sectionsKey],
-      {
-        revalidate: PUBLIC_CMS_REVALIDATE_SECONDS,
-        tags: [SITE_CONTENT_CACHE_TAG],
-      },
-    )(),
-);
+function pickSections(
+  content: GroupedSiteContent,
+  sections: string[],
+): GroupedSiteContent {
+  const filtered: GroupedSiteContent = {};
+  for (const section of sections) {
+    if (content[section]) filtered[section] = content[section];
+  }
+  return filtered;
+}
 
 export function groupSiteContentRows(
   rows: Array<{ section: string; key: string; value: string }>,
@@ -91,6 +72,7 @@ export async function getGroupedSiteContent(): Promise<GroupedSiteContent> {
   }
 }
 
+/** 섹션별 조회도 전체 캐시에서 필터링해 DB 중복 호출을 막는다. */
 export async function getGroupedSiteContentBySections(
   sections: string[],
 ): Promise<GroupedSiteContent> {
@@ -98,7 +80,8 @@ export async function getGroupedSiteContentBySections(
   if (normalized.length === 0) return EMPTY_SITE_CONTENT;
 
   try {
-    return await getCachedGroupedSiteContentBySections(JSON.stringify(normalized));
+    const all = await getGroupedSiteContent();
+    return pickSections(all, normalized);
   } catch (error) {
     console.error("[getGroupedSiteContentBySections]", error);
     return EMPTY_SITE_CONTENT;

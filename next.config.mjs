@@ -8,6 +8,12 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client"],
+    optimizePackageImports: [
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities",
+      "framer-motion",
+    ],
   },
   images: {
     formats: ["image/avif", "image/webp"],

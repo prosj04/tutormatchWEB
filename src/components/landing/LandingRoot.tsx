@@ -8,6 +8,6 @@ type Props = {
   isEditMode?: boolean;
 };
 
-export function LandingRoot({ cms }: Props) {
-  return <LandingPageV2 cms={cms} />;
+export function LandingRoot({ cms, isEditMode = false }: Props) {
+  return <LandingPageV2 cms={cms} isEditMode={isEditMode} />;
 }

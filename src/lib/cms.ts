@@ -162,13 +162,15 @@ export async function getActiveFaqs(): Promise<LandingCmsContent["faqs"]> {
   return getFaqPageFaqs();
 }
 
-/** connection_limit=1 환경: 병렬 Prisma 호출 금지, siteContent는 getGroupedSiteContent 재사용 */
+/** connection_limit=1 환경: siteContent 먼저, testimonials·faqs는 캐시된 조회만 병렬 */
 export async function getLandingCmsContent(): Promise<LandingCmsContent> {
   const timer = startPerfTimer("cms.getLandingCmsContent");
   try {
     const siteContent = await getGroupedSiteContent();
-    const testimonials = await getHomeTestimonials();
-    const faqs = await getHomeFaqs();
+    const [testimonials, faqs] = await Promise.all([
+      getHomeTestimonials(),
+      getHomeFaqs(),
+    ]);
 
     return {
       siteContent,

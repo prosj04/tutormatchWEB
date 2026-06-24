@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 
+import "../../portal-design.css";
+
+import { PortalDesignProvider } from "@/components/providers/PortalDesignProvider";
 import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";
 import { TeacherPortalShell } from "@/components/teacher-portal/TeacherPortalShell";
 import { auth } from "@/auth";
@@ -29,13 +32,15 @@ export default async function TeacherDashboardLayout({
   const siteContent = await getGroupedSiteContentBySections(["teacher_portal"]);
 
   return (
-    <PortalSiteContentProvider value={siteContent}>
-      <TeacherPortalShell
-        teacherName={teacher.name}
-        role={session.user.role as PortalTeacherRole}
-      >
-        {children}
-      </TeacherPortalShell>
-    </PortalSiteContentProvider>
+    <PortalDesignProvider>
+      <PortalSiteContentProvider value={siteContent}>
+        <TeacherPortalShell
+          teacherName={teacher.name}
+          role={session.user.role as PortalTeacherRole}
+        >
+          {children}
+        </TeacherPortalShell>
+      </PortalSiteContentProvider>
+    </PortalDesignProvider>
   );
 }

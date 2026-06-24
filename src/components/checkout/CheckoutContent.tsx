@@ -1,14 +1,10 @@
 "use client";
 
 import type { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
-import {
-  ANONYMOUS,
-  clearPaymentWidget,
-  loadPaymentWidget,
-} from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
@@ -26,12 +22,21 @@ import {
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
 import type { GroupedSiteContent } from "@/lib/site-content";
-import { TOSS_WIDGET_CLIENT_KEY } from "@/lib/toss-client";
 
-type PMW = ReturnType<PaymentWidgetInstance["renderPaymentMethods"]>;
+import type { PMW } from "./CheckoutTossWidget";
 
-const PAYMENT_SELECTOR = "#concord-payment-methods";
-const AGREEMENT_SELECTOR = "#concord-agreement";
+const CheckoutTossWidget = dynamic(
+  () => import("./CheckoutTossWidget").then((mod) => mod.CheckoutTossWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <p className="panel-note" style={{ marginTop: 24 }}>
+        결제 수단 불러오는 중…
+      </p>
+    ),
+  },
+);
+
 const CHECKOUT_SIGNUP_STORAGE_KEY = "concord-checkout-signup";
 const SUBJECT_OPTIONS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
@@ -93,47 +98,9 @@ export function CheckoutContent({
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
   const paymentMethodsRef = useRef<PMW | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        clearPaymentWidget();
-        const paymentWidget = await loadPaymentWidget(
-          TOSS_WIDGET_CLIENT_KEY,
-          ANONYMOUS,
-        );
-        if (cancelled) return;
-
-        paymentWidgetRef.current = paymentWidget;
-        const pmw = paymentWidget.renderPaymentMethods(
-          PAYMENT_SELECTOR,
-          { currency: "KRW", value: total },
-          { variantKey: "DEFAULT" },
-        );
-        paymentMethodsRef.current = pmw;
-        paymentWidget.renderAgreement(AGREEMENT_SELECTOR);
-        if (!cancelled) setWidgetReady(true);
-      } catch (e) {
-        console.error(e);
-        if (!cancelled) {
-          setError("결제 위젯을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      paymentWidgetRef.current = null;
-      paymentMethodsRef.current = null;
-      clearPaymentWidget();
-      setWidgetReady(false);
-    };
-  }, [total]);
-
-  useEffect(() => {
-    paymentMethodsRef.current?.updateAmount(total);
-  }, [total]);
+  const handleWidgetError = useCallback((message: string) => {
+    setError(message);
+  }, []);
 
   const toggleSubject = useCallback(
     (subject: string) => {
@@ -318,8 +285,13 @@ export function CheckoutContent({
                 <CmsText active={isEditMode} cmsKey="payment_note">
                   <p className="panel-note">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
                 </CmsText>
-                <div id="concord-payment-methods" style={{ marginTop: 24, minHeight: 120, width: "100%" }} />
-                <div id="concord-agreement" style={{ marginTop: 24, width: "100%" }} />
+                <CheckoutTossWidget
+                  total={total}
+                  onReadyChange={setWidgetReady}
+                  onError={handleWidgetError}
+                  paymentWidgetRef={paymentWidgetRef}
+                  paymentMethodsRef={paymentMethodsRef}
+                />
               </article>
             </div>
 

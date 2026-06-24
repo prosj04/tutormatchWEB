@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export type TutorCardData = {
@@ -32,12 +33,14 @@ export function TutorCard({ tutor }: { tutor: TutorCardData }) {
         )}
       </div>
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+          <Image
             src={tutor.photoUrl ?? "/images/teachers/default-male.png"}
             alt={`${tutor.name} 프로필`}
-            className="h-full w-full object-cover"
+            fill
+            sizes="80px"
+            className="object-cover"
+            loading="lazy"
           />
         </div>
 

@@ -14,10 +14,10 @@ type ConsultationBooking = ManagerConsultationBooking;
 type Tab = "waiting" | "mine";
 
 const STATUS_BADGES = {
-  ASSIGNED: { label: "배정 완료", className: "bg-green-100 text-green-800" },
-  COMPLETED: { label: "상담 완료", className: "bg-blue-100 text-blue-800" },
-  CANCELLED: { label: "취소됨", className: "bg-gray-100 text-gray-600" },
-  WAITING: { label: "대기중", className: "bg-amber-100 text-amber-800" },
+  ASSIGNED: { label: "배정 완료", className: "badge-status-assigned" },
+  COMPLETED: { label: "상담 완료", className: "badge-status-completed" },
+  CANCELLED: { label: "취소됨", className: "badge-status-cancelled" },
+  WAITING: { label: "대기중", className: "badge-status-waiting" },
 } as const;
 
 type ManagerConsultationsPageProps = {

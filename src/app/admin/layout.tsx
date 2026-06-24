@@ -1,6 +1,9 @@
+import "../portal-design.css";
+
 import { redirect } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { PortalDesignProvider } from "@/components/providers/PortalDesignProvider";
 import { auth } from "@/auth";
 
 export const metadata = {
@@ -18,6 +21,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <AdminShell email={session.user.email ?? ""}>{children}</AdminShell>
+    <PortalDesignProvider>
+      <AdminShell email={session.user.email ?? ""}>{children}</AdminShell>
+    </PortalDesignProvider>
   );
 }

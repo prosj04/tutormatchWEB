@@ -88,9 +88,22 @@ export function ConcordSiteHeader({
     };
   }, [open]);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <>
-      <header className="site">
+      <header className={`site${open ? " menu-open" : ""}`}>
         <div className="wrap nav">
           <Link className="logo" href={logoHref} onClick={() => setOpen(false)}>
             Concord<span>.</span>
@@ -189,63 +202,112 @@ export function ConcordSiteHeader({
         </div>
       </header>
 
-      <div className={`mobile-drawer${open ? " open" : ""}`} aria-hidden={!open}>
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
-            {link.label}
-          </Link>
-        ))}
+      <button
+        type="button"
+        className={`mobile-backdrop${open ? " open" : ""}`}
+        aria-label="메뉴 닫기"
+        tabIndex={open ? 0 : -1}
+        onClick={() => setOpen(false)}
+      />
 
-        <div className="mobile-theme">
-          <div className="seg" role="group" aria-label="색 테마 선택">
-            <button type="button" className="g" aria-pressed={color === "green"} onClick={() => setColor("green")}>
-              <span className="dot" />
-            </button>
-            <button type="button" className="b" aria-pressed={color === "blue"} onClick={() => setColor("blue")}>
-              <span className="dot" />
-            </button>
+      <div
+        className={`mobile-drawer${open ? " open" : ""}`}
+        aria-hidden={!open}
+        role="dialog"
+        aria-modal={open}
+        aria-label="사이트 메뉴"
+      >
+        <div className="mobile-drawer-inner">
+          <nav className="mobile-nav" aria-label="주요 메뉴">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={isActive(pathname, link.href) ? "active" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mobile-drawer-foot">
+            <div className="mobile-theme">
+              <span className="mobile-theme-label">테마</span>
+              <div className="mobile-theme-controls">
+                <div className="seg" role="group" aria-label="색 테마 선택">
+                  <button
+                    type="button"
+                    className="g"
+                    aria-label="그린 테마"
+                    aria-pressed={color === "green"}
+                    onClick={() => setColor("green")}
+                  >
+                    <span className="dot" />
+                  </button>
+                  <button
+                    type="button"
+                    className="b"
+                    aria-label="블루 테마"
+                    aria-pressed={color === "blue"}
+                    onClick={() => setColor("blue")}
+                  >
+                    <span className="dot" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="theme-toggle"
+                  onClick={toggleMode}
+                  aria-label="다크 모드 전환"
+                >
+                  <ConcordMoonIcon />
+                  <ConcordSunIcon />
+                </button>
+              </div>
+            </div>
+
+            {status === "authenticated" && session?.user ? (
+              <p className="mobile-user">{name}님</p>
+            ) : null}
+
+            <div className="mobile-actions">
+              {status === "authenticated" && session?.user ? (
+                <>
+                  <Link href={portalHref} className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
+                    {portalLabel}
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn btn-block"
+                    style={{ background: "var(--fg)", color: "var(--bg)" }}
+                    onClick={() => {
+                      setOpen(false);
+                      void signOut({ redirectTo: "/" });
+                    }}
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
+                    로그인
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn btn-acc btn-block"
+                    onClick={() => {
+                      setOpen(false);
+                      void goConsultation();
+                    }}
+                  >
+                    무료 상담
+                  </button>
+                </>
+              )}
+            </div>
           </div>
-          <button type="button" className="theme-toggle" onClick={toggleMode} aria-label="다크 모드 전환">
-            <ConcordMoonIcon />
-            <ConcordSunIcon />
-          </button>
-        </div>
-
-        <div className="mobile-actions">
-          {status === "authenticated" && session?.user ? (
-            <>
-              <Link href={portalHref} className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
-                {portalLabel}
-              </Link>
-              <button
-                type="button"
-                className="btn btn-block"
-                style={{ background: "var(--fg)", color: "var(--bg)" }}
-                onClick={() => {
-                  setOpen(false);
-                  void signOut({ redirectTo: "/" });
-                }}
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
-                로그인
-              </Link>
-              <button
-                type="button"
-                className="btn btn-acc btn-block"
-                onClick={() => {
-                  setOpen(false);
-                  void goConsultation();
-                }}
-              >
-                무료 상담
-              </button>
-            </>
-          )}
         </div>
       </div>
     </>

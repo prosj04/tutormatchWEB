@@ -211,11 +211,11 @@ export function StudentDashboard({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-portal-content>
       <DashboardTopBar studentName={studentName} isEditMode={isEditMode} />
 
-      <div className="flex pt-14">
-        <aside className="fixed left-0 top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-4 lg:block">
+      <div className="flex pt-[var(--portal-header-h,3.5rem)]">
+        <aside className="fixed left-0 top-[var(--portal-header-h,3.5rem)] z-30 hidden h-[calc(100vh-var(--portal-header-h,3.5rem))] w-56 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-3 sm:p-4 lg:block xl:w-60">
           <DashboardCalendar
             year={calendarYear}
             month={calendarMonth}
@@ -226,7 +226,7 @@ export function StudentDashboard({
           />
         </aside>
 
-        <main className="min-w-0 flex-1 lg:ml-64">
+        <main className="min-w-0 flex-1 lg:ml-56 xl:ml-60">
           <div className="border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>

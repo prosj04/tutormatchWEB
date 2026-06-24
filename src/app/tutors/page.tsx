@@ -10,6 +10,12 @@ export const metadata = {
 
 export const revalidate = 300;
 
+type SearchParams = { cms_edit?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
 function splitSubjects(value: string): string[] {
   return value
     .split(",")
@@ -17,10 +23,13 @@ function splitSubjects(value: string): string[] {
     .filter(Boolean);
 }
 
-export default async function TutorsPage() {
+export default async function TutorsPage({ searchParams }: { searchParams?: SearchParams }) {
   const timer = startPerfTimer("page.tutors.total");
-  const siteContent = await getGroupedSiteContentBySections(["tutors_page", "spacing"]);
-  const teachers = await timeAsync("cache.publicTeachers.list", () => getPublicTeachers());
+  const isEditMode = first(searchParams?.cms_edit) === "1";
+  const [siteContent, teachers] = await Promise.all([
+    getGroupedSiteContentBySections(["tutors_page", "spacing"]),
+    timeAsync("cache.publicTeachers.list", () => getPublicTeachers()),
+  ]);
 
   const tutors = teachers.map((teacher) => ({
     id: teacher.id,
@@ -32,7 +41,7 @@ export default async function TutorsPage() {
     photoUrl: getTutorPublicPhotoUrl(teacher.gender, siteContent, teacher.profile?.photoUrl),
   }));
 
-  const page = <TutorsListing tutors={tutors} />;
+  const page = <TutorsListing tutors={tutors} siteContent={siteContent} isEditMode={isEditMode} />;
   timer.end({ tutorCount: tutors.length });
   return page;
 }

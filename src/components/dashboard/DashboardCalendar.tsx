@@ -65,7 +65,7 @@ export function DashboardCalendar({
         {WEEKDAY_LABELS.map((label, i) => (
           <span
             key={label}
-            className={`py-1 text-[10px] font-medium ${
+            className={`py-1.5 text-xs font-medium sm:text-sm ${
               i === 0 ? "text-accent" : i === 6 ? "text-primary" : "text-text-muted"
             }`}
           >
@@ -89,7 +89,7 @@ export function DashboardCalendar({
               key={dateKey}
               type="button"
               onClick={() => onSelectDate(dateKey)}
-              className={`relative flex aspect-square flex-col items-center justify-center rounded-lg text-xs transition ${
+              className={`relative flex min-h-[2.25rem] flex-col items-center justify-center rounded-lg text-xs sm:min-h-[2.5rem] sm:text-sm transition ${
                 isSelected
                   ? "bg-primary font-semibold text-white"
                   : "text-text-primary hover:bg-background"

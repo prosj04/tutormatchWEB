@@ -44,10 +44,12 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function TutorProfilePage({ params }: PageProps) {
   const timer = startPerfTimer("page.tutorProfile.total");
   const { id } = await params;
-  const siteContent = await getGroupedSiteContentBySections(["tutors_page"]);
-  const teacher = await timeAsync("cache.publicTeacher.detail", () => getPublicTeacherById(id), {
-    teacherId: id,
-  });
+  const [siteContent, teacher] = await Promise.all([
+    getGroupedSiteContentBySections(["tutors_page"]),
+    timeAsync("cache.publicTeacher.detail", () => getPublicTeacherById(id), {
+      teacherId: id,
+    }),
+  ]);
 
   if (!teacher) {
     timer.end({ notFound: true });

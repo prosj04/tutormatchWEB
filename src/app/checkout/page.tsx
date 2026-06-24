@@ -25,8 +25,10 @@ type PageProps = {
 };
 
 export default async function CheckoutPage({ searchParams }: PageProps) {
-  const session = await auth();
-  const siteContent = await getGroupedSiteContentBySections(["checkout_page"]);
+  const [session, siteContent] = await Promise.all([
+    auth(),
+    getGroupedSiteContentBySections(["checkout_page"]),
+  ]);
   const tutorId = first(searchParams.tutor) ?? "1";
   const sessionsRaw = first(searchParams.sessions);
   const sessions: SessionPlan = parseSessionsParam(sessionsRaw);

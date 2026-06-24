@@ -3,8 +3,11 @@
 import Image from "next/image";
 import { useState } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
+import type { GroupedSiteContent } from "@/lib/site-content";
 
 export type TutorCardData = {
   id: string;
@@ -65,21 +68,51 @@ function ConcordTutorCard({ tutor }: { tutor: TutorCardData }) {
   );
 }
 
-export function TutorsListing({ tutors }: { tutors: TutorCardData[] }) {
+export function TutorsListing({
+  tutors,
+  siteContent,
+  isEditMode = false,
+}: {
+  tutors: TutorCardData[];
+  siteContent?: GroupedSiteContent;
+  isEditMode?: boolean;
+}) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const get = (key: string, fallback: string) =>
+    getCmsSectionValue(siteContent, "tutors_page", key, fallback);
+
+  const titleLines = formatCmsMultiline(
+    get("header_title", "검증된 명문대 출신\n전문 강사진"),
+  )
+    .split("\n")
+    .filter(Boolean);
 
   return (
     <main>
       <ConcordPageHead
         eyebrow="Teachers"
         title={
-          <>
-            검증된 명문대 출신
-            <br />
-            전문 강사진
-          </>
+          <CmsEdit active={isEditMode} section="tutors_page" cmsKey="header_title" type="text">
+            {titleLines.length <= 1 ? (
+              titleLines[0] ?? "전문 강사진"
+            ) : (
+              titleLines.map((line, i) => (
+                <span key={line}>
+                  {line}
+                  {i < titleLines.length - 1 ? <br /> : null}
+                </span>
+              ))
+            )}
+          </CmsEdit>
         }
-        description="모든 선생님은 학력 서류 확인과 면접을 거쳐 선발됩니다. 과목·성향·일정에 맞춰 직접 매칭해 드립니다."
+        description={
+          <CmsEdit active={isEditMode} section="tutors_page" cmsKey="header_subtext" type="text">
+            {get(
+              "header_subtext",
+              "모든 선생님은 학력 서류 확인과 면접을 거쳐 선발됩니다. 과목·성향·일정에 맞춰 직접 매칭해 드립니다.",
+            )}
+          </CmsEdit>
+        }
       />
 
       <section className="sec" style={{ paddingTop: 0 }}>

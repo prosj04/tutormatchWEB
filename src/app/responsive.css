@@ -1,0 +1,52 @@
+/* ════════════════════════════════════════════════════
+   Responsive scale — layout tokens & fluid base
+   Load last so --wrap cap applies site-wide.
+   ════════════════════════════════════════════════════ */
+
+:root {
+  --page-x: clamp(1.25rem, 0.65rem + 2vw, 2rem);
+  --site-header-h: clamp(3.5rem, 3.15rem + 1vw, 4.625rem);
+  --portal-header-h: clamp(3.375rem, 3.2rem + 0.45vw, 3.5rem);
+  --subnav-h: 3rem;
+  --content-max: 72rem;
+}
+
+@media (min-width: 1500px) {
+  :root {
+    --wrap: min(1320px, 90vw);
+  }
+}
+
+@media (min-width: 1900px) {
+  :root {
+    --wrap: min(1360px, 82vw);
+  }
+}
+
+/* Subtle rem scale for Tailwind portal/dashboard (15–16px) */
+html {
+  font-size: clamp(15px, 0.234vw + 14.25px, 16px);
+}
+
+body {
+  overflow-x: clip;
+}
+
+/* Portal / dashboard readable width on ultra-wide */
+@media (min-width: 1280px) {
+  [data-portal-content] .mx-auto.max-w-2xl {
+    max-width: min(42rem, 92vw);
+  }
+
+  [data-portal-content] .mx-auto.max-w-6xl {
+    max-width: min(var(--content-max), 94vw);
+  }
+}
+
+/* Minimum touch targets in logged-in areas */
+@media (max-width: 767px) {
+  [data-portal-content] button:not(.aspect-square),
+  [data-portal-content] a.btn {
+    min-height: 44px;
+  }
+}

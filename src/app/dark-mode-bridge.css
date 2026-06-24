@@ -1,0 +1,153 @@
+/* ============================================================
+   Dark mode bridge — Tailwind tokens ↔ Concord CSS variables
+   Minimal overrides: readable text on dark surfaces, no layout changes.
+   ============================================================ */
+
+/* Portal/Tailwind semantic tokens on every page (public + portal) */
+html {
+  --portal-bg: var(--bg);
+  --portal-surface: var(--panel);
+  --portal-surface-2: var(--panel-2);
+  --portal-primary: var(--acc);
+  --portal-primary-fg: var(--on-acc);
+  --portal-fg: var(--fg);
+  --portal-mut: var(--mut);
+  --portal-mut-2: var(--mut-2);
+  --portal-line: var(--line-2);
+  --portal-header-bg: var(--header-bg);
+}
+
+/* Legacy portal shell — follow Concord tokens in dark mode */
+html[data-portal-design="legacy"][data-theme="dark"] {
+  --portal-bg: var(--bg);
+  --portal-surface: var(--panel);
+  --portal-surface-2: var(--panel-2);
+  --portal-primary: var(--acc);
+  --portal-fg: var(--fg);
+  --portal-mut: var(--mut);
+  --portal-mut-2: var(--mut-2);
+  --portal-line: var(--line-2);
+  --portal-header-bg: var(--header-bg);
+}
+
+/* Scoped surfaces: portal pages + modals using .concord-surface */
+[data-theme="dark"] [data-portal-content] .border-gray-100,
+[data-theme="dark"] [data-portal-content] .border-gray-200,
+[data-theme="dark"] [data-portal-content] .border-gray-300,
+[data-theme="dark"] .concord-surface .border-gray-100,
+[data-theme="dark"] .concord-surface .border-gray-200,
+[data-theme="dark"] .concord-surface .border-gray-300 {
+  border-color: var(--line);
+}
+
+[data-theme="dark"] [data-portal-content] .bg-white,
+[data-theme="dark"] .concord-surface .bg-white {
+  background-color: var(--panel);
+}
+
+[data-theme="dark"] [data-portal-content] .bg-gray-50,
+[data-theme="dark"] [data-portal-content] .bg-gray-100,
+[data-theme="dark"] [data-portal-content] .bg-gray-200,
+[data-theme="dark"] .concord-surface .bg-gray-50,
+[data-theme="dark"] .concord-surface .bg-gray-100,
+[data-theme="dark"] .concord-surface .bg-gray-200 {
+  background-color: var(--panel-2);
+}
+
+[data-theme="dark"] [data-portal-content] .text-gray-500,
+[data-theme="dark"] [data-portal-content] .text-gray-600,
+[data-theme="dark"] [data-portal-content] .text-gray-700,
+[data-theme="dark"] .concord-surface .text-gray-500,
+[data-theme="dark"] .concord-surface .text-gray-600,
+[data-theme="dark"] .concord-surface .text-gray-700 {
+  color: var(--mut);
+}
+
+[data-theme="dark"] [data-portal-content] .hover\:bg-gray-50:hover,
+[data-theme="dark"] .concord-surface .hover\:bg-gray-50:hover {
+  background-color: var(--panel-2);
+}
+
+/* Legacy neutral palette (light-mode hex values) → Concord tokens in dark */
+[data-theme="dark"] .text-neutral-100 {
+  color: var(--fg);
+}
+[data-theme="dark"] .text-neutral-80 {
+  color: var(--mut);
+}
+[data-theme="dark"] .text-neutral-50,
+[data-theme="dark"] .text-neutral-40,
+[data-theme="dark"] .text-neutral-30 {
+  color: var(--mut-2);
+}
+[data-theme="dark"] .bg-neutral-10,
+[data-theme="dark"] .bg-neutral-20 {
+  background-color: var(--panel-2);
+}
+[data-theme="dark"] .border-neutral-20,
+[data-theme="dark"] .border-neutral-30 {
+  border-color: var(--line-2);
+}
+[data-theme="dark"] .hover\:bg-neutral-10:hover {
+  background-color: var(--panel-2);
+}
+[data-theme="dark"] .hover\:text-neutral-100:hover {
+  color: var(--fg);
+}
+
+[data-theme="dark"] .bg-amber-50 {
+  background: rgba(251, 191, 36, 0.12);
+}
+[data-theme="dark"] .text-amber-800,
+[data-theme="dark"] .text-amber-900 {
+  color: #fcd34d;
+}
+[data-theme="dark"] .border-amber-200 {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+/* Status badges (consultation / manager) */
+.badge-status-waiting,
+.badge-status-assigned,
+.badge-status-completed,
+.badge-status-cancelled {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.badge-status-waiting {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+.badge-status-assigned {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+.badge-status-completed {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+}
+.badge-status-cancelled {
+  background: var(--panel-2);
+  color: var(--mut);
+}
+[data-theme="dark"] .badge-status-waiting {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fcd34d;
+}
+[data-theme="dark"] .badge-status-assigned {
+  background: rgba(74, 222, 128, 0.14);
+  color: #86efac;
+}
+[data-theme="dark"] .badge-status-completed {
+  background: rgba(96, 165, 250, 0.16);
+  color: #93c5fd;
+}
+[data-theme="dark"] .badge-status-cancelled {
+  background: var(--panel-2);
+  color: var(--mut);
+}

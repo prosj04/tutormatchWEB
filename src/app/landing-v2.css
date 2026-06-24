@@ -24,11 +24,11 @@
 .lp2-root ::selection { background: var(--acc); color: var(--on-acc); }
 
 /* ── layout ── */
-.lp2-wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 32px; }
-.lp2-sec { padding: clamp(92px,8.5vw,168px) 0; position: relative; }
-.lp2-sec-head { max-width: min(820px,72%); margin-bottom: clamp(48px,5vw,80px); }
+.lp2-wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--page-x, 32px); }
+.lp2-sec { padding: clamp(72px, 8vw, 148px) 0; position: relative; }
+.lp2-sec-head { max-width: min(820px, 100%); margin-bottom: clamp(40px, 5vw, 72px); }
 .lp2-sec-head h2 {
-  font-size: clamp(32px,4.4vw,66px); font-weight: 700; letter-spacing: -.03em;
+  font-size: clamp(28px, 4vw, 58px); font-weight: 700; letter-spacing: -.03em;
   line-height: 1.08; margin-top: 18px; color: var(--fg);
 }
 .lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; text-wrap: pretty; }
@@ -38,13 +38,13 @@
   display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .22em;
   text-transform: uppercase; color: var(--acc-text);
 }
-.lp2-hl { color: var(--acc-text); }
+.lp2-hl { color: var(--acc-text); font-style: normal; }
 
 /* ── buttons ── */
 .lp2-btn {
   display: inline-flex; align-items: center; gap: 8px; justify-content: center;
-  font-weight: 700; font-size: 16px; border-radius: 999px;
-  padding: 15px 26px; cursor: pointer; border: 1px solid transparent;
+  font-weight: 700; font-size: clamp(15px, .92rem + .15vw, 16px); border-radius: 999px;
+  padding: clamp(13px, .75rem + .3vw, 15px) clamp(22px, 1.2rem + .8vw, 26px); cursor: pointer; border: 1px solid transparent;
   transition: transform .18s var(--ease), background .18s, border-color .18s, color .18s;
   white-space: nowrap; min-height: 44px;
 }
@@ -66,8 +66,8 @@
   border-bottom-color: transparent;
   box-shadow: 0 1px 0 var(--line), 0 8px 28px rgba(15,18,30,.06);
 }
-.lp2-nav { display: flex; align-items: center; gap: 40px; height: 74px; }
-.lp2-logo { font-size: 23px; font-weight: 800; letter-spacing: -.03em; color: var(--fg); flex-shrink: 0; }
+.lp2-nav { display: flex; align-items: center; gap: clamp(16px, 2.5vw, 40px); height: var(--site-header-h, 74px); }
+.lp2-logo { font-size: clamp(18px, 1rem + .55vw, 23px); font-weight: 800; letter-spacing: -.03em; color: var(--fg); flex-shrink: 0; }
 .lp2-logo span { color: var(--acc); }
 .lp2-nav-links { display: flex; gap: 30px; margin-left: 8px; }
 .lp2-nav-links a { color: var(--mut); font-size: 15px; font-weight: 500; transition: color .15s; }
@@ -115,15 +115,15 @@
 
 /* mobile drawer */
 .lp2-mobile-menu {
-  position: fixed; inset: 74px 0 0 0; z-index: 49;
-  background: var(--panel); padding: 24px 20px;
+  position: fixed; top: var(--site-header-h, 74px); left: 0; right: 0; bottom: 0; z-index: 49;
+  background: var(--panel); padding: clamp(16px, 3vw, 24px) var(--page-x, 20px);
   transform: translateX(100%); transition: transform .3s var(--ease);
   overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
 }
 .lp2-mobile-menu.open { transform: translateX(0); }
 .lp2-mobile-menu a, .lp2-mobile-menu button {
-  display: flex; align-items: center; min-height: 52px;
-  padding: 0 14px; border-radius: 12px; font-size: 20px; font-weight: 700;
+  display: flex; align-items: center; min-height: clamp(48px, 3rem + .5vw, 52px);
+  padding: 0 14px; border-radius: 12px; font-size: clamp(17px, 1rem + .45vw, 19px); font-weight: 700;
   color: var(--fg); background: transparent; border: none; cursor: pointer; width: 100%; text-align: left;
 }
 .lp2-mobile-menu a:hover, .lp2-mobile-menu button:hover {
@@ -157,11 +157,11 @@
 [data-theme="dark"] .lp2-hero-bg::after { opacity: .4; }
 .lp2-hero-inner { position: relative; z-index: 1; }
 .lp2-hero h1 {
-  font-size: clamp(46px,7.4vw,124px); font-weight: 800; letter-spacing: -.04em;
+  font-size: clamp(36px, 6vw, 92px); font-weight: 800; letter-spacing: -.04em;
   line-height: 1.04; margin-top: 26px; max-width: 13ch; color: var(--fg);
 }
 .lp2-hero .lp2-lede {
-  font-size: clamp(18px,1.55vw,25px); color: var(--mut); margin-top: 30px;
+  font-size: clamp(17px, 1.35vw, 23px); color: var(--mut); margin-top: clamp(20px, 3vw, 30px);
   max-width: 50ch; line-height: 1.55; text-wrap: pretty;
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
@@ -172,7 +172,7 @@
 .lp2-stat { padding: 34px 44px 34px 0; margin-right: 44px; border-right: 1px solid var(--line); }
 .lp2-stat:last-child { border-right: 0; margin-right: 0; }
 .lp2-stat .n {
-  font-size: clamp(40px,4.6vw,72px); font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  font-size: clamp(32px, 4vw, 64px); font-weight: 800; letter-spacing: -.03em; line-height: 1;
   font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; color: var(--fg);
 }
 .lp2-stat .n em { color: var(--acc-text); font-style: normal; }
@@ -283,9 +283,9 @@
   font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; letter-spacing: .04em;
 }
 .lp2-price-card .ptag { font-size: 14px; font-weight: 600; color: var(--mut); }
-.lp2-price-card .pname { font-size: 26px; font-weight: 700; margin-top: 6px; letter-spacing: -.025em; color: var(--fg); }
+.lp2-price-card .pname { font-size: clamp(22px, 1.2rem + .8vw, 26px); font-weight: 700; margin-top: 6px; letter-spacing: -.025em; color: var(--fg); }
 .lp2-price-card .price {
-  font-size: 42px; font-weight: 800; margin-top: 8px; letter-spacing: -.03em; color: var(--fg);
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 42px); font-weight: 800; margin-top: 8px; letter-spacing: -.03em; color: var(--fg);
   font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
 }
 .lp2-price-card .price small { font-size: 18px; font-weight: 600; color: var(--mut); margin-left: 4px; }
@@ -389,16 +389,17 @@
   .lp2-nav-links { display: none; }
   .lp2-ghost-link { display: none; }
   .lp2-hamburger { display: flex; }
-  .lp2-sec { padding: 88px 0; }
+  .lp2-sec { padding: clamp(56px, 10vw, 88px) 0; }
   .lp2-desktop-session { display: none; }
+  .lp2-sec-head h2 { font-size: clamp(26px, 6.5vw, 40px); }
 }
 @media (max-width:680px) {
-  .lp2-wrap { padding: 0 20px; }
   .lp2-grid-3, .lp2-rev-grid, .lp2-price-grid { grid-template-columns: 1fr; }
   .lp2-grid-4 { grid-template-columns: 1fr; }
   .lp2-stats { flex-wrap: wrap; }
-  .lp2-stat { border-right: 0; margin-right: 0; padding: 24px 0; width: 50%; }
-  .lp2-proc-row { grid-template-columns: 64px 1fr; gap: 18px; }
-  .lp2-cta-band { padding: 48px 32px; }
+  .lp2-stat { border-right: 0; margin-right: 0; padding: 20px 0; width: 50%; }
+  .lp2-proc-row { grid-template-columns: 56px 1fr; gap: 16px; }
+  .lp2-cta-band { padding: clamp(36px, 8vw, 48px) clamp(24px, 5vw, 32px); }
   .lp2-cta-band .lp2-btn { width: 100%; }
+  .lp2-hero h1 { font-size: clamp(32px, 9vw, 44px); max-width: none; }
 }

@@ -19,10 +19,10 @@ import {
 type Booking = ConsultationBookingDto;
 
 const STATUS_BADGE_CLASS: Record<Booking["status"], string> = {
-  WAITING: "bg-amber-100 text-amber-800",
-  ASSIGNED: "bg-green-100 text-green-800",
-  COMPLETED: "bg-blue-100 text-blue-800",
-  CANCELLED: "bg-gray-100 text-gray-600",
+  WAITING: "badge-status-waiting",
+  ASSIGNED: "badge-status-assigned",
+  COMPLETED: "badge-status-completed",
+  CANCELLED: "badge-status-cancelled",
 };
 
 const STATUS_CMS_KEYS: Record<Booking["status"], { label: string; body: string }> = {
@@ -194,7 +194,7 @@ export function ConsultationBookingPage({
   const welcomeText = welcomeTpl.replace(/\{name\}/g, studentName);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-portal-content>
       <header className="sticky top-0 z-40 border-b border-text-primary/10 bg-surface px-4 py-3 shadow-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
           <Link href="/dashboard" className="font-sans text-lg font-bold italic text-primary">

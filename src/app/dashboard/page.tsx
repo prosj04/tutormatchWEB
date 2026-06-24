@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { StudentDashboard } from "@/components/dashboard/StudentDashboard";
+import { StudentDashboardEntry } from "@/components/dashboard/StudentDashboardEntry";
 import { isAiAnswerEnabled } from "@/lib/ai-answer";
 import { auth } from "@/auth";
 import { formatDateKey } from "@/lib/study-plan-dates";
@@ -88,7 +88,7 @@ export default async function DashboardPage({
   }));
 
   return (
-    <StudentDashboard
+    <StudentDashboardEntry
       studentName={student.name}
       studentId={student.id}
       initialDate={initialDate}

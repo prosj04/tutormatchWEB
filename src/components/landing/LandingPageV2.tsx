@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { formatCmsMultiline, parseCmsVisibility } from "@/lib/cms-page-defaults";
+import { buildVisibleCompareRows, getCompareTableTitle } from "@/lib/compare-cms";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
@@ -43,54 +45,26 @@ const steps = [
   { number: "05", title: "학습 리포트·관리", desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다." },
 ];
 
-const compareRows = [
-  { label: "선생님 자격 검증", general: "없음", concord: "서류·면접 인증" },
-  { label: "선생님 실력 확인", general: "수업 후에야 파악", concord: "사전 검증" },
-  { label: "학생 맞춤 매칭", general: "직접 알아봐야 함", concord: "성향·과목 맞춤" },
-  { label: "선생님 교체 리스크", general: "안 맞으면 1~2달 낭비", concord: "처음부터 핏 맞는 선생님" },
-  { label: "매일 학습 점검", general: "없음", concord: "일별 플랜" },
-  { label: "질문 답변", general: "수업 시간에만", concord: "상시 (강사·AI)" },
-  { label: "문제 발생 대응", general: "학부모가 직접 해결", concord: "전담 매니저 조율" },
-];
-
-/* ─── scroll-reveal hook ─── */
-function useReveal() {
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("in");
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
-    );
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-    const timer = setTimeout(() => {
-      document.querySelectorAll(".reveal:not(.in)").forEach((el) =>
-        el.classList.add("in"),
-      );
-    }, 2500);
-    return () => {
-      io.disconnect();
-      clearTimeout(timer);
-    };
-  }, []);
+/** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
+function homePricingTitleParts(raw: string): { highlight: string; suffix: string } {
+  const line = (raw.includes("\n") ? raw.split("\n").pop() : raw)?.trim() ?? "월 40만원부터";
+  const trimmed = line.replace(/^1:1\s*맞춤\s*과외,?\s*/, "").trim() || "월 40만원부터";
+  if (trimmed.endsWith("부터")) {
+    return { highlight: trimmed.slice(0, -2).trim(), suffix: "부터" };
+  }
+  return { highlight: trimmed, suffix: "" };
 }
 
-/* ─── main component ─── */
-export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
-  useReveal();
-  const [pricingTier] = usePricingSchoolTier();
-
+function buildLandingCmsView(cms?: LandingCmsContent) {
   const getCmsValue = (section: string, key: string, fallback: string) =>
     cms?.siteContent[section]?.[key] ?? fallback;
   const getCmsMultiline = (section: string, key: string, fallback: string) =>
     formatCmsMultiline(getCmsValue(section, key, fallback));
 
-  /* ── CMS data (identical processing to LandingPageThemed) ── */
+  const pricingTitleParts = homePricingTitleParts(
+    getCmsValue("home_page", "pricing_title", "월 40만원부터"),
+  );
+
   const cmsStats = [
     {
       value: getCmsValue("stats", "stat1_number", stats[0].value),
@@ -123,18 +97,13 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
       },
     ];
   });
-  const doubledResults =
-    cmsResults.length > 0 ? [...cmsResults, ...cmsResults] : [];
+  const doubledResults = cmsResults.length > 0 ? [...cmsResults, ...cmsResults] : [];
 
   const cmsTeachers = teachers.flatMap((t, index) => {
     const n = index + 1;
     const vis = getCmsValue("teachers", `teacher${n}_visible`, "1");
     if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis)) return [];
-    const careers = getCmsValue(
-      "teachers",
-      `teacher${n}_careers`,
-      t.careers.join("\n"),
-    )
+    const careers = getCmsValue("teachers", `teacher${n}_careers`, t.careers.join("\n"))
       .split("\n")
       .map((c) => c.trim())
       .filter(Boolean);
@@ -143,11 +112,7 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
         subject: getCmsValue("teachers", `teacher${n}_subject`, t.subject),
         name: getCmsValue("teachers", `teacher${n}_name`, t.name),
         image: getCmsValue("teachers", `teacher${n}_image`, t.image),
-        highlight: getCmsValue(
-          "teachers",
-          `teacher${n}_highlight`,
-          t.highlight,
-        ),
+        highlight: getCmsValue("teachers", `teacher${n}_highlight`, t.highlight),
         careers: careers.length > 0 ? careers : t.careers,
       },
     ];
@@ -156,8 +121,7 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
   const cmsSteps = steps.flatMap((step, index) => {
     const n = index + 1;
     const vis = getCmsValue("features", `step${n}_visible`, "1");
-    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, n <= 5))
-      return [];
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, n <= 5)) return [];
     return [
       {
         ...step,
@@ -191,7 +155,7 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
       : [
           {
             quote:
-              "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
+              "공부하러 가서도 시간만내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
             info: "고2 수학 · 학부모",
             img: "",
           },
@@ -209,6 +173,76 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
           },
         ];
 
+  return {
+    getCmsValue,
+    getCmsMultiline,
+    pricingTitleParts,
+    cmsStats,
+    doubledResults,
+    cmsTeachers,
+    cmsSteps,
+    managementItems,
+    cmsTestimonials,
+    compareTitle: getCompareTableTitle(cms?.siteContent),
+  };
+}
+
+/* ─── scroll-reveal hook ─── */
+function useReveal() {
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    const timer = setTimeout(() => {
+      document.querySelectorAll(".reveal:not(.in)").forEach((el) =>
+        el.classList.add("in"),
+      );
+    }, 2500);
+    return () => {
+      io.disconnect();
+      clearTimeout(timer);
+    };
+  }, []);
+}
+
+/* ─── main component ─── */
+export function LandingPageV2({
+  cms,
+  isEditMode = false,
+}: {
+  cms?: LandingCmsContent;
+  isEditMode?: boolean;
+}) {
+  useReveal();
+  const [pricingTier] = usePricingSchoolTier();
+
+  const {
+    getCmsValue,
+    getCmsMultiline,
+    pricingTitleParts,
+    cmsStats,
+    doubledResults,
+    cmsTeachers,
+    cmsSteps,
+    managementItems,
+    cmsTestimonials,
+    compareTitle,
+  } = useMemo(() => buildLandingCmsView(cms), [cms]);
+
+  const compareRowsCms = useMemo(
+    () => buildVisibleCompareRows(cms?.siteContent),
+    [cms?.siteContent],
+  );
+
   const homePricingItems = useMemo(() => {
     const all = buildVisiblePricingPlanItems(cms?.siteContent, pricingTier);
     const picked = all.filter((_, i) => i === 0 || i === 2);
@@ -222,22 +256,32 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
         <div className="lp2-hero-bg" />
         <div className="lp2-wrap lp2-hero-inner">
           <span className="lp2-eyebrow">Concord Private Tutoring</span>
-          <h1>
-            학생마다 맞는 <em className="lp2-hl">선생님</em>이 다릅니다
+          <h1 style={{ whiteSpace: "pre-line" }}>
+            <CmsEdit active={isEditMode} section="hero" cmsKey="headline" type="text">
+              {formatCmsMultiline(
+                getCmsValue("hero", "headline", "학생마다 맞는\n선생님이 다릅니다"),
+              )}
+            </CmsEdit>
           </h1>
           <p className="lp2-lede">
-            {getCmsValue(
-              "hero",
-              "subtext",
-              "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
-            )}
+            <CmsEdit active={isEditMode} section="hero" cmsKey="subtext" type="text">
+              {getCmsMultiline(
+                "hero",
+                "subtext",
+                "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
+              )}
+            </CmsEdit>
           </p>
           <div className="lp2-cta-row">
             <ConsultationApplyButton className="lp2-btn lp2-btn-acc">
-              무료 상담 신청
+              <CmsEdit active={isEditMode} section="hero" cmsKey="cta_primary" type="text">
+                {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
+              </CmsEdit>
             </ConsultationApplyButton>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
-              선생님 둘러보기 →
+              <CmsEdit active={isEditMode} section="hero" cmsKey="cta_secondary" type="text">
+                {getCmsValue("hero", "cta_secondary", "선생님 둘러보기 →")}
+              </CmsEdit>
             </Link>
           </div>
 
@@ -410,9 +454,8 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
             <span className="lp2-eyebrow">Plans</span>
             <h2>
               1:1 맞춤 과외,{" "}
-              <span className="lp2-hl">
-                {getCmsValue("home_page", "pricing_title", "월 40만원부터")}
-              </span>
+              <span className="lp2-hl">{pricingTitleParts.highlight}</span>
+              {pricingTitleParts.suffix}
             </h2>
             <p>
               {getCmsValue(
@@ -473,10 +516,13 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
             <span className="lp2-eyebrow">Compare</span>
-            <h2>개인 과외와 무엇이 다른가요</h2>
+            <h2>
+              <CmsEdit active={isEditMode} section="compare" cmsKey="table_title" type="text">
+                {compareTitle || "개인 과외와 무엇이 다른가요"}
+              </CmsEdit>
+            </h2>
             <p>
-              맞지 않는 선생님으로 1~2달을 낭비하지 않도록, 처음부터 핏을
-              맞춥니다.
+              맞지 않는 선생님으로 1~2달을 낭비하지 않도록, 처음부터 핏을 맞춥니다.
             </p>
           </div>
 
@@ -490,22 +536,30 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
                 </tr>
               </thead>
               <tbody>
-                {compareRows.map((row) => (
-                  <tr key={row.label}>
-                    <td>{row.label}</td>
+                {compareRowsCms.map((row) => (
+                  <tr key={row.rowIndex}>
                     <td>
-                      {row.general === "없음" ? (
+                      <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_feature`} type="text">
+                        {row.feature}
+                      </CmsEdit>
+                    </td>
+                    <td>
+                      {row.other === "✗" || row.other === "없음" ? (
                         <>
                           <span className="lp2-no">✗</span>
-                          {row.general}
+                          {row.other.replace("✗", "").trim() || "없음"}
                         </>
                       ) : (
-                        row.general
+                        <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_other`} type="text">
+                          {row.other}
+                        </CmsEdit>
                       )}
                     </td>
                     <td className="lp2-col-c">
                       <span className="lp2-ok">✓</span>
-                      {row.concord}
+                      <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_concord`} type="text">
+                        {row.concord.replace(/^✓\s*/, "")}
+                      </CmsEdit>
                     </td>
                   </tr>
                 ))}

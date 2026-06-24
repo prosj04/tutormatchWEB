@@ -5,9 +5,9 @@ export function ConcordPageHead({
   title,
   description,
 }: {
-  eyebrow: string;
+  eyebrow: ReactNode;
   title: ReactNode;
-  description: string;
+  description: ReactNode;
 }) {
   return (
     <section className="page-head">

@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#F5F5F5",
-        surface: "#FFFFFF",
-        primary: "#2563EB",
+        background: "var(--portal-bg, #F5F5F5)",
+        surface: "var(--portal-surface, #FFFFFF)",
+        primary: "var(--portal-primary, #2563EB)",
         accent: "#E91E8C",
         "brand-blue": "#2563EB",
         "neutral-100": "#111111",
@@ -24,11 +24,11 @@ const config: Config = {
         "neutral-40": "#888888",
         "neutral-50": "#666666",
         text: {
-          primary: "#111111",
-          secondary: "#6B7280",
-          muted: "#9CA3AF",
+          primary: "var(--portal-fg, #111111)",
+          secondary: "var(--portal-mut, #6B7280)",
+          muted: "var(--portal-mut-2, #9CA3AF)",
         },
-        border: "#E5E7EB",
+        border: "var(--portal-line, #E5E7EB)",
       },
       fontFamily: {
         sans: ["var(--font-pretendard)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],

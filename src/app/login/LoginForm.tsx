@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 
 function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
@@ -228,7 +229,16 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function LoginForm() {
+export function LoginForm({
+  isEditMode = false,
+  defaultTitle = "다시 오신 것을 환영해요",
+  defaultSubtext = "학습 플래너와 상담 내역을 확인하세요.",
+}: {
+  siteContent?: Record<string, Record<string, string>>;
+  isEditMode?: boolean;
+  defaultTitle?: string;
+  defaultSubtext?: string;
+}) {
   const searchParams = useSearchParams();
   const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
@@ -297,8 +307,16 @@ export function LoginForm() {
           <div className="brand">
             Concord<span>.</span>
           </div>
-          <h1>다시 오신 것을 환영해요</h1>
-          <p className="sub">학습 플래너와 상담 내역을 확인하세요.</p>
+          <h1>
+            <CmsEdit active={isEditMode} section="login_page" cmsKey="title" type="text">
+              {defaultTitle}
+            </CmsEdit>
+          </h1>
+          <p className="sub">
+            <CmsEdit active={isEditMode} section="login_page" cmsKey="subtext" type="text">
+              {defaultSubtext}
+            </CmsEdit>
+          </p>
 
           <div className="seg-tabs" data-group aria-label="로그인 역할">
             <button

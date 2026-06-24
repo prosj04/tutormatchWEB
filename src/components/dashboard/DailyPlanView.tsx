@@ -1,13 +1,23 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
 
 import { CopyPlanModal } from "./CopyPlanModal";
 import { QuestionSection } from "./QuestionSection";
-import { TaskList } from "./TaskList";
 import type { Question, RecentPlanOption, StudyPlan, StudyTask } from "./types";
+
+const TaskList = dynamic(
+  () => import("./TaskList").then((mod) => mod.TaskList),
+  {
+    loading: () => (
+      <p className="py-4 text-center text-sm text-text-muted">할 일 목록 불러오는 중…</p>
+    ),
+  },
+);
 
 type DailyPlanViewProps = {
   selectedDate: string;
@@ -71,10 +81,10 @@ export function DailyPlanView({
   const emptyComment = usePortalCopy("student_dashboard", "empty_comment", "아직 코멘트가 없습니다");
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] flex-1 overflow-y-auto bg-background p-4 sm:p-6 md:p-8">
+    <div className="min-h-[calc(100vh-var(--portal-header-h,3.5rem))] flex-1 overflow-y-auto bg-background p-3 sm:p-6 md:p-8">
       <div className="mx-auto max-w-2xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-xl font-bold text-text-primary sm:text-2xl">
+          <h1 className="text-lg font-bold text-text-primary sm:text-xl lg:text-2xl">
             {formatPlanHeader(selectedDate)}
           </h1>
           {!plan && (

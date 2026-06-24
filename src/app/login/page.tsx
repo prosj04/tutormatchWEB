@@ -1,5 +1,8 @@
 import { Suspense } from "react";
 
+import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { getGroupedSiteContentBySections } from "@/lib/site-content";
+
 import { LoginForm } from "./LoginForm";
 
 function LoginFallback() {
@@ -23,10 +26,33 @@ export const metadata = {
   title: "로그인",
 };
 
-export default function LoginPage() {
+export const revalidate = 300;
+
+type SearchParams = { cms_edit?: string | string[]; setup?: string | string[] };
+
+function first(v: string | string[] | undefined): string | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+export default async function LoginPage({ searchParams }: { searchParams?: SearchParams }) {
+  const isEditMode = first(searchParams?.cms_edit) === "1";
+  const siteContent = await getGroupedSiteContentBySections(["login_page"]);
+  const title = getCmsSectionValue(siteContent, "login_page", "title", "다시 오신 것을 환영해요");
+  const subtext = getCmsSectionValue(
+    siteContent,
+    "login_page",
+    "subtext",
+    "학습 플래너와 상담 내역을 확인하세요.",
+  );
+
   return (
     <Suspense fallback={<LoginFallback />}>
-      <LoginForm />
+      <LoginForm
+        siteContent={siteContent}
+        isEditMode={isEditMode}
+        defaultTitle={title}
+        defaultSubtext={subtext}
+      />
     </Suspense>
   );
 }

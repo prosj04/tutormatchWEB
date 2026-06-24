@@ -1,11 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo } from "react";
 
+import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
+import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { buildCheckoutHref } from "@/lib/pricing-plans";
+import type { GroupedSiteContent } from "@/lib/site-content";
 
 function ShieldIcon() {
   return (
@@ -22,23 +27,52 @@ function ShieldIcon() {
   );
 }
 
-type Tier = "middle" | "high";
+function cmsTitleLines(text: string) {
+  const lines = formatCmsMultiline(text).split("\n").filter(Boolean);
+  if (lines.length <= 1) return text;
+  return lines.map((line, i) => (
+    <span key={line}>
+      {line}
+      {i < lines.length - 1 ? <br /> : null}
+    </span>
+  ));
+}
 
-export function PricingContent() {
-  const [tier, setTier] = useState<Tier>("middle");
+type PricingContentProps = {
+  siteContent?: GroupedSiteContent;
+  isEditMode?: boolean;
+};
+
+export function PricingContent({ siteContent, isEditMode = false }: PricingContentProps) {
+  const [tier, setTier] = usePricingSchoolTier();
+  const get = (key: string, fallback: string) =>
+    getCmsSectionValue(siteContent, "pricing_page", key, fallback);
+
+  const items = useMemo(
+    () => buildVisiblePricingPlanItems(siteContent, tier),
+    [siteContent, tier],
+  );
+
+  const headerTitle = get("header_title", "투명한 요금,\n꼭 맞는 1:1 과외");
+  const headerSubtext = get(
+    "header_subtext",
+    "모든 플랜에 학습 진도 관리, 과제 관리, 강사 첨삭·질답이 포함됩니다. 학년과 수업 횟수에 맞춰 선택하세요.",
+  );
 
   return (
     <main>
       <ConcordPageHead
         eyebrow="Plans"
         title={
-          <>
-            투명한 요금,
-            <br />
-            꼭 맞는 1:1 과외
-          </>
+          <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_title" type="text">
+            {cmsTitleLines(headerTitle)}
+          </CmsEdit>
         }
-        description="모든 플랜에 학습 진도 관리, 과제 관리, 강사 첨삭·질답이 포함됩니다. 학년과 수업 횟수에 맞춰 선택하세요."
+        description={
+          <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_subtext" type="text">
+            {headerSubtext}
+          </CmsEdit>
+        }
       />
 
       <section className="sec" style={{ paddingTop: 0 }}>
@@ -62,98 +96,50 @@ export function PricingContent() {
             </button>
           </ConcordReveal>
 
-          {tier === "middle" ? (
-            <div data-tier="middle">
-              <div className="price-grid">
-                <ConcordReveal as="article" className="card price-card">
-                  <div className="ptag">1:1 맞춤 과외 · 중등</div>
-                  <div className="pname">주 1회</div>
-                  <div className="price">
-                    320,000<small>원 / 월</small>
-                  </div>
-                  <div className="punit">주 1회 · 120분 · 회당 80,000원</div>
-                  <ul className="pfeat">
-                    <li>주 1회 수업 (120분)</li>
-                    <li>학습 진도 관리</li>
-                    <li>과제 관리</li>
-                    <li>AI 질답 토큰 제공</li>
-                    <li>수시 강사 첨삭·질답</li>
-                  </ul>
-                  <Link className="btn btn-ghost btn-block" href={buildCheckoutHref(4, 1)}>
-                    이 플랜으로 시작
-                  </Link>
-                </ConcordReveal>
-                <ConcordReveal as="article" className="card price-card rec">
-                  <span className="rec-badge">추천</span>
-                  <div className="ptag">1:1 맞춤 과외 · 중등</div>
-                  <div className="pname">주 2회</div>
-                  <div className="price">
-                    620,000<small>원 / 월</small>
-                  </div>
-                  <div className="punit">주 2회 · 240분 · 회당 77,500원</div>
-                  <ul className="pfeat">
-                    <li>과목별 주 2회 수업 (240분)</li>
-                    <li>과목 2개 이상 선택 가능</li>
-                    <li>과목별 선생님 선택 가능</li>
-                    <li>학습 진도·과제 관리</li>
-                    <li>AI 질답 토큰 제공</li>
-                    <li>수시 강사 첨삭·질답</li>
-                  </ul>
-                  <Link className="btn btn-acc btn-block" href={buildCheckoutHref(8, 1)}>
-                    이 플랜으로 시작
-                  </Link>
-                </ConcordReveal>
-              </div>
+          <div data-tier={tier}>
+            <div className="price-grid">
+              {items.map((item, index) => {
+                const isRec = index === 1 || item.plan.sessions === 8;
+                const priceDigits = (item.price ?? "").replace(/[^\d]/g, "");
+                const tierLabel = tier === "middle" ? "중등" : "고등";
+                return (
+                  <ConcordReveal
+                    key={item.plan.id}
+                    as="article"
+                    className={`card price-card${isRec ? " rec" : ""}`}
+                  >
+                    {isRec ? <span className="rec-badge">추천</span> : null}
+                    <div className="ptag">
+                      1:1 맞춤 과외 · {tierLabel}
+                    </div>
+                    <div className="pname">{item.title ?? item.plan.title}</div>
+                    <div className="price">
+                      {priceDigits}
+                      <small>원 / 월</small>
+                    </div>
+                    <div className="punit">{item.subtitle ?? item.plan.subtitle}</div>
+                    <ul className="pfeat">
+                      {(item.features ?? item.plan.features).map((f) => (
+                        <li key={f}>{f}</li>
+                      ))}
+                    </ul>
+                    <Link
+                      className={`btn btn-block${isRec ? " btn-acc" : " btn-ghost"}`}
+                      href={buildCheckoutHref(item.plan.sessions, item.plan.subjects)}
+                    >
+                      이 플랜으로 시작
+                    </Link>
+                  </ConcordReveal>
+                );
+              })}
             </div>
-          ) : (
-            <div data-tier="high">
-              <div className="price-grid">
-                <ConcordReveal as="article" className="card price-card">
-                  <div className="ptag">1:1 맞춤 과외 · 고등</div>
-                  <div className="pname">주 1회</div>
-                  <div className="price">
-                    380,000<small>원 / 월</small>
-                  </div>
-                  <div className="punit">주 1회 · 120분 · 회당 100,000원</div>
-                  <ul className="pfeat">
-                    <li>주 1회 수업 (120분)</li>
-                    <li>학습 진도 관리</li>
-                    <li>과제 관리</li>
-                    <li>AI 질답 토큰 제공</li>
-                    <li>수시 강사 첨삭·질답</li>
-                  </ul>
-                  <Link className="btn btn-ghost btn-block" href={buildCheckoutHref(4, 1)}>
-                    이 플랜으로 시작
-                  </Link>
-                </ConcordReveal>
-                <ConcordReveal as="article" className="card price-card rec">
-                  <span className="rec-badge">추천</span>
-                  <div className="ptag">1:1 맞춤 과외 · 고등</div>
-                  <div className="pname">주 2회</div>
-                  <div className="price">
-                    740,000<small>원 / 월</small>
-                  </div>
-                  <div className="punit">주 2회 · 240분 · 회당 90,000원</div>
-                  <ul className="pfeat">
-                    <li>과목별 주 2회 수업 (240분)</li>
-                    <li>과목 2개 이상 선택 가능</li>
-                    <li>과목별 선생님 선택 가능</li>
-                    <li>학습 진도·과제 관리</li>
-                    <li>AI 질답 토큰 제공</li>
-                    <li>수시 강사 첨삭·질답</li>
-                  </ul>
-                  <Link className="btn btn-acc btn-block" href={buildCheckoutHref(8, 1)}>
-                    이 플랜으로 시작
-                  </Link>
-                </ConcordReveal>
-              </div>
-            </div>
-          )}
+          </div>
 
           <ConcordReveal className="assure" as="div">
             <ShieldIcon />
             <span>
-              처음 배정된 선생님이 맞지 않으면 <strong>추가 비용 없이 다시 매칭</strong>해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.
+              처음 배정된 선생님이 맞지 않으면 <strong>추가 비용 없이 다시 매칭</strong>해 드립니다. 수업료는 월
+              단위, 언제든 조정 가능합니다.
             </span>
           </ConcordReveal>
         </div>
