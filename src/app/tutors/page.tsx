@@ -1,4 +1,3 @@
-import { PublicShell } from "@/components/layout/PublicShell";
 import { TutorsListing } from "@/components/tutors/TutorsListing";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
@@ -11,12 +10,6 @@ export const metadata = {
 
 export const revalidate = 300;
 
-type SearchParams = { cms_edit?: string | string[] };
-
-function first(v: string | string[] | undefined): string | undefined {
-  return Array.isArray(v) ? v[0] : v;
-}
-
 function splitSubjects(value: string): string[] {
   return value
     .split(",")
@@ -24,13 +17,8 @@ function splitSubjects(value: string): string[] {
     .filter(Boolean);
 }
 
-export default async function TutorsPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function TutorsPage() {
   const timer = startPerfTimer("page.tutors.total");
-  const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["tutors_page", "spacing"]);
   const teachers = await timeAsync("cache.publicTeachers.list", () => getPublicTeachers());
 
@@ -44,11 +32,7 @@ export default async function TutorsPage({
     photoUrl: getTutorPublicPhotoUrl(teacher.gender, siteContent, teacher.profile?.photoUrl),
   }));
 
-  const page = (
-    <PublicShell>
-      <TutorsListing tutors={tutors} siteContent={siteContent} isEditMode={isEditMode} />
-    </PublicShell>
-  );
+  const page = <TutorsListing tutors={tutors} />;
   timer.end({ tutorCount: tutors.length });
   return page;
 }

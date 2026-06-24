@@ -5,27 +5,33 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, type ReactNode } from "react";
 
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
-const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
-const textareaClass = inputClass + " resize-y leading-relaxed";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
-
 function SuccessCheckLarge() {
   return (
     <div
-      className="mx-auto flex size-20 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/10"
+      style={{
+        margin: "0 auto",
+        width: 80,
+        height: 80,
+        display: "grid",
+        placeItems: "center",
+        borderRadius: "50%",
+        border: "2px solid rgba(var(--acc-rgb),.3)",
+        background: "rgba(var(--acc-rgb),.1)",
+      }}
       aria-hidden
     >
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           d="M10 20l7 7 13-14"
-          stroke="#2563EB"
+          stroke="currentColor"
+          style={{ color: "var(--acc-text)" }}
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -119,28 +125,24 @@ export function TeacherPortalApplyClient() {
   }
 
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-24">
-        <div className="mx-auto max-w-6xl px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Apply</p>
-          <h1 className="mt-4 text-5xl font-black leading-tight text-text-primary sm:text-6xl">선생님 가입 신청</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-            제출 후 관리자 검토를 거쳐 안내드립니다.
-          </p>
-        </div>
-      </div>
-      <div className="mx-auto max-w-lg px-8 py-16 md:py-24">
-        <article className="rounded-2xl border border-gray-100 bg-white shadow-sm">
-          {!registerSuccess ? (
-            <div className="p-8 md:p-10">
-              <div className="space-y-5">
+    <main>
+      <ConcordPageHead
+        eyebrow="Apply"
+        title="선생님 가입 신청"
+        description="제출 후 관리자 검토를 거쳐 안내드립니다."
+      />
+
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <article className="card panel-card" style={{ maxWidth: 560, margin: "0 auto" }}>
+            {!registerSuccess ? (
+              <>
                 <Field label="이름" htmlFor="apply-name" error={fieldErrors.name}>
                   <input
                     id="apply-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={inputClass}
                   />
                 </Field>
                 <Field label="전화번호 (로그인 ID)" htmlFor="apply-phone" error={fieldErrors.phone}>
@@ -150,21 +152,15 @@ export function TeacherPortalApplyClient() {
                     placeholder="010-0000-0000"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className={inputClass}
                   />
                 </Field>
-                <GenderSelect
-                  value={gender}
-                  onChange={setGender}
-                  error={fieldErrors.gender}
-                />
+                <GenderSelect value={gender} onChange={setGender} error={fieldErrors.gender} />
                 <Field label="비밀번호" htmlFor="apply-pw" error={fieldErrors.password}>
                   <input
                     id="apply-pw"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={inputClass}
                   />
                 </Field>
                 <Field label="비밀번호 확인" htmlFor="apply-pw2" error={fieldErrors.passwordConfirm}>
@@ -173,12 +169,11 @@ export function TeacherPortalApplyClient() {
                     type="password"
                     value={passwordConfirm}
                     onChange={(e) => setPasswordConfirm(e.target.value)}
-                    className={inputClass}
                   />
                 </Field>
-                <div>
-                  <span className={labelClass}>담당 과목</span>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                <div className="field">
+                  <label>담당 과목</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
                     {SUBJECTS.map((s) => {
                       const on = subjects.includes(s);
                       return (
@@ -186,11 +181,7 @@ export function TeacherPortalApplyClient() {
                           key={s}
                           type="button"
                           onClick={() => toggleSubject(s)}
-                          className={`rounded-full border px-3.5 py-2 text-xs font-semibold transition ${
-                            on
-                              ? "border-primary bg-primary text-white"
-                              : "border-gray-200 bg-white text-text-secondary hover:border-gray-300"
-                          }`}
+                          className={`chip-f${on ? " on" : ""}`}
                         >
                           {s}
                         </button>
@@ -198,7 +189,7 @@ export function TeacherPortalApplyClient() {
                     })}
                   </div>
                   {fieldErrors.subjects ? (
-                    <p className="mt-1 text-xs text-red-600">{fieldErrors.subjects}</p>
+                    <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.subjects}</p>
                   ) : null}
                 </div>
                 <Field label="최종 학력" htmlFor="apply-edu" error={fieldErrors.education}>
@@ -208,7 +199,6 @@ export function TeacherPortalApplyClient() {
                     placeholder="예) 서울대학교 수학교육과 졸업"
                     value={education}
                     onChange={(e) => setEducation(e.target.value)}
-                    className={textareaClass}
                   />
                 </Field>
                 <Field label="주요 경력" htmlFor="apply-exp" error={fieldErrors.experience}>
@@ -218,7 +208,6 @@ export function TeacherPortalApplyClient() {
                     placeholder="예) 대치동 OO학원 수학 강사 3년"
                     value={experience}
                     onChange={(e) => setExperience(e.target.value)}
-                    className={textareaClass}
                   />
                 </Field>
                 <Field label="자기소개" htmlFor="apply-bio" error={fieldErrors.bio}>
@@ -228,58 +217,45 @@ export function TeacherPortalApplyClient() {
                     placeholder="학생들에게 어떤 선생님인지 소개해주세요"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className={textareaClass}
                   />
                 </Field>
                 <button
                   type="button"
                   disabled={registerLoading}
                   onClick={() => void handleRegister()}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn btn-acc btn-block"
+                  style={{ marginTop: 8 }}
                 >
-                  {registerLoading ? (
-                    <>
-                      <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                      처리 중…
-                    </>
-                  ) : (
-                    "가입 신청하기"
-                  )}
+                  {registerLoading ? "처리 중…" : "가입 신청하기"}
                 </button>
                 {registerConflict ? (
-                  <p className="text-center text-sm text-red-600" role="alert">
+                  <p style={{ marginTop: 16, fontSize: 14, color: "var(--acc-text)", textAlign: "center" }} role="alert">
                     {registerConflict}
                   </p>
                 ) : null}
-              </div>
 
-              <p className="mt-8 text-center text-sm text-text-secondary">
-                이미 계정이 있으신가요?{" "}
-                <Link href="/teacher-portal" className="font-semibold text-primary underline-offset-4 hover:underline">
-                  로그인
+                <p className="auth-alt">
+                  이미 계정이 있으신가요? <Link href="/teacher-portal">로그인</Link>
+                </p>
+              </>
+            ) : (
+              <div style={{ textAlign: "center", padding: "24px 0" }}>
+                <SuccessCheckLarge />
+                <h2 className="panel-title" style={{ marginTop: 24, fontSize: 24 }}>
+                  신청이 완료되었습니다
+                </h2>
+                <p className="panel-note" style={{ marginTop: 12 }}>
+                  선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
+                </p>
+                <Link href="/teacher-portal/dashboard" className="btn btn-acc" style={{ marginTop: 28 }}>
+                  선생님 포털로 이동
                 </Link>
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center px-6 py-14 text-center sm:px-10 sm:py-16">
-              <SuccessCheckLarge />
-              <h2 className="mt-8 text-2xl font-black text-text-primary sm:text-3xl">
-                신청이 완료되었습니다
-              </h2>
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-text-secondary">
-                선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
-              </p>
-              <Link
-                href="/teacher-portal/dashboard"
-                className="mt-10 inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/90"
-              >
-                선생님 포털로 이동
-              </Link>
-            </div>
-          )}
-        </article>
-      </div>
-    </div>
+              </div>
+            )}
+          </article>
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -295,12 +271,12 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <div>
-      <label htmlFor={htmlFor} className={labelClass}>
-        {label}
-      </label>
+    <div className="field">
+      <label htmlFor={htmlFor}>{label}</label>
       {children}
-      {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : null}
+      {error ? (
+        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{error}</p>
+      ) : null}
     </div>
   );
 }

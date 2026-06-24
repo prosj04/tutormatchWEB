@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 
-const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 
 export function TeacherPortalLoginClient() {
   const router = useRouter();
@@ -47,26 +45,18 @@ export function TeacherPortalLoginClient() {
   }
 
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">Teachers</p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-            선생님 로그인
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-            전화번호와 비밀번호로 로그인해 주세요.
-          </p>
-        </div>
-      </div>
+    <main>
+      <ConcordPageHead
+        eyebrow="Teachers"
+        title="선생님 로그인"
+        description="전화번호와 비밀번호로 로그인해 주세요."
+      />
 
-      <div className="mx-auto max-w-md px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20 lg:py-24">
-        <article className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
-          <div className="space-y-5">
-            <div>
-              <label htmlFor="tp-login-id" className={labelClass}>
-                이메일 또는 전화번호
-              </label>
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <article className="card panel-card" style={{ maxWidth: 480, margin: "0 auto" }}>
+            <div className="field">
+              <label htmlFor="tp-login-id">이메일 또는 전화번호</label>
               <input
                 id="tp-login-id"
                 type="text"
@@ -75,13 +65,10 @@ export function TeacherPortalLoginClient() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && void handleLogin()}
-                className={inputClass}
               />
             </div>
-            <div>
-              <label htmlFor="tp-login-password" className={labelClass}>
-                비밀번호
-              </label>
+            <div className="field">
+              <label htmlFor="tp-login-password">비밀번호</label>
               <input
                 id="tp-login-password"
                 type="password"
@@ -89,45 +76,30 @@ export function TeacherPortalLoginClient() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && void handleLogin()}
-                className={inputClass}
               />
             </div>
             <button
               type="button"
               disabled={loading}
               onClick={() => void handleLogin()}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn btn-acc btn-block"
+              style={{ marginTop: 8 }}
             >
-              {loading ? (
-                <>
-                  <span
-                    className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                    aria-hidden
-                  />
-                  처리 중…
-                </>
-              ) : (
-                "로그인"
-              )}
+              {loading ? "처리 중…" : "로그인"}
             </button>
             {error ? (
-              <p className="text-center text-sm text-accent" role="alert">
+              <p style={{ marginTop: 16, fontSize: 14, color: "var(--acc-text)", textAlign: "center" }} role="alert">
                 {error}
               </p>
             ) : null}
-          </div>
 
-          <p className="mt-8 text-center text-sm text-text-secondary">
-            아직 계정이 없으신가요?{" "}
-            <Link
-              href="/teacher-portal/apply"
-              className="font-semibold text-primary underline-offset-4 hover:underline"
-            >
-              가입 신청
-            </Link>
-          </p>
-        </article>
-      </div>
-    </div>
+            <p className="auth-alt">
+              아직 계정이 없으신가요?{" "}
+              <Link href="/teacher-portal/apply">가입 신청</Link>
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
   );
 }

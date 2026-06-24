@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { SuccessPaymentComplete } from "@/components/success/SuccessPaymentComplete";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
@@ -32,7 +33,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
   const amount = amountRaw ? Number(amountRaw) : NaN;
 
   return (
-    <div className="bg-background px-4 py-12 sm:px-6 md:px-8 md:py-20 lg:py-28">
+    <main>
       {orderId ? (
         <SuccessPaymentComplete
           orderId={orderId}
@@ -40,73 +41,63 @@ export default async function SuccessPage({ searchParams }: PageProps) {
           amount={Number.isFinite(amount) ? amount : undefined}
         />
       ) : null}
-      <div className="mx-auto max-w-6xl">
-        <div className="rounded-2xl border border-gray-100 bg-white px-5 py-10 text-center shadow-sm sm:px-8 sm:py-12 md:px-12 md:py-16">
-          <CmsEdit active={isEditMode} section="success_page" cmsKey="kicker" type="text">
-            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-              {s("kicker", "Payment")}
-            </p>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="success_page" cmsKey="title" type="text">
-            <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-              {s("title", "결제가 완료되었습니다")}
-            </h1>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="success_page" cmsKey="body" type="text">
-            <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-text-secondary">
-              {s("body", "주문이 정상적으로 접수되었습니다. 담당 매니저가 곧 연락드릴 예정입니다.")}
-            </p>
-          </CmsEdit>
 
-          {paymentKey && orderId && Number.isFinite(amount) ? (
-            <dl className="mx-auto mt-10 max-w-md space-y-3 border-t border-gray-100 pt-10 text-left text-sm">
-              <div className="flex justify-between gap-4">
-                <CmsEdit active={isEditMode} section="success_page" cmsKey="label_order" type="text">
-                  <dt className="text-text-muted">{s("label_order", "주문번호")}</dt>
-                </CmsEdit>
-                <dd className="break-all font-mono text-xs text-text-primary">{orderId}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <CmsEdit active={isEditMode} section="success_page" cmsKey="label_payment_key" type="text">
-                  <dt className="text-text-muted">{s("label_payment_key", "결제키")}</dt>
-                </CmsEdit>
-                <dd className="break-all font-mono text-xs text-text-primary">{paymentKey}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <CmsEdit active={isEditMode} section="success_page" cmsKey="label_amount" type="text">
-                  <dt className="text-text-muted">{s("label_amount", "승인 금액")}</dt>
-                </CmsEdit>
-                <dd className="font-bold text-primary">{formatKRW(amount)}</dd>
-              </div>
-            </dl>
-          ) : (
-            <CmsEdit active={isEditMode} section="success_page" cmsKey="missing_payment_info" type="text">
-              <p className="mt-10 text-sm text-text-muted">
-                {s(
-                  "missing_payment_info",
-                  "결제 확인 정보가 URL에 포함되지 않았습니다. 매니저 확인용 메일을 확인해 주세요.",
-                )}
-              </p>
-            </CmsEdit>
-          )}
+      <ConcordPageHead
+        eyebrow={s("kicker", "Payment")}
+        title={s("title", "결제가 완료되었습니다")}
+        description={s("body", "주문이 정상적으로 접수되었습니다. 담당 매니저가 곧 연락드릴 예정입니다.")}
+      />
 
-          <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-4">
-            <CmsEdit active={isEditMode} section="success_page" cmsKey="link_home" type="text">
-              <Link
-                href="/"
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-gray-300 py-3.5 text-sm font-semibold uppercase tracking-wider text-text-primary transition hover:bg-gray-50 sm:w-auto sm:min-w-[180px]"
-              >
-                {s("link_home", "홈으로")}
-              </Link>
-            </CmsEdit>
-            <CmsEdit active={isEditMode} section="success_page" cmsKey="link_consultation" type="text">
-              <ConsultationApplyButton className="inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90 sm:w-auto sm:min-w-[180px]">
-                {s("link_consultation", "상담 신청")}
-              </ConsultationApplyButton>
-            </CmsEdit>
-          </div>
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <article className="card panel-card" style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+            {paymentKey && orderId && Number.isFinite(amount) ? (
+              <dl style={{ marginTop: 8, textAlign: "left" }}>
+                <div className="kv-row">
+                  <CmsEdit active={isEditMode} section="success_page" cmsKey="label_order" type="text">
+                    <dt>{s("label_order", "주문번호")}</dt>
+                  </CmsEdit>
+                  <dd style={{ fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>{orderId}</dd>
+                </div>
+                <div className="kv-row">
+                  <CmsEdit active={isEditMode} section="success_page" cmsKey="label_payment_key" type="text">
+                    <dt>{s("label_payment_key", "결제키")}</dt>
+                  </CmsEdit>
+                  <dd style={{ fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>{paymentKey}</dd>
+                </div>
+                <div className="kv-row total">
+                  <CmsEdit active={isEditMode} section="success_page" cmsKey="label_amount" type="text">
+                    <dt>{s("label_amount", "승인 금액")}</dt>
+                  </CmsEdit>
+                  <dd>{formatKRW(amount)}</dd>
+                </div>
+              </dl>
+            ) : (
+              <CmsEdit active={isEditMode} section="success_page" cmsKey="missing_payment_info" type="text">
+                <p className="panel-note" style={{ marginTop: 8 }}>
+                  {s(
+                    "missing_payment_info",
+                    "결제 확인 정보가 URL에 포함되지 않았습니다. 매니저 확인용 메일을 확인해 주세요.",
+                  )}
+                </p>
+              </CmsEdit>
+            )}
+
+            <div className="form-actions" style={{ justifyContent: "center", marginTop: 32 }}>
+              <CmsEdit active={isEditMode} section="success_page" cmsKey="link_home" type="text">
+                <Link href="/" className="btn btn-ghost">
+                  {s("link_home", "홈으로")}
+                </Link>
+              </CmsEdit>
+              <CmsEdit active={isEditMode} section="success_page" cmsKey="link_consultation" type="text">
+                <ConsultationApplyButton className="btn btn-acc">
+                  {s("link_consultation", "상담 신청")}
+                </ConsultationApplyButton>
+              </CmsEdit>
+            </div>
+          </article>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

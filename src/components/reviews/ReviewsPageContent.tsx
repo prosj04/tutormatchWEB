@@ -1,60 +1,35 @@
-import { CmsEdit } from "@/components/admin/CmsEditOverlay";
-import { TestimonialCard, type TestimonialItem } from "@/components/reviews/TestimonialCard";
-import { getCmsSpacing, getCmsSectionValue } from "@/lib/cms-page-defaults";
-import type { GroupedSiteContent } from "@/lib/site-content";
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { ReviewByLine, type ReviewCardItem } from "@/lib/reviews-html-fallback";
 
-export function ReviewsPageContent({
-  testimonials,
-  siteContent,
-  isEditMode = false,
-}: {
-  testimonials: TestimonialItem[];
-  siteContent?: GroupedSiteContent;
-  isEditMode?: boolean;
-}) {
-  const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "reviews_page", key, fb);
-  const sp = (key: string) => getCmsSpacing(siteContent, key);
+export function ReviewsPageContent({ testimonials }: { testimonials: ReviewCardItem[] }) {
   return (
-    <div className="pb-24 md:pb-32">
-      <CmsEdit active={isEditMode} section="spacing" cmsKey="reviews_header" type="spacing">
-      <section className="border-b border-neutral-20 bg-white py-12 md:py-16 lg:py-20" style={sp("reviews_header")}>
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-5">
-          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="kicker" type="text">
-            <p className="text-sm font-black uppercase tracking-wider text-primary">
-              {get("kicker", "REVIEWS")}
-            </p>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="title" type="text">
-            <h1 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-0.03em] text-neutral-100">
-              {get("title", "학습 후기")}
-            </h1>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="subtext" type="text">
-            <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-neutral-80">
-              {get("subtext", "실제 학부모·학생이 남긴 후기를 모았습니다.")}
-            </p>
-          </CmsEdit>
-        </div>
-      </section>
-      </CmsEdit>
+    <main>
+      <ConcordPageHead
+        eyebrow="Reviews"
+        title={
+          <>
+            성적보다 습관이
+            <br />
+            먼저 바뀌었어요
+          </>
+        }
+        description="Concord와 함께한 가정의 실제 후기입니다. 점수 변화보다 학생이 스스로 공부하게 된 이야기를 더 자랑스럽게 생각합니다."
+      />
 
-      <CmsEdit active={isEditMode} section="spacing" cmsKey="reviews_list" type="spacing">
-      <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-5 sm:py-12 md:py-16" style={sp("reviews_list")}>
-        {testimonials.length === 0 ? (
-          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="empty_text" type="text">
-            <p className="rounded-2xl border border-dashed border-neutral-20 bg-white p-10 text-center text-sm text-neutral-80">
-              {get("empty_text", "등록된 후기가 없습니다.")}
-            </p>
-          </CmsEdit>
-        ) : (
-          <div className="space-y-5">
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="rev-masonry">
             {testimonials.map((item) => (
-              <TestimonialCard key={`${item.info}-${item.quote.slice(0, 24)}`} item={item} />
+              <ConcordReveal key={`${item.info}-${item.quote.slice(0, 24)}`} as="article" className="card rev-card">
+                <div className="rev-stars">★★★★★</div>
+                <p className="qt">{item.quote}</p>
+                <ReviewByLine info={item.info} />
+              </ConcordReveal>
             ))}
           </div>
-        )}
+        </div>
       </section>
-      </CmsEdit>
-    </div>
+    </main>
   );
 }

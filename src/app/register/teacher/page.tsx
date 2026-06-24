@@ -5,17 +5,13 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
-const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
-const textareaClass = `${inputClass} resize-y leading-relaxed`;
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 type CareerEntry = {
   org: string;
@@ -235,67 +231,69 @@ export default function TeacherRegisterPage() {
 
   if (success) {
     return (
-      <div className="mx-auto max-w-2xl px-8 py-24 text-center">
-        <div className="rounded-3xl border border-gray-100 bg-white p-10 shadow-sm">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <svg width="36" height="36" viewBox="0 0 40 40" fill="none" aria-hidden>
-              <path
-                d="M10 20l7 7 13-14"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+      <main>
+        <section className="sec">
+          <div className="wrap">
+            <article className="card panel-card" style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+              <div
+                style={{
+                  margin: "0 auto",
+                  width: 80,
+                  height: 80,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: "50%",
+                  border: "2px solid rgba(var(--acc-rgb),.3)",
+                  background: "rgba(var(--acc-rgb),.1)",
+                  color: "var(--acc-text)",
+                }}
+                aria-hidden
+              >
+                <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+                  <path
+                    d="M10 20l7 7 13-14"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <h1 className="panel-title" style={{ marginTop: 24, fontSize: 28 }}>
+                신청이 완료되었습니다.
+              </h1>
+              <p className="panel-note" style={{ marginTop: 12 }}>
+                선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
+              </p>
+              <Link href="/teacher-portal/dashboard" className="btn btn-acc" style={{ marginTop: 28 }}>
+                선생님 포털로 이동
+              </Link>
+            </article>
           </div>
-          <h1 className="mt-8 text-3xl font-black text-text-primary">
-            신청이 완료되었습니다.
-          </h1>
-          <p className="mt-4 text-sm leading-relaxed text-text-secondary">
-            선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
-          </p>
-          <Link
-            href="/teacher-portal/dashboard"
-            className="mt-8 inline-flex rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90"
-          >
-            선생님 포털로 이동
-          </Link>
-        </div>
-      </div>
+        </section>
+      </main>
     );
   }
 
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-            Teacher Apply
-          </p>
-          <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-            선생님 가입 신청
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg">
-            3단계 신청서를 작성해 주세요. 서류는 선택사항이며 나중에 선생님 포털에서도 수정할 수 있습니다.
-          </p>
-        </div>
-      </div>
+    <main>
+      <ConcordPageHead
+        eyebrow="Teacher Apply"
+        title="선생님 가입 신청"
+        description="3단계 신청서를 작성해 주세요. 서류는 선택사항이며 나중에 선생님 포털에서도 수정할 수 있습니다."
+      />
 
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20">
-        <div className="mb-6 flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm">
-          {[1, 2, 3].map((item) => (
-            <div
-              key={item}
-              className={`flex flex-1 items-center justify-center rounded-xl px-4 py-3 text-sm font-bold ${
-                step === item ? "bg-primary text-white" : "text-text-muted"
-              }`}
-            >
-              {item}/3
-            </div>
-          ))}
-        </div>
+      <section className="sec" style={{ paddingTop: 0 }}>
+        <div className="wrap" style={{ maxWidth: 720, margin: "0 auto" }}>
+          <div className="seg-tabs" style={{ marginBottom: 24 }}>
+            {[1, 2, 3].map((item) => (
+              <button key={item} type="button" className={step === item ? "on" : undefined} disabled>
+                {item}/3
+              </button>
+            ))}
+          </div>
 
-        <article className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
+          <article className="card panel-card">
           {step === 1 ? (
             <StepOne
               name={name}
@@ -340,24 +338,20 @@ export default function TeacherRegisterPage() {
             />
           ) : null}
 
-          {error ? <p className="mt-6 text-sm text-accent">{error}</p> : null}
+          {error ? (
+            <p style={{ marginTop: 24, fontSize: 14, color: "var(--acc-text)" }} role="alert">
+              {error}
+            </p>
+          ) : null}
 
-          <div className="mt-8 flex gap-3">
+          <div className="form-actions" style={{ marginTop: 32 }}>
             {step > 1 ? (
-              <button
-                type="button"
-                onClick={() => setStep((current) => current - 1)}
-                className="flex-1 rounded-2xl border border-gray-200 py-4 text-sm font-semibold text-text-primary"
-              >
+              <button type="button" onClick={() => setStep((current) => current - 1)} className="btn btn-ghost" style={{ flex: 1 }}>
                 이전
               </button>
             ) : null}
             {step < 3 ? (
-              <button
-                type="button"
-                onClick={goNext}
-                className="flex-1 rounded-2xl bg-primary py-4 text-sm font-semibold text-white"
-              >
+              <button type="button" onClick={goNext} className="btn btn-acc" style={{ flex: 1 }}>
                 다음
               </button>
             ) : (
@@ -365,15 +359,17 @@ export default function TeacherRegisterPage() {
                 type="button"
                 disabled={submitting}
                 onClick={() => void handleSubmit()}
-                className="flex-1 rounded-2xl bg-primary py-4 text-sm font-semibold text-white disabled:opacity-50"
+                className="btn btn-acc"
+                style={{ flex: 1 }}
               >
                 {submitting ? "처리 중…" : "가입 완료"}
               </button>
             )}
           </div>
-        </article>
-      </div>
-    </div>
+          </article>
+        </div>
+      </section>
+    </main>
   );
 }
 
@@ -407,9 +403,9 @@ function StepOne({
   onToggleSubject: (value: string) => void;
 }) {
   return (
-    <div className="space-y-5">
+    <div>
       <Field label="이름" error={fieldErrors.name}>
-        <input value={name} onChange={(e) => onName(e.target.value)} className={inputClass} />
+        <input value={name} onChange={(e) => onName(e.target.value)} />
       </Field>
       <GenderSelect value={gender} onChange={onGender} error={fieldErrors.gender} />
       <Field label="전화번호 (로그인 ID)" error={fieldErrors.phone}>
@@ -418,28 +414,21 @@ function StepOne({
           placeholder="010-0000-0000"
           value={phone}
           onChange={(e) => onPhone(e.target.value)}
-          className={inputClass}
         />
       </Field>
       <Field label="비밀번호" error={fieldErrors.password}>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => onPassword(e.target.value)}
-          className={inputClass}
-        />
+        <input type="password" value={password} onChange={(e) => onPassword(e.target.value)} />
       </Field>
       <Field label="비밀번호 확인" error={fieldErrors.passwordConfirm}>
         <input
           type="password"
           value={passwordConfirm}
           onChange={(e) => onPasswordConfirm(e.target.value)}
-          className={inputClass}
         />
       </Field>
-      <div>
-        <span className={labelClass}>담당 과목</span>
-        <div className="mt-2 flex flex-wrap gap-2">
+      <div className="field">
+        <label>담당 과목</label>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
           {SUBJECTS.map((subject) => {
             const selected = subjects.includes(subject);
             return (
@@ -447,11 +436,7 @@ function StepOne({
                 key={subject}
                 type="button"
                 onClick={() => onToggleSubject(subject)}
-                className={`rounded-full border px-3.5 py-2 text-xs font-semibold ${
-                  selected
-                    ? "border-primary bg-primary text-white"
-                    : "border-gray-200 bg-white text-text-secondary"
-                }`}
+                className={`chip-f${selected ? " on" : ""}`}
               >
                 {subject}
               </button>
@@ -459,7 +444,7 @@ function StepOne({
           })}
         </div>
         {fieldErrors.subjects ? (
-          <p className="mt-2 text-xs text-accent">{fieldErrors.subjects}</p>
+          <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.subjects}</p>
         ) : null}
       </div>
     </div>
@@ -484,30 +469,25 @@ function StepTwo({
   onBio: (value: string) => void;
 }) {
   return (
-    <div className="space-y-5">
+    <div>
       <Field label="최종 학력" error={fieldErrors.education}>
-        <textarea
-          rows={4}
-          value={education}
-          onChange={(e) => onEducation(e.target.value)}
-          className={textareaClass}
-        />
+        <textarea rows={4} value={education} onChange={(e) => onEducation(e.target.value)} />
       </Field>
 
-      <div>
-        <div className="flex items-center justify-between">
-          <span className={labelClass}>주요 경력</span>
+      <div className="field">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <label>주요 경력</label>
           <button
             type="button"
             onClick={() => onCareers([...careers, { org: "", period: "" }])}
-            className="text-xs font-semibold text-primary"
+            style={{ fontSize: 13, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
           >
             항목 추가
           </button>
         </div>
-        <div className="mt-3 space-y-3">
+        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 12 }}>
           {careers.map((career, index) => (
-            <div key={index} className="grid gap-2 rounded-xl bg-background p-3 md:grid-cols-2">
+            <div key={index} className="card panel-card" style={{ padding: 16 }}>
               <input
                 value={career.org}
                 onChange={(e) =>
@@ -518,7 +498,6 @@ function StepTwo({
                   )
                 }
                 placeholder="기관명"
-                className={inputClass}
               />
               <input
                 value={career.period}
@@ -530,12 +509,12 @@ function StepTwo({
                   )
                 }
                 placeholder="기간"
-                className={inputClass}
+                style={{ marginTop: 8 }}
               />
               <button
                 type="button"
                 onClick={() => onCareers(careers.filter((_, i) => i !== index))}
-                className="text-left text-xs font-semibold text-accent md:col-span-2"
+                style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
               >
                 삭제
               </button>
@@ -543,17 +522,12 @@ function StepTwo({
           ))}
         </div>
         {fieldErrors.career ? (
-          <p className="mt-2 text-xs text-accent">{fieldErrors.career}</p>
+          <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.career}</p>
         ) : null}
       </div>
 
       <Field label="자기소개" error={fieldErrors.bio}>
-        <textarea
-          rows={5}
-          value={bio}
-          onChange={(e) => onBio(e.target.value)}
-          className={textareaClass}
-        />
+        <textarea rows={5} value={bio} onChange={(e) => onBio(e.target.value)} />
       </Field>
     </div>
   );
@@ -573,8 +547,8 @@ function StepThree({
   onRemoveDocument: (id: string) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <p className="rounded-2xl bg-primary/10 p-4 text-sm leading-relaxed text-text-secondary">
+    <div>
+      <p className="panel-note" style={{ padding: 16, borderRadius: "var(--r-card)", background: "rgba(var(--acc-rgb),.08)" }}>
         서류는 선택사항입니다. 서류는 나중에 선생님 포털에서도 수정할 수 있습니다.
       </p>
       <FilePicker
@@ -609,16 +583,16 @@ function FilePicker({
   onRemove: (id: string) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-gray-100 bg-background p-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-bold text-text-primary">{title}</h2>
-        <label className="cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary">
+    <section className="card panel-card" style={{ marginTop: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h2 className="panel-title" style={{ fontSize: 15 }}>{title}</h2>
+        <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
           파일 선택
           <input
             type="file"
             accept="application/pdf,image/*"
             multiple={multiple}
-            className="hidden"
+            style={{ display: "none" }}
             onChange={(e) => {
               onAdd(e.target.files);
               e.currentTarget.value = "";
@@ -626,20 +600,32 @@ function FilePicker({
           />
         </label>
       </div>
-      <ul className="mt-3 space-y-2">
+      <ul style={{ marginTop: 12, listStyle: "none", padding: 0 }}>
         {files.length === 0 ? (
-          <li className="text-sm text-text-muted">선택된 파일이 없습니다.</li>
+          <li className="panel-note">선택된 파일이 없습니다.</li>
         ) : (
           files.map((item) => (
             <li
               key={item.id}
-              className="flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2 text-sm"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                padding: "10px 12px",
+                borderRadius: "var(--r-control)",
+                background: "var(--panel-2)",
+                marginTop: 8,
+                fontSize: 14,
+              }}
             >
-              <span className="min-w-0 truncate text-text-secondary">{item.file.name}</span>
+              <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--mut)" }}>
+                {item.file.name}
+              </span>
               <button
                 type="button"
                 onClick={() => onRemove(item.id)}
-                className="shrink-0 text-xs font-semibold text-accent"
+                style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
               >
                 삭제
               </button>
@@ -661,10 +647,12 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <span className={labelClass}>{label}</span>
+    <div className="field">
+      <label>{label}</label>
       {children}
-      {error ? <p className="mt-2 text-xs text-accent">{error}</p> : null}
+      {error ? (
+        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{error}</p>
+      ) : null}
     </div>
   );
 }

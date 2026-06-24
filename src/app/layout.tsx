@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import "./globals.css";
 import "./landing-v2.css";
+import "./concord.css";
 
 const pretendard = localFont({
   src: [

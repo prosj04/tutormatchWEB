@@ -1,41 +1,32 @@
 import { Suspense } from "react";
 
-import { getGroupedSiteContentBySections } from "@/lib/site-content";
-
 import { LoginForm } from "./LoginForm";
 
 function LoginFallback() {
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-12 md:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-          <div className="mt-4 h-12 w-48 animate-pulse rounded bg-gray-200" />
+    <main>
+      <div className="auth-wrap">
+        <div className="auth-bg" />
+        <div className="auth-card reveal in">
+          <div className="brand">
+            Concord<span>.</span>
+          </div>
+          <h1>다시 오신 것을 환영해요</h1>
+          <p className="sub">학습 플래너와 상담 내역을 확인하세요.</p>
         </div>
       </div>
-      <div className="mx-auto max-w-md px-4 py-10 sm:px-6 md:px-8">
-        <div className="h-64 animate-pulse rounded-2xl bg-gray-100" />
-      </div>
-    </div>
+    </main>
   );
 }
 
-type SearchParams = { cms_edit?: string | string[] };
+export const metadata = {
+  title: "로그인",
+};
 
-function first(v: string | string[] | undefined): string | undefined {
-  return Array.isArray(v) ? v[0] : v;
-}
-
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
-  const siteContent = await getGroupedSiteContentBySections(["login_page"]);
-  const isEditMode = first(searchParams?.cms_edit) === "1";
+export default function LoginPage() {
   return (
     <Suspense fallback={<LoginFallback />}>
-      <LoginForm siteContent={siteContent} isEditMode={isEditMode} />
+      <LoginForm />
     </Suspense>
   );
 }

@@ -1,0 +1,140 @@
+/* ============================================================
+   Concord Design Tokens — single source of truth
+   색 2종(green·blue) × 모드 2종(light·dark)
+   기본값: green + light
+   <html data-color="green|blue" data-theme="light|dark">
+   ============================================================ */
+
+:root{
+  /* ---- non-color tokens (모든 테마 공통) ---- */
+  --wrap:1280px;            /* 1500px+ → 1460 / 1900px+ → 1640 (아래 미디어쿼리) */
+  --ease:cubic-bezier(.2,.7,.3,1);
+
+  /* radius */
+  --r-card:18px;
+  --r-card-lg:22px;        /* 요금제 카드 */
+  --r-wrap:20px;           /* 비교표 래퍼 */
+  --r-control:12px;        /* 토글 등 사각 컨트롤 */
+  --r-pill:999px;          /* 버튼·칩·배지 */
+
+  /* spacing scale (4px 베이스) */
+  --space-1:4px;  --space-2:8px;  --space-3:12px; --space-4:16px;
+  --space-5:20px; --space-6:24px; --space-8:32px; --space-10:40px;
+  --space-14:56px; --space-18:72px;
+  --sec-pad:clamp(92px,8.5vw,168px);   /* 섹션 상하 패딩 */
+  --gutter:32px;                        /* .wrap 좌우 (≥1500px: 48px) */
+
+  /* typography */
+  --font-sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
+  --fs-display:clamp(46px,7.4vw,124px); /* 히어로 H1 / 800 / -.04em / lh1.04 */
+  --fs-h2:clamp(32px,4.4vw,66px);       /* 섹션 제목 / 700 / -.03em / lh1.08 */
+  --fs-stat:clamp(40px,4.6vw,72px);     /* 통계·프로세스 번호 / 800 */
+  --fs-price:42px;                      /* 가격 / 800 */
+  --fs-lede:clamp(18px,1.55vw,25px);    /* 히어로 리드 */
+  --fs-lead:clamp(17px,1.3vw,20px);     /* 섹션 설명 */
+  --fs-h3:24px;                         /* 카드/행 제목 / 700 */
+  --fs-body:16px;                       /* 본문·버튼 / 400·700 */
+  --fs-sm:15px;                         /* 보조 텍스트 */
+  --fs-xs:14px;                         /* 캡션 */
+  --fs-eyebrow:13px;                    /* eyebrow / 700 / .22em / UPPER */
+
+  /* ---- GREEN · LIGHT (기본) ---- */
+  --bg:#FAF9F4;
+  --panel:#FFFFFF;
+  --panel-2:#F0EFE7;
+  --line:rgba(34,38,30,.085);
+  --line-2:rgba(34,38,30,.15);
+  --fg:#161A16;
+  --mut:#585C53;
+  --mut-2:#9AA095;
+  --header-bg:rgba(250,249,244,.85);
+  --acc:#10B981;            /* 면(버튼·CTA·배지) */
+  --acc-press:#0CA372;      /* hover/active */
+  --acc-rgb:16,185,129;     /* 틴트·글로우용 */
+  --on-acc:#FFFFFF;         /* 면 위 텍스트 */
+  --acc-text:#07875A;       /* 본문 위 강조 텍스트·체크·숫자 */
+  --shadow-sm:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06);
+  --shadow-md:0 10px 24px rgba(34,38,30,.09),0 22px 50px rgba(34,38,30,.09);
+}
+
+/* ---- BLUE · LIGHT ---- */
+[data-color="blue"]{
+  --bg:#F5F8FE;
+  --panel:#FFFFFF;
+  --panel-2:#EAF0FB;
+  --line:rgba(20,38,74,.085);
+  --line-2:rgba(20,38,74,.15);
+  --fg:#0F1A2E;
+  --mut:#54627A;
+  --mut-2:#93A1B8;
+  --header-bg:rgba(245,248,254,.85);
+  --acc:#2563EB;
+  --acc-press:#1d54cf;
+  --acc-rgb:37,99,235;
+  --on-acc:#FFFFFF;
+  --acc-text:#1D4ED8;
+  --shadow-sm:0 1px 2px rgba(20,38,74,.05),0 3px 10px rgba(20,38,74,.06);
+  --shadow-md:0 10px 24px rgba(20,38,74,.09),0 22px 50px rgba(20,38,74,.09);
+}
+
+/* ---- GREEN · DARK (중립 차콜, 그린은 액센트에만) ---- */
+[data-color="green"][data-theme="dark"]{
+  --bg:#181A1B;
+  --panel:#202325;
+  --panel-2:#282B2D;
+  --line:rgba(200,206,202,.11);
+  --line-2:rgba(200,206,202,.18);
+  --fg:#ECEEEC;
+  --mut:#AEB4B0;
+  --mut-2:#7C817E;
+  --header-bg:rgba(24,26,27,.82);
+  --acc:#2EA46E;
+  --acc-press:#38B97E;
+  --acc-rgb:46,164,110;
+  --on-acc:#06150D;
+  --acc-text:#64C699;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.24),0 2px 10px rgba(0,0,0,.28);
+  --shadow-md:0 14px 32px rgba(0,0,0,.4),0 26px 52px rgba(0,0,0,.34);
+}
+
+/* ---- BLUE · DARK (깊은 네이비) ---- */
+[data-color="blue"][data-theme="dark"]{
+  --bg:#0A1120;
+  --panel:#101D32;
+  --panel-2:#16273F;
+  --line:rgba(140,175,230,.13);
+  --line-2:rgba(140,175,230,.22);
+  --fg:#EAF1FB;
+  --mut:#9DABC4;
+  --mut-2:#6A7894;
+  --header-bg:rgba(10,17,32,.80);
+  --acc:#3B82F6;
+  --acc-press:#5B9CFF;
+  --acc-rgb:59,130,246;
+  --on-acc:#06122A;
+  --acc-text:#85B5FF;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
+  --shadow-md:0 16px 36px rgba(0,0,0,.5),0 30px 60px rgba(0,0,0,.42);
+}
+
+/* ---- 반응형 폭 ---- */
+@media (min-width:1500px){ :root{ --wrap:1460px; --gutter:48px; } }
+@media (min-width:1900px){ :root{ --wrap:1640px; } }
+
+/* ---- 다크 전용 보정 (색과 무관, 항상 둘 것) ---- */
+[data-theme="dark"] .cmp .col-c{ background:rgba(var(--acc-rgb),.12); }
+.cmp thead th.cc{ color:#fff; }
+
+/* ============================================================
+   베이스 (선택) — 토큰을 쓰는 최소 전역 규칙
+   ============================================================ */
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--font-sans);
+  font-weight:400; line-height:1.6; letter-spacing:-.01em;
+  word-break:keep-all;                 /* 한글 어절 단위 줄바꿈 — 필수 */
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+.stat .n,.price-card .price,.proc-n{ font-variant-numeric:tabular-nums; }

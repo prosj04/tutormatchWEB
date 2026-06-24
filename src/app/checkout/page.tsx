@@ -46,7 +46,16 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
     <>
       {showFailBanner ? (
         <CmsEdit active={isEditMode} section="checkout_page" cmsKey="fail_banner" type="text">
-          <div className="border-b border-accent/20 bg-accent/5 px-4 py-3 text-center text-sm text-text-primary sm:px-6 md:px-8">
+          <div
+            style={{
+              borderBottom: "1px solid rgba(var(--acc-rgb),.2)",
+              background: "rgba(var(--acc-rgb),.08)",
+              padding: "12px 24px",
+              textAlign: "center",
+              fontSize: 14,
+              color: "var(--fg)",
+            }}
+          >
             {failBannerText}
           </div>
         </CmsEdit>

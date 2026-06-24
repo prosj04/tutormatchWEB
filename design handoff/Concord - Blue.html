@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord Private Tutoring — Blue (라이트·다크)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root{
+    /* Blue · light (main) — bright, cool, institutional trust */
+    --bg:#F5F8FE;
+    --panel:#FFFFFF;
+    --panel-2:#EAF0FB;
+    --line:rgba(20,38,74,.085);
+    --line-2:rgba(20,38,74,.15);
+    --fg:#0F1A2E;
+    --mut:#54627A;
+    --mut-2:#93A1B8;
+    --stripe-a:#E8EFFA;
+    --stripe-b:#F2F6FD;
+    --header-bg:rgba(245,248,254,.85);
+    --acc:#2563EB;
+    --acc-press:#1d54cf;
+    --acc-rgb:37,99,235;
+    --on-acc:#FFFFFF;
+    --acc-text:#1D4ED8;
+    --shadow-sm:0 1px 2px rgba(20,38,74,.05),0 3px 10px rgba(20,38,74,.06);
+    --shadow-md:0 10px 24px rgba(20,38,74,.09),0 22px 50px rgba(20,38,74,.09);
+    --wrap:1280px;
+    --ease:cubic-bezier(.2,.7,.3,1);
+    font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
+  }
+  [data-theme="dark"]{
+    /* Blue · dark (bespoke deep navy, not an inversion) */
+    --bg:#0A1120;
+    --panel:#101D32;
+    --panel-2:#16273F;
+    --line:rgba(140,175,230,.13);
+    --line-2:rgba(140,175,230,.22);
+    --fg:#EAF1FB;
+    --mut:#9DABC4;
+    --mut-2:#6A7894;
+    --stripe-a:#16273F;
+    --stripe-b:#101D32;
+    --header-bg:rgba(10,17,32,.80);
+    --acc:#3B82F6;
+    --acc-press:#5B9CFF;
+    --acc-rgb:59,130,246;
+    --on-acc:#06122A;
+    --acc-text:#85B5FF;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
+    --shadow-md:0 16px 36px rgba(0,0,0,.5),0 30px 60px rgba(0,0,0,.42);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:inherit;line-height:1.6;font-weight:400;
+    letter-spacing:-.01em;word-break:keep-all;
+    font-feature-settings:"ss03","cv01";
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    transition:background .4s var(--ease),color .4s var(--ease);
+  }
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--acc);color:var(--on-acc);}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 32px;}
+  .eyebrow{
+    display:inline-block;font-size:13px;font-weight:700;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--acc-text);
+  }
+  .hl{color:var(--acc-text);}
+  .sec{padding:clamp(92px,8.5vw,168px) 0;position:relative;}
+  .sec-head{max-width:min(820px,72%);margin-bottom:clamp(48px,5vw,80px);}
+  .sec-head h2{
+    font-size:clamp(32px,4.4vw,66px);font-weight:700;letter-spacing:-.03em;
+    line-height:1.08;margin-top:18px;
+  }
+  .sec-head p{color:var(--mut);font-size:clamp(17px,1.3vw,20px);margin-top:20px;max-width:600px;text-wrap:pretty;}
+
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    font-weight:700;font-size:16px;border-radius:999px;
+    padding:15px 26px;cursor:pointer;border:1px solid transparent;
+    transition:transform .18s var(--ease),background .18s,border-color .18s,color .18s;
+    white-space:nowrap;
+  }
+  .btn-acc{background:var(--acc);color:var(--on-acc);}
+  .btn-acc:hover{background:var(--acc-press);transform:translateY(-2px);}
+  .btn-ghost{background:transparent;color:var(--fg);border-color:var(--line-2);}
+  .btn-ghost:hover{border-color:var(--fg);transform:translateY(-2px);}
+  .btn-sm{padding:11px 18px;font-size:14px;}
+
+  /* nav */
+  header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(140%) blur(14px);
+    background:var(--header-bg);
+    border-bottom:1px solid transparent;transition:border-color .3s;
+  }
+  header.scrolled{border-bottom-color:var(--line);}
+  .nav{display:flex;align-items:center;gap:40px;height:74px;}
+  .logo{font-size:23px;font-weight:800;letter-spacing:-.03em;}
+  .logo span{color:var(--acc);}
+  /* numeric: align figures in stats & prices */
+  .stat .n,.price-card .price,.proc-n{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+  .nav-links{display:flex;gap:30px;margin-left:8px;}
+  .nav-links a{color:var(--mut);font-size:15px;font-weight:500;transition:color .15s;}
+  .nav-links a:hover{color:var(--fg);}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+  .nav-right .ghost-link{color:var(--mut);font-size:14px;font-weight:600;}
+  .nav-right .ghost-link:hover{color:var(--fg);}
+
+  /* hero */
+  .hero{position:relative;padding:clamp(96px,9vw,150px) 0 clamp(78px,7vw,118px);overflow:hidden;}
+  .hero-bg{
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(680px 420px at 78% -8%, rgba(var(--acc-rgb),.16), transparent 60%),
+      radial-gradient(540px 380px at 8% 12%, rgba(var(--acc-rgb),.05), transparent 60%);
+  }
+  .hero-bg::after{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(900px 600px at 70% 0%,#000,transparent 75%);
+            mask-image:radial-gradient(900px 600px at 70% 0%,#000,transparent 75%);
+    opacity:.5;
+  }
+  .hero-inner{position:relative;z-index:1;}
+  .hero h1{
+    font-size:clamp(46px,7.4vw,124px);font-weight:800;letter-spacing:-.04em;
+    line-height:1.04;margin-top:26px;max-width:13ch;
+  }
+  .hero .lede{
+    font-size:clamp(18px,1.55vw,25px);color:var(--mut);margin-top:30px;
+    max-width:50ch;text-wrap:pretty;line-height:1.55;
+  }
+  .cta-row{display:flex;gap:14px;margin-top:42px;flex-wrap:wrap;}
+  .stats{
+    display:flex;gap:0;margin-top:84px;border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .stat{padding:34px 44px 34px 0;margin-right:44px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:0;}
+  .stat .n{font-size:clamp(40px,4.6vw,72px);font-weight:800;letter-spacing:-.03em;line-height:1;}
+  .stat .n em{color:var(--acc-text);font-style:normal;}
+  .stat .l{color:var(--mut);font-size:15px;margin-top:10px;font-weight:500;}
+
+  /* marquee */
+  .marquee{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--panel);overflow:hidden;padding:22px 0;
+    display:flex;gap:0;
+  }
+  .marquee-track{display:flex;gap:14px;align-items:center;white-space:nowrap;
+    animation:scroll 38s linear infinite;padding-left:14px;}
+  .marquee:hover .marquee-track{animation-play-state:paused;}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .chip{
+    display:inline-flex;align-items:center;gap:12px;flex:0 0 auto;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:999px;
+    padding:11px 20px;font-size:15px;font-weight:600;
+  }
+  .chip b{color:var(--mut);font-weight:600;}
+  .chip .arr{color:var(--acc-text);font-weight:800;}
+  .chip .up{color:var(--fg);font-weight:800;}
+
+  /* teachers */
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .t-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;
+    overflow:hidden;transition:transform .25s var(--ease),border-color .25s;
+    display:flex;flex-direction:column;
+  }
+  .t-card:hover{transform:translateY(-6px);border-color:var(--line-2);}
+  .t-media{
+    position:relative;aspect-ratio:4/3;
+    background:repeating-linear-gradient(135deg,var(--stripe-a) 0 11px,var(--stripe-b) 11px 22px);
+    display:flex;align-items:center;justify-content:center;
+    border-bottom:1px solid var(--line);
+  }
+  .t-media .ph{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px;color:var(--mut-2);letter-spacing:.04em;}
+  .t-tag{
+    position:absolute;top:14px;left:14px;background:var(--acc);color:var(--on-acc);
+    font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;letter-spacing:.02em;
+  }
+  .t-body{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;}
+  .t-name{font-size:18px;font-weight:700;letter-spacing:-.02em;}
+  .t-line{color:var(--mut);font-size:14px;margin-top:8px;line-height:1.5;text-wrap:pretty;min-height:42px;}
+  .t-edu{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;font-weight:600;color:var(--fg);}
+  .t-items{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
+  .t-items li{list-style:none;color:var(--mut);font-size:13px;display:flex;gap:8px;align-items:baseline;}
+  .t-items li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--acc-text);flex:0 0 auto;transform:translateY(-1px);}
+
+  /* care */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .care-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:34px 30px 36px;
+    transition:border-color .25s,transform .25s var(--ease);
+  }
+  .care-card:hover{border-color:var(--line-2);transform:translateY(-4px);}
+  .care-card .num{font-size:14px;font-weight:800;color:var(--acc-text);letter-spacing:.1em;}
+  .care-card h3{font-size:22px;font-weight:700;margin-top:22px;letter-spacing:-.025em;}
+  .care-card p{color:var(--mut);font-size:15px;margin-top:12px;line-height:1.6;text-wrap:pretty;}
+
+  /* process */
+  .proc{display:flex;flex-direction:column;}
+  .proc-row{
+    display:grid;grid-template-columns:120px 1fr;gap:32px;align-items:baseline;
+    padding:32px 0;border-top:1px solid var(--line);
+    transition:padding-left .25s var(--ease);
+  }
+  .proc-row:last-child{border-bottom:1px solid var(--line);}
+  .proc-row:hover{padding-left:14px;}
+  .proc-n{font-size:clamp(40px,4.2vw,72px);font-weight:800;color:var(--mut-2);letter-spacing:-.03em;line-height:1;transition:color .25s;}
+  .proc-row:hover .proc-n{color:var(--acc-text);}
+  .proc-c h3{font-size:24px;font-weight:700;letter-spacing:-.025em;}
+  .proc-c p{color:var(--mut);font-size:16px;margin-top:10px;max-width:54ch;text-wrap:pretty;}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:840px;}
+  .price-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:38px 34px 40px;
+    position:relative;display:flex;flex-direction:column;
+  }
+  .price-card.rec{border-color:var(--acc-text);background:linear-gradient(180deg,rgba(var(--acc-rgb),.06),rgba(var(--acc-rgb),0) 40%),var(--panel);}
+  .rec-badge{
+    position:absolute;top:-13px;left:34px;background:var(--acc);color:var(--on-acc);
+    font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;letter-spacing:.04em;
+  }
+  .price-card .ptag{font-size:14px;font-weight:600;color:var(--mut);}
+  .price-card .pname{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.025em;}
+  .price-card .price{font-size:42px;font-weight:800;margin-top:18px;letter-spacing:-.03em;}
+  .price-card .price small{font-size:18px;font-weight:600;color:var(--mut);margin-left:4px;}
+  .price-card .punit{color:var(--mut);font-size:14px;margin-top:6px;}
+  .pfeat{margin-top:26px;display:flex;flex-direction:column;gap:13px;flex:1;}
+  .pfeat li{list-style:none;display:flex;gap:11px;align-items:baseline;font-size:15px;color:var(--fg);}
+  .pfeat li::before{content:"✓";color:var(--acc-text);font-weight:800;flex:0 0 auto;}
+  .price-card .btn{margin-top:30px;width:100%;}
+
+  /* compare */
+  .cmp{width:100%;border-collapse:collapse;border-spacing:0;}
+  .cmp th,.cmp td{padding:20px 24px;text-align:left;font-size:16px;}
+  .cmp thead th{font-size:14px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line-2);}
+  .cmp thead th.cc{color:var(--on-acc);}
+  .cmp tbody td{border-bottom:1px solid var(--line);color:var(--mut);}
+  .cmp tbody td:first-child{color:var(--fg);font-weight:600;}
+  .cmp .col-c{background:rgba(var(--acc-rgb),.05);}
+  .cmp thead .col-c{background:var(--acc);border-radius:14px 14px 0 0;}
+  .cmp .col-c td,.cmp td.col-c{color:var(--fg);font-weight:600;}
+  .cmp .ok{color:var(--acc-text);font-weight:800;margin-right:8px;}
+  .cmp .no{color:var(--mut-2);font-weight:800;margin-right:8px;}
+  .cmp-wrap{border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+
+  /* reviews */
+  .rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .rev-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:32px 30px;display:flex;flex-direction:column;}
+  .rev-card .quote{font-size:28px;font-weight:800;color:var(--acc-text);line-height:1;}
+  .rev-card .qt{font-size:16px;line-height:1.65;margin-top:18px;color:var(--fg);text-wrap:pretty;flex:1;}
+  .rev-card .by{margin-top:22px;font-size:14px;color:var(--mut);font-weight:600;}
+
+  /* cta band */
+  .cta-band{
+    background:var(--acc);color:var(--on-acc);border-radius:28px;
+    padding:72px 56px;display:flex;align-items:center;justify-content:space-between;
+    gap:40px;flex-wrap:wrap;
+  }
+  .cta-band h2{font-size:clamp(30px,3.6vw,46px);font-weight:800;letter-spacing:-.035em;line-height:1.12;}
+  .cta-band p{font-size:16px;font-weight:600;margin-top:14px;opacity:.72;}
+  .cta-band .btn{background:var(--on-acc);color:var(--acc);}
+  .cta-band .btn:hover{background:#000;}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:64px 0 56px;margin-top:120px;}
+  .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:40px;border-bottom:1px solid var(--line);}
+  .foot-cols{display:flex;gap:72px;flex-wrap:wrap;}
+  .foot-col h4{font-size:13px;font-weight:700;color:var(--mut-2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;}
+  .foot-col a,.foot-col span{display:block;color:var(--mut);font-size:15px;margin-bottom:10px;cursor:pointer;}
+  .foot-col a:hover{color:var(--fg);}
+  .foot-meta{color:var(--mut-2);font-size:13px;line-height:1.8;margin-top:32px;}
+  .foot-meta .legal{margin-top:14px;display:flex;gap:18px;flex-wrap:wrap;}
+  .foot-meta .legal span{cursor:pointer;}
+  .foot-meta .legal span:hover{color:var(--mut);}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    .marquee-track{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* large screens — let width, type and rhythm grow instead of stranding a narrow column */
+  @media (min-width:1500px){
+    :root{--wrap:1460px;}
+    .wrap{padding:0 48px;}
+    .grid-4{gap:26px;}
+    .grid-3,.rev-grid{gap:26px;}
+    .price-grid{max-width:960px;}
+    .proc-row{grid-template-columns:160px 1fr;gap:44px;}
+    .cmp th,.cmp td{padding:24px 30px;font-size:17px;}
+    .cta-band{padding:88px 72px;}
+    .stat{padding:40px 56px 40px 0;margin-right:56px;}
+  }
+  @media (min-width:1900px){
+    :root{--wrap:1640px;}
+    .price-grid{max-width:1040px;}
+  }
+
+  /* responsive */
+  @media (max-width:960px){
+    .grid-4{grid-template-columns:repeat(2,1fr);}
+    .nav-links{display:none;}
+    .sec{padding:88px 0;}
+  }
+  @media (max-width:680px){
+    .wrap{padding:0 20px;}
+    .grid-3,.rev-grid,.price-grid{grid-template-columns:1fr;}
+    .grid-4{grid-template-columns:1fr;}
+    .stats{flex-wrap:wrap;}
+    .stat{border-right:0;margin-right:0;padding:24px 0;width:50%;}
+    .proc-row{grid-template-columns:64px 1fr;gap:18px;}
+    .cta-band{padding:48px 32px;}
+    .nav-right .ghost-link{display:none;}
+  }
+</style>
+<style>
+  /* light-native depth: soft shadows replace heavy outlines */
+  .t-card,.care-card,.price-card,.rev-card,.cmp-wrap{box-shadow:var(--shadow-sm);}
+  .t-card:hover,.care-card:hover{box-shadow:var(--shadow-md);}
+  .price-card.rec{box-shadow:var(--shadow-md);}
+  .chip{box-shadow:var(--shadow-sm);}
+  header.scrolled{border-bottom-color:transparent;box-shadow:0 1px 0 var(--line),0 8px 28px rgba(15,18,30,.06);}
+  .hero-bg::after{opacity:.3;}
+  .t-media{background:linear-gradient(180deg,var(--panel-2),var(--panel));}
+  header{transition:border-color .3s,box-shadow .3s,background .4s var(--ease);}
+  .t-card,.care-card,.price-card,.rev-card,.cmp-wrap,.chip,.btn,.marquee{transition:background .4s var(--ease),border-color .4s var(--ease),box-shadow .25s,transform .25s var(--ease),color .4s var(--ease);}
+  /* theme toggle */
+  .theme-toggle{width:42px;height:42px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel);
+    color:var(--fg);display:grid;place-items:center;cursor:pointer;transition:border-color .18s,transform .18s,background .4s;flex:0 0 auto;}
+  .theme-toggle:hover{border-color:var(--fg);transform:translateY(-1px);}
+  .theme-toggle svg{width:19px;height:19px;}
+  .theme-toggle .i-sun{display:none;}
+  [data-theme="dark"] .theme-toggle .i-moon{display:none;}
+  [data-theme="dark"] .theme-toggle .i-sun{display:block;}
+  /* dark-mode polish: softer grid + cleaner CTA button hover */
+  [data-theme="dark"] .hero-bg::after{opacity:.4;}
+  [data-theme="dark"] .cta-band .btn:hover{background:var(--panel);}
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" fill="#F5F8FE"/>
+  <text x="200" y="232" font-family="-apple-system,system-ui,sans-serif" font-size="200" font-weight="800" letter-spacing="-8" text-anchor="middle" fill="#2563EB">C</text>
+</svg>
+</template>
+
+<header id="header">
+  <div class="wrap nav">
+    <a class="logo" href="#top">Concord<span>.</span></a>
+    <nav class="nav-links">
+      <a href="#teachers">강사진</a>
+      <a href="#care">학습 관리</a>
+      <a href="#process">진행 방식</a>
+      <a href="#pricing">요금제</a>
+      <a href="#compare">서비스 비교</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="다크 모드 전환" title="다크/라이트 전환">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="ghost-link" href="#">선생님 지원</a>
+      <a class="btn btn-acc btn-sm" href="#consult">무료 상담 신청</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="wrap hero-inner">
+      <span class="eyebrow">Concord Private Tutoring</span>
+      <h1>학생마다 맞는 <span class="hl">선생님</span>이 다릅니다</h1>
+      <p class="lede">전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다. 무작위 배정이 아닌, 성향과 목표까지 읽는 매칭.</p>
+      <div class="cta-row">
+        <a class="btn btn-acc" href="#consult">무료 상담 신청</a>
+        <a class="btn btn-ghost" href="#teachers">선생님 둘러보기 →</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n">500<em>+</em></div><div class="l">누적 상담</div></div>
+        <div class="stat"><div class="n">400<em>+</em></div><div class="l">매칭 완료</div></div>
+        <div class="stat"><div class="n">98<em>%</em></div><div class="l">학생 만족도</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS MARQUEE -->
+  <div class="marquee" aria-label="성적 향상 사례">
+    <div class="marquee-track" id="mq"></div>
+  </div>
+
+  <!-- TEACHERS -->
+  <section class="sec" id="teachers">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Teachers</span>
+        <h2>명문대 출신부터<br>경력 10년 이상 전문가까지</h2>
+        <p>확실한 서류 인증과 채용 절차로 엄선된, 인품과 실력 모두 확실한 소속 선생님을 학생의 성향에 맞춰 배정해드립니다.</p>
+      </div>
+      <div class="grid-4">
+        <article class="t-card reveal">
+          <div class="t-media"><span class="t-tag">수학</span><span class="ph">강사 사진</span></div>
+          <div class="t-body">
+            <div class="t-name">Teacher Noah</div>
+            <p class="t-line">전교 꼴등에서 서울대학교 입학했어요</p>
+            <div class="t-edu">서울대학교 수리과학부</div>
+            <ul class="t-items"><li>입시 수학 7년</li><li>최상위권 심화반 운영</li></ul>
+          </div>
+        </article>
+        <article class="t-card reveal">
+          <div class="t-media"><span class="t-tag">영어</span><span class="ph">강사 사진</span></div>
+          <div class="t-body">
+            <div class="t-name">Teacher Olivia</div>
+            <p class="t-line">읽기 습관만 바꿔도 점수는 달라집니다</p>
+            <div class="t-edu">연세대학교 영어영문학과</div>
+            <ul class="t-items"><li>국제학교·토플 지도</li><li>첨삭 1,800시간+</li></ul>
+          </div>
+        </article>
+        <article class="t-card reveal">
+          <div class="t-media"><span class="t-tag">물리</span><span class="ph">강사 사진</span></div>
+          <div class="t-body">
+            <div class="t-name">Teacher Peter</div>
+            <p class="t-line">공식보다 먼저 직관을 세워요</p>
+            <div class="t-edu">KAIST 전기및전자공학부</div>
+            <ul class="t-items"><li>물리·수학 통합 지도</li><li>STEM 멘토 수상</li></ul>
+          </div>
+        </article>
+        <article class="t-card reveal">
+          <div class="t-media"><span class="t-tag">국어</span><span class="ph">강사 사진</span></div>
+          <div class="t-body">
+            <div class="t-name">Teacher Jiwoo</div>
+            <p class="t-line">지문을 읽는 규칙을 훈련합니다</p>
+            <div class="t-edu">서울대학교 국어국문학과</div>
+            <ul class="t-items"><li>논술 전문 프라이빗</li><li>내신 국어 맞춤 관리</li></ul>
+          </div>
+        </article>
+      </div>
+      <div style="margin-top:40px;" class="reveal">
+        <a class="btn btn-ghost" href="#">전체 선생님 보기 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARE -->
+  <section class="sec" id="care" style="padding-top:40px;">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Learning Care</span>
+        <h2>수업 밖에서도 이어지는 학습 관리</h2>
+        <p>진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.</p>
+      </div>
+      <div class="grid-3">
+        <div class="care-card reveal"><div class="num">01</div><h3>진도 관리</h3><p>주간 진도와 목표 달성률을 매니저·가정과 공유합니다.</p></div>
+        <div class="care-card reveal"><div class="num">02</div><h3>질문 관리</h3><p>복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다.</p></div>
+        <div class="care-card reveal"><div class="num">03</div><h3>리포트</h3><p>월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="sec" id="process">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Process</span>
+        <h2>이렇게 진행됩니다</h2>
+        <p>상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.</p>
+      </div>
+      <div class="proc">
+        <div class="proc-row reveal"><div class="proc-n">01</div><div class="proc-c"><h3>무료 상담 신청</h3><p>학생의 현재 성적, 목표, 성향을 간단히 남겨주세요.</p></div></div>
+        <div class="proc-row reveal"><div class="proc-n">02</div><div class="proc-c"><h3>매니저 배정·전화 상담</h3><p>10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다.</p></div></div>
+        <div class="proc-row reveal"><div class="proc-n">03</div><div class="proc-c"><h3>선생님 추천·매칭</h3><p>과목, 성향, 일정에 맞는 선생님 후보를 추천합니다.</p></div></div>
+        <div class="proc-row reveal"><div class="proc-n">04</div><div class="proc-c"><h3>수업 시작</h3><p>첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다.</p></div></div>
+        <div class="proc-row reveal"><div class="proc-n">05</div><div class="proc-c"><h3>학습 리포트·관리</h3><p>진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="sec" id="pricing">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Plans</span>
+        <h2>1:1 맞춤 과외, <span class="hl">월 38만원</span>부터</h2>
+        <p>중·고등 맞춤 1:1 과외. 모든 플랜에 학습 관리와 강사 첨삭이 포함됩니다.</p>
+      </div>
+      <div class="price-grid">
+        <div class="price-card reveal">
+          <div class="ptag">1:1 맞춤 과외</div>
+          <div class="pname">주 1회</div>
+          <div class="price">380,000<small>원 / 월</small></div>
+          <div class="punit">주 1회 · 120분</div>
+          <ul class="pfeat">
+            <li>주 1회 수업 (120분)</li>
+            <li>학습 진도 관리</li>
+            <li>과제 관리</li>
+            <li>AI 질답 토큰 제공</li>
+            <li>수시 강사 첨삭·질답</li>
+          </ul>
+          <a class="btn btn-ghost" href="#consult">이 플랜으로 시작</a>
+        </div>
+        <div class="price-card rec reveal">
+          <span class="rec-badge">추천</span>
+          <div class="ptag">1:1 맞춤 과외</div>
+          <div class="pname">주 2회</div>
+          <div class="price">740,000<small>원 / 월</small></div>
+          <div class="punit">주 2회 · 240분</div>
+          <ul class="pfeat">
+            <li>과목별 주 2회 수업 (240분)</li>
+            <li>과목 2개 이상 선택 가능</li>
+            <li>과목별 선생님 선택 가능</li>
+            <li>학습 진도·과제 관리</li>
+            <li>AI 질답 토큰 제공</li>
+            <li>수시 강사 첨삭·질답</li>
+          </ul>
+          <a class="btn btn-acc" href="#consult">이 플랜으로 시작</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARE -->
+  <section class="sec" id="compare">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Compare</span>
+        <h2>개인 과외와 무엇이 다른가요</h2>
+        <p>맞지 않는 선생님으로 1~2달을 낭비하지 않도록, 처음부터 핏을 맞춥니다.</p>
+      </div>
+      <div class="cmp-wrap reveal">
+        <table class="cmp">
+          <thead>
+            <tr><th>비교 항목</th><th>개인 과외</th><th class="col-c cc">Concord</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>선생님 자격 검증</td><td><span class="no">✗</span></td><td class="col-c"><span class="ok">✓</span>서류·면접</td></tr>
+            <tr><td>선생님 실력 확인</td><td>수업 후에야 파악</td><td class="col-c"><span class="ok">✓</span>사전 검증</td></tr>
+            <tr><td>학생 맞춤 매칭</td><td>직접 알아봐야 함</td><td class="col-c"><span class="ok">✓</span>성향·과목 맞춤 연결</td></tr>
+            <tr><td>선생님 교체 리스크</td><td>안 맞으면 1~2달 낭비</td><td class="col-c"><span class="ok">✓</span>처음부터 핏 맞는 선생님</td></tr>
+            <tr><td>매일 학습 점검</td><td><span class="no">✗</span></td><td class="col-c"><span class="ok">✓</span>일별 플랜</td></tr>
+            <tr><td>질문 답변</td><td>수업 시간에만</td><td class="col-c"><span class="ok">✓</span>상시 (강사·AI)</td></tr>
+            <tr><td>문제 발생 대응</td><td>학부모가 직접 해결</td><td class="col-c"><span class="ok">✓</span>전담 매니저 조율</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="sec" id="reviews" style="padding-top:40px;">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Reviews</span>
+        <h2>성적보다 습관이 먼저 바뀌었어요</h2>
+      </div>
+      <div class="rev-grid">
+        <div class="rev-card reveal"><div class="quote">“</div><p class="qt">공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.</p><div class="by">고2 수학 · 학부모</div></div>
+        <div class="rev-card reveal"><div class="quote">“</div><p class="qt">방황하는 아들의 방향을 잡아 줄 선생님이 필요했는데, 정확히 맞는 분을 찾아줬어요. 아이가 선생님처럼 되고 싶다며 열심히 합니다.</p><div class="by">고3 수학 · 학부모</div></div>
+        <div class="rev-card reveal"><div class="quote">“</div><p class="qt">숙제와 공부 계획을 등록하고 선생님이랑 같이 점검하니 자연스럽게 매일 공부하게 됐어요. 성적보다 습관이 먼저 바뀌었어요.</p><div class="by">중3 영어 · 학생</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="sec" id="consult" style="padding-top:20px;">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <div>
+          <h2>우리 아이에게 맞는 선생님,<br>지금 무료로 찾아보세요</h2>
+          <p>무료 상담 1회 · 매니저 직접 배정 · 첫 달 학습 리포트 무료</p>
+        </div>
+        <a class="btn" href="#">무료 상담 신청하기</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <a class="logo" href="#top">Concord<span>.</span></a>
+        <div class="foot-meta">채팅문의 10:00~22:00 · 전화문의 평일 10:00~19:00</div>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>서비스</h4>
+          <a href="#teachers">강사진</a>
+          <a href="#pricing">요금제</a>
+          <a href="#">FAQ</a>
+          <a href="#consult">상담 신청</a>
+        </div>
+        <div class="foot-col">
+          <h4>SNS</h4>
+          <a href="#">Instagram</a>
+          <a href="#">YouTube</a>
+          <a href="#">Blog</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-meta">
+      주식회사 컨코드에듀케이션 · 대표 홍길동 · 사업자등록번호 123-45-67890<br>
+      서울특별시 강남구 테헤란로 000, 00층
+      <div class="legal"><span>이용약관</span><span>개인정보처리방침</span><span>환불정책</span></div>
+      <div style="margin-top:14px;">© 2026 Concord Private Tutoring. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // dark-mode toggle (light is default/main), persisted
+  (function(){
+    const KEY='concord-theme-blue';
+    const root=document.documentElement;
+    try{ if(localStorage.getItem(KEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){}
+    const btn=document.getElementById('themeToggle');
+    if(btn) btn.addEventListener('click',()=>{
+      const dark=root.getAttribute('data-theme')==='dark';
+      if(dark){root.removeAttribute('data-theme');}else{root.setAttribute('data-theme','dark');}
+      try{localStorage.setItem(KEY,dark?'light':'dark');}catch(e){}
+    });
+  })();
+
+  // sticky header border
+  const header = document.getElementById('header');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  // results marquee (duplicated for seamless loop)
+  const results = [
+    ['고2','수학','5등급','2등급'],['중3','영어','64점','87점'],['고1','국어','55점','78점'],
+    ['중2','수학','85점','100점'],['고3','영어','5등급','3등급'],['고1','수학','69점','92점'],
+  ];
+  const chip = (r) => `<span class="chip"><b>${r[0]} ${r[1]}</b> ${r[2]} <span class="arr">→</span> <span class="up">${r[3]}</span></span>`;
+  document.getElementById('mq').innerHTML = [...results, ...results].map(chip).join('');
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  // fallback: reveal everything after 2.5s in case IO doesn't fire
+  setTimeout(() => document.querySelectorAll('.reveal:not(.in)').forEach((el)=>el.classList.add('in')), 2500);
+</script>
+
+</body>
+</html>

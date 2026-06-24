@@ -4,14 +4,8 @@ import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-import { CmsEdit } from "@/components/admin/CmsEditOverlay";
+import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
-import { getCmsSectionValue } from "@/lib/cms-page-defaults";
-import type { GroupedSiteContent } from "@/lib/site-content";
-
-const inputClass =
-  "mt-2 w-full rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 
 function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("");
@@ -59,15 +53,11 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
 
   if (success) {
     return (
-      <div className="mt-6 space-y-3 text-center">
-        <p className="text-sm text-green-700" role="status">
+      <div style={{ marginTop: 24, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "var(--acc-text)" }} role="status">
           관리자 계정이 생성되었습니다.
         </p>
-        <button
-          type="button"
-          onClick={onSuccess}
-          className="text-xs font-medium text-primary underline-offset-4 hover:underline"
-        >
+        <button type="button" onClick={onSuccess} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
           이 안내 닫기
         </button>
       </div>
@@ -75,72 +65,43 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="mt-4 space-y-4">
-        <div>
-          <label htmlFor="admin-email" className={labelClass}>
-            관리자 이메일
-          </label>
-          <input
-            id="admin-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label htmlFor="admin-password" className={labelClass}>
-            비밀번호
-          </label>
-          <input
-            id="admin-password"
-            type="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label htmlFor="admin-password-confirm" className={labelClass}>
-            비밀번호 확인
-          </label>
-          <input
-            id="admin-password-confirm"
-            type="password"
-            autoComplete="new-password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label htmlFor="admin-secret" className={labelClass}>
-            설정 비밀키
-          </label>
-          <input
-            id="admin-secret"
-            type="text"
-            autoComplete="off"
-            value={secretKey}
-            onChange={(e) => setSecretKey(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void handleCreate()}
-          className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-gray-300 hover:text-text-primary disabled:opacity-50"
-        >
-          {loading ? "생성 중…" : "생성하기"}
-        </button>
-        {error ? (
-          <p className="text-center text-sm text-accent" role="alert">
-            {error}
-          </p>
-        ) : null}
+    <div style={{ marginTop: 24 }}>
+      <div className="field">
+        <label htmlFor="admin-email">관리자 이메일</label>
+        <input id="admin-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div className="field">
+        <label htmlFor="admin-password">비밀번호</label>
+        <input
+          id="admin-password"
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor="admin-password-confirm">비밀번호 확인</label>
+        <input
+          id="admin-password-confirm"
+          type="password"
+          autoComplete="new-password"
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+        />
+      </div>
+      <div className="field">
+        <label htmlFor="admin-secret">설정 비밀키</label>
+        <input id="admin-secret" type="text" autoComplete="off" value={secretKey} onChange={(e) => setSecretKey(e.target.value)} />
+      </div>
+      <button type="button" disabled={loading} onClick={() => void handleCreate()} className="btn btn-ghost btn-block">
+        {loading ? "생성 중…" : "생성하기"}
+      </button>
+      {error ? (
+        <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -184,15 +145,11 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
 
   if (success) {
     return (
-      <div className="mt-6 space-y-3 text-center">
-        <p className="text-sm text-green-700" role="status">
+      <div style={{ marginTop: 24, textAlign: "center" }}>
+        <p style={{ fontSize: 14, color: "var(--acc-text)" }} role="status">
           비밀번호가 변경되었습니다.
         </p>
-        <button
-          type="button"
-          onClick={onSuccess}
-          className="text-xs font-medium text-primary underline-offset-4 hover:underline"
-        >
+        <button type="button" onClick={onSuccess} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
           이 안내 닫기
         </button>
       </div>
@@ -200,69 +157,52 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div className="mt-4 space-y-4">
-      <div>
-        <label htmlFor="admin-recover-email" className={labelClass}>
-          관리자 이메일
-        </label>
+    <div style={{ marginTop: 24 }}>
+      <div className="field">
+        <label htmlFor="admin-recover-email">관리자 이메일</label>
         <input
           id="admin-recover-email"
           type="email"
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={inputClass}
         />
       </div>
-      <div>
-        <label htmlFor="admin-recover-password" className={labelClass}>
-          새 비밀번호
-        </label>
+      <div className="field">
+        <label htmlFor="admin-recover-password">새 비밀번호</label>
         <input
           id="admin-recover-password"
           type="password"
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className={inputClass}
         />
       </div>
-      <div>
-        <label htmlFor="admin-recover-password-confirm" className={labelClass}>
-          새 비밀번호 확인
-        </label>
+      <div className="field">
+        <label htmlFor="admin-recover-password-confirm">새 비밀번호 확인</label>
         <input
           id="admin-recover-password-confirm"
           type="password"
           autoComplete="new-password"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
-          className={inputClass}
         />
       </div>
-      <div>
-        <label htmlFor="admin-recover-secret" className={labelClass}>
-          설정 비밀키
-        </label>
+      <div className="field">
+        <label htmlFor="admin-recover-secret">설정 비밀키</label>
         <input
           id="admin-recover-secret"
           type="password"
           autoComplete="off"
           value={secretKey}
           onChange={(e) => setSecretKey(e.target.value)}
-          className={inputClass}
         />
       </div>
-      <button
-        type="button"
-        disabled={loading}
-        onClick={() => void handleRecover()}
-        className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-gray-300 hover:text-text-primary disabled:opacity-50"
-      >
+      <button type="button" disabled={loading} onClick={() => void handleRecover()} className="btn btn-ghost btn-block">
         {loading ? "처리 중…" : "비밀번호 재설정"}
       </button>
       {error ? (
-        <p className="text-center text-sm text-accent" role="alert">
+        <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
           {error}
         </p>
       ) : null}
@@ -270,52 +210,30 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-const adminTabBtnBase =
-  "flex-1 rounded-lg py-2.5 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
-
 function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
   const [tab, setTab] = useState<"recover" | "create">("recover");
 
   return (
-    <section className="mt-8 border-t border-gray-100 pt-8">
-      <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
-        <button
-          type="button"
-          className={`${adminTabBtnBase} ${
-            tab === "recover" ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
-          }`}
-          onClick={() => setTab("recover")}
-        >
+    <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+      <div className="seg-tabs">
+        <button type="button" className={tab === "recover" ? "on" : undefined} onClick={() => setTab("recover")}>
           비밀번호 재설정
         </button>
-        <button
-          type="button"
-          className={`${adminTabBtnBase} ${
-            tab === "create" ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
-          }`}
-          onClick={() => setTab("create")}
-        >
+        <button type="button" className={tab === "create" ? "on" : undefined} onClick={() => setTab("create")}>
           최초 생성
         </button>
       </div>
       {tab === "recover" ? <AdminRecoverSection onSuccess={onDismiss} /> : <AdminSetupSection onSuccess={onDismiss} />}
-    </section>
+    </div>
   );
 }
 
-export function LoginForm({
-  siteContent,
-  isEditMode: isEditModeProp,
-}: {
-  siteContent?: GroupedSiteContent;
-  isEditMode?: boolean;
-}) {
+export function LoginForm() {
   const searchParams = useSearchParams();
-  const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
   const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
-  const get = (key: string, fb: string) => getCmsSectionValue(siteContent, "login_page", key, fb);
 
+  const [role, setRole] = useState<"student" | "teacher">("student");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -354,15 +272,15 @@ export function LoginForm({
         credentials: "include",
         cache: "no-store",
       });
-      let role: string | undefined;
+      let userRole: string | undefined;
       if (sessionRes.ok) {
         const data = (await sessionRes.json()) as { user?: { role?: string } };
-        role = data?.user?.role;
+        userRole = data?.user?.role;
       }
       const destination =
-        role === "ADMIN"
+        userRole === "ADMIN"
           ? "/admin"
-          : role === "TEACHER" || role === "MANAGER"
+          : userRole === "TEACHER" || userRole === "MANAGER"
             ? "/teacher-portal/dashboard"
             : "/dashboard";
       window.location.assign(destination);
@@ -372,102 +290,93 @@ export function LoginForm({
   }
 
   return (
-    <div className="pb-24 md:pb-32">
-      <div className="border-b border-gray-100 bg-background py-12 md:py-20 lg:py-24">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8">
-          <CmsEdit active={isEditMode} section="login_page" cmsKey="kicker" type="text">
-            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
-              {get("kicker", "Account")}
-            </p>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="login_page" cmsKey="title" type="text">
-            <h1 className="mt-3 text-3xl font-black leading-tight text-text-primary sm:mt-4 sm:text-4xl md:text-5xl lg:text-6xl">
-              {get("title", "로그인")}
-            </h1>
-          </CmsEdit>
-          <CmsEdit active={isEditMode} section="login_page" cmsKey="subtext" type="text">
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">
-              {get("subtext", "이메일 또는 전화번호와 비밀번호로 Concord 계정에 로그인하세요.")}
-            </p>
-          </CmsEdit>
-        </div>
-      </div>
-      <div className="mx-auto max-w-md px-4 py-10 sm:px-6 sm:py-14 md:px-8 md:py-20 lg:py-24">
-        <article className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm md:p-10">
-          <div className="space-y-5">
-            <div>
-              <label htmlFor="login-identifier" className={labelClass}>
-                이메일 또는 전화번호
-              </label>
-              <input
-                id="login-identifier"
-                type="text"
-                autoComplete="username"
-                placeholder="이메일 또는 010-0000-0000"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label htmlFor="login-password" className={labelClass}>
-                비밀번호
-              </label>
-              <input
-                id="login-password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
-                className={inputClass}
-              />
-            </div>
+    <main>
+      <div className="auth-wrap">
+        <div className="auth-bg" />
+        <ConcordReveal className="auth-card">
+          <div className="brand">
+            Concord<span>.</span>
           </div>
+          <h1>다시 오신 것을 환영해요</h1>
+          <p className="sub">학습 플래너와 상담 내역을 확인하세요.</p>
+
+          <div className="seg-tabs" data-group aria-label="로그인 역할">
+            <button
+              type="button"
+              className={role === "student" ? "on" : undefined}
+              data-val="student"
+              onClick={() => setRole("student")}
+            >
+              학생
+            </button>
+            <button
+              type="button"
+              className={role === "teacher" ? "on" : undefined}
+              data-val="teacher"
+              onClick={() => setRole("teacher")}
+            >
+              선생님
+            </button>
+          </div>
+
+          <div className="field">
+            <label htmlFor="id">전화번호 또는 이메일</label>
+            <input
+              id="id"
+              type="text"
+              placeholder="010-0000-0000"
+              autoComplete="username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="pw">비밀번호</label>
+            <input
+              id="pw"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
+            />
+          </div>
+
           <button
             type="button"
             disabled={loading}
+            className="btn btn-acc btn-block btn-lg"
             onClick={() => void handleSubmit()}
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-semibold tracking-wide text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? (
-              <>
-                <span
-                  className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                  aria-hidden
-                />
-                <span>로그인 중…</span>
-              </>
-            ) : (
-              "로그인"
-            )}
+            {loading ? "로그인 중…" : "로그인"}
           </button>
+
           {error ? (
-            <p className="mt-4 text-center text-sm text-accent" role="alert">
+            <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
               {error}
             </p>
           ) : null}
-          <CmsEdit active={isEditMode} section="login_page" cmsKey="signup_prompt" type="text">
-            <p className="mt-8 text-center text-sm text-text-secondary">
-              {get("signup_prompt", "아직 계정이 없으신가요? ")}{" "}
-              <CmsEdit active={isEditMode} section="login_page" cmsKey="signup_cta" type="text">
-                <button
-                  type="button"
-                  onClick={goConsultation}
-                  className="font-semibold text-primary underline-offset-4 hover:underline"
-                >
-                  {get("signup_cta", "상담 신청")}
-                </button>
-              </CmsEdit>
-            </p>
-          </CmsEdit>
+
+          <div className="auth-alt">
+            아직 회원이 아니신가요?{" "}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                goConsultation();
+              }}
+            >
+              무료 상담으로 시작하기
+            </a>
+          </div>
 
           {showAdminSetup && !adminSetupHidden ? (
             <AdminToolsSection onDismiss={() => setAdminSetupHidden(true)} />
           ) : null}
-        </article>
+        </ConcordReveal>
       </div>
-    </div>
+    </main>
   );
 }

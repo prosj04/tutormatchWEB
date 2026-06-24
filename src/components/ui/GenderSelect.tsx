@@ -2,8 +2,6 @@
 
 import type { ProfileGender } from "@/lib/profile-gender";
 
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
-
 type GenderSelectProps = {
   value: ProfileGender | "";
   onChange: (value: ProfileGender) => void;
@@ -13,9 +11,9 @@ type GenderSelectProps = {
 
 export function GenderSelect({ value, onChange, error, className = "" }: GenderSelectProps) {
   return (
-    <div className={className}>
-      <span className={labelClass}>성별</span>
-      <div className="mt-2 flex gap-2">
+    <div className={`field${className ? ` ${className}` : ""}`}>
+      <label>성별</label>
+      <div className="seg-tabs" style={{ marginTop: 8 }}>
         {(
           [
             { id: "MALE" as const, label: "남" },
@@ -25,18 +23,18 @@ export function GenderSelect({ value, onChange, error, className = "" }: GenderS
           <button
             key={opt.id}
             type="button"
+            className={value === opt.id ? "on" : undefined}
             onClick={() => onChange(opt.id)}
-            className={`flex-1 rounded-xl border px-4 py-3 text-sm font-bold transition ${
-              value === opt.id
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-gray-200 bg-background text-text-secondary hover:border-gray-300"
-            }`}
           >
             {opt.label}
           </button>
         ))}
       </div>
-      {error ? <p className="mt-1 text-xs text-red-600">{error}</p> : null}
+      {error ? (
+        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }} role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { LandingRoot } from "@/components/landing/LandingRoot";
-import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
+import { PublicShell } from "@/components/layout/PublicShell";
 import { startPerfTimer } from "@/lib/perf-timer";
 import { getLandingCmsContent } from "@/lib/cms";
 
@@ -24,12 +24,12 @@ export default async function HomePage({
   const faqs = cms.faqs.length > 0 ? cms.faqs : fallbackFaqs;
 
   const page = (
-    <PublicAppProviders>
+    <PublicShell showCompareLink>
       <LandingRoot
         cms={{ siteContent: cms.siteContent, testimonials, faqs }}
         isEditMode={isEditMode}
       />
-    </PublicAppProviders>
+    </PublicShell>
   );
 
   timer.end();
@@ -39,7 +39,7 @@ export default async function HomePage({
 const fallbackTestimonials = [
   {
     quote:
-      "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 무조건 아무 선생님이나 매칭하는것이 아니라 정말 아이에 맞는 선생님을 고민하고 찾아주셔서 훨씬 안심됐습니다.",
+      "공부하러 가서도 시간만내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 무조건 아무 선생님이나 매칭하는것이 아니라 정말 아이에 맞는 선생님을 고민하고 찾아주셔서 훨씬 안심됐습니다.",
     info: "고2 수학 · 학부모",
     img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=640&h=520&fit=crop&q=80",
   },

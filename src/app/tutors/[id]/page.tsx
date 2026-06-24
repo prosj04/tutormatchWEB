@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PublicShell } from "@/components/layout/PublicShell";
 import { getTutorPublicPhotoUrl } from "@/lib/cms-page-defaults";
 import { getPublicTeacherById, getPublicTeacherIds } from "@/lib/public-teachers-cache";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
@@ -69,40 +68,35 @@ export default async function TutorProfilePage({ params }: PageProps) {
   );
 
   const page = (
-    <PublicShell>
-      <main className="pb-24">
-        <section className="border-b border-gray-100 bg-white px-6 py-16 md:py-20">
-          <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[14rem_1fr] md:items-center">
-            <div className="h-48 w-48 overflow-hidden rounded-3xl bg-gray-100">
+    <main>
+      <section className="sec-sm" style={{ paddingBottom: 0 }}>
+        <div className="wrap">
+          <div className="profile-hero">
+            <div className="profile-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={publicPhotoUrl}
-                alt={`${teacher.name} 프로필 사진`}
-                className="h-full w-full object-cover"
-              />
+              <img src={publicPhotoUrl} alt={`${teacher.name} 프로필 사진`} />
             </div>
 
             <div>
-              <Link
-                href="/tutors"
-                className="text-sm font-bold text-text-muted underline-offset-4 hover:text-primary hover:underline"
-              >
+              <Link href="/tutors" className="profile-back">
                 ← 강사진 목록
               </Link>
-              <h1 className="mt-5 text-4xl font-black tracking-[-0.04em] text-text-primary md:text-5xl">
+              <h1 style={{ marginTop: 16, fontSize: "clamp(2rem,4vw,2.75rem)", fontWeight: 800, letterSpacing: "-.04em" }}>
                 {teacher.name} 선생님
               </h1>
-              <p className="mt-3 text-lg font-bold text-primary">
+              <p className="profile-subjects">
                 {subjects.length > 0 ? subjects.join(" · ") : "담당 과목 협의"}
               </p>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-text-secondary">
+              <p className="profile-intro">
                 {teacher.profile?.intro || teacher.bio || "학생에게 맞는 수업을 설계합니다."}
               </p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="mx-auto grid max-w-6xl gap-6 px-6 py-12 md:grid-cols-2">
+      <section className="sec-sm">
+        <div className="wrap detail-grid">
           <InfoBlock title="관리자 카드 정보">
             <InfoLine label="학력" value={teacher.education} />
             <InfoLine label="경력" value={teacher.experience} />
@@ -131,9 +125,9 @@ export default async function TutorProfilePage({ params }: PageProps) {
               />
             ))}
           </InfoBlock>
-        </section>
-      </main>
-    </PublicShell>
+        </div>
+      </section>
+    </main>
   );
   timer.end({
     teacherId: teacher.id,
@@ -152,10 +146,10 @@ function InfoBlock({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-black text-text-primary">{title}</h2>
-      <div className="mt-5 space-y-4">{children}</div>
-    </div>
+    <article className="card panel-card">
+      <h2 className="panel-title">{title}</h2>
+      <dl style={{ marginTop: 20 }}>{children}</dl>
+    </article>
   );
 }
 
@@ -163,9 +157,9 @@ function InfoLine({ label, value }: { label: string; value: string }) {
   if (!value) return null;
 
   return (
-    <div>
-      <dt className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</dt>
-      <dd className="mt-1 text-sm leading-relaxed text-text-secondary">{value}</dd>
+    <div className="info-line">
+      <dt>{label}</dt>
+      <dd>{value}</dd>
     </div>
   );
 }

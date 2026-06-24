@@ -2,10 +2,10 @@ import { PublicShell } from "@/components/layout/PublicShell";
 
 export const revalidate = 300;
 
-export default function LoginLayout({
+export default function TutorsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <PublicShell showFooter={false}>{children}</PublicShell>;
+  return <PublicShell>{children}</PublicShell>;
 }
