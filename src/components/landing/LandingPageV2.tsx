@@ -173,6 +173,24 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
           },
         ];
 
+  const kickers = {
+    teachers: getCmsValue("home_labels", "kicker_teachers", "Teachers"),
+    management: getCmsValue("home_labels", "kicker_management", "Learning Care"),
+    process: getCmsValue("home_labels", "kicker_process", "Process"),
+    plans: getCmsValue("home_labels", "kicker_plans", "Plans"),
+    compare: getCmsValue("compare", "kicker", "Compare"),
+    reviews: getCmsValue("home_labels", "kicker_reviews", "Reviews"),
+  };
+
+  const sectionTitles = {
+    teachers: getCmsMultiline("teachers", "section_title", "명문대 출신부터\n경력 10년 이상 전문가까지"),
+    management: getCmsMultiline("management", "headline", "수업 밖에서도\n이어지는 학습 관리"),
+    process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
+    processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요."),
+    teachersCta: getCmsValue("teachers", "cta", "전체 선생님 보기 →"),
+    reviews: getCmsValue("home_labels", "section_title_reviews", "성적보다 습관이 먼저 바뀌었어요"),
+  };
+
   return {
     getCmsValue,
     getCmsMultiline,
@@ -184,6 +202,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     managementItems,
     cmsTestimonials,
     compareTitle: getCompareTableTitle(cms?.siteContent),
+    kickers,
+    sectionTitles,
   };
 }
 
@@ -236,6 +256,8 @@ export function LandingPageV2({
     managementItems,
     cmsTestimonials,
     compareTitle,
+    kickers,
+    sectionTitles,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
   const compareRowsCms = useMemo(
@@ -328,12 +350,8 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Teachers</span>
-            <h2>
-              명문대 출신부터
-              <br />
-              경력 10년 이상 전문가까지
-            </h2>
+            <span className="lp2-eyebrow">{kickers.teachers}</span>
+            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.teachers}</h2>
             <p>
               {getCmsValue(
                 "teachers",
@@ -374,7 +392,7 @@ export function LandingPageV2({
 
           <div className="reveal" style={{ marginTop: "40px" }}>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-              전체 선생님 보기 →
+              {sectionTitles.teachersCta}
             </Link>
           </div>
         </div>
@@ -388,8 +406,8 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Learning Care</span>
-            <h2>수업 밖에서도 이어지는 학습 관리</h2>
+            <span className="lp2-eyebrow">{kickers.management}</span>
+            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
             <p>
               {getCmsValue(
                 "management",
@@ -419,9 +437,9 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Process</span>
-            <h2>이렇게 진행됩니다</h2>
-            <p>상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.</p>
+            <span className="lp2-eyebrow">{kickers.process}</span>
+            <h2>{sectionTitles.process}</h2>
+            <p>{sectionTitles.processSubtext}</p>
           </div>
 
           <div>
@@ -451,7 +469,7 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Plans</span>
+            <span className="lp2-eyebrow">{kickers.plans}</span>
             <h2>
               1:1 맞춤 과외,{" "}
               <span className="lp2-hl">{pricingTitleParts.highlight}</span>
@@ -515,7 +533,7 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Compare</span>
+            <span className="lp2-eyebrow">{kickers.compare}</span>
             <h2>
               <CmsEdit active={isEditMode} section="compare" cmsKey="table_title" type="text">
                 {compareTitle || "개인 과외와 무엇이 다른가요"}
@@ -577,8 +595,8 @@ export function LandingPageV2({
       >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Reviews</span>
-            <h2>성적보다 습관이 먼저 바뀌었어요</h2>
+            <span className="lp2-eyebrow">{kickers.reviews}</span>
+            <h2>{sectionTitles.reviews}</h2>
           </div>
 
           <div className="lp2-rev-grid">
