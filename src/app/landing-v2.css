@@ -31,7 +31,7 @@
   font-size: clamp(32px,4.4vw,66px); font-weight: 700; letter-spacing: -.03em;
   line-height: 1.08; margin-top: 18px; color: var(--fg);
 }
-.lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; }
+.lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; text-wrap: pretty; }
 
 /* ── typography helpers ── */
 .lp2-eyebrow {
@@ -162,7 +162,7 @@
 }
 .lp2-hero .lp2-lede {
   font-size: clamp(18px,1.55vw,25px); color: var(--mut); margin-top: 30px;
-  max-width: 50ch; line-height: 1.55;
+  max-width: 50ch; line-height: 1.55; text-wrap: pretty;
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
 .lp2-stats {
@@ -224,7 +224,7 @@
 }
 .lp2-t-body { padding: 22px 22px 24px; display: flex; flex-direction: column; flex: 1; }
 .lp2-t-name { font-size: 18px; font-weight: 700; letter-spacing: -.02em; color: var(--fg); }
-.lp2-t-line { color: var(--mut); font-size: 14px; margin-top: 8px; line-height: 1.5; min-height: 42px; }
+.lp2-t-line { color: var(--mut); font-size: 14px; margin-top: 8px; line-height: 1.5; min-height: 42px; text-wrap: pretty; }
 .lp2-t-edu { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 600; color: var(--fg); }
 .lp2-t-items { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
 .lp2-t-items li {
@@ -246,7 +246,7 @@
 .lp2-care-card:hover { border-color: var(--line-2); transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .lp2-care-card .num { font-size: 14px; font-weight: 800; color: var(--acc-text); letter-spacing: .1em; }
 .lp2-care-card h3 { font-size: 22px; font-weight: 700; margin-top: 22px; letter-spacing: -.025em; color: var(--fg); }
-.lp2-care-card p { color: var(--mut); font-size: 15px; margin-top: 12px; line-height: 1.6; }
+.lp2-care-card p { color: var(--mut); font-size: 15px; margin-top: 12px; line-height: 1.6; text-wrap: pretty; }
 
 /* ── process ── */
 .lp2-proc-row {
@@ -263,7 +263,7 @@
 }
 .lp2-proc-row:hover .lp2-proc-n { color: var(--acc-text); }
 .lp2-proc-c h3 { font-size: 24px; font-weight: 700; letter-spacing: -.025em; color: var(--fg); }
-.lp2-proc-c p { color: var(--mut); font-size: 16px; margin-top: 10px; max-width: 54ch; }
+.lp2-proc-c p { color: var(--mut); font-size: 16px; margin-top: 10px; max-width: 54ch; text-wrap: pretty; }
 
 /* ── pricing ── */
 .lp2-price-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 22px; max-width: 840px; }
@@ -326,7 +326,7 @@
   transition: background .4s var(--ease), border-color .4s var(--ease);
 }
 .lp2-rev-card .quote { font-size: 28px; font-weight: 800; color: var(--acc-text); line-height: 1; }
-.lp2-rev-card .qt { font-size: 16px; line-height: 1.65; margin-top: 18px; color: var(--fg); flex: 1; }
+.lp2-rev-card .qt { font-size: 16px; line-height: 1.65; margin-top: 18px; color: var(--fg); flex: 1; text-wrap: pretty; }
 .lp2-rev-card .by { margin-top: 22px; font-size: 14px; color: var(--mut); font-weight: 600; }
 
 /* ── CTA band ── */
@@ -337,14 +337,15 @@
 }
 .lp2-cta-band h2 {
   font-size: clamp(30px,3.6vw,46px); font-weight: 800; letter-spacing: -.035em; line-height: 1.12;
-  white-space: pre-line;
+  white-space: pre-line; color: var(--on-acc);
 }
-.lp2-cta-band p { font-size: 16px; font-weight: 600; margin-top: 14px; opacity: .72; }
+.lp2-cta-band p { font-size: 16px; font-weight: 600; margin-top: 14px; opacity: .72; color: var(--on-acc); }
 .lp2-cta-band .lp2-btn { background: var(--on-acc); color: var(--acc); }
-[data-theme="dark"] .lp2-cta-band .lp2-btn:hover { background: var(--panel); }
+.lp2-cta-band .lp2-btn:hover { background: #000; color: #fff; }
+[data-theme="dark"] .lp2-cta-band .lp2-btn:hover { background: var(--panel); color: var(--fg); }
 
 /* ── footer ── */
-.lp2-footer { border-top: 1px solid var(--line); padding: 64px 0 56px; }
+.lp2-footer { border-top: 1px solid var(--line); padding: 64px 0 56px; margin-top: 120px; }
 .lp2-foot-top {
   display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap;
   padding-bottom: 40px; border-bottom: 1px solid var(--line);

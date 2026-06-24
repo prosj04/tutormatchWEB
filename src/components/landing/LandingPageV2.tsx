@@ -597,14 +597,16 @@ export function LandingPageV2({ cms }: { cms?: LandingCmsContent }) {
                   <span className="lp2-t-tag">{t.subject}</span>
                 </div>
                 <div className="lp2-t-body">
-                  <div className="lp2-t-name">{t.name} 선생님</div>
+                  <div className="lp2-t-name">{t.name}</div>
                   <p className="lp2-t-line">{t.highlight}</p>
-                  <div className="lp2-t-edu">경력</div>
-                  <ul className="lp2-t-items">
-                    {t.careers.map((c) => (
-                      <li key={c}>{c}</li>
-                    ))}
-                  </ul>
+                  {t.careers[0] && <div className="lp2-t-edu">{t.careers[0]}</div>}
+                  {t.careers.length > 1 && (
+                    <ul className="lp2-t-items">
+                      {t.careers.slice(1).map((c) => (
+                        <li key={c}>{c}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </article>
             ))}

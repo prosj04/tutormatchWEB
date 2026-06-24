@@ -92,7 +92,7 @@ export default function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       {/* Prevent flash-of-wrong-theme: read localStorage before first paint */}
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('concord-theme');if(t==='light-lime'||t==='dark-blue')document.documentElement.setAttribute('data-theme',t);var c=localStorage.getItem('concord-color');if(c==='blue')document.documentElement.setAttribute('data-color','blue');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();` }} />
       </head>
       <body className="min-h-screen [word-break:keep-all]">
         <script
