@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
@@ -41,19 +42,19 @@ function ConcordTutorCard({ tutor }: { tutor: TutorCardData }) {
   const items = splitBullets(tutor.experience);
 
   return (
-    <ConcordReveal as="article" className="card tutor-card">
-      <div className="tutor-media" style={tutor.photoUrl ? { position: "relative", overflow: "hidden" } : undefined}>
+    <ConcordReveal as="article" className="card tutor-card" style={{ cursor: "pointer" }}>
+      <Link href={`/tutors/${tutor.id}`} className="tutor-media" style={tutor.photoUrl ? { position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" } : undefined}>
         <span className="tutor-tag">{tag}</span>
         {tutor.photoUrl ? (
           <Image src={tutor.photoUrl} alt="" fill className="object-cover" sizes="(max-width:960px) 50vw, 33vw" />
         ) : (
           <span className="ph">강사 사진</span>
         )}
-      </div>
+      </Link>
       <div className="tutor-body">
-        <div className="tutor-name">
+        <Link href={`/tutors/${tutor.id}`} className="tutor-name">
           {tutor.name} <span className="verified">✓ 검증</span>
-        </div>
+        </Link>
         <p className="tutor-line">{tutor.bio ?? ""}</p>
         <div className="tutor-edu">{tutor.education ?? ""}</div>
         {items.length > 0 ? (
