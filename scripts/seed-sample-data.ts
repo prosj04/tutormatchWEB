@@ -53,13 +53,13 @@ const TEACHERS = [
     experience: "7년",
   },
   {
-    name: sampleName("이서연"),
+    name: sampleName("김서연"),
     phone: "01090002002",
     subjects: ["영어"],
     gender: "FEMALE" as const,
     approved: true,
-    bio: "영어 회화·내신",
-    education: "연세대학교 영어영문학과",
+    bio: "수학 내신·수능 전문",
+    education: "성균관대학교 기계공학과",
     experience: "5년",
   },
   {
@@ -81,6 +81,16 @@ const TEACHERS = [
     bio: "국어 논술·내신 (승인 대기 샘플)",
     education: "고려대학교 국어국문학과",
     experience: "4년",
+  },
+  {
+    name: sampleName("이지현"),
+    phone: "01090002005",
+    subjects: ["영어"],
+    gender: "FEMALE" as const,
+    approved: true,
+    bio: "영어 회화·내신",
+    education: "연세대학교 영어영문학과",
+    experience: "5년",
   },
 ];
 
@@ -182,7 +192,7 @@ async function createTeacher(
     },
     include: { teacher: true },
   });
-  console.log(`  ✅ 선생님 ${row.name} (${digits}) — ${row.approved ? "승인" : "미승인"}`);
+  console.log(`  선생님 ${row.name} (${digits}) — ${row.approved ? "승인" : "미승인"}`);
   return user.teacher!.id;
 }
 
@@ -231,7 +241,7 @@ async function createStudent(
     });
   }
 
-  console.log(`  ✅ 학생 ${row.name} (${digits})${managerTeacherId ? " — 매니저 배정" : ""}`);
+  console.log(`  학생 ${row.name} (${digits})${managerTeacherId ? " — 매니저 배정" : ""}`);
   return studentId;
 }
 
