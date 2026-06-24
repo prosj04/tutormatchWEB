@@ -36,6 +36,7 @@ import {
   pricingBoxFieldKey,
   pricingMiddleBoxFieldKey,
 } from "@/lib/cms-page-defaults";
+import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 import { COMPARE_ROW_COUNT } from "@/lib/compare-cms";
 import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
 
@@ -114,12 +115,12 @@ const statsFields: TextFieldConfig[] = [
 ];
 
 const resultDefaults = [
-  { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: "/images/teachers/default-male.png" },
-  { student: "중3 학생", before: "영어 64점→",  after: "87점으로 상승",  image: "/images/teachers/default-female.png" },
-  { student: "고1 학생", before: "국어 55점→",  after: "78점으로 상승",  image: "/images/teachers/default-male.png" },
-  { student: "중2 학생", before: "수학 85점→",  after: "100점으로 상승", image: "/images/teachers/default-female.png" },
-  { student: "고3 학생", before: "영어 5등급→", after: "3등급으로 상승", image: "/images/teachers/default-male.png" },
-  { student: "고1 학생", before: "수학 69점→",  after: "92점으로 상승",  image: "/images/teachers/default-female.png" },
+  { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: RESULT_CARD_IMAGES[0] },
+  { student: "중3 학생", before: "영어 64점→", after: "87점으로 상승", image: RESULT_CARD_IMAGES[1] },
+  { student: "고1 학생", before: "국어 55점→", after: "78점으로 상승", image: RESULT_CARD_IMAGES[2] },
+  { student: "중2 학생", before: "수학 85점→", after: "100점으로 상승", image: RESULT_CARD_IMAGES[3] },
+  { student: "고3 학생", before: "영어 5등급→", after: "3등급으로 상승", image: RESULT_CARD_IMAGES[4] },
+  { student: "고1 학생", before: "수학 69점→", after: "92점으로 상승", image: RESULT_CARD_IMAGES[5] },
 ];
 
 const teacherDefaults = [

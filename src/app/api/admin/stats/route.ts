@@ -22,6 +22,9 @@ export async function GET() {
     questionsToday,
     recentStudents,
     unansweredQuestions,
+    waitingConsultations,
+    assignedConsultations,
+    managerLoad,
   ] = await Promise.all([
     prisma.student.count(),
     prisma.teacher.count({ where: { approved: true } }),
@@ -37,6 +40,17 @@ export async function GET() {
       },
     }),
     prisma.question.count({ where: { teacherAnswer: null } }),
+    prisma.consultationBooking.count({ where: { status: "WAITING" } }),
+    prisma.consultationBooking.count({ where: { status: "ASSIGNED" } }),
+    prisma.teacher.findMany({
+      where: { managerStudents: { some: {} } },
+      select: {
+        name: true,
+        _count: { select: { managerStudents: true } },
+      },
+      orderBy: { managerStudents: { _count: "desc" } },
+      take: 10,
+    }),
   ]);
 
   return NextResponse.json({
@@ -47,10 +61,16 @@ export async function GET() {
       activeMatches,
       questionsToday,
       unansweredQuestions,
+      waitingConsultations,
+      assignedConsultations,
     },
     recentStudents: recentStudents.map((s) => ({
       name: s.name,
       createdAt: s.user.createdAt,
+    })),
+    managerLoad: managerLoad.map((m) => ({
+      name: m.name,
+      studentCount: m._count.managerStudents,
     })),
   });
 }

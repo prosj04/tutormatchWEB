@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { portalHomeHref } from "@/lib/portal-roles";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 function displayName(session: { user?: { name?: string | null; email?: string | null } }) {
   const n = session.user?.name?.trim();
@@ -230,7 +231,8 @@ export function SiteHeader({
           </nav>
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <SessionActions scrolled={scrolled} />
         </div>
 
@@ -307,7 +309,10 @@ export function SiteHeader({
               ))}
             </nav>
           </div>
-          <SessionActions mobile onNavigate={() => setOpen(false)} />
+          <div className="space-y-4">
+            <ThemeToggle className="w-full justify-center" />
+            <SessionActions mobile onNavigate={() => setOpen(false)} />
+          </div>
         </div>
       </div>
     </header>

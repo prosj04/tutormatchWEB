@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { sendSms } from "@/lib/sms";
 
 export type NotificationType =
   | "QUESTION_UNANSWERED"
@@ -11,7 +12,16 @@ export type NotificationType =
   | "TEACHER_COMMENT"
   | "NEW_STUDENT_ASSIGNED"
   | "TEACHER_ASSIGNED"
-  | "NEW_QUESTION";
+  | "NEW_QUESTION"
+  | "VISIT_TIMES_UPDATED";
+
+/** 외부 SMS를 보낼 알림 타입 */
+const SMS_NOTIFICATION_TYPES = new Set<string>([
+  "TEACHER_ASSIGNED",
+  "BOOKING_CONFIRMED",
+  "QUESTION_UNANSWERED",
+  "NEW_STUDENT_ASSIGNED",
+]);
 
 export async function createNotification({
   userId,
@@ -26,7 +36,7 @@ export async function createNotification({
   body: string;
   relatedId?: string | null;
 }) {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId,
       type,
@@ -35,6 +45,31 @@ export async function createNotification({
       relatedId: relatedId ?? null,
     },
   });
+
+  if (SMS_NOTIFICATION_TYPES.has(type)) {
+    void dispatchSms(userId, body);
+  }
+
+  return notification;
+}
+
+/** userId → Student 또는 Teacher phone 조회 후 SMS 발송 (fire-and-forget) */
+async function dispatchSms(userId: string, body: string): Promise<void> {
+  try {
+    const student = await prisma.student.findUnique({
+      where: { userId },
+      select: { phone: true },
+    });
+    const phone = student?.phone ?? (
+      await prisma.teacher.findUnique({ where: { userId }, select: { phone: true } })
+    )?.phone;
+
+    if (phone) {
+      await sendSms(phone, `[Concord] ${body}`);
+    }
+  } catch (e) {
+    console.error("[SMS] dispatchSms error:", e);
+  }
 }
 
 export function formatRelativeTime(iso: string): string {

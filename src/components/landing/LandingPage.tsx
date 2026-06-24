@@ -23,19 +23,13 @@ import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { PublicCardLine } from "@/components/landing/PublicCardText";
 import { PUBLIC_CARD } from "@/lib/public-card-sizes";
+import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 import { SiteHeader } from "./SiteHeader";
 
 const HOME_TESTIMONIAL_PREVIEW = 3;
 const HOME_FAQ_PREVIEW = 3;
 
-const DEFAULT_RESULT_IMAGES = [
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-  "/images/teachers/default-male.png",
-  "/images/teachers/default-female.png",
-];
+const DEFAULT_RESULT_IMAGES = [...RESULT_CARD_IMAGES];
 
 /* ─────────────────────────────────────────── data ── */
 

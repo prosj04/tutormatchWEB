@@ -11,6 +11,7 @@ import {
   tutorsPageDefaults,
 } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
+import { LEGACY_RESULT_IMAGE_PLACEHOLDERS, RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 
 const siteContentDefaults = [
   { section: "hero", key: "headline", value: "아이마다 맞는\n선생님이 다릅니다", type: "text", order: 1 },
@@ -121,9 +122,9 @@ const siteContentDefaults = [
   { section: "results", key: "result3_student", value: "고1 학생", type: "text", order: 8 },
   { section: "results", key: "result3_before", value: "국어 55점→", type: "text", order: 9 },
   { section: "results", key: "result3_after", value: "78점으로 상승", type: "text", order: 10 },
-  { section: "results", key: "result1_image", value: "/images/teachers/default-male.png", type: "image", order: 11 },
-  { section: "results", key: "result2_image", value: "/images/teachers/default-female.png", type: "image", order: 12 },
-  { section: "results", key: "result3_image", value: "/images/teachers/default-male.png", type: "image", order: 13 },
+  { section: "results", key: "result1_image", value: RESULT_CARD_IMAGES[0], type: "image", order: 11 },
+  { section: "results", key: "result2_image", value: RESULT_CARD_IMAGES[1], type: "image", order: 12 },
+  { section: "results", key: "result3_image", value: RESULT_CARD_IMAGES[2], type: "image", order: 13 },
   { section: "results", key: "result1_visible", value: "1", type: "text", order: 14 },
   { section: "results", key: "result2_visible", value: "1", type: "text", order: 15 },
   { section: "results", key: "result3_visible", value: "1", type: "text", order: 16 },
@@ -139,9 +140,9 @@ const siteContentDefaults = [
   { section: "results", key: "result6_student", value: "고1 학생", type: "text", order: 26 },
   { section: "results", key: "result6_before", value: "수학 69점→", type: "text", order: 27 },
   { section: "results", key: "result6_after", value: "92점으로 상승", type: "text", order: 28 },
-  { section: "results", key: "result4_image", value: "/images/teachers/default-female.png", type: "image", order: 29 },
-  { section: "results", key: "result5_image", value: "/images/teachers/default-male.png", type: "image", order: 30 },
-  { section: "results", key: "result6_image", value: "/images/teachers/default-female.png", type: "image", order: 31 },
+  { section: "results", key: "result4_image", value: RESULT_CARD_IMAGES[3], type: "image", order: 29 },
+  { section: "results", key: "result5_image", value: RESULT_CARD_IMAGES[4], type: "image", order: 30 },
+  { section: "results", key: "result6_image", value: RESULT_CARD_IMAGES[5], type: "image", order: 31 },
 
   { section: "teachers", key: "section_title", value: "명문대 출신부터\n경력 5년 이상\n전문가까지", type: "text", order: 1 },
   { section: "teachers", key: "section_subtext", value: "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.", type: "text", order: 2 },
@@ -305,6 +306,21 @@ export async function seedDefaultCmsContent(adminUserId?: string) {
         },
         data: {
           value: item.newValue,
+          updatedBy: adminUserId ?? null,
+        },
+      }),
+    ),
+  );
+  await Promise.all(
+    RESULT_CARD_IMAGES.map((image, index) =>
+      prisma.siteContent.updateMany({
+        where: {
+          section: "results",
+          key: `result${index + 1}_image`,
+          value: { in: [...LEGACY_RESULT_IMAGE_PLACEHOLDERS] },
+        },
+        data: {
+          value: image,
           updatedBy: adminUserId ?? null,
         },
       }),

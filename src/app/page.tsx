@@ -1,4 +1,4 @@
-import { LandingPage } from "@/components/landing/LandingPage";
+import { LandingRoot } from "@/components/landing/LandingRoot";
 import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
 import { startPerfTimer } from "@/lib/perf-timer";
 import { getLandingCmsContent } from "@/lib/cms";
@@ -25,7 +25,7 @@ export default async function HomePage({
 
   const page = (
     <PublicAppProviders>
-      <LandingPage
+      <LandingRoot
         cms={{ siteContent: cms.siteContent, testimonials, faqs }}
         isEditMode={isEditMode}
       />

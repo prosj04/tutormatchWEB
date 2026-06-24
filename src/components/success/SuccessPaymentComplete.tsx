@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 import { normalizePhoneDigits } from "@/lib/phone-login";
@@ -17,6 +18,8 @@ type PendingCheckoutSignup = {
   subjects: string[];
 };
 
+type Status = "loading" | "done" | "no-data" | "error";
+
 type SuccessPaymentCompleteProps = {
   orderId?: string;
   paymentKey?: string;
@@ -26,14 +29,16 @@ type SuccessPaymentCompleteProps = {
 /** 결제 성공 리다이렉트 후 Chief 매니저 즉시 배정 */
 export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessPaymentCompleteProps) {
   const called = useRef(false);
+  const router = useRouter();
+  const [status, setStatus] = useState<Status>("loading");
 
   useEffect(() => {
     if (!orderId?.trim() || called.current) return;
     called.current = true;
     const safeOrderId = orderId.trim();
 
-    async function handleExistingStudent() {
-      await fetch("/api/payments/complete", {
+    async function handleExistingStudent(): Promise<"ok" | "unauth" | "error"> {
+      const res = await fetch("/api/payments/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -42,9 +47,12 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessP
           amount: Number.isFinite(amount) ? amount : undefined,
         }),
       });
+      if (res.status === 401) return "unauth";
+      if (!res.ok) return "error";
+      return "ok";
     }
 
-    async function handleCheckoutSignup(payload: PendingCheckoutSignup) {
+    async function handleCheckoutSignup(payload: PendingCheckoutSignup): Promise<"ok" | "error"> {
       const registerRes = await fetch("/api/register/student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,48 +67,99 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessP
         }),
       });
 
+      const identifier = normalizePhoneDigits(payload.phone);
+
       if (registerRes.status === 409) {
         const signResult = await signIn("credentials", {
-          identifier: normalizePhoneDigits(payload.phone),
+          identifier,
           password: payload.password,
           redirect: false,
         });
-        if (signResult?.ok) {
-          await handleExistingStudent();
-        }
-        return;
+        if (!signResult?.ok) return "error";
+        const result = await handleExistingStudent();
+        return result === "ok" ? "ok" : "error";
       }
 
-      if (!registerRes.ok) return;
+      if (!registerRes.ok) return "error";
 
-      await signIn("credentials", {
-        identifier: normalizePhoneDigits(payload.phone),
+      const signResult = await signIn("credentials", {
+        identifier,
         password: payload.password,
         redirect: false,
       });
+      return signResult?.ok ? "ok" : "error";
     }
 
     async function run() {
       try {
         const raw = sessionStorage.getItem(CHECKOUT_SIGNUP_STORAGE_KEY);
-        if (!raw) {
-          await handleExistingStudent();
-          return;
+
+        if (raw) {
+          const payload = JSON.parse(raw) as PendingCheckoutSignup;
+          if (payload.orderId === safeOrderId) {
+            const result = await handleCheckoutSignup(payload);
+            sessionStorage.removeItem(CHECKOUT_SIGNUP_STORAGE_KEY);
+            if (result === "ok") {
+              setStatus("done");
+              router.push("/dashboard");
+            } else {
+              setStatus("error");
+            }
+            return;
+          }
         }
-        const payload = JSON.parse(raw) as PendingCheckoutSignup;
-        if (payload.orderId !== safeOrderId) {
-          await handleExistingStudent();
-          return;
+
+        // 기존 로그인 학생 경로
+        const result = await handleExistingStudent();
+        if (result === "ok") {
+          setStatus("done");
+          router.push("/dashboard");
+        } else if (result === "unauth") {
+          setStatus("no-data");
+        } else {
+          setStatus("error");
         }
-        await handleCheckoutSignup(payload);
-        sessionStorage.removeItem(CHECKOUT_SIGNUP_STORAGE_KEY);
       } catch (e) {
-        console.error("[success] payments/complete:", e);
+        console.error("[success] SuccessPaymentComplete:", e);
+        setStatus("error");
       }
     }
 
     void run();
-  }, [orderId, paymentKey, amount]);
+  }, [orderId, paymentKey, amount, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center gap-2 py-4 text-sm text-text-secondary">
+        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+        처리 중입니다…
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-center text-sm text-red-700 mb-6">
+        처리 중 오류가 발생했습니다. 아래 연락처로 문의해 주시면 바로 도와드리겠습니다.
+        <div className="mt-2 font-semibold">
+          <a href="tel:01000000000" className="underline">010-0000-0000</a>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "no-data") {
+    return (
+      <div className="rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 text-center text-sm text-yellow-800 mb-6">
+        결제 정보를 확인하는 중 문제가 발생했습니다.
+        <br />
+        담당자에게 연락하시면 즉시 처리해 드립니다.
+        <div className="mt-2 font-semibold">
+          <a href="tel:01000000000" className="underline">010-0000-0000</a>
+        </div>
+      </div>
+    );
+  }
 
   return null;
 }

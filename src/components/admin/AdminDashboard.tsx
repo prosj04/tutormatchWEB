@@ -9,13 +9,17 @@ type Stats = {
   activeMatches: number;
   questionsToday: number;
   unansweredQuestions: number;
+  waitingConsultations: number;
+  assignedConsultations: number;
 };
 
 type RecentStudent = { name: string; createdAt: string };
+type ManagerLoad = { name: string; studentCount: number };
 
 export function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<RecentStudent[]>([]);
+  const [managerLoad, setManagerLoad] = useState<ManagerLoad[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [cronLoading, setCronLoading] = useState(false);
@@ -33,6 +37,7 @@ export function AdminDashboard() {
       .then((data) => {
         setStats(data.stats);
         setRecent(data.recentStudents);
+        setManagerLoad((data as { managerLoad?: ManagerLoad[] }).managerLoad ?? []);
       })
       .catch(() => {
         setLoadError("대시보드 데이터를 불러오지 못했습니다. 관리자로 다시 로그인했는지 확인해 주세요.");
@@ -60,12 +65,14 @@ export function AdminDashboard() {
     },
     { label: "활성 매칭", value: stats.activeMatches },
     { label: "오늘 질문", value: stats.questionsToday },
+    { label: "상담 대기", value: stats.waitingConsultations },
+    { label: "상담 진행 중", value: stats.assignedConsultations },
   ];
 
   return (
     <div>
       <h2 className="text-2xl font-black text-text-primary">대시보드</h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((c) => (
           <div
             key={c.label}
@@ -79,7 +86,7 @@ export function AdminDashboard() {
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h3 className="font-bold text-text-primary">최근 가입 학생</h3>
           <ul className="mt-4 space-y-3">
@@ -107,6 +114,25 @@ export function AdminDashboard() {
             {stats.unansweredQuestions}
           </p>
           <p className="mt-2 text-sm text-text-secondary">선생님 답변이 없는 질문 수</p>
+        </section>
+
+        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h3 className="font-bold text-text-primary">매니저 업무량</h3>
+          <ul className="mt-4 space-y-3">
+            {managerLoad.length === 0 ? (
+              <li className="text-sm text-text-muted">배정된 매니저 없음</li>
+            ) : (
+              managerLoad.map((m) => (
+                <li
+                  key={m.name}
+                  className="flex justify-between border-b border-gray-50 pb-2 text-sm last:border-0"
+                >
+                  <span className="font-medium text-text-primary">{m.name}</span>
+                  <span className="tabular-nums text-text-muted">{m.studentCount}명</span>
+                </li>
+              ))
+            )}
+          </ul>
         </section>
       </div>
 

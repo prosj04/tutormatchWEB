@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme CSS variables (light-lime / dark-blue) ─── */
+[data-theme="light-lime"] {
+  --th-bg: #F6F4EC;
+  --th-panel: #FFFFFF;
+  --th-panel-2: #EFEDE2;
+  --th-line: rgba(28,26,18,.10);
+  --th-line-2: rgba(28,26,18,.17);
+  --th-fg: #1B1A14;
+  --th-mut: #57554B;
+  --th-mut-2: #9B988A;
+  --th-stripe-a: #E9E7DC;
+  --th-stripe-b: #F1EFE6;
+  --th-header-bg: rgba(246,244,236,.85);
+  --th-acc: #0F8A5B;
+  --th-acc-hover: #0C7349;
+  --th-acc-rgb: 15,138,91;
+  --th-on-acc: #FFFFFF;
+  --th-acc-text: #0C6E49;
+}
+
+[data-theme="dark-blue"] {
+  --th-bg: #0B0C0F;
+  --th-panel: #131519;
+  --th-panel-2: #191C22;
+  --th-line: rgba(255,255,255,.09);
+  --th-line-2: rgba(255,255,255,.16);
+  --th-fg: #F5F6F8;
+  --th-mut: #9A9EA8;
+  --th-mut-2: #6E727C;
+  --th-stripe-a: #1b1e24;
+  --th-stripe-b: #171a1f;
+  --th-header-bg: rgba(11,12,15,.82);
+  --th-acc: #3D7BFF;
+  --th-acc-hover: #2E6BF0;
+  --th-acc-rgb: 61,123,255;
+  --th-on-acc: #FFFFFF;
+  --th-acc-text: #6FA0FF;
+}
+
+/* ─── Scroll-reveal for themed landing page ─── */
+.th-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .75s cubic-bezier(.2,.7,.3,1), transform .75s cubic-bezier(.2,.7,.3,1);
+}
+.th-reveal.th-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .th-reveal { opacity: 1; transform: none; transition: none; }
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
