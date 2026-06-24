@@ -1,21 +1,13 @@
 "use client";
 
-import { useTheme } from "@/hooks/useTheme";
 import type { LandingCmsContent } from "@/lib/cms";
-import { LandingPage } from "@/components/landing/LandingPage";
-import { LandingPageThemed } from "@/components/landing/LandingPageThemed";
+import { LandingPageV2 } from "@/components/landing/LandingPageV2";
 
 type Props = {
   cms?: LandingCmsContent;
   isEditMode?: boolean;
 };
 
-export function LandingRoot({ cms, isEditMode }: Props) {
-  const [theme] = useTheme();
-
-  if (theme === "light-lime" || theme === "dark-blue") {
-    return <LandingPageThemed cms={cms} isEditMode={isEditMode} />;
-  }
-
-  return <LandingPage cms={cms} isEditMode={isEditMode} />;
+export function LandingRoot({ cms }: Props) {
+  return <LandingPageV2 cms={cms} />;
 }
