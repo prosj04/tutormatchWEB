@@ -92,7 +92,6 @@ body:has(.lp2-root) footer.site .logo span {
   max-width: 50ch; line-height: 1.55; text-wrap: pretty;
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
-.lp2-trust-badge { font-size: 13px; color: var(--mut); margin-top: 0.75rem; letter-spacing: 0.01em; }
 .lp2-stats {
   display: flex; gap: 0; margin-top: 84px;
   border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);

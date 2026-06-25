@@ -16,9 +16,9 @@ import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 const DEFAULT_RESULT_IMAGES = [...RESULT_CARD_IMAGES];
 
 const stats = [
-  { value: "2명 중 1명", label: "3개월 내 성적 향상" },
-  { value: "1,200+", label: "누적 매칭 완료" },
-  { value: "97%+", label: "수강 만족도" },
+  { value: "500+", label: "누적 상담" },
+  { value: "1,200+", label: "매칭 완료" },
+  { value: "98%", label: "학생 만족도" },
 ];
 
 const results: [string, string, string][] = [
@@ -38,11 +38,11 @@ const teachers = [
 ];
 
 const steps = [
-  { number: "01", title: "무료 상담 신청 (30초)", desc: "학생의 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분합니다." },
-  { number: "02", title: "당일 매니저 연락", desc: "전담 매니저가 1:1로 전화 상담을 진행합니다. 걱정되시는 점을 자세히 들어드립니다." },
-  { number: "03", title: "1~3일 내 선생님 추천", desc: "상담 내용 바탕으로 과목·성향·일정에 딱 맞는 선생님 후보를 추천합니다." },
-  { number: "04", title: "첫 수업 · 100% 환불 보장", desc: "첫 수업 후 불만족 시 어떠한 위약금 없이 전액 환불해 드립니다." },
-  { number: "05", title: "학습 리포트 & 지속 관리", desc: "진도·숙제·질문·월간 리포트를 한 흐름으로 계속 관리합니다." },
+  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요." },
+  { number: "02", title: "매니저 배정·전화 상담", desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다." },
+  { number: "03", title: "선생님 추천·매칭", desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다." },
+  { number: "04", title: "수업 시작", desc: "첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다." },
+  { number: "05", title: "학습 리포트·관리", desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다." },
 ];
 
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
@@ -200,10 +200,10 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
   };
 
   const sectionTitles = {
-    teachers: getCmsMultiline("teachers", "section_title", "지원자 절반이 탈락하는\n검증을 통과한 선생님들"),
-    management: getCmsMultiline("management", "headline", "선생님께 직접 말 못해도\n매니저가 다 챙겨드립니다"),
+    teachers: getCmsMultiline("teachers", "section_title", "명문대 출신부터\n경력 10년 이상 전문가까지"),
+    management: getCmsMultiline("management", "headline", "수업 밖에서도\n이어지는 학습 관리"),
     process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
-    processSubtext: getCmsValue("features", "section_subtext", "상담부터 배정까지 빠르면 2일, 첫 수업은 마음에 안 들면 100% 환불됩니다."),
+    processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요."),
     teachersCta: getCmsValue("teachers", "cta", "전체 선생님 보기 →"),
     reviews: getCmsValue("home_labels", "section_title_reviews", "성적보다 습관이 먼저 바뀌었어요"),
   };
@@ -299,7 +299,7 @@ export function LandingPageV2({
           <h1 style={{ whiteSpace: "pre-line" }}>
             <CmsEdit active={isEditMode} section="hero" cmsKey="headline" type="text">
               {heroHeadlineWithHl(
-                getCmsValue("hero", "headline", "맞는 선생님 한 명이\n아이의 성적을 바꿉니다"),
+                getCmsValue("hero", "headline", "학생마다 맞는\n선생님이 다릅니다"),
               )}
             </CmsEdit>
           </h1>
@@ -308,14 +308,14 @@ export function LandingPageV2({
               {getCmsMultiline(
                 "hero",
                 "subtext",
-                "SKY·의치한약수 출신 중에서도 엄선된 선생님만 배정합니다. 전담 매니저가 성향·목표·일정을 직접 듣고 처음부터 딱 맞는 선생님을 연결해 드립니다.",
+                "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
               )}
             </CmsEdit>
           </p>
           <div className="lp2-cta-row">
             <ConsultationApplyButton className="lp2-btn lp2-btn-acc">
               <CmsEdit active={isEditMode} section="hero" cmsKey="cta_primary" type="text">
-                {getCmsValue("hero", "cta_primary", "지금 무료 상담 신청하기")}
+                {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
               </CmsEdit>
             </ConsultationApplyButton>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
@@ -324,14 +324,6 @@ export function LandingPageV2({
               </CmsEdit>
             </Link>
           </div>
-          {getCmsValue("hero", "trust_text", "✓ 첫 수업 100% 환불 보장 · ✓ 1~3일 내 선생님 배정") && (
-            <CmsEdit active={isEditMode} section="hero" cmsKey="trust_text" type="text">
-              <p className="lp2-trust-badge">
-                {getCmsValue("hero", "trust_text", "✓ 첫 수업 100% 환불 보장 · ✓ 1~3일 내 선생님 배정")}
-              </p>
-            </CmsEdit>
-          )}
-
           {/* Stats */}
           <div className="lp2-stats">
             {cmsStats.map((s) => {
@@ -419,7 +411,7 @@ export function LandingPageV2({
               {getCmsValue(
                 "teachers",
                 "section_subtext",
-                "SKY·의치한약수 출신만 지원 가능하며, 서류·수업 시연·최종 면접을 모두 통과한 선생님만 배정합니다.",
+                "확실한 서류 인증과 채용 절차로 엄선된, 인품과 실력 모두 확실한 선생님을 배정해드립니다.",
               )}
             </p>
           </div>
@@ -475,7 +467,7 @@ export function LandingPageV2({
               {getCmsValue(
                 "management",
                 "subtext",
-                "불편한 요청도 매니저가 대신 전달합니다. 학부모님은 수업 내용·숙제·성적 변화를 한 화면에서 확인하세요.",
+                "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.",
               )}
             </p>
           </div>
