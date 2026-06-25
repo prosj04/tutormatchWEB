@@ -213,6 +213,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     getCmsMultiline,
     pricingTitleParts,
     cmsStats,
+    cmsResults,
     doubledResults,
     cmsTeachers,
     cmsSteps,
@@ -267,7 +268,7 @@ export function LandingPageV2({
     getCmsMultiline,
     pricingTitleParts,
     cmsStats,
-    doubledResults,
+    cmsResults,
     cmsTeachers,
     cmsSteps,
     managementItems,
@@ -352,19 +353,57 @@ export function LandingPageV2({
         </div>
       </section>
 
-      {/* ══ RESULTS MARQUEE ═══════════════════════════════ */}
-      <div className="lp2-marquee">
-        <div className="lp2-marquee-track">
-          {doubledResults.map((item, i) => (
-            <span key={i} className="lp2-chip">
-              <b>{item.student}</b>
-              {item.before}
-              <span className="arr">→</span>
-              <span className="up">{item.after}</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* ══ RESULTS ══════════════════════════════════════ */}
+      {cmsResults.length > 0 && (
+        <section className="lp2-sec lp2-results-sec" id="results" style={{ scrollMarginTop: "80px" }}>
+          <div className="lp2-wrap">
+            <div className="lp2-sec-head reveal">
+              <span className="lp2-eyebrow">Results</span>
+              <h2>
+                <CmsEdit active={isEditMode} section="results" cmsKey="section_title" type="text">
+                  {getCmsValue("results", "section_title", "결과로 증명합니다")}
+                </CmsEdit>
+              </h2>
+            </div>
+            <div className="lp2-result-grid">
+              {cmsResults.map((item, i) => {
+                const n = i + 1;
+                return (
+                  <article key={i} className="lp2-result-card reveal">
+                    <div className="lp2-result-img">
+                      <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_image`} type="image">
+                        <Image
+                          src={item.image}
+                          alt={`${item.student} 성적 변화`}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover"
+                        />
+                      </CmsEdit>
+                    </div>
+                    <div className="lp2-result-body">
+                      <span className="lp2-result-badge">
+                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_student`} type="text">
+                          {item.student}
+                        </CmsEdit>
+                      </span>
+                      <p className="lp2-result-text">
+                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_before`} type="text">
+                          <span className="before">{item.before}</span>
+                        </CmsEdit>
+                        <span className="arr">→</span>
+                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_after`} type="text">
+                          <span className="after">{item.after}</span>
+                        </CmsEdit>
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ══ TEACHERS ══════════════════════════════════════ */}
       <section
@@ -508,7 +547,10 @@ export function LandingPageV2({
               const isRec = i === 1;
               const priceText = item.price ?? item.plan.title;
               const featureList = item.features ?? item.plan.features;
-              const numOnly = priceText.replace(/[^0-9,]/g, "");
+              const rawNum = Number(priceText.replace(/[^\d]/g, ""));
+              const numOnly = rawNum > 0
+                ? rawNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                : priceText.replace(/[^0-9,]/g, "");
               return (
                 <div
                   key={item.plan.id}

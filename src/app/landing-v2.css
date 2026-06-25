@@ -106,7 +106,32 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-stat .n em { color: var(--acc-text); font-style: normal; }
 .lp2-stat .l { color: var(--mut); font-size: 15px; margin-top: 10px; font-weight: 500; }
 
-/* ── marquee ── */
+/* ── results ── */
+.lp2-results-sec { padding-top: 80px; padding-bottom: 80px; }
+.lp2-result-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 48px;
+}
+.lp2-result-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: transform .25s var(--ease), border-color .25s, background .4s var(--ease), box-shadow .25s;
+}
+.lp2-result-card:hover { transform: translateY(-4px); border-color: var(--line-2); box-shadow: var(--shadow-md); }
+.lp2-result-img { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--panel-2); flex-shrink: 0; }
+.lp2-result-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.lp2-result-badge {
+  display: inline-flex; align-items: center;
+  background: var(--acc-bg, hsl(215 80% 96%)); color: var(--acc-text);
+  border-radius: 999px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+  width: fit-content;
+}
+.lp2-result-text { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; flex-wrap: wrap; }
+.lp2-result-text .before { color: var(--mut); }
+.lp2-result-text .arr { color: var(--acc-text); font-weight: 800; font-size: 16px; }
+.lp2-result-text .after { color: var(--fg); font-weight: 800; }
+
+/* ── marquee (kept for possible re-use) ── */
 .lp2-marquee {
   border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
   background: var(--panel); overflow: hidden; padding: 22px 0;
@@ -313,6 +338,7 @@ body:has(.lp2-root) footer.site .logo span {
 
 /* ── responsive ── */
 @media (max-width:960px) {
+  .lp2-result-grid { grid-template-columns: repeat(2,1fr); }
   .lp2-grid-4 { grid-template-columns: repeat(2,1fr); }
   .lp2-nav-links { display: none; }
   .lp2-ghost-link { display: none; }
@@ -322,6 +348,7 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-sec-head h2 { font-size: clamp(26px, 6.5vw, 40px); }
 }
 @media (max-width:680px) {
+  .lp2-result-grid { grid-template-columns: 1fr; }
   .lp2-grid-3, .lp2-rev-grid, .lp2-price-grid { grid-template-columns: 1fr; }
   .lp2-grid-4 { grid-template-columns: 1fr; }
   .lp2-stats { flex-wrap: wrap; }
