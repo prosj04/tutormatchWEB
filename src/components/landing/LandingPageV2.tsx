@@ -21,13 +21,13 @@ const stats = [
   { value: "98%", label: "학생 만족도" },
 ];
 
-const results: [string, string, string][] = [
-  ["고2 학생", "수학 5등급→", "2등급으로 상승"],
-  ["중3 학생", "영어 64점→", "87점으로 상승"],
-  ["고1 학생", "국어 55점→", "78점으로 상승"],
-  ["중2 학생", "수학 85점→", "100점으로 상승"],
-  ["고3 학생", "영어 5등급→", "3등급으로 상승"],
-  ["고1 학생", "수학 69점→", "92점으로 상승"],
+const results: [string, string, string, string][] = [
+  ["고2 학생", "수학 5등급", "2등급으로 상승", "3개월"],
+  ["중3 학생", "영어 64점", "87점으로 상승", "4개월"],
+  ["고1 학생", "국어 55점", "78점으로 상승", "3개월"],
+  ["중2 학생", "수학 85점", "100점으로 상승", "2개월"],
+  ["고3 학생", "영어 5등급", "3등급으로 상승", "5개월"],
+  ["고1 학생", "수학 69점", "92점으로 상승", "3개월"],
 ];
 
 const teachers = [
@@ -97,15 +97,16 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     },
   ];
 
-  const cmsResults = results.flatMap(([student, before, after], index) => {
+  const cmsResults = results.flatMap(([student, before, after, months], index) => {
     const n = index + 1;
     const vis = getCmsValue("results", `result${n}_visible`, "1");
     if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
     return [
       {
         student: getCmsValue("results", `result${n}_student`, student),
-        before: getCmsValue("results", `result${n}_before`, before),
+        before: getCmsValue("results", `result${n}_before`, before).replace(/→\s*$/, ""),
         after: getCmsValue("results", `result${n}_after`, after),
+        months: getCmsValue("results", `result${n}_months`, months),
         image: getCmsValue(
           "results",
           `result${n}_image`,
@@ -269,6 +270,7 @@ export function LandingPageV2({
     pricingTitleParts,
     cmsStats,
     cmsResults,
+    doubledResults,
     cmsTeachers,
     cmsSteps,
     managementItems,
@@ -346,7 +348,7 @@ export function LandingPageV2({
       </section>
 
       {/* ══ RESULTS ══════════════════════════════════════ */}
-      {cmsResults.length > 0 && (
+      {doubledResults.length > 0 && (
         <section className="lp2-sec lp2-results-sec" id="results" style={{ scrollMarginTop: "80px" }}>
           <div className="lp2-wrap">
             <div className="lp2-sec-head reveal">
@@ -357,36 +359,64 @@ export function LandingPageV2({
                 </CmsEdit>
               </h2>
             </div>
-            <div className="lp2-result-grid">
-              {cmsResults.map((item, i) => {
-                const n = i + 1;
+          </div>
+          <div className="lp2-result-marquee">
+            <div className="lp2-result-track">
+              {doubledResults.map((item, i) => {
+                const n = (i % cmsResults.length) + 1;
+                const isOriginal = i < cmsResults.length;
                 return (
-                  <article key={i} className="lp2-result-card reveal">
+                  <article key={i} className="lp2-result-card">
                     <div className="lp2-result-img">
-                      <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_image`} type="image">
+                      {isOriginal ? (
+                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_image`} type="image">
+                          <Image
+                            src={item.image}
+                            alt={`${item.student} 성적 변화`}
+                            fill
+                            sizes="220px"
+                            className="object-cover"
+                          />
+                        </CmsEdit>
+                      ) : (
                         <Image
                           src={item.image}
                           alt={`${item.student} 성적 변화`}
                           fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          sizes="220px"
                           className="object-cover"
                         />
-                      </CmsEdit>
+                      )}
                     </div>
                     <div className="lp2-result-body">
-                      <span className="lp2-result-badge">
-                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_student`} type="text">
-                          {item.student}
-                        </CmsEdit>
-                      </span>
+                      <div className="lp2-result-meta">
+                        <span className="lp2-result-badge">
+                          {isOriginal ? (
+                            <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_student`} type="text">
+                              {item.student}
+                            </CmsEdit>
+                          ) : item.student}
+                        </span>
+                        <span className="lp2-result-months">
+                          {isOriginal ? (
+                            <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_months`} type="text">
+                              {item.months} 수강
+                            </CmsEdit>
+                          ) : `${item.months} 수강`}
+                        </span>
+                      </div>
                       <p className="lp2-result-text">
-                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_before`} type="text">
-                          <span className="before">{item.before}</span>
-                        </CmsEdit>
+                        {isOriginal ? (
+                          <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_before`} type="text">
+                            <span className="before">{item.before}</span>
+                          </CmsEdit>
+                        ) : <span className="before">{item.before}</span>}
                         <span className="arr">→</span>
-                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_after`} type="text">
-                          <span className="after">{item.after}</span>
-                        </CmsEdit>
+                        {isOriginal ? (
+                          <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_after`} type="text">
+                            <span className="after">{item.after}</span>
+                          </CmsEdit>
+                        ) : <span className="after">{item.after}</span>}
                       </p>
                     </div>
                   </article>
