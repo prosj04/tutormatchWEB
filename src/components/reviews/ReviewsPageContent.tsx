@@ -45,7 +45,7 @@ export function ReviewsPageContent({
           <CmsEdit active={isEditMode} section="reviews_page" cmsKey="subtext" type="text">
             {get(
               "subtext",
-              "Concord와 함께한 가정의 실제 후기입니다. 점수 변화보다 학생이 스스로 공부하게 된 이야기를 더 자랑스럽게 생각합니다.",
+              "Concord와 함께한 가정의 실제 후기입니다. 성적 향상보다 학생이 스스로 공부하게 된 이야기를 더 자랑스럽게 생각합니다.",
             )}
           </CmsEdit>
         }

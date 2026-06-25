@@ -4,6 +4,12 @@
    CSS vars (--bg, --acc, etc.) defined in globals.css.
    ════════════════════════════════════════════════════ */
 
+/* 홈 랜딩 헤더·푸터 로고 점 — Green/Blue v2 HTML은 --acc (서브페이지 concord.css는 --acc-text) */
+body:has(.lp2-root) header.site .logo span,
+body:has(.lp2-root) footer.site .logo span {
+  color: var(--acc);
+}
+
 .lp2-root {
   background: var(--bg);
   color: var(--fg);
@@ -86,6 +92,7 @@
   max-width: 50ch; line-height: 1.55; text-wrap: pretty;
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
+.lp2-trust-badge { font-size: 13px; color: var(--mut); margin-top: 0.75rem; letter-spacing: 0.01em; }
 .lp2-stats {
   display: flex; gap: 0; margin-top: 84px;
   border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
@@ -228,7 +235,7 @@
   font-size: 14px; font-weight: 700; color: var(--mut);
   text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--line-2);
 }
-.lp2-cmp thead th.lp2-cc { color: var(--on-acc); }
+.lp2-cmp thead th.lp2-cc { color: #fff; }
 .lp2-cmp tbody td { border-bottom: 1px solid var(--line); color: var(--mut); }
 .lp2-cmp tbody tr:last-child td { border-bottom: none; }
 .lp2-cmp tbody td:first-child { color: var(--fg); font-weight: 600; }

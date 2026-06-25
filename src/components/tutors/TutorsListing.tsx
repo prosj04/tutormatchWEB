@@ -125,7 +125,7 @@ export function TutorsListing({
           <CmsEdit active={isEditMode} section="tutors_page" cmsKey="header_subtext" type="text">
             {get(
               "header_subtext",
-              "모든 선생님은 학력 서류 확인과 면접을 거쳐 선발됩니다. 과목·성향·일정에 맞춰 직접 매칭해 드립니다.",
+              "SKY·의치한약수 출신 중 서류·수업 시연·면접을 통과한 선생님만 배정됩니다. 지원자 절반이 탈락하는 선발 과정을 거쳤습니다.",
             )}
           </CmsEdit>
         }

@@ -561,7 +561,7 @@ export const homePageVisibilityDefaults = [
   {
     section: "home_page",
     key: "pricing_subtext",
-    value: "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
+    value: "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
     type: "text",
     order: 4,
   },

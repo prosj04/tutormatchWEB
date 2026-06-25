@@ -44,7 +44,7 @@ export function FaqPageContent({
           <CmsEdit active={isEditMode} section="faq_page" cmsKey="subtext" type="text">
             {get(
               "subtext",
-              "상담·매칭·수업·결제에 대해 학부모님이 가장 많이 묻는 내용을 모았습니다. 더 궁금한 점은 언제든 상담으로 문의해 주세요.",
+              "상담·매칭·수업·환불에 대해 가장 많이 묻는 내용을 모았습니다. 추가 질문은 무료 상담으로 문의해 주세요.",
             )}
           </CmsEdit>
         }

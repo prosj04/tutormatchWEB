@@ -872,6 +872,11 @@ export function AdminCmsPage() {
     if (res.ok) await load();
   }
 
+  async function upsertMarketingCopy() {
+    const res = await fetch("/api/admin/cms/init?force=true", { method: "POST" });
+    if (res.ok) await load();
+  }
+
   async function patchTestimonial(id: string, payload: Partial<TestimonialRow>) {
     const res = await fetch(`/api/admin/cms/testimonials/${id}`, {
       method: "PATCH",
@@ -986,13 +991,22 @@ export function AdminCmsPage() {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => void initDefaults()}
-            className="mb-1 shrink-0 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
-          >
-            기본값으로 초기화
-          </button>
+          <div className="mb-1 flex shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={() => void upsertMarketingCopy()}
+              className="rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white"
+            >
+              마케팅 문구 업데이트
+            </button>
+            <button
+              type="button"
+              onClick={() => void initDefaults()}
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
+            >
+              기본값으로 초기화
+            </button>
+          </div>
         </div>
 
         {hasNoContent ? (

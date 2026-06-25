@@ -56,7 +56,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
   const headerTitle = get("header_title", "투명한 요금,\n꼭 맞는 1:1 과외");
   const headerSubtext = get(
     "header_subtext",
-    "모든 플랜에 학습 진도 관리, 과제 관리, 강사 첨삭·질답이 포함됩니다. 학년과 수업 횟수에 맞춰 선택하세요.",
+    "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
   );
 
   return (
