@@ -41,6 +41,12 @@ export function StudentDashboard({
   const [plan, setPlan] = useState<StudyPlan | null>(initialPlan);
   const [loading, setLoading] = useState(false);
 
+  const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
+  const showToast = useCallback((msg: string, type: "ok" | "err" = "err") => {
+    setToast({ msg, type });
+    window.setTimeout(() => setToast(null), 3500);
+  }, []);
+
   const [copyModalOpen, setCopyModalOpen] = useState(false);
   const [copyOptions, setCopyOptions] = useState<RecentPlanOption[]>([]);
   const [copyLoading, setCopyLoading] = useState(false);
@@ -116,14 +122,14 @@ export function StudentDashboard({
 
   async function handleAddTask() {
     const current = await ensurePlan();
-    if (!current) return;
+    if (!current) { showToast("할 일 추가에 실패했습니다."); return; }
 
     const res = await fetch(`/api/plans/${current.id}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: "" }),
     });
-    if (!res.ok) return;
+    if (!res.ok) { showToast("할 일 추가에 실패했습니다."); return; }
     const data = (await res.json()) as { task: StudyTask };
     setPlan((p) =>
       p ? { ...p, tasks: [...p.tasks, data.task] } : p,
@@ -139,7 +145,7 @@ export function StudentDashboard({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     });
-    if (!res.ok) return;
+    if (!res.ok) { showToast("저장에 실패했습니다. 다시 시도해 주세요."); return; }
     const data = (await res.json()) as { task: StudyTask };
     setPlan((p) =>
       p
@@ -158,15 +164,16 @@ export function StudentDashboard({
 
   async function handleDelete(taskId: string) {
     const res = await fetch(`/api/plans/tasks/${taskId}`, { method: "DELETE" });
-    if (!res.ok) return;
+    if (!res.ok) { showToast("삭제에 실패했습니다."); return; }
     setPlan((p) =>
       p ? { ...p, tasks: p.tasks.filter((t) => t.id !== taskId) } : p,
     );
   }
 
   async function handleReorder(reordered: StudyTask[]) {
+    const snapshot = plan;
     setPlan((p) => (p ? { ...p, tasks: reordered } : p));
-    const current = plan;
+    const current = snapshot;
     if (!current) return;
 
     const res = await fetch(`/api/plans/${current.id}/tasks`, {
@@ -174,7 +181,10 @@ export function StudentDashboard({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ taskIds: reordered.map((task) => task.id) }),
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setPlan(snapshot);
+      return;
+    }
     const data = (await res.json()) as { tasks: StudyTask[] };
     setPlan((p) => (p ? { ...p, tasks: data.tasks } : p));
   }
@@ -187,7 +197,7 @@ export function StudentDashboard({
       const res = await fetch(
         `/api/plans?before=${selectedDate}&recent=7`,
       );
-      if (!res.ok) return;
+      if (!res.ok) { showToast("최근 계획을 불러오지 못했습니다."); return; }
       const data = (await res.json()) as { plans: RecentPlanOption[] };
       setCopyOptions(data.plans.filter((p) => p.taskCount > 0));
     } finally {
@@ -202,7 +212,7 @@ export function StudentDashboard({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sourceDate: copySource, targetDate: selectedDate }),
     });
-    if (!res.ok) return;
+    if (!res.ok) { showToast("계획 복사에 실패했습니다."); return; }
     const data = (await res.json()) as { plan: StudyPlan };
     setPlan(data.plan);
     setPlanDates((prev) => new Set(prev).add(selectedDate));
@@ -211,6 +221,7 @@ export function StudentDashboard({
   }
 
   return (
+    <>
     <div className="min-h-screen bg-background" data-portal-content>
       <DashboardTopBar studentName={studentName} isEditMode={isEditMode} />
 
@@ -282,5 +293,16 @@ export function StudentDashboard({
         </main>
       </div>
     </div>
+    {toast && (
+      <p
+        role="status"
+        className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-5 py-2.5 text-sm text-white shadow-lg transition-opacity${
+          toast.type === "err" ? " bg-red-600" : " bg-gray-900"
+        }`}
+      >
+        {toast.msg}
+      </p>
+    )}
+    </>
   );
 }

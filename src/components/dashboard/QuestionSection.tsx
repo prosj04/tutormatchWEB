@@ -41,7 +41,7 @@ export function QuestionSection({
   const errUpload = usePortalCopy(
     "student_questions",
     "err_upload",
-    "이미지 업로드에 실패했습니다. Supabase Storage 설정을 확인해 주세요.",
+    "이미지 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.",
   );
 
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);

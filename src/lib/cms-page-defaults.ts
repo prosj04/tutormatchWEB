@@ -937,7 +937,7 @@ export const portalPagesDefaults = [
   {
     section: "student_questions",
     key: "err_upload",
-    value: "이미지 업로드에 실패했습니다. Supabase Storage 설정을 확인해 주세요.",
+    value: "이미지 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     type: "text",
     order: 6,
   },
