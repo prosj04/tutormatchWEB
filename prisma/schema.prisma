@@ -16,43 +16,56 @@ model User {
   student       Student?
   teacher       Teacher?
   notifications Notification[]
+  pushDevices   PushDevice[]
   createdAt     DateTime       @default(now())
 }
 
 model Student {
-  id            String                @id @default(uuid())
-  userId        String                @unique
-  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name          String
-  grade         String
-  subjects      String
-  phone         String
+  id                  String               @id @default(uuid())
+  userId              String               @unique
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  grade               String
+  subjects            String
+  phone               String
   /// "MALE" | "FEMALE" — 기본 프로필 이미지 구분
-  gender        String?
-  plans         StudyPlan[]
-  questions     Question[]
-  teachers      TeacherStudent[]
+  gender              String?
+  plans               StudyPlan[]
+  questions           Question[]
+  teachers            TeacherStudent[]
   consultationBooking ConsultationBooking?
-  managerLinks  ManagerStudent[]
+  managerLinks        ManagerStudent[]
+  lessons             Lesson[]
+  reviews             TutorReview[]
+  studySessions       StudySession[]
+  subscriptions       Subscription[]
+  tokenWallets        TokenWallet[]
+  monthlyReports      MonthlyReport[]
+  questionMessages    QuestionMessage[]
+  onboardingSurvey    OnboardingSurvey?
 }
 
 model Teacher {
-  id              String             @id @default(uuid())
-  userId          String             @unique
-  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name            String
-  phone           String
-  subjects        String
-  bio             String
-  education       String
-  experience      String
+  id               String                @id @default(uuid())
+  userId           String                @unique
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  phone            String
+  subjects         String
+  bio              String
+  education        String
+  experience       String
   /// 공개 강사진 사진 구분: "MALE" | "FEMALE" (미설정 시 남성 기본 이미지)
-  gender          String?
-  approved        Boolean            @default(false)
-  profile         TeacherProfile?
-  students        TeacherStudent[]
-  managerBookings ConsultationBooking[]
-  managerStudents ManagerStudent[]   @relation("ManagerStudents")
+  gender           String?
+  approved         Boolean               @default(false)
+  profile          TeacherProfile?
+  students         TeacherStudent[]
+  managerBookings  ConsultationBooking[]
+  managerStudents  ManagerStudent[]      @relation("ManagerStudents")
+  lessons          Lesson[]
+  reviews          TutorReview[]
+  availabilities   TutorAvailability[]
+  questionMessages QuestionMessage[]
 
   @@index([approved])
 }
@@ -63,8 +76,8 @@ model TeacherStudent {
   studentId String
   teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  subjects  String   // 이 매칭에서 담당하는 과목 (comma-separated)
-  startDate String   // "2024-01-01"
+  subjects  String // 이 매칭에서 담당하는 과목 (comma-separated)
+  startDate String // "2024-01-01"
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
@@ -78,11 +91,11 @@ model StudyPlan {
   id        String      @id @default(uuid())
   studentId String
   student   Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  date      String      // "2024-01-15" format
+  date      String // "2024-01-15" format
   tasks     StudyTask[]
-  comment   String?     // 강사 코멘트
+  comment   String? // 강사 코멘트
   commentAt DateTime?
-  commentBy String?     // Teacher id
+  commentBy String? // Teacher id
   createdAt DateTime    @default(now())
 
   @@index([studentId])
@@ -104,13 +117,13 @@ model Question {
   id              String    @id @default(uuid())
   studentId       String
   student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  date            String    // 연결된 날짜 "2024-01-15"
+  date            String // 연결된 날짜 "2024-01-15"
   content         String
-  imageUrl        String?   // Supabase Storage URL
+  imageUrl        String? // Supabase Storage URL
   aiAnswer        String?
   teacherAnswer   String?
   teacherAnswerAt DateTime?
-  answeredBy      String?   // Teacher id
+  answeredBy      String? // Teacher id
   isResolved      Boolean   @default(false)
   createdAt       DateTime  @default(now())
 
@@ -126,28 +139,28 @@ model TeacherProfile {
   teacher      Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   photoUrl     String?
   intro        String?
-  career       String?  // JSON string array
-  education    String?  // JSON string array
-  certificates String?  // JSON string array
-  resumeUrls   String?  // JSON string array, 이력서 파일 URL들
-  documentUrls String?  // JSON string array, 인증서류 파일 URL들
+  career       String? // JSON string array
+  education    String? // JSON string array
+  certificates String? // JSON string array
+  resumeUrls   String? // JSON string array, 이력서 파일 URL들
+  documentUrls String? // JSON string array, 인증서류 파일 URL들
   updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model ConsultationBooking {
-  id             String    @id @default(uuid())
-  studentId      String    @unique
-  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  managerId      String?
-  manager        Teacher?  @relation(fields: [managerId], references: [id])
+  id                  String    @id @default(uuid())
+  studentId           String    @unique
+  student             Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  managerId           String?
+  manager             Teacher?  @relation(fields: [managerId], references: [id])
   preferredTimes      String    @default("[]")
   visitPreferredTimes String    @default("{}")
   status              String    @default("WAITING")
   // "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED"
-  note           String?
-  managerNote    String?
-  assignedAt     DateTime?
-  createdAt      DateTime  @default(now())
+  note                String?
+  managerNote         String?
+  assignedAt          DateTime?
+  createdAt           DateTime  @default(now())
 
   @@index([managerId])
   @@index([status])
@@ -188,14 +201,14 @@ model ManagerStudent {
 
 model SiteContent {
   id        String   @id @default(uuid())
-  section   String   // "hero" | "stats" | "testimonials" | "faq" | "cta" | "features"
-  key       String   // e.g. "headline", "subtext", "stat1_number"
-  value     String   // actual content (text or image URL)
+  section   String // "hero" | "stats" | "testimonials" | "faq" | "cta" | "features"
+  key       String // e.g. "headline", "subtext", "stat1_number"
+  value     String // actual content (text or image URL)
   type      String   @default("text") // "text" | "image" | "number"
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   updatedAt DateTime @updatedAt
-  updatedBy String?  // admin user id
+  updatedBy String? // admin user id
 
   @@unique([section, key])
 }
@@ -203,7 +216,7 @@ model SiteContent {
 model Testimonial {
   id                String   @id @default(uuid())
   quote             String
-  author            String   // e.g. "고2 · 수학 · 학부모"
+  author            String // e.g. "고2 · 수학 · 학부모"
   imageUrl          String?
   order             Int      @default(0)
   isActive          Boolean  @default(true)
@@ -214,13 +227,167 @@ model Testimonial {
 }
 
 model FaqItem {
-  id           String   @id @default(uuid())
-  question     String
-  answer       String
-  order        Int      @default(0)
-  isActive     Boolean  @default(true)
-  showOnHome   Boolean  @default(false)
-  showOnFaqPage Boolean @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(uuid())
+  question      String
+  answer        String
+  order         Int      @default(0)
+  isActive      Boolean  @default(true)
+  showOnHome    Boolean  @default(false)
+  showOnFaqPage Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ── 모바일 앱 전용 모델 ───────────────────────────────────────────
+
+/// 예약된 수업 (홈 '오늘 수업'·'다가오는 일정', 입장 버튼)
+model Lesson {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId   String
+  teacher     Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject     String
+  startAt     DateTime
+  durationMin Int      @default(50)
+  joinUrl     String?
+  status      String   @default("SCHEDULED") // "SCHEDULED" | "COMPLETED" | "CANCELLED"
+  createdAt   DateTime @default(now())
+
+  @@index([studentId])
+  @@index([studentId, startAt])
+  @@index([teacherId])
+  @@index([status])
+}
+
+/// 강사 평점/후기 (선생님 찾기·프로필 평점)
+model TutorReview {
+  id        String   @id @default(uuid())
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  rating    Int // 1–5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, studentId])
+  @@index([teacherId])
+}
+
+/// 강사 상담 가능 시간 슬롯 (프로필 SlotGrid)
+model TutorAvailability {
+  id        String   @id @default(uuid())
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  weekday   Int // 0(일)–6(토)
+  time      String // "19:00"
+  isOpen    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, weekday, time])
+  @@index([teacherId])
+}
+
+/// 일자별 학습 시간 (내 학습 주간 막대)
+model StudySession {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date      String // "2024-01-15"
+  minutes   Int      @default(0)
+  source    String? // "lesson" | "self" | "homework"
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([studentId, date])
+}
+
+/// 구독/플랜 상태 (AI 토큰 할당량 산정 근거)
+model Subscription {
+  id          String    @id @default(uuid())
+  studentId   String
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  plan        String // pricing-plans id e.g. "8-1"
+  status      String    @default("ACTIVE") // "ACTIVE" | "PAST_DUE" | "CANCELLED"
+  periodStart DateTime  @default(now())
+  periodEnd   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([studentId, status])
+}
+
+/// AI 질답 토큰 지갑 (월별 사용/할당량)
+model TokenWallet {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  month     String // "2024-01"
+  used      Int      @default(0)
+  quota     Int      @default(0)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([studentId, month])
+  @@index([studentId])
+}
+
+/// 월간 리포트 (내 학습 '취약 유형 분석')
+model MonthlyReport {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  month     String // "2024-01"
+  summary   String
+  weakTypes String   @default("[]") // JSON string array
+  detail    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([studentId, month])
+  @@index([studentId])
+}
+
+/// Q&A 채팅 메시지 (tutor별 말풍선 대화)
+model QuestionMessage {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  sender    String // "me" | "tutor" | "ai"
+  body      String
+  imageUrl  String?
+  tokenCost Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([studentId, teacherId])
+  @@index([studentId, teacherId, createdAt])
+}
+
+/// 푸시 디바이스 등록 (Expo Push)
+model PushDevice {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expoPushToken String   @unique
+  platform      String? // "ios" | "android"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+/// 온보딩 설문 (성적·목표·성향)
+model OnboardingSurvey {
+  id        String   @id @default(uuid())
+  studentId String   @unique
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  grade     String?
+  goal      String?
+  style     String?
+  data      String   @default("{}") // 추가 응답 JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
