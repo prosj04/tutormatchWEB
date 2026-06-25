@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
+
 import { LandingRoot } from "@/components/landing/LandingRoot";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { startPerfTimer } from "@/lib/perf-timer";
 import { getLandingCmsContent } from "@/lib/cms";
+import { SITE_URL } from "@/lib/site-config";
 
 export const revalidate = 300;
+
+export const metadata: Metadata = {
+  title: "프리미엄 1:1 과외 | 명문대 검증 강사 매칭",
+  description:
+    "엄선된 명문대 출신 선생님과 1:1 맞춤 과외. 상담부터 매칭·수업·학습 관리까지 전담 매니저가 함께합니다.",
+  openGraph: {
+    title: "프리미엄 1:1 과외 | Concord Private Tutoring",
+    description:
+      "엄선된 명문대 출신 선생님과 1:1 맞춤 과외. 상담부터 매칭·수업·학습 관리까지 전담 매니저가 함께합니다.",
+    url: SITE_URL,
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Concord Private Tutoring" }],
+  },
+};
 
 type SearchParams = { cms_edit?: string | string[] };
 

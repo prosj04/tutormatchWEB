@@ -24,7 +24,7 @@ type PageProps = {
 
 export default async function SuccessPage({ searchParams }: PageProps) {
   const isEditMode = first(searchParams.cms_edit) === "1";
-  const siteContent = await getGroupedSiteContentBySections(["success_page"]);
+  const siteContent = await getGroupedSiteContentBySections(["success_page", "footer"]);
   const s = (key: string, fb: string) => getCmsSectionValue(siteContent, "success_page", key, fb);
 
   const paymentKey = first(searchParams.paymentKey);
@@ -39,6 +39,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
           orderId={orderId}
           paymentKey={paymentKey}
           amount={Number.isFinite(amount) ? amount : undefined}
+          siteContent={siteContent}
         />
       ) : null}
 

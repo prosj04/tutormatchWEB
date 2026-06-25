@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { normalizePhoneDigits } from "@/lib/phone-login";
+import type { GroupedSiteContent } from "@/lib/site-content";
 
 const CHECKOUT_SIGNUP_STORAGE_KEY = "concord-checkout-signup";
 
@@ -24,10 +26,12 @@ type SuccessPaymentCompleteProps = {
   orderId?: string;
   paymentKey?: string;
   amount?: number;
+  siteContent?: GroupedSiteContent;
 };
 
 /** 결제 성공 리다이렉트 후 Chief 매니저 즉시 배정 */
-export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessPaymentCompleteProps) {
+export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteContent }: SuccessPaymentCompleteProps) {
+  const phone = getCmsSectionValue(siteContent, "footer", "phone_number", "010-0000-0000");
   const called = useRef(false);
   const router = useRouter();
   const [status, setStatus] = useState<Status>("loading");
@@ -142,7 +146,7 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessP
       <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-center text-sm text-red-700 mb-6">
         처리 중 오류가 발생했습니다. 아래 연락처로 문의해 주시면 바로 도와드리겠습니다.
         <div className="mt-2 font-semibold">
-          <a href="tel:01000000000" className="underline">010-0000-0000</a>
+          <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} className="underline">{phone}</a>
         </div>
       </div>
     );
@@ -155,7 +159,7 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount }: SuccessP
         <br />
         담당자에게 연락하시면 즉시 처리해 드립니다.
         <div className="mt-2 font-semibold">
-          <a href="tel:01000000000" className="underline">010-0000-0000</a>
+          <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} className="underline">{phone}</a>
         </div>
       </div>
     );

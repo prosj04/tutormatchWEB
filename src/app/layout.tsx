@@ -7,6 +7,7 @@ import "./dark-mode-bridge.css";
 import "./responsive.css";
 
 import { getPortalDesign } from "@/lib/portal-design";
+import { SITE_URL } from "@/lib/site-config";
 
 const pretendard = localFont({
   src: [
@@ -45,7 +46,6 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 });
 
-const SITE_URL = "https://tutormatch-web.vercel.app";
 const SITE_DESCRIPTION =
   "엄선된 선생님과의 1:1 맞춤 과외. 상담부터 매칭·학습 관리까지 전담 매니저가 함께합니다.";
 

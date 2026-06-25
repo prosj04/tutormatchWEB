@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://tutormatch-web.vercel.app";
+import { SITE_URL } from "@/lib/site-config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/pricing", "/reviews", "/tutors", "/faq"],
+        allow: ["/", "/pricing", "/reviews", "/tutors", "/faq", "/terms", "/privacy", "/refund"],
         disallow: ["/admin", "/dashboard", "/teacher-portal", "/api/", "/checkout", "/success", "/register", "/login"],
       },
     ],

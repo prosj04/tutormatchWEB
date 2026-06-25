@@ -410,14 +410,17 @@ export function CheckoutContent({
                     checked={termsAgreed}
                     onChange={(e) => setTermsAgreed(e.target.checked)}
                   />
-                  <CmsText active={isEditMode} cmsKey="terms_text">
-                    <span>
-                      {c(
-                        "terms_text",
-                        "전자상거래 및 결제 관련 약관, 개인정보 처리방침에 동의합니다. (필수)",
-                      )}
-                    </span>
-                  </CmsText>
+                  <span>
+                    전자상거래 및 결제 관련{" "}
+                    <Link href="/terms" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
+                      이용약관
+                    </Link>
+                    ,{" "}
+                    <Link href="/privacy" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
+                      개인정보처리방침
+                    </Link>
+                    에 동의합니다. (필수)
+                  </span>
                 </label>
 
                 {error ? (

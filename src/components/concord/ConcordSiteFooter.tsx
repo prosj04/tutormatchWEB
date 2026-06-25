@@ -51,9 +51,9 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
           <br />
           {get("company_address", "서울특별시 강남구 테헤란로 000, 00층")}
           <div className="legal">
-            <span>이용약관</span>
-            <span>개인정보처리방침</span>
-            <span>환불정책</span>
+            <Link href="/terms">{get("label_terms", "이용약관")}</Link>
+            <Link href="/privacy">{get("label_privacy", "개인정보처리방침")}</Link>
+            <Link href="/refund">{get("label_refund", "환불정책")}</Link>
           </div>
           <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "space-between" }}>
             <span>{copyright}</span>
