@@ -146,9 +146,7 @@ export function ConsultationSignupForm({
             onChange={(e) => setName(e.target.value)}
           />
           {fieldErrors.name ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.name}
-            </p>
+            <p className="field-error">{fieldErrors.name}</p>
           ) : null}
         </div>
         <div className="field">
@@ -161,11 +159,7 @@ export function ConsultationSignupForm({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-          {fieldErrors.phone ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.phone}
-            </p>
-          ) : null}
+          {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
         </div>
         <div className="field">
           <label htmlFor="reg-password">비밀번호</label>
@@ -176,11 +170,7 @@ export function ConsultationSignupForm({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {fieldErrors.password ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.password}
-            </p>
-          ) : null}
+          {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
         </div>
         <div className="field">
           <label htmlFor="reg-password2">비밀번호 확인</label>
@@ -192,9 +182,7 @@ export function ConsultationSignupForm({
             onChange={(e) => setPasswordConfirm(e.target.value)}
           />
           {fieldErrors.passwordConfirm ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.passwordConfirm}
-            </p>
+            <p className="field-error">{fieldErrors.passwordConfirm}</p>
           ) : null}
         </div>
         <GenderSelect value={gender} onChange={setGender} error={fieldErrors.gender} />
@@ -207,11 +195,7 @@ export function ConsultationSignupForm({
               </option>
             ))}
           </select>
-          {fieldErrors.grade ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.grade}
-            </p>
-          ) : null}
+          {fieldErrors.grade ? <p className="field-error">{fieldErrors.grade}</p> : null}
         </div>
         <div className="field">
           <span>희망 과목</span>
@@ -230,11 +214,7 @@ export function ConsultationSignupForm({
               );
             })}
           </div>
-          {fieldErrors.subjects ? (
-            <p className="mt-2 text-xs" style={{ color: "var(--acc-text)" }}>
-              {fieldErrors.subjects}
-            </p>
-          ) : null}
+          {fieldErrors.subjects ? <p className="field-error">{fieldErrors.subjects}</p> : null}
         </div>
       </div>
       <button
@@ -257,7 +237,7 @@ export function ConsultationSignupForm({
         )}
       </button>
       {conflictError ? (
-        <p className="mt-4 text-center text-sm" style={{ color: "var(--acc-text)" }} role="alert">
+        <p className="field-error mt-4 text-center text-sm" role="alert">
           {conflictError}
         </p>
       ) : null}

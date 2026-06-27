@@ -424,7 +424,7 @@ export function CheckoutContent({
                 </label>
 
                 {error ? (
-                  <p style={{ marginTop: 16, fontSize: 14, color: "var(--acc-text)" }} role="alert">
+                  <p className="field-error" style={{ marginTop: 16, fontSize: 14 }} role="alert">
                     {error}
                   </p>
                 ) : null}

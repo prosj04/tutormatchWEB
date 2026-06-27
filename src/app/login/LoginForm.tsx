@@ -99,7 +99,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
         {loading ? "생성 중…" : "생성하기"}
       </button>
       {error ? (
-        <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
+        <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
           {error}
         </p>
       ) : null}
@@ -203,7 +203,7 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
         {loading ? "처리 중…" : "비밀번호 재설정"}
       </button>
       {error ? (
-        <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
+        <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
           {error}
         </p>
       ) : null}
@@ -372,7 +372,7 @@ export function LoginForm({
           </button>
 
           {error ? (
-            <p style={{ marginTop: 12, textAlign: "center", fontSize: 14, color: "var(--acc-text)" }} role="alert">
+            <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
               {error}
             </p>
           ) : null}

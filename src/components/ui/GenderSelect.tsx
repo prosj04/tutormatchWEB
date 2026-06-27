@@ -31,7 +31,7 @@ export function GenderSelect({ value, onChange, error, className = "" }: GenderS
         ))}
       </div>
       {error ? (
-        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }} role="alert">
+        <p className="field-error" role="alert">
           {error}
         </p>
       ) : null}

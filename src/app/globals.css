@@ -60,7 +60,7 @@
 /* Dark-mode table fix (color-agnostic) */
 [data-theme="dark"] .lp2-cmp .lp2-col-c { background:rgba(var(--acc-rgb),.12); }
 [data-theme="dark"] .lp2-cmp thead .lp2-col-c { background:rgba(var(--acc-rgb),.2); }
-[data-theme="dark"] .lp2-cmp thead th.lp2-cc { color:var(--acc-text); }
+/* Compare Concord column header — HTML 시안(.cmp thead th.cc)과 동일하게 흰색 */
 .lp2-cmp thead th.lp2-cc { color:#fff; }
 
 /* V2 scroll-reveal */

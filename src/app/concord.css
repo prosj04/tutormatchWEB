@@ -122,12 +122,12 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }
 .rec-badge{ position:absolute; top:-13px; left:34px; background:var(--acc); color:var(--on-acc); font-size:12px; font-weight:700; padding:6px 14px; border-radius:var(--r-pill); letter-spacing:.04em; }
 .price-card .ptag{ font-size:14px; font-weight:600; color:var(--mut); }
-.price-card .pname{ font-size:clamp(21px,1.2rem + .8vw,25px); font-weight:700; margin-top:6px; letter-spacing:-.025em; }
-.price-card .price{ font-size:clamp(2rem,1.4rem + 2.2vw,42px); font-weight:800; margin-top:8px; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+.price-card .pname{ font-size:clamp(21px,1.2rem + .8vw,25px); font-weight:700; margin-top:6px; letter-spacing:-.025em; color:var(--fg); }
+.price-card .price{ font-size:clamp(2rem,1.4rem + 2.2vw,42px); font-weight:800; margin-top:8px; letter-spacing:-.03em; font-variant-numeric:tabular-nums; color:var(--fg); }
 .price-card .price small{ font-size:clamp(15px,.9rem + .25vw,18px); font-weight:600; color:var(--mut); margin-left:4px; }
 .price-card .punit{ color:var(--mut); font-size:14px; margin-top:6px; }
 .pfeat{ margin-top:24px; display:flex; flex-direction:column; gap:12px; flex:1; }
-.pfeat li{ list-style:none; display:flex; gap:11px; align-items:baseline; font-size:15px; }
+.pfeat li{ list-style:none; display:flex; gap:11px; align-items:baseline; font-size:15px; color:var(--fg); }
 .pfeat li::before{ content:"✓"; color:var(--acc-text); font-weight:800; flex:0 0 auto; }
 .price-card .btn{ margin-top:28px; }
 .assure{ display:flex; align-items:center; gap:12px; margin-top:24px; max-width:860px; padding:18px 22px; background:rgba(var(--acc-rgb),.08); border-radius:var(--r-control); font-size:15px; }
@@ -152,7 +152,7 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .verified{ display:inline-flex; align-items:center; gap:4px; background:rgba(var(--acc-rgb),.12); color:var(--acc-text);
   font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:var(--r-pill); }
 .tutor-line{ color:var(--mut); font-size:14px; margin-top:8px; min-height:42px; text-wrap:pretty; }
-.tutor-edu{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-size:13px; font-weight:600; }
+.tutor-edu{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-size:13px; font-weight:600; color:var(--fg); }
 .tutor-items{ margin-top:10px; display:flex; flex-direction:column; gap:7px; }
 .tutor-items li{ list-style:none; color:var(--mut); font-size:13px; display:flex; gap:8px; align-items:baseline; }
 .tutor-items li::before{ content:""; width:5px; height:5px; border-radius:50%; background:var(--acc-text); flex:0 0 auto; transform:translateY(-1px); }
@@ -177,7 +177,7 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .rev-card{ break-inside:avoid; margin-bottom:22px; padding:28px 28px 26px; display:inline-block; width:100%; }
 .rev-stars{ display:flex; gap:3px; color:var(--acc-text); margin-bottom:14px; }
 .rev-stars svg{ width:17px; height:17px; }
-.rev-card .qt{ font-size:15.5px; line-height:1.65; text-wrap:pretty; }
+.rev-card .qt{ font-size:15.5px; line-height:1.65; text-wrap:pretty; color:var(--fg); }
 .rev-card .by{ margin-top:18px; padding-top:16px; border-top:1px solid var(--line); font-size:14px; color:var(--mut); font-weight:600; }
 .rev-card .by b{ color:var(--fg); font-weight:700; }
 
@@ -199,6 +199,8 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
   background:var(--bg); color:var(--fg); font-family:inherit; font-size:15px; transition:border-color .18s,box-shadow .18s; }
 .field input:focus{ outline:0; border-color:var(--acc); box-shadow:0 0 0 3px rgba(var(--acc-rgb),.16); }
 .field input::placeholder{ color:var(--mut-2); }
+.field-error{ margin-top:8px; font-size:12px; color:#dc2626; }
+[data-theme="dark"] .field-error{ color:#f87171; }
 .auth-card .btn{ margin-top:26px; }
 .auth-alt{ margin-top:22px; padding-top:20px; border-top:1px solid var(--line); text-align:center; font-size:14px; color:var(--mut); }
 .auth-alt a{ color:var(--acc-text); font-weight:700; }
