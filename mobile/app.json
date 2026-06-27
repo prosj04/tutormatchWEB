@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Concord",
+    "slug": "concord",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "concord",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.concord.tutoring"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#10B981",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "package": "com.concord.tutoring"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-splash-screen"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
