@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 로고 키트 (확정)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root{
+    --ease:cubic-bezier(.2,.7,.3,1);
+    --font-sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
+    --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --line:rgba(34,38,30,.085); --line-2:rgba(34,38,30,.15);
+    --fg:#161A16; --mut:#585C53; --mut-2:#9AA095;
+    --acc:#10B981; --acc-rgb:16,185,129; --on-acc:#FFFFFF; --acc-text:#07875A;
+    --shadow-sm:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06);
+    --shadow-md:0 10px 24px rgba(34,38,30,.09),0 22px 50px rgba(34,38,30,.09);
+  }
+  [data-color="blue"]{
+    --bg:#F5F8FE; --panel:#FFFFFF; --panel-2:#EAF0FB;
+    --line:rgba(20,38,74,.085); --line-2:rgba(20,38,74,.15);
+    --fg:#0F1A2E; --mut:#54627A; --mut-2:#93A1B8;
+    --acc:#2563EB; --acc-rgb:37,99,235; --on-acc:#FFFFFF; --acc-text:#1D4ED8;
+    --shadow-sm:0 1px 2px rgba(20,38,74,.05),0 3px 10px rgba(20,38,74,.06);
+    --shadow-md:0 10px 24px rgba(20,38,74,.09),0 22px 50px rgba(20,38,74,.09);
+  }
+  [data-color="green"][data-theme="dark"]{
+    --bg:#181A1B; --panel:#202325; --panel-2:#282B2D;
+    --line:rgba(200,206,202,.11); --line-2:rgba(200,206,202,.18);
+    --fg:#ECEEEC; --mut:#AEB4B0; --mut-2:#7C817E;
+    --acc:#2EA46E; --acc-rgb:46,164,110; --on-acc:#06150D; --acc-text:#64C699;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.24),0 2px 10px rgba(0,0,0,.28);
+    --shadow-md:0 14px 32px rgba(0,0,0,.4),0 26px 52px rgba(0,0,0,.34);
+  }
+  [data-color="blue"][data-theme="dark"]{
+    --bg:#0A1120; --panel:#101D32; --panel-2:#16273F;
+    --line:rgba(140,175,230,.13); --line-2:rgba(140,175,230,.22);
+    --fg:#EAF1FB; --mut:#9DABC4; --mut-2:#6A7894;
+    --acc:#3B82F6; --acc-rgb:59,130,246; --on-acc:#06122A; --acc-text:#85B5FF;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
+    --shadow-md:0 16px 36px rgba(0,0,0,.5),0 30px 60px rgba(0,0,0,.42);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--fg); font-family:var(--font-sans); font-weight:400; line-height:1.6;
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased;
+    transition:background .4s var(--ease),color .4s var(--ease); }
+  button{ font-family:inherit; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 32px; }
+
+  .top{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:14px; height:66px;
+    padding:0 32px; background:color-mix(in srgb,var(--bg) 82%,transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .top .lab{ font-size:13px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--mut-2); }
+  .top .right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+  .seg{ display:flex; padding:3px; gap:2px; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; }
+  .seg button{ width:26px; height:26px; border:0; border-radius:50%; cursor:pointer; background:transparent; display:grid; place-items:center; }
+  .seg .dot{ width:16px; height:16px; border-radius:50%; box-shadow:0 0 0 2px var(--panel); }
+  .seg button[aria-pressed="true"] .dot{ box-shadow:0 0 0 2px var(--panel),0 0 0 4px currentColor; }
+  .seg .g{ color:#10B981; } .seg .g .dot{ background:#10B981; }
+  .seg .b{ color:#2563EB; } .seg .b .dot{ background:#2563EB; }
+  .tog{ width:40px; height:40px; border-radius:10px; border:1px solid var(--line-2); background:var(--panel); color:var(--fg); display:grid; place-items:center; cursor:pointer; transition:.18s; }
+  .tog:hover{ border-color:var(--fg); transform:translateY(-1px); }
+  .tog svg{ width:18px; height:18px; } .tog .i-sun{ display:none; }
+  [data-theme="dark"] .tog .i-moon{ display:none; } [data-theme="dark"] .tog .i-sun{ display:block; }
+
+  .head{ padding:64px 0 10px; }
+  .eyebrow{ font-size:13px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--acc-text); }
+  .head h1{ font-size:clamp(34px,4.4vw,54px); font-weight:800; letter-spacing:-.04em; line-height:1.05; margin-top:14px; }
+  .head p{ color:var(--mut); font-size:17px; margin-top:16px; max-width:62ch; text-wrap:pretty; }
+
+  /* the wordmark + dot */
+  .w{ font-weight:800; letter-spacing:-.045em; display:inline-flex; align-items:baseline; }
+  .d{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--acc-text); margin-left:.04em; }
+
+  .sec{ padding:46px 0 6px; }
+  .sec-h{ display:flex; align-items:baseline; gap:13px; margin-bottom:20px; }
+  .sec-h h2{ font-size:21px; font-weight:700; letter-spacing:-.025em; }
+  .sec-h .n{ font-size:13px; font-weight:800; color:var(--acc-text); }
+  .sec-h p{ color:var(--mut); font-size:14px; margin-left:auto; max-width:46ch; text-align:right; text-wrap:pretty; }
+
+  .hero-logo{ border:1px solid var(--line); border-radius:24px; background:var(--panel); box-shadow:var(--shadow-md);
+    padding:80px 40px; display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .hero-logo .big{ font-size:clamp(46px,8vw,92px); }
+  .hero-logo .cap{ font-size:13px; color:var(--mut); letter-spacing:.04em; }
+
+  .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .grid.two{ grid-template-columns:repeat(2,1fr); }
+  .cell{ border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow-sm); overflow:hidden; }
+  .cell .stage{ min-height:140px; display:flex; align-items:center; justify-content:center; padding:28px; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel-2),var(--panel)); }
+  .cell .lab{ padding:13px 18px; }
+  .cell .lab b{ font-size:14px; font-weight:700; letter-spacing:-.01em; }
+  .cell .lab span{ display:block; color:var(--mut); font-size:12.5px; margin-top:3px; }
+
+  /* mono swatches */
+  .stage.onlight{ background:#FFFFFF; color:#111; }
+  .stage.ondark{ background:#15171A; color:#fff; }
+  .stage.onacc{ background:var(--acc); color:var(--on-acc); }
+  .stage.onacc .d, .stage.ondark .d, .stage.onlight .d{ background:currentColor; opacity:.9; }
+
+  /* app icon tiles */
+  .tile{ width:104px; height:104px; border-radius:24px; display:grid; place-items:center; box-shadow:var(--shadow-md); }
+  .tile.fill{ background:var(--acc); color:var(--on-acc); }
+  .tile.soft{ background:var(--panel-2); color:var(--acc-text); }
+  .tile .t{ font-size:52px; font-weight:800; letter-spacing:-.05em; line-height:1; display:inline-flex; align-items:baseline; }
+  .tile .t .d{ width:.17em; height:.17em; background:currentColor; }
+  .tile.dot-only{ background:var(--acc); }
+  .tile.dot-only .solo{ width:30px; height:30px; border-radius:50%; background:var(--on-acc); }
+  .favs{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .fav{ display:grid; place-items:center; background:var(--acc); border-radius:7px; }
+  .fav .s{ border-radius:50%; background:var(--on-acc); }
+
+  /* clear space */
+  .clear{ position:relative; display:inline-flex; align-items:center; justify-content:center; padding:40px; }
+  .clear .box{ position:absolute; inset:0; border:1px dashed var(--line-2); border-radius:8px; }
+  .clear .pad{ position:absolute; border:1px dashed rgba(var(--acc-rgb),.5); border-radius:4px; inset:40px; }
+  .clear .w{ position:relative; font-size:46px; }
+
+  /* min size */
+  .sizes{ display:flex; align-items:flex-end; gap:34px; flex-wrap:wrap; }
+  .size{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .size .px{ font-size:12px; color:var(--mut); font-variant-numeric:tabular-nums; }
+
+  /* do / dont */
+  .rules{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .rule{ border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--panel); box-shadow:var(--shadow-sm); }
+  .rule .bar{ padding:11px 16px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .rule.ok .bar{ color:var(--acc-text); } .rule.no .bar{ color:#c2483b; }
+  [data-theme="dark"] .rule.no .bar{ color:#ff8a7d; }
+  .rule .bar svg{ width:15px; height:15px; }
+  .rule ul{ list-style:none; padding:6px 18px 18px; }
+  .rule li{ color:var(--mut); font-size:13.5px; padding:5px 0 5px 18px; position:relative; }
+  .rule li::before{ content:""; position:absolute; left:0; top:11px; width:6px; height:6px; border-radius:50%; background:var(--mut-2); }
+
+  .note{ margin:36px 0 80px; color:var(--mut); font-size:14.5px; display:flex; gap:10px; align-items:flex-start; }
+  .note svg{ width:18px; height:18px; flex:0 0 auto; color:var(--mut-2); margin-top:3px; }
+
+  @media (max-width:820px){ .grid,.grid.two,.rules{ grid-template-columns:1fr; } .sec-h{ flex-direction:column; } .sec-h p{ text-align:left; margin-left:0; } }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="lab">Concord · Logo Kit</span>
+  <div class="right">
+    <div class="seg" role="group" aria-label="색 테마 선택">
+      <button class="g" data-set-color="green" aria-label="그린 테마"><span class="dot"></span></button>
+      <button class="b" data-set-color="blue" aria-label="블루 테마"><span class="dot"></span></button>
+    </div>
+    <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="head">
+    <span class="eyebrow">Logo Kit · Final</span>
+    <h1>Concord<span class="d"></span> 로고 가이드</h1>
+    <p>확정안은 <b>Signature</b> — 워드마크에 액센트 닷 하나. 닷은 ‘한 아이의 가능성에 마침표를 찍는다 = 결과로 증명한다’는 약속이자, 앱 아이콘·파비콘으로 떼어 쓰는 브랜드 버그입니다.</p>
+  </header>
+
+  <!-- PRIMARY -->
+  <section class="sec">
+    <div class="hero-logo">
+      <span class="w big">Concord<span class="d"></span></span>
+      <span class="cap">Primary wordmark · 닷은 항상 액센트 컬러</span>
+    </div>
+  </section>
+
+  <!-- LOCKUPS -->
+  <section class="sec">
+    <div class="sec-h"><span class="n">01</span><h2>락업</h2><p>가로형이 기본. 세로형은 명함·푸터·앱 스플래시에.</p></div>
+    <div class="grid">
+      <div class="cell">
+        <div class="stage"><span class="w" style="font-size:38px">Concord<span class="d"></span></span></div>
+        <div class="lab"><b>Horizontal</b><span>기본 가로형. 헤더·대부분의 용도</span></div>
+      </div>
+      <div class="cell">
+        <div class="stage">
+          <span style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span class="w" style="font-size:32px">Concord<span class="d"></span></span>
+            <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)">Private Tutoring</span>
+          </span>
+        </div>
+        <div class="lab"><b>Stacked + tagline</b><span>세로형. 인쇄·스플래시</span></div>
+      </div>
+      <div class="cell">
+        <div class="stage"><span class="w" style="font-size:38px">C<span class="d"></span></span></div>
+        <div class="lab"><b>Short — C·</b><span>좁은 공간·아바타·워터마크</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLORWAYS / MONO -->
+  <section class="sec">
+    <div class="sec-h"><span class="n">02</span><h2>컬러 사용</h2><p>배경 대비가 충분한 곳에. 단색 환경에선 모노로.</p></div>
+    <div class="grid">
+      <div class="cell"><div class="stage onlight"><span class="w" style="font-size:34px">Concord<span class="d"></span></span></div><div class="lab"><b>On light</b><span>밝은 배경 · 닷=액센트</span></div></div>
+      <div class="cell"><div class="stage ondark"><span class="w" style="font-size:34px">Concord<span class="d"></span></span></div><div class="lab"><b>On dark</b><span>어두운 배경 · 닷=액센트</span></div></div>
+      <div class="cell"><div class="stage onacc"><span class="w" style="font-size:34px">Concord<span class="d"></span></span></div><div class="lab"><b>On accent (reverse)</b><span>액센트 면 위 · 전체 흰색</span></div></div>
+    </div>
+    <div class="grid" style="margin-top:18px">
+      <div class="cell"><div class="stage onlight"><span class="w" style="font-size:34px;color:#111">Concord<span class="d" style="background:#111"></span></span></div><div class="lab"><b>Mono — black</b><span>단색 인쇄·팩스·도장</span></div></div>
+      <div class="cell"><div class="stage ondark"><span class="w" style="font-size:34px;color:#fff">Concord<span class="d" style="background:#fff"></span></span></div><div class="lab"><b>Mono — white</b><span>사진·어두운 배경 위</span></div></div>
+      <div class="cell"><div class="stage" style="background:repeating-linear-gradient(45deg,var(--panel-2) 0 10px,var(--panel) 10px 20px)"><span class="w" style="font-size:34px">Concord<span class="d"></span></span></div><div class="lab"><b>On texture</b><span>패턴 위엔 충분한 여백 확보</span></div></div>
+    </div>
+  </section>
+
+  <!-- APP ICON + FAVICON -->
+  <section class="sec">
+    <div class="sec-h"><span class="n">03</span><h2>앱 아이콘 · 파비콘</h2><p>닷을 떼어내 시그니처 버그로. 작은 크기일수록 단순하게.</p></div>
+    <div class="grid">
+      <div class="cell">
+        <div class="stage"><div class="tile fill"><span class="t">C<span class="d"></span></span></div></div>
+        <div class="lab"><b>App icon — C·</b><span>iOS·Android 런처. 액센트 면 + 흰 글자</span></div>
+      </div>
+      <div class="cell">
+        <div class="stage"><div class="tile dot-only"><span class="solo"></span></div></div>
+        <div class="lab"><b>Dot bug</b><span>알림 배지·로딩·워터마크</span></div>
+      </div>
+      <div class="cell">
+        <div class="stage">
+          <div class="favs">
+            <span class="fav" style="width:48px;height:48px"><span class="s" style="width:15px;height:15px"></span></span>
+            <span class="fav" style="width:32px;height:32px;border-radius:6px"><span class="s" style="width:11px;height:11px"></span></span>
+            <span class="fav" style="width:16px;height:16px;border-radius:4px"><span class="s" style="width:6px;height:6px"></span></span>
+          </div>
+        </div>
+        <div class="lab"><b>Favicon — 48·32·16px</b><span>탭은 닷 버그로. 16px에서도 또렷</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLEAR SPACE + MIN SIZE -->
+  <section class="sec">
+    <div class="sec-h"><span class="n">04</span><h2>여백 · 최소 크기</h2><p>로고 주위엔 닷 지름의 2배 여백. 그 이하로 다른 요소 금지.</p></div>
+    <div class="grid two">
+      <div class="cell">
+        <div class="stage">
+          <span class="clear"><span class="box"></span><span class="pad"></span><span class="w">Concord<span class="d"></span></span></span>
+        </div>
+        <div class="lab"><b>Clear space</b><span>최소 여백 = 닷 지름 ×2 (점선 안쪽)</span></div>
+      </div>
+      <div class="cell">
+        <div class="stage">
+          <div class="sizes">
+            <span class="size"><span class="w" style="font-size:30px">Concord<span class="d"></span></span><span class="px">웹 최소 120px</span></span>
+            <span class="size"><span class="w" style="font-size:18px">Concord<span class="d"></span></span><span class="px">모바일 최소 88px</span></span>
+          </div>
+        </div>
+        <div class="lab"><b>Minimum size</b><span>이보다 작으면 ‘C·’ 또는 닷 버그 사용</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DO / DONT -->
+  <section class="sec">
+    <div class="sec-h"><span class="n">05</span><h2>해도 / 하지 말 것</h2></div>
+    <div class="rules">
+      <div class="rule ok">
+        <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>권장</div>
+        <ul>
+          <li>닷은 항상 액센트 컬러(그린/블루) 유지</li>
+          <li>충분한 여백 + 단색 배경 위에 배치</li>
+          <li>작은 크기에선 ‘C·’ 또는 닷 버그로 교체</li>
+          <li>모노 환경은 흑/백 버전 사용</li>
+        </ul>
+      </div>
+      <div class="rule no">
+        <div class="bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>금지</div>
+        <ul>
+          <li>닷을 떼거나 다른 색·이모지로 바꾸기</li>
+          <li>자간·비율 변형, 그림자·외곽선 추가</li>
+          <li>대비 낮은 배경·복잡한 사진 위 직접 배치</li>
+          <li>워드마크를 기울이거나 늘리기</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    닷은 CSS/SVG로 그려 어떤 해상도에서도 또렷합니다. 실제 파비콘·앱아이콘은 핸드오프의 사양(16/32/48/180/512px)대로 내보내면 됩니다. 우측 상단에서 그린/블루·라이트/다크 4조합을 확인하세요.
+  </div>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+  })();
+</script>
+</body>
+</html>
