@@ -56,15 +56,18 @@ export async function GET(request: Request) {
   // 이번 주 과제 진척 (StudyPlan/StudyTask)
   const plans = await prisma.studyPlan.findMany({
     where: { studentId: student.id, date: { in: weekDates } },
-    select: { tasks: { select: { isDone: true } } },
+    orderBy: { date: "asc" },
+    select: { tasks: { select: { id: true, title: true, isDone: true, order: true }, orderBy: { order: "asc" } } },
   });
   const allTasks = plans.flatMap((p) => p.tasks);
   const doneTasks = allTasks.filter((t) => t.isDone).length;
+  const taskItems = allTasks.map(({ id, title, isDone }) => ({ id, title, isDone }));
 
   return NextResponse.json({
     weekStart: weekDates[0],
     bars,
     totalMinutes,
     tasks: { done: doneTasks, total: allTasks.length },
+    taskItems,
   });
 }

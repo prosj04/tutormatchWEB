@@ -13,6 +13,8 @@ import {
 } from "react-native";
 
 import { auth as authS, field as fieldS, font } from "../../styles/app-styles";
+import { saveTokens } from "../../lib/auth";
+import { API_BASE } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { SubHead } from "../../components/ui/SubHead";
 
@@ -27,20 +29,30 @@ export default function Signup() {
   const [error, setError] = useState("");
 
   async function handleSignup() {
-    if (!name.trim() || !email.trim() || !password || !phone.trim()) return;
+    if (!name.trim() || !password || !phone.trim()) return;
     setError("");
     setLoading(true);
     try {
-      // TODO: register API
-      throw new Error("회원가입 준비 중입니다. 상담 신청으로 시작해주세요.");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "가입 실패");
+      const res = await fetch(`${API_BASE}/api/mobile/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), password, phone: phone.trim() }),
+      });
+      const data = await res.json() as { accessToken?: string; refreshToken?: string; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? "가입에 실패했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      await saveTokens(data.accessToken!, data.refreshToken!);
+      router.replace("/(tabs)");
+    } catch {
+      setError("네트워크 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   }
 
-  const canSubmit = name.trim() && email.trim() && password && phone.trim();
+  const canSubmit = name.trim() && password && phone.trim();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
