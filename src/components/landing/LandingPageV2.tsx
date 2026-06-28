@@ -320,6 +320,11 @@ export function LandingPageV2({
                 {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
               </CmsEdit>
             </ConsultationApplyButton>
+            <a href="#teachers" className="lp2-btn lp2-btn-ghost">
+              <CmsEdit active={isEditMode} section="hero" cmsKey="cta_secondary" type="text">
+                {getCmsValue("hero", "cta_secondary", "선생님 둘러보기 →")}
+              </CmsEdit>
+            </a>
           </div>
           {/* Stats */}
           <div className="lp2-stats">
@@ -468,6 +473,12 @@ export function LandingPageV2({
                 </div>
               </article>
             ))}
+          </div>
+
+          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
+            <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
+              {sectionTitles.teachersCta}
+            </Link>
           </div>
 
         </div>

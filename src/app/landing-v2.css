@@ -141,7 +141,7 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-result-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .lp2-result-badge {
   display: inline-flex; align-items: center;
-  background: var(--acc-bg, hsl(215 80% 96%)); color: var(--acc-text);
+  background: rgba(var(--acc-rgb),.12); color: var(--acc-text);
   border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 700;
 }
 .lp2-result-months { font-size: 11px; color: var(--mut); font-weight: 500; }
@@ -289,6 +289,7 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-col-c { background: rgba(var(--acc-rgb),.05); }
 .lp2-cmp thead .lp2-col-c { background: var(--acc); border-radius: 14px 14px 0 0; }
 .lp2-cmp .lp2-col-c td, .lp2-cmp td.lp2-col-c { color: var(--fg); font-weight: 600; }
+[data-theme="dark"] .lp2-col-c { background: rgba(var(--acc-rgb),.12); }
 .lp2-ok { color: var(--acc-text); font-weight: 800; margin-right: 8px; }
 .lp2-no { color: var(--mut-2); font-weight: 800; margin-right: 8px; }
 
