@@ -11,9 +11,20 @@ import {
 } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
-import { BellIcon, ChevronRightIcon } from "../../components/ui/Icons";
-import { Logo } from "../../components/ui/Logo";
-import { SectionTitle } from "../../components/ui/SectionTitle";
+import {
+  appbar as appbarS,
+  card,
+  font,
+  iconbtn,
+  iconbtnBadge,
+  lrow as lrowS,
+  now as nowS,
+  qa as qaS,
+  ringCard as ringCardS,
+  scroll as scrollS,
+  sectT as sectTS,
+  shadowSm,
+} from "../../styles/app-styles";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
@@ -24,6 +35,7 @@ interface HomeData {
   todayLesson: {
     id: string;
     subject: string;
+    topic: string;
     startAt: string;
     teacher: { id: string; name: string };
   } | null;
@@ -32,45 +44,53 @@ interface HomeData {
     subject: string;
     startAt: string;
     teacher: { id: string; name: string };
+    note?: string;
   }>;
+  lessons: Array<{ subject: string; teacher: string; frequency: string }>;
   weekProgress: { done: number; total: number; percent: number };
 }
 
-function ProgressRing({ percent, size = 72 }: { percent: number; size?: number }) {
+// ─── ProgressRing (react-native-svg 기반) ─────────────────────────────────────
+// .ring { width:74; height:74; border-radius:37; }
+// .ring i { width:56; height:56; border-radius:28; font-size:17; font-weight:800; }
+function ProgressRing({ percent }: { percent: number }) {
   const { t } = useTheme();
-  const sw = 7;
+  const size = ringCardS.ring.width as number;   // 74
+  const inner = ringCardS.inner.width as number; // 56
+  const sw = (size - inner) / 2;                 // 9
   const r = (size - sw) / 2;
   const circ = 2 * Math.PI * r;
   return (
-    <Svg width={size} height={size}>
-      <Circle cx={size / 2} cy={size / 2} r={r} stroke={t.panel2} strokeWidth={sw} fill="none" />
-      <Circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        stroke={t.acc}
-        strokeWidth={sw}
-        fill="none"
-        strokeDasharray={`${circ} ${circ}`}
-        strokeDashoffset={circ * (1 - Math.min(percent, 100) / 100)}
-        strokeLinecap="round"
-        rotation="-90"
-        originX={size / 2}
-        originY={size / 2}
-      />
-    </Svg>
+    <View style={styles.ringWrap}>
+      <Svg width={size} height={size}>
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={t.panel2} strokeWidth={sw} fill="none" />
+        <Circle
+          cx={size / 2} cy={size / 2} r={r}
+          stroke={t.acc} strokeWidth={sw} fill="none"
+          strokeDasharray={`${circ} ${circ}`}
+          strokeDashoffset={circ * (1 - Math.min(percent, 100) / 100)}
+          strokeLinecap="round"
+          rotation="-90"
+          originX={size / 2} originY={size / 2}
+        />
+      </Svg>
+      {/* inner circle */}
+      <View style={[styles.ringInner, { backgroundColor: t.panel }]}>
+        <Text style={[ringCardS.inner, styles.ringPct, { color: t.accText }]}>{percent}%</Text>
+      </View>
+    </View>
   );
 }
 
+function pad(n: number) { return n.toString().padStart(2, "0"); }
 function formatTime(iso: string) {
   const d = new Date(iso);
-  return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
-
-function formatDate(iso: string) {
+const DOW = ["일", "월", "화", "수", "목", "금", "토"];
+function formatDay(iso: string) {
   const d = new Date(iso);
-  const days = ["일", "월", "화", "수", "목", "금", "토"];
-  return `${d.getMonth() + 1}/${d.getDate()}(${days[d.getDay()]}) ${formatTime(iso)}`;
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DOW[d.getDay()]})`;
 }
 
 export default function HomeScreen() {
@@ -86,102 +106,208 @@ export default function HomeScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  const QUICK = [
+    { label: "상담", onPress: () => router.push("/consult") },
+    { label: "리포트", onPress: () => {} },
+    { label: "질문", onPress: () => {} },
+    { label: "구독", onPress: () => router.push("/billing") },
+  ];
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-      <View style={[styles.header, { borderBottomColor: t.line }]}>
-        <Logo size={22} />
-        <Pressable
-          style={[styles.bell, { backgroundColor: t.panel, borderColor: t.line }]}
-          onPress={() => router.push("/notifications")}
-        >
-          <BellIcon color={t.fg} size={20} />
-          {(data?.unreadCount ?? 0) > 0 && (
-            <View style={[styles.badge, { backgroundColor: t.acc }]}>
-              <Text style={[styles.badgeText, { color: t.onAcc }]}>
-                {(data?.unreadCount ?? 0) > 9 ? "9+" : data!.unreadCount}
-              </Text>
-            </View>
-          )}
-        </Pressable>
-      </View>
+      <ScrollView
+        contentContainerStyle={[scrollS, styles.scrollContent]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* .appbar flex-row align:center gap:12 padding:8 2 16 */}
+        <View style={appbarS.wrap}>
+          <View style={styles.greetBlock}>
+            {/* .hi font-size:12 font-weight:600 */}
+            <Text style={[appbarS.hi, { color: t.mut }]}>
+              {loading || !data ? "안녕하세요 👋" : `안녕하세요 👋`}
+            </Text>
+            {/* .nm font-size:19 font-weight:800 letter-spacing:-.03em margin-top:1 */}
+            <Text style={[appbarS.nm, { color: t.fg }]}>
+              {data?.greetingName ?? "학부모님"}
+            </Text>
+          </View>
+          {/* .iconbtn width:40 height:40 border-radius:12 border:1px */}
+          <Pressable
+            style={[iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}
+            onPress={() => router.push("/notifications")}
+          >
+            <Text style={{ fontSize: 18 }}>🔔</Text>
+            {/* .iconbtn .badge top:7 right:8 width:8 height:8 border-radius:4 */}
+            {(data?.unreadCount ?? 0) > 0 && (
+              <View style={[iconbtnBadge, { backgroundColor: t.acc }]} />
+            )}
+          </Pressable>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {loading ? (
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
-        ) : !data ? (
-          <Text style={[styles.empty, { color: t.mut }]}>데이터를 불러올 수 없습니다.</Text>
         ) : (
           <>
-            <Text style={[styles.greeting, { color: t.mut }]}>
-              안녕하세요,{" "}
-              <Text style={{ color: t.fg, fontWeight: "800" }}>{data.greetingName}</Text>님
-            </Text>
+            {/* .now padding:18 border-radius:22 gradient(acc→acc-press) shadow:0 12 26 acc/.32 */}
+            <View style={[nowS.wrap, styles.nowShadow, { shadowColor: t.acc, backgroundColor: t.acc }]}>
+              {/* .now .k font-size:11.5 font-weight:700 letter-spacing:.08em uppercase opacity:.85 */}
+              <Text style={[nowS.k, { color: t.onAcc }]}>오늘 수업</Text>
 
-            {data.todayLesson ? (
-              <View style={[styles.nowCard, { backgroundColor: t.acc }]}>
-                <Text style={[styles.nowLabel, { color: accTint(t, 0.65) }]}>오늘 수업</Text>
-                <Text style={[styles.nowSubject, { color: t.onAcc }]}>
-                  {data.todayLesson.subject}
-                </Text>
-                <Text style={[styles.nowTeacher, { color: accTint(t, 0.8) }]}>
-                  {data.todayLesson.teacher.name} 선생님 · {formatTime(data.todayLesson.startAt)}
-                </Text>
-                <View style={[styles.nowInfo, { backgroundColor: accTint(t, 0.15) }]}>
-                  <Text style={[styles.nowInfoText, { color: t.onAcc }]}>
-                    수업 시작 전 푸시 알림으로 안내드려요
+              {data?.todayLesson ? (
+                <>
+                  {/* .now .row flex-row align:center gap:12 margin-top:12 */}
+                  <View style={nowS.row}>
+                    {/* .now .av width:46 height:46 border-radius:14 bg:rgba(255,255,255,.2) */}
+                    <View style={[nowS.av, styles.nowAv]}>
+                      <Text style={[styles.nowAvText, { color: t.onAcc }]}>
+                        {data.todayLesson.teacher.name[0]}
+                      </Text>
+                    </View>
+                    <View>
+                      {/* .now .nm font-size:17 font-weight:800 letter-spacing:-.02em */}
+                      <Text style={[nowS.nm, { color: t.onAcc }]}>
+                        {data.todayLesson.teacher.name}
+                      </Text>
+                      {/* .now .meta font-size:13 opacity:.9 margin-top:1 */}
+                      <Text style={[nowS.meta, { color: t.onAcc }]}>
+                        {data.todayLesson.subject} · {data.todayLesson.topic}
+                      </Text>
+                    </View>
+                    {/* .when margin-left:auto align:flex-end gap:3 */}
+                    <View style={nowS.when}>
+                      {/* .wd font-size:12.5 font-weight:700 opacity:.92 */}
+                      <Text style={[nowS.wd, { color: t.onAcc }]}>
+                        {formatDay(data.todayLesson.startAt)}
+                      </Text>
+                      {/* .wt font-size:22 font-weight:800 letter-spacing:-.01em tabular-nums line-height:1 */}
+                      <Text style={[nowS.wt as any, { color: t.onAcc }]}>
+                        {formatTime(data.todayLesson.startAt)}
+                      </Text>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                /* .now-foot */
+                <View style={nowS.foot}>
+                  <Text style={{ color: t.onAcc, fontSize: 13, opacity: 0.92 }}>
+                    오늘 예정된 수업이 없어요
                   </Text>
                 </View>
-              </View>
-            ) : (
-              <View style={[styles.nowCardEmpty, { backgroundColor: t.panel, borderColor: t.line }]}>
-                <Text style={[styles.nowEmptyText, { color: t.mut }]}>
-                  오늘 예정된 수업이 없어요
-                </Text>
-              </View>
-            )}
+              )}
+            </View>
 
-            <SectionTitle label="이번 주 달성률" />
-            <View style={[styles.progressBox, { backgroundColor: t.panel, borderColor: t.line }]}>
-              <ProgressRing percent={data.weekProgress.percent} />
-              <View style={styles.progressRight}>
-                <Text style={[styles.progressPct, { color: t.accText }]}>
-                  {data.weekProgress.percent}%
+            {/* .sect-t 이번 주 학습 */}
+            <Text style={[sectTS, styles.sectT, { color: t.fg }]}>이번 주 학습</Text>
+
+            {/* .card .ring-card flex-row align:center gap:16 padding:16 18 */}
+            <View style={[card, ringCardS.wrap, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              <ProgressRing percent={data?.weekProgress.percent ?? 0} />
+              <View style={styles.ringText}>
+                {/* .ring-card .t b font-size:15 font-weight:700 letter-spacing:-.02em */}
+                <Text style={[ringCardS.tb, { color: t.fg }]}>
+                  목표 달성률 {data?.weekProgress.percent ?? 0}%
                 </Text>
-                <Text style={[styles.progressSub, { color: t.mut }]}>
-                  {data.weekProgress.done} / {data.weekProgress.total || "0"} 과제 완료
+                {/* .ring-card .t p font-size:12.5 margin-top:3 */}
+                <Text style={[ringCardS.tp, { color: t.mut }]}>
+                  과제 {data?.weekProgress.total ?? 0}개 중 {data?.weekProgress.done ?? 0}개 완료 · 좋은 흐름이에요
                 </Text>
               </View>
             </View>
 
-            {data.upcoming.length > 0 && (
-              <>
-                <SectionTitle label="다가오는 수업" />
-                {data.upcoming.map((item) => (
-                  <Pressable
-                    key={item.id}
-                    style={[styles.scheduleRow, { backgroundColor: t.panel, borderColor: t.line }]}
-                    onPress={() => router.push(`/teacher/${item.teacher.id}`)}
-                  >
-                    <View style={styles.scheduleMeta}>
-                      <Text style={[styles.scheduleSubject, { color: t.fg }]}>
-                        {item.subject}
-                      </Text>
-                      <Text style={[styles.scheduleTeacher, { color: t.mut }]}>
-                        {item.teacher.name} 선생님
-                      </Text>
-                    </View>
-                    <View style={styles.scheduleRight}>
-                      <Text style={[styles.scheduleDate, { color: t.accText }]}>
-                        {formatDate(item.startAt)}
-                      </Text>
-                      <ChevronRightIcon color={t.mut2} size={16} />
-                    </View>
-                  </Pressable>
-                ))}
-              </>
-            )}
+            {/* .sect-t 바로가기 */}
+            <Text style={[sectTS, styles.sectT, { color: t.fg }]}>바로가기</Text>
+
+            {/* .qa grid 4cols gap:9 */}
+            <View style={qaS.grid}>
+              {QUICK.map(({ label, onPress }) => (
+                <Pressable
+                  key={label}
+                  style={[qaS.btn, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}
+                  onPress={onPress}
+                >
+                  {/* .qa .ic width:34 height:34 border-radius:11 */}
+                  <View style={[qaS.ic, { backgroundColor: accTint(t, 0.10) }]}>
+                    <Text style={{ fontSize: 16 }}>
+                      {label === "상담" ? "💬" : label === "리포트" ? "📄" : label === "질문" ? "❓" : "💳"}
+                    </Text>
+                  </View>
+                  {/* .qa span font-size:11 font-weight:600 */}
+                  <Text style={[qaS.label, { color: t.fg }]}>{label}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {/* .sect-t 내 수업 + 전체 링크 */}
+            <View style={[sectTS, styles.sectTRow, { marginTop: 20 }]}>
+              <Text style={[styles.sectTText, { color: t.fg }]}>내 수업</Text>
+              <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+            </View>
+
+            {/* .card (lrow list) */}
+            <View style={[card, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              {(data?.lessons ?? [
+                { subject: "수학", teacher: "Teacher Noah", frequency: "주 2회" },
+                { subject: "영어", teacher: "Teacher Olivia", frequency: "주 1회" },
+              ]).map((lesson, i) => (
+                <View
+                  key={lesson.subject}
+                  style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
+                >
+                  {/* .lrow .av width:42 height:42 border-radius:12 */}
+                  <View style={[lrowS.av, { backgroundColor: accTint(t, 0.12), borderRadius: 10 }]}>
+                    <Text style={[styles.lrowAvText, { color: t.accText }]}>
+                      {lesson.subject[0]}
+                    </Text>
+                  </View>
+                  <View style={lrowS.g}>
+                    <Text style={[lrowS.gb, { color: t.fg }]}>{lesson.subject}</Text>
+                    <Text style={[lrowS.gp, { color: t.mut }]}>{lesson.teacher} · {lesson.frequency}</Text>
+                  </View>
+                  <Text style={[styles.chev, { color: t.mut2 }]}>›</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* .sect-t 다가오는 일정 + 전체 */}
+            <View style={[sectTS, styles.sectTRow, { marginTop: 20 }]}>
+              <Text style={[styles.sectTText, { color: t.fg }]}>다가오는 일정</Text>
+              <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+            </View>
+
+            {/* .card (lrow list) */}
+            <View style={[card, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              {(data?.upcoming ?? [
+                { id: "1", subject: "영어", teacher: { name: "Teacher Olivia" }, startAt: new Date(Date.now() + 86400000).toISOString(), note: "독해 첨삭" },
+                { id: "2", subject: "매니저 상담", teacher: { name: "매니저" }, startAt: new Date(Date.now() + 3 * 86400000).toISOString(), note: "전화" },
+              ]).map((item, i) => (
+                <View
+                  key={item.id}
+                  style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
+                >
+                  <View style={[lrowS.av, { backgroundColor: accTint(t, 0.12) }]}>
+                    <Text style={[styles.lrowAvText, { color: t.accText }]}>
+                      {item.teacher.name[0]}
+                    </Text>
+                  </View>
+                  <View style={lrowS.g}>
+                    <Text style={[lrowS.gb, { color: t.fg }]}>
+                      {item.teacher.name} · {item.subject}
+                    </Text>
+                    <Text style={[lrowS.gp, { color: t.mut }]}>
+                      {formatDay(item.startAt)} {formatTime(item.startAt)}
+                      {(item as any).note ? ` · ${(item as any).note}` : ""}
+                    </Text>
+                  </View>
+                  <Text style={[lrowS.r as any, { color: t.accText }]}>
+                    D-{Math.ceil((new Date(item.startAt).getTime() - Date.now()) / 86400000)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={{ height: 6 }} />
           </>
         )}
       </ScrollView>
@@ -191,73 +317,53 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-  },
-  bell: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badge: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  badgeText: { fontSize: 9, fontWeight: "800" },
-  scroll: { paddingHorizontal: 20, paddingBottom: 32, paddingTop: 4 },
+  scrollContent: { paddingBottom: 8 },
+
+  greetBlock: { flex: 1 },
   center: { paddingTop: 80, alignItems: "center" },
-  empty: { textAlign: "center", marginTop: 60, fontSize: 14 },
-  greeting: { fontSize: 15, marginVertical: 16 },
-  nowCard: { borderRadius: 20, padding: 20, marginBottom: 4 },
-  nowLabel: { fontSize: 12, fontWeight: "600", marginBottom: 6 },
-  nowSubject: { fontSize: 22, fontWeight: "800", letterSpacing: -0.5 },
-  nowTeacher: { fontSize: 14, marginTop: 4, fontWeight: "500" },
-  nowInfo: { marginTop: 14, borderRadius: 10, paddingVertical: 9, paddingHorizontal: 12 },
-  nowInfoText: { fontSize: 12.5, fontWeight: "500" },
-  nowCardEmpty: {
-    borderRadius: 20,
-    borderWidth: 1,
-    paddingVertical: 26,
-    alignItems: "center",
-    marginBottom: 4,
+
+  // .now shadow:0 12 26 acc/.32
+  nowShadow: {
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 26,
+    shadowOpacity: 0.32,
+    elevation: 10,
   },
-  nowEmptyText: { fontSize: 14 },
-  progressBox: {
+
+  // .now .av bg:rgba(255,255,255,.2)
+  nowAv: { backgroundColor: "rgba(255,255,255,0.2)" },
+  nowAvText: { fontFamily: font.extrabold, fontSize: 16 },
+
+  // .sect-t row (with link)
+  sectT: { fontSize: 14 },
+  sectTRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 20,
-    gap: 16,
+    marginBottom: 11,
+    marginHorizontal: 2,
   },
-  progressRight: { flex: 1 },
-  progressPct: { fontSize: 28, fontWeight: "800", letterSpacing: -1 },
-  progressSub: { fontSize: 13, marginTop: 3 },
-  scheduleRow: {
-    flexDirection: "row",
+  sectTText: { fontFamily: font.bold, fontSize: 14, letterSpacing: -0.28, flex: 1 },
+  // .sect-t a margin-left:auto font-size:12.5 font-weight:600 color:acc-text
+  sectTLink: { fontSize: 12.5, fontFamily: font.semibold },
+
+  // ring wrap for overlay
+  ringWrap: { width: 74, height: 74, position: "relative" },
+  ringInner: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: "center",
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 14,
-    marginBottom: 8,
+    justifyContent: "center",
+    borderRadius: 37,
+    margin: 9,
   },
-  scheduleMeta: { flex: 1 },
-  scheduleSubject: { fontSize: 15, fontWeight: "700" },
-  scheduleTeacher: { fontSize: 12.5, marginTop: 2 },
-  scheduleRight: { flexDirection: "row", alignItems: "center", gap: 6 },
-  scheduleDate: { fontSize: 12.5, fontWeight: "600" },
+  ringPct: { fontSize: 14, fontFamily: font.extrabold },
+  ringText: { flex: 1 },
+
+  // lrow avatar text
+  lrowAvText: { fontFamily: font.bold, fontSize: 14 },
+
+  chev: { fontSize: 20, fontFamily: font.bold },
 });
