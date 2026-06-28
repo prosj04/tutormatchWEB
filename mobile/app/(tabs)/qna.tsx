@@ -1,225 +1,192 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 
-import { SendIcon, SparkIcon } from "../../components/ui/Icons";
-import { apiFetch } from "../../lib/api";
+import {
+  chat as chatS,
+  font,
+} from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import { accTint, type ThemeTokens } from "../../theme/tokens";
+import { accTint } from "../../theme/tokens";
 
-interface Message {
-  id: string;
-  sender: "me" | "them" | "ai";
-  body: string;
-  imageUrl: string | null;
-  tokenCost: number | null;
-  createdAt: string;
-}
+// ─── 메시지 말풍선 ─────────────────────────────────────────────────────────────
+// .msg { max-width:80%; padding:11 14; border-radius:16; font-size:13.5; line-height:20; margin-bottom:9; }
+// .msg.them { border:1px; border-bottom-left-radius:5; }
+// .msg.me { border-bottom-right-radius:5; align-self:flex-end; bg:acc; color:on-acc; }
+// .msg.ai { border:1px; border-bottom-left-radius:5; bg:acc/10 tint; }
+// .msg.ai .tag { font-size:10; font-weight:800; letter-spacing:.06em; uppercase; }
+// .msg.ai .empty → 토큰 소진 안내
+function MsgBubble({ type, text, aiTag, tokenEmpty }: {
+  type: "me" | "them" | "ai";
+  text: string;
+  aiTag?: string;
+  tokenEmpty?: boolean;
+}) {
+  const { t } = useTheme();
 
-interface QnaData {
-  messages: Message[];
-  wallet: { tokens: number };
-}
-
-interface HomeData {
-  todayLesson: { teacher: { id: string; name: string } } | null;
-  upcoming: Array<{ teacher: { id: string; name: string } }>;
-}
-
-function Bubble({ msg, t }: { msg: Message; t: ThemeTokens }) {
-  const isMe = msg.sender === "me";
-  const isAi = msg.sender === "ai";
-
-  const bg = isMe ? t.acc : isAi ? accTint(t, 0.1) : t.panel;
-  const color = isMe ? t.onAcc : t.fg;
+  const bgColor =
+    type === "me" ? t.acc
+    : type === "ai" ? accTint(t, 0.10)
+    : t.panel;
 
   return (
-    <View style={[styles.bubbleWrap, isMe && styles.bubbleWrapMe]}>
-      {isAi && (
-        <View style={[styles.aiLabel, { backgroundColor: accTint(t, 0.1) }]}>
-          <SparkIcon color={t.accText} size={12} />
-          <Text style={[styles.aiLabelText, { color: t.accText }]}>AI 답변</Text>
+    <View style={[
+      chatS.msg,
+      type === "me" ? [chatS.me, { backgroundColor: bgColor }]
+      : type === "ai" ? [chatS.ai, { backgroundColor: bgColor, borderColor: t.line2 }]
+      : [chatS.them, { backgroundColor: bgColor, borderColor: t.line2 }],
+    ]}>
+      {(type === "ai" && aiTag) && (
+        <View style={chatS.aiTag}>
+          <Text style={{ color: t.accText, fontSize: 10 }}>✨</Text>
+          <Text style={[styles.aiTagText, { color: t.accText }]}>{aiTag}</Text>
         </View>
       )}
-      <View
-        style={[
-          styles.bubble,
-          { backgroundColor: bg, borderColor: isAi ? accTint(t, 0.2) : t.line },
-          isMe ? styles.bubbleMe : isAi ? styles.bubbleAi : styles.bubbleThem,
-        ]}
-      >
-        <Text style={[styles.bubbleText, { color }]}>{msg.body}</Text>
+      <Text style={[styles.msgText, {
+        color: type === "me" ? t.onAcc : t.fg,
+      }]}>{text}</Text>
+      {tokenEmpty && (
+        <Text style={[styles.tokenEmptySub, { color: t.mut }]}>
+          충전하면 AI 즉답을 다시 사용할 수 있어요.
+        </Text>
+      )}
+    </View>
+  );
+}
+
+// ─── .resolve 해결 선택 박스 ──────────────────────────────────────────────────
+// .resolve { border:1px; border-radius:16; padding:14; margin-bottom:9; shadow-sm; }
+// .resolve p { font-size:12.5; font-weight:600; text-align:center; margin-bottom:11; }
+// .resolve button { flex:1; padding:11; border-radius:11; font-weight:700; font-size:13; }
+function ResolvePrompt({ onResolve, onAsk }: { onResolve: () => void; onAsk: () => void }) {
+  const { t } = useTheme();
+  return (
+    <View style={[chatS.resolve, { backgroundColor: t.panel, borderColor: t.line }]}>
+      <Text style={[chatS.resolveP, { color: t.fg }]}>이 답변으로 해결되었나요?</Text>
+      <View style={{ flexDirection: "row", gap: 9 }}>
+        <Pressable
+          style={[chatS.resolveBtn, { backgroundColor: accTint(t, 0.10), borderWidth: 0 }]}
+          onPress={onResolve}
+        >
+          <Text style={{ color: t.accText, fontFamily: font.bold, fontSize: 13 }}>✓ 해결됐어요</Text>
+        </Pressable>
+        <Pressable
+          style={[chatS.resolveBtn, { backgroundColor: t.panel2, borderWidth: 0 }]}
+          onPress={onAsk}
+        >
+          <Text style={{ color: t.fg, fontFamily: font.bold, fontSize: 13 }}>💬 선생님께 질문</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
 
-export default function QnaScreen() {
+type ChatState = "ai" | "teacher" | "token_empty";
+
+export default function QnAScreen() {
   const { t } = useTheme();
-  const [teacherId, setTeacherId] = useState<string | null>(null);
-  const [teacherName, setTeacherName] = useState("선생님");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [tokens, setTokens] = useState(0);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const flatRef = useRef<FlatList>(null);
+  const [text, setText] = useState("");
+  const [chatState, setChatState] = useState<ChatState>("ai");
+  const scrollRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    apiFetch<HomeData>("/api/mobile/home")
-      .then((home) => {
-        const teacher =
-          home.todayLesson?.teacher ?? home.upcoming[0]?.teacher ?? null;
-        if (teacher) {
-          setTeacherId(teacher.id);
-          setTeacherName(teacher.name);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (!teacherId) return;
-    apiFetch<QnaData>(`/api/mobile/qna/${teacherId}`).then((data) => {
-      setMessages(data.messages);
-      setTokens(data.wallet.tokens);
-    });
-  }, [teacherId]);
-
-  async function handleSend() {
-    if (!input.trim() || !teacherId || sending || tokens <= 0) return;
-    const text = input.trim();
-    setInput("");
-    setSending(true);
-    try {
-      const res = await apiFetch<{
-        message: Message;
-        aiMessage: Message | null;
-        wallet: { tokens: number };
-      }>(`/api/mobile/qna/${teacherId}`, {
-        method: "POST",
-        body: JSON.stringify({ content: text }),
-      });
-      setMessages((prev) => [
-        ...prev,
-        res.message,
-        ...(res.aiMessage ? [res.aiMessage] : []),
-      ]);
-      setTokens(res.wallet.tokens);
-      setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 80);
-    } catch {
-      setInput(text);
-    } finally {
-      setSending(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-        <View style={styles.center}>
-          <ActivityIndicator color={t.acc} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (!teacherId) {
-    return (
-      <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-        <View style={[styles.noTeacherHeader, { borderBottomColor: t.line }]}>
-          <Text style={[styles.headerTitle, { color: t.fg }]}>질문</Text>
-        </View>
-        <View style={styles.center}>
-          <Text style={[styles.emptyText, { color: t.mut }]}>
-            배정된 선생님이 없습니다.{"\n"}무료 상담 신청 후 이용해주세요.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  const canSend = input.trim().length > 0 && tokens > 0 && !sending;
+  const tokenEmpty = chatState === "token_empty";
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-      <View style={[styles.chatHeader, { borderBottomColor: t.line }]}>
-        <Text style={[styles.headerTitle, { color: t.fg }]}>
-          {teacherName} 선생님
-        </Text>
-        <View
-          style={[
-            styles.tokenBadge,
-            { backgroundColor: accTint(t, 0.12), borderColor: accTint(t, 0.2) },
-          ]}
-        >
-          <SparkIcon color={t.accText} size={14} />
-          <Text style={[styles.tokenText, { color: t.accText }]}>{tokens}</Text>
-        </View>
-      </View>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={90}
-      >
-        <FlatList
-          ref={flatRef}
-          data={messages}
-          keyExtractor={(m) => m.id}
-          renderItem={({ item }) => <Bubble msg={item} t={t} />}
-          contentContainerStyle={styles.list}
-          onLayout={() => flatRef.current?.scrollToEnd({ animated: false })}
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: 4 }]}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <Text style={[styles.emptyChat, { color: t.mut }]}>
-              질문을 입력해보세요
-            </Text>
-          }
-        />
+          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+        >
+          {/* .chat-head flex-row align:center gap:11 padding:6 2 14 */}
+          <View style={[chatS.head]}>
+            <Pressable style={[styles.backBtn, { backgroundColor: t.panel, borderColor: t.line }]}>
+              <Text style={{ color: t.fg, fontSize: 18 }}>‹</Text>
+            </Pressable>
+            {/* .av width:40 height:40 border-radius:12 */}
+            <View style={[chatS.headAv, { backgroundColor: accTint(t, 0.12) }]}>
+              <Text style={[styles.headAvText, { color: t.accText }]}>N</Text>
+            </View>
+            <View>
+              <Text style={[chatS.headNm, { color: t.fg }]}>수학 · Teacher Noah</Text>
+              <Text style={[chatS.headSub, { color: t.mut }]}>
+                {tokenEmpty ? "● 보통 1시간 내 답변" : "● 질문하면 AI가 먼저 답해요"}
+              </Text>
+            </View>
+          </View>
 
-        <View style={[styles.composer, { borderTopColor: t.line, backgroundColor: t.bg }]}>
-          {tokens <= 0 && (
-            <Text style={[styles.noToken, { color: t.mut }]}>AI 토큰이 부족합니다</Text>
+          {/* .daysep text-align:center font-size:11 margin:4 0 12 */}
+          <Text style={[chatS.daysep, { color: t.mut2 }]}>오늘</Text>
+
+          {/* messages */}
+          <MsgBubble type="me" text="선생님, 미적분 활용 문제에서 속도-시간 그래프 넓이가 왜 이동거리가 되나요?" />
+
+          {chatState === "ai" && (
+            <>
+              <MsgBubble
+                type="ai"
+                aiTag="AI 즉답 · 토큰 1 사용"
+                text="속도 v(t)를 t로 적분한 ∫v dt가 위치 변화량입니다. 그래프에서 곡선 아래 면적이 곧 그 적분값이라, 면적이 이동거리와 같아져요."
+              />
+              <ResolvePrompt onResolve={() => setChatState("teacher")} onAsk={() => setChatState("teacher")} />
+            </>
           )}
-          <View style={[styles.inputRow, { backgroundColor: t.panel, borderColor: t.line2 }]}>
-            <TextInput
-              style={[styles.inputField, { color: t.fg }]}
-              placeholder="질문을 입력하세요..."
-              placeholderTextColor={t.mut2}
-              value={input}
-              onChangeText={setInput}
-              multiline
-              maxLength={500}
-              editable={tokens > 0}
-            />
-            <Pressable
-              style={[
-                styles.sendBtn,
-                { backgroundColor: canSend ? t.acc : t.panel2 },
-              ]}
-              onPress={handleSend}
-              disabled={!canSend}
-            >
-              {sending ? (
-                <ActivityIndicator color={t.onAcc} size="small" />
-              ) : (
-                <SendIcon color={canSend ? t.onAcc : t.mut2} size={18} />
-              )}
+
+          {tokenEmpty && (
+            <>
+              <MsgBubble
+                type="ai"
+                aiTag="AI 즉답"
+                text="이번 달 AI 즉답 토큰을 모두 사용했어요. 지금부터는 선생님이 직접 답변해 드려요."
+                tokenEmpty
+              />
+              <MsgBubble type="them" text="그럼요. 방금 보니 적분 구간 설정에서 헷갈린 것 같아요. 풀이 사진 보낼 테니 같이 보고, 내일 수업에서 한 번 더 정리해요." />
+              <MsgBubble type="me" text="감사합니다 선생님 🙏" />
+            </>
+          )}
+
+          <View style={{ height: 6 }} />
+        </ScrollView>
+
+        {/* Composer */}
+        {tokenEmpty ? (
+          // .composer.ask-only — 토큰 소진 상태
+          <View style={[chatS.composer, chatS.composerAskOnly, { borderTopColor: t.line, backgroundColor: t.bg }]}>
+            <Text style={[chatS.depNote, { color: t.mut2 }]}>AI 토큰을 모두 사용했어요 · 답변은 선생님이 직접 드려요</Text>
+            <Pressable style={[chatS.askBtn, { backgroundColor: accTint(t, 0.10) }]}>
+              <Text style={{ color: t.accText, fontFamily: font.bold, fontSize: 14 }}>💬 선생님께 질문하기</Text>
             </Pressable>
           </View>
-        </View>
+        ) : (
+          // .composer — 일반 입력
+          <View style={[chatS.composer, { borderTopColor: t.line, backgroundColor: t.bg }]}>
+            {/* .composer .in flex:1 padding:11 15 border-radius:999 border:1px font-size:13.5 */}
+            <TextInput
+              style={[chatS.composerIn, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg, flex: 1 }]}
+              placeholder="메시지 입력…"
+              placeholderTextColor={t.mut2}
+              value={text}
+              onChangeText={setText}
+              multiline
+            />
+            {/* .composer .snd width:42 height:42 border-radius:21 bg:acc */}
+            <Pressable style={[chatS.composerSnd, { backgroundColor: t.acc }]}>
+              <Text style={{ color: t.onAcc, fontSize: 16 }}>↑</Text>
+            </Pressable>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -228,75 +195,21 @@ export default function QnaScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   flex: { flex: 1 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
-  noTeacherHeader: {
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-  },
-  chatHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-  },
-  headerTitle: { fontSize: 17, fontWeight: "800", letterSpacing: -0.5 },
-  tokenBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    borderRadius: 10,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  tokenText: { fontSize: 13, fontWeight: "700" },
-  emptyText: { fontSize: 14, lineHeight: 22, textAlign: "center" },
-  list: { padding: 16, gap: 6, paddingBottom: 24 },
-  emptyChat: { textAlign: "center", marginTop: 60, fontSize: 14 },
-  bubbleWrap: { alignItems: "flex-start", marginVertical: 2 },
-  bubbleWrapMe: { alignItems: "flex-end" },
-  aiLabel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    marginBottom: 4,
-    alignSelf: "flex-start",
-  },
-  aiLabelText: { fontSize: 11, fontWeight: "700" },
-  bubble: { maxWidth: "80%", padding: 12, borderWidth: 1 },
-  bubbleThem: { borderRadius: 18, borderTopLeftRadius: 5 },
-  bubbleMe: { borderRadius: 18, borderTopRightRadius: 5 },
-  bubbleAi: { borderRadius: 18, borderTopLeftRadius: 5 },
-  bubbleText: { fontSize: 14.5, lineHeight: 21 },
-  composer: {
-    borderTopWidth: 1,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 24,
-  },
-  noToken: { fontSize: 12, textAlign: "center", marginBottom: 8 },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    borderRadius: 18,
-    borderWidth: 1,
-    paddingLeft: 14,
-    paddingRight: 6,
-    paddingVertical: 6,
-    gap: 8,
-  },
-  inputField: { flex: 1, fontSize: 14.5, maxHeight: 100, paddingVertical: 4 },
-  sendBtn: {
+  scrollContent: { paddingHorizontal: 18, paddingBottom: 8 },
+
+  backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 12,
+    borderRadius: 11,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
+  headAvText: { fontFamily: font.bold, fontSize: 15 },
+
+  aiTagText: { fontSize: 10, fontFamily: font.extrabold, letterSpacing: 0.6, textTransform: "uppercase" },
+
+  // .msg text
+  msgText: { fontSize: 13.5, lineHeight: 20 },
+  tokenEmptySub: { fontSize: 11, marginTop: 6 },
 });
