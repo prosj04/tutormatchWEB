@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { font, subHead as subHeadS } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
 import { ChevronLeftIcon } from "./Icons";
 
@@ -35,30 +36,12 @@ export function SubHead({ title, actionLabel, onAction, onBack }: SubHeadProps) 
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingTop: 6,
-    paddingBottom: 16,
-    paddingHorizontal: 2,
-  },
-  back: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    flex: 1,
-    fontSize: 17,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-  },
-  action: {
-    fontSize: 13,
-    fontWeight: "600",
-  },
+  // .sub-head { flex-row; align-items:center; gap:12; padding:6px 2px 16px; }
+  row: { ...subHeadS.wrap },
+  // .pf-back { width:40; height:40; border-radius:12; border:1px; }
+  back: { ...subHeadS.back },
+  // .sub-head b { font-size:17; font-weight:800; letter-spacing:-.025em; }
+  title: { flex: 1, ...subHeadS.title },
+  // .sub-head .act { margin-left:auto; font-size:13; font-weight:600; }
+  action: { ...subHeadS.act },
 });
