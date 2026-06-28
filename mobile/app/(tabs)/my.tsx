@@ -1,145 +1,134 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+
 import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from "react-native";
-
-import { Avatar } from "../../components/ui/Avatar";
-import { CardIcon, ChevronRightIcon, PersonIcon } from "../../components/ui/Icons";
-import { Logo } from "../../components/ui/Logo";
+  card,
+  font,
+  iconbtn,
+  my as myS,
+  scroll as scrollS,
+  sectT as sectTS,
+  switchStyle,
+} from "../../styles/app-styles";
 import { useAuth } from "../../hooks/useAuth";
-import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
+import { accTint } from "../../theme/tokens";
 
-interface MeData {
-  student: {
-    id: string;
-    name: string;
-    grade: string;
-    subjects: string;
-  };
-  subscription: {
-    plan: string;
-    status: string;
-    periodEnd: string;
-  } | null;
+// ─── .mrow 메뉴 행 ─────────────────────────────────────────────────────────────
+// .mrow { flex-row; align:center; gap:13; padding:15 16; }
+// .mrow .ic { width:36; height:36; border-radius:11; }
+// .mrow .g b { font-size:14.5; font-weight:600; }
+// .mrow .g p { font-size:12; margin-top:1; }
+function MRow({
+  icon,
+  label,
+  sub,
+  trailing,
+  onPress,
+  divider,
+}: {
+  icon: string;
+  label: string;
+  sub?: string;
+  trailing?: React.ReactNode;
+  onPress?: () => void;
+  divider?: boolean;
+}) {
+  const { t } = useTheme();
+  const inner = (
+    <View style={[myS.mrow, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
+      <View style={[myS.mrowIc, { backgroundColor: t.panel2 }]}>
+        <Text style={{ fontSize: 16 }}>{icon}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={[myS.mrowGb, { color: t.fg }]}>{label}</Text>
+        {sub && <Text style={[myS.mrowGp, { color: t.mut }]}>{sub}</Text>}
+      </View>
+      {trailing ?? <Text style={[styles.chev, { color: t.mut2 }]}>›</Text>}
+    </View>
+  );
+  return onPress ? <Pressable onPress={onPress}>{inner}</Pressable> : inner;
+}
+
+// ─── .switch (.on) ────────────────────────────────────────────────────────────
+// .switch { width:42; height:25; border-radius:999; }
+// .switch i { top:2.5; left:2.5; width:20; height:20; border-radius:10; bg:#fff; }
+// .switch.on → bg:acc, thumb at right (left:42-2.5-20=19.5)
+function Switch({ on }: { on: boolean }) {
+  const { t } = useTheme();
+  return (
+    <View style={[switchStyle.track, { backgroundColor: on ? t.acc : t.line2 }]}>
+      <View style={[switchStyle.thumb, { left: on ? 19.5 : 2.5 }]} />
+    </View>
+  );
 }
 
 export default function MyScreen() {
-  const { t, color, mode, setColor, toggleMode } = useTheme();
-  const { logout } = useAuth();
+  const { t } = useTheme();
   const router = useRouter();
-  const [data, setData] = useState<MeData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch<MeData>("/api/mobile/me")
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  function handleLogout() {
-    Alert.alert("로그아웃", "정말 로그아웃 하시겠어요?", [
-      { text: "취소", style: "cancel" },
-      { text: "로그아웃", style: "destructive", onPress: logout },
-    ]);
-  }
+  const { logout } = useAuth();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-      <View style={[styles.header, { borderBottomColor: t.line }]}>
-        <Logo size={20} />
-      </View>
+      <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {loading ? (
-          <View style={styles.center}>
-            <ActivityIndicator color={t.acc} />
+        {/* .my-top flex-row align:center gap:14 padding:8 4 18 */}
+        <View style={[myS.top]}>
+          {/* .my-av width:60 height:60 border-radius:18 font-size:22 font-weight:800 */}
+          <View style={[myS.av, { backgroundColor: accTint(t, 0.12) }]}>
+            <Text style={[styles.avText, { color: t.accText }]}>지</Text>
           </View>
-        ) : data ? (
-          <>
-            <View style={[styles.profileCard, { backgroundColor: t.panel, borderColor: t.line }]}>
-              <Avatar label={data.student.name.charAt(0)} size={56} radius={16} accent />
-              <View style={styles.profileInfo}>
-                <Text style={[styles.profileName, { color: t.fg }]}>{data.student.name}</Text>
-                <Text style={[styles.profileMeta, { color: t.mut }]}>
-                  {data.student.grade}
-                  {data.student.subjects ? ` · ${data.student.subjects}` : ""}
-                </Text>
-              </View>
-            </View>
+          <View style={{ flex: 1 }}>
+            {/* .my-top .nm font-size:19 font-weight:800 letter-spacing:-.02em */}
+            <Text style={[myS.nm, { color: t.fg }]}>지우 학부모님</Text>
+            {/* .my-top .sub font-size:13 margin-top:2 */}
+            <Text style={[myS.sub, { color: t.mut }]}>jiwoo.parent@email.com</Text>
+          </View>
+          {/* .iconbtn edit button */}
+          <Pressable style={[iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}>
+            <Text style={{ fontSize: 16 }}>✏️</Text>
+          </Pressable>
+        </View>
 
-            <Pressable
-              style={[styles.subCard, { backgroundColor: t.acc }]}
-              onPress={() => router.push("/subscription")}
-            >
-              <View>
-                <Text style={styles.subLabel}>구독 플랜</Text>
-                <Text style={styles.subPlan}>
-                  {data.subscription ? data.subscription.plan : "구독 없음"}
-                </Text>
-                {data.subscription && (
-                  <Text style={styles.subExpiry}>
-                    {new Date(data.subscription.periodEnd).toLocaleDateString("ko-KR")} 만료
-                  </Text>
-                )}
-              </View>
-              <ChevronRightIcon color="rgba(255,255,255,0.8)" size={20} />
-            </Pressable>
+        {/* 자녀 카드 */}
+        <View style={[card, styles.childCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+          <View style={[styles.childAv, { backgroundColor: t.panel2 }]}>
+            <Text style={[styles.childAvText, { color: t.accText }]}>우</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.childName, { color: t.fg }]}>김지우</Text>
+            <Text style={[styles.childSub, { color: t.mut }]}>중3 · 수학·영어 · 주 3회</Text>
+          </View>
+          <View style={[styles.statusBadge, { backgroundColor: accTint(t, 0.12) }]}>
+            <Text style={[styles.statusText, { color: t.accText }]}>수강 중</Text>
+          </View>
+        </View>
 
-            <View style={[styles.section, { backgroundColor: t.panel, borderColor: t.line }]}>
-              <Text style={[styles.sectionLabel, { color: t.mut }]}>앱 설정</Text>
-              <View style={[styles.settingRow, { borderBottomColor: t.line }]}>
-                <Text style={[styles.settingLabel, { color: t.fg }]}>다크 모드</Text>
-                <Switch
-                  value={mode === "dark"}
-                  onValueChange={toggleMode}
-                  trackColor={{ false: t.panel2, true: t.acc }}
-                  thumbColor="#fff"
-                />
-              </View>
-              <View style={[styles.settingRow, { borderBottomWidth: 0 }]}>
-                <Text style={[styles.settingLabel, { color: t.fg }]}>블루 테마</Text>
-                <Switch
-                  value={color === "blue"}
-                  onValueChange={(v) => setColor(v ? "blue" : "green")}
-                  trackColor={{ false: t.panel2, true: t.acc }}
-                  thumbColor="#fff"
-                />
-              </View>
-            </View>
+        {/* .sect-t 관리 */}
+        <Text style={[sectTS, styles.sectT, { color: t.fg }]}>관리</Text>
 
-            <View style={[styles.section, { backgroundColor: t.panel, borderColor: t.line }]}>
-              <Pressable
-                style={[styles.menuRow, { borderBottomColor: t.line }]}
-                onPress={() => router.push("/subscription")}
-              >
-                <View style={[styles.menuIcon, { backgroundColor: t.panel2 }]}>
-                  <CardIcon color={t.mut} size={18} />
-                </View>
-                <Text style={[styles.menuLabel, { color: t.fg }]}>구독 관리</Text>
-                <ChevronRightIcon color={t.mut2} size={16} />
-              </Pressable>
-              <Pressable style={styles.menuRow} onPress={handleLogout}>
-                <View style={[styles.menuIcon, { backgroundColor: t.panel2 }]}>
-                  <PersonIcon color="#E53E3E" size={18} />
-                </View>
-                <Text style={[styles.menuLabel, { color: "#E53E3E" }]}>로그아웃</Text>
-              </Pressable>
-            </View>
-          </>
-        ) : (
-          <Text style={[styles.empty, { color: t.mut }]}>프로필을 불러올 수 없습니다.</Text>
-        )}
+        <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+          <MRow icon="💳" label="구독·결제" sub="주 2회 플랜 · 다음 결제 10/1" onPress={() => router.push("/billing")} />
+          <MRow icon="📄" label="학습 리포트" onPress={() => {}} divider />
+        </View>
+
+        {/* .sect-t 설정 */}
+        <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
+
+        <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+          <MRow icon="🔔" label="알림 설정" trailing={<Switch on />} />
+          <MRow icon="❓" label="고객센터" onPress={() => {}} divider />
+          <MRow icon="📄" label="약관·정책" onPress={() => {}} divider />
+        </View>
+
+        {/* 로그아웃 */}
+        <Pressable style={styles.logoutWrap} onPress={logout}>
+          <Text style={[styles.logoutText, { color: t.mut2 }]}>로그아웃</Text>
+        </Pressable>
+
+        <View style={{ height: 6 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -147,65 +136,37 @@ export default function MyScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  header: { paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1 },
-  scroll: { paddingHorizontal: 20, paddingBottom: 40, paddingTop: 12, gap: 12 },
-  center: { paddingTop: 80, alignItems: "center" },
-  empty: { textAlign: "center", marginTop: 60, fontSize: 14 },
-  profileCard: {
+  content: { paddingBottom: 8 },
+
+  avText: { fontSize: 22, fontFamily: font.extrabold },
+
+  // 자녀 카드
+  childCard: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    gap: 14,
+    gap: 13,
+    padding: 15,
+    paddingHorizontal: 16,
   },
-  profileInfo: { flex: 1 },
-  profileName: { fontSize: 18, fontWeight: "800", letterSpacing: -0.5 },
-  profileMeta: { fontSize: 13.5, marginTop: 3 },
-  subCard: {
-    borderRadius: 16,
-    padding: 18,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  subLabel: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.7)", marginBottom: 4 },
-  subPlan: { fontSize: 20, fontWeight: "800", letterSpacing: -0.5, color: "#fff" },
-  subExpiry: { fontSize: 12, color: "rgba(255,255,255,0.7)", marginTop: 4 },
-  section: { borderRadius: 16, borderWidth: 1, overflow: "hidden" },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    paddingHorizontal: 14,
-    paddingTop: 12,
-    paddingBottom: 4,
-  },
-  settingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderBottomWidth: 1,
-  },
-  settingLabel: { fontSize: 15, fontWeight: "500" },
-  menuRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "transparent",
-  },
-  menuIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
+  childAv: {
+    width: 44,
+    height: 44,
+    borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
   },
-  menuLabel: { flex: 1, fontSize: 15, fontWeight: "500" },
+  childAvText: { fontSize: 16, fontFamily: font.bold },
+  childName: { fontSize: 14.5, fontFamily: font.bold },
+  childSub: { fontSize: 12.5, marginTop: 2 },
+  statusBadge: { paddingVertical: 5, paddingHorizontal: 11, borderRadius: 999 },
+  statusText: { fontSize: 11, fontFamily: font.bold },
+
+  sectT: { fontSize: 14 },
+
+  menuCard: { overflow: "hidden" },
+
+  chev: { fontSize: 20, fontFamily: font.bold },
+
+  logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },
+  logoutText: { fontSize: 13, fontFamily: font.semibold },
 });

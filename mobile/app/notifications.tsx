@@ -1,99 +1,85 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+
 import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-
+  card,
+  notif as notifS,
+  scroll as scrollS,
+} from "../styles/app-styles";
 import { SubHead } from "../components/ui/SubHead";
-import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
+import { accTint } from "../theme/tokens";
 
-interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  body: string;
-  isRead: boolean;
-  createdAt: string;
+// ─── .ncat ────────────────────────────────────────────────────────────────────
+// .ncat { padding:11 16 7; font-size:11; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+function NCategory({ label }: { label: string }) {
+  const { t } = useTheme();
+  return <Text style={[notifS.cat, { color: t.mut2 }]}>{label}</Text>;
 }
+
+// ─── .nrow (.unread) ──────────────────────────────────────────────────────────
+function NRow({ accent, unread, icon, title, body, time, divider }: {
+  accent: boolean; unread?: boolean; icon: string;
+  title: string; body: string; time: string; divider?: boolean;
+}) {
+  const { t } = useTheme();
+  return (
+    <View style={[notifS.row, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
+      <View style={[notifS.ic, { backgroundColor: accent ? accTint(t, 0.12) : t.panel2 }]}>
+        <Text style={{ fontSize: 16 }}>{icon}</Text>
+      </View>
+      <View style={notifS.g}>
+        <Text style={[notifS.gb, { color: t.fg }]}>{title}</Text>
+        <Text style={[notifS.gp, { color: t.mut }]}>{body}</Text>
+        <Text style={[notifS.tm, { color: t.mut2 }]}>{time}</Text>
+      </View>
+      {/* .nrow .ud width:8 height:8 border-radius:4 bg:acc margin-top:6 */}
+      {unread && <View style={[notifS.ud, { backgroundColor: t.acc }]} />}
+    </View>
+  );
+}
+
+const SECTIONS = [
+  { cat: "수업", items: [
+    { accent: true, unread: true, icon: "📅", title: "오늘 수학 수업 19:00", body: "Teacher Noah · 시작 30분 전 다시 알려드릴게요.", time: "방금" },
+  ]},
+  { cat: "리포트 · 학습", items: [
+    { accent: true, unread: true, icon: "📄", title: "9월 학습 리포트가 도착했어요", body: "이번 달 취약 유형 분석과 다음 달 계획을 확인하세요.", time: "2시간 전" },
+    { accent: false, unread: false, icon: "✓", title: "과제 2개가 등록되었어요", body: "미적분 4단원 · 영어 독해 3편", time: "2일 전" },
+  ]},
+  { cat: "메시지", items: [
+    { accent: false, unread: false, icon: "💬", title: "매니저 메시지", body: "지우 어머님, 이번 주 영어 진도 관련해 말씀드릴 게 있어요.", time: "어제" },
+  ]},
+  { cat: "결제", items: [
+    { accent: false, unread: false, icon: "💳", title: "9월 수업료 결제 완료", body: "주 2회 플랜 · 740,000원", time: "9월 1일" },
+  ]},
+];
 
 export default function NotificationsScreen() {
   const { t } = useTheme();
-  const [items, setItems] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    apiFetch<{ notifications: Notification[] }>("/api/mobile/notifications")
-      .then((d) => setItems(d.notifications))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-      <View style={styles.head}>
-        <SubHead title="알림" />
-      </View>
-
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={t.acc} />
-        </View>
-      ) : items.length === 0 ? (
-        <View style={styles.center}>
-          <Text style={[styles.empty, { color: t.mut }]}>새 알림이 없어요</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={items}
-          keyExtractor={(n) => n.id}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.row,
-                {
-                  backgroundColor: item.isRead ? t.bg : t.panel,
-                  borderColor: t.line,
-                },
-              ]}
-            >
-              {!item.isRead && (
-                <View style={[styles.dot, { backgroundColor: t.acc }]} />
-              )}
-              <View style={styles.rowContent}>
-                <Text style={[styles.rowTitle, { color: t.fg }]}>{item.title}</Text>
-                <Text style={[styles.rowBody, { color: t.mut }]}>{item.body}</Text>
-              </View>
+      <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
+        <SubHead title="알림" actionLabel="모두 읽음" />
+        <View style={[card, styles.notifCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+          {SECTIONS.map((section) => (
+            <View key={section.cat}>
+              <NCategory label={section.cat} />
+              {section.items.map((item, i) => (
+                <NRow key={item.title} {...item} divider={i > 0} />
+              ))}
             </View>
-          )}
-        />
-      )}
+          ))}
+        </View>
+        <View style={{ height: 6 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  head: { paddingHorizontal: 20, paddingTop: 8 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
-  empty: { fontSize: 14 },
-  list: { paddingHorizontal: 20, paddingBottom: 40, gap: 8, paddingTop: 4 },
-  row: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 14,
-    gap: 10,
-  },
-  dot: { width: 8, height: 8, borderRadius: 4, marginTop: 5 },
-  rowContent: { flex: 1 },
-  rowTitle: { fontSize: 14.5, fontWeight: "700" },
-  rowBody: { fontSize: 13.5, marginTop: 3, lineHeight: 19 },
+  content: { paddingBottom: 8 },
+  notifCard: { overflow: "hidden" },
 });
