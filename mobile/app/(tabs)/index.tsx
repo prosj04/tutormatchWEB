@@ -108,8 +108,8 @@ export default function HomeScreen() {
 
   const QUICK = [
     { label: "상담", onPress: () => router.push("/consult") },
-    { label: "리포트", onPress: () => {} },
-    { label: "질문", onPress: () => {} },
+    { label: "리포트", onPress: () => router.push("/(tabs)/learning") },
+    { label: "질문", onPress: () => router.push("/(tabs)/qna") },
     { label: "구독", onPress: () => router.push("/billing") },
   ];
 
@@ -189,11 +189,19 @@ export default function HomeScreen() {
                   </View>
                 </>
               ) : (
-                /* .now-foot */
+                /* .now-foot — 빈 상태: 이유 + 다음 행동 */
                 <View style={nowS.foot}>
                   <Text style={{ color: t.onAcc, fontSize: 13, opacity: 0.92 }}>
-                    오늘 예정된 수업이 없어요
+                    아직 배정된 수업이 없어요
                   </Text>
+                  <Pressable
+                    style={styles.nowCta}
+                    onPress={() => router.push("/consult")}
+                  >
+                    <Text style={[styles.nowCtaText, { color: t.onAcc }]}>
+                      상담 진행 상태 보기 ›
+                    </Text>
+                  </Pressable>
                 </View>
               )}
             </View>
@@ -333,6 +341,17 @@ const styles = StyleSheet.create({
   // .now .av bg:rgba(255,255,255,.2)
   nowAv: { backgroundColor: "rgba(255,255,255,0.2)" },
   nowAvText: { fontFamily: font.extrabold, fontSize: 16 },
+
+  // 빈 상태 CTA (오늘 수업 없음)
+  nowCta: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 13,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  nowCtaText: { fontSize: 12.5, fontFamily: font.bold },
 
   // .sect-t row (with link)
   sectT: { fontSize: 14 },

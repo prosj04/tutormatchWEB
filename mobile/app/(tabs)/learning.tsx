@@ -173,7 +173,9 @@ export default function LearningScreen() {
                 ))
               ) : (
                 <View style={todoS.item}>
-                  <Text style={[todoS.gb, { color: t.mut }]}>이번 주 등록된 과제가 없어요</Text>
+                  <Text style={[todoS.gb, { color: t.mut }]}>
+                    이번 주 과제가 아직 없어요 · 선생님이 학습 계획을 올리면 표시돼요
+                  </Text>
                 </View>
               )}
             </View>
@@ -202,7 +204,12 @@ export default function LearningScreen() {
                   </Text>
                 </>
               ) : (
-                <Text style={[styles.reportTitle, { color: t.mut }]}>아직 리포트가 없어요</Text>
+                <>
+                  <Text style={[styles.reportTitle, { color: t.mut }]}>첫 리포트 생성 전입니다</Text>
+                  <Text style={[styles.reportBody, { color: t.mut }]}>
+                    보통 첫 수업 이후 월간 리포트가 생성돼요.
+                  </Text>
+                </>
               )}
               <View style={styles.reportActions}>
                 {["선생님 코멘트", "학습 계획", "리포트 보기"].map((label) => (

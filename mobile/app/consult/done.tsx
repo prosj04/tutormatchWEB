@@ -1,8 +1,10 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { ctaBar as ctaBarS, font, status as statusS } from "../../styles/app-styles";
+import { getAccessToken } from "../../lib/auth";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -73,6 +75,11 @@ function StepV({
 export default function ConsultDone() {
   const { t } = useTheme();
   const router = useRouter();
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getAccessToken().then((token) => setLoggedIn(!!token));
+  }, []);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -121,14 +128,33 @@ export default function ConsultDone() {
           </View>
         </View>
 
-        {/* .cta-bar */}
+        {/* .cta-bar — 비로그인이면 계정 연결을 1순위로 유도 */}
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.bg }]}>
-          <Pressable
-            style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-            onPress={() => router.replace("/(tabs)/")}
-          >
-            <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>홈으로</Text>
-          </Pressable>
+          {loggedIn === false ? (
+            <>
+              <Text style={[ctaBarS.sub, { color: t.mut }]}>
+                계정을 만들면 매칭 진행 상태를 알림으로 받아볼 수 있어요
+              </Text>
+              <Pressable
+                style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
+                onPress={() => router.replace("/(auth)/signup")}
+              >
+                <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>계정 만들고 상태 받기</Text>
+              </Pressable>
+              <Pressable style={styles.altBtn} onPress={() => router.replace("/(auth)/login")}>
+                <Text style={[styles.altText, { color: t.mut }]}>
+                  이미 계정이 있나요? <Text style={{ color: t.fg, fontFamily: font.bold }}>로그인</Text>
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
+              onPress={() => router.replace("/(tabs)/")}
+            >
+              <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>홈으로</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -167,4 +193,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   ctaBtnText: { fontFamily: font.extrabold, fontSize: 16, textAlign: "center" },
+
+  altBtn: { paddingVertical: 12, alignItems: "center", marginTop: 4 },
+  altText: { fontSize: 13, fontFamily: font.semibold },
 });
