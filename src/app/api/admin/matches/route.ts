@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
         student: { select: { id: true, name: true, grade: true } },
       },
     });
+    await trackJourneyActiveIfFirst(studentId);
     return NextResponse.json({ match });
   }
 
@@ -89,6 +91,8 @@ export async function POST(request: Request) {
       student: { select: { id: true, name: true, grade: true } },
     },
   });
+
+  await trackJourneyActiveIfFirst(studentId);
 
   return NextResponse.json({ match }, { status: 201 });
 }

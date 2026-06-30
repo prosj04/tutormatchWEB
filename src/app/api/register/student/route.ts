@@ -2,7 +2,9 @@ import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
-import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
+import { assignChiefManagerToStudent, createConsultationRequest } from "@/lib/student-enrollment";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { logAnalyticsEvent } from "@/lib/analytics";
 import { prisma } from "@/lib/prisma";
 import {
   normalizePhoneDigits,
@@ -121,7 +123,27 @@ export async function POST(request: Request) {
         }
         throw e;
       }
+    } else if (user.student) {
+      try {
+        await createConsultationRequest({
+          studentId: user.student.id,
+          studentName: user.student.name,
+          studentGrade: user.student.grade,
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "";
+        if (msg !== "ALREADY_ACTIVE" && msg !== "ALREADY_COMPLETED") {
+          throw e;
+        }
+      }
     }
+
+    logAnalyticsEvent({
+      name: ANALYTICS_EVENTS.studentRegistered,
+      userId: user.id,
+      platform: "web",
+      payload: { instantEnroll: !!instantEnroll },
+    });
 
     return NextResponse.json(
       { id: user.id, instantEnroll },

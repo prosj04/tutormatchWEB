@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getManagerMatchingData } from "@/lib/manager-portal-data";
+import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
 import { requireManager } from "@/lib/manager-auth";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
@@ -79,8 +80,10 @@ export async function POST(request: Request) {
     );
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.teacherStudent.create({
+  // createNotification uses the outer prisma instance — keep it outside
+  // the interactive transaction to avoid connection-pool deadlock on Vercel.
+  await prisma.$transaction([
+    prisma.teacherStudent.create({
       data: {
         teacherId,
         studentId,
@@ -88,9 +91,8 @@ export async function POST(request: Request) {
         startDate,
         isActive: true,
       },
-    });
-
-    await tx.managerStudent.upsert({
+    }),
+    prisma.managerStudent.upsert({
       where: {
         managerId_studentId: {
           managerId: teacher.id,
@@ -102,24 +104,27 @@ export async function POST(request: Request) {
         studentId,
       },
       update: {},
-    });
+    }),
+  ]);
 
-    await createNotification({
+  await Promise.all([
+    createNotification({
       userId: targetTeacher.userId,
       type: "NEW_STUDENT_ASSIGNED",
       title: "새로운 학생이 배정되었습니다",
       body: `${student.name} 학생이 배정되었습니다. 담당 과목: ${subjects}`,
       relatedId: studentId,
-    });
-
-    await createNotification({
+    }),
+    createNotification({
       userId: student.userId,
       type: "TEACHER_ASSIGNED",
       title: "선생님이 배정되었습니다",
       body: `${targetTeacher.name} 선생님이 담당 선생님으로 배정되었습니다.`,
       relatedId: teacherId,
-    });
-  });
+    }),
+  ]);
+
+  await trackJourneyActiveIfFirst(studentId);
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
+import { EMPTY_STATE_COPY } from "@/lib/student-journey";
 import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
 
 import { CopyPlanModal } from "./CopyPlanModal";
@@ -70,11 +71,11 @@ export function DailyPlanView({
 
   const btnAddPlan = usePortalCopy("student_dashboard", "btn_add_plan", "계획 추가");
   const loadingLabel = usePortalCopy("student_dashboard", "loading", "불러오는 중…");
-  const emptyNoPlan = usePortalCopy("student_dashboard", "empty_no_plan", "이 날짜의 학습 계획이 없습니다.");
+  const emptyNoPlan = usePortalCopy("student_dashboard", "empty_no_plan", EMPTY_STATE_COPY.noPlan.title);
   const emptyHint = usePortalCopy(
     "student_dashboard",
     "empty_hint",
-    "계획 추가 버튼을 눌러 시작하거나, 이전 날짜에서 복사해 보세요.",
+    EMPTY_STATE_COPY.noPlan.description,
   );
   const btnCopyPrev = usePortalCopy("student_dashboard", "btn_copy_prev", "이전 날짜에서 복사");
   const labelTeacherComment = usePortalCopy("student_dashboard", "label_teacher_comment", "선생님 코멘트");

@@ -391,3 +391,17 @@ model OnboardingSurvey {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+/// 클라이언트·서버 분석 이벤트 (웹/앱 공통)
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  name      String
+  platform  String   @default("web") // "web" | "mobile"
+  userId    String?
+  payload   String   @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}

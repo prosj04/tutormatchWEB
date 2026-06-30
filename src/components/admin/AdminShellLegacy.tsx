@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 const NAV = [
   { href: "/admin", label: "대시보드", exact: true },
+  { href: "/admin/funnel", label: "전환 퍼널" },
   { href: "/admin/students", label: "학생 관리" },
   { href: "/admin/teachers", label: "선생님 관리" },
   { href: "/admin/matches", label: "매칭 관리" },

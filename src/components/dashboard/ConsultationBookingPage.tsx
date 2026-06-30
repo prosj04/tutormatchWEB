@@ -15,6 +15,7 @@ import {
   countVisitSlots,
   type VisitTimesByDate,
 } from "@/lib/visit-consultation";
+import { CONSULTATION_STATUS_COPY } from "@/lib/student-journey";
 
 type Booking = ConsultationBookingDto;
 
@@ -33,17 +34,17 @@ const STATUS_CMS_KEYS: Record<Booking["status"], { label: string; body: string }
 };
 
 const STATUS_FALLBACK_LABEL: Record<Booking["status"], string> = {
-  WAITING: "매니저 배정 대기중",
-  ASSIGNED: "매니저 배정 완료",
-  COMPLETED: "상담 완료",
-  CANCELLED: "취소됨",
+  WAITING: CONSULTATION_STATUS_COPY.WAITING.label,
+  ASSIGNED: CONSULTATION_STATUS_COPY.ASSIGNED.label,
+  COMPLETED: CONSULTATION_STATUS_COPY.COMPLETED.label,
+  CANCELLED: CONSULTATION_STATUS_COPY.CANCELLED.label,
 };
 
 const STATUS_FALLBACK_BODY: Record<Booking["status"], string> = {
-  WAITING: "매니저 배정 후 방문 상담 희망 시간을 안내해 주세요.",
-  ASSIGNED: "담당 매니저가 입력하신 방문 시간을 참고하여 연락드립니다.",
-  COMPLETED: "선생님 매칭을 진행 중입니다.",
-  CANCELLED: "상담 신청이 취소되었습니다.",
+  WAITING: CONSULTATION_STATUS_COPY.WAITING.body,
+  ASSIGNED: CONSULTATION_STATUS_COPY.ASSIGNED.body,
+  COMPLETED: CONSULTATION_STATUS_COPY.COMPLETED.body,
+  CANCELLED: CONSULTATION_STATUS_COPY.CANCELLED.body,
 };
 
 type ConsultationBookingPageProps = {

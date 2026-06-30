@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import { useSession } from "next-auth/react";
 
 import { useConsultationSignup } from "@/components/providers/ConsultationSignupProvider";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { trackEvent } from "@/lib/analytics-client";
 
 export const STUDENT_CONSULTATION_PATH = "/dashboard/consultation";
 
@@ -17,8 +19,10 @@ export function useConsultationCta() {
   const { open: openConsultationSignup } = useConsultationSignup();
   const router = useRouter();
 
-  return useCallback(() => {
+  return useCallback((source = "unknown") => {
     if (status === "loading") return;
+
+    trackEvent(ANALYTICS_EVENTS.landingConsultationCtaClicked, { source });
 
     if (!session?.user) {
       openConsultationSignup();

@@ -21,11 +21,12 @@ const siteContentDefaults = [
   { section: "hero", key: "bg_image_url", value: "", type: "image", order: 5 },
   { section: "hero", key: "trust_text", value: "", type: "text", order: 6 },
 
-  { section: "stats", key: "stat1_number", value: "500+", type: "number", order: 1 },
+  { section: "stats", key: "stat_visible", value: "0", type: "text", order: 0 },
+  { section: "stats", key: "stat1_number", value: "", type: "number", order: 1 },
   { section: "stats", key: "stat1_label", value: "누적 상담", type: "text", order: 2 },
-  { section: "stats", key: "stat2_number", value: "1,200+", type: "number", order: 3 },
+  { section: "stats", key: "stat2_number", value: "", type: "number", order: 3 },
   { section: "stats", key: "stat2_label", value: "매칭 완료", type: "text", order: 4 },
-  { section: "stats", key: "stat3_number", value: "98%", type: "number", order: 5 },
+  { section: "stats", key: "stat3_number", value: "", type: "number", order: 5 },
   { section: "stats", key: "stat3_label", value: "학생 만족도", type: "text", order: 6 },
 
   { section: "cta", key: "headline", value: "첫 수업이 마음에 안 들면\n100% 환불해드립니다", type: "text", order: 1 },

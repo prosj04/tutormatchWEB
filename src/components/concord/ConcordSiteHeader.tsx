@@ -174,7 +174,7 @@ export function ConcordSiteHeader({
                   <Link href="/login" className="btn btn-ghost btn-sm">
                     로그인
                   </Link>
-                  <button type="button" className="btn btn-acc btn-sm" onClick={() => void goConsultation()}>
+                  <button type="button" className="btn btn-acc btn-sm" onClick={() => void goConsultation("header")}>
                     무료 상담
                   </button>
                 </>
@@ -299,7 +299,7 @@ export function ConcordSiteHeader({
                     className="btn btn-acc btn-block"
                     onClick={() => {
                       setOpen(false);
-                      void goConsultation();
+                      void goConsultation("header_mobile");
                     }}
                   >
                     무료 상담

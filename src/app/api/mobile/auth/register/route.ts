@@ -1,16 +1,83 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import { buildConsultationNote } from "@/lib/consultation-note";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { logAnalyticsEvent } from "@/lib/analytics";
 import { issueMobileTokens } from "@/lib/mobile-auth";
 import {
   normalizePhoneDigits,
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 import { prisma } from "@/lib/prisma";
+import { createConsultationRequest } from "@/lib/student-enrollment";
+
+type ConsultationPayload = {
+  grade?: unknown;
+  subjects?: unknown;
+  gradeLevel?: unknown;
+  memo?: unknown;
+};
+
+function parseSubjects(value: unknown): string | null {
+  if (typeof value === "string" && value.trim()) return value.trim();
+  if (Array.isArray(value)) {
+    const items = value.filter(
+      (s): s is string => typeof s === "string" && s.trim().length > 0,
+    );
+    if (items.length > 0) return items.join(", ");
+  }
+  return null;
+}
+
+async function attachConsultationIfProvided(
+  studentId: string,
+  studentName: string,
+  consultation: ConsultationPayload,
+): Promise<{ attached: boolean; status?: string }> {
+  const grade = typeof consultation.grade === "string" ? consultation.grade.trim() : "";
+  const subjects = parseSubjects(consultation.subjects);
+  const gradeLevel =
+    typeof consultation.gradeLevel === "string" ? consultation.gradeLevel.trim() : "";
+  const memo = typeof consultation.memo === "string" ? consultation.memo : "";
+
+  if (!grade || !subjects || !gradeLevel) {
+    return { attached: false };
+  }
+
+  const note = buildConsultationNote(gradeLevel, memo);
+  const updated = await prisma.student.update({
+    where: { id: studentId },
+    data: { grade, subjects },
+    select: { id: true, name: true, grade: true },
+  });
+
+  try {
+    const booking = await createConsultationRequest({
+      studentId: updated.id,
+      studentName: updated.name,
+      studentGrade: updated.grade,
+      note,
+    });
+    return { attached: true, status: booking.status };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    if (msg === "ALREADY_ACTIVE" || msg === "ALREADY_COMPLETED") {
+      return { attached: true, status: msg === "ALREADY_COMPLETED" ? "COMPLETED" : "WAITING" };
+    }
+    throw e;
+  }
+}
 
 /** POST /api/mobile/auth/register — 학생 계정 생성 */
 export async function POST(request: Request) {
-  let body: { name?: unknown; email?: unknown; password?: unknown; phone?: unknown };
+  let body: {
+    name?: unknown;
+    email?: unknown;
+    password?: unknown;
+    phone?: unknown;
+    consultation?: ConsultationPayload;
+  };
   try {
     body = await request.json();
   } catch {
@@ -61,9 +128,27 @@ export async function POST(request: Request) {
         },
       },
     },
-    select: { id: true, role: true },
+    select: { id: true, role: true, student: { select: { id: true, name: true } } },
   });
 
+  let consultationAttached = false;
+  if (body.consultation && user.student) {
+    const result = await attachConsultationIfProvided(
+      user.student.id,
+      user.student.name,
+      body.consultation,
+    );
+    consultationAttached = result.attached;
+  }
+
   const tokens = issueMobileTokens(user.id, user.role);
-  return NextResponse.json(tokens, { status: 201 });
+
+  logAnalyticsEvent({
+    name: ANALYTICS_EVENTS.studentRegistered,
+    userId: user.id,
+    platform: "mobile",
+    payload: { consultationAttached },
+  });
+
+  return NextResponse.json({ ...tokens, consultationAttached }, { status: 201 });
 }

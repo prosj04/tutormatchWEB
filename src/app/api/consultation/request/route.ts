@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { createConsultationRequest } from "@/lib/student-enrollment";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { logAnalyticsEvent } from "@/lib/analytics";
 import { requireStudent } from "@/lib/student-auth";
 
 export async function POST(request: Request) {
@@ -24,6 +26,12 @@ export async function POST(request: Request) {
       studentName: student.name,
       studentGrade: student.grade,
       note,
+    });
+
+    logAnalyticsEvent({
+      name: ANALYTICS_EVENTS.consultationSubmitted,
+      userId: student.userId,
+      platform: "web",
     });
 
     return NextResponse.json(

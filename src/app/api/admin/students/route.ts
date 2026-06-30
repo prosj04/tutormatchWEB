@@ -25,6 +25,7 @@ export async function GET(request: Request) {
 
   const where = {
     AND: [
+      { name: { not: { startsWith: "[sample]" } } },
       unmatchedFor ? { id: { notIn: excludedIds } } : {},
       q
         ? {

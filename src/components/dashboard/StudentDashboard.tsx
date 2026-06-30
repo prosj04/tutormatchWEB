@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { parseDateKey } from "@/lib/study-plan-dates";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
+import { trackEvent } from "@/lib/analytics-client";
 
 import { DashboardCalendar } from "./DashboardCalendar";
 import { DashboardTopBar } from "./DashboardTopBar";
@@ -52,6 +55,10 @@ export function StudentDashboard({
   const [copyLoading, setCopyLoading] = useState(false);
   const [copySource, setCopySource] = useState<string | null>(null);
   const skipInitialSnapshotFetchRef = useRef(true);
+
+  useEffect(() => {
+    trackEvent(ANALYTICS_EVENTS.webDashboardViewed);
+  }, []);
 
   const monthKey = useMemo(
     () => `${calendarYear}-${String(calendarMonth).padStart(2, "0")}`,
@@ -235,6 +242,22 @@ export function StudentDashboard({
             onSelectDate={handleSelectDate}
             onMonthChange={handleMonthChange}
           />
+          <nav className="mt-4 space-y-1 border-t border-gray-100 pt-4">
+            <Link
+              href="/questions"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary"
+            >
+              <span className="text-base">❓</span>
+              내 질문 목록
+            </Link>
+            <Link
+              href="/payments"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary"
+            >
+              <span className="text-base">💳</span>
+              결제·구독 내역
+            </Link>
+          </nav>
         </aside>
 
         <main className="min-w-0 flex-1 lg:ml-56 xl:ml-60">

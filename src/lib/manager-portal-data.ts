@@ -229,7 +229,7 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
   const staleBefore = new Date(Date.now() - STALE_MS);
 
   const links = await prisma.managerStudent.findMany({
-    where: { managerId },
+    where: { managerId, student: { name: { not: { startsWith: "[sample]" } } } },
     include: {
       student: { select: { id: true, name: true, grade: true } },
     },

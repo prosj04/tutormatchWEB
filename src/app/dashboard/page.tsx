@@ -4,6 +4,7 @@ import { StudentDashboardEntry } from "@/components/dashboard/StudentDashboardEn
 import { isAiAnswerEnabled } from "@/lib/ai-answer";
 import { auth } from "@/auth";
 import { formatDateKey } from "@/lib/study-plan-dates";
+import { resolveStudentJourneyStage } from "@/lib/student-journey";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = {
@@ -43,7 +44,8 @@ export default async function DashboardPage({
     redirect("/?signup=1");
   }
 
-  if (student._count.teachers === 0) {
+  const journeyStage = await resolveStudentJourneyStage(student.id);
+  if (journeyStage !== "ACTIVE") {
     redirect("/dashboard/consultation");
   }
 
