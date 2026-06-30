@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -10,6 +10,13 @@ import {
   View,
 } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import {
+  BellIcon,
+  CardIcon,
+  ChatIcon,
+  DocumentIcon,
+  QuestionIcon,
+} from "../../components/ui/Icons";
 
 import {
   appbar as appbarS,
@@ -26,6 +33,10 @@ import {
   shadowSm,
 } from "../../styles/app-styles";
 import { apiFetch } from "../../lib/api";
+import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
+import { EMPTY_STATE_COPY } from "../../lib/student-journey";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -46,7 +57,7 @@ interface HomeData {
     teacher: { id: string; name: string };
     note?: string;
   }>;
-  lessons: Array<{ subject: string; teacher: string; frequency: string }>;
+  lessons: Array<{ subject: string; teacher: string; teacherId: string; frequency: string }>;
   weekProgress: { done: number; total: number; percent: number };
 }
 
@@ -76,7 +87,7 @@ function ProgressRing({ percent }: { percent: number }) {
       </Svg>
       {/* inner circle */}
       <View style={[styles.ringInner, { backgroundColor: t.panel }]}>
-        <Text style={[ringCardS.inner, styles.ringPct, { color: t.accText }]}>{percent}%</Text>
+        <Text style={[styles.ringPct, { color: t.accText }]}>{percent}%</Text>
       </View>
     </View>
   );
@@ -98,19 +109,37 @@ export default function HomeScreen() {
   const router = useRouter();
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    apiFetch<HomeData>("/api/mobile/home")
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    const mountAt = Date.now();
+    try {
+      const res = await apiFetch<HomeData>("/api/mobile/home");
+      setData(res);
+      console.log(`[perf] 홈탭 mount→render: ${Date.now() - mountAt}ms`);
+      trackEvent(ANALYTICS_EVENTS.homeViewed);
+      if (!res.todayLesson) {
+        trackEvent(ANALYTICS_EVENTS.homeEmptyTodayLessonViewed);
+      }
+    } catch {
+      setData(null);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    void load();
+  }, [load]);
+
   const QUICK = [
-    { label: "상담", onPress: () => router.push("/consult") },
-    { label: "리포트", onPress: () => router.push("/(tabs)/learning") },
-    { label: "질문", onPress: () => router.push("/(tabs)/qna") },
-    { label: "구독", onPress: () => router.push("/billing") },
+    { label: "상담", cta: "consult" as const, onPress: () => { trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "consult" }); router.push("/consult/status"); } },
+    { label: "리포트", cta: "report" as const, onPress: () => { trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "report" }); router.push("/(tabs)/learning"); } },
+    { label: "질문", cta: "qna" as const, onPress: () => { trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "qna" }); router.push("/(tabs)/qna"); } },
+    { label: "구독", cta: "billing" as const, onPress: () => { trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "billing" }); router.push("/billing"); } },
   ];
 
   return (
@@ -128,7 +157,7 @@ export default function HomeScreen() {
             </Text>
             {/* .nm font-size:19 font-weight:800 letter-spacing:-.03em margin-top:1 */}
             <Text style={[appbarS.nm, { color: t.fg }]}>
-              {data?.greetingName ?? "학부모님"}
+              {data?.greetingName ?? "학생"}
             </Text>
           </View>
           {/* .iconbtn width:40 height:40 border-radius:12 border:1px */}
@@ -136,7 +165,7 @@ export default function HomeScreen() {
             style={[iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}
             onPress={() => router.push("/notifications")}
           >
-            <Text style={{ fontSize: 18 }}>🔔</Text>
+            <BellIcon color={t.fg} size={20} />
             {/* .iconbtn .badge top:7 right:8 width:8 height:8 border-radius:4 */}
             {(data?.unreadCount ?? 0) > 0 && (
               <View style={[iconbtnBadge, { backgroundColor: t.acc }]} />
@@ -144,10 +173,15 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {loading ? (
+        {loading && !data ? (
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
+        ) : error && !data ? (
+          <ErrorState
+            title="홈을 불러오지 못했어요"
+            onRetry={() => void load()}
+          />
         ) : (
           <>
             {/* .now padding:18 border-radius:22 gradient(acc→acc-press) shadow:0 12 26 acc/.32 */}
@@ -192,14 +226,17 @@ export default function HomeScreen() {
                 /* .now-foot — 빈 상태: 이유 + 다음 행동 */
                 <View style={nowS.foot}>
                   <Text style={{ color: t.onAcc, fontSize: 13, opacity: 0.92 }}>
-                    아직 배정된 수업이 없어요
+                    {EMPTY_STATE_COPY.noTodayLesson.title}
                   </Text>
                   <Pressable
                     style={styles.nowCta}
-                    onPress={() => router.push("/consult")}
+                    onPress={() => {
+                      trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "consult_status" });
+                      router.push("/consult/status");
+                    }}
                   >
                     <Text style={[styles.nowCtaText, { color: t.onAcc }]}>
-                      상담 진행 상태 보기 ›
+                      {EMPTY_STATE_COPY.noTodayLesson.cta} ›
                     </Text>
                   </Pressable>
                 </View>
@@ -219,7 +256,9 @@ export default function HomeScreen() {
                 </Text>
                 {/* .ring-card .t p font-size:12.5 margin-top:3 */}
                 <Text style={[ringCardS.tp, { color: t.mut }]}>
-                  과제 {data?.weekProgress.total ?? 0}개 중 {data?.weekProgress.done ?? 0}개 완료 · 좋은 흐름이에요
+                  {(data?.weekProgress.total ?? 0) > 0
+                    ? `과제 ${data?.weekProgress.total ?? 0}개 중 ${data?.weekProgress.done ?? 0}개 완료 · 좋은 흐름이에요`
+                    : EMPTY_STATE_COPY.noWeekTasks.description}
                 </Text>
               </View>
             </View>
@@ -237,9 +276,10 @@ export default function HomeScreen() {
                 >
                   {/* .qa .ic width:34 height:34 border-radius:11 */}
                   <View style={[qaS.ic, { backgroundColor: accTint(t, 0.10) }]}>
-                    <Text style={{ fontSize: 16 }}>
-                      {label === "상담" ? "💬" : label === "리포트" ? "📄" : label === "질문" ? "❓" : "💳"}
-                    </Text>
+                    {label === "상담" ? <ChatIcon color={t.accText} size={18} />
+                      : label === "리포트" ? <DocumentIcon color={t.accText} size={18} />
+                      : label === "질문" ? <QuestionIcon color={t.accText} size={18} />
+                      : <CardIcon color={t.accText} size={18} />}
                   </View>
                   {/* .qa span font-size:11 font-weight:600 */}
                   <Text style={[qaS.label, { color: t.fg }]}>{label}</Text>
@@ -250,20 +290,26 @@ export default function HomeScreen() {
             {/* .sect-t 내 수업 + 전체 링크 */}
             <View style={[sectTS, styles.sectTRow, { marginTop: 20 }]}>
               <Text style={[styles.sectTText, { color: t.fg }]}>내 수업</Text>
-              <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+              <Pressable onPress={() => router.push("/(tabs)/learning")}>
+                <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+              </Pressable>
             </View>
 
             {/* .card (lrow list) */}
             <View style={[card, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-              {(data?.lessons ?? [
-                { subject: "수학", teacher: "Teacher Noah", frequency: "주 2회" },
-                { subject: "영어", teacher: "Teacher Olivia", frequency: "주 1회" },
-              ]).map((lesson, i) => (
+              {(data?.lessons ?? []).length === 0 ? (
+                <EmptyState
+                  title="배정된 수업이 아직 없어요"
+                  description={EMPTY_STATE_COPY.noTodayLesson.description}
+                  ctaLabel={EMPTY_STATE_COPY.noTodayLesson.cta}
+                  onCta={() => router.push("/consult/status")}
+                />
+              ) : (
+                (data?.lessons ?? []).map((lesson, i) => (
                 <View
-                  key={lesson.subject}
+                  key={`${lesson.teacherId}-${lesson.subject}`}
                   style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
                 >
-                  {/* .lrow .av width:42 height:42 border-radius:12 */}
                   <View style={[lrowS.av, { backgroundColor: accTint(t, 0.12), borderRadius: 10 }]}>
                     <Text style={[styles.lrowAvText, { color: t.accText }]}>
                       {lesson.subject[0]}
@@ -275,21 +321,26 @@ export default function HomeScreen() {
                   </View>
                   <Text style={[styles.chev, { color: t.mut2 }]}>›</Text>
                 </View>
-              ))}
+              )))}
             </View>
 
             {/* .sect-t 다가오는 일정 + 전체 */}
             <View style={[sectTS, styles.sectTRow, { marginTop: 20 }]}>
               <Text style={[styles.sectTText, { color: t.fg }]}>다가오는 일정</Text>
-              <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+              <Pressable onPress={() => router.push("/(tabs)/learning")}>
+                <Text style={[styles.sectTLink, { color: t.accText }]}>전체</Text>
+              </Pressable>
             </View>
 
             {/* .card (lrow list) */}
             <View style={[card, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-              {(data?.upcoming ?? [
-                { id: "1", subject: "영어", teacher: { name: "Teacher Olivia" }, startAt: new Date(Date.now() + 86400000).toISOString(), note: "독해 첨삭" },
-                { id: "2", subject: "매니저 상담", teacher: { name: "매니저" }, startAt: new Date(Date.now() + 3 * 86400000).toISOString(), note: "전화" },
-              ]).map((item, i) => (
+              {(data?.upcoming ?? []).length === 0 ? (
+                <EmptyState
+                  title={EMPTY_STATE_COPY.noUpcoming.title}
+                  description={EMPTY_STATE_COPY.noUpcoming.description}
+                />
+              ) : (
+                (data?.upcoming ?? []).map((item, i) => (
                 <View
                   key={item.id}
                   style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
@@ -305,14 +356,14 @@ export default function HomeScreen() {
                     </Text>
                     <Text style={[lrowS.gp, { color: t.mut }]}>
                       {formatDay(item.startAt)} {formatTime(item.startAt)}
-                      {(item as any).note ? ` · ${(item as any).note}` : ""}
+                      {item.note ? ` · ${item.note}` : ""}
                     </Text>
                   </View>
                   <Text style={[lrowS.r as any, { color: t.accText }]}>
                     D-{Math.ceil((new Date(item.startAt).getTime() - Date.now()) / 86400000)}
                   </Text>
                 </View>
-              ))}
+              )))}
             </View>
 
             <View style={{ height: 6 }} />
@@ -369,14 +420,13 @@ const styles = StyleSheet.create({
   ringWrap: { width: 74, height: 74, position: "relative" },
   ringInner: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 9,
+    left: 9,
+    width: 56,
+    height: 56,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 37,
-    margin: 9,
+    borderRadius: 28,
   },
   ringPct: { fontSize: 14, fontFamily: font.extrabold },
   ringText: { flex: 1 },

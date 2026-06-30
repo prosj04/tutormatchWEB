@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
@@ -14,6 +14,9 @@ import {
   todo as todoS,
 } from "../../styles/app-styles";
 import { apiFetch } from "../../lib/api";
+import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
+import { EMPTY_STATE_COPY } from "../../lib/student-journey";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -102,17 +105,44 @@ export default function LearningScreen() {
   const [tokens, setTokens] = useState<TokenData | null>(null);
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    const mountAt = Date.now();
+    try {
+      const [w, tk, rp] = await Promise.all([
+        apiFetch<WeeklyData>("/api/mobile/learning/weekly"),
+        apiFetch<TokenData>("/api/mobile/me/tokens"),
+        apiFetch<ReportData>("/api/mobile/reports"),
+      ]);
+      setWeekly(w);
+      setTokens(tk);
+      setReport(rp);
+      console.log(`[perf] 학습탭 mount→render (3 parallel): ${Date.now() - mountAt}ms`);
+      trackEvent(ANALYTICS_EVENTS.learningViewed);
+      if ((w?.taskItems ?? []).length === 0) {
+        trackEvent(ANALYTICS_EVENTS.learningEmptyTasksViewed);
+      }
+      if (!rp?.report) {
+        trackEvent(ANALYTICS_EVENTS.learningEmptyReportViewed);
+      }
+    } catch {
+      setWeekly(null);
+      setTokens(null);
+      setReport(null);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    Promise.all([
-      apiFetch<WeeklyData>("/api/mobile/learning/weekly"),
-      apiFetch<TokenData>("/api/mobile/me/tokens"),
-      apiFetch<ReportData>("/api/mobile/reports"),
-    ])
-      .then(([w, tk, rp]) => { setWeekly(w); setTokens(tk); setReport(rp); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    void load();
+  }, [load]);
+
+  const reportMonth = report?.report?.month;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -121,10 +151,15 @@ export default function LearningScreen() {
           <Text style={[appbarS.nm, styles.pageTitle, { color: t.fg }]}>내 학습</Text>
         </View>
 
-        {loading ? (
+        {loading && !weekly && !error ? (
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
+        ) : error ? (
+          <ErrorState
+            title="학습 데이터를 불러오지 못했어요"
+            onRetry={() => void load()}
+          />
         ) : (
           <>
             {/* 주간 학습 시간 */}
@@ -174,7 +209,7 @@ export default function LearningScreen() {
               ) : (
                 <View style={todoS.item}>
                   <Text style={[todoS.gb, { color: t.mut }]}>
-                    이번 주 과제가 아직 없어요 · 선생님이 학습 계획을 올리면 표시돼요
+                    {EMPTY_STATE_COPY.noWeekTasks.title} · {EMPTY_STATE_COPY.noWeekTasks.description}
                   </Text>
                 </View>
               )}
@@ -205,9 +240,9 @@ export default function LearningScreen() {
                 </>
               ) : (
                 <>
-                  <Text style={[styles.reportTitle, { color: t.mut }]}>첫 리포트 생성 전입니다</Text>
+                  <Text style={[styles.reportTitle, { color: t.mut }]}>{EMPTY_STATE_COPY.noReport.title}</Text>
                   <Text style={[styles.reportBody, { color: t.mut }]}>
-                    보통 첫 수업 이후 월간 리포트가 생성돼요.
+                    {EMPTY_STATE_COPY.noReport.description}
                   </Text>
                 </>
               )}
@@ -216,7 +251,11 @@ export default function LearningScreen() {
                   <Pressable
                     key={label}
                     style={[styles.reportBtn, { backgroundColor: t.panel2, borderColor: t.line }]}
-                    onPress={label === "리포트 보기" ? () => router.push("/report/latest") : undefined}
+                    onPress={
+                      label === "리포트 보기" && reportMonth
+                        ? () => router.push(`/report/${reportMonth}` as Parameters<typeof router.push>[0])
+                        : undefined
+                    }
                   >
                     <Text style={[styles.reportBtnText, { color: t.fg }]}>{label}</Text>
                   </Pressable>
@@ -234,7 +273,7 @@ export default function LearningScreen() {
                 <Text style={[tokS.p, { color: t.mut }]}>이번 달 남은 질문</Text>
               </View>
               <Text style={[tokS.n as any, { color: t.accText }]}>
-                {tokens?.remaining ?? "–"}
+                {tokens ? tokens.remaining : "준비 중"}
               </Text>
             </View>
 

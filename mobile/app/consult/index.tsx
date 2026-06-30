@@ -22,6 +22,9 @@ import {
 } from "../../styles/app-styles";
 import { SubHead } from "../../components/ui/SubHead";
 import { apiFetch } from "../../lib/api";
+import { getAccessToken } from "../../lib/auth";
+import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
+import { savePendingConsultation } from "../../lib/pending-consultation";
 import { useTheme } from "../../theme/ThemeProvider";
 
 const GRADES = ["중1", "중2", "중3", "고1", "고2", "고3"];
@@ -106,6 +109,7 @@ export default function ConsultScreen() {
   const [gradeLevel, setGradeLevel] = useState("");
   const [memo, setMemo] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   function toggleSubject(s: string) {
     setSubjects((prev) =>
@@ -117,18 +121,39 @@ export default function ConsultScreen() {
 
   async function handleSubmit() {
     if (!canSubmit) return;
+    setError("");
     setLoading(true);
+    const payload = {
+      grade,
+      subjects: subjects.join(", "),
+      gradeLevel,
+      memo,
+    };
     try {
-      await apiFetch("/api/consultation", {
-        method: "POST",
-        body: JSON.stringify({ grade, subjects: subjects.join(", "), gradeLevel, memo }),
-      });
-    } catch {
-      // API 미구현 시 성공 처리
+      const token = await getAccessToken();
+      if (token) {
+        await apiFetch("/api/mobile/consultation", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        trackEvent(ANALYTICS_EVENTS.consultationSubmitted);
+        router.replace("/consult/done");
+        return;
+      }
+
+      await savePendingConsultation(payload);
+      trackEvent(ANALYTICS_EVENTS.consultationSubmitted);
+      router.replace("/consult/done");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      if (msg.includes("409") || msg.includes("이미")) {
+        setError("이미 진행 중인 상담 신청이 있어요. 상태 화면에서 확인해 주세요.");
+      } else {
+        setError("상담 신청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      }
     } finally {
       setLoading(false);
     }
-    router.replace("/consult/done");
   }
 
   return (
@@ -204,6 +229,9 @@ export default function ConsultScreen() {
 
         {/* .cta-bar padding:14 18 26 border-top:1px */}
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.bg }]}>
+          {error ? (
+            <Text style={[styles.errorText, { color: t.accText }]}>{error}</Text>
+          ) : null}
           {/* .sub text-align:center font-size:12 margin-bottom:10 */}
           <Text style={[ctaBarS.sub, { color: t.mut }]}>
             상담은{" "}
@@ -265,4 +293,5 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   ctaBtnText: { fontFamily: font.extrabold, fontSize: 16, textAlign: "center" },
+  errorText: { fontSize: 12.5, textAlign: "center", marginBottom: 8, fontFamily: font.semibold },
 });

@@ -15,6 +15,11 @@ import {
 import { auth as authS, field as fieldS, font } from "../../styles/app-styles";
 import { saveTokens } from "../../lib/auth";
 import { API_BASE } from "../../lib/api";
+import {
+  clearPendingConsultation,
+  getPendingConsultation,
+} from "../../lib/pending-consultation";
+import { registerPushToken } from "../../lib/push";
 import { useTheme } from "../../theme/ThemeProvider";
 import { SubHead } from "../../components/ui/SubHead";
 
@@ -33,18 +38,36 @@ export default function Signup() {
     setError("");
     setLoading(true);
     try {
+      const pending = await getPendingConsultation();
       const res = await fetch(`${API_BASE}/api/mobile/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), password, phone: phone.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          phone: phone.trim(),
+          ...(pending ? { consultation: pending } : {}),
+        }),
       });
-      const data = await res.json() as { accessToken?: string; refreshToken?: string; error?: string };
+      const data = await res.json() as {
+        accessToken?: string;
+        refreshToken?: string;
+        consultationAttached?: boolean;
+        error?: string;
+      };
       if (!res.ok) {
         setError(data.error ?? "가입에 실패했습니다. 다시 시도해 주세요.");
         return;
       }
       await saveTokens(data.accessToken!, data.refreshToken!);
-      router.replace("/(tabs)");
+      void registerPushToken().catch(() => {});
+      if (pending) await clearPendingConsultation();
+      if (data.consultationAttached || pending) {
+        router.replace("/consult/status");
+      } else {
+        router.replace("/(tabs)");
+      }
     } catch {
       setError("네트워크 오류가 발생했습니다.");
     } finally {
@@ -76,7 +99,7 @@ export default function Signup() {
               <Text style={[fieldS.label, { color: t.fg }]}>이름</Text>
               <TextInput
                 style={[fieldS.inp, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg }]}
-                placeholder="김지우 학부모"
+                placeholder="홍길동"
                 placeholderTextColor={t.mut2}
                 value={name}
                 onChangeText={setName}

@@ -64,14 +64,6 @@ export function ChevronRightIcon({ color = "currentColor", size = 24 }: IconProp
   );
 }
 
-export function VideoIcon({ color = "currentColor", size = 24 }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M15 10l4.5-2.5v9L15 14M3 6h12v12H3z" />
-    </Svg>
-  );
-}
-
 export function DocumentIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -101,7 +93,7 @@ export function QuestionIcon({ color = "currentColor", size = 24 }: IconProps) {
 
 export function CheckIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
       <Path d="M20 6 9 17l-5-5" />
     </Svg>
   );
@@ -148,10 +140,21 @@ export function EditIcon({ color = "currentColor", size = 24 }: IconProps) {
   );
 }
 
-export function PersonIcon({ color = "currentColor", size = 24 }: IconProps) {
+export function LockIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM4 21c0-4 4-6 8-6s8 2 8 6" />
+      <Rect x={4} y={11} width={16} height={10} rx={2} />
+      <Path d="M8 11V7a4 4 0 0 1 8 0v4" />
     </Svg>
   );
 }
+
+export function FileIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <Path d="M14 2v6h6" />
+    </Svg>
+  );
+}
+

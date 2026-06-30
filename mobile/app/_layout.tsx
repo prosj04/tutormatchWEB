@@ -33,6 +33,7 @@ export default function RootLayout() {
           <Stack.Screen name="report/[id]" />
           <Stack.Screen name="consult" />
           <Stack.Screen name="consult/done" />
+          <Stack.Screen name="consult/status" />
           <Stack.Screen name="consult/match" />
           <Stack.Screen name="subscribe" />
           <Stack.Screen name="checkout" />

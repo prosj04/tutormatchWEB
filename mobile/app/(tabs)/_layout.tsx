@@ -1,11 +1,16 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { ChatIcon, HomeIcon, LearningIcon, MyIcon } from "../../components/ui/Icons";
+import { registerPushToken } from "../../lib/push";
 import { useTheme } from "../../theme/ThemeProvider";
 
 export default function TabsLayout() {
   const { t } = useTheme();
+
+  useEffect(() => {
+    void registerPushToken().catch(() => {});
+  }, []);
 
   return (
     <Tabs

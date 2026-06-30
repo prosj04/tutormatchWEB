@@ -1,54 +1,74 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   card,
   ctaBar as ctaBarS,
   font,
-  lrow as lrowS,
   plan as planS,
   scroll as scrollS,
   sectT as sectTS,
-  shadowMd,
 } from "../styles/app-styles";
+import { EmptyState } from "../components/ui/EmptyState";
 import { SubHead } from "../components/ui/SubHead";
+import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
+import { accTint } from "../theme/tokens";
 
-// ─── .plan-now 현재 플랜 카드 ─────────────────────────────────────────────────
-// .plan-now { padding:20; border-radius:22; gradient(acc→acc-press); shadow:0 12 26 acc/.30; }
-// .plan-now .k { font-size:11.5; font-weight:700; letter-spacing:.08em; uppercase; opacity:.85; }
-// .plan-now .nm { font-size:24; font-weight:800; letter-spacing:-.025em; margin-top:8; }
-// .plan-now .pr { font-size:14; opacity:.92; margin-top:4; tabular-nums; }
-// .plan-now .nx { margin-top:16; padding-top:14; border-top:1px rgba(255,255,255,.22); flex-row; font-size:13; }
-function PlanNow() {
-  const { t } = useTheme();
-  return (
-    <View style={[planS.now, styles.planNowShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}>
-      <Text style={[planS.nowK, { color: t.onAcc }]}>현재 플랜</Text>
-      <Text style={[planS.nowNm, { color: t.onAcc }]}>주 2회 플랜</Text>
-      <Text style={[planS.nowPr as any, { color: t.onAcc }]}>740,000원 / 월 · 수학·영어</Text>
-      <View style={[planS.nowNx]}>
-        <Text style={[styles.nxLabel, { color: t.onAcc }]}>다음 결제일</Text>
-        <Text style={[styles.nxValue, { color: t.onAcc }]}>2026. 10. 1.</Text>
-      </View>
-    </View>
-  );
+type SubData = {
+  plan: string;
+  planLabel: string;
+  status: string;
+  periodEnd: string | null;
+  nextBilling: string | null;
+};
+
+type MeData = {
+  student: { name: string };
+  subscription: SubData | null;
+  enrollmentStatus: string;
+};
+
+const PLAN_FEATURES: Record<string, string[]> = {
+  "4-1": ["주 1회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 이용 가능", "수시 강사 첨삭·질답"],
+  "8-1": ["주 2회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답", "복수 과목 선택 가능"],
+  "4-2": ["과목별 주 1회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 이용 가능"],
+  "8-2": ["과목별 주 2회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답"],
+};
+
+const PLAN_PRICE: Record<string, number> = {
+  "4-1": 400_000,
+  "8-1": 720_000,
+  "4-2": 800_000,
+  "8-2": 1_440_000,
+};
+
+function formatPrice(n: number): string {
+  return n.toLocaleString("ko-KR") + "원";
 }
-
-const FEATURES = [
-  "과목별 주 2회 수업 (240분)",
-  "학습 진도·과제 관리",
-  "월간 학습 리포트",
-  "AI 질답 토큰 + 강사 첨삭",
-];
-
-const PAYMENTS = [
-  { label: "9월 수업료", date: "2026. 9. 1. · 신한카드 ****1234", amount: "740,000원" },
-  { label: "8월 수업료", date: "2026. 8. 1. · 신한카드 ****1234", amount: "740,000원" },
-];
 
 export default function BillingScreen() {
   const { t } = useTheme();
+  const router = useRouter();
+  const [data, setData] = useState<MeData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const mountAt = Date.now();
+    apiFetch<MeData>("/api/mobile/me")
+      .then((d) => {
+        setData(d);
+        console.log(`[perf] 구독결제화면 mount→render: ${Date.now() - mountAt}ms`);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const sub = data?.subscription ?? null;
+  const features = sub ? (PLAN_FEATURES[sub.plan] ?? ["1:1 맞춤 과외", "학습 진도·과제 관리", "AI 질답", "수시 강사 첨삭·질답"]) : [];
+  const price = sub ? PLAN_PRICE[sub.plan] : null;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -56,42 +76,73 @@ export default function BillingScreen() {
         <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
           <SubHead title="구독·결제" />
 
-          <PlanNow />
-
-          {/* .sect-t 플랜에 포함 */}
-          <Text style={[sectTS, styles.sectT, { color: t.fg }]}>플랜에 포함</Text>
-
-          <View style={[card, styles.featCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-            {FEATURES.map((feat, i) => (
-              <View key={feat} style={[styles.featRow, i > 0 && { marginTop: 11 }]}>
-                <Text style={[styles.featCheck, { color: t.accText }]}>✓</Text>
-                <Text style={[styles.featText, { color: t.fg }]}>{feat}</Text>
+          {loading ? (
+            <View style={styles.center}>
+              <ActivityIndicator color={t.acc} />
+            </View>
+          ) : !sub ? (
+            <EmptyState
+              title="현재 구독 중인 플랜이 없어요"
+              description="무료 상담 신청 후 매니저가 맞춤 플랜을 안내드려요."
+            />
+          ) : (
+            <>
+              {/* 현재 플랜 카드 */}
+              <View style={[planS.now, styles.planNowShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}>
+                <Text style={[planS.nowK, { color: t.onAcc }]}>현재 플랜</Text>
+                <Text style={[planS.nowNm, { color: t.onAcc }]}>{sub.planLabel}</Text>
+                {price != null ? (
+                  <Text style={[planS.nowPr as any, { color: t.onAcc }]}>
+                    {formatPrice(price)} / 월
+                  </Text>
+                ) : null}
+                {sub.nextBilling ? (
+                  <View style={planS.nowNx}>
+                    <Text style={[styles.nxLabel, { color: t.onAcc }]}>다음 결제일</Text>
+                    <Text style={[styles.nxValue, { color: t.onAcc }]}>
+                      {formatPeriodEnd(sub.periodEnd)}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
-            ))}
-          </View>
 
-          {/* .sect-t 결제 내역 */}
-          <Text style={[sectTS, styles.sectT, { color: t.fg }]}>결제 내역</Text>
+              {/* 포함 혜택 */}
+              <Text style={[sectTS, styles.sectT, { color: t.fg }]}>플랜에 포함</Text>
+              <View style={[card, styles.featCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+                {features.map((feat, i) => (
+                  <View key={feat} style={[styles.featRow, i > 0 && { marginTop: 11 }]}>
+                    <Text style={[styles.featCheck, { color: t.accText }]}>✓</Text>
+                    <Text style={[styles.featText, { color: t.fg }]}>{feat}</Text>
+                  </View>
+                ))}
+              </View>
 
-          <View style={[card, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-            {PAYMENTS.map((p, i) => (
-              <View key={p.label} style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}>
-                <View style={lrowS.g}>
-                  <Text style={[lrowS.gb, { color: t.fg }]}>{p.label}</Text>
-                  <Text style={[lrowS.gp, { color: t.mut }]}>{p.date}</Text>
+              {/* 구독 정보 */}
+              <Text style={[sectTS, styles.sectT, { color: t.fg }]}>구독 정보</Text>
+              <View style={[card, styles.infoCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+                <InfoRow label="플랜" value={sub.planLabel} t={t} />
+                <InfoRow label="상태" value={data?.enrollmentStatus ?? sub.status} t={t} divider />
+                {sub.periodEnd ? (
+                  <InfoRow label="만료일" value={formatPeriodEnd(sub.periodEnd)} t={t} divider />
+                ) : null}
+                <View style={[styles.infoNote, { borderTopWidth: 1, borderTopColor: t.line }]}>
+                  <Text style={[styles.infoNoteText, { color: t.mut }]}>
+                    결제 영수증 및 세부 내역은 담당 매니저에게 문의해 주세요.
+                  </Text>
                 </View>
-                <Text style={[styles.amount, { color: t.fg }]}>{p.amount}</Text>
               </View>
-            ))}
-          </View>
+            </>
+          )}
 
           <View style={{ height: 6 }} />
         </ScrollView>
 
-        {/* .cta-bar — "플랜 변경 · 결제수단 관리" (panel bg, line-2 border) */}
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.bg }]}>
-          <Pressable style={[ctaBarS.btn, { backgroundColor: t.panel, borderColor: t.line2, borderWidth: 1 }]}>
-            <Text style={[styles.ctaBtnText, { color: t.fg }]}>플랜 변경 · 결제수단 관리</Text>
+          <Pressable
+            style={[ctaBarS.btn, { backgroundColor: t.panel, borderColor: t.line2, borderWidth: 1 }]}
+            onPress={() => router.push("/consult/status" as Parameters<typeof router.push>[0])}
+          >
+            <Text style={[styles.ctaBtnText, { color: t.fg }]}>플랜 변경 · 상담 신청</Text>
           </Pressable>
         </View>
       </View>
@@ -99,33 +150,49 @@ export default function BillingScreen() {
   );
 }
 
+function InfoRow({ label, value, t, divider }: { label: string; value: string; t: any; divider?: boolean }) {
+  return (
+    <View style={[styles.infoRow, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
+      <Text style={[styles.infoLabel, { color: t.mut }]}>{label}</Text>
+      <Text style={[styles.infoValue, { color: t.fg }]}>{value}</Text>
+    </View>
+  );
+}
+
+function formatPeriodEnd(iso: string | null): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`;
+}
+
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   flex: { flex: 1 },
   content: { paddingBottom: 6 },
+  center: { paddingVertical: 48, alignItems: "center" },
 
-  // .plan-now shadow:0 12 26 acc/.30
   planNowShadow: {
     shadowOffset: { width: 0, height: 12 },
     shadowRadius: 26,
     shadowOpacity: 0.30,
     elevation: 10,
   },
-
-  // .plan-now .nx
   nxLabel: { fontSize: 13, opacity: 0.85, flex: 1 },
   nxValue: { fontSize: 13, fontFamily: font.bold, opacity: 0.92 },
 
   sectT: { fontSize: 14 },
 
-  // features card padding:14 16 flex-col gap:11
   featCard: { paddingVertical: 14, paddingHorizontal: 16 },
   featRow: { flexDirection: "row", gap: 10, alignItems: "baseline" },
   featCheck: { fontFamily: font.extrabold, fontSize: 13.5 },
   featText: { fontSize: 13.5, flex: 1 },
 
-  // payment amount
-  amount: { fontFamily: font.bold, fontSize: 13.5, fontVariant: ["tabular-nums"] as any },
+  infoCard: { overflow: "hidden" },
+  infoRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 13, paddingHorizontal: 16 },
+  infoLabel: { fontSize: 13, fontFamily: font.medium },
+  infoValue: { fontSize: 13, fontFamily: font.semibold },
+  infoNote: { paddingVertical: 12, paddingHorizontal: 16 },
+  infoNoteText: { fontSize: 12, lineHeight: 18 },
 
   ctaBtnText: { fontFamily: font.bold, fontSize: 16, textAlign: "center" },
 });

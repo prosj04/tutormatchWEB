@@ -18,7 +18,10 @@ import {
   font,
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";
+import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
+import { EMPTY_STATE_COPY } from "../../lib/student-journey";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -96,16 +99,24 @@ export default function QnAScreen() {
   const scrollRef = useRef<ScrollView>(null);
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [data, setData] = useState<QnaData | null>(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
   async function load() {
+    setLoading(true);
+    setError(false);
     try {
       const res = await apiFetch<QnaData>("/api/mobile/qna");
       setData(res);
+      trackEvent(ANALYTICS_EVENTS.qnaViewed);
+      if (!res.teacher) {
+        trackEvent(ANALYTICS_EVENTS.qnaEmptyNoTeacherViewed);
+      }
     } catch {
       setData(null);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -118,6 +129,9 @@ export default function QnAScreen() {
   async function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || !data?.teacher || sending) return;
+    if (data.messages.length === 0) {
+      trackEvent(ANALYTICS_EVENTS.qnaFirstQuestionClicked);
+    }
     setSending(true);
     setText("");
     try {
@@ -147,12 +161,29 @@ export default function QnAScreen() {
   }
 
   // ── 로딩 ──
-  if (loading) {
+  if (loading && !data && !error) {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
         <View style={styles.center}>
           <ActivityIndicator color={t.acc} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ── 오류 ──
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
+        <View style={[chatS.head]}>
+          <View style={{ flex: 1 }}>
+            <Text style={[chatS.headNm, { color: t.fg }]}>질문</Text>
+          </View>
+        </View>
+        <ErrorState
+          title="질문 목록을 불러오지 못했어요"
+          onRetry={() => void load()}
+        />
       </SafeAreaView>
     );
   }
@@ -168,10 +199,10 @@ export default function QnAScreen() {
         </View>
         <EmptyState
           icon="💬"
-          title="아직 배정된 선생님이 없어요"
-          description="상담 후 선생님이 매칭되면 이곳에서 바로 질문하고 AI·선생님 답변을 받을 수 있어요."
-          ctaLabel="상담 진행 상태 보기"
-          onCta={() => router.push("/consult")}
+          title={EMPTY_STATE_COPY.noTeacher.title}
+          description={EMPTY_STATE_COPY.noTeacher.description}
+          ctaLabel={EMPTY_STATE_COPY.noTeacher.cta}
+          onCta={() => router.push("/consult/status")}
         />
       </SafeAreaView>
     );
@@ -207,8 +238,8 @@ export default function QnAScreen() {
 
           {messages.length === 0 ? (
             <EmptyState
-              title="첫 질문을 남겨보세요"
-              description="모르는 문제를 보내면 AI가 먼저 즉답하고, 선생님이 이어서 확인해 드려요."
+              title={EMPTY_STATE_COPY.noQuestions.title}
+              description={EMPTY_STATE_COPY.noQuestions.description}
             />
           ) : (
             messages.map((m) => (
@@ -228,7 +259,7 @@ export default function QnAScreen() {
         {tokenEmpty && (
           <View style={[styles.tokenNote, { backgroundColor: t.bg }]}>
             <Text style={[chatS.depNote, { color: t.mut2 }]}>
-              이번 달 AI 토큰을 모두 사용했어요 · 답변은 선생님이 직접 드려요
+              {EMPTY_STATE_COPY.tokensExhausted.title} · {EMPTY_STATE_COPY.tokensExhausted.description}
             </Text>
           </View>
         )}

@@ -1,26 +1,56 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import {
   card,
   font,
-  iconbtn,
   my as myS,
   scroll as scrollS,
   sectT as sectTS,
   switchStyle,
 } from "../../styles/app-styles";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
+import {
+  BellIcon,
+  CalendarIcon,
+  CardIcon,
+  DocumentIcon,
+  FileIcon,
+  LockIcon,
+  QuestionIcon,
+} from "../../components/ui/Icons";
 import { useAuth } from "../../hooks/useAuth";
+import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
-// ─── .mrow 메뉴 행 ─────────────────────────────────────────────────────────────
-// .mrow { flex-row; align:center; gap:13; padding:15 16; }
-// .mrow .ic { width:36; height:36; border-radius:11; }
-// .mrow .g b { font-size:14.5; font-weight:600; }
-// .mrow .g p { font-size:12; margin-top:1; }
+const SUPPORT_EMAIL = "mailto:hello@concord.school";
+const TERMS_URL = "https://concord.school/terms";
+const PRIVACY_URL = "https://concord.school/privacy";
+
+interface MeData {
+  student: { name: string; grade: string; subjects: string[]; email: string };
+  subscription: {
+    plan: string;
+    planLabel: string;
+    nextBilling: string | null;
+  } | null;
+  enrollmentStatus: string;
+  journey: { stage: string; label: string };
+  latestReportMonth: string | null;
+}
+
 function MRow({
   icon,
   label,
@@ -29,7 +59,7 @@ function MRow({
   onPress,
   divider,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   sub?: string;
   trailing?: React.ReactNode;
@@ -40,7 +70,7 @@ function MRow({
   const inner = (
     <View style={[myS.mrow, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
       <View style={[myS.mrowIc, { backgroundColor: t.panel2 }]}>
-        <Text style={{ fontSize: 16 }}>{icon}</Text>
+        {icon}
       </View>
       <View style={{ flex: 1 }}>
         <Text style={[myS.mrowGb, { color: t.fg }]}>{label}</Text>
@@ -52,10 +82,6 @@ function MRow({
   return onPress ? <Pressable onPress={onPress}>{inner}</Pressable> : inner;
 }
 
-// ─── .switch (.on) ────────────────────────────────────────────────────────────
-// .switch { width:42; height:25; border-radius:999; }
-// .switch i { top:2.5; left:2.5; width:20; height:20; border-radius:10; bg:#fff; }
-// .switch.on → bg:acc, thumb at right (left:42-2.5-20=19.5)
 function Switch({ on }: { on: boolean }) {
   const { t } = useTheme();
   return (
@@ -69,65 +95,143 @@ export default function MyScreen() {
   const { t } = useTheme();
   const router = useRouter();
   const { logout } = useAuth();
+  const [data, setData] = useState<MeData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    const mountAt = Date.now();
+    try {
+      const d = await apiFetch<MeData>("/api/mobile/me");
+      setData(d);
+      console.log(`[perf] MY탭 mount→render: ${Date.now() - mountAt}ms`);
+    } catch {
+      setData(null);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const name = data?.student.name ?? "";
+  const initial = name[0] ?? "?";
+  const gradeSubjects = [
+    data?.student.grade,
+    ...(data?.student.subjects ?? []),
+  ].filter(Boolean).join(" · ");
+  const billingSub = data?.subscription
+    ? `${data.subscription.planLabel}${data.subscription.nextBilling ? ` · 다음 결제 ${data.subscription.nextBilling}` : ""}`
+    : "플랜을 선택해 보세요";
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
-
-        {/* .my-top flex-row align:center gap:14 padding:8 4 18 */}
-        <View style={[myS.top]}>
-          {/* .my-av width:60 height:60 border-radius:18 font-size:22 font-weight:800 */}
-          <View style={[myS.av, { backgroundColor: accTint(t, 0.12) }]}>
-            <Text style={[styles.avText, { color: t.accText }]}>지</Text>
+        {loading && !data && !error ? (
+          <View style={styles.center}>
+            <ActivityIndicator color={t.acc} />
           </View>
-          <View style={{ flex: 1 }}>
-            {/* .my-top .nm font-size:19 font-weight:800 letter-spacing:-.02em */}
-            <Text style={[myS.nm, { color: t.fg }]}>지우 학부모님</Text>
-            {/* .my-top .sub font-size:13 margin-top:2 */}
-            <Text style={[myS.sub, { color: t.mut }]}>jiwoo.parent@email.com</Text>
-          </View>
-          {/* .iconbtn edit button */}
-          <Pressable style={[iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}>
-            <Text style={{ fontSize: 16 }}>✏️</Text>
-          </Pressable>
-        </View>
+        ) : error ? (
+          <ErrorState
+            title="프로필을 불러오지 못했어요"
+            onRetry={() => void load()}
+          />
+        ) : !data ? (
+          <EmptyState
+            title="프로필 정보가 없어요"
+            description="계정 정보를 확인해 주세요."
+          />
+        ) : (
+          <>
+            {/* 학생 프로필 헤더 */}
+            <View style={[myS.top]}>
+              <View style={[myS.av, { backgroundColor: accTint(t, 0.12) }]}>
+                <Text style={[styles.avText, { color: t.accText }]}>{initial}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[myS.nm, { color: t.fg }]}>{name}</Text>
+                {gradeSubjects ? (
+                  <Text style={[myS.sub, { color: t.mut }]}>{gradeSubjects}</Text>
+                ) : null}
+                {data.student.email ? (
+                  <Text style={[myS.sub, { color: t.mut, marginTop: 1 }]}>{data.student.email}</Text>
+                ) : null}
+              </View>
+              <View style={[styles.statusBadge, { backgroundColor: accTint(t, 0.12) }]}>
+                <Text style={[styles.statusText, { color: t.accText }]}>
+                  {data.enrollmentStatus}
+                </Text>
+              </View>
+            </View>
 
-        {/* 자녀 카드 */}
-        <View style={[card, styles.childCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-          <View style={[styles.childAv, { backgroundColor: t.panel2 }]}>
-            <Text style={[styles.childAvText, { color: t.accText }]}>우</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.childName, { color: t.fg }]}>김지우</Text>
-            <Text style={[styles.childSub, { color: t.mut }]}>중3 · 수학·영어 · 주 3회</Text>
-          </View>
-          <View style={[styles.statusBadge, { backgroundColor: accTint(t, 0.12) }]}>
-            <Text style={[styles.statusText, { color: t.accText }]}>수강 중</Text>
-          </View>
-        </View>
+            <Text style={[sectTS, styles.sectT, { color: t.fg }]}>관리</Text>
+            <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              <MRow
+                icon={<CardIcon color={t.accText} size={18} />}
+                label="구독·결제"
+                sub={billingSub}
+                onPress={() => router.push("/billing")}
+              />
+              <MRow
+                icon={<BellIcon color={t.accText} size={18} />}
+                label="알림"
+                onPress={() => router.push("/notifications")}
+                divider
+              />
+              <MRow
+                icon={<DocumentIcon color={t.accText} size={18} />}
+                label="학습 리포트"
+                sub={data.latestReportMonth ? `${data.latestReportMonth} 리포트` : "아직 리포트 없음"}
+                onPress={() => {
+                  if (data.latestReportMonth) {
+                    router.push(`/report/${data.latestReportMonth}` as Parameters<typeof router.push>[0]);
+                  } else {
+                    router.push("/(tabs)/learning" as Parameters<typeof router.push>[0]);
+                  }
+                }}
+                divider
+              />
+              <MRow
+                icon={<CalendarIcon color={t.accText} size={18} />}
+                label="상담 진행 상태"
+                sub={data.journey.label}
+                onPress={() => router.push("/consult/status" as Parameters<typeof router.push>[0])}
+                divider
+              />
+            </View>
 
-        {/* .sect-t 관리 */}
-        <Text style={[sectTS, styles.sectT, { color: t.fg }]}>관리</Text>
+            <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
+            <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              <MRow
+                icon={<QuestionIcon color={t.accText} size={18} />}
+                label="고객센터"
+                sub="이메일로 문의하기"
+                onPress={() => void Linking.openURL(SUPPORT_EMAIL)}
+              />
+              <MRow
+                icon={<FileIcon color={t.accText} size={18} />}
+                label="이용약관"
+                onPress={() => void Linking.openURL(TERMS_URL)}
+                divider
+              />
+              <MRow
+                icon={<LockIcon color={t.accText} size={18} />}
+                label="개인정보 처리방침"
+                onPress={() => void Linking.openURL(PRIVACY_URL)}
+                divider
+              />
+            </View>
 
-        <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-          <MRow icon="💳" label="구독·결제" sub="주 2회 플랜 · 다음 결제 10/1" onPress={() => router.push("/billing")} />
-          <MRow icon="📄" label="학습 리포트" onPress={() => {}} divider />
-        </View>
-
-        {/* .sect-t 설정 */}
-        <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
-
-        <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-          <MRow icon="🔔" label="알림 설정" trailing={<Switch on />} />
-          <MRow icon="❓" label="고객센터" onPress={() => {}} divider />
-          <MRow icon="📄" label="약관·정책" onPress={() => {}} divider />
-        </View>
-
-        {/* 로그아웃 */}
-        <Pressable style={styles.logoutWrap} onPress={logout}>
-          <Text style={[styles.logoutText, { color: t.mut2 }]}>로그아웃</Text>
-        </Pressable>
-
+            <Pressable style={styles.logoutWrap} onPress={logout}>
+              <Text style={[styles.logoutText, { color: t.mut2 }]}>로그아웃</Text>
+            </Pressable>
+          </>
+        )}
         <View style={{ height: 6 }} />
       </ScrollView>
     </SafeAreaView>
@@ -137,36 +241,13 @@ export default function MyScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { paddingBottom: 8 },
-
+  center: { paddingVertical: 48, alignItems: "center" },
   avText: { fontSize: 22, fontFamily: font.extrabold },
-
-  // 자녀 카드
-  childCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 13,
-    padding: 15,
-    paddingHorizontal: 16,
-  },
-  childAv: {
-    width: 44,
-    height: 44,
-    borderRadius: 13,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  childAvText: { fontSize: 16, fontFamily: font.bold },
-  childName: { fontSize: 14.5, fontFamily: font.bold },
-  childSub: { fontSize: 12.5, marginTop: 2 },
   statusBadge: { paddingVertical: 5, paddingHorizontal: 11, borderRadius: 999 },
   statusText: { fontSize: 11, fontFamily: font.bold },
-
   sectT: { fontSize: 14 },
-
   menuCard: { overflow: "hidden" },
-
   chev: { fontSize: 20, fontFamily: font.bold },
-
   logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },
   logoutText: { fontSize: 13, fontFamily: font.semibold },
 });

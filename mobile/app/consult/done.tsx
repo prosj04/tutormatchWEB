@@ -5,6 +5,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { ctaBar as ctaBarS, font, status as statusS } from "../../styles/app-styles";
 import { getAccessToken } from "../../lib/auth";
+import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
+import { getPendingConsultation } from "../../lib/pending-consultation";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -76,9 +78,12 @@ export default function ConsultDone() {
   const { t } = useTheme();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+  const [hasPending, setHasPending] = useState(false);
 
   useEffect(() => {
+    trackEvent(ANALYTICS_EVENTS.consultationSubmitted);
     getAccessToken().then((token) => setLoggedIn(!!token));
+    getPendingConsultation().then((p) => setHasPending(!!p));
   }, []);
 
   return (
@@ -99,6 +104,9 @@ export default function ConsultDone() {
           {/* p font-size:14 line-height:1.6 */}
           <Text style={[statusS.p, { color: t.mut }]}>
             담당 매니저가 신청 내용을 검토하고{"\n"}평균 1일 내 연락드립니다.
+            {loggedIn === false && hasPending
+              ? "\n\n계정을 만들면 방금 신청한 내용이 자동으로 연결돼요."
+              : ""}
           </Text>
 
           {/* .steps-v 세로 타임라인 */}
@@ -137,7 +145,10 @@ export default function ConsultDone() {
               </Text>
               <Pressable
                 style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-                onPress={() => router.replace("/(auth)/signup")}
+                onPress={() => {
+                  trackEvent(ANALYTICS_EVENTS.consultationPostSignupClicked);
+                  router.replace("/(auth)/signup");
+                }}
               >
                 <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>계정 만들고 상태 받기</Text>
               </Pressable>
@@ -148,12 +159,25 @@ export default function ConsultDone() {
               </Pressable>
             </>
           ) : (
-            <Pressable
-              style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-              onPress={() => router.replace("/(tabs)/")}
-            >
-              <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>홈으로</Text>
-            </Pressable>
+            <>
+              <Pressable
+                style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
+                onPress={() => {
+                  trackEvent(ANALYTICS_EVENTS.consultationStatusViewClicked);
+                  router.replace("/consult/status");
+                }}
+              >
+                <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>상담 진행 상태 보기</Text>
+              </Pressable>
+              <Pressable
+                style={styles.altBtn}
+                onPress={() => router.replace("/(tabs)/" as Parameters<typeof router.replace>[0])}
+              >
+                <Text style={[styles.altText, { color: t.mut }]}>
+                  <Text style={{ color: t.fg, fontFamily: font.bold }}>홈으로</Text>
+                </Text>
+              </Pressable>
+            </>
           )}
         </View>
       </View>

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { apiLogin } from "../lib/api";
 import { clearTokens, getAccessToken, saveTokens } from "../lib/auth";
+import { registerPushToken } from "../lib/push";
 
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -16,6 +17,7 @@ export function useAuth() {
     const data = await apiLogin(identifier, password);
     await saveTokens(data.accessToken, data.refreshToken);
     setIsLoggedIn(true);
+    void registerPushToken().catch(() => {});
     router.replace("/(tabs)/");
   }, [router]);
 

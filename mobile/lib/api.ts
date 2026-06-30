@@ -25,7 +25,9 @@ async function refreshAccessToken(): Promise<string | null> {
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const t0 = Date.now();
   let token = await getAccessToken();
+  const tokenMs = Date.now() - t0;
 
   const doFetch = async (t: string | null) =>
     fetch(`${API_BASE}${path}`, {
@@ -37,6 +39,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
       },
     });
 
+  const fetchStart = Date.now();
   let res = await doFetch(token);
 
   if (res.status === 401 && token) {
@@ -45,6 +48,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
       res = await doFetch(token);
     }
   }
+
+  const fetchMs = Date.now() - fetchStart;
+  const totalMs = Date.now() - t0;
+  console.log(`[perf] ${path} | token:${tokenMs}ms fetch:${fetchMs}ms total:${totalMs}ms | status:${res.status}`);
 
   if (!res.ok) {
     const body = await res.text();
