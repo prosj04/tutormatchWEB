@@ -5,7 +5,7 @@ import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 
 export async function requireManagerPage() {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== "MANAGER") {
+  if (!session?.user?.id || (session.user.role !== "MANAGER" && session.user.role !== "CHIEF_MANAGER")) {
     redirect("/teacher-portal/dashboard");
   }
 

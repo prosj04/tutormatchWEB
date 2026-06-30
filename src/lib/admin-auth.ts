@@ -10,7 +10,7 @@ export async function requireAdmin() {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
-  if (session.user.role !== "ADMIN") {
+  if (session.user.role !== "ADMIN" && session.user.role !== "CHIEF_MANAGER") {
     return {
       error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
     } as const;
@@ -25,5 +25,5 @@ export function parsePagination(searchParams: URLSearchParams) {
 }
 
 export async function adminCount() {
-  return prisma.user.count({ where: { role: "ADMIN" } });
+  return prisma.user.count({ where: { role: { in: ["ADMIN", "CHIEF_MANAGER"] } } });
 }

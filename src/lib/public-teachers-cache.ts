@@ -75,7 +75,7 @@ const getCachedPublicTeacherIds = unstable_cache(
       prisma.teacher.findMany({
         where: {
           approved: true,
-          user: { role: { in: ["TEACHER", "MANAGER"] } },
+          user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
         },
         orderBy: { name: "asc" },
         select: { id: true },
@@ -94,7 +94,7 @@ const getCachedPublicTeachers = unstable_cache(
       prisma.teacher.findMany({
         where: {
           approved: true,
-          user: { role: { in: ["TEACHER", "MANAGER"] } },
+          user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
         },
         orderBy: { name: "asc" },
         select: listTeacherSelect,
@@ -115,7 +115,7 @@ const getPublicTeacherByIdCached = cache(async (id: string): Promise<TeacherDeta
           where: {
             id,
             approved: true,
-            user: { role: { in: ["TEACHER", "MANAGER"] } },
+            user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
           },
           select: detailTeacherSelect,
         }),

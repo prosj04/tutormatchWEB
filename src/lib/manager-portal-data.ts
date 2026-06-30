@@ -194,7 +194,7 @@ export async function getManagerMatchingData(managerId: string): Promise<{
   const teachers = await prisma.teacher.findMany({
     where: {
       approved: true,
-      user: { role: { in: ["TEACHER", "MANAGER"] } },
+      user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
     },
     include: {
       profile: { select: { photoUrl: true } },

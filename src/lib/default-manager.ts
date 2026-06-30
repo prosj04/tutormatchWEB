@@ -7,7 +7,7 @@ export async function getDefaultManager() {
     const byEmail = await prisma.teacher.findFirst({
       where: {
         approved: true,
-        user: { role: "MANAGER", email: preferredEmail },
+        user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] }, email: preferredEmail },
       },
       include: { user: { select: { id: true } } },
     });
@@ -15,7 +15,7 @@ export async function getDefaultManager() {
   }
 
   const manager = await prisma.teacher.findFirst({
-    where: { approved: true, user: { role: "MANAGER" } },
+    where: { approved: true, user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] } } },
     orderBy: { user: { createdAt: "asc" } },
     include: { user: { select: { id: true } } },
   });

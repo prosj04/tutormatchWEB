@@ -296,7 +296,7 @@ export async function runAlertChecks() {
 
   if (waitingBookings.length > 0) {
     const managers = await prisma.teacher.findMany({
-      where: { approved: true, user: { role: "MANAGER" } },
+      where: { approved: true, user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] } } },
       select: { userId: true },
     });
 

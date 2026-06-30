@@ -10,7 +10,7 @@ export async function requireManager() {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
-  if (session.user.role !== "MANAGER") {
+  if (session.user.role !== "MANAGER" && session.user.role !== "CHIEF_MANAGER") {
     return {
       error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
     } as const;

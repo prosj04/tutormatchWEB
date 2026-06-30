@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { sendExpoPushToUser } from "@/lib/expo-push";
 import { sendSms } from "@/lib/sms";
 
 export type NotificationType =
@@ -21,6 +22,15 @@ const SMS_NOTIFICATION_TYPES = new Set<string>([
   "BOOKING_CONFIRMED",
   "QUESTION_UNANSWERED",
   "NEW_STUDENT_ASSIGNED",
+]);
+
+/** Expo 푸시를 보낼 알림 타입 (앱 등록 디바이스) */
+const PUSH_NOTIFICATION_TYPES = new Set<string>([
+  "TEACHER_ASSIGNED",
+  "BOOKING_CONFIRMED",
+  "TEACHER_ANSWERED",
+  "NEW_STUDENT_ASSIGNED",
+  "NEW_QUESTION",
 ]);
 
 export async function createNotification({
@@ -48,6 +58,17 @@ export async function createNotification({
 
   if (SMS_NOTIFICATION_TYPES.has(type)) {
     void dispatchSms(userId, body);
+  }
+
+  if (PUSH_NOTIFICATION_TYPES.has(type)) {
+    void sendExpoPushToUser(userId, {
+      title,
+      body,
+      data: {
+        type,
+        relatedId: relatedId ?? "",
+      },
+    });
   }
 
   return notification;

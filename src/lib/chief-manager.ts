@@ -14,7 +14,7 @@ export async function getChiefManager() {
     const byEmail = await prisma.teacher.findFirst({
       where: {
         approved: true,
-        user: { role: "MANAGER", email: chiefEmail },
+        user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] }, email: chiefEmail },
       },
       select: chiefManagerSelect,
     });
@@ -24,7 +24,7 @@ export async function getChiefManager() {
   const byName = await prisma.teacher.findFirst({
     where: {
       approved: true,
-      user: { role: "MANAGER" },
+      user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] } },
       OR: [
         { name: { equals: "Chief_manager", mode: "insensitive" } },
         { name: { contains: "Chief_manager", mode: "insensitive" } },

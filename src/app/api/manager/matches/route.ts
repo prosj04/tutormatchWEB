@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     where: {
       id: teacherId,
       approved: true,
-      user: { role: { in: ["TEACHER", "MANAGER"] } },
+      user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
     },
     include: { user: true },
   });
