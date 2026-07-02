@@ -40,7 +40,7 @@ model Student {
   reviews             TutorReview[]
   studySessions       StudySession[]
   subscriptions       Subscription[]
-  paymentCompletions   PaymentCompletion[]
+  paymentCompletions  PaymentCompletion[]
   tokenWallets        TokenWallet[]
   monthlyReports      MonthlyReport[]
   questionMessages    QuestionMessage[]
@@ -49,46 +49,52 @@ model Student {
 }
 
 model Teacher {
-  id               String                @id @default(uuid())
-  userId           String                @unique
-  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name             String
-  phone            String
-  subjects         String
-  bio              String
-  education        String
-  experience       String
+  id                String                @id @default(uuid())
+  userId            String                @unique
+  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  phone             String
+  subjects          String
+  bio               String
+  education         String
+  experience        String
   /// 공개 강사진 사진 구분: "MALE" | "FEMALE" (미설정 시 남성 기본 이미지)
-  gender           String?
-  approved         Boolean               @default(false)
-  profile          TeacherProfile?
-  students         TeacherStudent[]
-  managerBookings  ConsultationBooking[]
-  managerStudents  ManagerStudent[]      @relation("ManagerStudents")
-  lessons          Lesson[]
-  reviews          TutorReview[]
-  availabilities   TutorAvailability[]
-  questionMessages QuestionMessage[]
+  gender            String?
+  approved          Boolean               @default(false)
+  profile           TeacherProfile?
+  students          TeacherStudent[]
+  managerBookings   ConsultationBooking[]
+  managerStudents   ManagerStudent[]      @relation("ManagerStudents")
+  lessons           Lesson[]
+  reviews           TutorReview[]
+  availabilities    TutorAvailability[]
+  questionMessages  QuestionMessage[]
   homeworkTemplates HomeworkTemplate[]
 
   @@index([approved])
 }
 
 model TeacherStudent {
-  id        String   @id @default(uuid())
-  teacherId String
-  studentId String
-  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  subjects  String // 이 매칭에서 담당하는 과목 (comma-separated)
-  startDate String // "2024-01-01"
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id          String    @id @default(uuid())
+  teacherId   String
+  studentId   String
+  teacher     Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjects    String // 이 매칭에서 담당하는 과목 (comma-separated)
+  startDate   String // "2024-01-01"
+  isActive    Boolean   @default(true)
+  // 학생의 명시적 배정 수락 상태. "PENDING_STUDENT_ACCEPT" | "ACTIVE".
+  // isActive와 항상 동기화되어야 하며, 당분간 매칭 활성 로직은 isActive를 기준으로 한다.
+  matchStatus String    @default("PENDING_STUDENT_ACCEPT")
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
 
   @@unique([teacherId, studentId])
   @@index([teacherId])
   @@index([studentId])
   @@index([isActive])
+  @@index([matchStatus])
+  @@index([studentId, matchStatus])
 }
 
 model StudyPlan {
@@ -112,8 +118,8 @@ model StudyTask {
   planId String
   plan   StudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
   title  String
-  source String  @default("student") // "student" | "teacher"
-  isDone Boolean @default(false)
+  source String    @default("student") // "student" | "teacher"
+  isDone Boolean   @default(false)
   doneAt DateTime?
   order  Int       @default(0)
 }
@@ -325,19 +331,19 @@ model Subscription {
 
 /// 결제 완료 처리 기록 (주문번호 기준 멱등성 보장)
 model PaymentCompletion {
-  id             String   @id @default(uuid())
-  orderId        String   @unique
+  id             String    @id @default(uuid())
+  orderId        String    @unique
   studentId      String
-  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   plan           String
-  status         String   @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
+  status         String    @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
   paymentKey     String?
   amount         Int?
   subscriptionId String?
   bookingId      String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
   completedAt    DateTime?
-  updatedAt      DateTime @default(now()) @updatedAt
+  updatedAt      DateTime  @default(now()) @updatedAt
 
   @@index([studentId])
   @@index([studentId, status])

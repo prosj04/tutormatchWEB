@@ -44,7 +44,10 @@ export default async function ConsultationPage({
   const [initialBooking, pendingMatch] = await Promise.all([
     getConsultationBookingDto(student.id),
     prisma.teacherStudent.findFirst({
-      where: { studentId: student.id, isActive: false },
+      where: {
+        studentId: student.id,
+        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+      },
       select: {
         id: true,
         subjects: true,

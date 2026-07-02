@@ -51,7 +51,7 @@ export async function acceptTeacherStudentMatch(
 
   const updated = await prisma.teacherStudent.update({
     where: { id: existing.id },
-    data: { isActive: true },
+    data: { isActive: true, matchStatus: "ACTIVE", respondedAt: new Date() },
     include: { teacher: { select: { id: true, name: true, userId: true } } },
   });
 

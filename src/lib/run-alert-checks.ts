@@ -525,14 +525,18 @@ export async function runAlertChecks() {
   // ── 5. Pending teacher-student match acceptance reminders ──────────────────
   //
   // Find TeacherStudent records created more than 24h ago where the student
-  // has not yet accepted (isActive = false). Send one in-app reminder per
-  // match, deduped against MATCH_ACCEPTANCE_REMINDER notifications from the
-  // last 24h keyed by match.id.
+  // has not yet accepted. Prefer the explicit matchStatus, but also match on
+  // isActive = false for rows that predate the matchStatus backfill. Send one
+  // in-app reminder per match, deduped against MATCH_ACCEPTANCE_REMINDER
+  // notifications from the last 24h keyed by match.id.
 
   const pendingMatchCutoff = new Date(Date.now() - DAY_MS);
 
   const pendingMatches = await prisma.teacherStudent.findMany({
-    where: { isActive: false, createdAt: { lt: pendingMatchCutoff } },
+    where: {
+      OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+      createdAt: { lt: pendingMatchCutoff },
+    },
     select: {
       id: true,
       teacher: { select: { name: true } },

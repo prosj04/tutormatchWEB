@@ -91,6 +91,8 @@ export async function POST(request: Request) {
         startDate,
         // 학생이 앱에서 수락하기 전까지는 ACTIVE 단계로 전환하지 않는다.
         isActive: false,
+        matchStatus: "PENDING_STUDENT_ACCEPT",
+        respondedAt: null,
       },
     }),
     prisma.managerStudent.upsert({
