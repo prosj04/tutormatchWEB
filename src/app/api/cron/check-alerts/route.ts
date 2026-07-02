@@ -20,12 +20,14 @@ export async function GET(request: Request) {
   return NextResponse.json({
     checked:
       result.questionsChecked +
+      result.qnaMessagesChecked +
       result.waitingBookingsChecked +
       result.pendingMatchesChecked +
       result.firstLessonRemindersChecked +
       result.subscriptionExpiryChecked,
     notificationsCreated: result.notificationsCreated,
     questionsChecked: result.questionsChecked,
+    qnaMessagesChecked: result.qnaMessagesChecked,
     waitingBookingsChecked: result.waitingBookingsChecked,
     weeklyStudentsChecked: result.weeklyStudentsChecked,
     weeklyCheckRan: result.weeklyCheckRan,

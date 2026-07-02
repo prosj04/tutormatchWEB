@@ -49,6 +49,7 @@ function getPreviousWeekRange(): { start: string; end: string } | null {
 export async function runAlertChecks() {
   let notificationsCreated = 0;
   let weeklyStudentsChecked = 0;
+  let qnaMessagesChecked = 0;
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
   let firstLessonRemindersChecked = 0;
@@ -163,6 +164,92 @@ export async function runAlertChecks() {
     if (toCreate.length > 0) {
       await prisma.notification.createMany({ data: toCreate });
       notificationsCreated += toCreate.length;
+    }
+  }
+
+  // ── 1b. Stale unanswered QnA chat messages ─────────────────────────────────
+  //
+  // Mobile QnA stores chat bubbles separately from Question. A thread is stale
+  // when the latest student message older than 24h has no later tutor reply.
+
+  const staleStudentMessages = await prisma.questionMessage.findMany({
+    where: {
+      sender: "me",
+      teacherId: { not: null },
+      createdAt: { lt: staleBefore },
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      studentId: true,
+      teacherId: true,
+      createdAt: true,
+      student: { select: { name: true } },
+      teacher: { select: { userId: true } },
+    },
+  });
+
+  const latestByThread = new Map<string, (typeof staleStudentMessages)[number]>();
+  for (const message of staleStudentMessages) {
+    if (!message.teacherId) continue;
+    const key = `${message.studentId}:${message.teacherId}`;
+    if (!latestByThread.has(key)) latestByThread.set(key, message);
+  }
+
+  const staleQnaCandidates: Array<{
+    messageId: string;
+    teacherUserId: string;
+    studentName: string;
+  }> = [];
+
+  for (const message of Array.from(latestByThread.values())) {
+    if (!message.teacherId || !message.teacher) continue;
+    const laterTutorReply = await prisma.questionMessage.findFirst({
+      where: {
+        studentId: message.studentId,
+        teacherId: message.teacherId,
+        sender: "tutor",
+        createdAt: { gt: message.createdAt },
+      },
+      select: { id: true },
+    });
+    if (laterTutorReply) continue;
+    staleQnaCandidates.push({
+      messageId: message.id,
+      teacherUserId: message.teacher.userId,
+      studentName: message.student.name,
+    });
+  }
+
+  qnaMessagesChecked = staleQnaCandidates.length;
+
+  if (staleQnaCandidates.length > 0) {
+    const messageIds = staleQnaCandidates.map((candidate) => candidate.messageId);
+    const recentQnaMessageNotifs = await prisma.notification.findMany({
+      where: {
+        type: "QUESTION_UNANSWERED",
+        relatedId: { in: messageIds },
+        createdAt: { gte: recentSince },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const qnaMessageAlreadyNotified = new Set(
+      recentQnaMessageNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    const qnaMessageToCreate = staleQnaCandidates
+      .filter((candidate) => !qnaMessageAlreadyNotified.has(`${candidate.teacherUserId}:${candidate.messageId}`))
+      .map((candidate) => ({
+        userId: candidate.teacherUserId,
+        type: "QUESTION_UNANSWERED",
+        title: "미답변 Q&A 알림",
+        body: `${candidate.studentName}님의 Q&A 메시지가 24시간째 답변되지 않았습니다.`,
+        relatedId: candidate.messageId,
+      }));
+
+    if (qnaMessageToCreate.length > 0) {
+      await prisma.notification.createMany({ data: qnaMessageToCreate });
+      notificationsCreated += qnaMessageToCreate.length;
     }
   }
 
@@ -625,6 +712,7 @@ export async function runAlertChecks() {
 
   return {
     questionsChecked,
+    qnaMessagesChecked,
     weeklyStudentsChecked,
     waitingBookingsChecked,
     pendingMatchesChecked,
