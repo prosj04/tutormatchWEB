@@ -50,6 +50,7 @@ export async function runAlertChecks() {
   let notificationsCreated = 0;
   let weeklyStudentsChecked = 0;
   let waitingBookingsChecked = 0;
+  let pendingMatchesChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
 
@@ -418,10 +419,73 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 5. Pending teacher-student match acceptance reminders ──────────────────
+  //
+  // Find TeacherStudent records created more than 24h ago where the student
+  // has not yet accepted (isActive = false). Send one in-app reminder per
+  // match, deduped against MATCH_ACCEPTANCE_REMINDER notifications from the
+  // last 24h keyed by match.id.
+
+  const pendingMatchCutoff = new Date(Date.now() - DAY_MS);
+
+  const pendingMatches = await prisma.teacherStudent.findMany({
+    where: { isActive: false, createdAt: { lt: pendingMatchCutoff } },
+    select: {
+      id: true,
+      teacher: { select: { name: true } },
+      student: { select: { userId: true } },
+    },
+  });
+
+  pendingMatchesChecked = pendingMatches.length;
+
+  if (pendingMatches.length > 0) {
+    const matchIds = pendingMatches.map((m) => m.id);
+
+    const recentMatchNotifs = await prisma.notification.findMany({
+      where: {
+        type: "MATCH_ACCEPTANCE_REMINDER",
+        relatedId: { in: matchIds },
+        createdAt: { gte: recentSince },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const matchAlreadyNotified = new Set(
+      recentMatchNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    const matchToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
+
+    for (const match of pendingMatches) {
+      const userId = match.student.userId;
+      if (!matchAlreadyNotified.has(`${userId}:${match.id}`)) {
+        matchToCreate.push({
+          userId,
+          type: "MATCH_ACCEPTANCE_REMINDER",
+          title: "선생님 배정 수락 안내",
+          body: `${match.teacher.name} 선생님이 배정되었습니다. 앱에서 수락해 주세요.`,
+          relatedId: match.id,
+        });
+      }
+    }
+
+    if (matchToCreate.length > 0) {
+      await prisma.notification.createMany({ data: matchToCreate });
+      notificationsCreated += matchToCreate.length;
+    }
+  }
+
   return {
     questionsChecked,
     weeklyStudentsChecked,
     waitingBookingsChecked,
+    pendingMatchesChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
     closedLessons,

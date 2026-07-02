@@ -13,6 +13,7 @@ export type NotificationType =
   | "TEACHER_COMMENT"
   | "NEW_STUDENT_ASSIGNED"
   | "TEACHER_ASSIGNED"
+  | "MATCH_ACCEPTANCE_REMINDER"
   | "NEW_QUESTION"
   | "VISIT_TIMES_UPDATED";
 
@@ -126,6 +127,7 @@ export function getNotificationIcon(type: string): string {
       return "📝";
     case "NEW_STUDENT_ASSIGNED":
     case "TEACHER_ASSIGNED":
+    case "MATCH_ACCEPTANCE_REMINDER":
       return "👤";
     case "NEW_QUESTION":
       return "✉️";
@@ -150,6 +152,7 @@ export function resolveNotificationHref(
     case "TEACHER_ANSWERED":
     case "TEACHER_COMMENT":
     case "TEACHER_ASSIGNED":
+    case "MATCH_ACCEPTANCE_REMINDER":
       return "/dashboard";
     case "BOOKING_CONFIRMED":
       return "/dashboard/consultation";
