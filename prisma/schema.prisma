@@ -45,6 +45,7 @@ model Student {
   monthlyReports      MonthlyReport[]
   questionMessages    QuestionMessage[]
   onboardingSurvey    OnboardingSurvey?
+  homeworkTemplates   HomeworkTemplate[]
 }
 
 model Teacher {
@@ -68,6 +69,7 @@ model Teacher {
   reviews          TutorReview[]
   availabilities   TutorAvailability[]
   questionMessages QuestionMessage[]
+  homeworkTemplates HomeworkTemplate[]
 
   @@index([approved])
 }
@@ -427,4 +429,21 @@ model AnalyticsEvent {
   @@index([name, createdAt])
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+model HomeworkTemplate {
+  id        String   @id @default(uuid())
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name      String
+  days      Int
+  tasks     String // newline-joined normalized task titles
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([teacherId, studentId])
 }
