@@ -5,6 +5,7 @@ export type StudentListItem = {
   subjects: string;
   phone: string;
   startDate: string;
+  firstLessonAt: string | null;
 };
 
 export type StudyTaskItem = {

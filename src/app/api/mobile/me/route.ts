@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   if ("error" in authResult) return authResult.error;
   const { student, userId } = authResult;
 
-  const [user, subscription, teacherCount, latestReport, booking] = await Promise.all([
+  const [user, subscription, teacherCount, firstLessonCount, latestReport, booking] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { email: true } }),
     prisma.subscription.findFirst({
       where: { studentId: student.id, status: "ACTIVE" },
@@ -25,6 +25,9 @@ export async function GET(request: Request) {
       select: { plan: true, status: true, periodEnd: true },
     }),
     prisma.teacherStudent.count({ where: { studentId: student.id, isActive: true } }),
+    prisma.lesson.count({
+      where: { studentId: student.id, status: { not: "CANCELLED" } },
+    }),
     prisma.monthlyReport.findFirst({
       where: { studentId: student.id },
       orderBy: { month: "desc" },
@@ -40,8 +43,10 @@ export async function GET(request: Request) {
   // Journey stage 계산 (DB 결과에서 직접 도출 — 추가 쿼리 없음)
   const consultationStatus = booking?.status as ConsultationBookingStatus | undefined;
   const stage =
-    teacherCount > 0
+    teacherCount > 0 && firstLessonCount > 0
       ? "ACTIVE"
+      : teacherCount > 0
+      ? "FIRST_LESSON_PENDING"
       : !booking
       ? "ONBOARDED"
       : CONSULTATION_STATUS_TO_STAGE[consultationStatus!];

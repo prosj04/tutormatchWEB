@@ -14,6 +14,16 @@ function formatStartDate(date: string) {
   return `${y}.${m}.${d}`;
 }
 
+function formatFirstLesson(iso: string | null) {
+  if (!iso) return "아직 설정되지 않음";
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(
+    d.getDate(),
+  ).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(
+    d.getMinutes(),
+  ).padStart(2, "0")}`;
+}
+
 function formatSubjects(subjects: string) {
   return subjects
     .split(",")
@@ -35,6 +45,10 @@ export function TeacherStudentsManager({
     initialStudents[0]?.id ?? null,
   );
   const [detailTab, setDetailTab] = useState<DetailTab>("plan");
+  const [lessonDate, setLessonDate] = useState("");
+  const [lessonTime, setLessonTime] = useState("19:00");
+  const [savingLesson, setSavingLesson] = useState(false);
+  const [lessonMessage, setLessonMessage] = useState<string | null>(null);
 
   const fetchStudents = useCallback(async () => {
     setLoading(true);
@@ -59,6 +73,63 @@ export function TeacherStudentsManager({
   }, [fetchStudents, initialStudents.length]);
 
   const selected = students.find((s) => s.id === selectedId);
+
+  useEffect(() => {
+    if (!selected) return;
+    if (selected.firstLessonAt) {
+      const d = new Date(selected.firstLessonAt);
+      setLessonDate(
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+          d.getDate(),
+        ).padStart(2, "0")}`,
+      );
+      setLessonTime(
+        `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(
+          2,
+          "0",
+        )}`,
+      );
+    } else {
+      setLessonDate(selected.startDate);
+      setLessonTime("19:00");
+    }
+    setLessonMessage(null);
+  }, [selected]);
+
+  async function saveFirstLesson() {
+    if (!selected || !lessonDate || !lessonTime) return;
+    setSavingLesson(true);
+    setLessonMessage(null);
+    try {
+      const res = await fetch(`/api/teacher/students/${selected.id}/first-lesson`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: lessonDate, time: lessonTime }),
+      });
+      if (!res.ok) {
+        setLessonMessage("첫 수업 일정 저장에 실패했습니다.");
+        return;
+      }
+      const data = (await res.json()) as {
+        lesson: { startAt: string };
+        startDate: string;
+      };
+      setStudents((prev) =>
+        prev.map((student) =>
+          student.id === selected.id
+            ? {
+                ...student,
+                startDate: data.startDate,
+                firstLessonAt: data.lesson.startAt,
+              }
+            : student,
+        ),
+      );
+      setLessonMessage("첫 수업 일정이 저장되었습니다.");
+    } finally {
+      setSavingLesson(false);
+    }
+  }
 
   return (
     <div>
@@ -109,6 +180,11 @@ export function TeacherStudentsManager({
                       <p className="mt-1 text-[10px] text-text-muted">
                         수업 시작 {formatStartDate(student.startDate)}
                       </p>
+                      {student.firstLessonAt ? (
+                        <p className="mt-0.5 text-[10px] text-primary">
+                          첫 수업 {formatFirstLesson(student.firstLessonAt)}
+                        </p>
+                      ) : null}
                     </button>
                   </li>
                 );
@@ -136,6 +212,52 @@ export function TeacherStudentsManager({
                   수업 시작일 {formatStartDate(selected.startDate)}
                 </p>
               </div>
+
+              <section className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-text-primary">
+                      첫 수업 일정
+                    </h3>
+                    <p className="mt-1 text-xs text-text-secondary">
+                      현재: {formatFirstLesson(selected.firstLessonAt)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+                    <label className="text-xs font-medium text-text-secondary">
+                      날짜
+                      <input
+                        type="date"
+                        value={lessonDate}
+                        onChange={(e) => setLessonDate(e.target.value)}
+                        className="mt-1 block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
+                      />
+                    </label>
+                    <label className="text-xs font-medium text-text-secondary">
+                      시간
+                      <input
+                        type="time"
+                        value={lessonTime}
+                        onChange={(e) => setLessonTime(e.target.value)}
+                        className="mt-1 block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      disabled={savingLesson || !lessonDate || !lessonTime}
+                      onClick={() => void saveFirstLesson()}
+                      className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                    >
+                      {savingLesson ? "저장 중…" : "일정 저장"}
+                    </button>
+                  </div>
+                </div>
+                {lessonMessage ? (
+                  <p className="mt-2 text-xs font-medium text-primary" role="status">
+                    {lessonMessage}
+                  </p>
+                ) : null}
+              </section>
 
               <div className="mt-4 flex gap-4 border-b border-gray-100">
                 {(

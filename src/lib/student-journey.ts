@@ -8,6 +8,7 @@ export type StudentJourneyStage =
   | "WAITING"
   | "ASSIGNED"
   | "MATCHING"
+  | "FIRST_LESSON_PENDING"
   | "ACTIVE";
 
 export type ConsultationBookingStatus = ConsultationBookingDto["status"];
@@ -64,6 +65,10 @@ export const JOURNEY_STAGE_COPY: Record<
   MATCHING: {
     label: "선생님 매칭 진행",
     body: "상담 결과를 바탕으로 가장 잘 맞는 선생님을 찾고 있어요.",
+  },
+  FIRST_LESSON_PENDING: {
+    label: "첫 수업 일정 조율 중",
+    body: "선생님이 첫 수업 날짜를 설정하면 수업이 시작돼요.",
   },
   ACTIVE: {
     label: "수업 진행 중",
@@ -127,9 +132,12 @@ export type StudentJourneySnapshot = {
 export async function resolveStudentJourneyStage(
   studentId: string,
 ): Promise<StudentJourneyStage> {
-  const [activeTeacherCount, booking] = await Promise.all([
+  const [activeTeacherCount, firstLessonCount, booking] = await Promise.all([
     prisma.teacherStudent.count({
       where: { studentId, isActive: true },
+    }),
+    prisma.lesson.count({
+      where: { studentId, status: { not: "CANCELLED" } },
     }),
     prisma.consultationBooking.findUnique({
       where: { studentId },
@@ -137,7 +145,8 @@ export async function resolveStudentJourneyStage(
     }),
   ]);
 
-  if (activeTeacherCount > 0) return "ACTIVE";
+  if (activeTeacherCount > 0 && firstLessonCount > 0) return "ACTIVE";
+  if (activeTeacherCount > 0) return "FIRST_LESSON_PENDING";
   if (!booking) return "ONBOARDED";
   return CONSULTATION_STATUS_TO_STAGE[booking.status as ConsultationBookingStatus];
 }
