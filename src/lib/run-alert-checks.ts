@@ -10,6 +10,14 @@ function getKstDate(): Date {
   );
 }
 
+// Use local-time getters — matches the /api/mobile/learning/weekly date convention
+// (server runs UTC, so local = UTC on Vercel).
+function lessonDateStr(d: Date): string {
+  return formatDateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
+}
+
+const CLOSE_BUFFER_MS = 12 * 60 * 60 * 1000; // 12 h after lesson ends
+
 function getPreviousWeekRange(): { start: string; end: string } | null {
   const kst = getKstDate();
   if (kst.getDay() !== 1) return null;
@@ -42,6 +50,8 @@ export async function runAlertChecks() {
   let notificationsCreated = 0;
   let weeklyStudentsChecked = 0;
   let waitingBookingsChecked = 0;
+  let closedLessons = 0;
+  let studySessionsWritten = 0;
 
   const staleBefore = new Date(Date.now() - DAY_MS);
   const recentSince = new Date(Date.now() - DAY_MS);
@@ -326,11 +336,95 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 4. Close past lessons + write StudySession ──────────────────────────────
+  //
+  // Find SCHEDULED lessons whose end time (startAt + durationMin) passed the
+  // 12-hour buffer, mark them COMPLETED, then recalculate lesson-sourced
+  // StudySession rows for the affected (studentId, date) pairs.
+  //
+  // Idempotency: source="lesson" rows are deleted and recreated from the full
+  // sum of COMPLETED lessons on that date — running twice gives the same result.
+  // Lessons already COMPLETED before this cron shipped are only included when
+  // they share a date with a newly-closed lesson (known scope limitation).
+
+  const scheduledLessons = await prisma.lesson.findMany({
+    where: { status: "SCHEDULED" },
+    select: { id: true, studentId: true, startAt: true, durationMin: true },
+  });
+
+  const toClose = scheduledLessons.filter(
+    (l) => l.startAt.getTime() + l.durationMin * 60_000 + CLOSE_BUFFER_MS < Date.now(),
+  );
+
+  if (toClose.length > 0) {
+    await prisma.lesson.updateMany({
+      where: { id: { in: toClose.map((l) => l.id) } },
+      data: { status: "COMPLETED" },
+    });
+    closedLessons = toClose.length;
+
+    // Deduplicate affected (studentId, date) pairs
+    const pairMap = new Map<string, { studentId: string; date: string }>();
+    for (const l of toClose) {
+      const date = lessonDateStr(l.startAt);
+      pairMap.set(`${l.studentId}:${date}`, { studentId: l.studentId, date });
+    }
+    const pairs = Array.from(pairMap.values());
+    const affectedStudentIds = Array.from(new Set(pairs.map((p) => p.studentId)));
+    const affectedSet = new Set(pairs.map((p) => `${p.studentId}:${p.date}`));
+    const minDate = pairs.map((p) => p.date).sort()[0];
+
+    // Re-sum from ALL completed lessons for these students from minDate onward
+    const completedLessons = await prisma.lesson.findMany({
+      where: {
+        studentId: { in: affectedStudentIds },
+        status: "COMPLETED",
+        startAt: { gte: new Date(minDate + "T00:00:00.000Z") },
+      },
+      select: { studentId: true, startAt: true, durationMin: true },
+    });
+
+    const minutesByKey = new Map<string, number>();
+    for (const l of completedLessons) {
+      const key = `${l.studentId}:${lessonDateStr(l.startAt)}`;
+      if (affectedSet.has(key)) {
+        minutesByKey.set(key, (minutesByKey.get(key) ?? 0) + l.durationMin);
+      }
+    }
+
+    const sessionData = pairs
+      .map(({ studentId, date }) => ({
+        studentId,
+        date,
+        minutes: minutesByKey.get(`${studentId}:${date}`) ?? 0,
+        source: "lesson",
+      }))
+      .filter((s) => s.minutes > 0);
+
+    if (sessionData.length > 0) {
+      await prisma.$transaction(async (tx) => {
+        await tx.studySession.deleteMany({
+          where: {
+            OR: sessionData.map(({ studentId, date }) => ({
+              studentId,
+              date,
+              source: "lesson",
+            })),
+          },
+        });
+        await tx.studySession.createMany({ data: sessionData });
+      });
+      studySessionsWritten = sessionData.length;
+    }
+  }
+
   return {
     questionsChecked,
     weeklyStudentsChecked,
     waitingBookingsChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
+    closedLessons,
+    studySessionsWritten,
   };
 }

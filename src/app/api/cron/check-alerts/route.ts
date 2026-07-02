@@ -24,5 +24,7 @@ export async function GET(request: Request) {
     waitingBookingsChecked: result.waitingBookingsChecked,
     weeklyStudentsChecked: result.weeklyStudentsChecked,
     weeklyCheckRan: result.weeklyCheckRan,
+    closedLessons: result.closedLessons,
+    studySessionsWritten: result.studySessionsWritten,
   });
 }
