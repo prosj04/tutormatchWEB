@@ -14,6 +14,7 @@ type PendingCheckoutSignup = {
   orderId: string;
   name: string;
   phone: string;
+  guardianPhone?: string;
   grade: string;
   gender: "MALE" | "FEMALE";
   password: string;
@@ -63,6 +64,7 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
         body: JSON.stringify({
           name: payload.name,
           phone: payload.phone,
+          guardianPhone: payload.guardianPhone,
           password: payload.password,
           grade: payload.grade,
           gender: payload.gender,

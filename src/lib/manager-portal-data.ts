@@ -26,6 +26,8 @@ export type ManagerConsultationBooking = {
     name: string;
     grade: string;
     subjects: string;
+    phone: string;
+    guardianPhone: string | null;
   };
 };
 
@@ -95,6 +97,8 @@ function mapConsultationBooking(
       name: string;
       grade: string;
       subjects: string;
+      phone: string;
+      guardianPhone: string | null;
     };
   },
 ): ManagerConsultationBooking {
@@ -122,7 +126,7 @@ export async function getManagerWaitingConsultations(): Promise<
     where: { status: "WAITING", managerId: null },
     include: {
       student: {
-        select: { id: true, name: true, grade: true, subjects: true },
+        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true },
       },
     },
     orderBy: { createdAt: "asc" },
@@ -138,7 +142,7 @@ export async function getManagerMineConsultations(
     where: { managerId },
     include: {
       student: {
-        select: { id: true, name: true, grade: true, subjects: true },
+        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true },
       },
     },
     orderBy: [{ assignedAt: "desc" }, { createdAt: "desc" }],
@@ -158,7 +162,7 @@ export async function getManagerMatchingData(managerId: string): Promise<{
       studentId: true,
       note: true,
       managerNote: true,
-      student: { select: { id: true, name: true, grade: true, subjects: true } },
+      student: { select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true } },
     },
     orderBy: { createdAt: "desc" },
   });

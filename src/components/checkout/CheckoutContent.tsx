@@ -83,6 +83,7 @@ export function CheckoutContent({
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [guardianPhone, setGuardianPhone] = useState("");
   const [email, setEmail] = useState("");
   const [grade, setGrade] = useState<string>(STUDENT_GRADES[0]);
   const [gender, setGender] = useState<ProfileGender | "">("");
@@ -133,6 +134,11 @@ export function CheckoutContent({
         setError("가입을 위해 학년을 선택해 주세요.");
         return;
       }
+      const guardianPhoneDigits = normalizePhoneDigits(guardianPhone);
+      if (guardianPhone.trim() && (guardianPhoneDigits.length < 10 || guardianPhoneDigits.length > 11)) {
+        setError("부모님 연락처를 올바르게 입력해 주세요.");
+        return;
+      }
       if (selectedSubjects.length !== subjects) {
         setError(`가입을 위해 희망 과목을 ${subjects}개 선택해 주세요.`);
         return;
@@ -169,6 +175,7 @@ export function CheckoutContent({
             orderId,
             name: name.trim(),
             phone: phoneDigits,
+            guardianPhone: normalizePhoneDigits(guardianPhone),
             grade,
             gender,
             password,
@@ -197,6 +204,7 @@ export function CheckoutContent({
     email,
     gender,
     grade,
+    guardianPhone,
     name,
     needsSignup,
     password,
@@ -356,6 +364,21 @@ export function CheckoutContent({
                             </option>
                           ))}
                         </select>
+                      </div>
+                      <div className="field">
+                        <label htmlFor="checkout-guardian-phone">부모님 연락처 (선택)</label>
+                        <input
+                          id="checkout-guardian-phone"
+                          type="tel"
+                          autoComplete="tel"
+                          inputMode="numeric"
+                          value={guardianPhone}
+                          onChange={(e) => setGuardianPhone(e.target.value)}
+                        />
+                        <p className="panel-note" style={{ marginTop: 6 }}>
+                          미성년 학생의 서비스 이용은 학부모 동의가 된 것으로 간주하며,
+                          입력하신 연락처는 상담 매니저에게만 전달됩니다.
+                        </p>
                       </div>
                       <div className="field">
                         <label>희망 과목</label>

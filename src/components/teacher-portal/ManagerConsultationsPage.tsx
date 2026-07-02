@@ -323,6 +323,20 @@ function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
   );
 }
 
+function ParentContactBlock({ booking }: { booking: ConsultationBooking }) {
+  return (
+    <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-950">
+      <p className="text-xs font-semibold text-blue-700">연락처</p>
+      <p className="mt-1">학생: {booking.student.phone}</p>
+      {booking.student.guardianPhone ? (
+        <p className="mt-1">부모님: {booking.student.guardianPhone}</p>
+      ) : (
+        <p className="mt-1 text-blue-700">부모님 연락처 미입력</p>
+      )}
+    </div>
+  );
+}
+
 function WaitingCard({
   booking,
   loading,
@@ -348,6 +362,7 @@ function WaitingCard({
           {booking.timeAgo}
         </span>
       </div>
+      <ParentContactBlock booking={booking} />
       <VisitPreferredBlock times={booking.visitPreferredTimes} />
       {booking.note ? (
         <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
@@ -397,6 +412,7 @@ function MineCard({
           {badge.label}
         </span>
       </div>
+      <ParentContactBlock booking={booking} />
       <VisitPreferredBlock times={booking.visitPreferredTimes} />
       {booking.note ? (
         <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">

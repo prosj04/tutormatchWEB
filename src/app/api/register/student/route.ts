@@ -19,6 +19,7 @@ type StudentBody = {
   phone?: unknown;
   gender?: unknown;
   password?: unknown;
+  guardianPhone?: unknown;
   /** true: 상담 대기 없이 대표 매니저 즉시 배정 */
   instantEnroll?: unknown;
 };
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { name, grade, subjects, phone, password } = body;
+  const { name, grade, subjects, phone, password, guardianPhone: rawGuardianPhone } = body;
 
   if (
     !isNonEmptyString(name) ||
@@ -66,6 +67,12 @@ export async function POST(request: Request) {
   }
 
   const subjectsCsv = subjectStrings.join(",");
+  const guardianPhone = isNonEmptyString(rawGuardianPhone)
+    ? normalizePhoneDigits(rawGuardianPhone)
+    : undefined;
+  if (guardianPhone && (guardianPhone.length < 10 || guardianPhone.length > 11)) {
+    return NextResponse.json({ error: "Invalid guardian phone number" }, { status: 400 });
+  }
   const email = studentSyntheticEmailFromDigits(phoneDigits);
 
   const existing = await prisma.user.findFirst({
@@ -98,6 +105,7 @@ export async function POST(request: Request) {
               grade,
               subjects: subjectsCsv,
               phone: phoneDigits,
+              guardianPhone,
               gender,
             },
           },

@@ -28,6 +28,7 @@ model Student {
   grade               String
   subjects            String
   phone               String
+  guardianPhone       String?
   /// "MALE" | "FEMALE" — 기본 프로필 이미지 구분
   gender              String?
   plans               StudyPlan[]
