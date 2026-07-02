@@ -3,7 +3,7 @@
 웹(랜딩·서브페이지)에 이어 **모바일 앱**과 **로고**를 같은 디자인 시스템으로 확장한 패키지입니다. 웹 핸드오프(`CLAUDE_HANDOFF.md`, `ROUTE_MAP.md`)와 **동일한 토큰**을 씁니다 — 새 디자인 언어가 아니라 같은 시스템의 연장입니다.
 
 ## 이 패키지 파일
-- `Concord - 모바일 앱.html` + `app/concord-app.css` — iOS 10화면 시안 (온보딩·무료상담신청·홈·알림·내선생님·내학습·리포트·질문·MY·구독결제)
+- `Concord - 모바일 앱.html` + `app/concord-app.css` — iOS 18화면 시안 (전체 사용자 흐름: 온보딩·로그인·회원가입·무료상담·접수완료·선생님추천·미구독홈·플랜선택·결제·결제완료·홈·알림·학습·리포트·질문2·MY·구독관리)
 - `Concord - 로고 키트.html` — 확정 로고 가이드 (락업·모노·여백·최소크기·파비콘·규칙)
 - `tokens-reference.css` — 색·간격·타이포 토큰 원본 (웹/앱 공통)
 - `DESIGN_SYSTEM.md` — 디자인 규칙서
@@ -61,23 +61,39 @@ export const themes = {
 (정확한 값은 `tokens-reference.css` 4블록 그대로.)
 
 ### 화면 ↔ 라우트/컴포넌트
+흐름 순서: **온보딩 → 로그인/회원가입 → 무료상담 → 접수완료 → 선생님추천 → 미구독홈 → 플랜선택 → 결제 → 결제완료 → (구독 후) 홈·학습·질문·MY·…**
+
 | 시안 화면 | 라우트 | 데이터 소스 | 핵심 컴포넌트 |
 |---|---|---|---|
 | 온보딩 | `/onboarding` | — | `Logo`, `PrimaryButton`, `TrustRow` |
+| 로그인 | `/login` | 인증(이메일·OAuth) | `AuthBrand`, `Field`, `SocialButton`(kakao/apple) |
+| 회원가입 | `/signup` | 회원 생성 | `SubHeader`, `Field`, `AgreeText` |
 | 무료 상담 신청 | `/consult` | 상담요청 생성 API | `Steps`, `Field`, `OptionGroup`, `StickyCTA` |
-| 홈·투데이 | `/(tabs)/home` | 오늘수업·진도·내선생님·일정 | `NowCard`(버튼없음), `ProgressRing`, `QuickActions`, `TutorRows`, `ScheduleList` |
+| 상담 접수 완료 | `/consult/done` | 상담요청 상태 | `StatusEmblem`, `StepTimeline`(세로) |
+| 선생님 추천 | `/consult/match` | 매칭 결과(매니저) | `MatchBadge`, `RecTutorCard`(추천이유), `StickyCTA` |
+| 미구독 홈 | `/(tabs)/home` (구독전) | 매칭상태·구독여부 | `EmptyState`, `LockedCard`(veil), `NowCard`(잠금), `StickyCTA` |
+| 플랜 선택 | `/subscribe` | 플랜 목록 | `PlanPick`(radio·badge), `StickyCTA` |
+| 결제 | `/checkout` | 주문·결제수단 | `OrderSummary`, `PayMethod`, `SecureNote`, `StickyCTA` |
+| 결제 완료 | `/checkout/success` | 구독 확정 | `StatusEmblem`, `MetaCard` |
+| 홈·투데이 | `/(tabs)/home` | 오늘수업·진도·내수업·일정 | `NowCard`(버튼없음), `ProgressRing`, `QuickActions`, `TutorRows`, `ScheduleList` |
 | 알림 센터 | `/notifications` | 알림 목록 | `SubHeader`, `NotificationRow`(unread) |
-| 내 선생님 | `/my-tutor/[id]` | 배정 강사 상세·이번주수업 | `ProfileHeader`, `StatRow`, `TutorActions`(메시지·일정), `LessonList` |
 | 내 학습 | `/(tabs)/learning` | 학습량·과제·리포트·토큰 | `WeekBars`, `AssignmentList`, `ReportSummary`, `TokenCard` |
-| 학습 리포트 | `/reports/[id]` | 월간 리포트·점수·코멘트 | `ProgressRing`, `ScoreChangeRow`, `WeekBars`, `ManagerComment` |
-| 질문 Q&A | `/(tabs)/qna/[tutorId]` | 메시지·AI 질답 | `ChatHeader`, `MessageBubble`(them/me/ai), `Composer` |
+| 학습 리포트 | `/reports/[id]` | 월간 리포트·점수·코멘트 | `ProgressRing`, `ScoreChangeRow`, `WeekBars`, `TeacherComment` |
+| 질문 Q&A (AI 즉답) | `/(tabs)/qna/[tutorId]` | 메시지·AI 질답·토큰 | `ChatHeader`, `MessageBubble`(them/me/ai), `ResolvePrompt`, `Composer` |
+| 질문 Q&A (토큰 소진) | `/(tabs)/qna/[tutorId]` | 토큰=0 상태 | `MessageBubble.ai.empty`(답변 대신 소진 안내), `Composer` |
 | MY 마이페이지 | `/(tabs)/my` | 학부모·자녀·메뉴 | `MyHeader`, `ChildCard`, `MenuRow`, `Switch` |
-| 구독·결제 | `/billing` | 구독·결제내역 | `PlanCard`, `FeatureList`, `PaymentHistory`, `StickyCTA` |
+| 구독·결제 관리 | `/billing` | 구독·결제내역 | `PlanCard`, `FeatureList`, `PaymentHistory`, `StickyCTA` |
 
 ### 탭 바
-홈 · 학습 · 질문 · MY (**4탭**). 아이콘은 시안의 stroke SVG 사용. active=`--acc-text`. 서브페이지(상담·알림·내선생님·리포트·구독)는 탭바 없이 back 헤더(`SubHeader`).
+홈 · 학습 · 질문 · MY (**4탭**). 아이콘은 시안의 stroke SVG 사용. active=`--acc-text`. 서브페이지(로그인·회원가입·상담·접수·추천·플랜·결제·알림·리포트·구독)는 탭바 없이 back 헤더(`SubHeader`) 또는 풀스크린.
 
-> **선생님 직접 찾기/예약 없음.** 서비스가 매니저 매칭 기반이라, 사용자는 선생님을 탐색·예약하지 않습니다. 진입은 ‘무료 상담 신청 → 매니저 매칭’이고, 배정 후 ‘내 선생님’으로 관리합니다.
+> **선생님 직접 찾기/예약 없음.** 서비스가 매니저 매칭 기반이라, 사용자는 선생님을 탐색·예약하지 않습니다. 진입은 ‘무료 상담 → 매니저 매칭(선생님 추천)’이고, 구독 후 홈·학습에서 배정 선생님을 관리합니다. ‘내 선생님’ 단독 화면은 두지 않고 홈/학습에 종속합니다.
+
+### 구독 게이트
+`subscription.status`로 분기: **미구독** → 미구독 홈(학습·리포트 잠금) + 플랜/결제 유도. **구독중** → 전체 기능 해제. 결제는 앱 스토어 IAP 정책 확인 필요(외부 결제 vs 인앱).
+
+### AI 질답 토큰 로직
+질문 시 기본은 AI가 먼저 답변(토큰 1 차감) → ‘해결됐어요 / 선생님께 질문’ 선택. 토큰 0이면 AI 답변 말풍선이 **답변 대신 소진 안내**를 표시하고, 이후 질문은 선생님 답변만 대기(별도 배너 없음).
 
 ### 동적/DB 주의
 - **강사 사진**: 시안은 placeholder(줄무늬). 실제 이미지 URL로 교체, 검증 배지는 `verified===true`일 때만.
