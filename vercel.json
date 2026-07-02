@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/check-alerts",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/generate-monthly-reports",
+      "schedule": "0 1 1 * *"
     }
   ]
 }
