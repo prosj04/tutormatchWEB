@@ -28,6 +28,7 @@ export async function clearJourneySkipIfStageChanged(
     "WAITING",
     "ASSIGNED",
     "MATCHING",
+    "FIRST_LESSON_PENDING",
     "ACTIVE",
   ];
   await Promise.all(

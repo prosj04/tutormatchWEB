@@ -1,10 +1,15 @@
-/** 학생 학습 단계 (웹 student-journey.ts 와 동일) */
+/**
+ * 학생 학습 단계 — src/lib/student-journey.ts(서버)가 source of truth.
+ * 서버 응답(/api/mobile/me, /api/mobile/me/journey)의 stage/stageCopy 값을 그대로 신뢰하고,
+ * 이 파일의 스테이지 목록·문구는 서버 파일과 항상 동일하게 유지해야 함.
+ */
 export type StudentJourneyStage =
   | "PRE_SIGNUP"
   | "ONBOARDED"
   | "WAITING"
   | "ASSIGNED"
   | "MATCHING"
+  | "FIRST_LESSON_PENDING"
   | "ACTIVE";
 
 export type ConsultationBookingStatus =
@@ -52,6 +57,10 @@ export const JOURNEY_STAGE_COPY: Record<
   MATCHING: {
     label: "선생님 매칭 진행",
     body: "상담 결과를 바탕으로 가장 잘 맞는 선생님을 찾고 있어요.",
+  },
+  FIRST_LESSON_PENDING: {
+    label: "첫 수업 일정 조율 중",
+    body: "선생님이 첫 수업 날짜를 설정하면 수업이 시작돼요.",
   },
   ACTIVE: {
     label: "수업 진행 중",
@@ -107,7 +116,12 @@ export type JourneySnapshot = {
   } | null;
 };
 
-/** 상담 추적 화면이 필요한 단계 */
+/** 상담 추적 화면이 필요한 단계 (ACTIVE 전까지는 모두 추적 화면으로, 웹 /dashboard 리다이렉트 규칙과 동일) */
 export function needsConsultationTracking(stage: StudentJourneyStage): boolean {
-  return stage === "WAITING" || stage === "ASSIGNED" || stage === "MATCHING";
+  return (
+    stage === "WAITING" ||
+    stage === "ASSIGNED" ||
+    stage === "MATCHING" ||
+    stage === "FIRST_LESSON_PENDING"
+  );
 }

@@ -81,7 +81,7 @@ function StepV({
 }
 
 function stepForStage(stage: StudentJourneyStage, step: 1 | 2 | 3): "done" | "now" | "wait" {
-  if (stage === "ACTIVE") return "done";
+  if (stage === "ACTIVE" || stage === "FIRST_LESSON_PENDING") return "done";
   if (stage === "ONBOARDED") return step === 1 ? "now" : "wait";
   if (stage === "WAITING") {
     if (step === 1) return "done";
@@ -187,7 +187,12 @@ export default function ConsultStatus() {
               type={stepForStage(journey.stage, 2)}
               content={2}
               showLine
-              lineActive={journey.stage === "ASSIGNED" || journey.stage === "MATCHING" || journey.stage === "ACTIVE"}
+              lineActive={
+                journey.stage === "ASSIGNED" ||
+                journey.stage === "MATCHING" ||
+                journey.stage === "FIRST_LESSON_PENDING" ||
+                journey.stage === "ACTIVE"
+              }
               label="매니저 배정·전화 상담"
               sub={managerName ? `${managerName} 담당` : "평균 1일 내 연락"}
             />
@@ -195,8 +200,16 @@ export default function ConsultStatus() {
               type={stepForStage(journey.stage, 3)}
               content={3}
               label="선생님 추천·매칭"
-              sub={journey.stage === "ACTIVE" ? "매칭 완료" : "상담 후 진행"}
-              muted={journey.stage !== "ACTIVE" && journey.stage !== "MATCHING"}
+              sub={
+                journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
+                  ? "매칭 완료"
+                  : "상담 후 진행"
+              }
+              muted={
+                journey.stage !== "ACTIVE" &&
+                journey.stage !== "MATCHING" &&
+                journey.stage !== "FIRST_LESSON_PENDING"
+              }
             />
           </View>
 
