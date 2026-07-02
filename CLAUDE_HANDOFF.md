@@ -28,6 +28,7 @@
 19. [알려진 이슈 & 주의사항](#19-알려진-이슈--주의사항)
 20. [로컬 개발 체크리스트](#20-로컬-개발-체크리스트)
 21. [빠른 참조](#21-빠른-참조)
+22. [미구현 핵심 플로우](#22-미구현-핵심-플로우)
 
 ---
 
@@ -867,63 +868,120 @@ SiteContent / Testimonial / FaqItem — CMS (User FK 없음)
 
 ## 18. 구현 상태 & 미구현
 
-### ✅ 구현됨
+> **재확인 기준**: 2026-06-30 · `main` · `HANDOFF.md` 교차 검증
+
+### ✅ 구현됨 (웹)
 
 - 마케팅 전 페이지 + CMS + ISR 캐시
-- 4역할 인증·라우트 가드
-- 학생 플래너 (DnD), 질문, AI 답변
-- 상담·방문 시간·매니저 배정·매칭
-- 선생님 포털 (프로필·서류·학생 관리)
-- 매니저 포털 (상담·매칭·모니터링)
-- Admin CRUD + CMS + 데이터 조회
-- 인앱 알림 + Cron 배치
+- 4역할 인증·라우트 가드 (`STUDENT` / `TEACHER` / `MANAGER` / `CHIEF_MANAGER` / `ADMIN`)
+- 학생 플래너 (DnD), 일별 질문 (`Question` 모델), AI 답변 (`ANTHROPIC_API_KEY` 시)
+- 상담·방문 시간·매니저 배정·매칭 (매니저/Admin 수동)
+- `resolveStudentJourneyStage()` — 웹 `/dashboard`는 `ACTIVE`만 진입 (`FIRST_LESSON_PENDING` 포함 비활성)
+- 웹 가입 `POST /api/register/student` — `instantEnroll` 아닐 때 상담 booking 자동 생성
+- 선생님 포털 (프로필·서류·학생 관리·첫 수업 일정·과제 분배 API)
+- 매니저 포털 (상담·매칭·모니터링·강사 승인)
+- Admin CRUD + CMS + 데이터 조회 + **전환 퍼널** (`/admin/funnel`, `AnalyticsEvent` DB)
+- 인앱 알림 + Cron 배치 (`/api/cron/check-alerts`)
 - SMS (Solapi, env 설정 시)
-- 결제 UI + 결제 후 Chief 배정
+- 토스 결제 **위젯 UI** + success 페이지 → `completeStudentPayment()` (Chief 배정·구독 활성화)
+- Chief 매니저 배정 로직 (`getChiefManager` → `assignChiefManagerToStudent`)
 - 성별·기본 프로필 사진
 - 랜딩 V2 테마 (다크/라이트, 그린/블루)
+- 학생 웹 페이지: `/questions`, `/payments`, `/notifications`
 
-### ❌ 미구현 · 부분
+### ✅ 구현됨 (모바일 · Expo 56)
+
+- JWT 인증 (`/api/mobile/auth/*`) + AsyncStorage 토큰
+- Journey 기반 cold start 라우팅 (`mobile/app/index.tsx` → status / match / tabs)
+- 상담 퍼널: `consult/index` → (비로그인 pending) → signup attach → `consult/status` → `consult/match`
+- 탭 API 연동: 홈·학습·QnA·MY·알림·리포트 (`/api/mobile/*`)
+- QnA 채팅 (`QuestionMessage` 모델, `/api/mobile/qna`)
+- `ErrorState` / `EmptyState` 분리 (홈·학습·QnA·MY·status)
+- Expo 푸시 토큰 등록 (`expo-notifications` + `POST /api/mobile/push/register`)
+- 분석 이벤트 전송 (`POST /api/events` → DB)
+
+### ⚠️ 부분 구현
+
+| 항목 | 현재 상태 (코드 기준) |
+|------|----------------------|
+| 결제 | 토스 위젯은 웹에만 있음. **서버 PG 승인 없음** — `orderId`만으로 구독 활성화 |
+| 모바일 결제 | `checkout.tsx`가 `POST /api/mobile/payments/complete`에 `mobile-${Date.now()}` 전송 — **PG 없음** |
+| Chief 자동 배정 | 결제·`instantEnroll` 경로만. 일반 상담 신청(`createConsultationRequest`)은 **매니저 수동 배정** |
+| 선생님 매칭 | 매니저 `POST /api/manager/matches`로 즉시 `TeacherStudent` 생성 — **선생님 수락 단계 없음** |
+| 첫 수업 일정 | API + 교사 포털 UI 있음. 앱·학생 측 설정 UI 없음. `FIRST_LESSON_PENDING`은 **웹 journey만** |
+| 숙제 자동 분배 | API + 교사 포털 UI 있음. **매칭/첫 수업 후 자동 트리거 없음** (수동 호출) |
+| QnA 데이터 | 웹 대시보드=`Question`, 앱=`QuestionMessage` — **모델 이원화** |
+| 푸시 | 서버 발송(`expo-push.ts`) + 등록 있음. 실기기 E2E·`FIRST_LESSON_SET` 푸시 타입 미포함 |
+| Journey 단계 | 웹 `FIRST_LESSON_PENDING` 있음 / 앱 enum에 **없음** (`mobile/lib/student-journey.ts`) |
+| 방문 상담 시간 | 웹 `ConsultationBookingPage`만. **앱 미노출** |
+| 수업 입장 | `Lesson.joinUrl` 필드만 — 영상/화상 연동 **미검증** |
+
+### ❌ 미구현
 
 | 항목 | 상태 |
 |------|------|
-| 서버 결제 승인·웹훅 | ❌ |
+| 토스 서버 승인·웹훅 | ❌ `paymentKey`/`amount` 미검증 |
 | 이메일 발송 | ❌ |
-| Supabase Auth | ❌ (자체 인증) |
-| 자동 선생님 추천 | ❌ (수동 매칭) |
-| 실시간 채팅 | ❌ |
+| Supabase Auth | ❌ (자체 bcrypt + JWT) |
+| 자동 선생님 추천·매칭 알고리즘 | ❌ (매니저 수동) |
+| 선생님 매칭 수락/거절 워크플로 | ❌ |
+| 상담 접수 시 Chief 자동 배정 (비결제) | ❌ |
+| 매칭·첫 수업 후 숙제 자동 생성 | ❌ |
+| 실시간 채팅 (WebSocket) | ❌ |
 | AI 이미지 비전 | ❌ (URL 텍스트만) |
-| 학생 아바타 UI | 부분 (`gender` 저장만) |
 | i18n | ❌ (한국어 고정) |
 | E2E 테스트 | ❌ |
+| `POST /api/dev/skip-payment-enroll` | ❌ 프로덕션 `src/`에 **없음** (`.claude/worktrees/`에만 존재) |
 
-### 우선순위 제안
+### 우선순위 제안 (2026-06-30)
 
-1. **P0** — 토스 서버 승인 검증, 결제 위변조 방지
-2. **P0** — `CHIEF_MANAGER_EMAIL` 운영 문서화 + Vercel env
-3. **P1** — Supabase Storage RLS 점검
-4. **P1** — `assignDefaultManagerToStudent` 정리 (미사용)
-5. **P2** — 레거시 랜딩 컴포넌트 정리 (`LandingPage`, `Hero.tsx` 등)
-6. **P2** — `AdminCmsPage` 분할
+1. **P0** — 토스 서버 승인 검증 (`/api/payments/complete`, `/api/mobile/payments/complete`)
+2. **P0** — 모바일 checkout 실 PG 연동 또는 웹뷰 위임
+3. **P0** — `CHIEF_MANAGER_EMAIL` / `CHIEF_MANAGER` 역할 운영 세팅 문서화
+4. **P1** — QnA 모델 통합 (`Question` ↔ `QuestionMessage`)
+5. **P1** — 웹/앱 journey enum 동기화 (`FIRST_LESSON_PENDING`)
+6. **P1** — Supabase Storage RLS 점검
+7. **P2** — 레거시 랜딩 컴포넌트 정리 (`LandingPage`, `Hero.tsx` 등)
+8. **P2** — `AdminCmsPage` 분할
 
 ---
 
 ## 19. 알려진 이슈 & 주의사항
 
+### 결제 검증 우회 (P0 — 보안)
+
+| 위치 | 동작 | 위험 |
+|------|------|------|
+| `src/lib/student-payment.ts` | `completeStudentPayment()` — 주석상 **PG 검증 분리·미구현**. `paymentKey`/`amount` 미사용 | 결제 없이 구독+Chief 배정 가능 |
+| `POST /api/payments/complete` | NextAuth `STUDENT` 세션 + **non-empty `orderId`만** 검사 → `completeStudentPayment()` | 위젯 성공 URL만 알면 호출 가능 |
+| `POST /api/mobile/payments/complete` | Mobile JWT + **`orderId`만** 검사 | 앱에서 임의 orderId 전송 가능 |
+| `mobile/app/checkout.tsx` | `orderId: \`mobile-${Date.now()}\``, `amount: 740000` 하드코드 → 위 API 호출 | **실제 PG 없이** 결제 완료 UI 진입 |
+| `src/components/success/SuccessPaymentComplete.tsx` | success 리다이렉트 후 `/api/payments/complete` 호출 (`paymentKey` body에 포함하나 **서버 무시**) | 클라이언트 신뢰 |
+| `POST /api/dev/skip-payment-enroll` | **프로덕션 `src/app/api/`에 없음** — worktree 복사본에만 존재 | 로컬 혼동 주의 |
+
+토스 **시크릿 키·confirm API** — repo에 서버 승인 구현 **NOT FOUND** (`src/lib/toss-client.ts`는 클라이언트 키만).
+
+### 기타 이슈
+
 | 이슈 | 설명 |
 |------|------|
-| 결제 검증 없음 | Success URL·클라이언트 위젯만 신뢰 |
 | 토스 테스트 키 폴백 | `toss-client.ts` 하드코드 |
-| 로그인 P2022 | DB 스키마 ≠ Prisma → migrate 필수 |
+| 로그인 P2022 | DB 스키마 ≠ Prisma → `prisma migrate deploy` 필수 |
 | CMS 캐시 300s | 변경 후 최대 5분 지연 |
 | 합성 이메일 | `*@concord.local` — 실제 메일 없음 |
-| Admin setup | non-production에서 secret 없이 허용 가능 |
-| `instantEnroll` 에러 메시지 | `NO_DEFAULT_MANAGER` 체크하나 실제는 Chief 호출 |
+| Admin setup | non-production에서 `ADMIN_SETUP_SECRET` 없이 허용 가능 |
+| `instantEnroll` 에러 메시지 | `NO_DEFAULT_MANAGER` 체크하나 실제는 `getChiefManager()` 호출 |
 | Prisma connection_limit=1 | 병렬 쿼리 주의 |
+| QnA 모델 분리 | 웹 `Question` vs 앱 `QuestionMessage` — 답변·이력 불일치 가능 |
+| Journey drift | 웹 `FIRST_LESSON_PENDING` / 앱 미반영 |
+| `User.role` Prisma 주석 | `CHIEF_MANAGER` 누락 (런타임은 사용) |
+| `npm run build` | `prisma migrate deploy` 필요 — DB 없으면 실패 |
+| 모바일 tsc | `/(tabs)/` typed-route 경고 (`useAuth.ts`) |
 
 ### 코드에서 특이한 처리
 
 1. `auth.ts` `basePath: "/api/auth"` — `NEXTAUTH_URL`에 path 금지
-2. 일반 가입은 상담 레코드 미생성 — `/dashboard/consultation`에서 별도 신청
+2. 웹 일반 가입(`instantEnroll` false) — **가입 직후** `createConsultationRequest()` 호출 (2026-06 이후). 별도 `/dashboard/consultation` 방문 없이 booking 생성 가능
 3. `PricingPlanCard` CTA → `/checkout` (상담 모달 아님)
 4. `/?signup=1&instant=1` → 상담 모달 + Chief 즉시 배정
 5. `.cursor/rules/verify-build.mdc` — 변경 후 `npm run build` 확인
@@ -963,6 +1021,85 @@ npm run dev
 | 알림 배치 | `src/lib/run-alert-checks.ts` |
 | 방문 상담 | `src/lib/visit-consultation.ts` |
 | 강사 공개 목록 | `src/lib/public-teachers-cache.ts` |
+| 모바일 API 기본 URL | `mobile/lib/api.ts` (`EXPO_PUBLIC_API_URL`) |
+| Journey 단계 (웹) | `src/lib/student-journey.ts` |
+| Journey 단계 (앱) | `mobile/lib/student-journey.ts` |
+| 핸드오프 (아키텍처) | `HANDOFF.md` (루트) |
+
+---
+
+## 22. 미구현 핵심 플로우
+
+> 현재 **Prisma 스키마**(`prisma/schema.prisma`) 기준으로, 의도된 비즈니스 플로우 대비 구현 가능 여부와 빠진 필드를 정리합니다.  
+> 재확인: 2026-06-30
+
+### 22.1 Chief Manager 자동 배정
+
+| 항목 | 내용 |
+|------|------|
+| **의도** | 상담 접수 또는 결제 후 학생에게 Chief(대표) 매니저가 자동으로 붙는다 |
+| **현재 구현** | **부분** — `assignChiefManagerToStudent()` (`src/lib/student-enrollment.ts`) + `getChiefManager()` (`src/lib/chief-manager.ts`) |
+| **동작하는 경로** | `completeStudentPayment()` (웹·앱 결제 complete), `instantEnroll: true` 웹 가입, checkout success |
+| **동작 안 하는 경로** | 일반 상담 `createConsultationRequest()` — `ConsultationBooking.status=WAITING`, `managerId=null`, 매니저들에게 `NEW_STUDENT_WAITING` 알림만 |
+| **스키마로 가능?** | **예** — 기존 필드만으로 저장 가능 |
+| **사용 테이블·필드** | `ConsultationBooking.managerId`, `ConsultationBooking.status`, `ConsultationBooking.assignedAt`, `ManagerStudent` (managerId+studentId) |
+| **빠진 것 (스키마)** | 없음 (로직·트리거만 추가하면 됨) |
+| **빠진 것 (운영·코드)** | DB에 `User.role=CHIEF_MANAGER` 또는 `CHIEF_MANAGER_EMAIL` env; 상담 신청 직후 자동 `assignChiefManagerToStudent` 호출 분기 미구현 |
+
+### 22.2 선생님 배정 / 수락
+
+| 항목 | 내용 |
+|------|------|
+| **의도** | 매니저가 후보 선생님을 제안하고, 선생님이 수락한 뒤 학생과 매칭된다 |
+| **현재 구현** | **배정만** — `POST /api/manager/matches`, `POST /api/admin/matches`가 `TeacherStudent`를 **`isActive: true`로 즉시 생성**. `NEW_STUDENT_ASSIGNED` / `TEACHER_ASSIGNED` 알림 발송 |
+| **수락 UI/API** | **NOT FOUND** — 선생님 포털에 수락·거절 화면·엔드포인트 없음 |
+| **스키마로 가능?** | **부분** — 즉시 매칭 저장은 가능, **수락 대기 상태 표현 불가** |
+| **사용 테이블·필드** | `TeacherStudent` (teacherId, studentId, subjects, startDate, isActive, createdAt) |
+| **빠진 필드 (권장)** | `TeacherStudent.matchStatus` (`PENDING`/`ACCEPTED`/`DECLINED`) 또는 별도 `MatchProposal` 모델 (proposalId, teacherId, studentId, status, proposedAt, respondedAt) |
+| **빠진 것 (코드)** | 선생님 수락 API, pending 상태 조회, 거절 시 재매칭 큐, 앱 `consult/match`는 **조회 전용** (선생님 선택·수락 없음) |
+
+### 22.3 첫 수업 날짜 설정
+
+| 항목 | 내용 |
+|------|------|
+| **의도** | 매칭 후 선생님이 첫 수업 일시를 정하고, 학생 앱·journey가 `ACTIVE`로 전환된다 |
+| **현재 구현** | **API + 교사 포털 UI** — `PATCH /api/teacher/students/[id]/first-lesson` → `Lesson` create/update, `TeacherStudent.startDate` 갱신, `FIRST_LESSON_SET` 알림 |
+| **Journey** | 웹 `resolveStudentJourneyStage()`: `activeTeacherCount>0 && lessonCount>0` → `ACTIVE`, 그 전 → `FIRST_LESSON_PENDING` |
+| **앱** | `mobile/lib/student-journey.ts`에 **`FIRST_LESSON_PENDING` 없음** — 매칭 후에도 `MATCHING`/`ACTIVE` 혼동 가능 |
+| **스키마로 가능?** | **예** |
+| **사용 테이블·필드** | `Lesson` (studentId, teacherId, subject, startAt, durationMin, joinUrl, status), `TeacherStudent.startDate` |
+| **빠진 필드 (선택)** | `Lesson`에 `lessonType` (FIRST/REGULAR), `TeacherStudent.firstLessonAt` (중복 표현 정리용) — **필수는 아님** |
+| **빠진 것 (코드·UX)** | 학생/앱 측 첫 수업 확인·일정 변경 UI; `joinUrl` 화상 연동; 푸시 타입 `FIRST_LESSON_SET`이 `PUSH_NOTIFICATION_TYPES`에 **미포함** (`src/lib/notifications.ts`) |
+
+### 22.4 숙제 자동 분배
+
+| 항목 | 내용 |
+|------|------|
+| **의도** | 첫 수업·매칭 후 N일치 과제가 자동으로 학습 플랜에 깔린다 |
+| **현재 구현** | **수동 API** — `POST /api/teacher/students/[id]/homework-distribution` (`startDate`, `days` 4\|7, `tasks[]`, `repeatWeeks`) → `StudyPlan` + `StudyTask` 일괄 생성. UI: `TeacherStudentPlanTab.tsx` |
+| **자동 트리거** | **NOT FOUND** — 매칭 완료·첫 수업 설정 후 자동 호출 없음 |
+| **스키마로 가능?** | **저장은 예** / **규칙·템플릿 저장은 아니오** |
+| **사용 테이블·필드** | `StudyPlan.date`, `StudyTask` (title, isDone, order), `StudyPlan.comment` (선생님 코멘트) |
+| **빠진 필드 (권장)** | `HomeworkTemplate` (teacherId, subject, tasks JSON, defaultDays) 또는 `Student.homeworkProfile`; `StudyPlan.source` (`MANUAL`/`AUTO_DISTRIBUTION`) |
+| **빠진 것 (코드)** | 매칭·첫 수업 완료 시 hook/cron; 앱 학습 탭은 API로 **조회만** (자동 생성 없음); AI 기반 과제 생성 없음 |
+
+### 22.5 플로우 의존 관계 (요약)
+
+```
+상담 WAITING ──(수동)──► manager ASSIGNED ──(수동)──► consultation COMPLETED / journey MATCHING
+                                                              │
+                    ┌─────────────────────────────────────────┘
+                    ▼
+         manager POST /matches ──► TeacherStudent (즉시 active, 수락 없음)
+                    │
+                    ▼
+         teacher first-lesson API ──► Lesson + FIRST_LESSON_PENDING → ACTIVE (웹만)
+                    │
+                    ▼
+         teacher homework-distribution API ──► StudyPlan[] (수동, 자동 아님)
+
+결제 complete ──► assignChiefManager + Subscription ACTIVE  (PG 검증 없음 — §19)
+```
 
 ---
 
