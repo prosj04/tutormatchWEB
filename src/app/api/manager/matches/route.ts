@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { getManagerMatchingData } from "@/lib/manager-portal-data";
-import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
 import { requireManager } from "@/lib/manager-auth";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
@@ -118,8 +117,6 @@ export async function POST(request: Request) {
     body: `${targetTeacher.name} 선생님이 배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
     relatedId: teacherId,
   });
-
-  await trackJourneyActiveIfFirst(studentId);
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }

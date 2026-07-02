@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
@@ -62,6 +63,8 @@ export async function acceptTeacherStudentMatch(
     body: `${studentName} 학생이 배정을 수락했습니다. 첫 수업 날짜를 설정해 주세요.`,
     relatedId: studentId,
   });
+
+  await trackJourneyActiveIfFirst(studentId);
 
   return {
     ok: true,

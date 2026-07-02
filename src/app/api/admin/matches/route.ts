@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
+import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -62,19 +63,22 @@ export async function POST(request: Request) {
   });
 
   if (existing) {
+    const remainsActive = existing.isActive;
     const match = await prisma.teacherStudent.update({
       where: { id: existing.id },
       data: {
         subjects: subjects.trim(),
         startDate,
-        isActive: true,
+        isActive: remainsActive,
+        matchStatus: remainsActive ? "ACTIVE" : "PENDING_STUDENT_ACCEPT",
+        respondedAt: remainsActive ? existing.respondedAt ?? new Date() : null,
       },
       include: {
         teacher: { select: { id: true, name: true } },
         student: { select: { id: true, name: true, grade: true } },
       },
     });
-    await trackJourneyActiveIfFirst(studentId);
+    if (remainsActive) await trackJourneyActiveIfFirst(studentId);
     return NextResponse.json({ match });
   }
 
@@ -84,7 +88,9 @@ export async function POST(request: Request) {
       studentId,
       subjects: subjects.trim(),
       startDate,
-      isActive: true,
+      isActive: false,
+      matchStatus: "PENDING_STUDENT_ACCEPT",
+      respondedAt: null,
     },
     include: {
       teacher: { select: { id: true, name: true } },
@@ -92,7 +98,13 @@ export async function POST(request: Request) {
     },
   });
 
-  await trackJourneyActiveIfFirst(studentId);
+  await createNotification({
+    userId: student.userId,
+    type: "TEACHER_ASSIGNED",
+    title: "선생님이 배정되었습니다",
+    body: `${teacher.name} 선생님이 배정되었습니다. 선생님 정보를 확인하고 수락해 주세요.`,
+    relatedId: teacherId,
+  });
 
   return NextResponse.json({ match }, { status: 201 });
 }
