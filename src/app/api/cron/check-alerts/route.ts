@@ -22,7 +22,8 @@ export async function GET(request: Request) {
       result.questionsChecked +
       result.waitingBookingsChecked +
       result.pendingMatchesChecked +
-      result.firstLessonRemindersChecked,
+      result.firstLessonRemindersChecked +
+      result.subscriptionExpiryChecked,
     notificationsCreated: result.notificationsCreated,
     questionsChecked: result.questionsChecked,
     waitingBookingsChecked: result.waitingBookingsChecked,
@@ -30,6 +31,7 @@ export async function GET(request: Request) {
     weeklyCheckRan: result.weeklyCheckRan,
     pendingMatchesChecked: result.pendingMatchesChecked,
     firstLessonRemindersChecked: result.firstLessonRemindersChecked,
+    subscriptionExpiryChecked: result.subscriptionExpiryChecked,
     closedLessons: result.closedLessons,
     studySessionsWritten: result.studySessionsWritten,
   });

@@ -15,6 +15,7 @@ export type NotificationType =
   | "TEACHER_ASSIGNED"
   | "MATCH_ACCEPTANCE_REMINDER"
   | "FIRST_LESSON_REMINDER"
+  | "SUBSCRIPTION_EXPIRY_REMINDER"
   | "NEW_QUESTION"
   | "VISIT_TIMES_UPDATED";
 
@@ -130,6 +131,7 @@ export function getNotificationIcon(type: string): string {
     case "TEACHER_ASSIGNED":
     case "MATCH_ACCEPTANCE_REMINDER":
     case "FIRST_LESSON_REMINDER":
+    case "SUBSCRIPTION_EXPIRY_REMINDER":
       return "👤";
     case "NEW_QUESTION":
       return "✉️";
@@ -158,6 +160,8 @@ export function resolveNotificationHref(
       return "/dashboard";
     case "FIRST_LESSON_REMINDER":
       return "/teacher-portal/dashboard/students";
+    case "SUBSCRIPTION_EXPIRY_REMINDER":
+      return "/pricing";
     case "BOOKING_CONFIRMED":
       return "/dashboard/consultation";
     case "NEW_BOOKING":

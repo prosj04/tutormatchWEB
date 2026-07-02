@@ -52,6 +52,7 @@ export async function runAlertChecks() {
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
   let firstLessonRemindersChecked = 0;
+  let subscriptionExpiryChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
 
@@ -558,12 +559,77 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 7. Subscription expiry reminders ───────────────────────────────────────
+  //
+  // Daily cron-friendly reminders for active subscriptions ending in 5 days or
+  // 1 day. No auto-billing, no billing key flow — just an in-app renewal notice.
+
+  const now = new Date();
+  const expiryWindowEnd = new Date(now.getTime() + 6 * DAY_MS);
+  const expiringSubscriptions = await prisma.subscription.findMany({
+    where: {
+      status: "ACTIVE",
+      periodEnd: { not: null, gte: now, lt: expiryWindowEnd },
+    },
+    select: {
+      id: true,
+      periodEnd: true,
+      student: { select: { userId: true } },
+    },
+  });
+
+  const expiryCandidates = expiringSubscriptions
+    .map((subscription) => {
+      if (!subscription.periodEnd) return null;
+      const daysLeft = Math.ceil((subscription.periodEnd.getTime() - now.getTime()) / DAY_MS);
+      if (daysLeft !== 5 && daysLeft !== 1) return null;
+      return {
+        subscriptionId: subscription.id,
+        userId: subscription.student.userId,
+        daysLeft,
+        relatedId: `${subscription.id}:${daysLeft}`,
+      };
+    })
+    .filter((candidate): candidate is NonNullable<typeof candidate> => candidate != null);
+
+  subscriptionExpiryChecked = expiryCandidates.length;
+
+  if (expiryCandidates.length > 0) {
+    const relatedIds = expiryCandidates.map((candidate) => candidate.relatedId);
+    const recentExpiryNotifs = await prisma.notification.findMany({
+      where: {
+        type: "SUBSCRIPTION_EXPIRY_REMINDER",
+        relatedId: { in: relatedIds },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const expiryAlreadyNotified = new Set(
+      recentExpiryNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    const expiryToCreate = expiryCandidates
+      .filter((candidate) => !expiryAlreadyNotified.has(`${candidate.userId}:${candidate.relatedId}`))
+      .map((candidate) => ({
+        userId: candidate.userId,
+        type: "SUBSCRIPTION_EXPIRY_REMINDER",
+        title: "구독 만료 안내",
+        body: `구독이 ${candidate.daysLeft}일 후 만료됩니다. 계속 이용하려면 플랜을 연장해 주세요.`,
+        relatedId: candidate.relatedId,
+      }));
+
+    if (expiryToCreate.length > 0) {
+      await prisma.notification.createMany({ data: expiryToCreate });
+      notificationsCreated += expiryToCreate.length;
+    }
+  }
+
   return {
     questionsChecked,
     weeklyStudentsChecked,
     waitingBookingsChecked,
     pendingMatchesChecked,
     firstLessonRemindersChecked,
+    subscriptionExpiryChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
     closedLessons,
