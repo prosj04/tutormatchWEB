@@ -1,6 +1,7 @@
 import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
 import { PRICING_PLANS } from "@/lib/pricing-plans";
+import { confirmTossPayment } from "@/lib/toss-payments";
 
 type CompleteStudentPaymentParams = {
   studentId: string;
@@ -51,12 +52,11 @@ async function fetchCurrentCompletionState(studentId: string) {
 
 /**
  * 결제 완료 공통 처리.
- * - ACTIVE 구독을 생성/갱신한다.
+ * - Toss 서버 confirm 후 ACTIVE 구독을 생성/갱신한다.
  * - 결제 학생을 Chief 매니저에게 즉시 배정한다.
- * - orderId 기준 멱등성을 보장한다.
+ * - orderId 기준 멱등성을 보장한다 (COMPLETED 재호출 무해, FAILED 재시도 가능).
  *
- * 실제 PG 검증은 호출 라우트에서 수행할 수 있도록 분리하고, 이 함수는
- * 결제 완료 이후 학생 상태 전환을 idempotent하게 담당한다.
+ * 호출 라우트에서 paymentKey·amount·plan 유효성을 검증하고 전달해야 한다.
  */
 export async function completeStudentPayment({
   studentId,
@@ -75,11 +75,13 @@ export async function completeStudentPayment({
     where: { orderId },
   });
 
+  // Already finished — idempotent return without re-confirming Toss.
   if (existingCompletion?.status === "COMPLETED") {
     const state = await fetchCurrentCompletionState(existingCompletion.studentId);
     return { ...state, plan: existingCompletion.plan };
   }
 
+  // Another request is currently processing this orderId.
   if (existingCompletion?.status === "PROCESSING") {
     try {
       const state = await fetchCurrentCompletionState(existingCompletion.studentId);
@@ -89,19 +91,41 @@ export async function completeStudentPayment({
     }
   }
 
-  let completionCreated = false;
+  // FAILED or null — confirm with Toss before transitioning to PROCESSING.
+  // Toss treats a previously-captured FAILED-retry as ALREADY_PROCESSED_PAYMENT (allowed).
+  const safeAmount =
+    typeof amount === "number" && Number.isFinite(amount) ? amount : 0;
+  await confirmTossPayment(paymentKey ?? "", orderId, safeAmount);
+
+  const safeStoredAmount =
+    typeof amount === "number" && Number.isFinite(amount) ? amount : null;
+
+  let shouldResetOnFailure = false;
   try {
-    await prisma.paymentCompletion.create({
-      data: {
-        orderId,
-        studentId,
-        plan: normalizedPlan,
-        status: "PROCESSING",
-        paymentKey: paymentKey ?? null,
-        amount: typeof amount === "number" && Number.isFinite(amount) ? amount : null,
-      },
-    });
-    completionCreated = true;
+    if (existingCompletion?.status === "FAILED") {
+      // Reset FAILED → PROCESSING so the retry can proceed.
+      await prisma.paymentCompletion.update({
+        where: { orderId },
+        data: {
+          status: "PROCESSING",
+          plan: normalizedPlan,
+          paymentKey: paymentKey ?? null,
+          amount: safeStoredAmount,
+        },
+      });
+    } else {
+      await prisma.paymentCompletion.create({
+        data: {
+          orderId,
+          studentId,
+          plan: normalizedPlan,
+          status: "PROCESSING",
+          paymentKey: paymentKey ?? null,
+          amount: safeStoredAmount,
+        },
+      });
+    }
+    shouldResetOnFailure = true;
 
     const { booking, manager } = await assignChiefManagerToStudent({
       studentId,
@@ -140,7 +164,7 @@ export async function completeStudentPayment({
       data: {
         status: "COMPLETED",
         paymentKey: paymentKey ?? null,
-        amount: typeof amount === "number" && Number.isFinite(amount) ? amount : null,
+        amount: safeStoredAmount,
         subscriptionId: subscription.id,
         bookingId: booking.id,
         completedAt: new Date(),
@@ -149,11 +173,10 @@ export async function completeStudentPayment({
 
     return { subscription, booking, manager, plan: normalizedPlan };
   } catch (error) {
-    if (completionCreated) {
-      await prisma.paymentCompletion.update({
-        where: { orderId },
-        data: { status: "FAILED" },
-      }).catch(() => undefined);
+    if (shouldResetOnFailure) {
+      await prisma.paymentCompletion
+        .update({ where: { orderId }, data: { status: "FAILED" } })
+        .catch(() => undefined);
     }
     throw error;
   }

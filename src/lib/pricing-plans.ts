@@ -158,3 +158,13 @@ export const PRICING_PLAN_SLOTS: PricingPlanDefinition[] = [
 export function isHomePricingOneSubject(plan: PricingPlanDefinition): boolean {
   return plan.subjects === 1;
 }
+
+/** 결제 금액으로 플랜 ID 도출. 유효한 플랜 금액과 일치하지 않으면 null. */
+export function planIdFromAmount(amount: number): string | null {
+  for (const plan of PRICING_PLANS) {
+    if (calculatePlanTotal(plan.sessions, plan.subjects) === amount) {
+      return plan.id;
+    }
+  }
+  return null;
+}
