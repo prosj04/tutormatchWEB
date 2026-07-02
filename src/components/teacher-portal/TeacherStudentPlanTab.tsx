@@ -294,6 +294,11 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
                       }`}
                     >
                       {task.title}
+                      {task.source === "teacher" ? (
+                        <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                          선생님 숙제
+                        </span>
+                      ) : null}
                     </p>
                     {task.isDone && task.doneAt && (
                       <p className="mt-0.5 text-xs text-text-muted">

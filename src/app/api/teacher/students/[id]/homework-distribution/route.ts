@@ -144,20 +144,27 @@ export async function POST(request: Request, context: RouteContext) {
 
   const existingPlans = await prisma.studyPlan.findMany({
     where: { studentId, date: { in: dates.map((entry) => entry.date) } },
-    select: { id: true, date: true },
+    select: { id: true, date: true, tasks: { select: { order: true } } },
   });
-  const existingPlanMap = new Map(existingPlans.map((plan) => [plan.date, plan.id]));
+  const existingPlanMap = new Map(existingPlans.map((plan) => [plan.date, plan]));
 
   const plans = await prisma.$transaction(
     dates.map(({ date, tasks: dayTasks }) => {
-      const existingPlanId = existingPlanMap.get(date);
-      if (existingPlanId) {
+      const existingPlan = existingPlanMap.get(date);
+      if (existingPlan) {
+        const nextOrder =
+          existingPlan.tasks.length > 0
+            ? Math.max(...existingPlan.tasks.map((task) => task.order)) + 1
+            : 0;
         return prisma.studyPlan.update({
-          where: { id: existingPlanId },
+          where: { id: existingPlan.id },
           data: {
             tasks: {
-              deleteMany: {},
-              create: dayTasks.map((title, order) => ({ title, order })),
+              create: dayTasks.map((title, order) => ({
+                title,
+                order: nextOrder + order,
+                source: "teacher",
+              })),
             },
           },
           include: { tasks: { orderBy: { order: "asc" } } },
@@ -169,7 +176,7 @@ export async function POST(request: Request, context: RouteContext) {
           studentId,
           date,
           tasks: {
-            create: dayTasks.map((title, order) => ({ title, order })),
+            create: dayTasks.map((title, order) => ({ title, order, source: "teacher" })),
           },
         },
         include: { tasks: { orderBy: { order: "asc" } } },

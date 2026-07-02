@@ -11,6 +11,7 @@ export type StudentListItem = {
 export type StudyTaskItem = {
   id: string;
   title: string;
+  source?: string;
   isDone: boolean;
   doneAt: string | null;
   order: number;

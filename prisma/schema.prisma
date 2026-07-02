@@ -110,7 +110,8 @@ model StudyTask {
   planId String
   plan   StudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
   title  String
-  isDone Boolean   @default(false)
+  source String  @default("student") // "student" | "teacher"
+  isDone Boolean @default(false)
   doneAt DateTime?
   order  Int       @default(0)
 }
