@@ -1,7 +1,7 @@
 # CLAUDE_HANDOFF.md
 
 > **Concord Private Tutoring** (`premium-tutoring`) — 이 문서만 읽고 바로 개발에 참여할 수 있도록 작성된 핸드오프입니다.  
-> 마지막 갱신: **2026-06-24** · 브랜치 `main` · 원격 `https://github.com/prosj04/tutormatchWEB.git`
+> 마지막 갱신: **2026-07-03** · 브랜치 `main` · 원격 `https://github.com/prosj04/tutormatchWEB.git`
 
 ---
 
@@ -661,11 +661,22 @@ SiteContent / Testimonial / FaqItem — CMS (User FK 없음)
 
 ### Cron 배치 (`run-alert-checks.ts`)
 
-매일 00:00 UTC (`vercel.json`):
+운영 스케줄(2026-07-03 기준):
 
-1. **미답변 질문**: AI 답변 있음 + teacherAnswer 없음 + 24h 경과 → 선생님·매니저 (24h 중복 방지)
+- **Vercel Cron**: Hobby 플랜 제한 때문에 `/api/cron/check-alerts`는 `vercel.json`에서 매일 00:00 UTC만 등록.
+- **GitHub Actions**: `.github/workflows/hourly-alerts.yml`이 매시 정각 `https://tutormatch-web.vercel.app/api/cron/check-alerts`를 호출해 24h/1h 수업 리마인더를 보완.
+- 두 경로 모두 `Authorization: Bearer ${CRON_SECRET}` 필요. `CRON_SECRET`은 Vercel Production env와 GitHub Actions secret에 같은 값으로 설정되어야 한다.
+
+주요 작업:
+
+1. **미답변 질문**: 웹 `Question` + 모바일 `QuestionMessage`, 24h 경과 → 선생님/매니저 알림 (중복 방지)
 2. **주간 진도**: KST 월요일만, 전주 완료율 <50% / <70% → 매니저
 3. **대기 상담**: WAITING 2h+ → 모든 매니저
+4. **매칭 수락 대기**: `TeacherStudent.matchStatus=PENDING_STUDENT_ACCEPT`, 24h+ → 학생 수락 리마인더
+5. **첫 수업 미설정**: 수락 후 48h+ 첫 수업 없음 → 선생님 리마인더
+6. **구독 만료**: D-5/D-1 → 학생 `/pricing` 안내
+7. **수업 리마인더**: 시작 24h/1h 전 학생·선생님 알림
+8. **수업 완료 전환**: 과거 `SCHEDULED` 수업을 12h 버퍼 후 `COMPLETED`로 전환하고 lesson-source `StudySession` 재계산
 
 ### SMS (Solapi)
 
@@ -736,6 +747,7 @@ SiteContent / Testimonial / FaqItem — CMS (User FK 없음)
 | `NEXT_PUBLIC_TOSS_WIDGET_CLIENT_KEY` | 토스 위젯 |
 | `SUPABASE_SERVICE_ROLE_KEY` | CMS 업로드·setup-storage |
 | `SOLAPI_API_KEY` / `SOLAPI_API_SECRET` / `SOLAPI_SENDER_PHONE` | SMS |
+| `ENABLE_AUTO_HOMEWORK_DISTRIBUTION` | 첫 수업 설정 후 템플릿 기반 숙제 자동 분배. 기본 OFF, 운영에서 명시적으로 `true`일 때만 동작 |
 
 ### 주의
 
@@ -749,9 +761,17 @@ SiteContent / Testimonial / FaqItem — CMS (User FK 없음)
 | 항목 | 값 |
 |------|-----|
 | 호스팅 | Vercel (`tutormatch-web`) |
-| Cron | `GET /api/cron/check-alerts` 매일 00:00 UTC |
+| Cron | Vercel daily + GitHub Actions hourly (`.github/workflows/hourly-alerts.yml`) |
 | Build | `prisma migrate deploy && next build` |
 | postinstall | `prisma generate` |
+
+### 2026-07-03 운영 메모
+
+- Vercel Hobby 플랜은 hourly cron을 허용하지 않으므로 `vercel.json`의 `/api/cron/check-alerts`는 daily로 유지한다.
+- hourly alert는 GitHub Actions workflow가 담당한다. 배포 후 GitHub Actions secret `CRON_SECRET`과 Vercel Production env `CRON_SECRET`이 둘 다 존재하는지 확인한다.
+- `ENABLE_AUTO_HOMEWORK_DISTRIBUTION`은 Production env에 없으면 안전하게 OFF다. 자동 분배를 켤 때만 `true`로 추가한다.
+- Production deploy는 파일 수 제한을 피하려면 `vercel --prod --yes --archive=tgz`를 사용한다.
+- 배포 후 smoke test 최소 경로: `/`, `/pricing`, `/register`, `/dashboard/consultation`, `/admin/payments`, `/api/cron/check-alerts`(401 확인 후 secret 호출).
 
 ### 자주 나는 이슈
 

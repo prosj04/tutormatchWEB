@@ -1,0 +1,21 @@
+name: Hourly alert checks
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-alerts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call production alert cron
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          CRON_URL: https://tutormatch-web.vercel.app/api/cron/check-alerts
+        run: |
+          test -n "$CRON_SECRET"
+          curl --fail-with-body --show-error --silent \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$CRON_URL"

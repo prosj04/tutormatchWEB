@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/check-alerts",
-      "schedule": "0 * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/generate-monthly-reports",
