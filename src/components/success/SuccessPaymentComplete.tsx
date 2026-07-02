@@ -91,7 +91,9 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
         password: payload.password,
         redirect: false,
       });
-      return signResult?.ok ? "ok" : "error";
+      if (!signResult?.ok) return "error";
+      const result = await handleExistingStudent();
+      return result === "ok" ? "ok" : "error";
     }
 
     async function run() {

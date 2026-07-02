@@ -1,25 +1,22 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { requireMobileStudent } from "@/lib/mobile-auth";
 import { completeStudentPayment } from "@/lib/student-payment";
 
-/** 요금제 결제 완료 후 로그인 학생에게 Chief 매니저 즉시 배정 + 구독 활성화 */
+type RequestBody = {
+  orderId?: unknown;
+  paymentKey?: unknown;
+  amount?: unknown;
+  plan?: unknown;
+};
+
+/** POST /api/mobile/payments/complete — 모바일 결제 완료 후 구독 활성화 + Chief 매니저 배정 */
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id || session.user.role !== "STUDENT") {
-    return NextResponse.json({ error: "Student login required" }, { status: 401 });
-  }
+  const authResult = await requireMobileStudent(request);
+  if ("error" in authResult) return authResult.error;
+  const { student } = authResult;
 
-  const student = await prisma.student.findUnique({
-    where: { userId: session.user.id },
-    select: { id: true, name: true, grade: true },
-  });
-  if (!student) {
-    return NextResponse.json({ error: "Student not found" }, { status: 404 });
-  }
-
-  let body: { orderId?: unknown; paymentKey?: unknown; amount?: unknown; plan?: unknown };
+  let body: RequestBody;
   try {
     body = await request.json();
   } catch {
@@ -66,6 +63,4 @@ export async function POST(request: Request) {
     }
     throw e;
   }
-
-  return NextResponse.json({ ok: true, assigned: true });
 }

@@ -7,7 +7,7 @@
 /* Sub-page layout vars (color tokens already defined in globals.css) */
 :root{
   --sub-wrap:1200px;
-  --font-sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
+  --font-sans:var(--font-pretendard),"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
 }
 @media (min-width:1500px){ :root{ --sub-wrap:1320px; } }
 
