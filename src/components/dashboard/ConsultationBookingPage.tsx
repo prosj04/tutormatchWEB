@@ -300,6 +300,10 @@ export function ConsultationBookingPage({
                 className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-primary"
                 placeholder={notePlaceholder}
               />
+              <p className="panel-note">
+                미성년 학생의 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며, 입력하신
+                연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
+              </p>
               {error ? (
                 <p className="mt-3 text-sm text-accent" role="alert">
                   {error}
@@ -393,6 +397,10 @@ export function ConsultationBookingPage({
 
             {showVisitPicker ? (
               <div className="mt-6">
+                <p className="panel-note">
+                  미성년 학생의 방문 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며,
+                  입력하신 연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
+                </p>
                 <VisitTimesPicker
                   initial={activeBooking.visitPreferredTimes}
                   onSubmit={saveVisitTimes}

@@ -239,6 +239,10 @@ export function ConsultationSignupForm({
             {fieldErrors.terms ? <span className="field-error block">{fieldErrors.terms}</span> : null}
           </span>
         </label>
+        <p className="panel-note">
+          미성년 학생의 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며, 입력하신 연락처는
+          배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
+        </p>
       </div>
       <button
         type="button"
