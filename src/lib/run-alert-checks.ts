@@ -408,8 +408,21 @@ export async function runAlertChecks() {
       relatedId: string;
     }> = [];
 
+    const recentWaitingNotifs = await prisma.notification.findMany({
+      where: {
+        type: "NEW_STUDENT_WAITING",
+        relatedId: { in: waitingBookings.map((booking) => booking.id) },
+        createdAt: { gte: recentSince },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const waitingAlreadyNotified = new Set(
+      recentWaitingNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
     for (const booking of waitingBookings) {
       for (const manager of managers) {
+        if (waitingAlreadyNotified.has(`${manager.userId}:${booking.id}`)) continue;
         bookingNotifs.push({
           userId: manager.userId,
           type: "NEW_STUDENT_WAITING",
