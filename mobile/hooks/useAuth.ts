@@ -18,7 +18,7 @@ export function useAuth() {
     await saveTokens(data.accessToken, data.refreshToken);
     setIsLoggedIn(true);
     void registerPushToken().catch(() => {});
-    router.replace("/(tabs)/");
+    router.replace("/");
   }, [router]);
 
   const logout = useCallback(async () => {

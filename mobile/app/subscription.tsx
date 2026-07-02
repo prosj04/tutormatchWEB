@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { CheckIcon } from "../components/ui/Icons";
+import { ErrorState } from "../components/ui/ErrorState";
 import { SubHead } from "../components/ui/SubHead";
 import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
@@ -39,13 +40,23 @@ export default function SubscriptionScreen() {
   const { t } = useTheme();
   const [data, setData] = useState<MeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const load = React.useCallback(() => {
+    setLoading(true);
+    setError(false);
     apiFetch<MeData>("/api/mobile/me")
       .then(setData)
-      .catch(() => {})
+      .catch(() => {
+        setData(null);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const features =
     data?.subscription?.plan
@@ -62,6 +73,11 @@ export default function SubscriptionScreen() {
         <View style={styles.center}>
           <ActivityIndicator color={t.acc} />
         </View>
+      ) : error ? (
+        <ErrorState
+          title="구독 정보를 불러오지 못했어요"
+          onRetry={load}
+        />
       ) : (
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {data?.subscription ? (

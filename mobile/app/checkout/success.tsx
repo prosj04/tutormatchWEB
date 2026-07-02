@@ -8,6 +8,7 @@ import {
   font,
   status as statusS,
 } from "../../styles/app-styles";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 
@@ -40,8 +41,11 @@ export default function CheckoutSuccess() {
   const [me, setMe] = useState<MeData | null>(null);
   const [matches, setMatches] = useState<MatchesData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(false);
     Promise.all([
       apiFetch<MeData>("/api/mobile/me"),
       apiFetch<MatchesData>("/api/mobile/matches"),
@@ -50,8 +54,16 @@ export default function CheckoutSuccess() {
         setMe(m);
         setMatches(mt);
       })
-      .catch(() => {})
+      .catch(() => {
+        setMe(null);
+        setMatches(null);
+        setError(true);
+      })
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    load();
   }, []);
 
   const teacherLine =
@@ -84,6 +96,11 @@ export default function CheckoutSuccess() {
 
           {loading ? (
             <ActivityIndicator color={t.acc} style={{ marginTop: 16 }} />
+          ) : error ? (
+            <ErrorState
+              title="결제 완료 정보를 불러오지 못했어요"
+              onRetry={load}
+            />
           ) : (
             <View style={[statusS.metaCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
               <MetaLine label="플랜" value={me?.subscription?.planLabel ?? "플랜 확인 중"} />

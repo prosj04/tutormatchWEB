@@ -15,6 +15,7 @@ import {
 } from "../styles/app-styles";
 import { SubHead } from "../components/ui/SubHead";
 import { EmptyState } from "../components/ui/EmptyState";
+import { ErrorState } from "../components/ui/ErrorState";
 import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
 import { accTint } from "../theme/tokens";
@@ -77,12 +78,14 @@ export default function NotificationsScreen() {
   const { t } = useTheme();
   const [data, setData] = useState<NotificationsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
+    setError(false);
     apiFetch<NotificationsData>("/api/mobile/notifications")
       .then(setData)
-      .catch(() => setData(null))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -123,7 +126,9 @@ export default function NotificationsScreen() {
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
-        ) : !data || sections.length === 0 ? (
+        ) : error ? (
+          <ErrorState onRetry={load} />
+        ) : sections.length === 0 ? (
           <EmptyState
             title="새 알림이 없어요"
             description="수업·리포트·메시지 알림이 오면 여기에 표시됩니다."

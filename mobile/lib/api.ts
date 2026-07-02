@@ -55,6 +55,9 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   if (!res.ok) {
     const body = await res.text();
+    if (res.status === 401) {
+      await clearTokens();
+    }
     throw new Error(`API ${res.status}: ${body}`);
   }
 

@@ -28,7 +28,7 @@ export default function Index() {
         const journey = await apiFetch<JourneySnapshot>("/api/mobile/me/journey");
         await clearJourneySkipIfStageChanged(journey.stage);
 
-        if (journey.stage === "MATCHING" && journey.activeTeacherCount > 0) {
+        if (journey.stage === "MATCHING") {
           setTarget("/consult/match");
         } else if (
           needsConsultationTracking(journey.stage) &&
@@ -39,7 +39,8 @@ export default function Index() {
           setTarget("/(tabs)/");
         }
       } catch {
-        setTarget("/(tabs)/");
+        const remainingToken = await getAccessToken();
+        setTarget(remainingToken ? "/(tabs)/" : "/(auth)/onboarding");
       }
       SplashScreen.hideAsync();
     });

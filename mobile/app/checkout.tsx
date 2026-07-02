@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -12,6 +13,7 @@ import {
   shadowSm,
 } from "../styles/app-styles";
 import { SubHead } from "../components/ui/SubHead";
+import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
 
 // ─── 주문 내역 라인 (.co-line / .co-line.total) ────────────────────────────────
@@ -62,6 +64,29 @@ function CoLine({
 export default function Checkout() {
   const { t } = useTheme();
   const router = useRouter();
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function completePayment() {
+    if (paying) return;
+    setPaying(true);
+    setError(null);
+    try {
+      await apiFetch<{ ok: boolean }>("/api/mobile/payments/complete", {
+        method: "POST",
+        body: JSON.stringify({
+          orderId: `mobile-${Date.now()}`,
+          amount: 740000,
+          plan: "8-1",
+        }),
+      });
+      router.replace("/checkout/success");
+    } catch {
+      setError("결제 완료 처리에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setPaying(false);
+    }
+  }
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -111,11 +136,22 @@ export default function Checkout() {
 
         {/* .cta-bar */}
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.bg }]}>
+          {error ? (
+            <Text style={[styles.errorText, { color: t.accText }]}>{error}</Text>
+          ) : null}
           <Pressable
-            style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-            onPress={() => router.replace("/checkout/success")}
+            disabled={paying}
+            style={[
+              ctaBarS.btn,
+              styles.ctaBtnShadow,
+              { backgroundColor: t.acc, shadowColor: t.acc },
+              paying && styles.disabledBtn,
+            ]}
+            onPress={() => void completePayment()}
           >
-            <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>740,000원 결제하기</Text>
+            <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>
+              {paying ? "결제 처리 중…" : "740,000원 결제하기"}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -164,4 +200,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   ctaBtnText: { fontFamily: font.extrabold, fontSize: 16, textAlign: "center" },
+  errorText: { marginBottom: 8, fontSize: 12, fontFamily: font.bold, textAlign: "center" },
+  disabledBtn: { opacity: 0.65 },
 });

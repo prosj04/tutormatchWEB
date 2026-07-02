@@ -226,7 +226,7 @@ export default function ConsultStatus() {
               >
                 <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>홈으로</Text>
               </Pressable>
-              {journey.stage === "MATCHING" && journey.activeTeacherCount > 0 && (
+              {journey.stage === "MATCHING" && (
                 <Pressable style={styles.altBtn} onPress={() => router.push("/consult/match")}>
                   <Text style={[styles.altText, { color: t.accText }]}>추천 선생님 보기</Text>
                 </Pressable>

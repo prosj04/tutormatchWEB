@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -18,6 +18,7 @@ import {
 } from "../../styles/app-styles";
 import { SubHead } from "../../components/ui/SubHead";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
@@ -38,12 +39,14 @@ function RecCard({
   edu,
   why,
   initials,
+  accepted,
 }: {
   name: string;
   subject: string;
   edu: string;
   why: string;
   initials: string;
+  accepted: boolean;
 }) {
   const { t } = useTheme();
   return (
@@ -61,7 +64,12 @@ function RecCard({
             <View style={[styles.subj, { backgroundColor: accTint(t, 0.10) }]}>
               <Text style={[styles.subjText, { color: t.accText }]}>{subject}</Text>
             </View>
-          </View>
+            {accepted ? (
+              <View style={[styles.acceptedPill, { backgroundColor: accTint(t, 0.16) }]}>
+                <Text style={[styles.acceptedPillText, { color: t.accText }]}>수락 완료</Text>
+              </View>
+            ) : null}
+            </View>
           <Text style={[recS.edu, { color: t.mut }]}>{edu}</Text>
         </View>
       </View>
@@ -85,6 +93,7 @@ interface MatchesData {
     experience: string;
     why: string;
     initials: string;
+    accepted: boolean;
   }>;
 }
 
@@ -93,13 +102,50 @@ export default function ConsultMatch() {
   const router = useRouter();
   const [data, setData] = useState<MatchesData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [accepting, setAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(false);
+    setAcceptError(null);
     apiFetch<MatchesData>("/api/mobile/matches")
-      .then(setData)
-      .catch(() => setData(null))
+      .then((res) => { setData(res); })
+      .catch(() => {
+        setData(null);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const pendingTeacher = data?.teachers.find((teacher) => !teacher.accepted) ?? data?.teachers[0];
+  const allAccepted = data?.teachers.length
+    ? data.teachers.every((teacher) => teacher.accepted)
+    : false;
+
+  async function handleAcceptTeacher() {
+    if (!pendingTeacher || pendingTeacher.accepted) {
+      router.replace("/");
+      return;
+    }
+
+    setAccepting(true);
+    setAcceptError(null);
+    try {
+      await apiFetch<{ ok: boolean; accepted: boolean }>("/api/mobile/matches", {
+        method: "POST",
+        body: JSON.stringify({ teacherId: pendingTeacher.id }),
+      });
+      router.replace("/");
+    } catch {
+      setAcceptError("선생님 수락 처리에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setAccepting(false);
+    }
+  }
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -111,6 +157,11 @@ export default function ConsultMatch() {
             <View style={styles.center}>
               <ActivityIndicator color={t.acc} />
             </View>
+          ) : error ? (
+            <ErrorState
+              title="추천 선생님을 불러오지 못했어요"
+              onRetry={load}
+            />
           ) : !data?.teachers.length ? (
             <EmptyState
               title="아직 추천 선생님이 없어요"
@@ -135,6 +186,7 @@ export default function ConsultMatch() {
                   edu={`${teacher.education}${teacher.experience ? ` · ${teacher.experience}` : ""}`}
                   why={teacher.why}
                   initials={teacher.initials}
+                  accepted={teacher.accepted}
                 />
               ))}
             </>
@@ -144,12 +196,26 @@ export default function ConsultMatch() {
 
         {data && data.teachers.length > 0 && (
           <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.bg }]}>
-            <Text style={[ctaBarS.sub, { color: t.mut }]}>선생님이 마음에 드시면 수업을 시작해요</Text>
+            {acceptError ? (
+              <Text style={[styles.acceptError, { color: t.accText }]}>{acceptError}</Text>
+            ) : null}
+            <Text style={[ctaBarS.sub, { color: t.mut }]}>
+              {allAccepted
+                ? "수락이 완료되었어요. 선생님이 첫 수업 날짜를 안내할 예정이에요"
+                : "선생님 정보를 확인한 뒤 배정을 수락해 주세요"}
+            </Text>
             <Pressable
               style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-              onPress={() => router.push("/subscribe")}
+              disabled={accepting}
+              onPress={() => void handleAcceptTeacher()}
             >
-              <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>이 선생님으로 시작하기</Text>
+              <Text style={[styles.ctaBtnText, { color: t.onAcc }]}>
+                {accepting
+                  ? "수락 처리 중…"
+                  : allAccepted
+                    ? "홈으로 이동"
+                    : "이 선생님 수락하기"}
+              </Text>
             </Pressable>
           </View>
         )}
@@ -190,7 +256,10 @@ const styles = StyleSheet.create({
   recNmRow: { flexDirection: "row", alignItems: "center", gap: 7, flexWrap: "wrap" },
   subj: { paddingVertical: 3, paddingHorizontal: 9, borderRadius: 999 },
   subjText: { fontSize: 11, fontFamily: font.bold },
+  acceptedPill: { paddingVertical: 3, paddingHorizontal: 9, borderRadius: 999 },
+  acceptedPillText: { fontSize: 11, fontFamily: font.bold },
   why: { fontSize: 12.5, lineHeight: 19 },
+  acceptError: { marginBottom: 8, fontSize: 12, fontFamily: font.bold, textAlign: "center" },
   ctaBtnShadow: {
     shadowOffset: { width: 0, height: 10 },
     shadowRadius: 22,

@@ -66,7 +66,7 @@ export default function Signup() {
       if (data.consultationAttached || pending) {
         router.replace("/consult/status");
       } else {
-        router.replace("/(tabs)");
+        router.replace("/");
       }
     } catch {
       setError("네트워크 오류가 발생했습니다.");

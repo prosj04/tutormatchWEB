@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,7 +10,9 @@ import {
 } from "react-native";
 
 import { Avatar } from "../../components/ui/Avatar";
+import { EmptyState } from "../../components/ui/EmptyState";
 import { CheckIcon } from "../../components/ui/Icons";
+import { ErrorState } from "../../components/ui/ErrorState";
 import { SubHead } from "../../components/ui/SubHead";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
@@ -58,13 +60,22 @@ export default function TeacherScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!id) return;
+    setLoading(true);
+    setError(false);
     apiFetch<{ tutor: Tutor }>(`/api/mobile/tutors/${id}`)
       .then((d) => setTutor(d.tutor))
-      .catch(() => setError(true))
+      .catch(() => {
+        setTutor(null);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -76,9 +87,16 @@ export default function TeacherScreen() {
         <View style={styles.center}>
           <ActivityIndicator color={t.acc} />
         </View>
-      ) : error || !tutor ? (
+      ) : error ? (
         <View style={styles.center}>
-          <Text style={[styles.errText, { color: t.mut }]}>선생님 정보를 불러올 수 없습니다.</Text>
+          <ErrorState onRetry={load} />
+        </View>
+      ) : !tutor ? (
+        <View style={styles.center}>
+          <EmptyState
+            title="선생님 정보를 찾을 수 없어요"
+            description="배정 정보가 갱신되면 다시 확인해 주세요."
+          />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
