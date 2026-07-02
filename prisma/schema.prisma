@@ -39,6 +39,7 @@ model Student {
   reviews             TutorReview[]
   studySessions       StudySession[]
   subscriptions       Subscription[]
+  paymentCompletions   PaymentCompletion[]
   tokenWallets        TokenWallet[]
   monthlyReports      MonthlyReport[]
   questionMessages    QuestionMessage[]
@@ -313,6 +314,26 @@ model Subscription {
   periodStart DateTime  @default(now())
   periodEnd   DateTime?
   createdAt   DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([studentId, status])
+}
+
+/// 결제 완료 처리 기록 (주문번호 기준 멱등성 보장)
+model PaymentCompletion {
+  id             String   @id @default(uuid())
+  orderId        String   @unique
+  studentId      String
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  plan           String
+  status         String   @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
+  paymentKey     String?
+  amount         Int?
+  subscriptionId String?
+  bookingId      String?
+  createdAt      DateTime @default(now())
+  completedAt    DateTime?
+  updatedAt      DateTime @default(now()) @updatedAt
 
   @@index([studentId])
   @@index([studentId, status])
