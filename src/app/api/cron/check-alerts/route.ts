@@ -21,13 +21,15 @@ export async function GET(request: Request) {
     checked:
       result.questionsChecked +
       result.waitingBookingsChecked +
-      result.pendingMatchesChecked,
+      result.pendingMatchesChecked +
+      result.firstLessonRemindersChecked,
     notificationsCreated: result.notificationsCreated,
     questionsChecked: result.questionsChecked,
     waitingBookingsChecked: result.waitingBookingsChecked,
     weeklyStudentsChecked: result.weeklyStudentsChecked,
     weeklyCheckRan: result.weeklyCheckRan,
     pendingMatchesChecked: result.pendingMatchesChecked,
+    firstLessonRemindersChecked: result.firstLessonRemindersChecked,
     closedLessons: result.closedLessons,
     studySessionsWritten: result.studySessionsWritten,
   });

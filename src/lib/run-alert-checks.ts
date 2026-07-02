@@ -51,6 +51,7 @@ export async function runAlertChecks() {
   let weeklyStudentsChecked = 0;
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
+  let firstLessonRemindersChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
 
@@ -481,11 +482,88 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 6. Accepted match first-lesson scheduling reminders ────────────────────
+  //
+  // Active matches older than 48h should have at least one non-cancelled lesson.
+  // If not, remind the assigned teacher to schedule the first lesson. This keeps
+  // the accept-only flow moving without adding decline/reassign paths.
+
+  const firstLessonCutoff = new Date(Date.now() - 2 * DAY_MS);
+  const activeMatches = await prisma.teacherStudent.findMany({
+    where: { isActive: true, createdAt: { lt: firstLessonCutoff } },
+    select: {
+      id: true,
+      studentId: true,
+      teacherId: true,
+      student: { select: { name: true } },
+      teacher: { select: { userId: true } },
+    },
+  });
+
+  if (activeMatches.length > 0) {
+    const reminderCandidates: Array<{
+      matchId: string;
+      userId: string;
+      studentName: string;
+    }> = [];
+
+    for (const match of activeMatches) {
+      const existingLesson = await prisma.lesson.findFirst({
+        where: {
+          studentId: match.studentId,
+          teacherId: match.teacherId,
+          status: { not: "CANCELLED" },
+        },
+        select: { id: true },
+      });
+      if (existingLesson) continue;
+
+      reminderCandidates.push({
+        matchId: match.id,
+        userId: match.teacher.userId,
+        studentName: match.student.name,
+      });
+    }
+
+    firstLessonRemindersChecked = reminderCandidates.length;
+
+    if (reminderCandidates.length > 0) {
+      const matchIdsNeedingLesson = reminderCandidates.map((candidate) => candidate.matchId);
+      const recentFirstLessonNotifs = await prisma.notification.findMany({
+        where: {
+          type: "FIRST_LESSON_REMINDER",
+          relatedId: { in: matchIdsNeedingLesson },
+          createdAt: { gte: recentSince },
+        },
+        select: { userId: true, relatedId: true },
+      });
+      const firstLessonAlreadyNotified = new Set(
+        recentFirstLessonNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+      );
+
+      const firstLessonToCreate = reminderCandidates
+        .filter((candidate) => !firstLessonAlreadyNotified.has(`${candidate.userId}:${candidate.matchId}`))
+        .map((candidate) => ({
+          userId: candidate.userId,
+          type: "FIRST_LESSON_REMINDER",
+          title: "첫 수업 일정을 설정해 주세요",
+          body: `${candidate.studentName} 학생이 배정을 수락했습니다. 첫 수업 일정을 설정해 주세요.`,
+          relatedId: candidate.matchId,
+        }));
+
+      if (firstLessonToCreate.length > 0) {
+        await prisma.notification.createMany({ data: firstLessonToCreate });
+        notificationsCreated += firstLessonToCreate.length;
+      }
+    }
+  }
+
   return {
     questionsChecked,
     weeklyStudentsChecked,
     waitingBookingsChecked,
     pendingMatchesChecked,
+    firstLessonRemindersChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
     closedLessons,
