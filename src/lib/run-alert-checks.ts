@@ -54,6 +54,7 @@ export async function runAlertChecks() {
   let pendingMatchesChecked = 0;
   let firstLessonRemindersChecked = 0;
   let subscriptionExpiryChecked = 0;
+  let lessonRemindersChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
 
@@ -723,6 +724,92 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 8. Upcoming lesson reminders ───────────────────────────────────────────
+  //
+  // Hourly cron windows: send once for lessons roughly 24h and 1h away.
+  // relatedId includes the reminder bucket, so repeated hourly runs stay safe.
+
+  const lessonWindowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+  const upcomingLessons = await prisma.lesson.findMany({
+    where: {
+      status: "SCHEDULED",
+      startAt: { gte: now, lt: lessonWindowEnd },
+    },
+    select: {
+      id: true,
+      startAt: true,
+      student: { select: { name: true, userId: true } },
+      teacher: { select: { name: true, userId: true } },
+    },
+  });
+
+  const lessonReminderCandidates: Array<{
+    userId: string;
+    relatedId: string;
+    title: string;
+    body: string;
+  }> = [];
+
+  for (const lesson of upcomingLessons) {
+    const minutesUntil = Math.round((lesson.startAt.getTime() - now.getTime()) / 60_000);
+    const bucket = minutesUntil >= 23.5 * 60 && minutesUntil <= 24.5 * 60
+      ? "24h"
+      : minutesUntil >= 30 && minutesUntil <= 90
+        ? "1h"
+        : null;
+    if (!bucket) continue;
+
+    const when = lesson.startAt.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+    const relatedId = `${lesson.id}:${bucket}`;
+    lessonReminderCandidates.push(
+      {
+        userId: lesson.student.userId,
+        relatedId,
+        title: bucket === "24h" ? "내일 수업이 있습니다" : "곧 수업이 시작됩니다",
+        body: `${lesson.teacher.name} 선생님과의 수업이 ${when}에 예정되어 있습니다.`,
+      },
+      {
+        userId: lesson.teacher.userId,
+        relatedId,
+        title: bucket === "24h" ? "내일 수업이 있습니다" : "곧 수업이 시작됩니다",
+        body: `${lesson.student.name} 학생과의 수업이 ${when}에 예정되어 있습니다.`,
+      },
+    );
+  }
+
+  lessonRemindersChecked = lessonReminderCandidates.length;
+
+  if (lessonReminderCandidates.length > 0) {
+    const lessonReminderRelatedIds = Array.from(
+      new Set(lessonReminderCandidates.map((candidate) => candidate.relatedId)),
+    );
+    const recentLessonNotifs = await prisma.notification.findMany({
+      where: {
+        type: "LESSON_REMINDER",
+        relatedId: { in: lessonReminderRelatedIds },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const lessonAlreadyNotified = new Set(
+      recentLessonNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    const lessonToCreate = lessonReminderCandidates
+      .filter((candidate) => !lessonAlreadyNotified.has(`${candidate.userId}:${candidate.relatedId}`))
+      .map((candidate) => ({
+        userId: candidate.userId,
+        type: "LESSON_REMINDER",
+        title: candidate.title,
+        body: candidate.body,
+        relatedId: candidate.relatedId,
+      }));
+
+    if (lessonToCreate.length > 0) {
+      await prisma.notification.createMany({ data: lessonToCreate });
+      notificationsCreated += lessonToCreate.length;
+    }
+  }
+
   return {
     questionsChecked,
     qnaMessagesChecked,
@@ -731,6 +818,7 @@ export async function runAlertChecks() {
     pendingMatchesChecked,
     firstLessonRemindersChecked,
     subscriptionExpiryChecked,
+    lessonRemindersChecked,
     notificationsCreated,
     weeklyCheckRan: prevWeek != null,
     closedLessons,
