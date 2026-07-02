@@ -19,7 +19,8 @@ type FieldKey =
   | "passwordConfirm"
   | "grade"
   | "subjects"
-  | "gender";
+  | "gender"
+  | "terms";
 
 type ConsultationSignupFormProps = {
   onSuccess?: () => void;
@@ -41,6 +42,7 @@ export function ConsultationSignupForm({
   const [grade, setGrade] = useState<string>("");
   const [gender, setGender] = useState<ProfileGender | "">("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [termsAgreed, setTermsAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,6 +68,7 @@ export function ConsultationSignupForm({
     if (!grade) next.grade = "학년을 선택해 주세요.";
     if (!gender) next.gender = "성별을 선택해 주세요.";
     if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
+    if (!termsAgreed) next.terms = "이용약관과 개인정보처리방침에 동의해 주세요.";
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -216,6 +219,26 @@ export function ConsultationSignupForm({
           </div>
           {fieldErrors.subjects ? <p className="field-error">{fieldErrors.subjects}</p> : null}
         </div>
+        <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
+          <input
+            type="checkbox"
+            checked={termsAgreed}
+            onChange={(e) => setTermsAgreed(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
+          />
+          <span>
+            상담 신청을 위해{" "}
+            <Link href="/terms" target="_blank" rel="noopener" className="font-semibold text-primary underline">
+              이용약관
+            </Link>
+            과{" "}
+            <Link href="/privacy" target="_blank" rel="noopener" className="font-semibold text-primary underline">
+              개인정보처리방침
+            </Link>
+            에 동의합니다.
+            {fieldErrors.terms ? <span className="field-error block">{fieldErrors.terms}</span> : null}
+          </span>
+        </label>
       </div>
       <button
         type="button"
