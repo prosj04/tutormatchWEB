@@ -108,22 +108,14 @@ export async function POST(request: Request) {
     }),
   ]);
 
-  await Promise.all([
-    createNotification({
-      userId: targetTeacher.userId,
-      type: "NEW_STUDENT_ASSIGNED",
-      title: "새로운 학생이 배정되었습니다",
-      body: `${student.name} 학생이 배정되었습니다. 담당 과목: ${subjects}`,
-      relatedId: studentId,
-    }),
-    createNotification({
-      userId: student.userId,
-      type: "TEACHER_ASSIGNED",
-      title: "선생님이 배정되었습니다",
-      body: `${targetTeacher.name} 선생님이 배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
-      relatedId: teacherId,
-    }),
-  ]);
+  // 선생님에게는 학생이 배정을 수락한 시점에 알림을 보낸다 (src/app/api/mobile/matches/route.ts 참고).
+  await createNotification({
+    userId: student.userId,
+    type: "TEACHER_ASSIGNED",
+    title: "선생님이 배정되었습니다",
+    body: `${targetTeacher.name} 선생님이 배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
+    relatedId: teacherId,
+  });
 
   await trackJourneyActiveIfFirst(studentId);
 
