@@ -41,3 +41,15 @@ prisma/dev.db-journal
 next-env.d.ts
 
 /src/generated/prisma
+
+# local/session artifacts
+admin_cookies.txt
+cookies.txt
+*.bak
+concord_bizplan.rtf
+
+# AI tooling (per-machine)
+.claude/
+.cursor/
+.hermes/
+mobile/.hermes/
