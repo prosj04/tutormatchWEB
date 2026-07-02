@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { addDays, distributeTasks } from "@/lib/homework-distribution";
 import { prisma } from "@/lib/prisma";
 import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
 import { requireTeacher } from "@/lib/teacher-auth";
@@ -19,14 +20,6 @@ function isValidDateString(value: string) {
   return !Number.isNaN(date.getTime()) && value === date.toISOString().slice(0, 10);
 }
 
-function addDays(date: string, offset: number) {
-  const [year, month, day] = date.split("-").map(Number);
-  const d = new Date(year, month - 1, day + offset, 12, 0, 0, 0);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate(),
-  ).padStart(2, "0")}`;
-}
-
 function parseTasks(raw: unknown) {
   if (Array.isArray(raw)) {
     return raw
@@ -38,58 +31,6 @@ function parseTasks(raw: unknown) {
     .split("\n")
     .map((line) => line.replace(/^[-*•\d.)\s]+/, "").trim())
     .filter(Boolean);
-}
-
-function distributeTasks(tasks: string[], days: 4 | 7) {
-  const buckets = Array.from({ length: days }, () => [] as string[]);
-  if (tasks.length === 0) return buckets;
-
-  const activeDays = Math.min(days, tasks.length);
-  // 앞쪽 날짜에 살짝 더 많은 과제를 배치하되, 가능한 모든 날짜에 최소 1개씩 배분한다.
-  const weights = Array.from({ length: activeDays }, (_, index) => activeDays - index + 1);
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  const baseCounts = weights.map((weight) => Math.floor((tasks.length * weight) / totalWeight));
-
-  if (tasks.length >= activeDays) {
-    for (let i = 0; i < activeDays; i += 1) {
-      baseCounts[i] = Math.max(1, baseCounts[i]);
-    }
-  }
-
-  let assigned = baseCounts.reduce((sum, count) => sum + count, 0);
-  const remainders = weights
-    .map((weight, index) => ({
-      index,
-      value: (tasks.length * weight) / totalWeight - Math.floor((tasks.length * weight) / totalWeight),
-    }))
-    .sort((a, b) => b.value - a.value);
-
-  while (assigned < tasks.length) {
-    for (const { index } of remainders) {
-      if (assigned >= tasks.length) break;
-      baseCounts[index] += 1;
-      assigned += 1;
-    }
-  }
-
-  while (assigned > tasks.length) {
-    for (let i = activeDays - 1; i >= 0; i -= 1) {
-      if (assigned <= tasks.length) break;
-      if (baseCounts[i] > 1) {
-        baseCounts[i] -= 1;
-        assigned -= 1;
-      }
-    }
-  }
-
-  let cursor = 0;
-  for (let dayIndex = 0; dayIndex < activeDays; dayIndex += 1) {
-    const count = baseCounts[dayIndex];
-    buckets[dayIndex].push(...tasks.slice(cursor, cursor + count));
-    cursor += count;
-  }
-
-  return buckets;
 }
 
 export async function POST(request: Request, context: RouteContext) {

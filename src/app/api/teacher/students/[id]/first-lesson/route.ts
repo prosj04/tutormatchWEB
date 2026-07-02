@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { autoApplyFirstLessonHomeworkTemplate } from "@/lib/homework-distribution";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
@@ -120,6 +121,13 @@ export async function PATCH(request: Request, context: RouteContext) {
     title: "첫 수업 일정이 정해졌습니다",
     body: `${teacher.name} 선생님과의 첫 수업이 ${date} ${time}에 시작됩니다.`,
     relatedId: lesson.id,
+  });
+
+  await autoApplyFirstLessonHomeworkTemplate({
+    teacherId: teacher.id,
+    studentId,
+    lessonId: lesson.id,
+    startDate: date,
   });
 
   return NextResponse.json({ lesson, startDate: date });
