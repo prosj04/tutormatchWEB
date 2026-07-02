@@ -71,11 +71,11 @@ export async function POST(request: Request) {
   }
 
   const existing = await prisma.teacherStudent.findFirst({
-    where: { studentId, isActive: true },
+    where: { studentId },
   });
   if (existing) {
     return NextResponse.json(
-      { error: "이미 매칭된 학생입니다." },
+      { error: "이미 배정된 선생님이 있는 학생입니다." },
       { status: 409 },
     );
   }
@@ -89,7 +89,8 @@ export async function POST(request: Request) {
         studentId,
         subjects,
         startDate,
-        isActive: true,
+        // 학생이 앱에서 수락하기 전까지는 ACTIVE 단계로 전환하지 않는다.
+        isActive: false,
       },
     }),
     prisma.managerStudent.upsert({
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
       userId: student.userId,
       type: "TEACHER_ASSIGNED",
       title: "선생님이 배정되었습니다",
-      body: `${targetTeacher.name} 선생님이 담당 선생님으로 배정되었습니다.`,
+      body: `${targetTeacher.name} 선생님이 배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
       relatedId: teacherId,
     }),
   ]);
