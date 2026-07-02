@@ -10,7 +10,7 @@ import {
   parseDateKey,
 } from "@/lib/study-plan-dates";
 
-import type { StudyPlanItem } from "./teacher-students-types";
+import type { HomeworkTemplate, StudyPlanItem } from "./teacher-students-types";
 
 type TeacherStudentPlanTabProps = {
   studentId: string;
@@ -37,6 +37,10 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
   const [savingHomework, setSavingHomework] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [homeworkMessage, setHomeworkMessage] = useState<string | null>(null);
+  const [homeworkTemplates, setHomeworkTemplates] = useState<HomeworkTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [templateName, setTemplateName] = useState("");
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   const monthKey = useMemo(
     () => `${calendarYear}-${String(calendarMonth).padStart(2, "0")}`,
@@ -66,6 +70,24 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
   useEffect(() => {
     void fetchPlanSnapshot();
   }, [fetchPlanSnapshot]);
+
+  const fetchHomeworkTemplates = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/api/teacher/homework-templates?studentId=${studentId}`,
+      );
+      if (!res.ok) return;
+      const data = (await res.json()) as { templates: HomeworkTemplate[] };
+      setHomeworkTemplates(data.templates);
+    } catch {
+      // ignore template load failures
+    }
+  }, [studentId]);
+
+  useEffect(() => {
+    setSelectedTemplateId("");
+    void fetchHomeworkTemplates();
+  }, [fetchHomeworkTemplates]);
 
   function handleSelectDate(date: string) {
     setSelectedDate(date);
@@ -161,6 +183,42 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
     }
   }
 
+  function handleSelectTemplate(templateId: string) {
+    setSelectedTemplateId(templateId);
+    if (!templateId) return;
+    const template = homeworkTemplates.find((t) => t.id === templateId);
+    if (!template) return;
+    setHomeworkTasks(template.tasks);
+    setHomeworkDays(template.days);
+  }
+
+  async function handleSaveTemplate() {
+    if (!templateName.trim() || !homeworkTasks.trim()) return;
+    setSavingTemplate(true);
+    setHomeworkMessage(null);
+    try {
+      const res = await fetch("/api/teacher/homework-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: templateName,
+          days: homeworkDays,
+          tasks: homeworkTasks,
+          studentId,
+        }),
+      });
+      if (!res.ok) {
+        setHomeworkMessage("템플릿 저장에 실패했습니다.");
+        return;
+      }
+      setTemplateName("");
+      setHomeworkMessage("템플릿이 저장되었습니다.");
+      await fetchHomeworkTemplates();
+    } finally {
+      setSavingTemplate(false);
+    }
+  }
+
   const tasks = plan?.tasks ?? [];
   const doneCount = tasks.filter((t) => t.isDone).length;
   const totalCount = tasks.length;
@@ -219,6 +277,18 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
                 </option>
               ))}
             </select>
+            <select
+              value={selectedTemplateId}
+              onChange={(e) => handleSelectTemplate(e.target.value)}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-text-primary outline-none focus:border-primary"
+            >
+              <option value="">템플릿 선택</option>
+              {homeworkTemplates.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
         <textarea
@@ -239,6 +309,23 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
             className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             {savingHomework ? "분배 중…" : "숙제 자동 분배"}
+          </button>
+        </div>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <input
+            type="text"
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            placeholder="템플릿 이름"
+            className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-text-primary outline-none focus:border-primary"
+          />
+          <button
+            type="button"
+            disabled={savingTemplate || !templateName.trim() || !homeworkTasks.trim()}
+            onClick={() => void handleSaveTemplate()}
+            className="rounded-lg border border-primary/30 bg-white px-3 py-2 text-xs font-semibold text-primary disabled:opacity-50"
+          >
+            {savingTemplate ? "저장 중…" : "템플릿 저장"}
           </button>
         </div>
         {homeworkMessage ? (

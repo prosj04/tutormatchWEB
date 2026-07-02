@@ -26,6 +26,15 @@ export type StudyPlanItem = {
   tasks: StudyTaskItem[];
 };
 
+export type HomeworkTemplate = {
+  id: string;
+  name: string;
+  days: 4 | 7;
+  tasks: string;
+  studentId: string | null;
+  updatedAt: string;
+};
+
 export type QuestionItem = {
   id: string;
   date: string;
