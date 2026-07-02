@@ -7,6 +7,19 @@ import { requireTeacher } from "@/lib/teacher-auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+function addDays(date: string, offset: number) {
+  const [year, month, day] = date.split("-").map(Number);
+  const d = new Date(year, month - 1, day + offset, 12, 0, 0, 0);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate(),
+  ).padStart(2, "0")}`;
+}
+
+function parseTemplateDays(value: string | null) {
+  const parsed = Number(value);
+  return parsed === 4 || parsed === 7 ? parsed : null;
+}
+
 export async function GET(request: Request, context: RouteContext) {
   const authResult = await requireTeacher();
   if ("error" in authResult) return authResult.error;
@@ -20,6 +33,33 @@ export async function GET(request: Request, context: RouteContext) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
   const month = searchParams.get("month");
+  const templateStart = searchParams.get("templateStart");
+  const templateDays = parseTemplateDays(searchParams.get("templateDays"));
+
+  if (templateStart || templateDays) {
+    if (!templateStart || !templateDays || !isValidDateString(templateStart)) {
+      return NextResponse.json({ error: "Invalid template range" }, { status: 400 });
+    }
+
+    const dates = Array.from({ length: templateDays }).map((_, index) =>
+      addDays(templateStart, index),
+    );
+    const plans = await prisma.studyPlan.findMany({
+      where: { studentId, date: { in: dates } },
+      orderBy: { date: "asc" },
+      include: { tasks: { orderBy: { order: "asc" } } },
+    });
+
+    return NextResponse.json({
+      template: {
+        startDate: templateStart,
+        days: templateDays,
+        dates,
+        plans,
+        tasks: plans.flatMap((plan) => plan.tasks.map((task) => task.title)),
+      },
+    });
+  }
 
   if (month) {
     if (!isValidMonthString(month)) {

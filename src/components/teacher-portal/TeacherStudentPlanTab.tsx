@@ -31,6 +31,12 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
   const [editingComment, setEditingComment] = useState(false);
   const [savingComment, setSavingComment] = useState(false);
   const [commentToast, setCommentToast] = useState(false);
+  const [homeworkTasks, setHomeworkTasks] = useState("");
+  const [homeworkDays, setHomeworkDays] = useState<4 | 7>(7);
+  const [repeatWeeks, setRepeatWeeks] = useState(1);
+  const [savingHomework, setSavingHomework] = useState(false);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
+  const [homeworkMessage, setHomeworkMessage] = useState<string | null>(null);
 
   const monthKey = useMemo(
     () => `${calendarYear}-${String(calendarMonth).padStart(2, "0")}`,
@@ -89,6 +95,72 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
     }
   }
 
+  async function handleDistributeHomework() {
+    if (!homeworkTasks.trim()) return;
+    setSavingHomework(true);
+    setHomeworkMessage(null);
+    try {
+      const res = await fetch(`/api/teacher/students/${studentId}/homework-distribution`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          startDate: selectedDate,
+          days: homeworkDays,
+          tasks: homeworkTasks,
+          repeatWeeks,
+        }),
+      });
+      if (!res.ok) {
+        setHomeworkMessage("숙제 자동 분배에 실패했습니다.");
+        return;
+      }
+      const data = (await res.json()) as { dates: string[] };
+      setHomeworkTasks("");
+      setHomeworkMessage(
+        `${data.dates.length}일치 숙제가 생성되었습니다. 달력에서 확인해 주세요.`,
+      );
+      await fetchPlanSnapshot();
+    } finally {
+      setSavingHomework(false);
+    }
+  }
+
+  function addDays(date: string, offset: number) {
+    const [year, month, day] = date.split("-").map(Number);
+    const d = new Date(year, month - 1, day + offset, 12, 0, 0, 0);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+  }
+
+  async function handleLoadLastWeekHomework() {
+    setLoadingTemplate(true);
+    setHomeworkMessage(null);
+    try {
+      const templateStart = addDays(selectedDate, -7);
+      const res = await fetch(
+        `/api/teacher/students/${studentId}/plans?templateStart=${templateStart}&templateDays=${homeworkDays}`,
+      );
+      if (!res.ok) {
+        setHomeworkMessage("지난 주 숙제를 불러오지 못했습니다.");
+        return;
+      }
+      const data = (await res.json()) as {
+        template: { tasks: string[]; startDate: string; days: 4 | 7 };
+      };
+      if (data.template.tasks.length === 0) {
+        setHomeworkMessage("지난 주에 재사용할 숙제가 없습니다.");
+        return;
+      }
+      setHomeworkTasks(data.template.tasks.join("\n"));
+      setHomeworkMessage(
+        `지난 주 ${data.template.days}일치 숙제 ${data.template.tasks.length}개를 불러왔습니다.`,
+      );
+    } finally {
+      setLoadingTemplate(false);
+    }
+  }
+
   const tasks = plan?.tasks ?? [];
   const doneCount = tasks.filter((t) => t.isDone).length;
   const totalCount = tasks.length;
@@ -108,6 +180,73 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
           setCalendarMonth(month);
         }}
       />
+
+      <section className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-text-primary">
+              주간 숙제 자동 분배
+            </h3>
+            <p className="mt-1 text-xs text-text-secondary">
+              선택한 날짜부터 4일 또는 7일치 숙제를 일별로 나눠 생성합니다. 지난 주 숙제를 불러와 같은 맥락으로 반복할 수 있습니다.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={loadingTemplate || savingHomework}
+              onClick={() => void handleLoadLastWeekHomework()}
+              className="rounded-lg border border-primary/30 bg-white px-3 py-2 text-xs font-semibold text-primary disabled:opacity-50"
+            >
+              {loadingTemplate ? "불러오는 중…" : "지난 주 숙제 불러오기"}
+            </button>
+            <select
+              value={homeworkDays}
+              onChange={(e) => setHomeworkDays(Number(e.target.value) as 4 | 7)}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-text-primary outline-none focus:border-primary"
+            >
+              <option value={7}>7일치</option>
+              <option value={4}>4일치</option>
+            </select>
+            <select
+              value={repeatWeeks}
+              onChange={(e) => setRepeatWeeks(Number(e.target.value))}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-text-primary outline-none focus:border-primary"
+            >
+              {[1, 2, 3, 4].map((week) => (
+                <option key={week} value={week}>
+                  {week}주 반복
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <textarea
+          value={homeworkTasks}
+          onChange={(e) => setHomeworkTasks(e.target.value)}
+          rows={5}
+          placeholder="숙제를 줄바꿈으로 입력하세요. 예)\n수학 개념 복습 20분\n오답노트 5문제\n영어 단어 30개"
+          className="mt-4 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary"
+        />
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-text-muted">
+            시작일: {formatPlanHeader(selectedDate).replace(" 학습 계획", "")}
+          </p>
+          <button
+            type="button"
+            disabled={savingHomework || !homeworkTasks.trim()}
+            onClick={() => void handleDistributeHomework()}
+            className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            {savingHomework ? "분배 중…" : "숙제 자동 분배"}
+          </button>
+        </div>
+        {homeworkMessage ? (
+          <p className="mt-2 text-xs font-medium text-primary" role="status">
+            {homeworkMessage}
+          </p>
+        ) : null}
+      </section>
 
       {loading ? (
         <p className="text-center text-sm text-text-muted">불러오는 중…</p>
