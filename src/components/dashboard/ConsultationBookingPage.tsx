@@ -47,18 +47,27 @@ const STATUS_FALLBACK_BODY: Record<Booking["status"], string> = {
   CANCELLED: CONSULTATION_STATUS_COPY.CANCELLED.body,
 };
 
+type PendingMatch = {
+  matchId: string;
+  subjects: string;
+  teacherName: string;
+};
+
 type ConsultationBookingPageProps = {
   studentName: string;
   /** 서버에서 내려줘 첫 페인트에 상담 상태 반영 (깜빡임 방지) */
   initialBooking: ConsultationBookingDto | null;
   /** URL ?visit=1 — 서버에서 해석 */
   openVisitFromUrl?: boolean;
+  /** 아직 학생이 수락하지 않은 배정 선생님 (있으면 수락 카드 노출) */
+  initialPendingMatch?: PendingMatch | null;
 };
 
 export function ConsultationBookingPage({
   studentName,
   initialBooking,
   openVisitFromUrl = false,
+  initialPendingMatch = null,
 }: ConsultationBookingPageProps) {
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("cms_edit") === "1";
@@ -70,6 +79,10 @@ export function ConsultationBookingPage({
   const [success, setSuccess] = useState(false);
   const [showVisitPicker, setShowVisitPicker] = useState(false);
   const [assignedToast, setAssignedToast] = useState(false);
+  const [pendingMatch, setPendingMatch] = useState(initialPendingMatch);
+  const [acceptedMatch, setAcceptedMatch] = useState<PendingMatch | null>(null);
+  const [acceptingMatch, setAcceptingMatch] = useState(false);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
   const previousStatus = useRef<string | null>(initialBooking?.status ?? null);
 
   const brand = usePortalCopy("student_consultation", "brand", "Concord.");
@@ -184,6 +197,28 @@ export function ConsultationBookingPage({
       setError(errSaveDefault);
     } finally {
       setVisitSubmitting(false);
+    }
+  }
+
+  async function acceptMatch() {
+    if (!pendingMatch) return;
+    setAcceptingMatch(true);
+    setAcceptError(null);
+    try {
+      const res = await fetch(`/api/matches/${pendingMatch.matchId}/accept`, {
+        method: "POST",
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setAcceptError(data.error ?? "선생님 수락에 실패했습니다.");
+        return;
+      }
+      setAcceptedMatch(pendingMatch);
+      setPendingMatch(null);
+    } catch {
+      setAcceptError("선생님 수락에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setAcceptingMatch(false);
     }
   }
 
@@ -312,6 +347,37 @@ export function ConsultationBookingPage({
             ) : null}
 
             <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} isEditMode={isEditMode} />
+
+            {pendingMatch ? (
+              <section className="mt-6 rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                  선생님 배정
+                </p>
+                <h2 className="mt-2 text-lg font-bold text-text-primary">
+                  {pendingMatch.teacherName} 선생님을 수락해 주세요
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+                  배정 과목: {pendingMatch.subjects}. 수락 후 선생님이 첫 수업 일정을 설정합니다.
+                </p>
+                {acceptError ? (
+                  <p className="mt-3 text-sm text-accent" role="alert">
+                    {acceptError}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  disabled={acceptingMatch}
+                  onClick={() => void acceptMatch()}
+                  className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {acceptingMatch ? "수락 중..." : "이 선생님으로 시작하기"}
+                </button>
+              </section>
+            ) : acceptedMatch ? (
+              <section className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5 text-sm text-green-800">
+                {acceptedMatch.teacherName} 선생님을 수락했습니다. 선생님이 첫 수업 일정을 설정하면 알려드릴게요.
+              </section>
+            ) : null}
 
             {!showVisitPicker && !hasVisitTimes ? (
               <button

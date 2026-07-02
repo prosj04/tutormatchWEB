@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { requireMobileStudent } from "@/lib/mobile-auth";
-import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
+import { acceptTeacherStudentMatch } from "@/lib/teacher-student-match";
 
 /** GET /api/mobile/matches — 배정(추천) 선생님 목록 */
 export async function GET(request: Request) {
@@ -71,26 +71,15 @@ export async function POST(request: Request) {
 
   const match = await prisma.teacherStudent.findFirst({
     where: { studentId: student.id, teacherId },
-    include: { teacher: { select: { name: true, userId: true } } },
   });
 
   if (!match) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
 
-  if (!match.isActive) {
-    await prisma.teacherStudent.update({
-      where: { id: match.id },
-      data: { isActive: true },
-    });
-
-    await createNotification({
-      userId: match.teacher.userId,
-      type: "NEW_STUDENT_ASSIGNED",
-      title: "학생이 배정 선생님을 수락했습니다",
-      body: `${student.name} 학생이 배정을 수락했습니다. 첫 수업 날짜를 설정해 주세요.`,
-      relatedId: student.id,
-    });
+  const result = await acceptTeacherStudentMatch(match.id, student.id, student.name);
+  if (!result.ok) {
+    return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true, accepted: true });

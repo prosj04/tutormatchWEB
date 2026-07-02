@@ -4,6 +4,7 @@ import { ConsultationBookingPage } from "@/components/dashboard/ConsultationBook
 import { auth } from "@/auth";
 import { getConsultationBookingDto } from "@/lib/consultation-booking-dto";
 import { prisma } from "@/lib/prisma";
+import { resolveStudentJourneyStage } from "@/lib/student-journey";
 
 export const metadata = {
   title: "상담 예약",
@@ -29,18 +30,28 @@ export default async function ConsultationPage({
 
   const student = await prisma.student.findUnique({
     where: { userId: session.user.id },
-    include: { teachers: { where: { isActive: true } } },
   });
 
   if (!student) {
     redirect("/?signup=1");
   }
 
-  if (student.teachers.length > 0) {
+  const journeyStage = await resolveStudentJourneyStage(student.id);
+  if (journeyStage === "ACTIVE") {
     redirect("/dashboard");
   }
 
-  const initialBooking = await getConsultationBookingDto(student.id);
+  const [initialBooking, pendingMatch] = await Promise.all([
+    getConsultationBookingDto(student.id),
+    prisma.teacherStudent.findFirst({
+      where: { studentId: student.id, isActive: false },
+      select: {
+        id: true,
+        subjects: true,
+        teacher: { select: { name: true } },
+      },
+    }),
+  ]);
   const openVisitFromUrl = isVisitOpenFlag(searchParams.visit);
 
   return (
@@ -48,6 +59,15 @@ export default async function ConsultationPage({
       studentName={student.name}
       initialBooking={initialBooking}
       openVisitFromUrl={openVisitFromUrl}
+      initialPendingMatch={
+        pendingMatch
+          ? {
+              matchId: pendingMatch.id,
+              subjects: pendingMatch.subjects,
+              teacherName: pendingMatch.teacher.name,
+            }
+          : null
+      }
     />
   );
 }
