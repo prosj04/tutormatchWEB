@@ -19,8 +19,10 @@
 | [TECH_OVERVIEW.md](internal/TECH_OVERVIEW.md) | 기술 아키텍처 (스택·인증·DB·결제·배포·기술부채) | 완료 (코드 실측) |
 | [API_REFERENCE.md](internal/API_REFERENCE.md) | API 전수 레퍼런스 (110개 라우트, 권한·파라미터) | 완료 (코드 실측) |
 | [LEGAL_DOCS_STATUS.md](internal/LEGAL_DOCS_STATUS.md) | 법률 문서 현황 + 필요 문서 7종(L-1~7) + 행정 절차 | 완료 (체크리스트) |
+| [contracts/TUITION_CONTRACT_DRAFT.md](internal/contracts/TUITION_CONTRACT_DRAFT.md) | L-1 수강 계약서 | ⚠️ 초안 — 변호사 검토 필수 |
+| [contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md](internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md) | L-2 강사 위촉 계약서 (직거래 금지·시급 30,000원 정산 반영) | ⚠️ 초안 — 변호사·노무 검토 필수 |
 
-미작성 (LEGAL_DOCS_STATUS 우선순위 따름): 수강 계약서(L-1), 강사 위촉 계약서(L-2), 개인정보 내부관리계획(L-3)
+미작성 (LEGAL_DOCS_STATUS 우선순위 따름): 개인정보 내부관리계획(L-3), 신원확인 동의서(L-4)
 
 ## 전략·리뷰
 
