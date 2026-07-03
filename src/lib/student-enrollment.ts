@@ -21,7 +21,7 @@ async function findOpenBookingByStudentId(studentId: string) {
   return prisma.consultationBooking.findFirst({
     where: {
       studentId,
-      status: { in: OPEN_BOOKING_STATUSES as unknown as string[] },
+      status: { in: [...OPEN_BOOKING_STATUSES] },
     },
     orderBy: { createdAt: "desc" },
   });

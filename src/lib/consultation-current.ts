@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { ConsultationStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -19,7 +19,10 @@ import { prisma } from "@/lib/prisma";
  */
 
 /** Statuses that count as "open" (in-progress) for a student. */
-export const OPEN_BOOKING_STATUSES = ["WAITING", "ASSIGNED"] as const;
+export const OPEN_BOOKING_STATUSES = [
+  ConsultationStatus.WAITING,
+  ConsultationStatus.ASSIGNED,
+] as const;
 export type OpenBookingStatus = (typeof OPEN_BOOKING_STATUSES)[number];
 
 type Extras = {
@@ -40,7 +43,7 @@ export async function getOpenBooking(
   const args = {
     where: {
       studentId,
-      status: { in: OPEN_BOOKING_STATUSES as unknown as string[] },
+      status: { in: [...OPEN_BOOKING_STATUSES] },
     },
     orderBy: { createdAt: "desc" as const },
     ...(select ? { select } : include ? { include } : {}),

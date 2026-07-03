@@ -8,11 +8,58 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+/// 사용자 역할. String → enum으로 승격되어 오타/누락 케이스가 컴파일 타임에 잡힘.
+enum UserRole {
+  ADMIN
+  CHIEF_MANAGER
+  MANAGER
+  TEACHER
+  STUDENT
+}
+
+/// 상담 예약 상태. 코드에서 쓰이는 4개 값을 모두 enum 값으로 포함.
+enum ConsultationStatus {
+  WAITING
+  ASSIGNED
+  COMPLETED
+  CANCELLED
+}
+
+/// 수업 상태. 기본값 SCHEDULED 유지.
+enum LessonStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+/// 구독 상태. 기본값 ACTIVE 유지.
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELLED
+}
+
+/// 선생님-학생 매칭 상태. 기본값 PENDING_STUDENT_ACCEPT 유지.
+enum MatchStatus {
+  PENDING_STUDENT_ACCEPT
+  ACTIVE
+  CANCELLED
+}
+
+/// 결제 완료 처리 상태. 기본값 PROCESSING 유지.
+enum PaymentStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 model User {
   id            String         @id @default(uuid())
   email         String         @unique
   password      String
-  role          String         @default("STUDENT") // "STUDENT" | "TEACHER" | "MANAGER" | "ADMIN"
+  role          UserRole       @default(STUDENT)
   student       Student?
   teacher       Teacher?
   notifications Notification[]
@@ -90,7 +137,7 @@ model TeacherStudent {
   isActive    Boolean   @default(true)
   // 학생의 명시적 배정 수락 상태. "PENDING_STUDENT_ACCEPT" | "ACTIVE".
   // isActive와 항상 동기화되어야 하며, 당분간 매칭 활성 로직은 isActive를 기준으로 한다.
-  matchStatus String    @default("PENDING_STUDENT_ACCEPT")
+  matchStatus MatchStatus @default(PENDING_STUDENT_ACCEPT)
   respondedAt DateTime?
   matchReason String?   // 담당 매니저가 이 선생님을 선택한 이유
   createdAt   DateTime  @default(now())
@@ -174,8 +221,7 @@ model ConsultationBooking {
   preferredTimes      String    @default("[]")
   visitPreferredTimes String    @default("{}")
   visitConfirmedAt    DateTime?
-  status              String    @default("WAITING")
-  // "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED"
+  status              ConsultationStatus @default(WAITING)
   note                String?
   managerNote         String?
   assignedAt          DateTime?
@@ -302,7 +348,7 @@ model Lesson {
   startAt     DateTime
   durationMin Int      @default(50)
   joinUrl     String?
-  status      String   @default("SCHEDULED") // "SCHEDULED" | "COMPLETED" | "CANCELLED"
+  status      LessonStatus @default(SCHEDULED)
   cancelledBy String? // "TEACHER" | "STUDENT" | "MANAGER" (only set when status is CANCELLED)
   createdAt   DateTime @default(now())
 
@@ -361,7 +407,7 @@ model Subscription {
   studentId   String
   student     Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
   plan        String // pricing-plans id e.g. "8-1"
-  status      String    @default("ACTIVE") // "ACTIVE" | "PAST_DUE" | "PAUSED" | "CANCELLED"
+  status      SubscriptionStatus @default(ACTIVE)
   periodStart DateTime  @default(now())
   periodEnd   DateTime?
   pausedAt    DateTime?
@@ -379,7 +425,7 @@ model PaymentCompletion {
   studentId       String
   student         Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
   plan            String
-  status          String    @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
+  status          PaymentStatus @default(PROCESSING)
   paymentKey      String?
   amount          Int?
   subscriptionId  String?

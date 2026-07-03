@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { UserRole } from "@prisma/client";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
-const ALLOWED_ROLES = ["TEACHER", "MANAGER"] as const;
+const ALLOWED_ROLES = [UserRole.TEACHER, UserRole.MANAGER] as const;
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -30,8 +31,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const role = typeof body.role === "string" ? body.role : "";
-  if (!ALLOWED_ROLES.includes(role as (typeof ALLOWED_ROLES)[number])) {
+  const rawRole = typeof body.role === "string" ? body.role : "";
+  const role = ALLOWED_ROLES.find((r) => r === rawRole);
+  if (!role) {
     return NextResponse.json(
       { error: "role must be TEACHER or MANAGER" },
       { status: 400 },
@@ -39,8 +41,8 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   if (
-    teacher.user.role !== "TEACHER" &&
-    teacher.user.role !== "MANAGER"
+    teacher.user.role !== UserRole.TEACHER &&
+    teacher.user.role !== UserRole.MANAGER
   ) {
     return NextResponse.json(
       { error: "Cannot change role for this account" },

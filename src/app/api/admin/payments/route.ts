@@ -1,9 +1,19 @@
 import { NextResponse } from "next/server";
+import { PaymentStatus, type Prisma } from "@prisma/client";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
-const VALID_STATUSES = ["FAILED", "PROCESSING", "COMPLETED", "REFUNDED"];
+const VALID_STATUSES: PaymentStatus[] = [
+  PaymentStatus.FAILED,
+  PaymentStatus.PROCESSING,
+  PaymentStatus.COMPLETED,
+  PaymentStatus.REFUNDED,
+];
+
+function isPaymentStatus(value: string): value is PaymentStatus {
+  return (VALID_STATUSES as string[]).includes(value);
+}
 
 export async function GET(request: Request) {
   const authResult = await requireAdmin();
@@ -12,12 +22,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status")?.trim().toUpperCase();
 
-  const where =
+  const where: Prisma.PaymentCompletionWhereInput =
     status === "ALL"
       ? {}
-      : status && VALID_STATUSES.includes(status)
+      : status && isPaymentStatus(status)
         ? { status }
-        : { status: { in: ["FAILED", "PROCESSING"] } };
+        : { status: { in: [PaymentStatus.FAILED, PaymentStatus.PROCESSING] } };
 
   const payments = await prisma.paymentCompletion.findMany({
     where,
