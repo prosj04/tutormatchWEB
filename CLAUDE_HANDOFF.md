@@ -1306,6 +1306,17 @@ npm run dev
 - ✅ (3차) 개선 항목 30개 중 오너가 21개 확정 → §24.3을 항목별 코드/비코드 구현 계획으로 재구성, §23 Phase 범위에 배치
 - ✅ (3차) Phase 1 코드 항목 구현: #1 가격 앵커링(`PLAN_INCLUDES` — 요금 카드·체크아웃에 포함 가치 노출; 월 총액 "원/월" 표기는 기존에 이미 존재), #8 1단계(환불 보장 1인 1회 한정 조항 — /refund에만, 마케팅 비노출), #13 SEO(루트 메타데이터·OG·네이버 verification env, robots/sitemap은 기존 존재 확인)
 
+### 25.1c Phase 2 세션 완료분 (2026-07-03)
+
+- ✅ 스키마: `HomeworkTemplate` 재구성(title/defaultDays/isDefault/tasks JSON), `ConsultationReport`, `StudyPlan.source`, `ConsultationBooking.followUpSentAt`, `PaymentCompletion.cashReceipt*`, `Lesson.cancelledBy` — 마이그레이션 `20260703031301_phase2_core_loop` **프로덕션 적용 완료** (기존 HomeworkTemplate 테이블 0행 확인 후 파괴적 변경 승인)
+- ✅ 숙제 루프(북극성 8·9): 템플릿 CRUD 정합화 + 첫 수업 설정 시 자동 분배(`autoApplyFirstLessonHomeworkTemplate`) — 별도 세션에서 커밋(`a4408b5`)
+- ✅ 알림 체크(#15 #23): 상담 후 3일 미결제 리드 팔로업 SMS(followUpSentAt 멱등), 첫 수업 SLA 7일 위반 → 치프 알림, 지난 수업 자동 COMPLETED 전이(레슨 완료 추적 = 정산·리포트 기반)
+- ✅ 상담 리포트(#16+#28): `PUT /api/manager/consultations/[bookingId]/report`, 매니저 상담 카드에 "상담 리포트" 모달(정량/정성 목표·수준·추천 플랜), 학생 대시보드 "학습 목표" 카드, 월간 리포트에 "목표 대비" 문구
+- ✅ 현금영수증(#21): Toss confirm/fetch 응답의 cashReceipt 저장(양 경로), UI는 결제 내역 화면 부재로 보류
+- ✅ 교체·보강(#25 #27): `POST /api/student/teacher-change-request`(7일 스팸 가드, 매니저 알림), `PATCH /api/teacher/lessons/[id]/cancel`(cancelledBy=TEACHER, +7일 보강 자동 생성, 학생·매니저 알림)
+- ⚠️ 스킵/보류: **#6 상담 리마인더** — ConsultationBooking에 확정 일시 필드(`visitConfirmedAt` 류)가 없어 구현 불가, 필드 추가가 선행 조건. **#14 카카오 로그인** — 카카오 개발자 앱 등록(사업자 정보) 선행. 선생 포털 수업 취소 버튼 UI — 수업 목록 UI 부재로 API만. BR-20 학생 측 취소/이월 정책 미구현(선생 취소만 처리)
+- ⚠️ **cron 체계 변경됨**: hourly GitHub Actions는 PAT workflow scope 문제로 브랜치에서 제거(`cd35b76`), 현재 알림은 Vercel daily cron뿐. cron 라우트에 x-vercel-cron 허용 추가. 알림 체크는 어떤 주기에도 멱등이도록 작성됨. **후속: push 경로(Scope 보강/SSH) 해결 후 hourly 복원 또는 Vercel Pro cron**
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
