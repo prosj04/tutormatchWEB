@@ -21,6 +21,7 @@
 | [LEGAL_DOCS_STATUS.md](internal/LEGAL_DOCS_STATUS.md) | 법률 문서 현황 + 필요 문서 7종(L-1~7) + 행정 절차 | 완료 (체크리스트) |
 | [contracts/TUITION_CONTRACT_DRAFT.md](internal/contracts/TUITION_CONTRACT_DRAFT.md) | L-1 수강 계약서 | ⚠️ 초안 — 변호사 검토 필수 |
 | [contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md](internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md) | L-2 강사 위촉 계약서 (직거래 금지·시급 30,000원 정산 반영) | ⚠️ 초안 — 변호사·노무 검토 필수 |
+| [LEGAL_ADVISORY_MEMO.md](internal/LEGAL_ADVISORY_MEMO.md) | 임시 법률 자문 메모 (A-1~4: 위약금·신원조회·학원법 지위·원천징수) + 정식 자문 질문 리스트 | ⚠️ AI 임시 자문 — 정식 자문으로 대체 필요 |
 
 미작성 (LEGAL_DOCS_STATUS 우선순위 따름): 개인정보 내부관리계획(L-3), 신원확인 동의서(L-4)
 
