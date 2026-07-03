@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { Prisma } from "@prisma/client";
-
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { listStudentQuestions } from "@/lib/qna";
 import { QuestionsPageClient } from "@/components/questions/QuestionsPageClient";
 
 export const metadata = { title: "내 질문" };
@@ -26,26 +25,14 @@ export default async function QuestionsPage({
   if (!student) redirect("/?signup=1");
 
   const resolvedFilter = searchParams?.resolved;
-  const where: Prisma.QuestionWhereInput = {
-    studentId: student.id,
-    ...(resolvedFilter === "true" ? { isResolved: true } : {}),
-    ...(resolvedFilter === "false" ? { isResolved: false } : {}),
-  };
-
-  const questions = await prisma.question.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
+  const questions = await listStudentQuestions(student.id, {
     take: 100,
-    select: {
-      id: true,
-      date: true,
-      content: true,
-      imageUrl: true,
-      isResolved: true,
-      teacherAnswer: true,
-      aiAnswer: true,
-      createdAt: true,
-    },
+    isResolved:
+      resolvedFilter === "true"
+        ? true
+        : resolvedFilter === "false"
+          ? false
+          : undefined,
   });
 
   const items = questions.map((q) => ({

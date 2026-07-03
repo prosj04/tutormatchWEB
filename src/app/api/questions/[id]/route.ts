@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { prisma } from "@/lib/prisma";
+import { getStudentQuestion, setResolved } from "@/lib/qna";
 import { requireStudent } from "@/lib/student-auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
-
-async function getOwnedQuestion(id: string, studentId: string) {
-  return prisma.question.findFirst({
-    where: { id, studentId },
-  });
-}
 
 export async function PATCH(request: Request, context: RouteContext) {
   const authResult = await requireStudent();
@@ -17,7 +11,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const { student } = authResult;
 
   const { id } = await context.params;
-  const existing = await getOwnedQuestion(id, student.id);
+  const existing = await getStudentQuestion(id, student.id);
   if (!existing) {
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
@@ -33,10 +27,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid isResolved" }, { status: 400 });
   }
 
-  const question = await prisma.question.update({
-    where: { id },
-    data: { isResolved: body.isResolved },
-  });
+  await setResolved(id, student.id, body.isResolved);
+  const question = await getStudentQuestion(id, student.id);
 
   return NextResponse.json({ question });
 }

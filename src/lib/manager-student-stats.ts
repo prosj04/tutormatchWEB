@@ -15,10 +15,12 @@ export async function getStudentWeekStats(studentId: string, week?: { start: str
       },
       include: { tasks: true },
     }),
-    prisma.question.count({
+    prisma.questionMessage.count({
       where: {
         studentId,
-        teacherAnswer: null,
+        sender: "me",
+        replyToId: null,
+        replies: { none: { sender: "tutor" } },
         createdAt: { lt: staleBefore },
       },
     }),

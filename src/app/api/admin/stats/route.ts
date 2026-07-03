@@ -30,7 +30,14 @@ export async function GET() {
     prisma.teacher.count({ where: { approved: true, name: { not: { startsWith: "[sample]" } } } }),
     prisma.teacher.count({ where: { approved: false, name: { not: { startsWith: "[sample]" } } } }),
     prisma.teacherStudent.count({ where: { isActive: true, student: { name: { not: { startsWith: "[sample]" } } } } }),
-    prisma.question.count({ where: { date: today, student: { name: { not: { startsWith: "[sample]" } } } } }),
+    prisma.questionMessage.count({
+      where: {
+        sender: "me",
+        replyToId: null,
+        date: today,
+        student: { name: { not: { startsWith: "[sample]" } } },
+      },
+    }),
     prisma.student.findMany({
       take: 5,
       orderBy: { user: { createdAt: "desc" } },
@@ -40,7 +47,14 @@ export async function GET() {
         user: { select: { createdAt: true } },
       },
     }),
-    prisma.question.count({ where: { teacherAnswer: null, student: { name: { not: { startsWith: "[sample]" } } } } }),
+    prisma.questionMessage.count({
+      where: {
+        sender: "me",
+        replyToId: null,
+        replies: { none: { sender: "tutor" } },
+        student: { name: { not: { startsWith: "[sample]" } } },
+      },
+    }),
     prisma.consultationBooking.count({ where: { status: "WAITING", student: { name: { not: { startsWith: "[sample]" } } } } }),
     prisma.consultationBooking.count({ where: { status: "ASSIGNED", student: { name: { not: { startsWith: "[sample]" } } } } }),
     prisma.teacher.findMany({

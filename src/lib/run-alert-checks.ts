@@ -51,7 +51,9 @@ function getPreviousWeekRange(): { start: string; end: string } | null {
 export async function runAlertChecks() {
   let notificationsCreated = 0;
   let weeklyStudentsChecked = 0;
-  let qnaMessagesChecked = 0;
+  // Retained for /api/cron/check-alerts response compatibility. Always 0 under
+  // the unified model (see §1 below).
+  const qnaMessagesChecked = 0;
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
   let staleMatchesChecked = 0;
@@ -71,15 +73,23 @@ export async function runAlertChecks() {
   const staleBefore = new Date(Date.now() - DAY_MS);
   const recentSince = new Date(Date.now() - DAY_MS);
 
-  // ── 1. Stale unanswered questions ─────────────────────────────────────────
+  // ── 1. Stale unanswered QnA root messages ────────────────────────────────
   //
-  // Single query with targeted select instead of deep include chain.
-  const staleQuestions = await prisma.question.findMany({
+  // QnA is unified onto `QuestionMessage`. A "question" is a root student message
+  // (sender="me", replyToId=null). It becomes stale when it is 24h+ old and has
+  // no tutor reply (sender="tutor") in its replies list.
+  //
+  // NOTE: `qnaMessagesChecked` used to count mobile chat threads, `questionsChecked`
+  // used to count web questions — both keys stay on the return so the cron route
+  // response shape doesn't change. Under the unified model, `qnaMessagesChecked`
+  // is intentionally 0.
+  const staleRootMessages = await prisma.questionMessage.findMany({
     where: {
-      teacherAnswer: null,
-      aiAnswer: { not: null },
-      createdAt: { lt: staleBefore },
+      sender: "me",
+      replyToId: null,
       isResolved: false,
+      createdAt: { lt: staleBefore },
+      replies: { none: { sender: "tutor" } },
     },
     select: {
       id: true,
@@ -96,14 +106,15 @@ export async function runAlertChecks() {
     },
   });
 
-  const questionsChecked = staleQuestions.length;
+  const questionsChecked = staleRootMessages.length;
 
-  if (staleQuestions.length > 0) {
-    const questionIds = staleQuestions.map((q) => q.id);
-    const studentIds = Array.from(new Set(staleQuestions.map((q) => q.studentId)));
+  if (staleRootMessages.length > 0) {
+    const questionIds = staleRootMessages.map((q) => q.id);
+    const studentIds = Array.from(
+      new Set(staleRootMessages.map((q) => q.studentId)),
+    );
 
     // Bulk-fetch manager links for all involved students.
-    // Previously: one managerStudent.findMany per question inside a loop.
     const rawManagerLinks = await prisma.managerStudent.findMany({
       where: { studentId: { in: studentIds } },
       select: {
@@ -112,7 +123,6 @@ export async function runAlertChecks() {
       },
     });
 
-    // userId[] keyed by studentId
     const managersByStudent = new Map<string, string[]>();
     for (const link of rawManagerLinks) {
       const arr = managersByStudent.get(link.studentId) ?? [];
@@ -120,8 +130,7 @@ export async function runAlertChecks() {
       managersByStudent.set(link.studentId, arr);
     }
 
-    // Bulk-fetch all recent QUESTION_UNANSWERED notifications in one query.
-    // Previously: wasNotifiedRecently() called per (teacher|manager) × question.
+    // Bulk-fetch recent QUESTION_UNANSWERED notifications for dedup.
     const recentQNotifs = await prisma.notification.findMany({
       where: {
         type: "QUESTION_UNANSWERED",
@@ -134,7 +143,6 @@ export async function runAlertChecks() {
       recentQNotifs.map((n) => `${n.userId}:${n.relatedId}`),
     );
 
-    // Build the full list of needed notifications without any further DB queries.
     const toCreate: Array<{
       userId: string;
       type: string;
@@ -143,7 +151,7 @@ export async function runAlertChecks() {
       relatedId: string;
     }> = [];
 
-    for (const question of staleQuestions) {
+    for (const question of staleRootMessages) {
       const studentName = question.student.name;
 
       for (const match of question.student.teachers) {
@@ -178,91 +186,10 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── 1b. Stale unanswered QnA chat messages ─────────────────────────────────
-  //
-  // Mobile QnA stores chat bubbles separately from Question. A thread is stale
-  // when the latest student message older than 24h has no later tutor reply.
-
-  const staleStudentMessages = await prisma.questionMessage.findMany({
-    where: {
-      sender: "me",
-      teacherId: { not: null },
-      createdAt: { lt: staleBefore },
-    },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      studentId: true,
-      teacherId: true,
-      createdAt: true,
-      student: { select: { name: true } },
-      teacher: { select: { userId: true } },
-    },
-  });
-
-  const latestByThread = new Map<string, (typeof staleStudentMessages)[number]>();
-  for (const message of staleStudentMessages) {
-    if (!message.teacherId) continue;
-    const key = `${message.studentId}:${message.teacherId}`;
-    if (!latestByThread.has(key)) latestByThread.set(key, message);
-  }
-
-  const staleQnaCandidates: Array<{
-    messageId: string;
-    teacherUserId: string;
-    studentName: string;
-  }> = [];
-
-  for (const message of Array.from(latestByThread.values())) {
-    if (!message.teacherId || !message.teacher) continue;
-    const laterTutorReply = await prisma.questionMessage.findFirst({
-      where: {
-        studentId: message.studentId,
-        teacherId: message.teacherId,
-        sender: "tutor",
-        createdAt: { gt: message.createdAt },
-      },
-      select: { id: true },
-    });
-    if (laterTutorReply) continue;
-    staleQnaCandidates.push({
-      messageId: message.id,
-      teacherUserId: message.teacher.userId,
-      studentName: message.student.name,
-    });
-  }
-
-  qnaMessagesChecked = staleQnaCandidates.length;
-
-  if (staleQnaCandidates.length > 0) {
-    const messageIds = staleQnaCandidates.map((candidate) => candidate.messageId);
-    const recentQnaMessageNotifs = await prisma.notification.findMany({
-      where: {
-        type: "QUESTION_UNANSWERED",
-        relatedId: { in: messageIds },
-        createdAt: { gte: recentSince },
-      },
-      select: { userId: true, relatedId: true },
-    });
-    const qnaMessageAlreadyNotified = new Set(
-      recentQnaMessageNotifs.map((n) => `${n.userId}:${n.relatedId}`),
-    );
-
-    const qnaMessageToCreate = staleQnaCandidates
-      .filter((candidate) => !qnaMessageAlreadyNotified.has(`${candidate.teacherUserId}:${candidate.messageId}`))
-      .map((candidate) => ({
-        userId: candidate.teacherUserId,
-        type: "QUESTION_UNANSWERED",
-        title: "미답변 Q&A 알림",
-        body: `${candidate.studentName}님의 Q&A 메시지가 24시간째 답변되지 않았습니다.`,
-        relatedId: candidate.messageId,
-      }));
-
-    if (qnaMessageToCreate.length > 0) {
-      await prisma.notification.createMany({ data: qnaMessageToCreate });
-      notificationsCreated += qnaMessageToCreate.length;
-    }
-  }
+  // `qnaMessagesChecked` is retained on the return payload for backward compat
+  // with the /api/cron/check-alerts response shape. Under the unified model,
+  // the unified check above owns everything, so this counter is always 0.
+  void qnaMessagesChecked;
 
   // ── 2. Weekly progress check ───────────────────────────────────────────────
   const prevWeek = getPreviousWeekRange();

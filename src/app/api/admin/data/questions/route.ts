@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { parsePagination, requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   const authResult = await requireAdmin();
@@ -14,7 +15,10 @@ export async function GET(request: Request) {
   const to = searchParams.get("to")?.trim() ?? "";
   const resolved = searchParams.get("resolved");
 
-  const where = {
+  // 학생 루트 메시지(=질문)만 조회한다. 답변은 replies로 include.
+  const where: Prisma.QuestionMessageWhereInput = {
+    sender: "me",
+    replyToId: null,
     AND: [
       q ? { student: { name: { contains: q, mode: "insensitive" as const } } } : {},
       from ? { date: { gte: from } } : {},
@@ -24,32 +28,48 @@ export async function GET(request: Request) {
     ],
   };
 
-  const [total, questions] = await Promise.all([
-    prisma.question.count({ where }),
-    prisma.question.findMany({
+  const [total, roots] = await Promise.all([
+    prisma.questionMessage.count({ where }),
+    prisma.questionMessage.findMany({
       where,
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
-      include: { student: { select: { name: true } } },
+      select: {
+        id: true,
+        date: true,
+        body: true,
+        imageUrl: true,
+        isResolved: true,
+        student: { select: { name: true } },
+        replies: {
+          orderBy: { createdAt: "asc" },
+          select: { sender: true, body: true, createdAt: true },
+        },
+      },
     }),
   ]);
 
   return NextResponse.json({
-    questions: questions.map((q) => ({
-      id: q.id,
-      studentName: q.student.name,
-      date: q.date,
-      content: q.content,
-      contentPreview:
-        q.content.length > 80 ? `${q.content.slice(0, 80)}…` : q.content,
-      hasAiAnswer: Boolean(q.aiAnswer),
-      hasTeacherAnswer: Boolean(q.teacherAnswer),
-      isResolved: q.isResolved,
-      imageUrl: q.imageUrl,
-      aiAnswer: q.aiAnswer,
-      teacherAnswer: q.teacherAnswer,
-    })),
+    questions: roots.map((row) => {
+      const aiReply = row.replies.find((r) => r.sender === "ai") ?? null;
+      const teacherReply = row.replies.find((r) => r.sender === "tutor") ?? null;
+      const content = row.body;
+      return {
+        id: row.id,
+        studentName: row.student.name,
+        date: row.date ?? "",
+        content,
+        contentPreview:
+          content.length > 80 ? `${content.slice(0, 80)}…` : content,
+        hasAiAnswer: Boolean(aiReply),
+        hasTeacherAnswer: Boolean(teacherReply),
+        isResolved: row.isResolved,
+        imageUrl: row.imageUrl,
+        aiAnswer: aiReply?.body ?? null,
+        teacherAnswer: teacherReply?.body ?? null,
+      };
+    }),
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   });
 }

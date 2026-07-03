@@ -178,6 +178,8 @@ model StudyTask {
   order  Int       @default(0)
 }
 
+/// DEPRECATED — 웹/앱 QnA는 `QuestionMessage`로 통합. 이 테이블은 롤백 대비 유지되며
+/// 신규 코드는 QuestionMessage를 사용한다. 향후 정리 마이그레이션에서 DROP 예정.
 model Question {
   id              String    @id @default(uuid())
   studentId       String
@@ -470,22 +472,37 @@ model MonthlyReport {
   @@index([studentId])
 }
 
-/// Q&A 채팅 메시지 (tutor별 말풍선 대화)
+/// Q&A 통합 메시지 스토어. 학생·강사·AI 발화가 하나의 시간순 시퀀스로 저장된다.
+/// - 루트(학생 발화): sender="me", replyToId=null. 웹 카드 뷰의 "질문"에 대응.
+/// - 답변(강사/AI): sender="tutor"|"ai", replyToId=루트 메시지 id.
+/// - 웹은 (루트 + replies) 뷰, 모바일은 flat 시간순 리스트로 소비한다.
 model QuestionMessage {
-  id        String   @id @default(uuid())
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  teacherId String?
-  teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
-  sender    String // "me" | "tutor" | "ai"
-  body      String
-  imageUrl  String?
-  tokenCost Int      @default(0)
-  createdAt DateTime @default(now())
+  id         String            @id @default(uuid())
+  studentId  String
+  student    Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId  String?
+  teacher    Teacher?          @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  sender     String // "me" | "tutor" | "ai"
+  body       String
+  imageUrl   String?
+  tokenCost  Int               @default(0)
+  /// 웹 대시보드에서 특정 날짜 카드에 연결된 학생 질문. 답변 메시지는 null.
+  date       String?
+  /// 루트 메시지에만 유효. 학생이 "해결됨"으로 표시하면 true.
+  isResolved Boolean           @default(false)
+  /// 답변(tutor/ai) 메시지의 부모(=학생 루트) 메시지. 루트는 null.
+  replyToId  String?
+  parent     QuestionMessage?  @relation("QuestionMessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies    QuestionMessage[] @relation("QuestionMessageReplies")
+  createdAt  DateTime          @default(now())
 
   @@index([studentId])
   @@index([studentId, teacherId])
   @@index([studentId, teacherId, createdAt])
+  @@index([studentId, date])
+  @@index([replyToId])
+  @@index([studentId, replyToId])
+  @@index([isResolved])
 }
 
 /// 푸시 디바이스 등록 (Expo Push)

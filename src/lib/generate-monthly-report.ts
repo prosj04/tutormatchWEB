@@ -81,8 +81,13 @@ export async function generateReportForStudent(
       where: { studentId, date: { gte: start, lt: end } },
       select: { tasks: { select: { isDone: true } } },
     }),
-    prisma.question.count({
-      where: { studentId, date: { gte: start, lt: end } },
+    prisma.questionMessage.count({
+      where: {
+        studentId,
+        sender: "me",
+        replyToId: null,
+        date: { gte: start, lt: end },
+      },
     }),
     prisma.consultationBooking.findFirst({
       where: { studentId },
@@ -143,8 +148,12 @@ export async function generateMonthlyReportsForMonth(
       select: { studentId: true },
       distinct: ["studentId"],
     }),
-    prisma.question.findMany({
-      where: { date: { gte: start, lt: end } },
+    prisma.questionMessage.findMany({
+      where: {
+        sender: "me",
+        replyToId: null,
+        date: { gte: start, lt: end },
+      },
       select: { studentId: true },
       distinct: ["studentId"],
     }),

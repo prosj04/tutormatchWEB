@@ -271,18 +271,22 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
           tasks: { select: { isDone: true } },
         },
       }),
-      prisma.question.count({
+      prisma.questionMessage.count({
         where: {
           studentId: { in: studentIds },
-          teacherAnswer: null,
+          sender: "me",
+          replyToId: null,
+          replies: { none: { sender: "tutor" } },
           createdAt: { lt: staleBefore },
         },
       }),
-      prisma.question.groupBy({
+      prisma.questionMessage.groupBy({
         by: ["studentId"],
         where: {
           studentId: { in: studentIds },
-          teacherAnswer: null,
+          sender: "me",
+          replyToId: null,
+          replies: { none: { sender: "tutor" } },
           createdAt: { lt: staleBefore },
         },
         _count: { id: true },
@@ -383,13 +387,15 @@ export async function getManagerMonitoringDetail(
       },
       orderBy: { date: "asc" },
     }),
-    prisma.question.findMany({
+    prisma.questionMessage.findMany({
       where: {
         studentId,
-        teacherAnswer: null,
+        sender: "me",
+        replyToId: null,
+        replies: { none: { sender: "tutor" } },
         createdAt: { lt: staleBefore },
       },
-      select: { id: true, date: true, content: true, createdAt: true },
+      select: { id: true, date: true, body: true, createdAt: true },
       orderBy: { createdAt: "desc" },
       take: 20,
     }),
@@ -422,8 +428,8 @@ export async function getManagerMonitoringDetail(
     })),
     unansweredQuestions: unanswered.map((question) => ({
       id: question.id,
-      date: question.date,
-      content: question.content,
+      date: question.date ?? "",
+      content: question.body,
       createdAt: question.createdAt.toISOString(),
     })),
     recentComments,

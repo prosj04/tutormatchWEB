@@ -69,6 +69,7 @@ export async function POST(
       sender: "me",
       body: content,
       imageUrl,
+      replyToId: null,
     },
     select: {
       id: true,
@@ -102,6 +103,7 @@ export async function POST(
         sender: "ai",
         body: aiText,
         tokenCost: 1,
+        replyToId: myMessage.id,
       },
       select: {
         id: true,

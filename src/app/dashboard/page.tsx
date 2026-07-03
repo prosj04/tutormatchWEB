@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { formatDateKey } from "@/lib/study-plan-dates";
 import { resolveStudentJourneyStage } from "@/lib/student-journey";
 import { prisma } from "@/lib/prisma";
+import { listStudentQuestions } from "@/lib/qna";
 import { parseGoals, type ConsultationGoals } from "@/lib/consultation-report";
 
 export const metadata = {
@@ -67,10 +68,7 @@ export default async function DashboardPage({
       where: { studentId: student.id, date: initialDate },
       include: { tasks: { orderBy: { order: "asc" } } },
     }),
-    prisma.question.findMany({
-      where: { studentId: student.id, date: initialDate },
-      orderBy: { createdAt: "desc" },
-    }),
+    listStudentQuestions(student.id, { date: initialDate }),
     prisma.consultationBooking.findFirst({
       where: { studentId: student.id },
       orderBy: { createdAt: "desc" },

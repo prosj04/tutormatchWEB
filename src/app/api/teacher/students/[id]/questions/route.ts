@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { prisma } from "@/lib/prisma";
+import { listStudentQuestions } from "@/lib/qna";
 import { isValidDateString } from "@/lib/student-auth";
 import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
 import { requireTeacher } from "@/lib/teacher-auth";
@@ -20,17 +20,12 @@ export async function GET(request: Request, context: RouteContext) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
 
-  const where: { studentId: string; date?: string } = { studentId };
-  if (date) {
-    if (!isValidDateString(date)) {
-      return NextResponse.json({ error: "Invalid date" }, { status: 400 });
-    }
-    where.date = date;
+  if (date && !isValidDateString(date)) {
+    return NextResponse.json({ error: "Invalid date" }, { status: 400 });
   }
 
-  const questions = await prisma.question.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
+  const questions = await listStudentQuestions(studentId, {
+    date: date ?? undefined,
   });
 
   return NextResponse.json({ questions });
