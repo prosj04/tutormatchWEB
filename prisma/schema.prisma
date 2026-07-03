@@ -46,7 +46,6 @@ model Student {
   monthlyReports      MonthlyReport[]
   questionMessages    QuestionMessage[]
   onboardingSurvey    OnboardingSurvey?
-  homeworkTemplates   HomeworkTemplate[]
   deletedAt           DateTime?
 }
 
@@ -109,6 +108,7 @@ model StudyPlan {
   comment   String? // 강사 코멘트
   commentAt DateTime?
   commentBy String? // Teacher id
+  source    String      @default("MANUAL") // "MANUAL" | "AUTO_DISTRIBUTION"
   createdAt DateTime    @default(now())
 
   @@index([studentId])
@@ -174,7 +174,9 @@ model ConsultationBooking {
   note                String?
   managerNote         String?
   assignedAt          DateTime?
+  followUpSentAt      DateTime?
   createdAt           DateTime  @default(now())
+  report              ConsultationReport?
 
   @@index([managerId])
   @@index([status])
@@ -266,6 +268,7 @@ model Lesson {
   durationMin Int      @default(50)
   joinUrl     String?
   status      String   @default("SCHEDULED") // "SCHEDULED" | "COMPLETED" | "CANCELLED"
+  cancelledBy String? // "TEACHER" | "STUDENT" | "MANAGER" (only set when status is CANCELLED)
   createdAt   DateTime @default(now())
 
   @@index([studentId])
@@ -334,19 +337,21 @@ model Subscription {
 
 /// 결제 완료 처리 기록 (주문번호 기준 멱등성 보장)
 model PaymentCompletion {
-  id             String    @id @default(uuid())
-  orderId        String    @unique
-  studentId      String
-  student        Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  plan           String
-  status         String    @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
-  paymentKey     String?
-  amount         Int?
-  subscriptionId String?
-  bookingId      String?
-  createdAt      DateTime  @default(now())
-  completedAt    DateTime?
-  updatedAt      DateTime  @default(now()) @updatedAt
+  id              String    @id @default(uuid())
+  orderId         String    @unique
+  studentId       String
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  plan            String
+  status          String    @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
+  paymentKey      String?
+  amount          Int?
+  subscriptionId  String?
+  bookingId       String?
+  cashReceiptType String? // e.g. "PERSONAL" | "BUSINESS"
+  cashReceiptUrl  String?
+  createdAt       DateTime  @default(now())
+  completedAt     DateTime?
+  updatedAt       DateTime  @default(now()) @updatedAt
 
   @@index([studentId])
   @@index([studentId, status])
@@ -441,18 +446,31 @@ model AnalyticsEvent {
 }
 
 model HomeworkTemplate {
-  id        String   @id @default(uuid())
-  teacherId String
-  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  studentId String?
-  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  name      String
-  days      Int
-  tasks     String // newline-joined normalized task titles
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  teacherId    String
+  teacher      Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  title        String
+  subject      String?
+  tasks        String   @default("[]") // JSON array of task objects with title & weight
+  defaultDays  Int      @default(7)
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([teacherId])
-  @@index([studentId])
-  @@index([teacherId, studentId])
+  @@index([isDefault])
+}
+
+model ConsultationReport {
+  id                  String   @id @default(uuid())
+  bookingId           String   @unique
+  booking             ConsultationBooking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  goals               String   @default("{}") // JSON: { quantitative: [], qualitative: [] }
+  subjectLevels       String? // JSON object mapping subjects to proficiency levels
+  recommendedPlan     String?
+  note                String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([bookingId])
 }

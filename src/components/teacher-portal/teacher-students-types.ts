@@ -28,10 +28,10 @@ export type StudyPlanItem = {
 
 export type HomeworkTemplate = {
   id: string;
-  name: string;
-  days: 4 | 7;
+  title: string;
+  subject: string | null;
+  defaultDays: 4 | 7;
   tasks: string;
-  studentId: string | null;
   updatedAt: string;
 };
 

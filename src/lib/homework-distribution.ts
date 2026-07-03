@@ -61,9 +61,9 @@ export function distributeTasks(tasks: string[], days: 4 | 7) {
 }
 
 /**
- * Auto-applies a teacher's student-scoped homework template once a first lesson
+ * Auto-applies a teacher's default homework template once a first lesson
  * date is set. Gated behind ENABLE_AUTO_HOMEWORK_DISTRIBUTION; only runs when
- * exactly one student-scoped template exists, and is idempotent per lesson via
+ * a default template exists, and is idempotent per lesson via
  * the `teacher:auto:first-lesson:${lessonId}` task source.
  */
 export async function autoApplyFirstLessonHomeworkTemplate({
@@ -79,20 +79,23 @@ export async function autoApplyFirstLessonHomeworkTemplate({
 }) {
   if (process.env.ENABLE_AUTO_HOMEWORK_DISTRIBUTION !== "true") return;
 
-  const templates = await prisma.homeworkTemplate.findMany({
-    where: { teacherId, studentId },
+  const template = await prisma.homeworkTemplate.findFirst({
+    where: { teacherId, isDefault: true },
   });
-  if (templates.length !== 1) return;
+  if (!template) return;
 
-  const template = templates[0];
-  const days = template.days === 4 ? 4 : template.days === 7 ? 7 : null;
+  const days = template.defaultDays === 4 ? 4 : template.defaultDays === 7 ? 7 : null;
   if (!days) return;
 
-  const tasks = template.tasks
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-  if (tasks.length === 0) return;
+  let taskArray: string[] = [];
+  try {
+    const parsed = JSON.parse(template.tasks);
+    taskArray = Array.isArray(parsed) ? parsed.map((t) => (typeof t === 'object' && t.title ? t.title : String(t))) : [];
+  } catch {
+    taskArray = [];
+  }
+  if (taskArray.length === 0) return;
+  const tasks = taskArray;
 
   const source = `teacher:auto:first-lesson:${lessonId}`;
   const buckets = distributeTasks(tasks, days);

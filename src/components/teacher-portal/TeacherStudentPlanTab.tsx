@@ -73,16 +73,14 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
 
   const fetchHomeworkTemplates = useCallback(async () => {
     try {
-      const res = await fetch(
-        `/api/teacher/homework-templates?studentId=${studentId}`,
-      );
+      const res = await fetch("/api/teacher/homework-templates");
       if (!res.ok) return;
       const data = (await res.json()) as { templates: HomeworkTemplate[] };
       setHomeworkTemplates(data.templates);
     } catch {
       // ignore template load failures
     }
-  }, [studentId]);
+  }, []);
 
   useEffect(() => {
     setSelectedTemplateId("");
@@ -189,7 +187,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
     const template = homeworkTemplates.find((t) => t.id === templateId);
     if (!template) return;
     setHomeworkTasks(template.tasks);
-    setHomeworkDays(template.days);
+    setHomeworkDays(template.defaultDays);
   }
 
   async function handleSaveTemplate() {
@@ -201,10 +199,9 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: templateName,
-          days: homeworkDays,
+          title: templateName,
+          defaultDays: homeworkDays,
           tasks: homeworkTasks,
-          studentId,
         }),
       });
       if (!res.ok) {
@@ -285,7 +282,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
               <option value="">템플릿 선택</option>
               {homeworkTemplates.map((template) => (
                 <option key={template.id} value={template.id}>
-                  {template.name}
+                  {template.title}
                 </option>
               ))}
             </select>

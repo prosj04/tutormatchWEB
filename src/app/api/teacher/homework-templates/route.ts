@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
 import { requireTeacher } from "@/lib/teacher-auth";
 
 type RequestBody = {
+  title?: unknown;
   name?: unknown;
+  subject?: unknown;
+  defaultDays?: unknown;
   days?: unknown;
   tasks?: unknown;
-  studentId?: unknown;
 };
 
 function parseTasks(raw: unknown) {
@@ -24,22 +25,14 @@ function parseTasks(raw: unknown) {
     .filter(Boolean);
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const authResult = await requireTeacher();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
-  const studentId = new URL(request.url).searchParams.get("studentId") || undefined;
-
-  if (studentId) {
-    const matchResult = await requireTeacherStudentMatch(teacher.id, studentId);
-    if ("error" in matchResult) return matchResult.error;
-  }
-
   const templates = await prisma.homeworkTemplate.findMany({
     where: {
       teacherId: teacher.id,
-      OR: studentId ? [{ studentId: null }, { studentId }] : [{ studentId: null }],
     },
     orderBy: { updatedAt: "desc" },
   });
@@ -59,14 +52,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const name = typeof body.name === "string" ? body.name.trim() : "";
-  if (!name || name.length > 80) {
-    return NextResponse.json({ error: "name must be 1-80 characters" }, { status: 400 });
+  const rawTitle = body.title ?? body.name;
+  const title = typeof rawTitle === "string" ? rawTitle.trim() : "";
+  if (!title || title.length > 80) {
+    return NextResponse.json({ error: "title must be 1-80 characters" }, { status: 400 });
   }
 
-  const days = body.days === 4 ? 4 : body.days === 7 ? 7 : null;
-  if (!days) {
-    return NextResponse.json({ error: "days must be 4 or 7" }, { status: 400 });
+  const subject = typeof body.subject === "string" ? body.subject.trim() : null;
+  if (subject && subject.length > 80) {
+    return NextResponse.json({ error: "subject must be max 80 characters" }, { status: 400 });
+  }
+
+  const rawDefaultDays = body.defaultDays ?? body.days;
+  const defaultDays = rawDefaultDays === 4 ? 4 : rawDefaultDays === 7 ? 7 : null;
+  if (!defaultDays) {
+    return NextResponse.json({ error: "defaultDays must be 4 or 7" }, { status: 400 });
   }
 
   const tasks = parseTasks(body.tasks);
@@ -74,19 +74,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "tasks must contain 1-100 items" }, { status: 400 });
   }
 
-  const studentId = typeof body.studentId === "string" && body.studentId ? body.studentId : null;
-  if (studentId) {
-    const matchResult = await requireTeacherStudentMatch(teacher.id, studentId);
-    if ("error" in matchResult) return matchResult.error;
-  }
-
   const template = await prisma.homeworkTemplate.create({
     data: {
       teacherId: teacher.id,
-      studentId,
-      name,
-      days,
-      tasks: tasks.join("\n"),
+      title,
+      subject,
+      defaultDays,
+      tasks: JSON.stringify(tasks.map((t) => ({ title: t, weight: 1 }))),
     },
   });
 
