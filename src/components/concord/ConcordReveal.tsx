@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 
 export function ConcordReveal({
   children,
   className = "",
   as: Tag = "div",
+  delay,
+  style,
   ...rest
 }: {
   children: ReactNode;
   className?: string;
   as?: "div" | "article" | "section";
+  /** Optional stagger delay in ms. Inert when prefers-reduced-motion is set. */
+  delay?: number;
 } & HTMLAttributes<HTMLElement>) {
   const ref = useRef<HTMLElement>(null);
 
@@ -47,8 +51,11 @@ export function ConcordReveal({
     };
   }, []);
 
+  const mergedStyle: CSSProperties | undefined =
+    delay != null ? { transitionDelay: `${delay}ms`, ...style } : style;
+
   return (
-    <Tag ref={ref as never} className={`reveal ${className}`.trim()} {...rest}>
+    <Tag ref={ref as never} className={`reveal ${className}`.trim()} style={mergedStyle} {...rest}>
       {children}
     </Tag>
   );

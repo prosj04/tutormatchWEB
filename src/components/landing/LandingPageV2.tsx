@@ -237,6 +237,11 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 /* ─── scroll-reveal hook ─── */
 function useReveal() {
   useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -345,7 +350,7 @@ export function LandingPageV2({
             ))}
           </div>
           {/* Stats */}
-          <div className="lp2-stats">
+          <div className="lp2-stats reveal">
             {cmsStats.map((s) => {
               const hasPlus = s.value.includes("+");
               const hasPct = s.value.includes("%");
@@ -471,6 +476,7 @@ export function LandingPageV2({
                 href="/tutors"
                 className="lp2-t-card reveal"
                 aria-label={`${t.name} 선생님 소개 보기`}
+                style={{ transitionDelay: `${Math.min(i * 80, 320)}ms` }}
               >
                 <div className="lp2-t-media">
                   <Image
@@ -544,8 +550,8 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-grid-3">
-            {managementItems.map((item) => (
-              <div key={item.n} className="lp2-care-card reveal">
+            {managementItems.map((item, i) => (
+              <div key={item.n} className="lp2-care-card reveal" style={{ transitionDelay: `${Math.min(i * 80, 320)}ms` }}>
                 <div className="num">0{item.n}</div>
                 <h3>{item.label}</h3>
                 <p>{item.desc}</p>
@@ -569,8 +575,8 @@ export function LandingPageV2({
           </div>
 
           <div>
-            {cmsSteps.map((step) => (
-              <div key={step.number} className="lp2-proc-row reveal">
+            {cmsSteps.map((step, i) => (
+              <div key={step.number} className="lp2-proc-row reveal" style={{ transitionDelay: `${Math.min(i * 80, 320)}ms` }}>
                 <div className="lp2-proc-n">{step.number}</div>
                 <div className="lp2-proc-c">
                   <h3>{step.title}</h3>
@@ -724,7 +730,7 @@ export function LandingPageV2({
 
           <div className="lp2-rev-grid">
             {cmsTestimonials.map((t, i) => (
-              <div key={i} className="lp2-rev-card reveal">
+              <div key={i} className="lp2-rev-card reveal" style={{ transitionDelay: `${Math.min(i * 80, 320)}ms` }}>
                 <div className="quote">&ldquo;</div>
                 <p className="qt">{t.quote}</p>
                 <div className="by">{t.info}</div>

@@ -17,9 +17,11 @@ export type FaqItem = { q: string; a: string };
 function FaqAccordionItem({
   item,
   defaultOpen = false,
+  delay,
 }: {
   item: FaqItem;
   defaultOpen?: boolean;
+  delay?: number;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const answerRef = useRef<HTMLDivElement>(null);
@@ -32,7 +34,7 @@ function FaqAccordionItem({
   }, [open]);
 
   return (
-    <ConcordReveal className={`faq-item${open ? " open" : ""}`}>
+    <ConcordReveal className={`faq-item${open ? " open" : ""}`} delay={delay}>
       <button
         type="button"
         className="faq-q"
@@ -56,7 +58,7 @@ export function FaqAccordionList({ faqs }: { faqs: FaqItem[] }) {
   return (
     <div className="faq-list">
       {faqs.map((item, index) => (
-        <FaqAccordionItem key={item.q} item={item} defaultOpen={index === 0} />
+        <FaqAccordionItem key={item.q} item={item} defaultOpen={index === 0} delay={index < 4 ? index * 80 : 0} />
       ))}
     </div>
   );

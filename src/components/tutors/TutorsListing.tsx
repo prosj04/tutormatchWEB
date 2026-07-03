@@ -53,12 +53,12 @@ function splitBullets(value?: string | null): string[] {
     .slice(0, 2);
 }
 
-function ConcordTutorCard({ tutor }: { tutor: TutorCardData }) {
+function ConcordTutorCard({ tutor, delay }: { tutor: TutorCardData; delay?: number }) {
   const tag = tutor.subjects[0] ?? "과목";
   const items = splitBullets(tutor.experience);
 
   return (
-    <ConcordReveal as="article" className="card tutor-card" style={{ cursor: "pointer" }}>
+    <ConcordReveal as="article" className="card tutor-card" style={{ cursor: "pointer" }} delay={delay}>
       <Link href={`/tutors/${tutor.id}`} className="tutor-media" style={tutor.photoUrl ? { position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" } : undefined}>
         <span className="tutor-tag">{tag}</span>
         {tutor.photoUrl ? (
@@ -149,8 +149,8 @@ export function TutorsListing({
           </ConcordReveal>
 
           <div className="tutor-grid">
-            {tutors.filter((t) => matchesFilter(t, activeFilter)).map((tutor) => (
-              <ConcordTutorCard key={tutor.id} tutor={tutor} />
+            {tutors.filter((t) => matchesFilter(t, activeFilter)).map((tutor, i) => (
+              <ConcordTutorCard key={tutor.id} tutor={tutor} delay={Math.min(i * 80, 320)} />
             ))}
           </div>
         </div>

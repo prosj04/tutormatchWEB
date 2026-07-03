@@ -107,9 +107,9 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .foot-meta .legal{ margin-top:12px; display:flex; gap:16px; flex-wrap:wrap; }
 
 /* ---- reveal ---- */
-.reveal{ opacity:0; transform:translateY(20px); transition:opacity .7s var(--ease),transform .7s var(--ease); }
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .55s var(--ease),transform .55s var(--ease); }
 .reveal.in{ opacity:1; transform:none; }
-@media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; } html{ scroll-behavior:auto; } }
+@media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; transition-delay:0ms!important; } html{ scroll-behavior:auto; } }
 
 /* =========================================================
    PRICING
