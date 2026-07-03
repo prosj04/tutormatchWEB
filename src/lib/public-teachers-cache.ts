@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
 import {
   PUBLIC_CMS_REVALIDATE_SECONDS,
@@ -69,14 +70,18 @@ const detailTeacherSelect = {
   },
 } as const;
 
+/** 공개 강사진 목록: 수업 담당인 TEACHER만 노출, 데모용 [sample] 계정 제외 (상세 조회는 매니저 딥링크 호환을 위해 기존 role 유지) */
+const publicTeacherListWhere: Prisma.TeacherWhereInput = {
+  approved: true,
+  user: { role: "TEACHER" },
+  NOT: { name: { startsWith: "[sample]" } },
+};
+
 const getCachedPublicTeacherIds = unstable_cache(
   async () =>
     timeAsync("prisma.teacher.findMany.publicTeacherIds", () =>
       prisma.teacher.findMany({
-        where: {
-          approved: true,
-          user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
-        },
+        where: publicTeacherListWhere,
         orderBy: { name: "asc" },
         select: { id: true },
       }),
@@ -92,10 +97,7 @@ const getCachedPublicTeachers = unstable_cache(
   async (): Promise<TeacherListRow[]> =>
     timeAsync("prisma.teacher.findMany.publicTeachers", () =>
       prisma.teacher.findMany({
-        where: {
-          approved: true,
-          user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
-        },
+        where: publicTeacherListWhere,
         orderBy: { name: "asc" },
         select: listTeacherSelect,
       }),

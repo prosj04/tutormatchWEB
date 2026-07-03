@@ -160,7 +160,7 @@
 | 우선순위 | 항목 | 비고 |
 |---|---|---|
 | 🔴 | **CMS DB 전체 비어 있음** (SiteContent/Testimonial/FaqItem 0행) — 사이트 전체가 코드 기본값으로 렌더링 중 | 시드 실행 여부는 다른 세션 작업과 조율 필요 |
-| 🔴 | `/tutors`에 `[sample]` 접두사 계정·매니저 계정(Chief_manager)이 공개 노출 | 샘플 데이터 정리 + 공개 목록에 MANAGER 포함 여부는 제품 결정 필요 (`public-teachers-cache.ts`의 role 필터) |
+| ✅ | ~~`/tutors`에 `[sample]` 계정·매니저 계정 공개 노출~~ → 공개 목록을 TEACHER 전용 + `[sample]` 제외로 수정 완료 (상세 딥링크는 기존 role 유지) | DB의 샘플 데이터 자체 정리는 별도 |
 | 🔴 | 법적 페이지 `[기재 예정]` 다수 (terms 4곳, privacy 6곳, refund 시행일) | 실제 사업자 정보 필요 |
 | 🔴 | `/login` 비밀번호 찾기 링크 부재 | 재설정 플로우(SMS/이메일) 자체가 미구현이라 선행 개발 필요 |
 | 🟠 | `/reviews` 전 카드 ★★★★★ 하드코딩 — 조작 인상 우려 | 유지/제거/개별 rating 필드 중 결정 필요 |
