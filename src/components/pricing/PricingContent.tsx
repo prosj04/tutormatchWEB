@@ -9,7 +9,7 @@ import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
-import { buildCheckoutHref } from "@/lib/pricing-plans";
+import { buildCheckoutHref, PLAN_INCLUDES } from "@/lib/pricing-plans";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 function ShieldIcon() {
@@ -123,6 +123,16 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                         <li key={f}>{f}</li>
                       ))}
                     </ul>
+                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase" }}>
+                        모든 플랜 공통 포함
+                      </p>
+                      <ul className="pfeat" style={{ fontSize: "0.875rem" }}>
+                        {PLAN_INCLUDES.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
                     <Link
                       className={`btn btn-block${isRec ? " btn-acc" : " btn-ghost"}`}
                       href={buildCheckoutHref(item.plan.sessions, item.plan.subjects)}

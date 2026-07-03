@@ -22,6 +22,7 @@ import {
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
 import type { GroupedSiteContent } from "@/lib/site-content";
+import { PLAN_INCLUDES } from "@/lib/pricing-plans";
 
 import type { PMW } from "./CheckoutTossWidget";
 
@@ -284,6 +285,19 @@ export function CheckoutContent({
                     <dd>{formatKRW(total)}</dd>
                   </div>
                 </dl>
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)" }}>
+                  <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "rgba(0,0,0,0.7)", marginBottom: 10 }}>
+                    모든 플랜에 포함됨
+                  </p>
+                  <ul style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "rgba(0,0,0,0.6)" }}>
+                    {PLAN_INCLUDES.map((item) => (
+                      <li key={item} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                        <span style={{ color: "var(--acc-color, #FF6B6B)" }}>·</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </article>
 
               <article className="card panel-card">

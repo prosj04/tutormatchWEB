@@ -12,6 +12,15 @@ export const RATE_WEEKLY_TWICE_OR_MORE = 90_000;
 
 export const CONSULTATION_HREF = "/dashboard/consultation";
 
+/** 모든 플랜에 공통으로 포함되는 가치 항목 */
+export const PLAN_INCLUDES = [
+  "전담 매니저 배정 및 정기 관리",
+  "월간 학습 리포트",
+  "숙제 관리 및 자동 분배",
+  "질문 답변 지원",
+  "선생님 매칭 및 교체 상담",
+] as const;
+
 export function getRatePerSession(sessions: SessionPlan): number {
   return sessions === 4 ? RATE_WEEKLY_ONCE : RATE_WEEKLY_TWICE_OR_MORE;
 }

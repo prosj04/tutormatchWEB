@@ -47,27 +47,27 @@ const pretendard = localFont({
 });
 
 const SITE_DESCRIPTION =
-  "엄선된 선생님과의 1:1 맞춤 과외. 상담부터 매칭·학습 관리까지 전담 매니저가 함께합니다.";
+  "1:1 프리미엄 과외 매칭 — 전담 매니저가 상담부터 선생님 매칭·학습 관리까지";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Concord Private Tutoring",
-    template: "%s · Concord Private Tutoring",
+    default: "콘코드 | 1:1 프리미엄 과외 매칭 플랫폼",
+    template: "%s | 콘코드",
   },
   description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
     locale: "ko_KR",
     url: SITE_URL,
-    siteName: "Concord Private Tutoring",
-    title: "Concord Private Tutoring",
+    siteName: "콘코드",
+    title: "콘코드 | 1:1 프리미엄 과외 매칭 플랫폼",
     description: SITE_DESCRIPTION,
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Concord Private Tutoring" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "콘코드 - 프리미엄 과외 매칭" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Concord Private Tutoring",
+    title: "콘코드 | 1:1 프리미엄 과외 매칭",
     description: SITE_DESCRIPTION,
     images: ["/og-image.png"],
   },
@@ -76,6 +76,13 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
+  ...(process.env.NAVER_SITE_VERIFICATION && {
+    verification: {
+      other: {
+        "naver-site-verification": process.env.NAVER_SITE_VERIFICATION,
+      },
+    },
+  }),
 };
 
 export default function RootLayout({
@@ -86,7 +93,8 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
-    name: "Concord Private Tutoring",
+    name: "콘코드",
+    alternateName: "Concord Private Tutoring",
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     "@id": SITE_URL,
