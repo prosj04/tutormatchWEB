@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { parseGoals, hasNonEmptyGoals } from "@/lib/consultation-report";
 
 function getMonthBounds(month: string): {
   start: string;
@@ -31,7 +32,7 @@ export async function generateReportForStudent(
 ): Promise<void> {
   const { start, end, startDate, endDate } = getMonthBounds(month);
 
-  const [lessonCount, plans, questionCount] = await Promise.all([
+  const [lessonCount, plans, questionCount, consultationBooking] = await Promise.all([
     prisma.lesson.count({
       where: { studentId, status: "COMPLETED", startAt: { gte: startDate, lt: endDate } },
     }),
@@ -42,6 +43,10 @@ export async function generateReportForStudent(
     prisma.question.count({
       where: { studentId, date: { gte: start, lt: end } },
     }),
+    prisma.consultationBooking.findUnique({
+      where: { studentId },
+      include: { report: true },
+    }),
   ]);
 
   const allTasks = plans.flatMap((p) => p.tasks);
@@ -49,7 +54,16 @@ export async function generateReportForStudent(
   const totalTaskCount = allTasks.length;
 
   const label = monthLabel(month);
-  const summary = `${label} 완료 수업 ${lessonCount}회, 과제 완료 ${doneTaskCount}건, 질문 ${questionCount}건`;
+  const goals = consultationBooking?.report
+    ? parseGoals(consultationBooking.report.goals)
+    : null;
+  const goalLine = (() => {
+    if (!goals || !hasNonEmptyGoals(goals)) return "";
+    const candidates = [...goals.quantitative, ...goals.qualitative];
+    const refs = candidates.slice(0, 2).join(", ");
+    return ` / 목표 대비: ${refs}`;
+  })();
+  const summary = `${label} 완료 수업 ${lessonCount}회, 과제 완료 ${doneTaskCount}건, 질문 ${questionCount}건${goalLine}`;
   const detail = [
     `수업 완료: ${lessonCount}회`,
     `과제 완료: ${doneTaskCount} / ${totalTaskCount}건`,

@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { formatDateKey } from "@/lib/study-plan-dates";
 import { resolveStudentJourneyStage } from "@/lib/student-journey";
 import { prisma } from "@/lib/prisma";
+import { parseGoals, type ConsultationGoals } from "@/lib/consultation-report";
 
 export const metadata = {
   title: "학습 플래너",
@@ -57,7 +58,7 @@ export default async function DashboardPage({
   );
   const initialMonthKey = initialDate.slice(0, 7);
 
-  const [planDateRows, rawInitialPlan, rawInitialQuestions] = await Promise.all([
+  const [planDateRows, rawInitialPlan, rawInitialQuestions, consultationBooking, activeTeacherMatch] = await Promise.all([
     prisma.studyPlan.findMany({
       where: { studentId: student.id, date: { startsWith: initialMonthKey } },
       select: { date: true },
@@ -70,7 +71,22 @@ export default async function DashboardPage({
       where: { studentId: student.id, date: initialDate },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.consultationBooking.findUnique({
+      where: { studentId: student.id },
+      include: { report: true },
+    }),
+    prisma.teacherStudent.findFirst({
+      where: { studentId: student.id, matchStatus: "ACTIVE", isActive: true },
+      select: { id: true, subjects: true, teacher: { select: { name: true } } },
+    }),
   ]);
+
+  const learningGoals: ConsultationGoals | null = (() => {
+    if (!consultationBooking?.report) return null;
+    const goals = parseGoals(consultationBooking.report.goals);
+    if (goals.quantitative.length === 0 && goals.qualitative.length === 0) return null;
+    return goals;
+  })();
 
   const initialPlan = rawInitialPlan
     ? {
@@ -89,6 +105,14 @@ export default async function DashboardPage({
     teacherAnswerAt: question.teacherAnswerAt?.toISOString() ?? null,
   }));
 
+  const activeMatch = activeTeacherMatch
+    ? {
+        matchId: activeTeacherMatch.id,
+        teacherName: activeTeacherMatch.teacher.name,
+        subjects: activeTeacherMatch.subjects,
+      }
+    : null;
+
   return (
     <StudentDashboardEntry
       studentName={student.name}
@@ -99,6 +123,8 @@ export default async function DashboardPage({
       initialQuestions={initialQuestions}
       aiAnswerEnabled={isAiAnswerEnabled()}
       isEditMode={isEditMode}
+      learningGoals={learningGoals}
+      activeMatch={activeMatch}
     />
   );
 }

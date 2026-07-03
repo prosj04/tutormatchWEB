@@ -19,7 +19,11 @@ export type NotificationType =
   | "LESSON_REMINDER"
   | "NEW_QUESTION"
   | "VISIT_TIMES_UPDATED"
-  | "STALE_MATCH_ACCEPTANCE";
+  | "STALE_MATCH_ACCEPTANCE"
+  | "FIRST_LESSON_SLA_BREACH"
+  | "POST_CONSULTATION_FOLLOWUP"
+  | "TEACHER_CHANGE_REQUEST"
+  | "LESSON_CANCELLED_BY_TEACHER";
 
 /** 외부 SMS를 보낼 알림 타입 */
 const SMS_NOTIFICATION_TYPES = new Set<string>([
@@ -134,9 +138,16 @@ export function getNotificationIcon(type: string): string {
     case "MATCH_ACCEPTANCE_REMINDER":
     case "STALE_MATCH_ACCEPTANCE":
     case "FIRST_LESSON_REMINDER":
+    case "FIRST_LESSON_SLA_BREACH":
     case "SUBSCRIPTION_EXPIRY_REMINDER":
     case "LESSON_REMINDER":
       return "👤";
+    case "POST_CONSULTATION_FOLLOWUP":
+      return "💬";
+    case "TEACHER_CHANGE_REQUEST":
+      return "🔄";
+    case "LESSON_CANCELLED_BY_TEACHER":
+      return "📅";
     case "NEW_QUESTION":
       return "✉️";
     default:
@@ -164,6 +175,7 @@ export function resolveNotificationHref(
     case "STALE_MATCH_ACCEPTANCE":
       return "/dashboard";
     case "FIRST_LESSON_REMINDER":
+    case "FIRST_LESSON_SLA_BREACH":
       return "/teacher-portal/dashboard/students";
     case "SUBSCRIPTION_EXPIRY_REMINDER":
       return "/pricing";
@@ -174,7 +186,16 @@ export function resolveNotificationHref(
     case "NEW_STUDENT_WAITING":
       return "/teacher-portal/dashboard/consultations";
     case "NEW_STUDENT_ASSIGNED":
+    case "POST_CONSULTATION_FOLLOWUP":
       return "/teacher-portal/dashboard/students";
+    case "TEACHER_CHANGE_REQUEST":
+      return role === "MANAGER" || role === "CHIEF_MANAGER"
+        ? "/teacher-portal/dashboard/matching"
+        : null;
+    case "LESSON_CANCELLED_BY_TEACHER":
+      return role === "STUDENT"
+        ? "/dashboard"
+        : "/teacher-portal/dashboard/students";
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":
       return "/teacher-portal/dashboard/monitoring";

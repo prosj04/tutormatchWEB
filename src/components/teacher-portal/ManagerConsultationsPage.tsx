@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ManagerConsultationBooking } from "@/lib/manager-portal-data";
+import type { ConsultationGoals } from "@/lib/consultation-report";
 import {
   getNextWeekDates,
   type VisitTimesByDate,
@@ -41,6 +42,18 @@ export function ManagerConsultationsPage({
     useState<ConsultationBooking | null>(null);
   const [managerNote, setManagerNote] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Consultation report modal state
+  const [reportTarget, setReportTarget] = useState<ConsultationBooking | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportSaving, setReportSaving] = useState(false);
+  const [reportGoals, setReportGoals] = useState<ConsultationGoals>({
+    quantitative: [],
+    qualitative: [],
+  });
+  const [reportSubjectLevels, setReportSubjectLevels] = useState("");
+  const [reportRecommendedPlan, setReportRecommendedPlan] = useState("");
+  const [reportNote, setReportNote] = useState("");
   const waitingIdsRef = useRef<Set<string>>(
     new Set(initialWaiting.map((booking) => booking.id)),
   );
@@ -174,6 +187,97 @@ export function ManagerConsultationsPage({
     }
   }
 
+  async function openReportModal(booking: ConsultationBooking) {
+    setReportTarget(booking);
+    setReportGoals({ quantitative: [], qualitative: [] });
+    setReportSubjectLevels("");
+    setReportRecommendedPlan("");
+    setReportNote("");
+    setReportLoading(true);
+    try {
+      const res = await fetch(
+        `/api/manager/consultations/${booking.id}/report`,
+      );
+      if (res.ok) {
+        const data = (await res.json()) as {
+          report: {
+            goals: ConsultationGoals;
+            subjectLevels: Record<string, string> | null;
+            recommendedPlan: string | null;
+            note: string | null;
+          } | null;
+        };
+        if (data.report) {
+          setReportGoals(data.report.goals);
+          setReportSubjectLevels(
+            data.report.subjectLevels
+              ? Object.entries(data.report.subjectLevels)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join("\n")
+              : "",
+          );
+          setReportRecommendedPlan(data.report.recommendedPlan ?? "");
+          setReportNote(data.report.note ?? "");
+        }
+      }
+    } finally {
+      setReportLoading(false);
+    }
+  }
+
+  async function saveReport() {
+    if (!reportTarget) return;
+    setReportSaving(true);
+    try {
+      // Parse subjectLevels from "subject: level" lines
+      const subjectLevels: Record<string, string> = {};
+      for (const line of reportSubjectLevels.split("\n")) {
+        const idx = line.indexOf(":");
+        if (idx > 0) {
+          const key = line.slice(0, idx).trim();
+          const val = line.slice(idx + 1).trim();
+          if (key && val) subjectLevels[key] = val;
+        }
+      }
+
+      const res = await fetch(
+        `/api/manager/consultations/${reportTarget.id}/report`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            goals: reportGoals,
+            subjectLevels:
+              Object.keys(subjectLevels).length > 0 ? subjectLevels : null,
+            recommendedPlan: reportRecommendedPlan.trim() || null,
+            note: reportNote.trim() || null,
+          }),
+        },
+      );
+      if (res.ok) {
+        showToast("리포트가 저장되었습니다.");
+        setReportTarget(null);
+      } else {
+        const err = (await res.json()) as { error?: string };
+        showToast(err.error ?? "저장에 실패했습니다.");
+      }
+    } finally {
+      setReportSaving(false);
+    }
+  }
+
+  function handleGoalListChange(
+    field: "quantitative" | "qualitative",
+    text: string,
+  ) {
+    const items = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .slice(0, 10);
+    setReportGoals((prev) => ({ ...prev, [field]: items }));
+  }
+
   return (
     <div>
       <AnimatePresence>
@@ -249,6 +353,7 @@ export function ManagerConsultationsPage({
                   setManagerNote("");
                 }}
                 onCancel={() => void cancelBooking(booking)}
+                onReport={() => void openReportModal(booking)}
               />
             ))}
           </ul>
@@ -288,6 +393,111 @@ export function ManagerConsultationsPage({
               >
                 완료 처리
               </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {reportTarget ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+        >
+          <div className="w-full max-w-lg overflow-y-auto rounded-2xl bg-surface p-6 shadow-xl max-h-[90vh]">
+            <h2 className="text-lg font-bold text-text-primary">상담 리포트</h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              {reportTarget.student.name} 학생 — 목표 및 수준 기록
+            </p>
+
+            {reportLoading ? (
+              <p className="mt-6 text-center text-sm text-text-muted">불러오는 중...</p>
+            ) : (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary">
+                    정량 목표 (한 줄에 하나, 최대 10개)
+                  </label>
+                  <textarea
+                    value={reportGoals.quantitative.join("\n")}
+                    onChange={(e) =>
+                      handleGoalListChange("quantitative", e.target.value)
+                    }
+                    rows={4}
+                    placeholder={"예) 수학 3등급 달성\n예) 영어 모의고사 85점 이상"}
+                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary">
+                    정성 목표 (한 줄에 하나, 최대 10개)
+                  </label>
+                  <textarea
+                    value={reportGoals.qualitative.join("\n")}
+                    onChange={(e) =>
+                      handleGoalListChange("qualitative", e.target.value)
+                    }
+                    rows={4}
+                    placeholder={"예) 자기주도 학습 습관 형성\n예) 개념 이해 중심 공부 전환"}
+                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary">
+                    과목별 현재 수준 (형식: &quot;과목: 수준&quot;, 한 줄에 하나)
+                  </label>
+                  <textarea
+                    value={reportSubjectLevels}
+                    onChange={(e) => setReportSubjectLevels(e.target.value)}
+                    rows={3}
+                    placeholder={"예) 수학: 중학교 3학년 수준\n예) 영어: 기초 문법 숙지"}
+                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary">
+                    추천 플랜
+                  </label>
+                  <textarea
+                    value={reportRecommendedPlan}
+                    onChange={(e) => setReportRecommendedPlan(e.target.value)}
+                    rows={3}
+                    placeholder="주 2회 수학 집중, 월 1회 영어 점검 등"
+                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-secondary">
+                    메모 (내부용)
+                  </label>
+                  <textarea
+                    value={reportNote}
+                    onChange={(e) => setReportNote(e.target.value)}
+                    rows={3}
+                    placeholder="특이사항, 학부모 요청사항 등"
+                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setReportTarget(null)}
+                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm"
+              >
+                닫기
+              </button>
+              {!reportLoading && (
+                <button
+                  type="button"
+                  disabled={reportSaving}
+                  onClick={() => void saveReport()}
+                  className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {reportSaving ? "저장 중..." : "저장"}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -386,11 +596,13 @@ function MineCard({
   loading,
   onComplete,
   onCancel,
+  onReport,
 }: {
   booking: ConsultationBooking;
   loading: boolean;
   onComplete: () => void;
   onCancel: () => void;
+  onReport: () => void;
 }) {
   const badge = STATUS_BADGES[booking.status] ?? STATUS_BADGES.ASSIGNED;
 
@@ -448,6 +660,13 @@ function MineCard({
           </button>
         </div>
       ) : null}
+      <button
+        type="button"
+        onClick={onReport}
+        className="mt-3 w-full rounded-xl border border-primary/30 bg-primary/5 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+      >
+        상담 리포트
+      </button>
     </li>
   );
 }

@@ -4,7 +4,8 @@ import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
 
 type StudentDashboardModule = typeof import("./StudentDashboard");
-type StudentDashboardProps = ComponentProps<StudentDashboardModule["StudentDashboard"]>;
+// Re-export so dashboard/page.tsx can use the full prop type (including learningGoals)
+export type StudentDashboardProps = ComponentProps<StudentDashboardModule["StudentDashboard"]>;
 
 const StudentDashboardLazy = dynamic(
   () => import("./StudentDashboard").then((mod) => mod.StudentDashboard),

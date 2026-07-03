@@ -1,6 +1,7 @@
 import { completionRate } from "@/lib/manager-stats";
 import { formatDateKey } from "@/lib/study-plan-dates";
 import { prisma } from "@/lib/prisma";
+import { sendSms } from "@/lib/sms";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -58,6 +59,9 @@ export async function runAlertChecks() {
   let lessonRemindersChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
+  let postConsultationFollowUpsSent = 0;
+  let firstLessonSlaBreachesChecked = 0;
+  let lessonsAutoCompleted = 0;
 
   const staleBefore = new Date(Date.now() - DAY_MS);
   const recentSince = new Date(Date.now() - DAY_MS);
@@ -953,6 +957,195 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── NEW-A. Post-consultation lead follow-up (#15) ─────────────────────────
+  //
+  // ConsultationBooking status "COMPLETED", created 3+ days ago (best available
+  // timestamp — no completedAt field), student has NO ACTIVE Subscription,
+  // followUpSentAt null → send one follow-up SMS and set followUpSentAt=now.
+  // followUpSentAt is the hard dedup: one SMS ever per booking.
+
+  const followUpCutoff = new Date(Date.now() - 3 * DAY_MS);
+
+  const completedBookings = await prisma.consultationBooking.findMany({
+    where: {
+      status: "COMPLETED",
+      followUpSentAt: null,
+      createdAt: { lt: followUpCutoff },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      student: {
+        select: {
+          phone: true,
+          subscriptions: {
+            where: { status: "ACTIVE" },
+            select: { id: true },
+            take: 1,
+          },
+        },
+      },
+    },
+  });
+
+  for (const booking of completedBookings) {
+    // Skip if student already has an active subscription.
+    if (booking.student.subscriptions.length > 0) continue;
+
+    const phone = booking.student.phone;
+    if (phone) {
+      try {
+        await sendSms(
+          phone,
+          "[Concord] 콘코드 상담 이후 고민되시는 점이 있으신가요? 담당 매니저가 언제든 다시 안내해 드립니다.",
+        );
+      } catch (e) {
+        console.error("[FollowUp] SMS failed:", e);
+      }
+    }
+    // Always mark sent regardless of SMS delivery (fire-and-forget; prevents re-send).
+    await prisma.consultationBooking.update({
+      where: { id: booking.id },
+      data: { followUpSentAt: new Date() },
+    });
+    postConsultationFollowUpsSent++;
+  }
+
+  // ── NEW-B. First-lesson SLA breach (#23) ──────────────────────────────────
+  //
+  // Subscription ACTIVE, created 7+ days ago, student has zero Lesson records
+  // → notify CHIEF_MANAGER users (FIRST_LESSON_SLA_BREACH).
+  // Dedup: existence of any FIRST_LESSON_SLA_BREACH notification for relatedId=studentId
+  // (no time window — fires once per student ever).
+
+  const slaCutoff = new Date(Date.now() - 7 * DAY_MS);
+
+  const slaSubscriptions = await prisma.subscription.findMany({
+    where: {
+      status: "ACTIVE",
+      createdAt: { lt: slaCutoff },
+    },
+    select: {
+      studentId: true,
+      createdAt: true,
+      student: { select: { name: true } },
+    },
+  });
+
+  if (slaSubscriptions.length > 0) {
+    // Deduplicate by studentId (a student may have multiple active subscriptions).
+    const slaByStudent = new Map<
+      string,
+      { studentName: string; createdAt: Date }
+    >();
+    for (const sub of slaSubscriptions) {
+      if (!slaByStudent.has(sub.studentId)) {
+        slaByStudent.set(sub.studentId, {
+          studentName: sub.student.name,
+          createdAt: sub.createdAt,
+        });
+      }
+    }
+
+    const slaStudentIds = Array.from(slaByStudent.keys());
+
+    // Check which students have zero lessons.
+    const studentsWithLessons = await prisma.lesson.findMany({
+      where: { studentId: { in: slaStudentIds } },
+      select: { studentId: true },
+      distinct: ["studentId"],
+    });
+    const hasLessonSet = new Set(studentsWithLessons.map((l) => l.studentId));
+
+    const slaBreachStudentIds = slaStudentIds.filter(
+      (id) => !hasLessonSet.has(id),
+    );
+    firstLessonSlaBreachesChecked = slaBreachStudentIds.length;
+
+    if (slaBreachStudentIds.length > 0) {
+      // Check which students already have a FIRST_LESSON_SLA_BREACH notification
+      // (no time window — once per student ever).
+      const existingSlaNotifs = await prisma.notification.findMany({
+        where: {
+          type: "FIRST_LESSON_SLA_BREACH",
+          relatedId: { in: slaBreachStudentIds },
+        },
+        select: { relatedId: true },
+      });
+      const slaAlreadyNotified = new Set(
+        existingSlaNotifs.map((n) => n.relatedId).filter(Boolean) as string[],
+      );
+
+      const slaBreachStudentsToNotify = slaBreachStudentIds.filter(
+        (id) => !slaAlreadyNotified.has(id),
+      );
+
+      if (slaBreachStudentsToNotify.length > 0) {
+        // Fetch CHIEF_MANAGER users.
+        const chiefManagersForSla = await prisma.teacher.findMany({
+          where: { approved: true, user: { role: "CHIEF_MANAGER" } },
+          select: { userId: true },
+        });
+        const chiefManagerIdsForSla = chiefManagersForSla.map((m) => m.userId);
+
+        const slaToCreate: Array<{
+          userId: string;
+          type: string;
+          title: string;
+          body: string;
+          relatedId: string;
+        }> = [];
+
+        for (const studentId of slaBreachStudentsToNotify) {
+          const info = slaByStudent.get(studentId)!;
+          const daysElapsed = Math.floor(
+            (Date.now() - info.createdAt.getTime()) / DAY_MS,
+          );
+          for (const managerId of chiefManagerIdsForSla) {
+            slaToCreate.push({
+              userId: managerId,
+              type: "FIRST_LESSON_SLA_BREACH",
+              title: "첫 수업 미진행 알림",
+              body: `${info.studentName}님이 구독 ${daysElapsed}일 후에도 첫 수업이 진행되지 않았습니다.`,
+              relatedId: studentId,
+            });
+          }
+        }
+
+        if (slaToCreate.length > 0) {
+          await prisma.notification.createMany({ data: slaToCreate });
+          notificationsCreated += slaToCreate.length;
+        }
+      }
+    }
+  }
+
+  // ── NEW-C. Lesson auto-complete (60-min buffer) ────────────────────────────
+  //
+  // Lessons status "SCHEDULED" with startAt + durationMin + 60min in the past
+  // → updateMany to "COMPLETED". Count only, no notifications.
+  // NOTE: Placed after section 4, which uses a 12h buffer; this catches the
+  // 60min–12h window. StudySession writes for this window remain out-of-scope
+  // (section 4 handles only its own closed set). No overlap with CANCELLED.
+
+  const lessonAutoCompleteCandidates = await prisma.lesson.findMany({
+    where: { status: "SCHEDULED" },
+    select: { id: true, startAt: true, durationMin: true },
+  });
+
+  const toAutoComplete = lessonAutoCompleteCandidates.filter(
+    (l) =>
+      l.startAt.getTime() + l.durationMin * 60_000 + 60 * 60_000 < Date.now(),
+  );
+
+  if (toAutoComplete.length > 0) {
+    await prisma.lesson.updateMany({
+      where: { id: { in: toAutoComplete.map((l) => l.id) } },
+      data: { status: "COMPLETED" },
+    });
+    lessonsAutoCompleted = toAutoComplete.length;
+  }
+
   return {
     questionsChecked,
     qnaMessagesChecked,
@@ -967,5 +1160,8 @@ export async function runAlertChecks() {
     weeklyCheckRan: prevWeek != null,
     closedLessons,
     studySessionsWritten,
+    postConsultationFollowUpsSent,
+    firstLessonSlaBreachesChecked,
+    lessonsAutoCompleted,
   };
 }

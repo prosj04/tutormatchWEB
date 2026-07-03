@@ -6,6 +6,7 @@ import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import { EMPTY_STATE_COPY } from "@/lib/student-journey";
 import { formatCommentDate, formatPlanHeader } from "@/lib/study-plan-dates";
+import type { ConsultationGoals } from "@/lib/consultation-report";
 
 import { CopyPlanModal } from "./CopyPlanModal";
 import { QuestionSection } from "./QuestionSection";
@@ -42,6 +43,7 @@ type DailyPlanViewProps = {
   onSelectCopySource: (date: string) => void;
   onConfirmCopy: () => void;
   isEditMode?: boolean;
+  learningGoals?: ConsultationGoals | null;
 };
 
 export function DailyPlanView({
@@ -55,6 +57,7 @@ export function DailyPlanView({
   copyOptions,
   copyLoading,
   copySource,
+  learningGoals = null,
   onCreatePlan,
   onToggle,
   onTitleChange,
@@ -189,6 +192,42 @@ export function DailyPlanView({
             </section>
           </>
         )}
+
+        {learningGoals ? (
+          <section className="mt-8">
+            <div className="rounded-2xl border border-gray-100 bg-surface p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                학습 목표
+              </p>
+              {learningGoals.quantitative.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-text-secondary">정량 목표</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {learningGoals.quantitative.map((goal, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-text-primary">
+                        <span className="mt-0.5 shrink-0 text-primary">•</span>
+                        <span>{goal}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {learningGoals.qualitative.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-text-secondary">정성 목표</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {learningGoals.qualitative.map((goal, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-text-primary">
+                        <span className="mt-0.5 shrink-0 text-primary">•</span>
+                        <span>{goal}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
 
         <QuestionSection
           selectedDate={selectedDate}
