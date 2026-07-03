@@ -1,0 +1,44 @@
+# 문서 지도 (docs/)
+
+> 갱신: 2026-07-04 · 리뷰 문서 6개를 2개로 통합하고 내부/외부 문서 체계를 신설.
+
+## 외부 문서 (제출·전달용) — `docs/external/`
+
+| 문서 | 용도 | 상태 |
+|---|---|---|
+| [BUSINESS_PLAN_PSST.md](external/BUSINESS_PLAN_PSST.md) | 창업지원사업 제출용 사업계획서 (PSST 구조) | 초안 — [기재 필요] 항목 채우면 제출 가능 |
+| [FINANCIAL_PLAN.md](external/FINANCIAL_PLAN.md) | 3개년 재무계획 (실제 V2 요금제 단가 기반, 3시나리오) | 초안 — 파일럿 실측치로 갱신 예정 |
+| [../docs/PHOTO_GENERATION_PROMPT.md](PHOTO_GENERATION_PROMPT.md) | 이미지 생성 AI 전달용 프롬프트 (인물 사진 6종×5장) | 완료 (작업 보류 중) |
+
+미작성 (필요 시): IR 원페이저, 정부 양식별 변환본(HWP 등)
+
+## 내부 문서 — `docs/internal/`
+
+| 문서 | 용도 | 상태 |
+|---|---|---|
+| [TECH_OVERVIEW.md](internal/TECH_OVERVIEW.md) | 기술 아키텍처 (스택·인증·DB·결제·배포·기술부채) | 완료 (코드 실측) |
+| [API_REFERENCE.md](internal/API_REFERENCE.md) | API 전수 레퍼런스 (110개 라우트, 권한·파라미터) | 완료 (코드 실측) |
+| [LEGAL_DOCS_STATUS.md](internal/LEGAL_DOCS_STATUS.md) | 법률 문서 현황 + 필요 문서 7종(L-1~7) + 행정 절차 | 완료 (체크리스트) |
+
+미작성 (LEGAL_DOCS_STATUS 우선순위 따름): 수강 계약서(L-1), 강사 위촉 계약서(L-2), 개인정보 내부관리계획(L-3)
+
+## 전략·리뷰
+
+| 문서 | 내용 |
+|---|---|
+| [BUSINESS_REVIEW.md](BUSINESS_REVIEW.md) | 사업·마케팅·리스크·성장 통합 (Part 1: BR-1~6/MK-1~8 · Part 2: BR-7~23 법률·재무 · Part 3: 성장 제안 §1~9) |
+| [PRODUCT_DESIGN_TRACKER.md](PRODUCT_DESIGN_TRACKER.md) | 제품·디자인 개선 트래커 (기능 FI-* · 디자인 §1~8 구현 현황 · 플로우 엣지케이스 EC-*) |
+| [project-goals.md](project-goals.md) | 프로젝트 목표 |
+
+## 실행·운영 (다른 세션 활성 사용 — 이 구조 변경 금지)
+
+| 문서 | 내용 |
+|---|---|
+| [IMPLEMENTATION_PLAN_2026-07.md](IMPLEMENTATION_PLAN_2026-07.md) | 2026-07 구현 계획 |
+| [IMPLEMENTATION_SESSIONS_REVISED.md](IMPLEMENTATION_SESSIONS_REVISED.md) | 세션별 구현 기록 |
+| [MANAGER_GUIDELINES.md](MANAGER_GUIDELINES.md) | 매니저 운영 가이드 |
+| `../CLAUDE_HANDOFF.md` (루트) | 세션 간 핸드오프 — 최신 상태의 진실의 원천 |
+
+## 루트 정리 권고 (미실행 — 사용자 결정 필요)
+
+`concord_bizplan.docx`, `concord_bizplan.docx.bak`, `concord_bizplan.rtf`, `Concord_사업계획서_2026.docx`는 구버전 산출물로 보임. `Concord_사업계획서_2026.md`가 원본 소스이며 PSST 버전이 이를 계승하므로, 확인 후 삭제 또는 아카이브 폴더 이동 권장.
