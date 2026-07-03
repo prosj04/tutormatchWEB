@@ -1,4 +1,71 @@
 const TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
+const TOSS_FETCH_URL = "https://api.tosspayments.com/v1/payments";
+
+/**
+ * Toss 서버 fetch API 호출 — 특정 paymentKey의 결제 상태를 조회한다.
+ * 웹훅 검증에 사용: 웹훅 본문을 신뢰하지 않고 Toss 서버에서 직접 확인.
+ */
+export async function fetchTossPayment(paymentKey: string): Promise<{
+  paymentKey: string;
+  orderId: string;
+  status: string;
+  amount: number;
+}> {
+  const secret = process.env.TOSS_SECRET_KEY;
+
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("TOSS_SECRET_KEY is required in production");
+    }
+    console.warn(
+      "[toss-payments] TOSS_SECRET_KEY not set — skipping Toss fetch (dev-only bypass)",
+    );
+    return {
+      paymentKey,
+      orderId: "",
+      status: "DONE",
+      amount: 0,
+    };
+  }
+
+  if (!paymentKey) {
+    throw new Error("TOSS_FETCH_MISSING_PAYMENT_KEY");
+  }
+
+  const credentials = Buffer.from(`${secret}:`).toString("base64");
+  const url = `${TOSS_FETCH_URL}/${encodeURIComponent(paymentKey)}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+    },
+  });
+
+  if (!res.ok) {
+    let errorCode = "";
+    try {
+      const json = (await res.json()) as { code?: string; message?: string };
+      errorCode = json.code ?? "";
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      // ignore parse error
+    }
+    throw new Error(`TOSS_FETCH_FAILED:${errorCode}`);
+  }
+
+  const data = (await res.json()) as {
+    paymentKey?: string;
+    orderId?: string;
+    status?: string;
+    totalAmount?: number;
+  };
+  return {
+    paymentKey: data.paymentKey ?? "",
+    orderId: data.orderId ?? "",
+    status: data.status ?? "",
+    amount: data.totalAmount ?? 0,
+  };
+}
 
 /**
  * Toss 서버 confirm API 호출.
