@@ -1357,6 +1357,16 @@ npm run dev
 - ✅ **선생 정산 리포트 (Q3)**: `/admin/settlements` — 월별(KST) 완료 수업×시간×시급 3만원, durationMin=0은 검토 필요로 분리. PG 지급대행 연동은 외부 계약 후
 - 마이그레이션 `20260703164930_billing_key` 프로덕션 적용 완료
 
+### 25.1h 표시부·모바일 정합 세션 (2026-07-04)
+
+- ✅ **요금 페이지 v2 반영 완료**: PricingContent 전면 개편(티어 토글 유지, 4카드, 정가 취소선+할인 배지, 금액은 CMS 오버라이드 불가 — `PRICING_PLANS_V2` 단일 소스), 홈 티저·CMS 기본값·어드민 CMS 편집 필드 동기화. §25.1g의 "표시부 미반영" 항목 해소 — **배포 가능 상태**
+- ✅ **모바일 정합성 감사(12항목) + 수정 7건**: 
+  - P0: 죽은 결제 화면(740,000원 하드코드→항상 501) → v2 플랜 안내(`GET /api/mobile/pricing-plans`) + 웹 결제 핸드오프로 재작성. **계정 삭제 버튼 추가**(my 탭, App Store 5.1.1(v) 충족 — 이전엔 API만 있고 UI 부재로 심사 탈락감이었음)
+  - P1: billing 화면 v2 플랜 라벨/가격(서버 제공), PAUSED/PAST_DUE가 raw enum으로 노출되던 것 라벨화
+  - GAP: `/api/mobile/me`가 ACTIVE만 반환해 일시정지 학생에게 "구독 없음"으로 보이던 문제 수정(+autoRenew·planLabel·priceKrw 포함), 만족도 체크인 모바일 응답 루트+홈 카드 신설, 모바일 가입에 보호자 동의 수집(웹과 동일 문구)
+  - 감사 통과(수정 불요): QnA 응답 shape, journey MATCH_PENDING_ACCEPT, 알림 신규 타입(서버 제공 icon/category라 안전), 토큰 지갑 v2 quota
+- 웹/모바일 tsc·lint 전부 클린
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
