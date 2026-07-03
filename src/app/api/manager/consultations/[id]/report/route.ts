@@ -8,17 +8,17 @@ import {
   serializeGoals,
 } from "@/lib/consultation-report";
 
-type RouteContext = { params: Promise<{ bookingId: string }> };
+type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   const authResult = await requireManager();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
-  const { bookingId } = await context.params;
+  const { id } = await context.params;
 
   const booking = await prisma.consultationBooking.findFirst({
-    where: { id: bookingId, managerId: teacher.id },
+    where: { id: id, managerId: teacher.id },
     include: { report: true },
   });
 
@@ -45,10 +45,10 @@ export async function PUT(request: Request, context: RouteContext) {
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
-  const { bookingId } = await context.params;
+  const { id } = await context.params;
 
   const booking = await prisma.consultationBooking.findFirst({
-    where: { id: bookingId, managerId: teacher.id },
+    where: { id: id, managerId: teacher.id },
   });
 
   if (!booking) {
@@ -91,9 +91,9 @@ export async function PUT(request: Request, context: RouteContext) {
     typeof body["note"] === "string" ? body["note"].trim() || null : null;
 
   const report = await prisma.consultationReport.upsert({
-    where: { bookingId },
+    where: { bookingId: id },
     create: {
-      bookingId,
+      bookingId: id,
       goals: serializeGoals(goalsResult.goals),
       subjectLevels: subjectLevelsStr,
       recommendedPlan,

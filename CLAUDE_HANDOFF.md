@@ -66,7 +66,9 @@
 - 이 묶음은 "첫 수업 설정 → 자동 숙제 분배 → 템플릿 CRUD 정합화 → 모바일 journey 갱신"으로 이어지는 phase2 core loop 보강이다.
 - 배포 운영을 위해 `CRON_SECRET`은 Vercel Production env / GitHub Actions secret에 설정 완료했다.
 - hourly GitHub Actions fallback은 초안까지 만들었지만, 현재 브랜치에는 포함하지 않았다. GitHub PAT에 `workflow` scope가 없어서 원격 push가 막혔고, 다음 세션에서 scope 보강 또는 SSH/대체 인증이 필요하다.
-- 현재 브랜치가 실제로 담고 있는 cron은 Vercel daily 체크만이다. hourly fallback은 후속 세션에서 다시 붙인다.
+- 현재 브랜치에는 phase3 retention 관련 대규모 변경이 이미 반영돼 있다.
+- 홈페이지 랜딩은 히어로 신뢰 배지와 하단 상담 섹션의 지역 안내를 보강했다.
+- Next.js 빌드 충돌 원인이던 `consultations/[bookingId]/report` 라우트는 `consultations/[id]/report`로 정리했고, `bookingId`는 Prisma 관계키로 유지한다.
 
 ---
 

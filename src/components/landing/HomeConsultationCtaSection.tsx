@@ -51,7 +51,7 @@ export function HomeConsultationCtaSection({ siteContent, isEditMode = false }: 
               "font-medium",
             )}`}
           >
-            {get("subtext", "무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
+            {get("subtext", "서울·분당 방문 수업 가능 · 무료 상담 1회 · 매니저 직접 배정 · 학습 리포트 무료 제공")}
           </p>
         </CmsEdit>
         <CmsEdit active={isEditMode} section="spacing" cmsKey="cta_cards" type="spacing">
