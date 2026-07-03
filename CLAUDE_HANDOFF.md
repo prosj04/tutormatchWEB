@@ -1183,7 +1183,7 @@ npm run dev
 
 ## 24. 사업/마케팅 개선 포인트
 
-> 2026-07-03 분석. docs/BUSINESS_AND_MARKETING_REVIEW.md (BR-1~6, MK-1~8)와 중복되지 않는 신규 포인트 위주. 기존 항목은 해당 문서 참조.
+> 2026-07-03 분석. docs/BUSINESS_REVIEW.md (BR-1~6, MK-1~8)와 중복되지 않는 신규 포인트 위주. 기존 항목은 해당 문서 참조.
 
 ### 24.1 사업 리스크 (신규 식별)
 
@@ -1408,7 +1408,7 @@ npm run dev
 3. ~~새 DB 시드~~ ✅ / ~~스모크 테스트~~ ✅ 2026-07-04 완료 (§25.1f)
 3-원안. **새 DB 시드** — DB 교체로 데이터 0행. 테스트 계정(ADMIN/CHIEF_MANAGER/MANAGER/TEACHER/STUDENT 각 1) 생성 스크립트 `scripts/`에 추가 권장. CHIEF_MANAGER_EMAIL env와 정합 유지
 4. **프로덕션 스모크 테스트** — 배포 후: 회원가입(보호자 동의)→상담 신청→매니저 배정→상담 리포트→매칭(matchReason)→학생 수락→첫 수업 설정→숙제 자동 분배→수업 자동 완료→월간 리포트 순으로 1회 관통. 결제는 Toss 테스트 키로 confirm+웹훅 경로 확인
-5. **소소한 부채**: `Lesson.cancelledBy`/`StudyPlan.source`/`ManagerCareLog.type`/`SatisfactionCheckin.trigger` enum 전환(2차), 매니저 상담 목록의 이력 표시 UX(현재 최소 변경으로 최신/open 위주), 어드민 지표의 매니저 재배정 시 중복 귀속(route.ts 주석 참조), `docs/DESIGN_IMPROVEMENTS.md`(타 세션 산출물) 내용 검토·반영 여부 결정
+5. **소소한 부채**: `Lesson.cancelledBy`/`StudyPlan.source`/`ManagerCareLog.type`/`SatisfactionCheckin.trigger` enum 전환(2차), 매니저 상담 목록의 이력 표시 UX(현재 최소 변경으로 최신/open 위주), 어드민 지표의 매니저 재배정 시 중복 귀속(route.ts 주석 참조), `docs/PRODUCT_DESIGN_TRACKER.md`(타 세션 산출물) 내용 검토·반영 여부 결정
 
 ---
 

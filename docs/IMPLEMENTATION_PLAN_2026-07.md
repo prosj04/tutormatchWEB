@@ -148,7 +148,7 @@ model Lesson {
 
 ### 3.2 매칭 제안 → 학생 수락 (§22.2) — 신규 4 + 수정 3
 
-> **현행화 (2026-07-02)**: 작업 트리에 B1(isActive:false 생성)·B6·B7(모바일 수락 API `POST /api/mobile/matches`)이 이미 부분 구현되어 있음을 코드 실측으로 확인. 남은 것은 거절·매니저 취소·웹 수락·matchStatus 도입 — 상세 지시는 `docs/FLOW_EDGE_CASES_AND_IMPROVEMENTS.md` EC-1~EC-4 참조 (그 문서가 우선).
+> **현행화 (2026-07-02)**: 작업 트리에 B1(isActive:false 생성)·B6·B7(모바일 수락 API `POST /api/mobile/matches`)이 이미 부분 구현되어 있음을 코드 실측으로 확인. 남은 것은 거절·매니저 취소·웹 수락·matchStatus 도입 — 상세 지시는 `docs/PRODUCT_DESIGN_TRACKER.md` EC-1~EC-4 참조 (그 문서가 우선).
 
 | # | Method·Path | 변경 | 내용 |
 |---|-------------|------|------|

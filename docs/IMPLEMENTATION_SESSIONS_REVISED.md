@@ -1,7 +1,7 @@
 # 실제 구현 세션 실행 순서 — 사용자 운영 방침 반영본
 
 > 작성: 2026-07-02
-> 기준 문서: `PRE_LAUNCH_RISK_REVIEW.md`, `BUSINESS_AND_MARKETING_REVIEW.md`, `PRODUCT_IMPROVEMENTS.md`, `IMPLEMENTATION_PLAN_2026-07.md`, `FLOW_EDGE_CASES_AND_IMPROVEMENTS.md`
+> 기준 문서: `BUSINESS_REVIEW.md`, `PRODUCT_DESIGN_TRACKER.md`, `IMPLEMENTATION_PLAN_2026-07.md`
 > 중요: 기존 문서의 일부 제안은 실제 운영 방침과 다르므로, 구현은 이 문서를 우선 기준으로 한다.
 
 ---
@@ -30,7 +30,7 @@
 구현 원칙:
 - 공개 후기/마케팅 후기는 Admin 또는 CMS에서 수동 등록하는 방향으로 유지한다.
 - 앱/웹에서 사용자에게 “후기 남기기”를 요구하지 않는다.
-- `PRODUCT_IMPROVEMENTS.md`의 FI-2는 자동 수집이 아니라 “운영 수집 후 Admin 반영”으로 재해석한다.
+- `PRODUCT_DESIGN_TRACKER.md`의 FI-2는 자동 수집이 아니라 “운영 수집 후 Admin 반영”으로 재해석한다.
 
 ### 0.3 매칭 수락/거절
 
@@ -59,7 +59,7 @@
 
 ## 1. 기존 문서에서 수정해서 읽어야 할 항목
 
-### 1.1 `PRE_LAUNCH_RISK_REVIEW.md`
+### 1.1 `BUSINESS_REVIEW.md` Part 2 (구 `PRE_LAUNCH_RISK_REVIEW.md`)
 
 기존 문서의 BR-7, BR-8, BR-9는 법적 리스크를 강하게 잡고 있으나, 실제 구현은 아래처럼 축소한다.
 
@@ -75,7 +75,7 @@
   - 결제자 법정대리인 인증 단계는 제외.
   - 결제/상담 안내에서 보호자 동의 간주 문구를 넣고, 부모님 연락처를 매니저에게 전달하는 방향.
 
-### 1.2 `PRODUCT_IMPROVEMENTS.md`
+### 1.2 `PRODUCT_DESIGN_TRACKER.md` Part 2 (구 `PRODUCT_IMPROVEMENTS.md`)
 
 - FI-2 후기/평점 자동 수집은 제외한다.
 - 대체 방향:
@@ -89,7 +89,7 @@
 - `DECLINED`, `declineReason`, 학생 거절 API는 제외한다.
 - `matchReason`은 여전히 유효하다. 학생이 수락할 때 설득력을 주기 때문이다.
 
-### 1.4 `FLOW_EDGE_CASES_AND_IMPROVEMENTS.md`
+### 1.4 `PRODUCT_DESIGN_TRACKER.md` Part 3 (구 `FLOW_EDGE_CASES_AND_IMPROVEMENTS.md`)
 
 - EC-1의 “거절 수단/재배정 데드락”은 이번 구현 기준에서는 P0가 아니다.
 - EC-3의 “웹으로도 수락 가능해야 함”은 유효하다.
