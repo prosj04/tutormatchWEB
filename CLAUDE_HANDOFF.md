@@ -1317,6 +1317,20 @@ npm run dev
 - ⚠️ 스킵/보류: **#6 상담 리마인더** — ConsultationBooking에 확정 일시 필드(`visitConfirmedAt` 류)가 없어 구현 불가, 필드 추가가 선행 조건. **#14 카카오 로그인** — 카카오 개발자 앱 등록(사업자 정보) 선행. 선생 포털 수업 취소 버튼 UI — 수업 목록 UI 부재로 API만. BR-20 학생 측 취소/이월 정책 미구현(선생 취소만 처리)
 - ⚠️ **cron 체계 변경됨**: hourly GitHub Actions는 PAT workflow scope 문제로 브랜치에서 제거(`cd35b76`), 현재 알림은 Vercel daily cron뿐. cron 라우트에 x-vercel-cron 허용 추가. 알림 체크는 어떤 주기에도 멱등이도록 작성됨. **후속: push 경로(Scope 보강/SSH) 해결 후 hourly 복원 또는 Vercel Pro cron**
 
+### 25.1d Phase 3 세션 완료분 (2026-07-03)
+
+- ✅ 스키마(`20260703071300_phase3_retention`, **프로덕션 적용**): `ConsultationBooking.visitConfirmedAt`, `ManagerCareLog`, `SatisfactionCheckin`, `Subscription.pausedAt/pausedUntil`(+status PAUSED)
+- ✅ #6 상담 리마인더: visitConfirmedAt 36h 전 학생 SMS+알림·매니저 알림 (매니저가 ManagerConsultationsPage에서 확정 일시 입력 가능)
+- ✅ BR-1 만료 알림: D-5/D-1/만료 3단계(SUBSCRIPTION_EXPIRY_SOON/EXPIRED_SOON/EXPIRED), PAUSED 제외, 상태 변경은 빌링 도입 시로 유보
+- ✅ D+7 만족도 체크인: cron이 SatisfactionCheckin 생성+SMS → 대시보드 1~5점 카드 → 3점 이하 시 매니저 알림(기존 POST_CONSULTATION_FOLLOWUP 타입 재사용 — 전용 타입 분리는 선택 과제)
+- ✅ #22 알림톡 구조: sms.ts에 env-gated 알림톡 우선+SMS 폴백. env: `SOLAPI_KAKAO_PF_ID`, `SOLAPI_KAKAO_TEMPLATE_*` (카카오 채널·템플릿 심사 후 설정)
+- ✅ #2 어드민 지표: `/admin/metrics` — 월별 코호트×재결제율, 환불율(전체/90일), 첫 수업 리드타임 avg/p90 (어드민 네비 "지표")
+- ✅ #8 2단계: `POST /api/admin/payments/[id]/refund` — COMPLETED→REFUNDED 마킹+구독 취소, 어드민 "환불 이력" 배지, student-payment에 REFUNDED 재완료 차단 가드
+- ✅ #10 케어 로그: `/api/manager/care-logs`, ManagerMonitoringPage 학생 드로어에 입력 UI, 학생 대시보드 "매니저 케어 기록" 타임라인(공개 항목 최근 5)
+- ✅ #18 일시정지: `POST /api/manager/subscriptions/[id]/pause` (PAUSE max 35일/RESUME 시 만료일 자동 연장), **docs/MANAGER_GUIDELINES.md** 신설(일시정지·노쇼·교체·보강·케어 로그 지침). pausedUntil 자동 재개 cron은 후속
+- ✅ FI-1: 월간 리포트 요약 AI 생성(ai-answer 인프라 재사용, 미설정/실패 시 기존 템플릿 폴백)
+- 🟡 Phase 3 잔여(의사결정 대기): #17 번들(할인율), #19 dunning+빌링키(Q2), 상담 이력화·Prisma enum 전환(대규모 별도 세션), QnA 통합(P2)
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
