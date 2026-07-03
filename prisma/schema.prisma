@@ -37,6 +37,7 @@ model Student {
   teachers            TeacherStudent[]
   consultationBooking ConsultationBooking?
   managerLinks        ManagerStudent[]
+  managerCareLogs     ManagerCareLog[]
   lessons             Lesson[]
   reviews             TutorReview[]
   studySessions       StudySession[]
@@ -46,6 +47,7 @@ model Student {
   monthlyReports      MonthlyReport[]
   questionMessages    QuestionMessage[]
   onboardingSurvey    OnboardingSurvey?
+  satisfactionCheckins SatisfactionCheckin[]
   deletedAt           DateTime?
 }
 
@@ -66,6 +68,7 @@ model Teacher {
   students          TeacherStudent[]
   managerBookings   ConsultationBooking[]
   managerStudents   ManagerStudent[]      @relation("ManagerStudents")
+  managerCareLogs   ManagerCareLog[]      @relation("ManagerCareLogs")
   lessons           Lesson[]
   reviews           TutorReview[]
   availabilities    TutorAvailability[]
@@ -169,6 +172,7 @@ model ConsultationBooking {
   manager             Teacher?  @relation(fields: [managerId], references: [id])
   preferredTimes      String    @default("[]")
   visitPreferredTimes String    @default("{}")
+  visitConfirmedAt    DateTime?
   status              String    @default("WAITING")
   // "WAITING" | "ASSIGNED" | "COMPLETED" | "CANCELLED"
   note                String?
@@ -212,6 +216,34 @@ model ManagerStudent {
 
   @@unique([managerId, studentId])
   @@index([managerId])
+  @@index([studentId])
+}
+
+model ManagerCareLog {
+  id              String   @id @default(uuid())
+  managerId       String
+  manager         Teacher  @relation("ManagerCareLogs", fields: [managerId], references: [id], onDelete: Cascade)
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type            String   // "CONSULT" | "INTERVENTION" | "CHECK"
+  note            String
+  visibleToStudent Boolean @default(true)
+  createdAt       DateTime @default(now())
+
+  @@index([studentId])
+  @@index([managerId])
+}
+
+model SatisfactionCheckin {
+  id         String    @id @default(uuid())
+  studentId  String
+  student    Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  trigger    String    @default("FIRST_LESSON_D7") // e.g. "FIRST_LESSON_D7"
+  score      Int?      // 1-5
+  comment    String?
+  requestedAt DateTime @default(now())
+  respondedAt DateTime?
+
   @@index([studentId])
 }
 
@@ -326,9 +358,11 @@ model Subscription {
   studentId   String
   student     Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
   plan        String // pricing-plans id e.g. "8-1"
-  status      String    @default("ACTIVE") // "ACTIVE" | "PAST_DUE" | "CANCELLED"
+  status      String    @default("ACTIVE") // "ACTIVE" | "PAST_DUE" | "PAUSED" | "CANCELLED"
   periodStart DateTime  @default(now())
   periodEnd   DateTime?
+  pausedAt    DateTime?
+  pausedUntil DateTime?
   createdAt   DateTime  @default(now())
 
   @@index([studentId])
