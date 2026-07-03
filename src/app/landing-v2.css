@@ -378,6 +378,135 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-mobile-footer .lp2-theme-btn { flex: none; font-size: inherit; }
 
+/* ── teacher verify pills (선발 절차) ── */
+.lp2-verify-lead {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--mut);
+  font-size: 14px;
+  font-weight: 500;
+}
+.lp2-verify-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 14px;
+}
+.lp2-verify-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--mut);
+  font-size: 14px;
+  font-weight: 600;
+}
+.lp2-verify-pill em {
+  font-style: normal;
+  color: var(--acc-text);
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.lp2-verify-sep {
+  color: var(--mut-2);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ── FAQ (native details/summary accordion) ── */
+.lp2-faq-list {
+  border-top: 1px solid var(--line);
+}
+.lp2-faq-item {
+  border-bottom: 1px solid var(--line);
+}
+.lp2-faq-item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 0;
+  font-size: clamp(16px, 1.05vw, 18px);
+  font-weight: 600;
+  color: var(--fg);
+  cursor: pointer;
+  list-style: none;
+  transition: color .18s var(--ease);
+}
+.lp2-faq-item > summary::-webkit-details-marker { display: none; }
+.lp2-faq-item > summary:hover { color: var(--acc-text); }
+.lp2-faq-q { flex: 1; text-wrap: pretty; }
+.lp2-faq-ind {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  color: var(--mut);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .2s var(--ease), color .18s, border-color .18s;
+}
+.lp2-faq-item[open] > summary .lp2-faq-ind {
+  transform: rotate(45deg);
+  color: var(--acc-text);
+  border-color: var(--acc-text);
+}
+.lp2-faq-a {
+  color: var(--mut);
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 0 0 22px;
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp2-faq-ind { transition: none; }
+}
+
+/* ── mobile floating CTA ── */
+.lp2-float-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(110%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform .28s var(--ease), visibility 0s linear .28s;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, .06);
+}
+.lp2-float-cta.is-visible {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform .28s var(--ease), visibility 0s linear 0s;
+}
+.lp2-float-cta .lp2-btn {
+  width: 100%;
+}
+@media (min-width: 681px) {
+  .lp2-float-cta { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp2-float-cta { transition: none; }
+}
+
 /* ── responsive ── */
 @media (max-width:960px) {
   .lp2-grid-4 { grid-template-columns: repeat(2,1fr); }

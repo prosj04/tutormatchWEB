@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { MobileFloatingCta } from "@/components/landing/MobileFloatingCta";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { formatCmsMultiline, parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { buildVisibleCompareRows, getCompareTableTitle } from "@/lib/compare-cms";
@@ -16,8 +17,8 @@ import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 const DEFAULT_RESULT_IMAGES = [...RESULT_CARD_IMAGES];
 
 const stats = [
-  { value: "500+", label: "누적 상담" },
-  { value: "1,200+", label: "매칭 완료" },
+  { value: "1,200+", label: "누적 상담" },
+  { value: "500+", label: "매칭 완료" },
   { value: "98%", label: "학생 만족도" },
 ];
 
@@ -462,7 +463,12 @@ export function LandingPageV2({
 
           <div className="lp2-grid-4">
             {cmsTeachers.map((t, i) => (
-              <article key={`${t.name}-${i}`} className="lp2-t-card reveal">
+              <Link
+                key={`${t.name}-${i}`}
+                href="/tutors"
+                className="lp2-t-card reveal"
+                aria-label={`${t.name} 선생님 소개 보기`}
+              >
                 <div className="lp2-t-media">
                   <Image
                     src={t.image}
@@ -485,8 +491,25 @@ export function LandingPageV2({
                     </ul>
                   )}
                 </div>
-              </article>
+              </Link>
             ))}
+          </div>
+
+          <p className="lp2-verify-lead reveal">
+            모든 선생님은 3단계 검증을 통과합니다
+          </p>
+          <div className="lp2-verify-row reveal" aria-label="선발 절차">
+            <span className="lp2-verify-pill">
+              <em>01</em> 서류·학력 인증
+            </span>
+            <span className="lp2-verify-sep" aria-hidden="true">→</span>
+            <span className="lp2-verify-pill">
+              <em>02</em> 수업 시연
+            </span>
+            <span className="lp2-verify-sep" aria-hidden="true">→</span>
+            <span className="lp2-verify-pill">
+              <em>03</em> 대면 인터뷰
+            </span>
           </div>
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>
@@ -706,8 +729,44 @@ export function LandingPageV2({
               </div>
             ))}
           </div>
+
+          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
+            <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
+              후기 전체 보기 →
+            </Link>
+          </div>
         </div>
       </section>
+
+      {/* ══ FAQ ═══════════════════════════════════════════ */}
+      {cms?.faqs && cms.faqs.length > 0 && (
+        <section id="faq" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+          <div className="lp2-wrap">
+            <div className="lp2-sec-head reveal">
+              <span className="lp2-eyebrow">FAQ</span>
+              <h2>자주 묻는 질문</h2>
+            </div>
+
+            <div className="lp2-faq-list reveal">
+              {cms.faqs.slice(0, 5).map((item, i) => (
+                <details key={`${i}-${item.q}`} className="lp2-faq-item">
+                  <summary>
+                    <span className="lp2-faq-q">{item.q}</span>
+                    <span className="lp2-faq-ind" aria-hidden="true">+</span>
+                  </summary>
+                  <p className="lp2-faq-a">{item.a}</p>
+                </details>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 32 }}>
+              <Link href="/faq" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
+                FAQ 전체 보기 →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ══ CTA BAND ══════════════════════════════════════ */}
       <section className="lp2-sec">
@@ -735,6 +794,8 @@ export function LandingPageV2({
           </div>
         </div>
       </section>
+
+      <MobileFloatingCta />
     </div>
   );
 }
