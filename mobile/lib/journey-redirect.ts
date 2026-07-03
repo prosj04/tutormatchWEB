@@ -28,6 +28,7 @@ export async function clearJourneySkipIfStageChanged(
     "WAITING",
     "ASSIGNED",
     "MATCHING",
+    "MATCH_PENDING_ACCEPT",
     "FIRST_LESSON_PENDING",
     "ACTIVE",
   ];

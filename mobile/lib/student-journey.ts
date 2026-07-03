@@ -9,6 +9,7 @@ export type StudentJourneyStage =
   | "WAITING"
   | "ASSIGNED"
   | "MATCHING"
+  | "MATCH_PENDING_ACCEPT"
   | "FIRST_LESSON_PENDING"
   | "ACTIVE";
 
@@ -57,6 +58,10 @@ export const JOURNEY_STAGE_COPY: Record<
   MATCHING: {
     label: "선생님 매칭 진행",
     body: "상담 결과를 바탕으로 가장 잘 맞는 선생님을 찾고 있어요.",
+  },
+  MATCH_PENDING_ACCEPT: {
+    label: "선생님 배정 수락 대기",
+    body: "선생님이 배정되었습니다. 앱에서 수락해 주세요.",
   },
   FIRST_LESSON_PENDING: {
     label: "첫 수업 일정 조율 중",
@@ -122,6 +127,7 @@ export function needsConsultationTracking(stage: StudentJourneyStage): boolean {
     stage === "WAITING" ||
     stage === "ASSIGNED" ||
     stage === "MATCHING" ||
+    stage === "MATCH_PENDING_ACCEPT" ||
     stage === "FIRST_LESSON_PENDING"
   );
 }

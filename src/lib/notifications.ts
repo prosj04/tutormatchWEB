@@ -29,7 +29,8 @@ export type NotificationType =
   | "SUBSCRIPTION_EXPIRY_SOON"
   | "SUBSCRIPTION_EXPIRED_SOON"
   | "SUBSCRIPTION_EXPIRED"
-  | "SATISFACTION_CHECKIN_REQUEST";
+  | "SATISFACTION_CHECKIN_REQUEST"
+  | "SATISFACTION_LOW_SCORE";
 
 /** 외부 SMS를 보낼 알림 타입 */
 const SMS_NOTIFICATION_TYPES = new Set<string>([
@@ -170,6 +171,8 @@ export function getNotificationIcon(type: string): string {
       return "💳";
     case "SATISFACTION_CHECKIN_REQUEST":
       return "😊";
+    case "SATISFACTION_LOW_SCORE":
+      return "⚠️";
     default:
       return "🔔";
   }
@@ -229,6 +232,8 @@ export function resolveNotificationHref(
       return "/pricing";
     case "SATISFACTION_CHECKIN_REQUEST":
       return "/dashboard";
+    case "SATISFACTION_LOW_SCORE":
+      return "/teacher-portal/dashboard/monitoring";
     default:
       return null;
   }

@@ -9,7 +9,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 /** POST /api/student/satisfaction-checkins/[id]/respond
  *  body: { score: 1-5, comment?: string (max 500) }
  *  Only the owning student, only when respondedAt is null.
- *  If score <= 3, notifies the manager via POST_CONSULTATION_FOLLOWUP.
+ *  If score <= 3, notifies the manager via SATISFACTION_LOW_SCORE.
  */
 export async function POST(request: Request, context: RouteContext) {
   const authResult = await requireStudent();
@@ -83,7 +83,7 @@ export async function POST(request: Request, context: RouteContext) {
       recipientUserIds.map((userId) =>
         createNotification({
           userId,
-          type: "POST_CONSULTATION_FOLLOWUP",
+          type: "SATISFACTION_LOW_SCORE",
           title: "만족도 낮은 학생 확인 필요",
           body: `${student.name} 학생이 첫 수업 만족도 ${score}점을 남겼습니다. 확인이 필요합니다.`,
           relatedId: student.id,

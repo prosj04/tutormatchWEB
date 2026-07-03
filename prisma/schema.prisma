@@ -48,6 +48,7 @@ model Student {
   questionMessages    QuestionMessage[]
   onboardingSurvey    OnboardingSurvey?
   satisfactionCheckins SatisfactionCheckin[]
+  guardianConsentAt   DateTime?
   deletedAt           DateTime?
 }
 
@@ -195,6 +196,7 @@ model Notification {
   type      String
   // "QUESTION_UNANSWERED" | "PROGRESS_WARNING" | "PROGRESS_DANGER"
   // | "NEW_BOOKING" | "BOOKING_CONFIRMED" | "TEACHER_ANSWERED"
+  // | "SATISFACTION_LOW_SCORE"
   title     String
   body      String
   isRead    Boolean  @default(false)

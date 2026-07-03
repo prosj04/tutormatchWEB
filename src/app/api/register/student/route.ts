@@ -22,6 +22,8 @@ type StudentBody = {
   guardianPhone?: unknown;
   /** true: 상담 대기 없이 대표 매니저 즉시 배정 */
   instantEnroll?: unknown;
+  /** true: 보호자(법정대리인)가 개인정보 수집·이용에 동의 */
+  guardianConsent?: unknown;
 };
 
 function isNonEmptyString(v: unknown): v is string {
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { name, grade, subjects, phone, password, guardianPhone: rawGuardianPhone } = body;
+  const { name, grade, subjects, phone, password, guardianPhone: rawGuardianPhone, guardianConsent } = body;
 
   if (
     !isNonEmptyString(name) ||
@@ -92,6 +94,7 @@ export async function POST(request: Request) {
 
   try {
     const instantEnroll = body.instantEnroll === true;
+    const guardianConsentAt = guardianConsent === true ? new Date() : undefined;
 
     const user = await prisma.$transaction(async (tx) => {
       return tx.user.create({
@@ -107,6 +110,7 @@ export async function POST(request: Request) {
               phone: phoneDigits,
               guardianPhone,
               gender,
+              guardianConsentAt,
             },
           },
         },

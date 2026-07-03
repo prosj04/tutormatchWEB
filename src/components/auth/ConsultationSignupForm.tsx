@@ -20,7 +20,8 @@ type FieldKey =
   | "grade"
   | "subjects"
   | "gender"
-  | "terms";
+  | "terms"
+  | "guardianConsent";
 
 type ConsultationSignupFormProps = {
   onSuccess?: () => void;
@@ -43,6 +44,7 @@ export function ConsultationSignupForm({
   const [gender, setGender] = useState<ProfileGender | "">("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [termsAgreed, setTermsAgreed] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,6 +71,7 @@ export function ConsultationSignupForm({
     if (!gender) next.gender = "성별을 선택해 주세요.";
     if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
     if (!termsAgreed) next.terms = "이용약관과 개인정보처리방침에 동의해 주세요.";
+    if (!guardianConsent) next.guardianConsent = "보호자 동의가 필요합니다.";
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -89,6 +92,7 @@ export function ConsultationSignupForm({
           subjects: selectedSubjects,
           phone: phone.trim(),
           instantEnroll,
+          guardianConsent: true,
         }),
       });
       if (res.status === 409) {
@@ -239,10 +243,20 @@ export function ConsultationSignupForm({
             {fieldErrors.terms ? <span className="field-error block">{fieldErrors.terms}</span> : null}
           </span>
         </label>
-        <p className="panel-note">
-          미성년 학생의 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며, 입력하신 연락처는
-          배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
-        </p>
+        <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
+          <input
+            type="checkbox"
+            checked={guardianConsent}
+            onChange={(e) => setGuardianConsent(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
+          />
+          <span>
+            만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.
+            {fieldErrors.guardianConsent ? (
+              <span className="field-error block">{fieldErrors.guardianConsent}</span>
+            ) : null}
+          </span>
+        </label>
       </div>
       <button
         type="button"

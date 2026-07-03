@@ -65,6 +65,7 @@ export async function runAlertChecks() {
   let lessonsAutoCompleted = 0;
   let consultationRemindersChecked = 0;
   let satisfactionCheckinsCreated = 0;
+  let subscriptionsAutoResumed = 0;
 
   const now = new Date();
   const staleBefore = new Date(Date.now() - DAY_MS);
@@ -1470,6 +1471,50 @@ export async function runAlertChecks() {
     satisfactionCheckinsCreated++;
   }
 
+  // ── AUTO-RESUME. Paused subscriptions past pausedUntil ────────────────────
+  //
+  // Subscription status "PAUSED" with pausedUntil < now → resume:
+  // status "ACTIVE", extend periodEnd by (now - pausedAt) when periodEnd non-null,
+  // clear pausedAt/pausedUntil. Mirrors RESUME logic in the manager pause route.
+
+  const pausedSubscriptions = await prisma.subscription.findMany({
+    where: {
+      status: "PAUSED",
+      pausedUntil: { not: null, lt: now },
+    },
+    select: {
+      id: true,
+      pausedAt: true,
+      periodEnd: true,
+      student: {
+        select: {
+          name: true,
+          managerLinks: { select: { manager: { select: { userId: true } } } },
+        },
+      },
+    },
+  });
+
+  if (pausedSubscriptions.length > 0) {
+    for (const sub of pausedSubscriptions) {
+      let newPeriodEnd = sub.periodEnd;
+      if (sub.pausedAt && sub.periodEnd) {
+        const pausedDuration = now.getTime() - sub.pausedAt.getTime();
+        newPeriodEnd = new Date(sub.periodEnd.getTime() + pausedDuration);
+      }
+      await prisma.subscription.update({
+        where: { id: sub.id },
+        data: {
+          status: "ACTIVE",
+          periodEnd: newPeriodEnd,
+          pausedAt: null,
+          pausedUntil: null,
+        },
+      });
+      subscriptionsAutoResumed++;
+    }
+  }
+
   // ── NEW-C. Lesson auto-complete (60-min buffer) ────────────────────────────
   //
   // Lessons status "SCHEDULED" with startAt + durationMin + 60min in the past
@@ -1515,5 +1560,6 @@ export async function runAlertChecks() {
     lessonsAutoCompleted,
     consultationRemindersChecked,
     satisfactionCheckinsCreated,
+    subscriptionsAutoResumed,
   };
 }

@@ -38,7 +38,7 @@ export default async function PaymentsPage() {
   });
   if (!student) redirect("/?signup=1");
 
-  const [subscriptions, wallet] = await Promise.all([
+  const [subscriptions, wallet, paymentCompletions] = await Promise.all([
     prisma.subscription.findMany({
       where: { studentId: student.id },
       orderBy: { createdAt: "desc" },
@@ -48,9 +48,18 @@ export default async function PaymentsPage() {
       orderBy: { month: "desc" },
       select: { used: true, quota: true, month: true },
     }),
+    prisma.paymentCompletion.findMany({
+      where: {
+        studentId: student.id,
+        status: { in: ["COMPLETED", "REFUNDED"] },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
   ]);
 
   const activeSubscription = subscriptions.find((s) => s.status === "ACTIVE") ?? null;
+  const pausedSubscription = subscriptions.find((s) => s.status === "PAUSED") ?? null;
 
   return (
     <div className="min-h-screen bg-background" data-portal-content>
@@ -96,6 +105,33 @@ export default async function PaymentsPage() {
                         </p>
                       </div>
                     )}
+                    <p className="mt-4 text-sm text-text-secondary">
+                      구독 일시정지가 필요하시면 담당 매니저에게 문의해 주세요.
+                    </p>
+                  </>
+                );
+              })()}
+            </div>
+          ) : pausedSubscription ? (
+            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6">
+              {(() => {
+                const info = getPlanInfo(pausedSubscription.plan);
+                return (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="font-bold text-text-primary">{info.title}</p>
+                      </div>
+                      <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                        일시정지 중
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm text-orange-700">
+                      일시정지 중 — 재개는 매니저에게 문의해 주세요.
+                      {pausedSubscription.pausedUntil && (
+                        <> 일시정지 예정 종료: <span className="font-semibold">{formatDate(pausedSubscription.pausedUntil)}</span></>
+                      )}
+                    </p>
                   </>
                 );
               })()}
@@ -133,6 +169,58 @@ export default async function PaymentsPage() {
                     <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusInfo.className}`}>
                       {statusInfo.label}
                     </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {/* 결제 내역 */}
+        {paymentCompletions.length > 0 && (
+          <section>
+            <h2 className="mb-4 text-lg font-bold text-text-primary">결제 내역</h2>
+            <ul className="space-y-3">
+              {paymentCompletions.map((payment) => {
+                const info = getPlanInfo(payment.plan);
+                const isRefunded = payment.status === "REFUNDED";
+                return (
+                  <li
+                    key={payment.id}
+                    className="rounded-xl border border-gray-100 bg-surface px-4 py-4"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">{info.title}</p>
+                        <p className="mt-0.5 text-xs text-text-muted">
+                          {formatDate(payment.createdAt)}
+                        </p>
+                        {payment.amount != null && (
+                          <p className="mt-1 text-base font-bold tabular-nums text-text-primary">
+                            {formatKRW(payment.amount)}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          isRefunded
+                            ? "bg-red-100 text-red-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {isRefunded ? "환불" : "결제완료"}
+                      </span>
+                    </div>
+                    {payment.cashReceiptUrl && (
+                      <a
+                        href={payment.cashReceiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+                      >
+                        현금영수증 보기 →
+                      </a>
+                    )}
                   </li>
                 );
               })}

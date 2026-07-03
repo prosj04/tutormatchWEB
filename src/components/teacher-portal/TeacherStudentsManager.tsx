@@ -6,6 +6,13 @@ import { TeacherStudentPlanTab } from "./TeacherStudentPlanTab";
 import { TeacherStudentQuestionsTab } from "./TeacherStudentQuestionsTab";
 import type { StudentListItem } from "./teacher-students-types";
 
+type UpcomingLesson = {
+  id: string;
+  startAt: string;
+  subject: string;
+  durationMin: number;
+};
+
 type DetailTab = "plan" | "questions";
 
 function formatStartDate(date: string) {
@@ -50,6 +57,13 @@ export function TeacherStudentsManager({
   const [savingLesson, setSavingLesson] = useState(false);
   const [lessonMessage, setLessonMessage] = useState<string | null>(null);
 
+  // Upcoming lessons for cancel UI
+  const [upcomingLessons, setUpcomingLessons] = useState<UpcomingLesson[]>([]);
+  const [upcomingLoading, setUpcomingLoading] = useState(false);
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null);
+
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
@@ -71,6 +85,38 @@ export function TeacherStudentsManager({
     if (initialStudents.length > 0) return;
     void fetchStudents();
   }, [fetchStudents, initialStudents.length]);
+
+  const fetchUpcomingLessons = useCallback(async (studentId: string) => {
+    setUpcomingLoading(true);
+    setUpcomingLessons([]);
+    setCancelMessage(null);
+    try {
+      const res = await fetch(`/api/teacher/lessons?studentId=${studentId}&status=SCHEDULED&upcoming=1`);
+      if (!res.ok) return;
+      const data = (await res.json()) as { lessons: UpcomingLesson[] };
+      setUpcomingLessons(data.lessons);
+    } finally {
+      setUpcomingLoading(false);
+    }
+  }, []);
+
+  const handleCancelLesson = useCallback(async (lessonId: string) => {
+    setCancelling(true);
+    setCancelMessage(null);
+    try {
+      const res = await fetch(`/api/teacher/lessons/${lessonId}/cancel`, { method: "PATCH" });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        setCancelMessage(data.error ?? "취소에 실패했습니다.");
+        return;
+      }
+      setCancelMessage("수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다.");
+      setUpcomingLessons((prev) => prev.filter((l) => l.id !== lessonId));
+    } finally {
+      setCancelling(false);
+      setCancelConfirmId(null);
+    }
+  }, []);
 
   const selected = students.find((s) => s.id === selectedId);
 
@@ -94,7 +140,8 @@ export function TeacherStudentsManager({
       setLessonTime("19:00");
     }
     setLessonMessage(null);
-  }, [selected]);
+    void fetchUpcomingLessons(selected.id);
+  }, [selected, fetchUpcomingLessons]);
 
   async function saveFirstLesson() {
     if (!selected || !lessonDate || !lessonTime) return;
@@ -256,6 +303,63 @@ export function TeacherStudentsManager({
                   <p className="mt-2 text-xs font-medium text-primary" role="status">
                     {lessonMessage}
                   </p>
+                ) : null}
+              </section>
+
+              {/* 예정된 수업 목록 + 취소 */}
+              <section className="mt-4 rounded-2xl border border-gray-100 bg-surface p-4">
+                <h3 className="mb-3 text-sm font-bold text-text-primary">예정된 수업</h3>
+                {upcomingLoading ? (
+                  <p className="text-xs text-text-muted">불러오는 중…</p>
+                ) : upcomingLessons.length === 0 ? (
+                  <p className="text-xs text-text-muted">예정된 수업이 없습니다.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {upcomingLessons.map((lesson) => {
+                      const d = new Date(lesson.startAt);
+                      const dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                      return (
+                        <li key={lesson.id} className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-white px-3 py-2 text-sm">
+                          <div>
+                            <span className="font-medium text-text-primary">{dateStr}</span>
+                            <span className="ml-2 text-xs text-text-muted">{lesson.subject} · {lesson.durationMin}분</span>
+                          </div>
+                          {cancelConfirmId === lesson.id ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-orange-600">보강 수업이 7일 뒤 자동 생성됩니다</span>
+                              <button
+                                type="button"
+                                disabled={cancelling}
+                                onClick={() => void handleCancelLesson(lesson.id)}
+                                className="rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                              >
+                                {cancelling ? "취소 중…" : "확인"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={cancelling}
+                                onClick={() => setCancelConfirmId(null)}
+                                className="rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-semibold text-text-secondary"
+                              >
+                                닫기
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setCancelConfirmId(lesson.id)}
+                              className="rounded-lg border border-red-200 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                            >
+                              취소
+                            </button>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                {cancelMessage ? (
+                  <p className="mt-2 text-xs font-medium text-primary" role="status">{cancelMessage}</p>
                 ) : null}
               </section>
 

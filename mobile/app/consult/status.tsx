@@ -96,6 +96,10 @@ function stepForStage(stage: StudentJourneyStage, step: 1 | 2 | 3): "done" | "no
     if (step <= 2) return "done";
     return "now";
   }
+  if (stage === "MATCH_PENDING_ACCEPT") {
+    if (step <= 2) return "done";
+    return "now";
+  }
   return "wait";
 }
 
