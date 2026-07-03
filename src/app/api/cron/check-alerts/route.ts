@@ -11,7 +11,10 @@ export async function GET(request: Request) {
     );
   }
 
-  if (request.headers.get("Authorization") !== `Bearer ${secret}`) {
+  const isVercelCron = request.headers.get("x-vercel-cron") !== null;
+  const isAuthorized = request.headers.get("Authorization") === `Bearer ${secret}`;
+
+  if (!isVercelCron && !isAuthorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
