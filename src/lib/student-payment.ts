@@ -83,6 +83,11 @@ export async function completeStudentPayment({
     return { ...state, plan: existingCompletion.plan };
   }
 
+  // Refunded payments must never be re-completed.
+  if (existingCompletion?.status === "REFUNDED") {
+    throw new Error("PAYMENT_REFUNDED");
+  }
+
   // Another request is currently processing this orderId.
   if (existingCompletion?.status === "PROCESSING") {
     try {

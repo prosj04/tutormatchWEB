@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
-const VALID_STATUSES = ["FAILED", "PROCESSING", "COMPLETED"];
+const VALID_STATUSES = ["FAILED", "PROCESSING", "COMPLETED", "REFUNDED"];
 
 export async function GET(request: Request) {
   const authResult = await requireAdmin();
