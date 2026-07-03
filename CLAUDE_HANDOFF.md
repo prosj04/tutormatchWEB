@@ -1341,6 +1341,15 @@ npm run dev
 - ✅ Phase 4: 매니저별 성과 지표(/admin/metrics — 상담→결제 전환율·매칭 수락률·수락 중앙값·케어 30일; 정의는 route.ts 상단 주석), **감사로그**(BR-15 — AuditLog 모델, 계정삭제/환불/역할변경/일시정지 기록, /admin/audit-logs)
 - ⚠️ **DB 교체 발생**: 세션 중 DATABASE_URL이 새 Supabase 인스턴스(pgbouncer 6543 + DIRECT_URL 5432)로 변경되어 있었음. `_prisma_migrations` 부재 + 데이터 0행 + 스키마는 push됨 상태 → **22개 마이그레이션 전체 베이스라인 처리 완료**(`migrate resolve --applied`), `migrate diff` 무차이 확인. **이전 DB의 데이터는 이관되지 않음 — 테스트 계정/시드 재생성 필요**
 
+### 25.1f 새벽 세션 완료분 (2026-07-04)
+
+- ✅ 새 DB 시드: `npm run seed:sample` 실행(치프 매니저 계정 `chief@concord.local` 추가). 비번: 스태프 Sample1234! / 학생·선생 11111111
+- ✅ **스모크 테스트 9/10 통과** (dev 서버 + 실 HTTP): 상담 확정→리포트→매칭(matchReason)→학생 수락→첫 수업→수업 조회→어드민 지표 전부 PASS. 유일 실패였던 cron은 로컬 `.env`에 CRON_SECRET 부재가 원인 → 추가 후 **알림 엔진 전 체크 무오류 완주 확인**
+- ✅ 버그 픽스: cron 라우트가 카운터를 수동 나열해 신규 체크 7종을 응답에서 누락 → 스프레드로 교체
+- ✅ **스토리지 서버 경유(BR-14 잔여)**: 브라우저 anon 키 업로드 전면 제거 — 질문 이미지 `POST /api/student/question-images`, 선생 사진 `POST /api/teacher/profile/photo` 신설, `createSupabaseBrowserClient` 삭제. **후속(사용자): Supabase 대시보드에서 anon INSERT 정책 제거**
+- ✅ **QnA 통합(§19 문제 3)**: `QuestionMessage`가 단일 저장소 (`replyToId` 스레드, date/isResolved 추가). 기존 `Question` 행은 마이그레이션 SQL 내 멱등 백필(id 보존 → 알림 참조 유지). 웹 라우트·통계 전부 `src/lib/qna.ts` 경유, 모바일 응답 shape 불변, 미답변 알림 체크 단일화. `Question` 테이블은 DEPRECATED로 존치(검증 후 제거)
+- 참고: 스모크가 발견한 경미 사항 — 매칭 수락 응답에 matchStatus 미포함(기능 영향 없음), 만족도 체크인 목록 GET API 없음(웹은 서버 사이드 주입이라 불필요)
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
@@ -1378,9 +1387,12 @@ npm run dev
 
 ### 26.3 코드 작업 스펙 (결정 불필요, 바로 착수 가능)
 
-1. **QnA 테이블 통합 (P2, §19 문제 3)** — `Question`(웹, 날짜 연결형)과 `QuestionMessage`(앱, 채팅형)가 이원화. 현재는 알림 브릿지로 봉합됨. 통합안: `QuestionThread`(studentId, subject?, createdAt) + `QuestionMessage`(threadId, sender, body, imageUrl, aiAnswer 플래그)로 슈퍼셋 모델 설계 → 웹 UI를 스레드 뷰로 전환 → 기존 `Question` 행을 스레드+메시지 2행으로 백필하는 데이터 마이그레이션 → `run-alert-checks.ts`의 두 체크를 하나로 통합. 규모: 상담 이력화급. 마이그레이션은 create-only 후 검수 필수
-2. **스토리지 보안 (BR-14 잔여)** — `src/lib/supabase-client.ts`가 브라우저에서 anon 키로 `question-images` 버킷에 직접 업로드. 앱이 NextAuth 기반이라 Supabase RLS로 사용자 구분 불가 → **서버 경유로 전환**: `POST /api/student/question-images`(세션 인증, 파일 크기/타입 검증, `supabase-admin`으로 업로드) 신설, 클라이언트는 이 API 호출로 교체, 이후 버킷의 anon INSERT 정책 제거(Supabase 대시보드). teacher documents/photos·CMS 업로드는 이미 서버 라우트 경유 — anon 키 노출 지점은 question-images뿐
-3. **새 DB 시드** — DB 교체로 데이터 0행. 테스트 계정(ADMIN/CHIEF_MANAGER/MANAGER/TEACHER/STUDENT 각 1) 생성 스크립트 `scripts/`에 추가 권장. CHIEF_MANAGER_EMAIL env와 정합 유지
+1. ~~QnA 테이블 통합~~ ✅ 2026-07-04 완료 (아래 원 스펙은 참고용)
+1-원안. **QnA 테이블 통합 (P2, §19 문제 3)** — `Question`(웹, 날짜 연결형)과 `QuestionMessage`(앱, 채팅형)가 이원화. 현재는 알림 브릿지로 봉합됨. 통합안: `QuestionThread`(studentId, subject?, createdAt) + `QuestionMessage`(threadId, sender, body, imageUrl, aiAnswer 플래그)로 슈퍼셋 모델 설계 → 웹 UI를 스레드 뷰로 전환 → 기존 `Question` 행을 스레드+메시지 2행으로 백필하는 데이터 마이그레이션 → `run-alert-checks.ts`의 두 체크를 하나로 통합. 규모: 상담 이력화급. 마이그레이션은 create-only 후 검수 필수
+2. ~~스토리지 보안~~ ✅ 2026-07-04 완료 — 잔여는 Supabase 대시보드 anon INSERT 정책 제거뿐 (아래 원 스펙 참고용)
+2-원안. **스토리지 보안 (BR-14 잔여)** — `src/lib/supabase-client.ts`가 브라우저에서 anon 키로 `question-images` 버킷에 직접 업로드. 앱이 NextAuth 기반이라 Supabase RLS로 사용자 구분 불가 → **서버 경유로 전환**: `POST /api/student/question-images`(세션 인증, 파일 크기/타입 검증, `supabase-admin`으로 업로드) 신설, 클라이언트는 이 API 호출로 교체, 이후 버킷의 anon INSERT 정책 제거(Supabase 대시보드). teacher documents/photos·CMS 업로드는 이미 서버 라우트 경유 — anon 키 노출 지점은 question-images뿐
+3. ~~새 DB 시드~~ ✅ / ~~스모크 테스트~~ ✅ 2026-07-04 완료 (§25.1f)
+3-원안. **새 DB 시드** — DB 교체로 데이터 0행. 테스트 계정(ADMIN/CHIEF_MANAGER/MANAGER/TEACHER/STUDENT 각 1) 생성 스크립트 `scripts/`에 추가 권장. CHIEF_MANAGER_EMAIL env와 정합 유지
 4. **프로덕션 스모크 테스트** — 배포 후: 회원가입(보호자 동의)→상담 신청→매니저 배정→상담 리포트→매칭(matchReason)→학생 수락→첫 수업 설정→숙제 자동 분배→수업 자동 완료→월간 리포트 순으로 1회 관통. 결제는 Toss 테스트 키로 confirm+웹훅 경로 확인
 5. **소소한 부채**: `Lesson.cancelledBy`/`StudyPlan.source`/`ManagerCareLog.type`/`SatisfactionCheckin.trigger` enum 전환(2차), 매니저 상담 목록의 이력 표시 UX(현재 최소 변경으로 최신/open 위주), 어드민 지표의 매니저 재배정 시 중복 귀속(route.ts 주석 참조), `docs/DESIGN_IMPROVEMENTS.md`(타 세션 산출물) 내용 검토·반영 여부 결정
 
