@@ -60,8 +60,10 @@ export async function POST(request: Request, context: RouteContext) {
 
   // If score <= 3, notify the student's manager
   if (score <= 3) {
-    const booking = await prisma.consultationBooking.findUnique({
+    // Use the student's current (open or latest) booking to find the manager.
+    const booking = await prisma.consultationBooking.findFirst({
       where: { studentId: student.id },
+      orderBy: { createdAt: "desc" },
       select: {
         managerId: true,
         manager: { select: { userId: true } },

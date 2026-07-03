@@ -621,7 +621,11 @@ export async function runAlertChecks() {
         select: {
           userId: true,
           name: true,
-          consultationBooking: {
+          // ConsultationBooking is a history collection. Take the most-recent
+          // row for manager attribution.
+          consultationBookings: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
             select: {
               managerId: true,
             },
@@ -687,12 +691,13 @@ export async function runAlertChecks() {
       const teacherName = match.teacher.name;
       const matchId = match.id;
 
-      // Determine manager recipients.
+      // Determine manager recipients from the student's current (most-recent) booking.
+      const currentBooking = match.student.consultationBookings[0];
       let managerUserIds: string[] = [];
-      if (match.student.consultationBooking?.managerId) {
+      if (currentBooking?.managerId) {
         // Get the userId for this manager's teacherId.
         const consultationManager = await prisma.teacher.findUnique({
-          where: { id: match.student.consultationBooking.managerId },
+          where: { id: currentBooking.managerId },
           select: { userId: true },
         });
         if (consultationManager) {
@@ -1250,6 +1255,7 @@ export async function runAlertChecks() {
     select: {
       id: true,
       studentId: true,
+      createdAt: true,
       student: {
         select: {
           phone: true,
@@ -1263,9 +1269,31 @@ export async function runAlertChecks() {
     },
   });
 
+  // History model guard: if the student has any newer ConsultationBooking row
+  // (e.g. a re-consultation was started after this COMPLETED one), skip.
+  // The follow-up is only meaningful when this is the student's LATEST booking.
+  const supersedingStudentIds = new Set<string>();
+  if (completedBookings.length > 0) {
+    const supersedingRows = await prisma.consultationBooking.findMany({
+      where: {
+        studentId: { in: completedBookings.map((b) => b.studentId) },
+        OR: completedBookings.map((b) => ({
+          studentId: b.studentId,
+          createdAt: { gt: b.createdAt },
+        })),
+      },
+      select: { studentId: true },
+    });
+    for (const row of supersedingRows) {
+      supersedingStudentIds.add(row.studentId);
+    }
+  }
+
   for (const booking of completedBookings) {
     // Skip if student already has an active subscription.
     if (booking.student.subscriptions.length > 0) continue;
+    // Skip if a newer booking exists for this student.
+    if (supersedingStudentIds.has(booking.studentId)) continue;
 
     const phone = booking.student.phone;
     if (phone) {

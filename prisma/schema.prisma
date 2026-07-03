@@ -35,7 +35,7 @@ model Student {
   plans               StudyPlan[]
   questions           Question[]
   teachers            TeacherStudent[]
-  consultationBooking ConsultationBooking?
+  consultationBookings ConsultationBooking[]
   managerLinks        ManagerStudent[]
   managerCareLogs     ManagerCareLog[]
   lessons             Lesson[]
@@ -167,7 +167,7 @@ model TeacherProfile {
 
 model ConsultationBooking {
   id                  String    @id @default(uuid())
-  studentId           String    @unique
+  studentId           String
   student             Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   managerId           String?
   manager             Teacher?  @relation(fields: [managerId], references: [id])
@@ -187,6 +187,7 @@ model ConsultationBooking {
   @@index([status])
   @@index([managerId, status])
   @@index([status, createdAt])
+  @@index([studentId, createdAt])
 }
 
 model Notification {

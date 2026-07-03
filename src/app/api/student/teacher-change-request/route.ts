@@ -64,8 +64,10 @@ export async function POST(request: Request) {
   }
 
   // Resolve notification recipients: booking.managerId first, fallback to all CHIEF_MANAGER users
-  const booking = await prisma.consultationBooking.findUnique({
+  // Use the student's current (open or latest) booking to route the request.
+  const booking = await prisma.consultationBooking.findFirst({
     where: { studentId: student.id },
+    orderBy: { createdAt: "desc" },
     select: { managerId: true, manager: { select: { userId: true } } },
   });
 

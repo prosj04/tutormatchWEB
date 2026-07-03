@@ -49,7 +49,11 @@ export async function GET(request: Request) {
       orderBy: { user: { createdAt: "desc" } },
       include: {
         user: { select: { createdAt: true } },
-        consultationBooking: {
+        // ConsultationBooking is now a history collection. Take the most-recent
+        // row per student (open or latest closed) for manager attribution.
+        consultationBookings: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
           include: { manager: { select: { name: true } } },
         },
         managerLinks: {
@@ -67,8 +71,9 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     students: students.map((s) => {
+      const currentBooking = s.consultationBookings[0];
       const managerName =
-        s.consultationBooking?.manager?.name ??
+        currentBooking?.manager?.name ??
         s.managerLinks[0]?.manager?.name ??
         null;
       return {

@@ -123,8 +123,10 @@ export async function PATCH(_request: Request, context: RouteContext) {
   });
 
   // Notify manager: booking.managerId first, fallback to all CHIEF_MANAGER users
-  const booking = await prisma.consultationBooking.findUnique({
+  // Use the student's current (open or latest) booking to route the notice.
+  const booking = await prisma.consultationBooking.findFirst({
     where: { studentId: lesson.studentId },
+    orderBy: { createdAt: "desc" },
     select: { manager: { select: { userId: true } } },
   });
 

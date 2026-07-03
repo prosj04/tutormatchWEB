@@ -1,6 +1,7 @@
 import { createNotification } from "@/lib/notifications";
 import { getChiefManager } from "@/lib/chief-manager";
 import { getDefaultManager } from "@/lib/default-manager";
+import { OPEN_BOOKING_STATUSES } from "@/lib/consultation-current";
 import { prisma } from "@/lib/prisma";
 import { serializeVisitTimes } from "@/lib/visit-consultation";
 
@@ -11,6 +12,21 @@ type EnrollConsultationParams = {
   note?: string | null;
 };
 
+/**
+ * Fetches the student's currently-open booking (WAITING/ASSIGNED) if any.
+ * "Open" means an in-progress consultation. COMPLETED/CANCELLED are frozen
+ * history rows and are ignored here so a new consultation can be requested.
+ */
+async function findOpenBookingByStudentId(studentId: string) {
+  return prisma.consultationBooking.findFirst({
+    where: {
+      studentId,
+      status: { in: OPEN_BOOKING_STATUSES as unknown as string[] },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 /** 상담 신청만 (매니저 미배정, 방문 시간 추후 입력) */
 export async function createConsultationRequest({
   studentId,
@@ -18,39 +34,23 @@ export async function createConsultationRequest({
   studentGrade,
   note,
 }: EnrollConsultationParams) {
-  const existing = await prisma.consultationBooking.findUnique({
-    where: { studentId },
-  });
+  // If the student already has an OPEN booking, refuse — one open at a time.
+  // Historical COMPLETED/CANCELLED rows are ignored (allowing re-consultation).
+  const openExisting = await findOpenBookingByStudentId(studentId);
 
-  if (existing?.status === "WAITING" || existing?.status === "ASSIGNED") {
+  if (openExisting?.status === "WAITING" || openExisting?.status === "ASSIGNED") {
     throw new Error("ALREADY_ACTIVE");
   }
-  if (existing?.status === "COMPLETED") {
-    throw new Error("ALREADY_COMPLETED");
-  }
 
-  const booking = existing
-    ? await prisma.consultationBooking.update({
-        where: { id: existing.id },
-        data: {
-          managerId: null,
-          preferredTimes: "[]",
-          visitPreferredTimes: serializeVisitTimes({}),
-          status: "WAITING",
-          note: note ?? null,
-          managerNote: null,
-          assignedAt: null,
-        },
-      })
-    : await prisma.consultationBooking.create({
-        data: {
-          studentId,
-          preferredTimes: "[]",
-          visitPreferredTimes: serializeVisitTimes({}),
-          status: "WAITING",
-          note: note ?? null,
-        },
-      });
+  const booking = await prisma.consultationBooking.create({
+    data: {
+      studentId,
+      preferredTimes: "[]",
+      visitPreferredTimes: serializeVisitTimes({}),
+      status: "WAITING",
+      note: note ?? null,
+    },
+  });
 
   const managers = await prisma.teacher.findMany({
     where: { approved: true, user: { role: { in: ["CHIEF_MANAGER", "MANAGER"] } } },
@@ -82,19 +82,17 @@ export async function assignDefaultManagerToStudent({
   const manager = await getDefaultManager();
   const now = new Date();
 
-  const existing = await prisma.consultationBooking.findUnique({
-    where: { studentId },
-  });
+  const openExisting = await findOpenBookingByStudentId(studentId);
 
-  const booking = existing
+  const booking = openExisting
     ? await prisma.consultationBooking.update({
-        where: { id: existing.id },
+        where: { id: openExisting.id },
         data: {
           managerId: manager.id,
           preferredTimes: "[]",
-          visitPreferredTimes: existing.visitPreferredTimes || "{}",
+          visitPreferredTimes: openExisting.visitPreferredTimes || "{}",
           status: "ASSIGNED",
-          note: note ?? existing.note,
+          note: note ?? openExisting.note,
           assignedAt: now,
         },
       })
@@ -129,7 +127,15 @@ export async function assignDefaultManagerToStudent({
   return { booking, manager };
 }
 
-/** 요금제 결제 완료 등 — Chief 매니저 즉시 배정 (없으면 getChiefManager 폴백) */
+/**
+ * 요금제 결제 완료 등 — Chief 매니저 즉시 배정.
+ *
+ * EC-8 semantics under the history model:
+ * - If an OPEN booking exists (WAITING/ASSIGNED): update it in-place to ASSIGNED,
+ *   preserving the existing managerId if any (never mutate a completed row).
+ * - If NO open booking exists (latest was COMPLETED/CANCELLED, or none ever):
+ *   CREATE a new booking. This is the re-consultation path — history is preserved.
+ */
 export async function assignChiefManagerToStudent({
   studentId,
   studentName,
@@ -139,24 +145,45 @@ export async function assignChiefManagerToStudent({
   const manager = await getChiefManager();
   const now = new Date();
 
-  const existing = await prisma.consultationBooking.findUnique({
-    where: { studentId },
-  });
+  const openExisting = await findOpenBookingByStudentId(studentId);
 
-  const booking = existing
-    ? existing.status === "COMPLETED" || existing.status === "CANCELLED"
-      ? existing
-      : await prisma.consultationBooking.update({
-          where: { id: existing.id },
-          data: {
-            managerId: existing.managerId ?? manager.id,
-            preferredTimes: "[]",
-            visitPreferredTimes: existing.visitPreferredTimes || "{}",
-            status: "ASSIGNED",
-            note: note ?? existing.note,
-            assignedAt: now,
+  // Renewal payments must not spawn a new consultation: a student already in
+  // active lessons has a manager and teacher, so keep their latest booking as-is.
+  if (!openExisting) {
+    const activeMatch = await prisma.teacherStudent.findFirst({
+      where: { studentId, isActive: true },
+      select: { id: true },
+    });
+    if (activeMatch) {
+      const latestBooking = await prisma.consultationBooking.findFirst({
+        where: { studentId },
+        orderBy: { createdAt: "desc" },
+      });
+      if (latestBooking) {
+        await prisma.managerStudent.upsert({
+          where: {
+            managerId_studentId: { managerId: manager.id, studentId },
           },
-        })
+          create: { managerId: manager.id, studentId },
+          update: {},
+        });
+        return { booking: latestBooking, manager };
+      }
+    }
+  }
+
+  const booking = openExisting
+    ? await prisma.consultationBooking.update({
+        where: { id: openExisting.id },
+        data: {
+          managerId: openExisting.managerId ?? manager.id,
+          preferredTimes: "[]",
+          visitPreferredTimes: openExisting.visitPreferredTimes || "{}",
+          status: "ASSIGNED",
+          note: note ?? openExisting.note,
+          assignedAt: now,
+        },
+      })
     : await prisma.consultationBooking.create({
         data: {
           studentId,

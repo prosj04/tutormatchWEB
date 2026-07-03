@@ -71,8 +71,9 @@ export default async function DashboardPage({
       where: { studentId: student.id, date: initialDate },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.consultationBooking.findUnique({
+    prisma.consultationBooking.findFirst({
       where: { studentId: student.id },
+      orderBy: { createdAt: "desc" },
       include: { report: true },
     }),
     prisma.teacherStudent.findFirst({

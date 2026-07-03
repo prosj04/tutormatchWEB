@@ -42,12 +42,18 @@ export async function PATCH(request: Request) {
     );
   }
 
-  const booking = await prisma.consultationBooking.findUnique({
-    where: { studentId: student.id },
+  // Visit-time updates target the student's OPEN booking. History rows
+  // (COMPLETED/CANCELLED) are immutable and must not be mutated.
+  const booking = await prisma.consultationBooking.findFirst({
+    where: {
+      studentId: student.id,
+      status: { in: ["WAITING", "ASSIGNED"] },
+    },
+    orderBy: { createdAt: "desc" },
     include: { manager: { include: { user: { select: { id: true } } } } },
   });
 
-  if (!booking || booking.status === "CANCELLED") {
+  if (!booking) {
     return NextResponse.json({ error: "상담 신청이 없습니다." }, { status: 404 });
   }
 

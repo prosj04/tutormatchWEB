@@ -84,8 +84,9 @@ export async function generateReportForStudent(
     prisma.question.count({
       where: { studentId, date: { gte: start, lt: end } },
     }),
-    prisma.consultationBooking.findUnique({
+    prisma.consultationBooking.findFirst({
       where: { studentId },
+      orderBy: { createdAt: "desc" },
       include: { report: true },
     }),
   ]);

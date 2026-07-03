@@ -21,8 +21,9 @@ export type ConsultationBookingDto = {
 export async function getConsultationBookingDto(
   studentId: string,
 ): Promise<ConsultationBookingDto | null> {
-  const booking = await prisma.consultationBooking.findUnique({
+  const booking = await prisma.consultationBooking.findFirst({
     where: { studentId },
+    orderBy: { createdAt: "desc" },
     include: {
       manager: {
         include: {

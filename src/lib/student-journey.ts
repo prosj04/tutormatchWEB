@@ -150,8 +150,9 @@ export async function resolveStudentJourneyStage(
     prisma.lesson.count({
       where: { studentId, status: { not: "CANCELLED" } },
     }),
-    prisma.consultationBooking.findUnique({
+    prisma.consultationBooking.findFirst({
       where: { studentId },
+      orderBy: { createdAt: "desc" },
       select: { status: true },
     }),
   ]);
@@ -169,8 +170,9 @@ export async function getStudentJourneySnapshot(
 ): Promise<StudentJourneySnapshot> {
   const [stage, booking] = await Promise.all([
     resolveStudentJourneyStage(studentId),
-    prisma.consultationBooking.findUnique({
+    prisma.consultationBooking.findFirst({
       where: { studentId },
+      orderBy: { createdAt: "desc" },
       select: {
         status: true,
         assignedAt: true,
