@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { softDeleteUser } from "@/lib/account-deletion";
 import { prisma } from "@/lib/prisma";
 import { normalizePhoneDigits } from "@/lib/phone-login";
+import { recordAudit } from "@/lib/audit-log";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -40,6 +41,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 export async function DELETE(_request: Request, context: RouteContext) {
   const authResult = await requireAdmin();
   if ("error" in authResult) return authResult.error;
+  const { session } = authResult;
 
   const { id } = await context.params;
   const student = await prisma.student.findUnique({ where: { id } });
@@ -49,6 +51,13 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
   try {
     await softDeleteUser(student.userId);
+    recordAudit({
+      actorUserId: session.user.id,
+      actorRole: session.user.role ?? "ADMIN",
+      action: "STUDENT_DELETE",
+      targetType: "Student",
+      targetId: id,
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[admin/students/delete] error:", error);

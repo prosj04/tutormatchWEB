@@ -15,6 +15,7 @@ const NAV = [
   { href: "/admin/metrics", label: "지표" },
   { href: "/admin/cms", label: "사이트 콘텐츠" },
   { href: "/admin/data", label: "전체 데이터" },
+  { href: "/admin/audit-logs", label: "감사 로그" },
 ];
 
 type AdminShellLegacyProps = {

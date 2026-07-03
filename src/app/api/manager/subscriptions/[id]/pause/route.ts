@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireManager } from "@/lib/manager-auth";
 import { prisma } from "@/lib/prisma";
+import { recordAudit } from "@/lib/audit-log";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -102,6 +103,18 @@ export async function POST(request: Request, context: RouteContext) {
       },
     });
 
+    recordAudit({
+      actorUserId: session.user.id,
+      actorRole: session.user.role ?? "MANAGER",
+      action: "SUBSCRIPTION_PAUSE",
+      targetType: "Subscription",
+      targetId: subscriptionId,
+      detail: JSON.stringify({
+        until,
+        reason: typeof reason === "string" ? reason.trim().slice(0, 500) : null,
+      }),
+    });
+
     return NextResponse.json({ subscription: updated }, { status: 200 });
   } else if (action === "RESUME") {
     // Find subscription with student relationship
@@ -161,6 +174,14 @@ export async function POST(request: Request, context: RouteContext) {
         pausedAt: null,
         pausedUntil: null,
       },
+    });
+
+    recordAudit({
+      actorUserId: session.user.id,
+      actorRole: session.user.role ?? "MANAGER",
+      action: "SUBSCRIPTION_RESUME",
+      targetType: "Subscription",
+      targetId: subscriptionId,
     });
 
     return NextResponse.json({ subscription: updated }, { status: 200 });

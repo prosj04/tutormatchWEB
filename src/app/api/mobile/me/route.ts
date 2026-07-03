@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireMobileStudent } from "@/lib/mobile-auth";
 import { softDeleteUser } from "@/lib/account-deletion";
 import { prisma } from "@/lib/prisma";
+import { recordAudit } from "@/lib/audit-log";
 import { formatSubscriptionPlanLabel, formatSubscriptionStatus } from "@/lib/subscription-label";
 import {
   CONSULTATION_STATUS_TO_STAGE,
@@ -102,6 +103,13 @@ export async function DELETE(request: Request) {
 
   try {
     await softDeleteUser(userId);
+    recordAudit({
+      actorUserId: userId,
+      actorRole: "STUDENT",
+      action: "ACCOUNT_DELETE",
+      targetType: "User",
+      targetId: userId,
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[mobile/me] DELETE error:", error);

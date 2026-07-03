@@ -557,3 +557,19 @@ model ConsultationReport {
 
   @@index([bookingId])
 }
+
+/// BR-15: 개인정보 접근·변경 기록 (1년 보관 요건)
+/// No FK relations — actorUserId is a plain string for decoupling.
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorUserId String
+  actorRole   String
+  action      String
+  targetType  String
+  targetId    String
+  detail      String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId, createdAt])
+  @@index([targetType, targetId])
+}

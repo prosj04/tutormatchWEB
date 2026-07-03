@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { recordAudit } from "@/lib/audit-log";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
   const authResult = await requireAdmin();
   if ("error" in authResult) return authResult.error;
+  const { session } = authResult;
 
   const { id } = await context.params;
 
@@ -53,6 +55,15 @@ export async function POST(request: Request, context: RouteContext) {
   if (reason) {
     console.log(`[admin/refund] payment=${id} reason="${reason}"`);
   }
+
+  recordAudit({
+    actorUserId: session.user.id,
+    actorRole: session.user.role ?? "ADMIN",
+    action: "PAYMENT_REFUND",
+    targetType: "PaymentCompletion",
+    targetId: id,
+    detail: JSON.stringify({ orderId: payment?.orderId ?? null, reason: reason ?? null }),
+  });
 
   return NextResponse.json({
     ok: true,
