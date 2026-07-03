@@ -151,6 +151,9 @@
 - `/faq` 아코디언 aria-expanded/aria-controls + FAQPage JSON-LD (SEO)
 - 푸터 죽은 SNS 링크(`href="#"`) — 유효 URL 없으면 컬럼 자체 미노출
 - 데드코드 `register/RegisterForm.tsx` 삭제 (Tailwind 토큰 이질 + 미사용)
+- `/login` 장식뿐이던 학생/선생님 role 탭 제거 (리다이렉트는 세션 role 기반으로 동작 중이었음)
+- `/terms` `/privacy` `/refund` 앵커 목차(`LegalToc.tsx`, scroll-margin 처리) + 히어로 카피 개선
+- `/register` 모달 실패 시 fallback 보강 (로그인 링크 추가)
 
 ## 8. 순회 감사에서 발견된 잔여 이슈 (미구현 — 결정/데이터 필요)
 
@@ -160,8 +163,7 @@
 | 🔴 | `/tutors`에 `[sample]` 접두사 계정·매니저 계정(Chief_manager)이 공개 노출 | 샘플 데이터 정리 + 공개 목록에 MANAGER 포함 여부는 제품 결정 필요 (`public-teachers-cache.ts`의 role 필터) |
 | 🔴 | 법적 페이지 `[기재 예정]` 다수 (terms 4곳, privacy 6곳, refund 시행일) | 실제 사업자 정보 필요 |
 | 🔴 | `/login` 비밀번호 찾기 링크 부재 | 재설정 플로우(SMS/이메일) 자체가 미구현이라 선행 개발 필요 |
-| 🟠 | `/login` 학생/선생님 role 탭이 UI만 있고 로직 미연결 | 제거 또는 실제 분기 |
 | 🟠 | `/reviews` 전 카드 ★★★★★ 하드코딩 — 조작 인상 우려 | 유지/제거/개별 rating 필드 중 결정 필요 |
-| 🟠 | 헤더에 컬러 스위처(그린/블루) 상시 노출 — 프리미엄 톤에 산만 | 다크 토글만 남기는 안 검토 |
-| 🟠 | `/register` 모달 실패 시 폼 fallback 없음 | |
-| 🟡 | 법적 페이지 TOC 부재, FAQ 카테고리 그루핑, 강사 필터 칩과 실제 과목 태그 정합성 | |
+| 🟡 | FAQ 카테고리 그루핑, 강사 필터 칩과 실제 과목 태그 정합성 | |
+
+> 참고: "헤더 컬러 스위처 상시 노출" 지적은 재검증 결과 공개 페이지에는 해당 없음(로그인 후 포털 셸 전용) — 이슈에서 제외.
