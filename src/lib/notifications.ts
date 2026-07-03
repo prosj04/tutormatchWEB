@@ -23,7 +23,13 @@ export type NotificationType =
   | "FIRST_LESSON_SLA_BREACH"
   | "POST_CONSULTATION_FOLLOWUP"
   | "TEACHER_CHANGE_REQUEST"
-  | "LESSON_CANCELLED_BY_TEACHER";
+  | "LESSON_CANCELLED_BY_TEACHER"
+  // Phase 3 additions
+  | "CONSULTATION_REMINDER"
+  | "SUBSCRIPTION_EXPIRY_SOON"
+  | "SUBSCRIPTION_EXPIRED_SOON"
+  | "SUBSCRIPTION_EXPIRED"
+  | "SATISFACTION_CHECKIN_REQUEST";
 
 /** 외부 SMS를 보낼 알림 타입 */
 const SMS_NOTIFICATION_TYPES = new Set<string>([
@@ -31,6 +37,12 @@ const SMS_NOTIFICATION_TYPES = new Set<string>([
   "BOOKING_CONFIRMED",
   "QUESTION_UNANSWERED",
   "NEW_STUDENT_ASSIGNED",
+  // Phase 3 additions
+  "CONSULTATION_REMINDER",
+  "SUBSCRIPTION_EXPIRY_SOON",
+  "SUBSCRIPTION_EXPIRED_SOON",
+  "SUBSCRIPTION_EXPIRED",
+  "SATISFACTION_CHECKIN_REQUEST",
 ]);
 
 /** Expo 푸시를 보낼 알림 타입 (앱 등록 디바이스) */
@@ -150,6 +162,14 @@ export function getNotificationIcon(type: string): string {
       return "📅";
     case "NEW_QUESTION":
       return "✉️";
+    case "CONSULTATION_REMINDER":
+      return "📅";
+    case "SUBSCRIPTION_EXPIRY_SOON":
+    case "SUBSCRIPTION_EXPIRED_SOON":
+    case "SUBSCRIPTION_EXPIRED":
+      return "💳";
+    case "SATISFACTION_CHECKIN_REQUEST":
+      return "😊";
     default:
       return "🔔";
   }
@@ -199,6 +219,16 @@ export function resolveNotificationHref(
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":
       return "/teacher-portal/dashboard/monitoring";
+    case "CONSULTATION_REMINDER":
+      return role === "STUDENT"
+        ? "/dashboard/consultation"
+        : "/teacher-portal/dashboard/consultations";
+    case "SUBSCRIPTION_EXPIRY_SOON":
+    case "SUBSCRIPTION_EXPIRED_SOON":
+    case "SUBSCRIPTION_EXPIRED":
+      return "/pricing";
+    case "SATISFACTION_CHECKIN_REQUEST":
+      return "/dashboard";
     default:
       return null;
   }

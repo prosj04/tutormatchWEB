@@ -2,6 +2,7 @@ import { completionRate } from "@/lib/manager-stats";
 import { formatDateKey } from "@/lib/study-plan-dates";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
+import { createNotification } from "@/lib/notifications";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -55,14 +56,17 @@ export async function runAlertChecks() {
   let pendingMatchesChecked = 0;
   let staleMatchesChecked = 0;
   let firstLessonRemindersChecked = 0;
-  let subscriptionExpiryChecked = 0;
+  let subscriptionExpiryChecked = 0; // kept for backward compat — total of all expiry stages
   let lessonRemindersChecked = 0;
   let closedLessons = 0;
   let studySessionsWritten = 0;
   let postConsultationFollowUpsSent = 0;
   let firstLessonSlaBreachesChecked = 0;
   let lessonsAutoCompleted = 0;
+  let consultationRemindersChecked = 0;
+  let satisfactionCheckinsCreated = 0;
 
+  const now = new Date();
   const staleBefore = new Date(Date.now() - DAY_MS);
   const recentSince = new Date(Date.now() - DAY_MS);
 
@@ -731,6 +735,118 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 5c. Consultation visit reminder (#6) ──────────────────────────────────
+  //
+  // ConsultationBooking status "ASSIGNED" with visitConfirmedAt set and within
+  // the next 36 hours (and still in the future) → remind the student and notify
+  // the manager.
+  // Dedup: existence of any CONSULTATION_REMINDER notification keyed by bookingId
+  // (no time window — fires once per booking, ever).
+
+  const consultationReminderWindow = new Date(now.getTime() + 36 * 60 * 60 * 1000);
+
+  const upcomingConsultations = await prisma.consultationBooking.findMany({
+    where: {
+      status: "ASSIGNED",
+      visitConfirmedAt: { not: null, gte: now, lt: consultationReminderWindow },
+    },
+    select: {
+      id: true,
+      visitConfirmedAt: true,
+      managerId: true,
+      student: {
+        select: {
+          userId: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  consultationRemindersChecked = upcomingConsultations.length;
+
+  if (upcomingConsultations.length > 0) {
+    const bookingIds = upcomingConsultations.map((b) => b.id);
+
+    const existingConsultNotifs = await prisma.notification.findMany({
+      where: {
+        type: "CONSULTATION_REMINDER",
+        relatedId: { in: bookingIds },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const consultAlreadySent = new Set(
+      existingConsultNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    // Resolve manager userIds for bookings that have a managerId.
+    const managerIds = upcomingConsultations
+      .map((b) => b.managerId)
+      .filter((id): id is string => id != null);
+
+    const managerTeachers =
+      managerIds.length > 0
+        ? await prisma.teacher.findMany({
+            where: { id: { in: managerIds } },
+            select: { id: true, userId: true },
+          })
+        : [];
+    const managerUserIdByTeacherId = new Map(
+      managerTeachers.map((t) => [t.id, t.userId]),
+    );
+
+    // Manager-only notifications (no SMS) collected for bulk insert.
+    const consultManagerToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
+
+    for (const booking of upcomingConsultations) {
+      if (!booking.visitConfirmedAt) continue;
+      const visitStr = booking.visitConfirmedAt.toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul",
+      });
+
+      // Notify student via createNotification — triggers SMS automatically.
+      const studentKey = `${booking.student.userId}:${booking.id}`;
+      if (!consultAlreadySent.has(studentKey)) {
+        await createNotification({
+          userId: booking.student.userId,
+          type: "CONSULTATION_REMINDER",
+          title: "방문 상담 일정 안내",
+          body: `${visitStr}에 방문 상담이 예정되어 있습니다. 잊지 말고 방문해 주세요!`,
+          relatedId: booking.id,
+        });
+        notificationsCreated++;
+      }
+
+      // Notify manager (if assigned) — in-app only, no SMS.
+      if (booking.managerId) {
+        const managerUserId = managerUserIdByTeacherId.get(booking.managerId);
+        if (managerUserId) {
+          const managerKey = `${managerUserId}:${booking.id}`;
+          if (!consultAlreadySent.has(managerKey)) {
+            consultManagerToCreate.push({
+              userId: managerUserId,
+              type: "CONSULTATION_REMINDER",
+              title: "방문 상담 일정 안내",
+              body: `${booking.student.name}님의 방문 상담이 ${visitStr}에 예정되어 있습니다.`,
+              relatedId: booking.id,
+            });
+          }
+        }
+      }
+    }
+
+    if (consultManagerToCreate.length > 0) {
+      await prisma.notification.createMany({ data: consultManagerToCreate });
+      notificationsCreated += consultManagerToCreate.length;
+    }
+  }
+
   // ── 6. Accepted match first-lesson scheduling reminders ────────────────────
   //
   // Active matches older than 48h should have at least one non-cancelled lesson.
@@ -807,13 +923,20 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── 7. Subscription expiry reminders ───────────────────────────────────────
+  // ── 7. Subscription expiry reminders (BR-1) ────────────────────────────────
   //
-  // Daily cron-friendly reminders for active subscriptions ending in 5 days or
-  // 1 day. No auto-billing, no billing key flow — just an in-app renewal notice.
+  // Three stages, each fires at most once per subscription (hard dedup via
+  // notification-existence check, no time window — safe under any cron cadence):
+  //
+  //   SUBSCRIPTION_EXPIRY_SOON  — periodEnd within 5 days (> 1 day remaining)
+  //   SUBSCRIPTION_EXPIRED_SOON — periodEnd within 1 day (still in future)
+  //   SUBSCRIPTION_EXPIRED      — periodEnd in the past, status still ACTIVE
+  //
+  // PAUSED subscriptions are skipped.  No status mutation — leave that to billing.
+  // Student gets warm renewal SMS; manager gets an in-app care nudge.
 
-  const now = new Date();
-  const expiryWindowEnd = new Date(now.getTime() + 6 * DAY_MS);
+  // ── 7a. Expiry-soon stages (periodEnd still in the future) ─────────────────
+  const expiryWindowEnd = new Date(now.getTime() + 5 * DAY_MS);
   const expiringSubscriptions = await prisma.subscription.findMany({
     where: {
       status: "ACTIVE",
@@ -821,53 +944,204 @@ export async function runAlertChecks() {
     },
     select: {
       id: true,
+      studentId: true,
       periodEnd: true,
-      student: { select: { userId: true } },
+      student: {
+        select: {
+          userId: true,
+          name: true,
+          managerLinks: {
+            select: { manager: { select: { userId: true } } },
+          },
+        },
+      },
     },
   });
 
-  const expiryCandidates = expiringSubscriptions
-    .map((subscription) => {
-      if (!subscription.periodEnd) return null;
-      const daysLeft = Math.ceil((subscription.periodEnd.getTime() - now.getTime()) / DAY_MS);
-      if (daysLeft !== 5 && daysLeft !== 1) return null;
-      return {
-        subscriptionId: subscription.id,
-        userId: subscription.student.userId,
-        daysLeft,
-        relatedId: `${subscription.id}:${daysLeft}`,
-      };
-    })
-    .filter((candidate): candidate is NonNullable<typeof candidate> => candidate != null);
+  type ExpiryCandidate = {
+    subscriptionId: string;
+    studentUserId: string;
+    studentName: string;
+    managerUserIds: string[];
+    type: "SUBSCRIPTION_EXPIRY_SOON" | "SUBSCRIPTION_EXPIRED_SOON";
+    relatedId: string;
+  };
+
+  const expiryCandidates: ExpiryCandidate[] = [];
+
+  for (const sub of expiringSubscriptions) {
+    if (!sub.periodEnd) continue;
+    const msLeft = sub.periodEnd.getTime() - now.getTime();
+    const daysLeft = msLeft / DAY_MS;
+
+    let type: "SUBSCRIPTION_EXPIRY_SOON" | "SUBSCRIPTION_EXPIRED_SOON" | null = null;
+    if (daysLeft <= 1) {
+      type = "SUBSCRIPTION_EXPIRED_SOON";
+    } else if (daysLeft <= 5) {
+      type = "SUBSCRIPTION_EXPIRY_SOON";
+    }
+    if (!type) continue;
+
+    expiryCandidates.push({
+      subscriptionId: sub.id,
+      studentUserId: sub.student.userId,
+      studentName: sub.student.name,
+      managerUserIds: sub.student.managerLinks.map((l) => l.manager.userId),
+      type,
+      relatedId: `${sub.id}:${type}`,
+    });
+  }
 
   subscriptionExpiryChecked = expiryCandidates.length;
 
   if (expiryCandidates.length > 0) {
-    const relatedIds = expiryCandidates.map((candidate) => candidate.relatedId);
-    const recentExpiryNotifs = await prisma.notification.findMany({
+    const expirySoonRelatedIds = expiryCandidates.map((c) => c.relatedId);
+    // Include both student relatedIds and manager relatedIds (relatedId:mgr).
+    const expirySoonAllRelatedIds = [
+      ...expirySoonRelatedIds,
+      ...expirySoonRelatedIds.map((id) => `${id}:mgr`),
+    ];
+
+    const existingExpirySoonNotifs = await prisma.notification.findMany({
       where: {
-        type: "SUBSCRIPTION_EXPIRY_REMINDER",
-        relatedId: { in: relatedIds },
+        type: { in: ["SUBSCRIPTION_EXPIRY_SOON", "SUBSCRIPTION_EXPIRED_SOON"] },
+        relatedId: { in: expirySoonAllRelatedIds },
       },
       select: { userId: true, relatedId: true },
     });
-    const expiryAlreadyNotified = new Set(
-      recentExpiryNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    const expirySoonAlreadySent = new Set(
+      existingExpirySoonNotifs.map((n) => `${n.userId}:${n.relatedId}`),
     );
 
-    const expiryToCreate = expiryCandidates
-      .filter((candidate) => !expiryAlreadyNotified.has(`${candidate.userId}:${candidate.relatedId}`))
-      .map((candidate) => ({
-        userId: candidate.userId,
-        type: "SUBSCRIPTION_EXPIRY_REMINDER",
-        title: "구독 만료 안내",
-        body: `구독이 ${candidate.daysLeft}일 후 만료됩니다. 계속 이용하려면 플랜을 연장해 주세요.`,
-        relatedId: candidate.relatedId,
-      }));
+    // Manager-only notifications collected for bulk insert (no SMS for manager).
+    const expiryManagerToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
 
-    if (expiryToCreate.length > 0) {
-      await prisma.notification.createMany({ data: expiryToCreate });
-      notificationsCreated += expiryToCreate.length;
+    for (const candidate of expiryCandidates) {
+      const renewalBody =
+        "구독이 곧 만료됩니다. 수업을 계속하시려면 재결제를 진행해 주세요. 웹 결제 페이지에서 재결제하실 수 있습니다.";
+
+      // Notify student via createNotification — triggers SMS automatically.
+      if (!expirySoonAlreadySent.has(`${candidate.studentUserId}:${candidate.relatedId}`)) {
+        await createNotification({
+          userId: candidate.studentUserId,
+          type: candidate.type,
+          title: "구독 만료 안내",
+          body: renewalBody,
+          relatedId: candidate.relatedId,
+        });
+        notificationsCreated++;
+      }
+
+      // Notify manager(s) — in-app only, no SMS.
+      const managerRelatedId = `${candidate.relatedId}:mgr`;
+      for (const managerId of candidate.managerUserIds) {
+        if (!expirySoonAlreadySent.has(`${managerId}:${managerRelatedId}`)) {
+          expiryManagerToCreate.push({
+            userId: managerId,
+            type: candidate.type,
+            title: "학생 구독 만료 임박",
+            body: `${candidate.studentName}님의 구독이 곧 만료됩니다. 재결제를 안내해 주세요.`,
+            relatedId: managerRelatedId,
+          });
+        }
+      }
+    }
+
+    if (expiryManagerToCreate.length > 0) {
+      await prisma.notification.createMany({ data: expiryManagerToCreate });
+      notificationsCreated += expiryManagerToCreate.length;
+    }
+  }
+
+  // ── 7b. Already-expired subscriptions (periodEnd in the past, still ACTIVE) ─
+  const expiredSubscriptions = await prisma.subscription.findMany({
+    where: {
+      status: "ACTIVE",
+      periodEnd: { not: null, lt: now },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      student: {
+        select: {
+          userId: true,
+          name: true,
+          managerLinks: {
+            select: { manager: { select: { userId: true } } },
+          },
+        },
+      },
+    },
+  });
+
+  if (expiredSubscriptions.length > 0) {
+    subscriptionExpiryChecked += expiredSubscriptions.length;
+
+    const expiredSubIds = expiredSubscriptions.map((s) => s.id);
+    // Include both student relatedIds (subId) and manager relatedIds (subId:mgr).
+    const expiredRelatedIds = [
+      ...expiredSubIds,
+      ...expiredSubIds.map((id) => `${id}:mgr`),
+    ];
+
+    const existingExpiredNotifs = await prisma.notification.findMany({
+      where: {
+        type: "SUBSCRIPTION_EXPIRED",
+        relatedId: { in: expiredRelatedIds },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const expiredAlreadySent = new Set(
+      existingExpiredNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    // Manager-only notifications collected for bulk insert (no SMS for manager).
+    const expiredManagerToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
+
+    for (const sub of expiredSubscriptions) {
+      // Notify student via createNotification — triggers SMS automatically.
+      const studentKey = `${sub.student.userId}:${sub.id}`;
+      if (!expiredAlreadySent.has(studentKey)) {
+        await createNotification({
+          userId: sub.student.userId,
+          type: "SUBSCRIPTION_EXPIRED",
+          title: "구독이 만료되었습니다",
+          body: "구독이 만료되었습니다. 수업을 계속하시려면 재결제를 진행해 주세요. 웹 결제 페이지에서 재결제하실 수 있습니다.",
+          relatedId: sub.id,
+        });
+        notificationsCreated++;
+      }
+
+      // Notify manager(s) — in-app only, no SMS.
+      for (const managerId of sub.student.managerLinks.map((l) => l.manager.userId)) {
+        const mgrKey = `${managerId}:${sub.id}:mgr`;
+        if (!expiredAlreadySent.has(mgrKey)) {
+          expiredManagerToCreate.push({
+            userId: managerId,
+            type: "SUBSCRIPTION_EXPIRED",
+            title: "학생 구독 만료",
+            body: `${sub.student.name}님의 구독이 만료되었습니다. 재결제를 안내해 주세요.`,
+            relatedId: `${sub.id}:mgr`,
+          });
+        }
+      }
+    }
+
+    if (expiredManagerToCreate.length > 0) {
+      await prisma.notification.createMany({ data: expiredManagerToCreate });
+      notificationsCreated += expiredManagerToCreate.length;
     }
   }
 
@@ -1120,6 +1394,82 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── NEW-D. Satisfaction check-in D+7 (§24.1-3) ───────────────────────────
+  //
+  // Students whose FIRST non-cancelled lesson was COMPLETED and started 7+ days
+  // ago, and who have NO SatisfactionCheckin row yet → create one row
+  // (trigger FIRST_LESSON_D7, requestedAt now) + in-app notify + SMS.
+  // Dedup: the SatisfactionCheckin row itself is the hard dedup (query excludes
+  // students who already have one).
+
+  const checkinCutoff = new Date(Date.now() - 7 * DAY_MS);
+
+  // Find one completed lesson per student — the earliest (first lesson).
+  // We group in-memory after the query to avoid a raw GROUP BY.
+  const completedLessonsForCheckin = await prisma.lesson.findMany({
+    where: {
+      status: "COMPLETED",
+      startAt: { lt: checkinCutoff },
+      student: { satisfactionCheckins: { none: {} } },
+    },
+    select: {
+      studentId: true,
+      startAt: true,
+      student: {
+        select: {
+          userId: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: { startAt: "asc" },
+  });
+
+  // Keep only the FIRST completed lesson per student.
+  const firstCompletedByStudent = new Map<
+    string,
+    { studentId: string; studentUserId: string; studentName: string; startAt: Date }
+  >();
+  for (const lesson of completedLessonsForCheckin) {
+    if (!firstCompletedByStudent.has(lesson.studentId)) {
+      firstCompletedByStudent.set(lesson.studentId, {
+        studentId: lesson.studentId,
+        studentUserId: lesson.student.userId,
+        studentName: lesson.student.name,
+        startAt: lesson.startAt,
+      });
+    }
+  }
+
+  const checkinCandidates = Array.from(firstCompletedByStudent.values());
+
+  for (const candidate of checkinCandidates) {
+    // Create SatisfactionCheckin row (this is the dedup — unique per student
+    // assumed here; if a concurrent run inserts one simultaneously, a DB
+    // unique constraint would catch it; we tolerate the rare double-create
+    // since no unique index is defined on (studentId, trigger)).
+    await prisma.satisfactionCheckin.create({
+      data: {
+        studentId: candidate.studentId,
+        trigger: "FIRST_LESSON_D7",
+        requestedAt: new Date(),
+      },
+    });
+
+    // In-app notification (createNotification dispatches SMS automatically
+    // because SATISFACTION_CHECKIN_REQUEST is in SMS_NOTIFICATION_TYPES).
+    await createNotification({
+      userId: candidate.studentUserId,
+      type: "SATISFACTION_CHECKIN_REQUEST",
+      title: "첫 수업 소감을 알려주세요",
+      body: "첫 수업 후 일주일이 지났어요. 수업은 어떠셨나요? 대시보드에서 알려주세요.",
+      relatedId: candidate.studentId,
+    });
+
+    notificationsCreated++;
+    satisfactionCheckinsCreated++;
+  }
+
   // ── NEW-C. Lesson auto-complete (60-min buffer) ────────────────────────────
   //
   // Lessons status "SCHEDULED" with startAt + durationMin + 60min in the past
@@ -1163,5 +1513,7 @@ export async function runAlertChecks() {
     postConsultationFollowUpsSent,
     firstLessonSlaBreachesChecked,
     lessonsAutoCompleted,
+    consultationRemindersChecked,
+    satisfactionCheckinsCreated,
   };
 }
