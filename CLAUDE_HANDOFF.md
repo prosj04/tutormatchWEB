@@ -1123,4 +1123,107 @@ npm run dev
 
 ---
 
+## 23. 장기 로드맵
+
+> 작성: 2026-07-03. 각 Phase는 순서대로 진행하되, 완료 기준을 만족해야 다음 Phase로 넘어간다.
+
+### Phase 0 — 아키텍처 부채 해소 (✅ 2026-07-03 완료)
+
+- **목표**: docs/IMPLEMENTATION_PLAN_2026-07.md의 P0 항목 + 재검사에서 나온 보안·버그 수정
+- **완료 기준**: ✅ 결제 서버 검증(Toss confirm) / ✅ 매칭 상태머신(PENDING_STUDENT_ACCEPT→ACTIVE, 학생 수락) / ✅ Toss 웹훅 / ✅ 방치 매칭 알림 / ✅ 소프트삭제 스키마 / ✅ 계정삭제 API / ✅ `tsc --noEmit`·`next lint` 무오류
+- **잔여**: 마이그레이션 `20260703014634_soft_delete_and_match_reason` **프로덕션 적용 대기** (§25 참조)
+
+### Phase 1 — 출시 차단 요소 해소 (법·결제 신뢰)
+
+- **목표**: 실 고객에게 돈을 받아도 법적·신뢰 리스크가 없는 상태
+- **범위**: 법적 문서 3종(이용약관·개인정보처리방침·환불정책) 실제 텍스트 (BR-7, 현재 "준비 중" placeholder), 미성년자 결제 시 법정대리인 동의 수집 (BR-8/9), 푸터 사업자 정보 실제 값 (MK-1), Toss 대시보드 웹훅 URL 등록, 마이그레이션 적용, 체크아웃 페이지에 환불 보장 문구 재노출
+- **완료 기준**: (1) 법적 페이지 placeholder 0개 (2) 실 결제 1건이 "결제→웹훅→구독 생성→치프 배정" E2E로 검증됨 (3) 14세 미만 가입 시 보호자 동의 필드 필수화 (4) 푸터에 실제 상호/대표/사업자등록번호/통신판매업신고번호 표기
+
+### Phase 2 — 핵심 루프 완성 (수업 운영, 북극성 7~9번)
+
+- **목표**: 매칭 이후 "수업이 실제로 굴러가는" 상태를 시스템이 추적
+- **범위**: Lesson COMPLETED 전이 자동화 (EC-7 — 정산·리포트·환불의 근간), 숙제 자동 분배 트리거 (첫 수업 설정 시 자동 StudyPlan 생성, §22.4), `HomeworkTemplate` 모델로 주간 반복 패턴 재사용, 수업 취소/보강/이월 정책 구현 (BR-20)
+- **완료 기준**: (1) 선생이 4일/7일치 숙제를 1회 입력하면 가중치 분배로 자동 생성 (2) 지난 수업이 COMPLETED로 자동/반자동 전이 (3) 템플릿 재사용으로 2회차부터 재입력 불필요
+
+### Phase 3 — 리텐션·수익 구조
+
+- **목표**: 1회 결제로 끝나지 않는 매출 구조
+- **범위**: 구독 만료 D-5/D-1 알림 + 재결제 유도 (BR-1), Toss 빌링키 자동결제 (미결 질문 Q2), 월간 리포트 AI 요약 고도화 (FI-1), 첫 수업 D+7 만족도 체크인, 상담 이력화(`ConsultationBooking.studentId` @unique 해제 — findUnique 사용처 전면 리팩토링 필요), Prisma enum 전환 (§19 문제 5)
+- **완료 기준**: (1) 만료 임박 알림 자동 발송 (2) 재결제 전환율이 어드민에서 측정 가능 (3) 상담 재신청이 이력으로 쌓임
+
+### Phase 4 — 확장·운영 성숙
+
+- **목표**: 매니저 1인 병목 해소 + 앱 스토어 출시
+- **범위**: 매니저 성과 대시보드 (매칭 수락률·상담→결제 전환율 — matchStatus/respondedAt 데이터는 이미 축적 중), 선생 정산 모델 (Q3), 모바일 앱 스토어 제출 (계정삭제 API 완료로 5.1.1(v) 충족, 모바일 journey enum에 MATCH_PENDING_ACCEPT 반영 필요), 관리자 감사로그 (BR-15), Supabase RLS (BR-14)
+- **완료 기준**: (1) 앱 심사 통과 (2) 매니저별 지표 대시보드 가동 (3) 치프 외 매니저로 배정 분산 가능
+
+### 미결 질문 (사용자 결정 필요)
+
+| # | 질문 | 막히는 Phase |
+|---|------|------|
+| Q1 | 법적 문서 3종의 실제 텍스트는 누가 작성하는가? (변호사 검토 여부) | Phase 1 |
+| Q2 | 재결제 방식: Toss 빌링키 자동결제 vs 수동 재결제 링크? | Phase 3 |
+| Q3 | 선생 정산 구조(월급제/수수료율)가 정해졌는가? | Phase 2~4 |
+| Q4 | 푸터에 넣을 실제 사업자 정보(상호·사업자번호·통신판매업신고)가 확보됐는가? | Phase 1 |
+| Q5 | 프로덕션 DB(Supabase)에 대기 중인 마이그레이션을 언제 적용할지? (적용 전까지 deletedAt/matchReason 코드가 프로덕션에서 오류 가능 — 배포 전 필수) | Phase 1 |
+| Q6 | 서비스 지역(서울/분당 등)을 사이트에 명시할 것인가? (MK-3) | Phase 1 |
+
+---
+
+## 24. 사업/마케팅 개선 포인트
+
+> 2026-07-03 분석. docs/BUSINESS_AND_MARKETING_REVIEW.md (BR-1~6, MK-1~8)와 중복되지 않는 신규 포인트 위주. 기존 항목은 해당 문서 참조.
+
+### 24.1 사업 리스크 (신규 식별)
+
+1. **중개 우회(디스인터미디에이션)** — 이 업종 최대 이탈 지점. 첫 매칭 후 학생·선생이 직거래로 전환하면 재결제가 사라진다. 대응: (a) 숙제 자동 분배·월간 리포트·질문답변을 플랫폼 안에 잠금(가치 락인 — Phase 2가 곧 리텐션 장치) (b) 선생 계약서에 직거래 금지 조항 (c) 수업 완료 추적(EC-7)으로 "플랫폼 밖 수업" 탐지 근거 확보.
+2. **선생 공급 풀 관리 부재** — 수요가 몰리면 매칭 SLA가 무너진다. 과목×지역별 가용 선생 수를 어드민에서 볼 수 없고, 선생 온보딩 파이프라인(모집→검증→활성)이 시스템 밖에 있다. 매칭 수락률(respondedAt 데이터)로 선생별 반응성도 측정 가능한데 미사용.
+3. **첫 4주 경험이 재결제를 결정** — 첫 수업 후 만족도 체크인(D+7)이 없어 불만이 재결제 거부 시점에야 드러난다. 조기 신호 수집 → 매니저 개입 루프가 필요 (Phase 3).
+4. **매니저 성과가 측정 불가** — 상담→결제 전환율, 매칭 수락률, 응답 시간의 원천 데이터는 이미 쌓이는데 지표화가 안 됨. 매니저 증원 시 관리 불가능 (Phase 4).
+5. **환불·중도해지 정산 로직 부재** — BR-4/BR-20의 하위 문제. "몇 회 수업 후 해지 시 얼마 환불"을 계산하려면 Lesson COMPLETED 카운트가 선행 조건. 정책(문서)과 정산(코드) 둘 다 없음.
+
+### 24.2 홈페이지 전환율 개선 (2026-07-03 실사이트 감사)
+
+> 기준: https://tutormatch-web.vercel.app 실제 fetch 감사. 홈·/pricing의 소셜프루프와 가격 노출은 양호. 아래는 구조적 누락.
+
+| # | 페이지 | 누락 | 이탈 시나리오 | 조치 |
+|---|--------|------|--------------|------|
+| H1 | /refund | "준비 중" placeholder | 홈의 "첫 수업 100% 환불 보장"을 확인하러 온 사용자가 빈 페이지를 보고 신뢰 상실 — 결제 직전 최대 이탈점 | 실제 환불 규정 게시 (Q1) |
+| H2 | /terms, /privacy | "준비 중" placeholder | 결제 전 실사하는 학부모가 약관·개인정보 처리를 확인 불가. 전상법·개인정보보호법 위반 소지 | Phase 1 법적 문서 |
+| H3 | /checkout | 환불 보장 문구 미재노출 + "결제 수단 불러오는 중…" 상태 노출 | 결제 확정 순간에 신뢰 신호가 없고 결제수단이 안 보이면 즉시 이탈 | 환불 배지 재노출, 위젯 로딩 UX 개선 |
+| H4 | /login | 회원가입 CTA 부재 (무료 상담 유도만 존재) | 바로 가입하려는 사용자가 경로를 못 찾음. 가입=상담신청인지 불명확 | 가입 경로 명시 또는 "상담 신청이 곧 가입" 안내 |
+| H5 | 전체 | 카카오톡 채널 부재 (MK-7 재확인) | 40대 학부모의 기본 문의 채널이 없어 저관여 접점 상실 | 카카오 채널 개설 + 플로팅 버튼 |
+
+미검증(로그인 벽): 결제 완료 페이지의 환불 문구, 실제 결제수단 목록. 다음 감사 시 테스트 계정으로 확인할 것.
+
+---
+
+## 25. 현재 작업 상태 (2026-07-03 세션 종료 시점)
+
+> 다음 AI를 위한 스냅샷. §19(알려진 이슈)·§22(미구현 플로우)의 일부 서술은 이 세션으로 해소되어 낡았다 — 이 섹션이 우선한다.
+
+### 25.1 오늘 완료한 작업
+
+- **§19/§22에서 해소됨**: 결제 PG 검증 없음 → Toss confirm 서버 검증 (`src/lib/toss-payments.ts`), 매칭 즉시 active → `matchStatus: PENDING_STUDENT_ACCEPT` + 학생 수락 (`/api/matches/[matchId]/accept`), journey drift → 서버 단일 소스 + `MATCH_PENDING_ACCEPT` 단계 추가
+- **보안**: `cookies.txt`/`admin_cookies.txt` 삭제, `.gitignore` 보강
+- **버그**: CHIEF_MANAGER 누락 role 체크 6곳 수정 (`useConsultationCta.ts`, `teacher-portal/page.tsx`, `LoginForm.tsx`, `TeacherPortalLoginClient.tsx`, `ConcordSiteHeader.tsx`)
+- **가드**: EC-8 (COMPLETED/CANCELLED 상담 덮어쓰기 방지, `student-enrollment.ts`), EC-7 (과거·완료 수업 수정 409, `first-lesson/route.ts`)
+- **신규**: Toss 웹훅 `POST /api/webhooks/toss` (멱등, Toss API 재검증, `planIdFromAmount`로 플랜 도출), 방치 매칭 알림 `STALE_MATCH_ACCEPTANCE` (`run-alert-checks.ts`, 24h, 매니저+학생, 중복 방지), 계정삭제 (`src/lib/account-deletion.ts`, `DELETE /api/mobile/me`, `POST /api/account/delete`, 탈퇴계정 로그인 차단 `auth.ts`), matchReason 입력(매니저 매칭 폼)→표시(학생 수락 카드, 모바일 `why` 필드)
+- **스키마**: `User.deletedAt`, `Student.deletedAt`, `TeacherStudent.matchReason`, PaymentCompletion/Subscription `onDelete: Cascade→Restrict`
+- **검증**: `npx tsc --noEmit` ✅, `npm run lint` ✅
+
+### 25.2 다음 세션에서 이어할 작업 (우선순위순)
+
+1. **[배포 전 필수]** 마이그레이션 적용: `npx prisma migrate deploy` (또는 `migrate dev`) — `prisma/migrations/20260703014634_soft_delete_and_match_reason`. **적용 전에 오늘 코드를 배포하면 deletedAt/matchReason 컬럼 부재로 런타임 오류.**
+2. Toss 대시보드에 웹훅 URL 등록: `https://tutormatch-web.vercel.app/api/webhooks/toss`
+3. Phase 1 착수: 법적 문서 3종 (Q1 답변 필요), 미성년 보호자 동의, 푸터 사업자 정보 (Q4)
+4. 모바일 `mobile/lib/student-journey.ts` enum에 `MATCH_PENDING_ACCEPT` 추가 (웹과 drift 방지)
+5. 이월 과제: 상담 이력화(@unique 해제 리팩토링), Prisma enum 전환, QnA 테이블 통합(P2)
+
+### 25.3 열린 결정사항
+
+§23 미결 질문 Q1~Q6 참조. 특히 Q5(마이그레이션 적용 시점)는 배포를 막고 있는 유일한 기술적 블로커.
+
+---
+
 *문서가 오래되면 `git log -20`, `prisma/schema.prisma`, `src/app/api/**/route.ts` 트리를 먼저 다시 확인하세요.*
