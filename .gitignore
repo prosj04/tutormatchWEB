@@ -45,6 +45,7 @@ next-env.d.ts
 # local/session artifacts
 admin_cookies.txt
 cookies.txt
+*.cookies.txt
 *.bak
 concord_bizplan.rtf
 

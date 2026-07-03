@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function TeacherPortalPage() {
   const session = await auth();
-  if (session?.user?.role === "TEACHER" || session?.user?.role === "MANAGER") {
+  if (session?.user?.role === "TEACHER" || session?.user?.role === "MANAGER" || session?.user?.role === "CHIEF_MANAGER") {
     redirect("/teacher-portal/dashboard");
   }
   return (

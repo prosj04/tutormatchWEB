@@ -85,6 +85,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     orderBy: { startAt: "asc" },
   });
 
+  if (existingLesson && (existingLesson.startAt < new Date() || existingLesson.status === "COMPLETED")) {
+    return NextResponse.json({ error: "이미 진행된 수업은 수정할 수 없습니다" }, { status: 409 });
+  }
+
   const [lesson, student] = await prisma.$transaction([
     existingLesson
       ? prisma.lesson.update({

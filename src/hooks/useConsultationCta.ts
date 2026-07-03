@@ -38,7 +38,7 @@ export function useConsultationCta() {
       router.push("/admin");
       return;
     }
-    if (role === "TEACHER" || role === "MANAGER") {
+    if (role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER") {
       router.push("/teacher-portal/dashboard");
       return;
     }

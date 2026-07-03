@@ -144,17 +144,19 @@ export async function assignChiefManagerToStudent({
   });
 
   const booking = existing
-    ? await prisma.consultationBooking.update({
-        where: { id: existing.id },
-        data: {
-          managerId: manager.id,
-          preferredTimes: "[]",
-          visitPreferredTimes: existing.visitPreferredTimes || "{}",
-          status: "ASSIGNED",
-          note: note ?? existing.note,
-          assignedAt: now,
-        },
-      })
+    ? existing.status === "COMPLETED" || existing.status === "CANCELLED"
+      ? existing
+      : await prisma.consultationBooking.update({
+          where: { id: existing.id },
+          data: {
+            managerId: existing.managerId ?? manager.id,
+            preferredTimes: "[]",
+            visitPreferredTimes: existing.visitPreferredTimes || "{}",
+            status: "ASSIGNED",
+            note: note ?? existing.note,
+            assignedAt: now,
+          },
+        })
     : await prisma.consultationBooking.create({
         data: {
           studentId,

@@ -290,7 +290,7 @@ export function LoginForm({
       const destination =
         userRole === "ADMIN"
           ? "/admin"
-          : userRole === "TEACHER" || userRole === "MANAGER"
+          : userRole === "TEACHER" || userRole === "MANAGER" || userRole === "CHIEF_MANAGER"
             ? "/teacher-portal/dashboard"
             : "/dashboard";
       window.location.assign(destination);

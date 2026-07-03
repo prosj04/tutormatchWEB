@@ -31,7 +31,7 @@ export function TeacherPortalLoginClient() {
       if (result?.ok) {
         const nextSession = await getSession();
         const role = nextSession?.user?.role;
-        if (role !== "TEACHER" && role !== "MANAGER") {
+        if (role !== "TEACHER" && role !== "MANAGER" && role !== "CHIEF_MANAGER") {
           await signOut({ redirect: false });
           setError("선생님·매니저 계정으로만 로그인할 수 있습니다.");
           return;

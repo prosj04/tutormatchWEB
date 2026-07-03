@@ -55,11 +55,11 @@ export function ConcordSiteHeader({
   const portalHref =
     role === "ADMIN"
       ? "/admin"
-      : role === "TEACHER" || role === "MANAGER"
+      : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER"
         ? "/teacher-portal/dashboard"
         : "/dashboard";
   const portalLabel =
-    role === "ADMIN" ? "관리자" : role === "TEACHER" || role === "MANAGER" ? "선생님 포털" : "내 학습";
+    role === "ADMIN" ? "관리자" : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER" ? "선생님 포털" : "내 학습";
 
   const links = [
     ...BASE_NAV.filter((l) => {
