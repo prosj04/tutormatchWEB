@@ -45,6 +45,12 @@ const steps = [
   { number: "05", title: "학습 리포트·관리", desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다." },
 ];
 
+const heroTrustPills = [
+  "무료 상담 1회",
+  "전담 매니저 직접 상담",
+  "첫 수업 100% 환불 보장",
+];
+
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
 function heroHeadlineWithHl(text: string) {
   const lines = formatCmsMultiline(text).split("\n");
@@ -325,6 +331,13 @@ export function LandingPageV2({
                 {getCmsValue("hero", "cta_secondary", "선생님 둘러보기 →")}
               </CmsEdit>
             </a>
+          </div>
+          <div className="lp2-hero-pills" aria-label="핵심 안내">
+            {heroTrustPills.map((pill) => (
+              <span key={pill} className="lp2-hero-pill">
+                {pill}
+              </span>
+            ))}
           </div>
           {/* Stats */}
           <div className="lp2-stats">
