@@ -58,7 +58,7 @@ export default async function DashboardPage({
   );
   const initialMonthKey = initialDate.slice(0, 7);
 
-  const [planDateRows, rawInitialPlan, rawInitialQuestions, consultationBooking, activeTeacherMatch] = await Promise.all([
+  const [planDateRows, rawInitialPlan, rawInitialQuestions, consultationBooking, activeTeacherMatch, rawCareLogs, pendingCheckin] = await Promise.all([
     prisma.studyPlan.findMany({
       where: { studentId: student.id, date: { startsWith: initialMonthKey } },
       select: { date: true },
@@ -78,6 +78,17 @@ export default async function DashboardPage({
     prisma.teacherStudent.findFirst({
       where: { studentId: student.id, matchStatus: "ACTIVE", isActive: true },
       select: { id: true, subjects: true, teacher: { select: { name: true } } },
+    }),
+    prisma.managerCareLog.findMany({
+      where: { studentId: student.id, visibleToStudent: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: { id: true, type: true, note: true, createdAt: true },
+    }),
+    prisma.satisfactionCheckin.findFirst({
+      where: { studentId: student.id, respondedAt: null },
+      orderBy: { requestedAt: "desc" },
+      select: { id: true, trigger: true, requestedAt: true },
     }),
   ]);
 
@@ -113,6 +124,21 @@ export default async function DashboardPage({
       }
     : null;
 
+  const careLogs = rawCareLogs.map((log) => ({
+    id: log.id,
+    type: log.type as "CONSULT" | "INTERVENTION" | "CHECK",
+    note: log.note,
+    createdAt: log.createdAt.toISOString(),
+  }));
+
+  const satisfactionCheckin = pendingCheckin
+    ? {
+        id: pendingCheckin.id,
+        trigger: pendingCheckin.trigger,
+        requestedAt: pendingCheckin.requestedAt.toISOString(),
+      }
+    : null;
+
   return (
     <StudentDashboardEntry
       studentName={student.name}
@@ -125,6 +151,8 @@ export default async function DashboardPage({
       isEditMode={isEditMode}
       learningGoals={learningGoals}
       activeMatch={activeMatch}
+      careLogs={careLogs}
+      satisfactionCheckin={satisfactionCheckin}
     />
   );
 }

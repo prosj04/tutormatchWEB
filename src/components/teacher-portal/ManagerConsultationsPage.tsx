@@ -43,6 +43,10 @@ export function ManagerConsultationsPage({
   const [managerNote, setManagerNote] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  // visitConfirmedAt state per booking (keyed by booking id)
+  const [visitConfirmedInputs, setVisitConfirmedInputs] = useState<Record<string, string>>({});
+  const [visitConfirmedSaving, setVisitConfirmedSaving] = useState<string | null>(null);
+
   // Consultation report modal state
   const [reportTarget, setReportTarget] = useState<ConsultationBooking | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
@@ -266,6 +270,38 @@ export function ManagerConsultationsPage({
     }
   }
 
+  function getVisitConfirmedValue(booking: ConsultationBooking): string {
+    if (booking.id in visitConfirmedInputs) return visitConfirmedInputs[booking.id] ?? "";
+    if (booking.visitConfirmedAt) {
+      // Convert ISO to datetime-local format (YYYY-MM-DDTHH:MM)
+      return booking.visitConfirmedAt.slice(0, 16);
+    }
+    return "";
+  }
+
+  async function saveVisitConfirmed(bookingId: string, value: string) {
+    setVisitConfirmedSaving(bookingId);
+    try {
+      const visitConfirmedAt = value ? new Date(value).toISOString() : null;
+      const res = await fetch(
+        `/api/manager/consultations/${bookingId}/visit-confirmed`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ visitConfirmedAt }),
+        },
+      );
+      if (res.ok) {
+        showToast("방문 상담 일시가 저장되었습니다.");
+        await refreshAll();
+      } else {
+        showToast("저장에 실패했습니다.");
+      }
+    } finally {
+      setVisitConfirmedSaving(null);
+    }
+  }
+
   function handleGoalListChange(
     field: "quantitative" | "qualitative",
     text: string,
@@ -348,6 +384,17 @@ export function ManagerConsultationsPage({
                 key={booking.id}
                 booking={booking}
                 loading={actionLoading === booking.id}
+                visitConfirmedValue={getVisitConfirmedValue(booking)}
+                visitConfirmedSaving={visitConfirmedSaving === booking.id}
+                onVisitConfirmedChange={(v) =>
+                  setVisitConfirmedInputs((prev) => ({ ...prev, [booking.id]: v }))
+                }
+                onVisitConfirmedSave={() =>
+                  void saveVisitConfirmed(
+                    booking.id,
+                    visitConfirmedInputs[booking.id] ?? getVisitConfirmedValue(booking),
+                  )
+                }
                 onComplete={() => {
                   setCompleteTarget(booking);
                   setManagerNote("");
@@ -594,12 +641,20 @@ function WaitingCard({
 function MineCard({
   booking,
   loading,
+  visitConfirmedValue,
+  visitConfirmedSaving,
+  onVisitConfirmedChange,
+  onVisitConfirmedSave,
   onComplete,
   onCancel,
   onReport,
 }: {
   booking: ConsultationBooking;
   loading: boolean;
+  visitConfirmedValue: string;
+  visitConfirmedSaving: boolean;
+  onVisitConfirmedChange: (v: string) => void;
+  onVisitConfirmedSave: () => void;
   onComplete: () => void;
   onCancel: () => void;
   onReport: () => void;
@@ -639,6 +694,29 @@ function MineCard({
       <p className="mt-4 text-xs text-text-muted">
         배정 시각: {booking.assignedAgo ?? "-"}
       </p>
+
+      {booking.visitConfirmedAt ? (
+        <p className="mt-2 text-xs font-medium text-primary">
+          방문 상담 확정: {new Date(booking.visitConfirmedAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
+        </p>
+      ) : null}
+
+      <div className="mt-3 flex gap-2 items-center">
+        <input
+          type="datetime-local"
+          value={visitConfirmedValue}
+          onChange={(e) => onVisitConfirmedChange(e.target.value)}
+          className="flex-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-primary"
+        />
+        <button
+          type="button"
+          disabled={visitConfirmedSaving}
+          onClick={onVisitConfirmedSave}
+          className="shrink-0 rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 disabled:opacity-50"
+        >
+          {visitConfirmedSaving ? "저장 중…" : "일시 저장"}
+        </button>
+      </div>
 
       {booking.status === "ASSIGNED" ? (
         <div className="mt-5 flex gap-2">

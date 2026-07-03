@@ -19,6 +19,31 @@ type ActiveMatch = {
   subjects: string;
 };
 
+type CareLogItem = {
+  id: string;
+  type: "CONSULT" | "INTERVENTION" | "CHECK";
+  note: string;
+  createdAt: string;
+};
+
+type SatisfactionCheckin = {
+  id: string;
+  trigger: string;
+  requestedAt: string;
+};
+
+const CARE_TYPE_LABELS: Record<string, string> = {
+  CONSULT: "상담",
+  INTERVENTION: "개입",
+  CHECK: "점검",
+};
+
+const CARE_TYPE_CLASSES: Record<string, string> = {
+  CONSULT: "bg-blue-50 text-blue-700",
+  INTERVENTION: "bg-orange-50 text-orange-700",
+  CHECK: "bg-green-50 text-green-700",
+};
+
 type StudentDashboardProps = {
   studentName: string;
   studentId: string;
@@ -30,6 +55,8 @@ type StudentDashboardProps = {
   isEditMode?: boolean;
   learningGoals?: ConsultationGoals | null;
   activeMatch?: ActiveMatch | null;
+  careLogs?: CareLogItem[];
+  satisfactionCheckin?: SatisfactionCheckin | null;
 };
 
 export function StudentDashboard({
@@ -43,6 +70,8 @@ export function StudentDashboard({
   isEditMode = false,
   learningGoals = null,
   activeMatch = null,
+  careLogs = [],
+  satisfactionCheckin = null,
 }: StudentDashboardProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -72,6 +101,12 @@ export function StudentDashboard({
   const [changeReqReason, setChangeReqReason] = useState("");
   const [changeReqLoading, setChangeReqLoading] = useState(false);
   const [changeReqDone, setChangeReqDone] = useState(false);
+
+  // Satisfaction checkin state
+  const [checkinDismissed, setCheckinDismissed] = useState(false);
+  const [checkinScore, setCheckinScore] = useState<number | null>(null);
+  const [checkinComment, setCheckinComment] = useState("");
+  const [checkinSubmitting, setCheckinSubmitting] = useState(false);
 
   useEffect(() => {
     trackEvent(ANALYTICS_EVENTS.webDashboardViewed);
@@ -244,6 +279,35 @@ export function StudentDashboard({
     setCopySource(null);
   }
 
+  async function handleCheckinSubmit() {
+    if (!satisfactionCheckin || checkinScore === null) return;
+    setCheckinSubmitting(true);
+    try {
+      const res = await fetch(
+        `/api/student/satisfaction-checkins/${satisfactionCheckin.id}/respond`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            score: checkinScore,
+            comment: checkinComment.trim() || undefined,
+          }),
+        },
+      );
+      if (res.ok) {
+        setCheckinDismissed(true);
+        showToast("소중한 피드백 감사합니다.", "ok");
+      } else {
+        const data = (await res.json()) as { error?: string };
+        showToast(data.error ?? "제출에 실패했습니다.");
+      }
+    } catch {
+      showToast("제출에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setCheckinSubmitting(false);
+    }
+  }
+
   async function handleTeacherChangeRequest() {
     if (!activeMatch) return;
     setChangeReqLoading(true);
@@ -293,7 +357,27 @@ export function StudentDashboard({
                 {activeMatch.teacherName} 선생님
               </p>
               <p className="mt-0.5 truncate text-xs text-text-muted">{activeMatch.subjects}</p>
-              {!changeReqDone ? (
+              {careLogs.length > 0 && (
+            <div className="mt-4 rounded-xl border border-gray-100 bg-background p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                매니저 케어 기록
+              </p>
+              <ul className="mt-2 space-y-2">
+                {careLogs.map((log) => (
+                  <li key={log.id}>
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${CARE_TYPE_CLASSES[log.type] ?? "bg-gray-100 text-gray-700"}`}>
+                      {CARE_TYPE_LABELS[log.type] ?? log.type}
+                    </span>
+                    <p className="mt-1 text-xs text-text-primary">{log.note}</p>
+                    <p className="mt-0.5 text-[10px] text-text-muted">
+                      {new Date(log.createdAt).toLocaleDateString("ko-KR")}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {!changeReqDone ? (
                 <button
                   type="button"
                   onClick={() => setChangeReqOpen(true)}
@@ -354,6 +438,53 @@ export function StudentDashboard({
               </div>
             ) : null}
           </div>
+          {satisfactionCheckin && !checkinDismissed ? (
+            <div className="border-b border-primary/20 bg-primary/5 px-4 py-4">
+              <div className="mx-auto max-w-2xl">
+                <p className="text-sm font-semibold text-text-primary">
+                  첫 수업은 어떠셨나요?
+                </p>
+                <p className="mt-1 text-xs text-text-secondary">
+                  솔직한 피드백이 더 나은 수업을 만듭니다.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setCheckinScore(s)}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition ${
+                        checkinScore === s
+                          ? "border-primary bg-primary text-white"
+                          : "border-gray-200 bg-white text-text-secondary hover:border-primary/50"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                {checkinScore !== null ? (
+                  <>
+                    <textarea
+                      value={checkinComment}
+                      onChange={(e) => setCheckinComment(e.target.value.slice(0, 500))}
+                      rows={2}
+                      placeholder="코멘트 (선택)"
+                      className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                    />
+                    <button
+                      type="button"
+                      disabled={checkinSubmitting}
+                      onClick={() => void handleCheckinSubmit()}
+                      className="mt-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                    >
+                      {checkinSubmitting ? "제출 중…" : "제출하기"}
+                    </button>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
           <DailyPlanView
             selectedDate={selectedDate}
             studentId={studentId}

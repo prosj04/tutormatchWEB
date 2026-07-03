@@ -17,6 +17,7 @@ export type ManagerConsultationBooking = {
   managerNote?: string | null;
   preferredTimes: string[];
   visitPreferredTimes: VisitTimesByDate;
+  visitConfirmedAt?: string | null;
   createdAt: string;
   timeAgo?: string;
   assignedAt?: string | null;
@@ -90,6 +91,7 @@ function mapConsultationBooking(
     note: string | null;
     managerNote: string | null;
     visitPreferredTimes: string;
+    visitConfirmedAt: Date | null;
     createdAt: Date;
     assignedAt: Date | null;
     student: {
@@ -109,6 +111,7 @@ function mapConsultationBooking(
     managerNote: booking.managerNote,
     preferredTimes: [],
     visitPreferredTimes: parseVisitTimes(booking.visitPreferredTimes),
+    visitConfirmedAt: booking.visitConfirmedAt?.toISOString() ?? null,
     createdAt: booking.createdAt.toISOString(),
     timeAgo: formatRelativeTime(booking.createdAt.toISOString()),
     assignedAt: booking.assignedAt?.toISOString() ?? null,

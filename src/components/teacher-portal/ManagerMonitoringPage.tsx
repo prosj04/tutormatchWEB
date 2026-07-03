@@ -9,6 +9,28 @@ import type {
 } from "@/lib/manager-portal-data";
 import { formatConsultationDateLabel } from "@/lib/study-plan-dates";
 
+type CareLogType = "CONSULT" | "INTERVENTION" | "CHECK";
+
+type CareLog = {
+  id: string;
+  type: CareLogType;
+  note: string;
+  visibleToStudent: boolean;
+  createdAt: string;
+};
+
+const CARE_LOG_TYPE_LABELS: Record<CareLogType, string> = {
+  CONSULT: "상담",
+  INTERVENTION: "개입",
+  CHECK: "점검",
+};
+
+const CARE_LOG_TYPE_CLASSES: Record<CareLogType, string> = {
+  CONSULT: "bg-blue-50 text-blue-700",
+  INTERVENTION: "bg-orange-50 text-orange-700",
+  CHECK: "bg-green-50 text-green-700",
+};
+
 type Overview = ManagerMonitoringOverview;
 type StudentRow = ManagerMonitoringStudentRow;
 type DetailData = ManagerMonitoringDetailData;
@@ -30,28 +52,94 @@ export function ManagerMonitoringPage({
   const [detailLoading, setDetailLoading] = useState(false);
   const detailCacheRef = useRef<Map<string, DetailData>>(new Map());
 
+  // Care log state
+  const [careLogs, setCareLogs] = useState<CareLog[]>([]);
+  const [careLogsLoading, setCareLogsLoading] = useState(false);
+  const careLogsCacheRef = useRef<Map<string, CareLog[]>>(new Map());
+  const [careLogType, setCareLogType] = useState<CareLogType>("CONSULT");
+  const [careLogNote, setCareLogNote] = useState("");
+  const [careLogVisible, setCareLogVisible] = useState(true);
+  const [careLogSaving, setCareLogSaving] = useState(false);
+  const [careLogToast, setCareLogToast] = useState<string | null>(null);
+
+  const fetchCareLogs = async (studentId: string) => {
+    const cached = careLogsCacheRef.current.get(studentId);
+    if (cached) {
+      setCareLogs(cached);
+      return;
+    }
+    setCareLogsLoading(true);
+    try {
+      const res = await fetch(
+        `/api/manager/care-logs?studentId=${encodeURIComponent(studentId)}`,
+      );
+      if (res.ok) {
+        const data = (await res.json()) as { logs: CareLog[] };
+        careLogsCacheRef.current.set(studentId, data.logs);
+        setCareLogs(data.logs);
+      }
+    } finally {
+      setCareLogsLoading(false);
+    }
+  };
+
   const openDrawer = async (studentId: string) => {
     setDrawerId(studentId);
+    setCareLogNote("");
+    setCareLogType("CONSULT");
+    setCareLogVisible(true);
+
     const cached = detailCacheRef.current.get(studentId);
     if (cached) {
       setDetail(cached);
       setDetailLoading(false);
-      return;
+    } else {
+      setDetail(null);
+      setDetailLoading(true);
+      try {
+        const res = await fetch(
+          `/api/manager/monitoring/stats?studentId=${encodeURIComponent(studentId)}`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as DetailData;
+          detailCacheRef.current.set(studentId, data);
+          setDetail(data);
+        }
+      } finally {
+        setDetailLoading(false);
+      }
     }
 
-    setDetail(null);
-    setDetailLoading(true);
+    void fetchCareLogs(studentId);
+  };
+
+  const submitCareLog = async () => {
+    if (!drawerId || !careLogNote.trim()) return;
+    setCareLogSaving(true);
     try {
-      const res = await fetch(
-        `/api/manager/monitoring/stats?studentId=${encodeURIComponent(studentId)}`,
-      );
+      const res = await fetch("/api/manager/care-logs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: drawerId,
+          type: careLogType,
+          note: careLogNote.trim(),
+          visibleToStudent: careLogVisible,
+        }),
+      });
       if (res.ok) {
-        const data = (await res.json()) as DetailData;
-        detailCacheRef.current.set(studentId, data);
-        setDetail(data);
+        // Clear cache so next open re-fetches
+        careLogsCacheRef.current.delete(drawerId);
+        setCareLogNote("");
+        setCareLogToast("케어 로그가 저장되었습니다.");
+        window.setTimeout(() => setCareLogToast(null), 3000);
+        void fetchCareLogs(drawerId);
+      } else {
+        setCareLogToast("저장에 실패했습니다.");
+        window.setTimeout(() => setCareLogToast(null), 3000);
       }
     } finally {
-      setDetailLoading(false);
+      setCareLogSaving(false);
     }
   };
 
@@ -281,6 +369,77 @@ export function ManagerMonitoringPage({
                           >
                             <p className="text-xs text-primary">{c.date}</p>
                             <p className="mt-1 text-text-primary">{c.comment}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+
+                  <section>
+                    <h3 className="text-sm font-semibold text-text-primary">
+                      케어 로그
+                    </h3>
+                    {careLogToast ? (
+                      <p className="mt-2 text-xs text-primary">{careLogToast}</p>
+                    ) : null}
+                    <div className="mt-3 space-y-2 rounded-xl border border-gray-100 bg-background p-3">
+                      <div className="flex gap-2">
+                        <select
+                          value={careLogType}
+                          onChange={(e) => setCareLogType(e.target.value as CareLogType)}
+                          className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs outline-none focus:border-primary"
+                        >
+                          <option value="CONSULT">상담</option>
+                          <option value="INTERVENTION">개입</option>
+                          <option value="CHECK">점검</option>
+                        </select>
+                        <label className="flex items-center gap-1 text-xs text-text-secondary">
+                          <input
+                            type="checkbox"
+                            checked={careLogVisible}
+                            onChange={(e) => setCareLogVisible(e.target.checked)}
+                            className="accent-primary"
+                          />
+                          학생 공개
+                        </label>
+                      </div>
+                      <textarea
+                        value={careLogNote}
+                        onChange={(e) => setCareLogNote(e.target.value.slice(0, 1000))}
+                        rows={3}
+                        placeholder="내용을 입력하세요 (최대 1000자)"
+                        className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                      />
+                      <button
+                        type="button"
+                        disabled={careLogSaving || !careLogNote.trim()}
+                        onClick={() => void submitCareLog()}
+                        className="w-full rounded-xl bg-primary py-2 text-xs font-semibold text-white disabled:opacity-50"
+                      >
+                        {careLogSaving ? "저장 중…" : "케어 로그 저장"}
+                      </button>
+                    </div>
+
+                    {careLogsLoading ? (
+                      <p className="mt-2 text-xs text-text-secondary">불러오는 중…</p>
+                    ) : careLogs.length === 0 ? (
+                      <p className="mt-2 text-xs text-text-secondary">아직 케어 로그가 없습니다.</p>
+                    ) : (
+                      <ul className="mt-3 space-y-2">
+                        {careLogs.map((log) => (
+                          <li key={log.id} className="rounded-lg border border-gray-100 px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${CARE_LOG_TYPE_CLASSES[log.type]}`}>
+                                {CARE_LOG_TYPE_LABELS[log.type]}
+                              </span>
+                              {!log.visibleToStudent && (
+                                <span className="text-xs text-text-muted">비공개</span>
+                              )}
+                              <span className="ml-auto text-xs text-text-muted">
+                                {new Date(log.createdAt).toLocaleDateString("ko-KR")}
+                              </span>
+                            </div>
+                            <p className="mt-1.5 text-sm text-text-primary">{log.note}</p>
                           </li>
                         ))}
                       </ul>
