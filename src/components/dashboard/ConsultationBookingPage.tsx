@@ -51,6 +51,7 @@ type PendingMatch = {
   matchId: string;
   subjects: string;
   teacherName: string;
+  matchReason?: string | null;
 };
 
 type ConsultationBookingPageProps = {
@@ -363,6 +364,12 @@ export function ConsultationBookingPage({
                 <p className="mt-2 text-sm leading-relaxed text-text-secondary">
                   배정 과목: {pendingMatch.subjects}. 수락 후 선생님이 첫 수업 일정을 설정합니다.
                 </p>
+                {pendingMatch.matchReason ? (
+                  <blockquote className="mt-4 border-l-4 border-primary/30 bg-white px-4 py-3 text-sm text-text-secondary italic">
+                    <p className="font-medium text-text-primary">매니저의 추천 이유</p>
+                    <p className="mt-1">{pendingMatch.matchReason}</p>
+                  </blockquote>
+                ) : null}
                 {acceptError ? (
                   <p className="mt-3 text-sm text-accent" role="alert">
                     {acceptError}

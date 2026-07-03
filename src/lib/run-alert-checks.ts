@@ -52,6 +52,7 @@ export async function runAlertChecks() {
   let qnaMessagesChecked = 0;
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
+  let staleMatchesChecked = 0;
   let firstLessonRemindersChecked = 0;
   let subscriptionExpiryChecked = 0;
   let lessonRemindersChecked = 0;
@@ -588,6 +589,144 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── 5b. Stale match acceptance — manager + student alerts ────────────────────
+  //
+  // Find TeacherStudent records where matchStatus is "PENDING_STUDENT_ACCEPT",
+  // respondedAt is null, and createdAt is older than 24h. Notify the responsible
+  // manager (via ConsultationBooking.managerId or fall back to CHIEF_MANAGER role),
+  // and notify the student that they are waiting for teacher acceptance.
+  // Dedup against STALE_MATCH_ACCEPTANCE notifications from the last 24h.
+
+  const staleMatchCutoff = new Date(Date.now() - DAY_MS);
+
+  const staleMatches = await prisma.teacherStudent.findMany({
+    where: {
+      matchStatus: "PENDING_STUDENT_ACCEPT",
+      respondedAt: null,
+      createdAt: { lt: staleMatchCutoff },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      student: {
+        select: {
+          userId: true,
+          name: true,
+          consultationBooking: {
+            select: {
+              managerId: true,
+            },
+          },
+        },
+      },
+      teacher: { select: { name: true } },
+    },
+  });
+
+  staleMatchesChecked = staleMatches.length;
+
+  if (staleMatches.length > 0) {
+    const matchIds = staleMatches.map((m) => m.id);
+    const studentIds = Array.from(new Set(staleMatches.map((m) => m.studentId)));
+
+    // Bulk-fetch recent STALE_MATCH_ACCEPTANCE notifications.
+    const recentStaleMatchNotifs = await prisma.notification.findMany({
+      where: {
+        type: "STALE_MATCH_ACCEPTANCE",
+        relatedId: { in: matchIds },
+        createdAt: { gte: recentSince },
+      },
+      select: { userId: true, relatedId: true },
+    });
+    const staleMatchAlreadyNotified = new Set(
+      recentStaleMatchNotifs.map((n) => `${n.userId}:${n.relatedId}`),
+    );
+
+    // Bulk-fetch all manager links for affected students (for fallback).
+    const managerLinks = await prisma.managerStudent.findMany({
+      where: { studentId: { in: studentIds } },
+      select: {
+        studentId: true,
+        manager: { select: { userId: true } },
+      },
+    });
+
+    const managersByStudent = new Map<string, string[]>();
+    for (const link of managerLinks) {
+      const arr = managersByStudent.get(link.studentId) ?? [];
+      arr.push(link.manager.userId);
+      managersByStudent.set(link.studentId, arr);
+    }
+
+    // Bulk-fetch CHIEF_MANAGER users for fallback.
+    const chiefManagers = await prisma.teacher.findMany({
+      where: { approved: true, user: { role: "CHIEF_MANAGER" } },
+      select: { userId: true },
+    });
+    const chiefManagerUserIds = chiefManagers.map((m) => m.userId);
+
+    const staleToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
+
+    for (const match of staleMatches) {
+      const studentName = match.student.name;
+      const teacherName = match.teacher.name;
+      const matchId = match.id;
+
+      // Determine manager recipients.
+      let managerUserIds: string[] = [];
+      if (match.student.consultationBooking?.managerId) {
+        // Get the userId for this manager's teacherId.
+        const consultationManager = await prisma.teacher.findUnique({
+          where: { id: match.student.consultationBooking.managerId },
+          select: { userId: true },
+        });
+        if (consultationManager) {
+          managerUserIds.push(consultationManager.userId);
+        }
+      }
+      // If no explicit manager, fall back to CHIEF_MANAGER role.
+      if (managerUserIds.length === 0) {
+        managerUserIds = chiefManagerUserIds;
+      }
+
+      // Notify manager.
+      for (const managerId of managerUserIds) {
+        if (!staleMatchAlreadyNotified.has(`${managerId}:${matchId}`)) {
+          staleToCreate.push({
+            userId: managerId,
+            type: "STALE_MATCH_ACCEPTANCE",
+            title: "오래된 선생님 배정 대기",
+            body: `${studentName}님이 ${teacherName} 선생님 배정을 24시간 이상 수락하지 않았습니다.`,
+            relatedId: matchId,
+          });
+        }
+      }
+
+      // Notify student.
+      const studentId = match.student.userId;
+      if (!staleMatchAlreadyNotified.has(`${studentId}:${matchId}`)) {
+        staleToCreate.push({
+          userId: studentId,
+          type: "STALE_MATCH_ACCEPTANCE",
+          title: "선생님 수락 대기",
+          body: `${teacherName} 선생님과의 매칭을 수락해 주세요.`,
+          relatedId: matchId,
+        });
+      }
+    }
+
+    if (staleToCreate.length > 0) {
+      await prisma.notification.createMany({ data: staleToCreate });
+      notificationsCreated += staleToCreate.length;
+    }
+  }
+
   // ── 6. Accepted match first-lesson scheduling reminders ────────────────────
   //
   // Active matches older than 48h should have at least one non-cancelled lesson.
@@ -820,6 +959,7 @@ export async function runAlertChecks() {
     weeklyStudentsChecked,
     waitingBookingsChecked,
     pendingMatchesChecked,
+    staleMatchesChecked,
     firstLessonRemindersChecked,
     subscriptionExpiryChecked,
     lessonRemindersChecked,

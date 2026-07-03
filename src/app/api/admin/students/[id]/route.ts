@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { softDeleteUser } from "@/lib/account-deletion";
 import { prisma } from "@/lib/prisma";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 
@@ -46,6 +47,14 @@ export async function DELETE(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await prisma.user.delete({ where: { id: student.userId } });
-  return NextResponse.json({ ok: true });
+  try {
+    await softDeleteUser(student.userId);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[admin/students/delete] error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete student account" },
+      { status: 500 },
+    );
+  }
 }

@@ -37,6 +37,7 @@ export function ManagerMatchingPage({
   const [matchSubjects, setMatchSubjects] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [matchReason, setMatchReason] = useState<string>("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -79,10 +80,12 @@ export function ManagerMatchingPage({
   useEffect(() => {
     if (!selected) {
       setMatchSubjects([]);
+      setMatchReason("");
       return;
     }
     setMatchSubjects(studentSubjectList);
     setTeacherId(null);
+    setMatchReason("");
   }, [selected, studentSubjectList]);
 
   function toggleSubject(s: string) {
@@ -104,6 +107,7 @@ export function ManagerMatchingPage({
           teacherId,
           subjects: matchSubjects.join(", "),
           startDate: todayDateKey(),
+          matchReason: matchReason.trim() || undefined,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -113,6 +117,7 @@ export function ManagerMatchingPage({
       }
       await load();
       setTeacherId(null);
+      setMatchReason("");
     } finally {
       setSubmitting(false);
     }
@@ -233,6 +238,23 @@ export function ManagerMatchingPage({
                     {s}
                   </button>
                 ))}
+              </div>
+
+              <div className="mt-8">
+                <label htmlFor="matchReason" className="block text-sm font-semibold text-text-primary">
+                  매칭 이유 (학생에게 표시됩니다)
+                </label>
+                <textarea
+                  id="matchReason"
+                  value={matchReason}
+                  onChange={(e) => setMatchReason(e.target.value)}
+                  placeholder="이 선생님을 배정한 이유를 간단히 설명해 주세요. (선택사항)"
+                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-relaxed placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  rows={3}
+                />
+                <p className="mt-1 text-xs text-text-muted">
+                  최대 500자까지 입력 가능합니다.
+                </p>
               </div>
 
               {error ? (

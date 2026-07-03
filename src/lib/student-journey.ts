@@ -8,6 +8,7 @@ export type StudentJourneyStage =
   | "WAITING"
   | "ASSIGNED"
   | "MATCHING"
+  | "MATCH_PENDING_ACCEPT"
   | "FIRST_LESSON_PENDING"
   | "ACTIVE";
 
@@ -65,6 +66,10 @@ export const JOURNEY_STAGE_COPY: Record<
   MATCHING: {
     label: "선생님 매칭 진행",
     body: "상담 결과를 바탕으로 가장 잘 맞는 선생님을 찾고 있어요.",
+  },
+  MATCH_PENDING_ACCEPT: {
+    label: "선생님 수락 대기",
+    body: "배정된 선생님을 확인하고 수락 버튼을 눌러주세요. 수락 후 선생님이 첫 수업 일정을 설정합니다.",
   },
   FIRST_LESSON_PENDING: {
     label: "첫 수업 일정 조율 중",
@@ -132,9 +137,15 @@ export type StudentJourneySnapshot = {
 export async function resolveStudentJourneyStage(
   studentId: string,
 ): Promise<StudentJourneyStage> {
-  const [activeTeacherCount, firstLessonCount, booking] = await Promise.all([
+  const [activeTeacherCount, pendingAcceptCount, firstLessonCount, booking] = await Promise.all([
     prisma.teacherStudent.count({
       where: { studentId, isActive: true },
+    }),
+    prisma.teacherStudent.count({
+      where: {
+        studentId,
+        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+      },
     }),
     prisma.lesson.count({
       where: { studentId, status: { not: "CANCELLED" } },
@@ -147,6 +158,7 @@ export async function resolveStudentJourneyStage(
 
   if (activeTeacherCount > 0 && firstLessonCount > 0) return "ACTIVE";
   if (activeTeacherCount > 0) return "FIRST_LESSON_PENDING";
+  if (pendingAcceptCount > 0) return "MATCH_PENDING_ACCEPT";
   if (!booking) return "ONBOARDED";
   return CONSULTATION_STATUS_TO_STAGE[booking.status as ConsultationBookingStatus];
 }

@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     studentId?: unknown;
     subjects?: unknown;
     startDate?: unknown;
+    matchReason?: unknown;
   };
   try {
     body = await request.json();
@@ -46,6 +47,11 @@ export async function POST(request: Request) {
 
   const startDate =
     typeof body.startDate === "string" ? body.startDate : todayDateKey();
+
+  const matchReason =
+    typeof body.matchReason === "string"
+      ? body.matchReason.trim().substring(0, 500)
+      : null;
 
   const targetTeacher = await prisma.teacher.findFirst({
     where: {
@@ -88,6 +94,7 @@ export async function POST(request: Request) {
         studentId,
         subjects,
         startDate,
+        matchReason,
         // 학생이 앱에서 수락하기 전까지는 ACTIVE 단계로 전환하지 않는다.
         isActive: false,
         matchStatus: "PENDING_STUDENT_ACCEPT",

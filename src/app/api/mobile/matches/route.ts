@@ -16,6 +16,7 @@ export async function GET(request: Request) {
     select: {
       id: true,
       subjects: true,
+      matchReason: true,
       isActive: true,
       teacher: {
         select: {
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
       subject,
       education: m.teacher.education,
       experience: m.teacher.experience,
-      why: m.teacher.bio || `${student.name} 학생의 학습 목표에 맞춰 배정된 선생님이에요.`,
+      why: m.matchReason || m.teacher.bio || `${student.name} 학생의 학습 목표에 맞춰 배정된 선생님이에요.`,
       initials: m.teacher.name[0] ?? "T",
       accepted: m.isActive,
     };

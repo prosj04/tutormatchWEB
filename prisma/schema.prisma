@@ -18,6 +18,7 @@ model User {
   notifications Notification[]
   pushDevices   PushDevice[]
   createdAt     DateTime       @default(now())
+  deletedAt     DateTime?
 }
 
 model Student {
@@ -46,6 +47,7 @@ model Student {
   questionMessages    QuestionMessage[]
   onboardingSurvey    OnboardingSurvey?
   homeworkTemplates   HomeworkTemplate[]
+  deletedAt           DateTime?
 }
 
 model Teacher {
@@ -87,6 +89,7 @@ model TeacherStudent {
   // isActive와 항상 동기화되어야 하며, 당분간 매칭 활성 로직은 isActive를 기준으로 한다.
   matchStatus String    @default("PENDING_STUDENT_ACCEPT")
   respondedAt DateTime?
+  matchReason String?   // 담당 매니저가 이 선생님을 선택한 이유
   createdAt   DateTime  @default(now())
 
   @@unique([teacherId, studentId])
@@ -318,7 +321,7 @@ model StudySession {
 model Subscription {
   id          String    @id @default(uuid())
   studentId   String
-  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
   plan        String // pricing-plans id e.g. "8-1"
   status      String    @default("ACTIVE") // "ACTIVE" | "PAST_DUE" | "CANCELLED"
   periodStart DateTime  @default(now())
@@ -334,7 +337,7 @@ model PaymentCompletion {
   id             String    @id @default(uuid())
   orderId        String    @unique
   studentId      String
-  student        Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student        Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
   plan           String
   status         String    @default("PROCESSING") // "PROCESSING" | "COMPLETED" | "FAILED"
   paymentKey     String?

@@ -18,7 +18,8 @@ export type NotificationType =
   | "SUBSCRIPTION_EXPIRY_REMINDER"
   | "LESSON_REMINDER"
   | "NEW_QUESTION"
-  | "VISIT_TIMES_UPDATED";
+  | "VISIT_TIMES_UPDATED"
+  | "STALE_MATCH_ACCEPTANCE";
 
 /** 외부 SMS를 보낼 알림 타입 */
 const SMS_NOTIFICATION_TYPES = new Set<string>([
@@ -131,6 +132,7 @@ export function getNotificationIcon(type: string): string {
     case "NEW_STUDENT_ASSIGNED":
     case "TEACHER_ASSIGNED":
     case "MATCH_ACCEPTANCE_REMINDER":
+    case "STALE_MATCH_ACCEPTANCE":
     case "FIRST_LESSON_REMINDER":
     case "SUBSCRIPTION_EXPIRY_REMINDER":
     case "LESSON_REMINDER":
@@ -159,6 +161,7 @@ export function resolveNotificationHref(
     case "TEACHER_COMMENT":
     case "TEACHER_ASSIGNED":
     case "MATCH_ACCEPTANCE_REMINDER":
+    case "STALE_MATCH_ACCEPTANCE":
       return "/dashboard";
     case "FIRST_LESSON_REMINDER":
       return "/teacher-portal/dashboard/students";

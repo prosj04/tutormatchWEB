@@ -51,6 +51,7 @@ export default async function ConsultationPage({
       select: {
         id: true,
         subjects: true,
+        matchReason: true,
         teacher: { select: { name: true } },
       },
     }),
@@ -68,6 +69,7 @@ export default async function ConsultationPage({
               matchId: pendingMatch.id,
               subjects: pendingMatch.subjects,
               teacherName: pendingMatch.teacher.name,
+              matchReason: pendingMatch.matchReason,
             }
           : null
       }

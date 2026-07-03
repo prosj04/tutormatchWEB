@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireMobileStudent } from "@/lib/mobile-auth";
+import { softDeleteUser } from "@/lib/account-deletion";
 import { prisma } from "@/lib/prisma";
 import { formatSubscriptionPlanLabel, formatSubscriptionStatus } from "@/lib/subscription-label";
 import {
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
   if ("error" in authResult) return authResult.error;
   const { student, userId } = authResult;
 
-  const [user, subscription, teacherCount, firstLessonCount, latestReport, booking] = await Promise.all([
+  const [user, subscription, teacherCount, pendingAcceptCount, firstLessonCount, latestReport, booking] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { email: true } }),
     prisma.subscription.findFirst({
       where: { studentId: student.id, status: "ACTIVE" },
@@ -25,6 +26,12 @@ export async function GET(request: Request) {
       select: { plan: true, status: true, periodEnd: true },
     }),
     prisma.teacherStudent.count({ where: { studentId: student.id, isActive: true } }),
+    prisma.teacherStudent.count({
+      where: {
+        studentId: student.id,
+        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+      },
+    }),
     prisma.lesson.count({
       where: { studentId: student.id, status: { not: "CANCELLED" } },
     }),
@@ -47,6 +54,8 @@ export async function GET(request: Request) {
       ? "ACTIVE"
       : teacherCount > 0
       ? "FIRST_LESSON_PENDING"
+      : pendingAcceptCount > 0
+      ? "MATCH_PENDING_ACCEPT"
       : !booking
       ? "ONBOARDED"
       : CONSULTATION_STATUS_TO_STAGE[consultationStatus!];
@@ -83,4 +92,22 @@ export async function GET(request: Request) {
 
 function formatBillingDate(d: Date): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+/** DELETE /api/mobile/me — delete own account (soft-delete) */
+export async function DELETE(request: Request) {
+  const authResult = await requireMobileStudent(request);
+  if ("error" in authResult) return authResult.error;
+  const { userId } = authResult;
+
+  try {
+    await softDeleteUser(userId);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[mobile/me] DELETE error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete account" },
+      { status: 500 },
+    );
+  }
 }

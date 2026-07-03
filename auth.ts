@@ -101,6 +101,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const valid = await bcrypt.compare(password, user.password);
           if (!valid) return null;
 
+          // Guard: reject deleted accounts
+          const userWithDeletedAt = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { deletedAt: true },
+          });
+          if (userWithDeletedAt?.deletedAt) return null;
+
           const name =
             user.student?.name ??
             user.teacher?.name ??
