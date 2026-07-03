@@ -1,6 +1,11 @@
 const TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 const TOSS_FETCH_URL = "https://api.tosspayments.com/v1/payments";
 
+export type CashReceipt = {
+  type: string; // e.g. "소득공제" | "지출증빙"
+  receiptUrl: string;
+} | null;
+
 /**
  * Toss 서버 fetch API 호출 — 특정 paymentKey의 결제 상태를 조회한다.
  * 웹훅 검증에 사용: 웹훅 본문을 신뢰하지 않고 Toss 서버에서 직접 확인.
@@ -10,6 +15,7 @@ export async function fetchTossPayment(paymentKey: string): Promise<{
   orderId: string;
   status: string;
   amount: number;
+  cashReceipt: CashReceipt;
 }> {
   const secret = process.env.TOSS_SECRET_KEY;
 
@@ -25,6 +31,7 @@ export async function fetchTossPayment(paymentKey: string): Promise<{
       orderId: "",
       status: "DONE",
       amount: 0,
+      cashReceipt: null,
     };
   }
 
@@ -58,12 +65,26 @@ export async function fetchTossPayment(paymentKey: string): Promise<{
     orderId?: string;
     status?: string;
     totalAmount?: number;
+    cashReceipt?: {
+      type?: string;
+      receiptUrl?: string;
+    } | null;
   };
+
+  let cashReceipt: CashReceipt = null;
+  if (data.cashReceipt?.type && data.cashReceipt?.receiptUrl) {
+    cashReceipt = {
+      type: data.cashReceipt.type,
+      receiptUrl: data.cashReceipt.receiptUrl,
+    };
+  }
+
   return {
     paymentKey: data.paymentKey ?? "",
     orderId: data.orderId ?? "",
     status: data.status ?? "",
     amount: data.totalAmount ?? 0,
+    cashReceipt,
   };
 }
 

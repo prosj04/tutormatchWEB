@@ -139,6 +139,7 @@ export async function POST(request: Request) {
         paymentKey,
         amount: tossPayment.amount,
         plan,
+        cashReceipt: tossPayment.cashReceipt,
       });
 
       console.log(`[toss-webhook] Successfully completed payment (orderId: ${orderId})`);

@@ -1,7 +1,7 @@
 import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
 import { PRICING_PLANS } from "@/lib/pricing-plans";
-import { confirmTossPayment } from "@/lib/toss-payments";
+import { confirmTossPayment, type CashReceipt } from "@/lib/toss-payments";
 
 type CompleteStudentPaymentParams = {
   studentId: string;
@@ -11,6 +11,7 @@ type CompleteStudentPaymentParams = {
   paymentKey?: string | null;
   amount?: number | null;
   plan?: string | null;
+  cashReceipt?: CashReceipt;
 };
 
 const DEFAULT_PAYMENT_PLAN = "8-1";
@@ -66,6 +67,7 @@ export async function completeStudentPayment({
   paymentKey,
   amount,
   plan,
+  cashReceipt,
 }: CompleteStudentPaymentParams) {
   const normalizedPlan = normalizePlan(plan);
   const now = new Date();
@@ -111,6 +113,8 @@ export async function completeStudentPayment({
           plan: normalizedPlan,
           paymentKey: paymentKey ?? null,
           amount: safeStoredAmount,
+          cashReceiptType: cashReceipt?.type ?? null,
+          cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
         },
       });
     } else {
@@ -122,6 +126,8 @@ export async function completeStudentPayment({
           status: "PROCESSING",
           paymentKey: paymentKey ?? null,
           amount: safeStoredAmount,
+          cashReceiptType: cashReceipt?.type ?? null,
+          cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
         },
       });
     }
@@ -165,6 +171,8 @@ export async function completeStudentPayment({
         status: "COMPLETED",
         paymentKey: paymentKey ?? null,
         amount: safeStoredAmount,
+        cashReceiptType: cashReceipt?.type ?? null,
+        cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
         subscriptionId: subscription.id,
         bookingId: booking.id,
         completedAt: new Date(),

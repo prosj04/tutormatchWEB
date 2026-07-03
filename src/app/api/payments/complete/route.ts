@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { planIdFromAmount } from "@/lib/pricing-plans";
 import { completeStudentPayment } from "@/lib/student-payment";
+import type { CashReceipt } from "@/lib/toss-payments";
 
 /** 요금제 결제 완료 후 로그인 학생에게 Chief 매니저 즉시 배정 + 구독 활성화 */
 export async function POST(request: Request) {
@@ -20,7 +21,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Student not found" }, { status: 404 });
   }
 
-  let body: { orderId?: unknown; paymentKey?: unknown; amount?: unknown };
+  let body: {
+    orderId?: unknown;
+    paymentKey?: unknown;
+    amount?: unknown;
+    cashReceipt?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -48,6 +54,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid payment amount" }, { status: 400 });
   }
 
+  // Parse optional cashReceipt
+  let cashReceipt: CashReceipt = null;
+  if (
+    body.cashReceipt &&
+    typeof body.cashReceipt === "object" &&
+    "type" in body.cashReceipt &&
+    "receiptUrl" in body.cashReceipt
+  ) {
+    const cr = body.cashReceipt as Record<string, unknown>;
+    if (typeof cr.type === "string" && typeof cr.receiptUrl === "string") {
+      cashReceipt = {
+        type: cr.type,
+        receiptUrl: cr.receiptUrl,
+      };
+    }
+  }
+
   try {
     const result = await completeStudentPayment({
       studentId: student.id,
@@ -57,6 +80,7 @@ export async function POST(request: Request) {
       paymentKey,
       amount,
       plan,
+      cashReceipt,
     });
 
     return NextResponse.json({
