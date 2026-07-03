@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { LegalToc } from "@/components/concord/LegalToc";
 
 export const metadata: Metadata = {
   title: "이용약관",
@@ -11,6 +12,7 @@ const headingStyle: React.CSSProperties = {
   fontSize: "1.05rem",
   fontWeight: 700,
   marginBottom: 10,
+  scrollMarginTop: "90px",
 };
 const listStyle: React.CSSProperties = {
   paddingLeft: "1.25rem",
@@ -24,7 +26,7 @@ export default function TermsPage() {
       <ConcordPageHead
         eyebrow="Legal"
         title="이용약관"
-        description="서비스 이용에 관한 약관입니다."
+        description="수업 신청부터 환불까지, 이용에 필요한 약속을 투명하게 안내합니다."
       />
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap" style={{ maxWidth: 720 }}>
@@ -39,8 +41,28 @@ export default function TermsPage() {
               규정함을 목적으로 합니다.
             </p>
 
+            <LegalToc
+              items={[
+                { id: "article-1", label: "제1조 (목적)" },
+                { id: "article-2", label: "제2조 (정의)" },
+                { id: "article-3", label: "제3조 (약관의 효력 및 변경)" },
+                { id: "article-4", label: "제4조 (회원가입 및 이용계약 체결)" },
+                { id: "article-5", label: "제5조 (서비스의 내용)" },
+                { id: "article-6", label: "제6조 (이용요금 및 결제)" },
+                { id: "article-7", label: "제7조 (계약 해지 및 환불)" },
+                { id: "article-8", label: "제8조 (수업 취소 및 보강)" },
+                { id: "article-9", label: "제9조 (회사와 선생님의 지위 및 책임 범위)" },
+                { id: "article-10", label: "제10조 (직거래 금지)" },
+                { id: "article-11", label: "제11조 (개인정보의 보호)" },
+                { id: "article-12", label: "제12조 (이용자의 의무)" },
+                { id: "article-13", label: "제13조 (면책)" },
+                { id: "article-14", label: "제14조 (분쟁 해결 및 관할)" },
+                { id: "article-appendix", label: "부칙" },
+              ]}
+            />
+
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제1조 (목적)</h2>
+              <h2 id="article-1" style={headingStyle}>제1조 (목적)</h2>
               <p>
                 본 약관은 회사가 제공하는 학생·학부모와 선생님 간의 과외 매칭,
                 전담 매니저를 통한 상담, 수업 일정·과제·진도 관리 등 관련 부수
@@ -50,7 +72,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제2조 (정의)</h2>
+              <h2 id="article-2" style={headingStyle}>제2조 (정의)</h2>
               <ul style={listStyle}>
                 <li>
                   &ldquo;서비스&rdquo;란 회사가 제공하는 매칭, 상담, 수업 관리,
@@ -81,7 +103,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제3조 (약관의 효력 및 변경)</h2>
+              <h2 id="article-3" style={headingStyle}>제3조 (약관의 효력 및 변경)</h2>
               <ol style={listStyle}>
                 <li>
                   본 약관은 서비스 화면 또는 연결화면에 게시하는 방법으로
@@ -107,7 +129,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제4조 (회원가입 및 이용계약 체결)</h2>
+              <h2 id="article-4" style={headingStyle}>제4조 (회원가입 및 이용계약 체결)</h2>
               <ol style={listStyle}>
                 <li>
                   이용자는 회사가 정한 절차에 따라 필수 정보를 제공하고 본 약관
@@ -137,7 +159,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제5조 (서비스의 내용)</h2>
+              <h2 id="article-5" style={headingStyle}>제5조 (서비스의 내용)</h2>
               <ol style={listStyle}>
                 <li>
                   회사는 다음 각 호의 서비스를 제공합니다.
@@ -163,7 +185,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제6조 (이용요금 및 결제)</h2>
+              <h2 id="article-6" style={headingStyle}>제6조 (이용요금 및 결제)</h2>
               <ol style={listStyle}>
                 <li>
                   서비스 이용요금은 다음과 같습니다.
@@ -191,7 +213,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제7조 (계약 해지 및 환불)</h2>
+              <h2 id="article-7" style={headingStyle}>제7조 (계약 해지 및 환불)</h2>
               <ol style={listStyle}>
                 <li>
                   이용자는 언제든지 서비스 이용을 중단하고 계약을 해지할 수
@@ -214,7 +236,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제8조 (수업 취소 및 보강)</h2>
+              <h2 id="article-8" style={headingStyle}>제8조 (수업 취소 및 보강)</h2>
               <ol style={listStyle}>
                 <li>
                   이용자가 예정된 수업을 취소하거나 일정 변경을 요청하는 경우,
@@ -241,7 +263,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>
+              <h2 id="article-9" style={headingStyle}>
                 제9조 (회사와 선생님의 지위 및 책임 범위)
               </h2>
               <ol style={listStyle}>
@@ -264,7 +286,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제10조 (직거래 금지)</h2>
+              <h2 id="article-10" style={headingStyle}>제10조 (직거래 금지)</h2>
               <ol style={listStyle}>
                 <li>
                   이용자와 선생님은 회사의 플랫폼을 통하지 아니하고 직접
@@ -285,7 +307,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제11조 (개인정보의 보호)</h2>
+              <h2 id="article-11" style={headingStyle}>제11조 (개인정보의 보호)</h2>
               <p>
                 회사는 관련 법령이 정하는 바에 따라 이용자의 개인정보를 보호하기
                 위해 노력합니다. 개인정보의 처리 및 보호에 관한 세부사항은
@@ -298,7 +320,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제12조 (이용자의 의무)</h2>
+              <h2 id="article-12" style={headingStyle}>제12조 (이용자의 의무)</h2>
               <ul style={listStyle}>
                 <li>이용자는 회원가입 시 정확한 정보를 제공하여야 합니다.</li>
                 <li>
@@ -317,7 +339,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제13조 (면책)</h2>
+              <h2 id="article-13" style={headingStyle}>제13조 (면책)</h2>
               <ol style={listStyle}>
                 <li>
                   회사는 천재지변, 전쟁, 정전, 통신망 장애 등 불가항력적 사유로
@@ -335,7 +357,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>제14조 (분쟁 해결 및 관할)</h2>
+              <h2 id="article-14" style={headingStyle}>제14조 (분쟁 해결 및 관할)</h2>
               <ol style={listStyle}>
                 <li>
                   회사와 이용자 간에 발생한 분쟁은 상호 협의를 통해 원만히 해결
@@ -351,7 +373,7 @@ export default function TermsPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>부칙</h2>
+              <h2 id="article-appendix" style={headingStyle}>부칙</h2>
               <p>본 약관은 [시행일: 기재 예정]부터 시행합니다.</p>
               <p style={{ ...mutedStyle, marginTop: 12 }}>
                 사업자 정보 — 상호: 콘코드 / 대표자: [기재 예정] /

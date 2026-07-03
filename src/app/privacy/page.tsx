@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { LegalToc } from "@/components/concord/LegalToc";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침",
@@ -11,6 +12,7 @@ const headingStyle: React.CSSProperties = {
   fontSize: "1.05rem",
   fontWeight: 700,
   marginBottom: 10,
+  scrollMarginTop: "90px",
 };
 const listStyle: React.CSSProperties = {
   paddingLeft: "1.25rem",
@@ -36,7 +38,7 @@ export default function PrivacyPage() {
       <ConcordPageHead
         eyebrow="Legal"
         title="개인정보처리방침"
-        description="수집하는 개인정보의 항목, 수집 목적 및 이용에 관한 방침입니다."
+        description="수집하는 정보와 보관 기간, 보호 절차를 숨김없이 공개합니다."
       />
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap" style={{ maxWidth: 720 }}>
@@ -51,8 +53,25 @@ export default function PrivacyPage() {
               두고 있습니다.
             </p>
 
+            <LegalToc
+              items={[
+                { id: "privacy-1", label: "1. 수집하는 개인정보의 항목" },
+                { id: "privacy-2", label: "2. 개인정보의 수집 방법" },
+                { id: "privacy-3", label: "3. 개인정보의 이용 목적" },
+                { id: "privacy-4", label: "4. 개인정보의 보유 및 이용 기간" },
+                { id: "privacy-5", label: "5. 개인정보 처리 위탁" },
+                { id: "privacy-6", label: "6. 개인정보의 제3자 제공" },
+                { id: "privacy-7", label: "7. 정보주체의 권리 및 행사 방법" },
+                { id: "privacy-8", label: "8. 만 14세 미만 아동의 개인정보" },
+                { id: "privacy-9", label: "9. 개인정보의 안전성 확보 조치" },
+                { id: "privacy-10", label: "10. 쿠키의 운영 및 거부" },
+                { id: "privacy-11", label: "11. 개인정보보호책임자" },
+                { id: "privacy-12", label: "12. 고지의 의무" },
+              ]}
+            />
+
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>1. 수집하는 개인정보의 항목</h2>
+              <h2 id="privacy-1" style={headingStyle}>1. 수집하는 개인정보의 항목</h2>
               <p>회사는 서비스 제공을 위하여 다음의 개인정보를 수집합니다.</p>
               <ul style={listStyle}>
                 <li>
@@ -79,7 +98,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>2. 개인정보의 수집 방법</h2>
+              <h2 id="privacy-2" style={headingStyle}>2. 개인정보의 수집 방법</h2>
               <ul style={listStyle}>
                 <li>홈페이지 및 앱을 통한 회원가입, 상담 신청, 결제 절차</li>
                 <li>대면·유선 상담 과정에서의 정보 제공</li>
@@ -89,7 +108,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>3. 개인정보의 이용 목적</h2>
+              <h2 id="privacy-3" style={headingStyle}>3. 개인정보의 이용 목적</h2>
               <ul style={listStyle}>
                 <li>회원 관리, 본인 확인, 부정 이용 방지</li>
                 <li>매니저 배정, 상담 진행, 선생님 매칭 및 수업 관리</li>
@@ -104,7 +123,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>4. 개인정보의 보유 및 이용 기간</h2>
+              <h2 id="privacy-4" style={headingStyle}>4. 개인정보의 보유 및 이용 기간</h2>
               <p>
                 회원 탈퇴 요청 시 회사는 지체 없이 해당 정보주체의 개인정보를
                 익명화(soft-delete) 처리하여 개인 식별이 불가능한 상태로
@@ -150,7 +169,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>5. 개인정보 처리 위탁</h2>
+              <h2 id="privacy-5" style={headingStyle}>5. 개인정보 처리 위탁</h2>
               <p>
                 회사는 원활한 서비스 제공을 위해 다음과 같이 개인정보 처리 업무를
                 외부에 위탁하고 있으며, 위탁 계약 시 개인정보 보호법 제26조에
@@ -185,7 +204,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>6. 개인정보의 제3자 제공</h2>
+              <h2 id="privacy-6" style={headingStyle}>6. 개인정보의 제3자 제공</h2>
               <p>
                 회사는 원칙적으로 정보주체의 개인정보를 제3자에게 제공하지
                 않습니다. 다만 다음의 경우에는 예외로 합니다.
@@ -200,7 +219,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>7. 정보주체의 권리 및 행사 방법</h2>
+              <h2 id="privacy-7" style={headingStyle}>7. 정보주체의 권리 및 행사 방법</h2>
               <ol style={listStyle}>
                 <li>
                   정보주체는 언제든지 자신의 개인정보에 대하여 다음의 권리를
@@ -235,7 +254,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>8. 만 14세 미만 아동의 개인정보</h2>
+              <h2 id="privacy-8" style={headingStyle}>8. 만 14세 미만 아동의 개인정보</h2>
               <p>
                 회사는 만 14세 미만 아동의 개인정보를 수집·이용·제공하고자
                 하는 경우, 법정대리인의 동의를 받아야 합니다. 회사는 법정대리인의
@@ -246,7 +265,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>9. 개인정보의 안전성 확보 조치</h2>
+              <h2 id="privacy-9" style={headingStyle}>9. 개인정보의 안전성 확보 조치</h2>
               <ul style={listStyle}>
                 <li>
                   <strong>관리적 조치</strong> — 개인정보 취급 직원의 최소화 및
@@ -265,7 +284,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>10. 쿠키의 운영 및 거부</h2>
+              <h2 id="privacy-10" style={headingStyle}>10. 쿠키의 운영 및 거부</h2>
               <p>
                 회사는 서비스 이용 편의를 위해 쿠키를 사용할 수 있습니다.
                 정보주체는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있으나,
@@ -274,7 +293,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>11. 개인정보보호책임자</h2>
+              <h2 id="privacy-11" style={headingStyle}>11. 개인정보보호책임자</h2>
               <p>
                 회사는 정보주체의 개인정보를 보호하고 개인정보와 관련한 불만을
                 처리하기 위하여 아래와 같이 개인정보보호책임자를 지정하고
@@ -306,7 +325,7 @@ export default function PrivacyPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>12. 고지의 의무</h2>
+              <h2 id="privacy-12" style={headingStyle}>12. 고지의 의무</h2>
               <p>
                 본 방침이 변경되는 경우 회사는 변경 사항의 시행 7일 전부터
                 공지사항을 통해 고지합니다. 다만, 정보주체의 권리에 중대한 변경이

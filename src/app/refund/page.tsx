@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { LegalToc } from "@/components/concord/LegalToc";
 
 export const metadata: Metadata = {
   title: "환불정책",
@@ -11,6 +12,7 @@ const headingStyle: React.CSSProperties = {
   fontSize: "1.05rem",
   fontWeight: 700,
   marginBottom: 10,
+  scrollMarginTop: "90px",
 };
 const listStyle: React.CSSProperties = {
   paddingLeft: "1.25rem",
@@ -31,7 +33,7 @@ export default function RefundPage() {
       <ConcordPageHead
         eyebrow="Legal"
         title="환불정책"
-        description="결제 취소 및 환불 처리에 관한 정책입니다."
+        description="첫 수업이 마음에 들지 않으면 100% 환불 — 위약금 없이 약속합니다."
       />
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap" style={{ maxWidth: 720 }}>
@@ -46,8 +48,20 @@ export default function RefundPage() {
               적용됩니다.
             </p>
 
+            <LegalToc
+              items={[
+                { id: "refund-1", label: "1. 첫 수업 100% 환불 보장" },
+                { id: "refund-2", label: "2. 수업 시작 전 환불" },
+                { id: "refund-3", label: "3. 월 중도 해지 및 정산" },
+                { id: "refund-4", label: "4. 환불이 제한되는 경우" },
+                { id: "refund-5", label: "5. 회사 사유로 인한 환불" },
+                { id: "refund-6", label: "6. 환불 절차 및 소요 기간" },
+                { id: "refund-7", label: "7. 문의 채널" },
+              ]}
+            />
+
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>1. 첫 수업 100% 환불 보장</h2>
+              <h2 id="refund-1" style={headingStyle}>1. 첫 수업 100% 환불 보장</h2>
               <div style={calloutStyle}>
                 <p>
                   <strong>
@@ -81,7 +95,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>2. 수업 시작 전 환불</h2>
+              <h2 id="refund-2" style={headingStyle}>2. 수업 시작 전 환불</h2>
               <ul style={listStyle}>
                 <li>
                   결제 후 첫 수업이 진행되기 전까지 이용자는 언제든지 계약을
@@ -95,7 +109,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>3. 월 중도 해지 및 정산</h2>
+              <h2 id="refund-3" style={headingStyle}>3. 월 중도 해지 및 정산</h2>
               <p>
                 이용자는 언제든지 서비스 이용을 중단할 수 있으며, 월 중도
                 해지 시 이미 진행된 수업 회차의 정가를 결제 금액에서 공제한 후
@@ -132,7 +146,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>4. 환불이 제한되는 경우</h2>
+              <h2 id="refund-4" style={headingStyle}>4. 환불이 제한되는 경우</h2>
               <ul style={listStyle}>
                 <li>이미 진행된 수업 회차의 이용료 (첫 수업 100% 환불 보장 대상은 예외)</li>
                 <li>
@@ -151,7 +165,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>5. 회사 사유로 인한 환불</h2>
+              <h2 id="refund-5" style={headingStyle}>5. 회사 사유로 인한 환불</h2>
               <p>
                 다음의 경우, 회사는 이용자가 이용하지 못한 회차에 대해 전액을
                 환불하거나 이용자의 선택에 따라 대체 서비스를 제공합니다.
@@ -164,7 +178,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>6. 환불 절차 및 소요 기간</h2>
+              <h2 id="refund-6" style={headingStyle}>6. 환불 절차 및 소요 기간</h2>
               <ol style={listStyle}>
                 <li>
                   담당 매니저 또는 아래 고객센터로 환불을 요청합니다.
@@ -186,7 +200,7 @@ export default function RefundPage() {
             </section>
 
             <section style={sectionStyle}>
-              <h2 style={headingStyle}>7. 문의 채널</h2>
+              <h2 id="refund-7" style={headingStyle}>7. 문의 채널</h2>
               <ul style={listStyle}>
                 <li>
                   이메일:{" "}

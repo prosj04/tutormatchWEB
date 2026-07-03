@@ -27,7 +27,10 @@ export default function RegisterPage() {
           회원가입/상담 신청 열기
         </button>
         <div className="auth-alt">
-          <Link href="/">홈으로 돌아가기</Link>
+          이미 계정이 있으신가요? <Link href="/login">로그인</Link>
+          <div style={{ marginTop: 10 }}>
+            <Link href="/">홈으로 돌아가기</Link>
+          </div>
         </div>
       </div>
     </div>
