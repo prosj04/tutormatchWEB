@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
@@ -9,22 +9,8 @@ type TeacherApprovalBody = {
   approve?: unknown;
 };
 
-async function requireChiefManagerApprovalAccess() {
-  const authResult = await requireAdmin();
-  if ("error" in authResult) return authResult;
-
-  const role = authResult.session.user.role;
-  if (role !== "CHIEF_MANAGER" && role !== "ADMIN") {
-    return {
-      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-    } as const;
-  }
-
-  return authResult;
-}
-
 export async function GET() {
-  const authResult = await requireChiefManagerApprovalAccess();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const pendingTeachers = await prisma.teacher.findMany({
@@ -52,7 +38,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authResult = await requireChiefManagerApprovalAccess();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   let body: TeacherApprovalBody;

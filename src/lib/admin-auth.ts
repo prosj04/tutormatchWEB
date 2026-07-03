@@ -10,6 +10,21 @@ export async function requireAdmin() {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
+  if (session.user.role !== "ADMIN") {
+    return {
+      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    } as const;
+  }
+  return { session, userId: session.user.id } as const;
+}
+
+export async function requireChiefManagerOrAdmin() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
   if (session.user.role !== "ADMIN" && session.user.role !== "CHIEF_MANAGER") {
     return {
       error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),

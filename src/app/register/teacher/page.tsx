@@ -180,11 +180,22 @@ export default function TeacherRegisterPage() {
         return;
       }
 
+      // 세션 확립 후 서류 업로드 — 인증된 세션의 teacher.id 로 서버가 소유권을 검증하도록 함
+      const loginId = normalizePhoneDigits(phone);
+      const signInResult = await signIn("credentials", {
+        identifier: loginId,
+        password,
+        redirect: false,
+      });
+      if (signInResult?.error) {
+        setSuccess(true);
+        return;
+      }
+
       const uploadDocument = async (file: File, type: "resume" | "document"): Promise<string> => {
         const fd = new FormData();
         fd.append("file", file);
         fd.append("type", type);
-        fd.append("teacherId", registerData.teacherId!);
         const res = await fetch("/api/register/teacher/documents", { method: "POST", body: fd });
         if (!res.ok) throw new Error("Document upload failed");
         const data = (await res.json()) as { path: string };
@@ -203,23 +214,12 @@ export default function TeacherRegisterPage() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            teacherId: registerData.teacherId,
             resumeUrls,
             documentUrls,
           }),
         });
       }
 
-      const loginId = normalizePhoneDigits(phone);
-      const signInResult = await signIn("credentials", {
-        identifier: loginId,
-        password,
-        redirect: false,
-      });
-      if (signInResult?.error) {
-        setSuccess(true);
-        return;
-      }
       router.push("/teacher-portal/dashboard");
       return;
     } catch {

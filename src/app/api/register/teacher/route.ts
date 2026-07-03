@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import {
   normalizePhoneDigits,
@@ -145,8 +146,23 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (session.user.role !== "TEACHER") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const teacher = await prisma.teacher.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+  if (!teacher) {
+    return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+  }
+
   let body: {
-    teacherId?: unknown;
     resumeUrls?: unknown;
     documentUrls?: unknown;
   };
@@ -154,10 +170,6 @@ export async function PATCH(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-
-  if (typeof body.teacherId !== "string") {
-    return NextResponse.json({ error: "Invalid teacher id" }, { status: 400 });
   }
 
   const resumeUrls = Array.isArray(body.resumeUrls)
@@ -168,9 +180,9 @@ export async function PATCH(request: Request) {
     : [];
 
   await prisma.teacherProfile.upsert({
-    where: { teacherId: body.teacherId },
+    where: { teacherId: teacher.id },
     create: {
-      teacherId: body.teacherId,
+      teacherId: teacher.id,
       resumeUrls: JSON.stringify(resumeUrls),
       documentUrls: JSON.stringify(documentUrls),
     },
