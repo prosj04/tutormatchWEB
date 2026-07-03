@@ -1,7 +1,7 @@
 # CLAUDE_HANDOFF.md
 
 > **Concord Private Tutoring** (`premium-tutoring`) — 이 문서만 읽고 바로 개발에 참여할 수 있도록 작성된 핸드오프입니다.  
-> 마지막 갱신: **2026-07-03 14:30 KST** · 브랜치 `main` · 원격 `https://github.com/prosj04/tutormatchWEB.git`
+> 마지막 갱신: **2026-07-03 15:10 KST** · 브랜치 `main` · 원격 `https://github.com/prosj04/tutormatchWEB.git`
 
 ---
 
@@ -61,12 +61,12 @@
 
 ### 0. 현재 작업 상태 요약 (2026-07-03)
 
-- 로컬 `main`은 `origin/main`보다 10커밋 앞서 있음. 원격에는 아직 반영되지 않았다.
-- 현재 워크트리에는 코드 변경이 남아 있다: `prisma/schema.prisma`, `src/lib/homework-distribution.ts`, `src/app/api/teacher/homework-templates/*`, `src/app/api/teacher/students/[id]/first-lesson/route.ts`, `src/app/api/mobile/me/route.ts`, `prisma/migrations/20260703031301_phase2_core_loop/migration.sql`.
-- 이 묶음은 "첫 수업 설정 → 자동 숙제 분배 → 모바일 journey 갱신"으로 이어지는 phase2 core loop 보강이다.
+- 로컬 `main`은 `origin/main`보다 12커밋 앞서 있음. 원격에는 아직 반영되지 않았다.
+- 워크트리는 현재 clean 상태다. phase2 core loop 변경은 `feat(homework): align templates with core loop schema` 커밋(`a4408b5`)에 반영됐다.
+- 이 묶음은 "첫 수업 설정 → 자동 숙제 분배 → 템플릿 CRUD 정합화 → 모바일 journey 갱신"으로 이어지는 phase2 core loop 보강이다.
 - 배포 운영을 위해 `CRON_SECRET`은 Vercel Production env / GitHub Actions secret에 설정 완료했다.
-- 다만 `.github/workflows/hourly-alerts.yml`은 현재 GitHub PAT에 `workflow` scope가 없어 원격 push가 막힌다. 이 파일은 다음 코딩 세션에서 scope 보강 또는 SSH/대체 인증으로 처리해야 한다.
-- 지금 당장 문서화가 필요한 내용은 아래 15장 운영 메모와 22장 후속 플로우에 반영해 둔다.
+- 다만 `.github/workflows/hourly-alerts.yml`이 포함된 브랜치 push는 현재 GitHub PAT에 `workflow` scope가 없어 막힐 가능성이 높다. 다음 세션에서는 scope 보강 또는 SSH/대체 인증이 필요하다.
+- 다음 코딩 세션의 1순위는 원격 push 경로 확보, 2순위는 prod smoke test, 3순위는 운영 cron/secret 최종 확인이다.
 
 ---
 
