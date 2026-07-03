@@ -1,6 +1,7 @@
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { ReviewByLine, type ReviewCardItem } from "@/lib/reviews-html-fallback";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -64,6 +65,12 @@ export function ReviewsPageContent({
           </div>
         </div>
       </section>
+
+      <ConcordSubpageCta
+        title="우리 아이도 같은 변화를 경험할 수 있어요"
+        description="무료 상담으로 학생에게 딱 맞는 학습 플랜을 확인해 보세요."
+        source="reviews_page_cta"
+      />
     </main>
   );
 }

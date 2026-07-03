@@ -101,6 +101,9 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
               {items.map((item, index) => {
                 const isRec = index === 1 || item.plan.sessions === 8;
                 const priceDigits = (item.price ?? "").replace(/[^\d]/g, "");
+                const priceFormatted = priceDigits
+                  ? priceDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  : "";
                 const tierLabel = tier === "middle" ? "중등" : "고등";
                 return (
                   <ConcordReveal
@@ -114,7 +117,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                     </div>
                     <div className="pname">{item.title ?? item.plan.title}</div>
                     <div className="price">
-                      {priceDigits}
+                      {priceFormatted}
                       <small>원 / 월</small>
                     </div>
                     <div className="punit">{item.subtitle ?? item.plan.subtitle}</div>

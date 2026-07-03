@@ -7,6 +7,7 @@ import { useState } from "react";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
@@ -61,7 +62,7 @@ function ConcordTutorCard({ tutor }: { tutor: TutorCardData }) {
       <Link href={`/tutors/${tutor.id}`} className="tutor-media" style={tutor.photoUrl ? { position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" } : undefined}>
         <span className="tutor-tag">{tag}</span>
         {tutor.photoUrl ? (
-          <Image src={tutor.photoUrl} alt="" fill className="object-cover" sizes="(max-width:960px) 50vw, 33vw" />
+          <Image src={tutor.photoUrl} alt={`${tutor.name} 선생님 프로필 사진`} fill className="object-cover" sizes="(max-width:960px) 50vw, 33vw" />
         ) : (
           <span className="ph">강사 사진</span>
         )}
@@ -154,6 +155,12 @@ export function TutorsListing({
           </div>
         </div>
       </section>
+
+      <ConcordSubpageCta
+        title="원하는 선생님, 무료 상담으로 배정받으세요"
+        description="학년·과목·목표에 맞춰 매니저가 최적의 강사진을 추천해 드립니다."
+        source="tutors_page_cta"
+      />
     </main>
   );
 }

@@ -31,18 +31,33 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
               <Link href="/faq">FAQ</Link>
               <ConsultationApplyButton className="foot-consult-link">상담 신청</ConsultationApplyButton>
             </div>
-            <div className="foot-col">
-              <h4>SNS</h4>
-              <a href={get("sns_instagram", "#")} target="_blank" rel="noopener noreferrer">
-                Instagram
-              </a>
-              <a href={get("sns_youtube", "#")} target="_blank" rel="noopener noreferrer">
-                YouTube
-              </a>
-              <a href={get("sns_blog", "#")} target="_blank" rel="noopener noreferrer">
-                Blog
-              </a>
-            </div>
+            {(() => {
+              const isValidSnsUrl = (raw: string) => {
+                const v = raw.trim();
+                return v.length > 0 && v !== "#" && /^https?:\/\//i.test(v);
+              };
+              const snsLinks = [
+                { label: "Instagram", href: get("sns_instagram", "") },
+                { label: "YouTube", href: get("sns_youtube", "") },
+                { label: "Blog", href: get("sns_blog", "") },
+              ].filter((link) => isValidSnsUrl(link.href));
+              if (snsLinks.length === 0) return null;
+              return (
+                <div className="foot-col">
+                  <h4>SNS</h4>
+                  {snsLinks.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
         <div className="foot-meta">

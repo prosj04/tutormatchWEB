@@ -31,12 +31,33 @@ export default async function FaqPage({ searchParams }: { searchParams?: SearchP
     notFound();
   }
 
+  const faqItems = faqs.length > 0 ? faqs : [...FAQ_HTML_FALLBACK];
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+  const faqJsonLdString = JSON.stringify(faqJsonLd).replace(/</g, "\\u003c");
+
   const page = (
-    <FaqPageContent
-      faqs={faqs.length > 0 ? faqs : [...FAQ_HTML_FALLBACK]}
-      siteContent={siteContent}
-      isEditMode={isEditMode}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: faqJsonLdString }}
+      />
+      <FaqPageContent
+        faqs={faqItems}
+        siteContent={siteContent}
+        isEditMode={isEditMode}
+      />
+    </>
   );
   timer.end({ faqCount: faqs.length });
   return page;
