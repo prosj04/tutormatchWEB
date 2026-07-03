@@ -1333,6 +1333,14 @@ npm run dev
 - ✅ FI-1: 월간 리포트 요약 AI 생성(ai-answer 인프라 재사용, 미설정/실패 시 기존 템플릿 폴백)
 - 🟡 Phase 3 잔여(의사결정 대기): #17 번들(할인율), #19 dunning+빌링키(Q2), 상담 이력화·Prisma enum 전환(대규모 별도 세션), QnA 통합(P2)
 
+### 25.1e Phase 3 마무리 + Phase 4 세션 완료분 (2026-07-03 야간)
+
+- ✅ 잔여 소품 7종: 보호자 동의 수집(BR-8, ConsultationSignupForm+`Student.guardianConsentAt`), 선생 수업 취소 UI(예정 수업 목록+취소 버튼), 학생 결제 내역+현금영수증 링크(/payments), 일시정지 안내 문구, SATISFACTION_LOW_SCORE 전용 타입, PAUSED 자동 재개 cron, 모바일 journey MATCH_PENDING_ACCEPT 반영
+- ✅ **상담 이력화** (`20260703140210_consultation_history`): @unique 해제, open-booking(WAITING/ASSIGNED 1개) 앱 레벨 강제, `src/lib/consultation-current.ts` 헬퍼, 재상담 = 새 행. **재결제 시 활성 매칭 있으면 새 상담 생성 안 함** (student-enrollment.ts 가드)
+- ✅ **Prisma enum 전환** (`20260703141527_status_enums`): UserRole·ConsultationStatus·LessonStatus·SubscriptionStatus·MatchStatus·PaymentStatus — Prisma 자동 생성이 DROP/ADD(데이터 파괴)여서 **수기 in-place 캐스트 SQL**로 대체
+- ✅ Phase 4: 매니저별 성과 지표(/admin/metrics — 상담→결제 전환율·매칭 수락률·수락 중앙값·케어 30일; 정의는 route.ts 상단 주석), **감사로그**(BR-15 — AuditLog 모델, 계정삭제/환불/역할변경/일시정지 기록, /admin/audit-logs)
+- ⚠️ **DB 교체 발생**: 세션 중 DATABASE_URL이 새 Supabase 인스턴스(pgbouncer 6543 + DIRECT_URL 5432)로 변경되어 있었음. `_prisma_migrations` 부재 + 데이터 0행 + 스키마는 push됨 상태 → **22개 마이그레이션 전체 베이스라인 처리 완료**(`migrate resolve --applied`), `migrate diff` 무차이 확인. **이전 DB의 데이터는 이관되지 않음 — 테스트 계정/시드 재생성 필요**
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
@@ -1344,6 +1352,37 @@ npm run dev
 ### 25.3 열린 결정사항
 
 §23 미결 질문 중 Q1(변호사 검토 — 사용자 진행 중), Q4(사업자 정보 — 미확보, 상호만 "콘코드" 확정), Q2·Q3·Q6 미결. Q5는 해소됨.
+
+---
+
+## 26. 이연 항목 스펙 (다른 AI 이어받기용, 2026-07-03 기준)
+
+> 각 항목은 이 문서만 읽고 바로 착수 가능하도록 작성. 착수 전 `git log -10`으로 중복 작업 여부 확인할 것.
+
+### 26.1 대기 중 (오너 의사결정 필요 — 결정 전 착수 금지)
+
+| # | 항목 | 필요한 결정 | 결정 후 작업 요약 |
+|---|------|------------|------------------|
+| Q2 | 빌링키 자동결제 + #19 dunning | 자동결제 도입 여부 | Toss 빌링키 발급 플로우(카드 등록), 만료 시 자동 승인 cron, 실패 시 PAST_DUE→재시도(D+1/D+3)→D+7 정지. `SubscriptionStatus.PAST_DUE` enum 값은 이미 존재 |
+| #17 | 번들 할인 | 2과목/형제 할인율 | `pricing-plans.ts` 할인 규칙 + `planIdFromAmount` 역매핑 갱신 — ⚠️ `/api/webhooks/toss`의 금액 검증과 반드시 정합 |
+| Q3/#3 | 선생 정산·리텐션 | 정산 구조(월급/수수료) | Lesson COMPLETED 카운트 기반 정산 리포트(자동 전이 구현됨), Teacher 등급 필드 |
+| #29 | 웹/앱 역할 | 학부모 앱 여부 | 방향: 웹=마케팅+전 기능, 앱=결제·학습 이중 구현. Phase 4 앱 심사 전 결정 |
+
+### 26.2 외부 절차 대기 (오너/외부 액션 후 코드 작업 소량)
+
+1. **카카오 비즈니스 채널** 개설 → (a) #22 알림톡: 코드 완성됨, `SOLAPI_KAKAO_PF_ID`+`SOLAPI_KAKAO_TEMPLATE_*` env 설정+템플릿 심사만 필요 (b) #14 카카오 로그인: next-auth KakaoProvider 추가+`User.provider/providerId` 마이그레이션+계정 연결 플로우 (c) H5 채널 플로팅 버튼
+2. **GitHub PAT `workflow` scope**(또는 SSH deploy key) → hourly 알림 복원: 삭제된 워크플로는 `git show cd35b76 -- .github/workflows/hourly-alerts.yml`로 복구 가능. CRON_SECRET은 Vercel/GH에 설정돼 있음(다른 세션 기록). 대안: Vercel Pro cron
+3. **법적**: 변호사 검토 반영 → terms/privacy/refund의 `[기재 예정]`(대표자명·사업자번호·통신판매업신고·주소·시행일) + 푸터 CMS `company_*` 키 + 카카오/토스 심사 정보
+4. **Toss 대시보드**: 웹훅 URL 등록 `https://tutormatch-web.vercel.app/api/webhooks/toss`, 현금영수증 자동발급 설정
+5. **Supabase 대시보드**: 백업/PITR 활성화(#30), 새 인스턴스 확인
+
+### 26.3 코드 작업 스펙 (결정 불필요, 바로 착수 가능)
+
+1. **QnA 테이블 통합 (P2, §19 문제 3)** — `Question`(웹, 날짜 연결형)과 `QuestionMessage`(앱, 채팅형)가 이원화. 현재는 알림 브릿지로 봉합됨. 통합안: `QuestionThread`(studentId, subject?, createdAt) + `QuestionMessage`(threadId, sender, body, imageUrl, aiAnswer 플래그)로 슈퍼셋 모델 설계 → 웹 UI를 스레드 뷰로 전환 → 기존 `Question` 행을 스레드+메시지 2행으로 백필하는 데이터 마이그레이션 → `run-alert-checks.ts`의 두 체크를 하나로 통합. 규모: 상담 이력화급. 마이그레이션은 create-only 후 검수 필수
+2. **스토리지 보안 (BR-14 잔여)** — `src/lib/supabase-client.ts`가 브라우저에서 anon 키로 `question-images` 버킷에 직접 업로드. 앱이 NextAuth 기반이라 Supabase RLS로 사용자 구분 불가 → **서버 경유로 전환**: `POST /api/student/question-images`(세션 인증, 파일 크기/타입 검증, `supabase-admin`으로 업로드) 신설, 클라이언트는 이 API 호출로 교체, 이후 버킷의 anon INSERT 정책 제거(Supabase 대시보드). teacher documents/photos·CMS 업로드는 이미 서버 라우트 경유 — anon 키 노출 지점은 question-images뿐
+3. **새 DB 시드** — DB 교체로 데이터 0행. 테스트 계정(ADMIN/CHIEF_MANAGER/MANAGER/TEACHER/STUDENT 각 1) 생성 스크립트 `scripts/`에 추가 권장. CHIEF_MANAGER_EMAIL env와 정합 유지
+4. **프로덕션 스모크 테스트** — 배포 후: 회원가입(보호자 동의)→상담 신청→매니저 배정→상담 리포트→매칭(matchReason)→학생 수락→첫 수업 설정→숙제 자동 분배→수업 자동 완료→월간 리포트 순으로 1회 관통. 결제는 Toss 테스트 키로 confirm+웹훅 경로 확인
+5. **소소한 부채**: `Lesson.cancelledBy`/`StudyPlan.source`/`ManagerCareLog.type`/`SatisfactionCheckin.trigger` enum 전환(2차), 매니저 상담 목록의 이력 표시 UX(현재 최소 변경으로 최신/open 위주), 어드민 지표의 매니저 재배정 시 중복 귀속(route.ts 주석 참조), `docs/DESIGN_IMPROVEMENTS.md`(타 세션 산출물) 내용 검토·반영 여부 결정
 
 ---
 
