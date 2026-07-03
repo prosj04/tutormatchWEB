@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getEffectivePhotoUrl } from "@/lib/profile-gender";
-import { uploadTeacherPhoto } from "@/lib/supabase-client";
 import {
   emptyCareer,
   emptyCertificate,
@@ -120,7 +119,12 @@ export function TeacherProfileEditor({
     try {
       let photoUrl = form.photoUrl;
       if (pendingPhoto) {
-        photoUrl = await uploadTeacherPhoto(teacherId, pendingPhoto);
+        const fd = new FormData();
+        fd.append("file", pendingPhoto);
+        const photoRes = await fetch("/api/teacher/profile/photo", { method: "POST", body: fd });
+        if (!photoRes.ok) throw new Error("사진 업로드에 실패했습니다.");
+        const photoData = (await photoRes.json()) as { photoUrl: string };
+        photoUrl = photoData.photoUrl;
       } else if (photoUrl?.startsWith("blob:")) {
         photoUrl = initialForm.photoUrl;
       }
