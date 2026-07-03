@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getV2PlanById, PRICING_PLANS } from "@/lib/pricing-plans";
 import { formatKRW } from "@/lib/format-won";
 import { PaymentsPageHeader } from "@/components/payments/PaymentsPageHeader";
+import { BillingManageSection } from "@/components/payments/BillingManageSection";
 
 export const metadata = { title: "결제·구독 내역" };
 
@@ -32,7 +33,11 @@ function formatDate(date: Date | null) {
   return date.toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
 }
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams?: { billing?: string | string[] };
+}) {
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.role !== "STUDENT") redirect("/teacher-portal/dashboard");
@@ -43,7 +48,12 @@ export default async function PaymentsPage() {
   });
   if (!student) redirect("/?signup=1");
 
-  const [subscriptions, wallet, paymentCompletions] = await Promise.all([
+  const rawBilling = searchParams?.billing;
+  const billingParam = Array.isArray(rawBilling)
+    ? rawBilling[0] ?? null
+    : rawBilling ?? null;
+
+  const [subscriptions, wallet, paymentCompletions, billingProfile] = await Promise.all([
     prisma.subscription.findMany({
       where: { studentId: student.id },
       orderBy: { createdAt: "desc" },
@@ -60,6 +70,14 @@ export default async function PaymentsPage() {
       },
       orderBy: { createdAt: "desc" },
       take: 20,
+    }),
+    prisma.billingProfile.findUnique({
+      where: { studentId: student.id },
+      select: {
+        cardCompany: true,
+        cardNumberMasked: true,
+        autoRenew: true,
+      },
     }),
   ]);
 
@@ -153,6 +171,13 @@ export default async function PaymentsPage() {
             </div>
           )}
         </section>
+
+        {/* 자동결제 관리 */}
+        <BillingManageSection
+          customerKey={`student-${student.id}`}
+          profile={billingProfile}
+          billingParam={billingParam}
+        />
 
         {/* 구독 이력 */}
         {subscriptions.length > 0 && (

@@ -30,7 +30,11 @@ export type NotificationType =
   | "SUBSCRIPTION_EXPIRED_SOON"
   | "SUBSCRIPTION_EXPIRED"
   | "SATISFACTION_CHECKIN_REQUEST"
-  | "SATISFACTION_LOW_SCORE";
+  | "SATISFACTION_LOW_SCORE"
+  // Billing / auto-renewal
+  | "SUBSCRIPTION_RENEWED"
+  | "SUBSCRIPTION_RENEWAL_FAILED"
+  | "SUBSCRIPTION_AUTO_CANCELLED";
 
 /** 외부 SMS를 보낼 알림 타입 */
 const SMS_NOTIFICATION_TYPES = new Set<string>([
@@ -44,6 +48,9 @@ const SMS_NOTIFICATION_TYPES = new Set<string>([
   "SUBSCRIPTION_EXPIRED_SOON",
   "SUBSCRIPTION_EXPIRED",
   "SATISFACTION_CHECKIN_REQUEST",
+  "SUBSCRIPTION_RENEWED",
+  "SUBSCRIPTION_RENEWAL_FAILED",
+  "SUBSCRIPTION_AUTO_CANCELLED",
 ]);
 
 /** Expo 푸시를 보낼 알림 타입 (앱 등록 디바이스) */
@@ -168,6 +175,9 @@ export function getNotificationIcon(type: string): string {
     case "SUBSCRIPTION_EXPIRY_SOON":
     case "SUBSCRIPTION_EXPIRED_SOON":
     case "SUBSCRIPTION_EXPIRED":
+    case "SUBSCRIPTION_RENEWED":
+    case "SUBSCRIPTION_RENEWAL_FAILED":
+    case "SUBSCRIPTION_AUTO_CANCELLED":
       return "💳";
     case "SATISFACTION_CHECKIN_REQUEST":
       return "😊";
@@ -230,6 +240,10 @@ export function resolveNotificationHref(
     case "SUBSCRIPTION_EXPIRED_SOON":
     case "SUBSCRIPTION_EXPIRED":
       return "/pricing";
+    case "SUBSCRIPTION_RENEWED":
+    case "SUBSCRIPTION_RENEWAL_FAILED":
+    case "SUBSCRIPTION_AUTO_CANCELLED":
+      return "/payments";
     case "SATISFACTION_CHECKIN_REQUEST":
       return "/dashboard";
     case "SATISFACTION_LOW_SCORE":

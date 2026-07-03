@@ -96,6 +96,7 @@ model Student {
   onboardingSurvey    OnboardingSurvey?
   satisfactionCheckins SatisfactionCheckin[]
   guardianConsentAt   DateTime?
+  billingProfile      BillingProfile?
   deletedAt           DateTime?
 }
 
@@ -440,6 +441,21 @@ model PaymentCompletion {
 
   @@index([studentId])
   @@index([studentId, status])
+}
+
+/// Toss 빌링키 프로필 (자동결제 카드 등록). Subscription 이력을 불변으로 유지하기
+/// 위해 별도 테이블로 분리한다. customerKey는 `student-{studentId}` 규약.
+model BillingProfile {
+  id                String   @id @default(uuid())
+  studentId         String   @unique
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  customerKey       String   @unique
+  billingKey        String
+  cardCompany       String?
+  cardNumberMasked  String?
+  autoRenew         Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
 }
 
 /// AI 질답 토큰 지갑 (월별 사용/할당량)

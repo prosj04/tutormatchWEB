@@ -3,6 +3,8 @@ import { formatDateKey } from "@/lib/study-plan-dates";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
 import { createNotification } from "@/lib/notifications";
+import { getV2PlanById } from "@/lib/pricing-plans";
+import { chargeBillingKey } from "@/lib/toss-payments";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -68,6 +70,14 @@ export async function runAlertChecks() {
   let consultationRemindersChecked = 0;
   let satisfactionCheckinsCreated = 0;
   let subscriptionsAutoResumed = 0;
+  let renewalChargesAttempted = 0;
+  let renewalChargesSucceeded = 0;
+  let renewalChargesFailed = 0;
+  let renewalSkippedPaused = 0;
+  let renewalSkippedNoBilling = 0;
+  let renewalSkippedAutoRenewOff = 0;
+  let renewalSkippedLegacyPlan = 0;
+  let subscriptionsAutoCancelled = 0;
 
   const now = new Date();
   const staleBefore = new Date(Date.now() - DAY_MS);
@@ -1470,6 +1480,274 @@ export async function runAlertChecks() {
     }
   }
 
+  // ── AUTO-RENEWAL. Toss 빌링키 정기결제 + dunning ────────────────────────────
+  //
+  // Rule: charge at/after periodEnd. periodEnd yyyymmdd(UTC)로 orderId를 고정하여
+  // D+0/D+1/D+3 재시도가 모두 동일 orderId를 공유 → PaymentCompletion(unique orderId)로
+  // idempotency 보장. Toss도 동일 orderId 중복 캡처를 거절한다.
+  //
+  // Dunning day-gating (hourly cron 안전):
+  //   d = floor((now - periodEnd) / DAY_MS)  — d>=0 상태에서만 청구.
+  //   ACTIVE 정상 만료 → d ∈ {0} 에서 최초 시도.
+  //   PAST_DUE (실패 이력) → d ∈ {1, 3} 에서만 추가 시도.
+  //   d >= 7 & PAST_DUE → 자동 CANCELLED + 최종 안내.
+  //
+  // Race protection: 같은 orderId의 PaymentCompletion.updatedAt이 최근 20h 이내면 스킵
+  //   (동일 dunning 버킷 안에서 이중 시도 방지).
+  //
+  // New period model: completeStudentPayment는 ACTIVE 구독 있으면 UPDATE, 없으면 CREATE.
+  //   이력 보존을 위해 청구 성공 직전 기존 ACTIVE를 CANCELLED로 마감(periodEnd 원본 유지) →
+  //   completeStudentPayment가 새 Subscription row를 생성하도록 유도한다.
+  //
+  // Never charge: autoRenew=false, PAUSED, BillingProfile 부재, legacy plan(v2 아님).
+  //   이 경우 SUBSCRIPTION_EXPIRY_SOON 알림이 계속 수동 결제를 유도한다.
+
+  const renewalCandidates = await prisma.subscription.findMany({
+    where: {
+      status: { in: ["ACTIVE", "PAST_DUE"] },
+      // Charge when now >= periodEnd (inclusive boundary).
+      periodEnd: { not: null, lte: now },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      plan: true,
+      status: true,
+      periodEnd: true,
+      student: {
+        select: {
+          userId: true,
+          name: true,
+          grade: true,
+          billingProfile: {
+            select: {
+              customerKey: true,
+              billingKey: true,
+              autoRenew: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  for (const sub of renewalCandidates) {
+    if (!sub.periodEnd) continue;
+
+    const daysPast = Math.floor(
+      (now.getTime() - sub.periodEnd.getTime()) / DAY_MS,
+    );
+    if (daysPast < 0) continue;
+
+    // Final cancellation on D+7 for dunning-failed subscriptions.
+    if (sub.status === "PAST_DUE" && daysPast >= 7) {
+      await prisma.subscription.update({
+        where: { id: sub.id },
+        data: { status: "CANCELLED" },
+      });
+      subscriptionsAutoCancelled++;
+
+      // Final notice — hard dedup by relatedId including a stable suffix.
+      const relatedId = `${sub.id}:auto-cancelled`;
+      const existing = await prisma.notification.findFirst({
+        where: {
+          userId: sub.student.userId,
+          type: "SUBSCRIPTION_AUTO_CANCELLED",
+          relatedId,
+        },
+        select: { id: true },
+      });
+      if (!existing) {
+        await createNotification({
+          userId: sub.student.userId,
+          type: "SUBSCRIPTION_AUTO_CANCELLED",
+          title: "구독 자동 해지",
+          body: "자동결제가 계속 실패하여 구독이 해지되었습니다. 계속 이용하시려면 결제 페이지에서 다시 결제해 주세요.",
+          relatedId,
+        });
+        notificationsCreated++;
+      }
+      continue;
+    }
+
+    // Skip PAUSED entirely (defense in depth — findMany already excludes).
+    if ((sub.status as string) === "PAUSED") {
+      renewalSkippedPaused++;
+      continue;
+    }
+
+    const billing = sub.student.billingProfile;
+    if (!billing) {
+      renewalSkippedNoBilling++;
+      continue;
+    }
+    if (!billing.autoRenew) {
+      renewalSkippedAutoRenewOff++;
+      continue;
+    }
+
+    const v2Plan = getV2PlanById(sub.plan);
+    if (!v2Plan) {
+      // Legacy plan — cannot resolve authoritative amount. Skip; expiry alerts handle it.
+      renewalSkippedLegacyPlan++;
+      continue;
+    }
+
+    // Dunning day-gate: {0, 1, 3} only. Other days between attempts are silent.
+    const chargeableToday =
+      (sub.status === "ACTIVE" && daysPast === 0) ||
+      (sub.status === "PAST_DUE" && (daysPast === 1 || daysPast === 3));
+    if (!chargeableToday) continue;
+
+    // Stable orderId across all dunning attempts for this period.
+    const yyyymmdd = `${sub.periodEnd.getUTCFullYear()}${String(
+      sub.periodEnd.getUTCMonth() + 1,
+    ).padStart(2, "0")}${String(sub.periodEnd.getUTCDate()).padStart(2, "0")}`;
+    const orderId = `renewal-${sub.id}-${yyyymmdd}`;
+
+    // Idempotency: existing COMPLETED means already renewed for this period.
+    // Recent attempt (< 20h) means another cron in the same bucket already tried.
+    const existingCompletion = await prisma.paymentCompletion.findUnique({
+      where: { orderId },
+      select: { status: true, updatedAt: true },
+    });
+    if (existingCompletion?.status === "COMPLETED") continue;
+    if (existingCompletion?.status === "REFUNDED") continue;
+    if (
+      existingCompletion &&
+      now.getTime() - existingCompletion.updatedAt.getTime() < 20 * 60 * 60 * 1000
+    ) {
+      continue;
+    }
+
+    renewalChargesAttempted++;
+
+    const orderName = `Concord ${v2Plan.title} 자동결제`;
+
+    try {
+      const charged = await chargeBillingKey({
+        billingKey: billing.billingKey,
+        customerKey: billing.customerKey,
+        amount: v2Plan.priceKrw,
+        orderId,
+        orderName,
+        customerName: sub.student.name,
+      });
+
+      // Preserve immutable history + issue a new Subscription period. We do NOT
+      // reuse completeStudentPayment here because it re-runs confirmTossPayment
+      // which requires a widget-issued paymentKey — renewal charges instead go
+      // through chargeBillingKey and return their own paymentKey directly.
+      const renewalPeriodStart = new Date();
+      const renewalPeriodEnd = new Date(renewalPeriodStart);
+      renewalPeriodEnd.setMonth(renewalPeriodEnd.getMonth() + 1);
+
+      await prisma.$transaction(async (tx) => {
+        // Close the current ACTIVE/PAST_DUE row keeping its ORIGINAL periodEnd
+        // (do not mutate historical boundaries).
+        await tx.subscription.update({
+          where: { id: sub.id },
+          data: { status: "CANCELLED" },
+        });
+
+        const newSub = await tx.subscription.create({
+          data: {
+            studentId: sub.studentId,
+            plan: sub.plan,
+            status: "ACTIVE",
+            periodStart: renewalPeriodStart,
+            periodEnd: renewalPeriodEnd,
+          },
+        });
+
+        await tx.paymentCompletion.upsert({
+          where: { orderId },
+          create: {
+            orderId,
+            studentId: sub.studentId,
+            plan: sub.plan,
+            status: "COMPLETED",
+            paymentKey: charged.paymentKey || null,
+            amount: charged.amount,
+            subscriptionId: newSub.id,
+            completedAt: new Date(),
+          },
+          update: {
+            status: "COMPLETED",
+            paymentKey: charged.paymentKey || null,
+            amount: charged.amount,
+            subscriptionId: newSub.id,
+            completedAt: new Date(),
+          },
+        });
+      });
+
+      renewalChargesSucceeded++;
+
+      await createNotification({
+        userId: sub.student.userId,
+        type: "SUBSCRIPTION_RENEWED",
+        title: "자동결제 완료",
+        body: `${v2Plan.title} 플랜이 자동 결제되어 다음 달 이용이 갱신되었습니다.`,
+        relatedId: `${sub.id}:${yyyymmdd}`,
+      });
+      notificationsCreated++;
+    } catch (chargeError) {
+      renewalChargesFailed++;
+      console.error("[renewal] chargeBillingKey failed:", chargeError);
+
+      // Mark PaymentCompletion FAILED (create or update) so next dunning bucket
+      // can detect prior failure and gate correctly.
+      const failedMsg =
+        chargeError instanceof Error ? chargeError.message : String(chargeError);
+      await prisma.paymentCompletion.upsert({
+        where: { orderId },
+        create: {
+          orderId,
+          studentId: sub.studentId,
+          plan: sub.plan,
+          status: "FAILED",
+          amount: v2Plan.priceKrw,
+        },
+        update: {
+          status: "FAILED",
+          amount: v2Plan.priceKrw,
+          plan: sub.plan,
+        },
+      });
+      void failedMsg;
+
+      // Transition Subscription → PAST_DUE (from ACTIVE) so dunning gate applies.
+      if (sub.status === "ACTIVE") {
+        await prisma.subscription.update({
+          where: { id: sub.id },
+          data: { status: "PAST_DUE" },
+        });
+      }
+
+      // Notify student. Dedup by dunning-attempt bucket.
+      const notifRelatedId = `${sub.id}:${yyyymmdd}:d${daysPast}`;
+      const existingFailNotif = await prisma.notification.findFirst({
+        where: {
+          userId: sub.student.userId,
+          type: "SUBSCRIPTION_RENEWAL_FAILED",
+          relatedId: notifRelatedId,
+        },
+        select: { id: true },
+      });
+      if (!existingFailNotif) {
+        await createNotification({
+          userId: sub.student.userId,
+          type: "SUBSCRIPTION_RENEWAL_FAILED",
+          title: "자동결제 실패 안내",
+          body: "등록된 카드로 결제가 승인되지 않았습니다. 결제 페이지에서 카드를 확인해 주세요.",
+          relatedId: notifRelatedId,
+        });
+        notificationsCreated++;
+      }
+    }
+  }
+
   // ── NEW-C. Lesson auto-complete (60-min buffer) ────────────────────────────
   //
   // Lessons status "SCHEDULED" with startAt + durationMin + 60min in the past
@@ -1516,5 +1794,13 @@ export async function runAlertChecks() {
     consultationRemindersChecked,
     satisfactionCheckinsCreated,
     subscriptionsAutoResumed,
+    renewalChargesAttempted,
+    renewalChargesSucceeded,
+    renewalChargesFailed,
+    renewalSkippedPaused,
+    renewalSkippedNoBilling,
+    renewalSkippedAutoRenewOff,
+    renewalSkippedLegacyPlan,
+    subscriptionsAutoCancelled,
   };
 }
