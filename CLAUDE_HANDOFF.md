@@ -65,8 +65,8 @@
 - 워크트리는 현재 clean 상태다. phase2 core loop 변경은 `feat(homework): align templates with core loop schema` 커밋(`a4408b5`)에 반영됐다.
 - 이 묶음은 "첫 수업 설정 → 자동 숙제 분배 → 템플릿 CRUD 정합화 → 모바일 journey 갱신"으로 이어지는 phase2 core loop 보강이다.
 - 배포 운영을 위해 `CRON_SECRET`은 Vercel Production env / GitHub Actions secret에 설정 완료했다.
-- 다만 `.github/workflows/hourly-alerts.yml`이 포함된 브랜치 push는 현재 GitHub PAT에 `workflow` scope가 없어 막힐 가능성이 높다. 다음 세션에서는 scope 보강 또는 SSH/대체 인증이 필요하다.
-- 다음 코딩 세션의 1순위는 원격 push 경로 확보, 2순위는 prod smoke test, 3순위는 운영 cron/secret 최종 확인이다.
+- hourly GitHub Actions fallback은 초안까지 만들었지만, 현재 브랜치에는 포함하지 않았다. GitHub PAT에 `workflow` scope가 없어서 원격 push가 막혔고, 다음 세션에서 scope 보강 또는 SSH/대체 인증이 필요하다.
+- 현재 브랜치가 실제로 담고 있는 cron은 Vercel daily 체크만이다. hourly fallback은 후속 세션에서 다시 붙인다.
 
 ---
 
