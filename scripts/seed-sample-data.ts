@@ -142,6 +142,7 @@ async function clearSampleAccounts() {
     where: {
       OR: [
         { email: ADMIN.email },
+        { email: "chief@concord.local" },
         { student: { phone: { in: phones } } },
         { teacher: { phone: { in: phones } } },
       ],
@@ -297,6 +298,27 @@ async function main() {
     },
   });
   console.log(`  ✅ 관리자 ${ADMIN.email}`);
+
+  // 결제 학생 자동 배정 대상 (getChiefManager: env → CHIEF_MANAGER 역할 순으로 탐색)
+  await prisma.user.create({
+    data: {
+      email: "chief@concord.local",
+      password: staffHash,
+      role: "CHIEF_MANAGER",
+      teacher: {
+        create: {
+          name: "치프 매니저",
+          phone: "01000000001",
+          subjects: MANAGER.subjects,
+          bio: "총괄 매니저",
+          education: MANAGER.education,
+          experience: MANAGER.experience,
+          approved: true,
+        },
+      },
+    },
+  });
+  console.log("  ✅ 치프 매니저 chief@concord.local");
 
   console.log("\n==> 선생님 샘플");
   for (const t of TEACHERS) {

@@ -29,17 +29,6 @@ export async function GET(request: Request) {
       result.firstLessonRemindersChecked +
       result.subscriptionExpiryChecked +
       result.lessonRemindersChecked,
-    notificationsCreated: result.notificationsCreated,
-    questionsChecked: result.questionsChecked,
-    qnaMessagesChecked: result.qnaMessagesChecked,
-    waitingBookingsChecked: result.waitingBookingsChecked,
-    weeklyStudentsChecked: result.weeklyStudentsChecked,
-    weeklyCheckRan: result.weeklyCheckRan,
-    pendingMatchesChecked: result.pendingMatchesChecked,
-    firstLessonRemindersChecked: result.firstLessonRemindersChecked,
-    subscriptionExpiryChecked: result.subscriptionExpiryChecked,
-    lessonRemindersChecked: result.lessonRemindersChecked,
-    closedLessons: result.closedLessons,
-    studySessionsWritten: result.studySessionsWritten,
+    ...result,
   });
 }
