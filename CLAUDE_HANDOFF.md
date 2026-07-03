@@ -1350,6 +1350,13 @@ npm run dev
 - ✅ **QnA 통합(§19 문제 3)**: `QuestionMessage`가 단일 저장소 (`replyToId` 스레드, date/isResolved 추가). 기존 `Question` 행은 마이그레이션 SQL 내 멱등 백필(id 보존 → 알림 참조 유지). 웹 라우트·통계 전부 `src/lib/qna.ts` 경유, 모바일 응답 shape 불변, 미답변 알림 체크 단일화. `Question` 테이블은 DEPRECATED로 존치(검증 후 제거)
 - 참고: 스모크가 발견한 경미 사항 — 매칭 수락 응답에 matchStatus 미포함(기능 영향 없음), 만족도 체크인 목록 GET API 없음(웹은 서버 사이드 주입이라 불필요)
 
+### 25.1g 오너 결정 반영 세션 (2026-07-04)
+
+- ✅ **요금제 v2 (오너 확정안)**: `PRICING_PLANS_V2` 8종 (mid|high × w1h2/w1h3/w2h2/w2h3 = 38/55/76/106 | 43/58/78/112만원), 시간당 정가 5만원 앵커+할인율 표시(양수일 때만), 과목 수 배수 폐지. 레거시 금액/플랜 id는 결제 검증·라벨에서 계속 인식. 체크아웃 `?plan=<v2id>`, 첫 수업 durationMin = 플랜 시간. ⚠️ **요금 페이지(PricingContent.tsx) 표시부는 사용자 병행 세션 WIP라 미반영** — WIP 머지 후 v2 카드로 개편 필요 (`pricing-cms.ts` 기본값도 레거시 수식 잔존)
+- ✅ **빌링키 자동결제 (Q2=A)**: `BillingProfile` 모델, 카드 등록(requestBillingAuth→`/api/billing/register-success`), 갱신 cron(periodEnd 도래 시 `renewal-{subId}-{yyyymmdd}` 멱등 청구, 기존 구독 CANCELLED 처리 후 새 기간 생성), dunning D+1/D+3 재시도→D+7 자동 해지, 셀프 autoRenew 토글("언제든 해지" 카피 /payments에 노출). PAUSED·수동갱신·레거시 플랜은 자동 청구 제외
+- ✅ **선생 정산 리포트 (Q3)**: `/admin/settlements` — 월별(KST) 완료 수업×시간×시급 3만원, durationMin=0은 검토 필요로 분리. PG 지급대행 연동은 외부 계약 후
+- 마이그레이션 `20260703164930_billing_key` 프로덕션 적용 완료
+
 ### 25.2 다음 세션에서 이어할 작업 (우선순위순)
 
 1. 법적 문서 변호사 검토 결과 반영 (사용자 담당) + 사업자등록 후 `[기재 예정]` placeholder 채우기 (terms/privacy/refund + 푸터 CMS `company_*` 키)
@@ -1379,9 +1386,9 @@ npm run dev
 
 | # | 항목 | 필요한 결정 | 결정 후 작업 요약 |
 |---|------|------------|------------------|
-| Q2 | 빌링키 자동결제 + #19 dunning | 자동결제 도입 여부 | Toss 빌링키 발급 플로우(카드 등록), 만료 시 자동 승인 cron, 실패 시 PAST_DUE→재시도(D+1/D+3)→D+7 정지. `SubscriptionStatus.PAST_DUE` enum 값은 이미 존재 |
+| ~~Q2~~ | ~~빌링키 자동결제 + #19 dunning~~ | ✅ 2026-07-04 A안 확정·구현 완료 (§25.1g) | — |
 | #17 | 번들 할인 | 2과목/형제 할인율 | `pricing-plans.ts` 할인 규칙 + `planIdFromAmount` 역매핑 갱신 — ⚠️ `/api/webhooks/toss`의 금액 검증과 반드시 정합 |
-| Q3/#3 | 선생 정산·리텐션 | 정산 구조(월급/수수료) | Lesson COMPLETED 카운트 기반 정산 리포트(자동 전이 구현됨), Teacher 등급 필드 |
+| ~~Q3~~/#3 | 선생 정산·리텐션 | ✅ 정산 확정·리포트 구현 완료 (시급 3만, §25.1g). 잔여: PG 지급대행 연동(외부 계약 후), 선생 등급·인센티브(#3) | — |
 | #29 | 웹/앱 역할 | 학부모 앱 여부 | 방향: 웹=마케팅+전 기능, 앱=결제·학습 이중 구현. Phase 4 앱 심사 전 결정 |
 
 ### 26.2 외부 절차 대기 (오너/외부 액션 후 코드 작업 소량)
