@@ -20,6 +20,7 @@ export function formatSubscriptionStatus(
 ): string {
   if (teacherCount > 0 && status === "ACTIVE") return "수강 중";
   if (status === "ACTIVE") return "구독 중";
+  if (status === "PAUSED") return "일시정지 중";
   if (status === "PAST_DUE") return "결제 확인 필요";
   if (status === "CANCELLED") return "구독 종료";
   return "상담 진행 중";

@@ -30,11 +30,16 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [guardianConsent, setGuardianConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSignup() {
     if (!name.trim() || !password || !phone.trim()) return;
+    if (!guardianConsent) {
+      setError("보호자 동의가 필요합니다.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -47,6 +52,7 @@ export default function Signup() {
           email: email.trim(),
           password,
           phone: phone.trim(),
+          guardianConsent: true,
           ...(pending ? { consultation: pending } : {}),
         }),
       });
@@ -75,7 +81,7 @@ export default function Signup() {
     }
   }
 
-  const canSubmit = name.trim() && password && phone.trim();
+  const canSubmit = name.trim() && password && phone.trim() && guardianConsent;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -151,6 +157,21 @@ export default function Signup() {
               />
             </View>
 
+            {/* 보호자 동의 체크박스 */}
+            <Pressable
+              style={[styles.consentRow, { borderColor: t.line2, backgroundColor: t.panel }]}
+              onPress={() => setGuardianConsent(!guardianConsent)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: guardianConsent }}
+            >
+              <View style={[styles.checkbox, { borderColor: guardianConsent ? t.acc : t.line2, backgroundColor: guardianConsent ? t.acc : "transparent" }]}>
+                {guardianConsent && <Text style={{ color: "#fff", fontSize: 11, fontFamily: font.extrabold }}>✓</Text>}
+              </View>
+              <Text style={[styles.consentText, { color: t.mut }]}>
+                만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.
+              </Text>
+            </Pressable>
+
             {error !== "" && (
               <Text style={styles.error}>{error}</Text>
             )}
@@ -209,4 +230,25 @@ const styles = StyleSheet.create({
   p1Text: { fontFamily: font.extrabold, fontSize: 15, textAlign: "center" },
 
   error: { fontSize: 13, color: "#E53E3E", marginBottom: 8, fontFamily: font.semibold },
+
+  consentRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 1,
+    flexShrink: 0,
+  },
+  consentText: { fontSize: 12, lineHeight: 18, flex: 1 },
 });

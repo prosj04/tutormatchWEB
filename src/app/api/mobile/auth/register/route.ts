@@ -76,6 +76,7 @@ export async function POST(request: Request) {
     email?: unknown;
     password?: unknown;
     phone?: unknown;
+    guardianConsent?: unknown;
     consultation?: ConsultationPayload;
   };
   try {
@@ -113,6 +114,7 @@ export async function POST(request: Request) {
   }
 
   const hashed = await bcrypt.hash(password, 10);
+  const guardianConsentAt = body.guardianConsent === true ? new Date() : undefined;
 
   const user = await prisma.user.create({
     data: {
@@ -125,6 +127,7 @@ export async function POST(request: Request) {
           phone: digits,
           grade: "",
           subjects: "",
+          guardianConsentAt,
         },
       },
     },

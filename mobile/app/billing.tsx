@@ -15,14 +15,16 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { SubHead } from "../components/ui/SubHead";
 import { apiFetch } from "../lib/api";
 import { useTheme } from "../theme/ThemeProvider";
-import { accTint } from "../theme/tokens";
+import { type ThemeTokens } from "../theme/tokens";
 
 type SubData = {
   plan: string;
   planLabel: string;
+  priceKrw: number | null;
   status: string;
   periodEnd: string | null;
   nextBilling: string | null;
+  autoRenew: boolean | null;
 };
 
 type MeData = {
@@ -31,19 +33,35 @@ type MeData = {
   enrollmentStatus: string;
 };
 
-const PLAN_FEATURES: Record<string, string[]> = {
+// Legacy fallback features for old plan IDs
+const LEGACY_FEATURES: Record<string, string[]> = {
   "4-1": ["주 1회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 이용 가능", "수시 강사 첨삭·질답"],
   "8-1": ["주 2회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답", "복수 과목 선택 가능"],
   "4-2": ["과목별 주 1회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 이용 가능"],
   "8-2": ["과목별 주 2회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답"],
 };
 
-const PLAN_PRICE: Record<string, number> = {
-  "4-1": 400_000,
-  "8-1": 720_000,
-  "4-2": 800_000,
-  "8-2": 1_440_000,
-};
+const DEFAULT_FEATURES = [
+  "1:1 맞춤 과외",
+  "AI 질답",
+  "매니저 1:1 관리",
+  "월간 학습 리포트",
+];
+
+function getFeaturesForPlan(planId: string): string[] {
+  // v2 plans: derive from plan ID pattern
+  if (planId.startsWith("mid-") || planId.startsWith("high-")) {
+    const weekly = planId.includes("w2") ? 2 : 1;
+    const hours = planId.includes("h3") ? 3 : 2;
+    return [
+      `주 ${weekly}회 수업 (회당 ${hours}시간)`,
+      "1:1 맞춤 과외 · 전담 매니저 배정",
+      "월간 학습 리포트 + AI 질답",
+      "숙제 관리 · 수시 강사 첨삭",
+    ];
+  }
+  return LEGACY_FEATURES[planId] ?? DEFAULT_FEATURES;
+}
 
 function formatPrice(n: number): string {
   return n.toLocaleString("ko-KR") + "원";
@@ -67,8 +85,8 @@ export default function BillingScreen() {
   }, []);
 
   const sub = data?.subscription ?? null;
-  const features = sub ? (PLAN_FEATURES[sub.plan] ?? ["1:1 맞춤 과외", "학습 진도·과제 관리", "AI 질답", "수시 강사 첨삭·질답"]) : [];
-  const price = sub ? PLAN_PRICE[sub.plan] : null;
+  const features = sub ? getFeaturesForPlan(sub.plan) : [];
+  const price = sub?.priceKrw ?? null;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -92,7 +110,7 @@ export default function BillingScreen() {
                 <Text style={[planS.nowK, { color: t.onAcc }]}>현재 플랜</Text>
                 <Text style={[planS.nowNm, { color: t.onAcc }]}>{sub.planLabel}</Text>
                 {price != null ? (
-                  <Text style={[planS.nowPr as any, { color: t.onAcc }]}>
+                  <Text style={[planS.nowPr as object, { color: t.onAcc }]}>
                     {formatPrice(price)} / 월
                   </Text>
                 ) : null}
@@ -125,9 +143,17 @@ export default function BillingScreen() {
                 {sub.periodEnd ? (
                   <InfoRow label="만료일" value={formatPeriodEnd(sub.periodEnd)} t={t} divider />
                 ) : null}
+                {sub.autoRenew !== null && (
+                  <InfoRow
+                    label="자동결제"
+                    value={sub.autoRenew ? "ON" : "OFF"}
+                    t={t}
+                    divider
+                  />
+                )}
                 <View style={[styles.infoNote, { borderTopWidth: 1, borderTopColor: t.line }]}>
                   <Text style={[styles.infoNoteText, { color: t.mut }]}>
-                    결제 영수증 및 세부 내역은 담당 매니저에게 문의해 주세요.
+                    자동결제 ON/OFF · 해지/변경은 웹 결제 페이지에서 진행해 주세요.
                   </Text>
                 </View>
               </View>
@@ -150,7 +176,7 @@ export default function BillingScreen() {
   );
 }
 
-function InfoRow({ label, value, t, divider }: { label: string; value: string; t: any; divider?: boolean }) {
+function InfoRow({ label, value, t, divider }: { label: string; value: string; t: ThemeTokens; divider?: boolean }) {
   return (
     <View style={[styles.infoRow, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
       <Text style={[styles.infoLabel, { color: t.mut }]}>{label}</Text>

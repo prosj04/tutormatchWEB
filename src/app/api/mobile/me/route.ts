@@ -4,6 +4,7 @@ import { requireMobileStudent } from "@/lib/mobile-auth";
 import { softDeleteUser } from "@/lib/account-deletion";
 import { prisma } from "@/lib/prisma";
 import { recordAudit } from "@/lib/audit-log";
+import { getV2PlanById } from "@/lib/pricing-plans";
 import { formatSubscriptionPlanLabel, formatSubscriptionStatus } from "@/lib/subscription-label";
 import {
   CONSULTATION_STATUS_TO_STAGE,
@@ -19,12 +20,16 @@ export async function GET(request: Request) {
   if ("error" in authResult) return authResult.error;
   const { student, userId } = authResult;
 
-  const [user, subscription, teacherCount, pendingAcceptCount, firstLessonCount, latestReport, booking] = await Promise.all([
+  const [user, subscription, billingProfile, teacherCount, pendingAcceptCount, firstLessonCount, latestReport, booking] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { email: true } }),
     prisma.subscription.findFirst({
-      where: { studentId: student.id, status: "ACTIVE" },
+      where: { studentId: student.id, status: { in: ["ACTIVE", "PAUSED", "PAST_DUE"] } },
       orderBy: { createdAt: "desc" },
       select: { plan: true, status: true, periodEnd: true },
+    }),
+    prisma.billingProfile.findUnique({
+      where: { studentId: student.id },
+      select: { autoRenew: true },
     }),
     prisma.teacherStudent.count({ where: { studentId: student.id, isActive: true } }),
     prisma.teacherStudent.count({
@@ -74,11 +79,13 @@ export async function GET(request: Request) {
       ? {
           plan: subscription.plan,
           planLabel: formatSubscriptionPlanLabel(subscription.plan),
+          priceKrw: getV2PlanById(subscription.plan)?.priceKrw ?? null,
           status: subscription.status,
           periodEnd: subscription.periodEnd?.toISOString() ?? null,
           nextBilling: subscription.periodEnd
             ? formatBillingDate(subscription.periodEnd)
             : null,
+          autoRenew: billingProfile?.autoRenew ?? null,
         }
       : null,
     enrollmentStatus: formatSubscriptionStatus(subscription?.status, teacherCount),

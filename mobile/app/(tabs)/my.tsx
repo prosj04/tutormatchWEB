@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -230,6 +231,32 @@ export default function MyScreen() {
             <Pressable style={styles.logoutWrap} onPress={logout}>
               <Text style={[styles.logoutText, { color: t.mut2 }]}>로그아웃</Text>
             </Pressable>
+
+            <Pressable
+              style={styles.deleteWrap}
+              onPress={() => {
+                Alert.alert(
+                  "계정 삭제",
+                  "계정을 삭제하면 개인정보가 익명화되며 되돌릴 수 없습니다. 결제 기록은 법령에 따라 보관됩니다.",
+                  [
+                    { text: "취소", style: "cancel" },
+                    {
+                      text: "삭제",
+                      style: "destructive",
+                      onPress: () => {
+                        apiFetch<{ ok: boolean }>("/api/mobile/me", { method: "DELETE" })
+                          .then(() => logout())
+                          .catch(() => {
+                            Alert.alert("오류", "계정 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+                          });
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text style={[styles.deleteText, { color: t.mut2 }]}>계정 삭제</Text>
+            </Pressable>
           </>
         )}
         <View style={{ height: 6 }} />
@@ -250,4 +277,6 @@ const styles = StyleSheet.create({
   chev: { fontSize: 20, fontFamily: font.bold },
   logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },
   logoutText: { fontSize: 13, fontFamily: font.semibold },
+  deleteWrap: { paddingVertical: 8, paddingBottom: 16, alignItems: "center" },
+  deleteText: { fontSize: 12, fontFamily: font.semibold },
 });

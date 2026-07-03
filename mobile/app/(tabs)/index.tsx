@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import Svg, { Circle } from "react-native-svg";
@@ -39,6 +40,109 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
+
+type CheckinItem = { id: string; trigger: string; requestedAt: string };
+
+function CheckinCard({ checkin, onDone }: { checkin: CheckinItem; onDone: () => void }) {
+  const { t } = useTheme();
+  const [score, setScore] = useState<number | null>(null);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function submit() {
+    if (!score || submitting) return;
+    setSubmitting(true);
+    try {
+      await apiFetch(`/api/mobile/satisfaction-checkins/${checkin.id}/respond`, {
+        method: "POST",
+        body: JSON.stringify({ score, comment: comment.trim() || undefined }),
+      });
+      onDone();
+    } catch {
+      // silent — best effort
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <View style={[checkinStyles.card, { backgroundColor: t.panel, borderColor: t.line }]}>
+      <Text style={[checkinStyles.title, { color: t.fg }]}>첫 수업은 어떠셨나요?</Text>
+      <Text style={[checkinStyles.sub, { color: t.mut }]}>1점(아쉬워요) ~ 5점(매우 만족해요)</Text>
+      <View style={checkinStyles.stars}>
+        {[1, 2, 3, 4, 5].map((s) => (
+          <Pressable
+            key={s}
+            style={[
+              checkinStyles.starBtn,
+              { backgroundColor: score !== null && s <= score ? t.acc : t.panel2 },
+            ]}
+            onPress={() => setScore(s)}
+          >
+            <Text style={[checkinStyles.starText, { color: score !== null && s <= score ? t.onAcc : t.mut }]}>
+              {s}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+      <TextInput
+        style={[checkinStyles.input, { backgroundColor: t.panel2, borderColor: t.line2, color: t.fg }]}
+        placeholder="의견을 남겨주세요 (선택)"
+        placeholderTextColor={t.mut2}
+        value={comment}
+        onChangeText={setComment}
+        multiline
+        maxLength={500}
+      />
+      <Pressable
+        style={[checkinStyles.btn, { backgroundColor: score ? t.acc : t.line2 }]}
+        onPress={() => void submit()}
+        disabled={!score || submitting}
+      >
+        <Text style={[checkinStyles.btnText, { color: score ? t.onAcc : t.mut }]}>
+          {submitting ? "제출 중…" : "제출하기"}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const checkinStyles = StyleSheet.create({
+  card: {
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 12,
+  },
+  title: { fontSize: 15, fontFamily: font.extrabold, letterSpacing: -0.3, marginBottom: 4 },
+  sub: { fontSize: 12, marginBottom: 12 },
+  stars: { flexDirection: "row", gap: 8, marginBottom: 12 },
+  starBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  starText: { fontSize: 16, fontFamily: font.bold },
+  input: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    fontSize: 13.5,
+    minHeight: 64,
+    marginBottom: 12,
+    textAlignVertical: "top",
+  },
+  btn: {
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  btnText: { fontSize: 14, fontFamily: font.bold },
+});
 
 interface HomeData {
   greetingName: string;
@@ -110,6 +214,13 @@ export default function HomeScreen() {
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [checkins, setCheckins] = useState<CheckinItem[]>([]);
+
+  const loadCheckins = useCallback(() => {
+    apiFetch<{ checkins: CheckinItem[] }>("/api/mobile/satisfaction-checkins")
+      .then((res) => setCheckins(res.checkins))
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -133,7 +244,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     void load();
-  }, [load]);
+    loadCheckins();
+  }, [load, loadCheckins]);
 
   const QUICK = [
     { label: "상담", cta: "consult" as const, onPress: () => { trackEvent(ANALYTICS_EVENTS.homeCtaClicked, { cta_name: "consult" }); router.push("/consult/status"); } },
@@ -262,6 +374,14 @@ export default function HomeScreen() {
                 </Text>
               </View>
             </View>
+
+            {/* 만족도 체크인 카드 */}
+            {checkins.length > 0 && (
+              <CheckinCard
+                checkin={checkins[0]}
+                onDone={() => setCheckins((prev) => prev.slice(1))}
+              />
+            )}
 
             {/* .sect-t 바로가기 */}
             <Text style={[sectTS, styles.sectT, { color: t.fg }]}>바로가기</Text>

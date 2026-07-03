@@ -12,6 +12,7 @@ import { CheckIcon } from "../components/ui/Icons";
 import { ErrorState } from "../components/ui/ErrorState";
 import { SubHead } from "../components/ui/SubHead";
 import { apiFetch } from "../lib/api";
+import { formatEnrollmentStatus } from "../lib/subscription-label";
 import { useTheme } from "../theme/ThemeProvider";
 import { accTint } from "../theme/tokens";
 
@@ -86,9 +87,10 @@ export default function SubscriptionScreen() {
                 <Text style={styles.activeLabel}>현재 플랜</Text>
                 <Text style={styles.activePlan}>{data.subscription.plan}</Text>
                 <Text style={styles.activeStatus}>
-                  {data.subscription.status === "ACTIVE" ? "구독 중" : data.subscription.status}
-                  {" · "}
-                  {new Date(data.subscription.periodEnd).toLocaleDateString("ko-KR")} 만료
+                  {formatEnrollmentStatus(data.subscription.status, 0)}
+                  {data.subscription.periodEnd
+                    ? ` · ${new Date(data.subscription.periodEnd).toLocaleDateString("ko-KR")} 만료`
+                    : ""}
                 </Text>
               </View>
 
