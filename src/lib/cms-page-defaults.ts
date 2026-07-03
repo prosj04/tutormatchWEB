@@ -2,12 +2,12 @@
 
 import type { CSSProperties } from "react";
 import { getEffectivePhotoUrl } from "@/lib/profile-gender";
-import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
+import { PRICING_PLANS_V2, type PricingPlanV2 } from "@/lib/pricing-plans";
 
 export { getGenderDefaultPhotoUrl, getEffectivePhotoUrl } from "@/lib/profile-gender";
 
-/** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 */
-export const CMS_MANAGED_CARD_SLOT_COUNT = 6;
+/** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 (v2: 4개 플랜/tier) */
+export const CMS_MANAGED_CARD_SLOT_COUNT = 4;
 
 /** 예: 요금제 CMS 박스 3 → pricing_box_3_title (고등 카드 세트 기본키) */
 export function pricingBoxFieldKey(
@@ -252,14 +252,29 @@ export const spacingDefaults = CMS_HOME_SPACING_SECTIONS.flatMap((item, index) =
   ];
 });
 
+function v2DefaultFeatures(plan: PricingPlanV2): string[] {
+  const weeklyLabel = plan.weekly === 1 ? "주 1회" : "주 2회";
+  const hourLabel = `회당 ${plan.hoursPerLesson}시간`;
+  const base = [
+    `${weeklyLabel} 수업 · ${hourLabel}`,
+    "학습 진도 관리",
+    "과제 관리",
+    plan.weekly === 2 ? "AI 질답 횟수 2배 제공" : "AI 질답 이용 가능",
+    "수시 강사 첨삭, 질답",
+  ];
+  return base;
+}
+
 function pricingBoxRowsForSlot(
   boxIndex: number,
-  plan: (typeof PRICING_PLAN_SLOTS)[number],
+  plan: PricingPlanV2,
   visibleDefault: string,
   orderStart: number,
   keyFn: typeof pricingBoxFieldKey = pricingBoxFieldKey,
 ) {
-  const featuresText = plan.features.join("\n");
+  const featuresText = v2DefaultFeatures(plan).join("\n");
+  const titleValue = `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
+  const subtitleValue = `월 ${plan.monthlyHours}시간`;
   return [
     {
       section: "pricing_page" as const,
@@ -271,107 +286,52 @@ function pricingBoxRowsForSlot(
     {
       section: "pricing_page" as const,
       key: keyFn(boxIndex, "title"),
-      value: plan.title,
+      value: titleValue,
       type: "text" as const,
       order: orderStart + 1,
     },
     {
       section: "pricing_page" as const,
       key: keyFn(boxIndex, "subtitle"),
-      value: plan.subtitle,
+      value: subtitleValue,
       type: "text" as const,
       order: orderStart + 2,
-    },
-    {
-      section: "pricing_page" as const,
-      key: keyFn(boxIndex, "price"),
-      value: formatPlanPrice(plan.sessions, plan.subjects),
-      type: "text" as const,
-      order: orderStart + 3,
     },
     {
       section: "pricing_page" as const,
       key: keyFn(boxIndex, "features"),
       value: featuresText,
       type: "text" as const,
-      order: orderStart + 4,
+      order: orderStart + 3,
     },
   ];
 }
 
+/** v2 high plans in order: w1h2, w1h3, w2h2, w2h3 */
+const HIGH_V2_PLANS = PRICING_PLANS_V2.filter((p) => p.tier === "high");
+/** v2 middle plans in order: w1h2, w1h3, w2h2, w2h3 */
+const MIDDLE_V2_PLANS = PRICING_PLANS_V2.filter((p) => p.tier === "middle");
+
 export const pricingPageDefaults = [
-  { section: "pricing_page", key: "header_title", value: "1:1 맞춤 과외,\n월 40만원부터", type: "text", order: 1 },
+  { section: "pricing_page", key: "header_title", value: "투명한 요금,\n꼭 맞는 1:1 과외", type: "text", order: 1 },
   {
     section: "pricing_page",
     key: "header_subtext",
-    value: "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
+    value: "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
     type: "text",
     order: 2,
   },
-  ...pricingBoxRowsForSlot(1, PRICING_PLAN_SLOTS[0], "1", 3),
-  ...pricingBoxRowsForSlot(2, PRICING_PLAN_SLOTS[1], "1", 8),
-  ...pricingBoxRowsForSlot(3, PRICING_PLAN_SLOTS[2], "1", 13),
-  ...pricingBoxRowsForSlot(4, PRICING_PLAN_SLOTS[3], "1", 18),
-  ...pricingBoxRowsForSlot(5, PRICING_PLAN_SLOTS[4], "0", 23),
-  ...pricingBoxRowsForSlot(6, PRICING_PLAN_SLOTS[5], "0", 28),
 
-  /** 중등 카드 세트 — 비워 두면 고등과 동일 문구가 노출되도록 빌더에서 폴백 */
-  ...pricingBoxRowsForSlot(1, PRICING_PLAN_SLOTS[0], "1", 130, pricingMiddleBoxFieldKey),
-  ...pricingBoxRowsForSlot(2, PRICING_PLAN_SLOTS[1], "1", 135, pricingMiddleBoxFieldKey),
-  ...pricingBoxRowsForSlot(3, PRICING_PLAN_SLOTS[2], "1", 140, pricingMiddleBoxFieldKey),
-  ...pricingBoxRowsForSlot(4, PRICING_PLAN_SLOTS[3], "1", 145, pricingMiddleBoxFieldKey),
-  ...pricingBoxRowsForSlot(5, PRICING_PLAN_SLOTS[4], "0", 150, pricingMiddleBoxFieldKey),
-  ...pricingBoxRowsForSlot(6, PRICING_PLAN_SLOTS[5], "0", 155, pricingMiddleBoxFieldKey),
+  /** 고등 카드 세트 (slots 1–4 = w1h2, w1h3, w2h2, w2h3) */
+  ...HIGH_V2_PLANS.flatMap((plan, idx) =>
+    pricingBoxRowsForSlot(idx + 1, plan, "1", 3 + idx * 4),
+  ),
 
-  /** 하위 호환: 구 plan id 키 + plan4_/plan8_ */
-  ...PRICING_PLAN_SLOTS.slice(0, 4).flatMap((plan, idx) => {
-    const orderStart = 90 + idx * 5;
-    return [
-      { section: "pricing_page", key: pricingPlanFieldKey(plan.id, "visible"), value: "1", type: "text" as const, order: orderStart },
-      { section: "pricing_page", key: pricingPlanFieldKey(plan.id, "title"), value: plan.title, type: "text" as const, order: orderStart + 1 },
-      {
-        section: "pricing_page",
-        key: pricingPlanFieldKey(plan.id, "subtitle"),
-        value: plan.subtitle,
-        type: "text",
-        order: orderStart + 2,
-      },
-      {
-        section: "pricing_page",
-        key: pricingPlanFieldKey(plan.id, "price"),
-        value: formatPlanPrice(plan.sessions, plan.subjects),
-        type: "text",
-        order: orderStart + 3,
-      },
-      {
-        section: "pricing_page",
-        key: pricingPlanFieldKey(plan.id, "features"),
-        value: plan.features.join("\n"),
-        type: "text",
-        order: orderStart + 4,
-      },
-    ];
-  }),
-  { section: "pricing_page", key: "plan4_title", value: PRICING_PLAN_SLOTS[0].title, type: "text", order: 100 },
-  { section: "pricing_page", key: "plan4_price", value: formatPlanPrice(4, 1), type: "text", order: 101 },
-  { section: "pricing_page", key: "plan4_subtitle", value: PRICING_PLAN_SLOTS[0].subtitle, type: "text", order: 102 },
-  {
-    section: "pricing_page",
-    key: "plan4_features",
-    value: PRICING_PLAN_SLOTS[0].features.join("\n"),
-    type: "text",
-    order: 103,
-  },
-  { section: "pricing_page", key: "plan8_title", value: PRICING_PLAN_SLOTS[1].title, type: "text", order: 104 },
-  { section: "pricing_page", key: "plan8_price", value: formatPlanPrice(8, 1), type: "text", order: 105 },
-  { section: "pricing_page", key: "plan8_subtitle", value: PRICING_PLAN_SLOTS[1].subtitle, type: "text", order: 106 },
-  {
-    section: "pricing_page",
-    key: "plan8_features",
-    value: PRICING_PLAN_SLOTS[1].features.join("\n"),
-    type: "text",
-    order: 107,
-  },
+  /** 중등 카드 세트 — 비워 두면 고등 값으로 폴백 */
+  ...MIDDLE_V2_PLANS.flatMap((plan, idx) =>
+    pricingBoxRowsForSlot(idx + 1, plan, "1", 130 + idx * 4, pricingMiddleBoxFieldKey),
+  ),
+
   { section: "pricing_page", key: "faq_title", value: "자주 묻는 질문", type: "text", order: 200 },
   {
     section: "pricing_page",
@@ -557,7 +517,7 @@ export const homePageVisibilityDefaults = [
   { section: "home_page", key: "show_faq_section", value: "0", type: "text", order: 0 },
   { section: "home_page", key: "show_reviews_section", value: "1", type: "text", order: 1 },
   { section: "home_page", key: "pricing_kicker", value: "PRICE", type: "text", order: 2 },
-  { section: "home_page", key: "pricing_title", value: "1:1 맞춤 과외,\n월 40만원부터", type: "text", order: 3 },
+  { section: "home_page", key: "pricing_title", value: "1:1 맞춤 과외,\n월 38만원부터", type: "text", order: 3 },
   {
     section: "home_page",
     key: "pricing_subtext",

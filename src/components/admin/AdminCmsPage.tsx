@@ -38,7 +38,7 @@ import {
 } from "@/lib/cms-page-defaults";
 import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 import { COMPARE_ROW_COUNT } from "@/lib/compare-cms";
-import { PRICING_PLAN_SLOTS, formatPlanPrice } from "@/lib/pricing-plans";
+import { PRICING_PLANS_V2 } from "@/lib/pricing-plans";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
@@ -262,7 +262,7 @@ const pricingHeaderFields: TextFieldConfig[] = [
     label: "페이지 제목",
     section: "pricing_page",
     keyName: "header_title",
-    defaultValue: "1:1 맞춤 과외,\n월 40만원부터",
+    defaultValue: "투명한 요금,\n꼭 맞는 1:1 과외",
     kind: "textarea",
     rows: 2,
   },
@@ -271,7 +271,7 @@ const pricingHeaderFields: TextFieldConfig[] = [
     section: "pricing_page",
     keyName: "header_subtext",
     defaultValue:
-      "1과목·2과목(선생님 2명) 패키지를 선택하세요.",
+      "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
     kind: "textarea",
     rows: 3,
   },
@@ -283,7 +283,7 @@ const homePricingFields: TextFieldConfig[] = [
     label: "홈 섹션 제목",
     section: "home_page",
     keyName: "pricing_title",
-    defaultValue: "1:1 맞춤 과외,\n월 40만원부터",
+    defaultValue: "1:1 맞춤 과외,\n월 38만원부터",
     kind: "textarea",
     rows: 2,
   },
@@ -302,31 +302,40 @@ function pricingSlotInnerFields(
   boxIndex: number,
   keyFn: (index: number, field: Parameters<typeof pricingBoxFieldKey>[1]) => string = pricingBoxFieldKey,
 ): TextFieldConfig[] {
-  const plan = PRICING_PLAN_SLOTS[boxIndex - 1]!;
+  // boxIndex is 1-based; slots 1–4 map to high-tier plans (w1h2, w1h3, w2h2, w2h3)
+  const highPlans = PRICING_PLANS_V2.filter((p) => p.tier === "high");
+  const plan = highPlans[boxIndex - 1];
+  const defaultTitle = plan
+    ? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`
+    : `박스 ${boxIndex}`;
+  const defaultSubtitle = plan ? `월 ${plan.monthlyHours}시간` : "";
+  const defaultFeatures = plan
+    ? [
+        `${plan.weekly === 1 ? "주 1회" : "주 2회"} 수업 · 회당 ${plan.hoursPerLesson}시간`,
+        "학습 진도 관리",
+        "과제 관리",
+        plan.weekly === 2 ? "AI 질답 횟수 2배 제공" : "AI 질답 이용 가능",
+        "수시 강사 첨삭, 질답",
+      ].join("\n")
+    : "";
   return [
     {
       label: "제목",
       section: "pricing_page",
       keyName: keyFn(boxIndex, "title"),
-      defaultValue: plan.title,
+      defaultValue: defaultTitle,
     },
     {
-      label: "부제",
+      label: "부제 (월 수업시간)",
       section: "pricing_page",
       keyName: keyFn(boxIndex, "subtitle"),
-      defaultValue: plan.subtitle,
-    },
-    {
-      label: "표시 가격",
-      section: "pricing_page",
-      keyName: keyFn(boxIndex, "price"),
-      defaultValue: formatPlanPrice(plan.sessions, plan.subjects),
+      defaultValue: defaultSubtitle,
     },
     {
       label: "혜택 (줄바꿈으로 구분)",
       section: "pricing_page",
       keyName: keyFn(boxIndex, "features"),
-      defaultValue: plan.features.join("\n"),
+      defaultValue: defaultFeatures,
       kind: "textarea",
       rows: 6,
     },
@@ -1462,8 +1471,8 @@ export function AdminCmsPage() {
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
               <p className="mb-5 text-sm text-text-secondary">
-                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 기존 키(pricing_box_), 「중등」은 pricing_middle_box_ 이며
-                고등 값이 비어 있으면 중등 값을 기본으로 쓰고 가격만 5만원 올려서 보입니다. 박스 5~6은 필요할 때만 켭니다.
+                카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 pricing_box_ 키, 「중등」은 pricing_middle_box_ 키를 사용합니다.
+                중등 값이 비어 있으면 고등 값을 기본으로 씁니다. 금액은 v2 플랜에서 자동 산출되며 CMS에서 수정할 수 없습니다.
               </p>
               <div className="grid gap-4 lg:grid-cols-2">
                 {pricingHeaderFields.map((field) => (

@@ -9,7 +9,8 @@ import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
-import { buildCheckoutHref, PLAN_INCLUDES } from "@/lib/pricing-plans";
+import { buildCheckoutHrefV2, PLAN_INCLUDES } from "@/lib/pricing-plans";
+import { formatKRW } from "@/lib/format-won";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 function ShieldIcon() {
@@ -98,16 +99,18 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
 
           <div data-tier={tier}>
             <div className="price-grid">
-              {items.map((item, index) => {
-                const isRec = index === 1 || item.plan.sessions === 8;
-                const priceDigits = (item.price ?? "").replace(/[^\d]/g, "");
-                const priceFormatted = priceDigits
-                  ? priceDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  : "";
+              {items.map((item) => {
+                const plan = item.plan;
+                const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
                 const tierLabel = tier === "middle" ? "중등" : "고등";
+                const priceFormatted = plan.priceKrw
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                const displayTitle = item.title ?? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
+                const displaySubtitle = item.subtitle ?? `월 ${plan.monthlyHours}시간`;
                 return (
                   <ConcordReveal
-                    key={item.plan.id}
+                    key={plan.id}
                     as="article"
                     className={`card price-card${isRec ? " rec" : ""}`}
                   >
@@ -115,14 +118,25 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                     <div className="ptag">
                       1:1 맞춤 과외 · {tierLabel}
                     </div>
-                    <div className="pname">{item.title ?? item.plan.title}</div>
+                    <div className="pname">{displayTitle}</div>
+                    <div className="punit" style={{ marginBottom: 4 }}>{displaySubtitle}</div>
+                    {plan.discountRate !== null ? (
+                      <div className="pdiscount" style={{ marginBottom: 4 }}>
+                        <span style={{ textDecoration: "line-through", color: "rgba(255,255,255,0.45)", fontSize: "0.85rem" }}>
+                          정가 {formatKRW(plan.listPriceKrw)}
+                        </span>
+                        {" "}
+                        <span className="rec-badge" style={{ fontSize: "0.75rem", padding: "2px 7px" }}>
+                          {plan.discountRate}% 할인
+                        </span>
+                      </div>
+                    ) : null}
                     <div className="price">
                       {priceFormatted}
                       <small>원 / 월</small>
                     </div>
-                    <div className="punit">{item.subtitle ?? item.plan.subtitle}</div>
                     <ul className="pfeat">
-                      {(item.features ?? item.plan.features).map((f) => (
+                      {(item.features ?? []).map((f) => (
                         <li key={f}>{f}</li>
                       ))}
                     </ul>
@@ -131,14 +145,14 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                         모든 플랜 공통 포함
                       </p>
                       <ul className="pfeat" style={{ fontSize: "0.875rem" }}>
-                        {PLAN_INCLUDES.map((item) => (
-                          <li key={item}>{item}</li>
+                        {PLAN_INCLUDES.map((inc) => (
+                          <li key={inc}>{inc}</li>
                         ))}
                       </ul>
                     </div>
                     <Link
                       className={`btn btn-block${isRec ? " btn-acc" : " btn-ghost"}`}
-                      href={buildCheckoutHref(item.plan.sessions, item.plan.subjects)}
+                      href={buildCheckoutHrefV2(plan.id)}
                     >
                       이 플랜으로 시작
                     </Link>

@@ -72,8 +72,8 @@ function heroHeadlineWithHl(text: string) {
   ));
 }
 function homePricingTitleParts(raw: string): { highlight: string; suffix: string } {
-  const line = (raw.includes("\n") ? raw.split("\n").pop() : raw)?.trim() ?? "월 40만원부터";
-  const trimmed = line.replace(/^1:1\s*맞춤\s*과외,?\s*/, "").trim() || "월 40만원부터";
+  const line = (raw.includes("\n") ? raw.split("\n").pop() : raw)?.trim() ?? "월 38만원부터";
+  const trimmed = line.replace(/^1:1\s*맞춤\s*과외,?\s*/, "").trim() || "월 38만원부터";
   if (trimmed.endsWith("부터")) {
     return { highlight: trimmed.slice(0, -2).trim(), suffix: "부터" };
   }
@@ -87,7 +87,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     formatCmsMultiline(getCmsValue(section, key, fallback));
 
   const pricingTitleParts = homePricingTitleParts(
-    getCmsValue("home_page", "pricing_title", "월 40만원부터"),
+    getCmsValue("home_page", "pricing_title", "월 38만원부터"),
   );
 
   const cmsStats = [
@@ -295,7 +295,10 @@ export function LandingPageV2({
 
   const homePricingItems = useMemo(() => {
     const all = buildVisiblePricingPlanItems(cms?.siteContent, pricingTier);
-    const picked = all.filter((_, i) => i === 0 || i === 2);
+    // Pick 주1회2시간 (slot 0) and 주2회2시간 (slot 2) as the two representative cards
+    const w1h2 = all.find((it) => it.plan.weekly === 1 && it.plan.hoursPerLesson === 2);
+    const w2h2 = all.find((it) => it.plan.weekly === 2 && it.plan.hoursPerLesson === 2);
+    const picked = [w1h2, w2h2].filter(Boolean) as typeof all;
     return picked.length >= 2 ? picked : all.slice(0, 2);
   }, [cms?.siteContent, pricingTier]);
 
@@ -603,22 +606,21 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-price-grid reveal">
-            {homePricingItems.map((item, i) => {
-              const isRec = i === 1;
-              const priceText = item.price ?? item.plan.title;
-              const featureList = item.features ?? item.plan.features;
-              const rawNum = Number(priceText.replace(/[^\d]/g, ""));
-              const numOnly = rawNum > 0
-                ? rawNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                : priceText.replace(/[^0-9,]/g, "");
+            {homePricingItems.map((item) => {
+              const plan = item.plan;
+              const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
+              const featureList = item.features ?? [];
+              const numOnly = plan.priceKrw.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              const displayTitle = item.title ?? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
+              const displaySubtitle = item.subtitle ?? `월 ${plan.monthlyHours}시간`;
               return (
                 <div
-                  key={item.plan.id}
+                  key={plan.id}
                   className={`lp2-price-card${isRec ? " rec" : ""}`}
                 >
                   {isRec && <span className="lp2-rec-badge">추천</span>}
-                  <div className="ptag">{item.subtitle ?? item.plan.subtitle}</div>
-                  <div className="pname">{item.title ?? item.plan.title}</div>
+                  <div className="ptag">{displaySubtitle}</div>
+                  <div className="pname">{displayTitle}</div>
                   <div className="price">
                     {numOnly}
                     <small>원 / 월</small>
