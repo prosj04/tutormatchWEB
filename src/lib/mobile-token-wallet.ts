@@ -8,7 +8,11 @@ export function currentMonth(date = new Date()): string {
 /** 활성 구독 플랜으로 월 토큰 할당량 산정 (구독 없으면 체험 10) */
 function quotaForPlan(plan: string | null): number {
   if (!plan) return 10;
-  // pricing-plans id: "4-1" | "8-1" | "4-2" | "8-2" → 앞자리=월 횟수
+  // v2 id: "mid-w2h3" / "high-w1h2" 등 — 주2회면 60, 주1회면 30.
+  if (plan.startsWith("mid-") || plan.startsWith("high-")) {
+    return plan.includes("w2") ? 60 : 30;
+  }
+  // LEGACY v1 id: "4-1" | "8-1" | "4-2" | "8-2" → 앞자리=월 횟수
   const base = plan.startsWith("8") ? 60 : 30;
   return base;
 }

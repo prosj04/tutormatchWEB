@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { PRICING_PLANS } from "@/lib/pricing-plans";
+import { getV2PlanById, PRICING_PLANS } from "@/lib/pricing-plans";
 import { formatKRW } from "@/lib/format-won";
 import { PaymentsPageHeader } from "@/components/payments/PaymentsPageHeader";
 
@@ -15,9 +15,14 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   CANCELLED: { label: "해지됨", className: "badge-status-cancelled" },
 };
 
-function getPlanInfo(planId: string) {
+function getPlanInfo(planId: string): { title: string; price: number | null } {
+  const v2 = getV2PlanById(planId);
+  if (v2) {
+    return { title: `${v2.title} · 월 ${v2.monthlyHours}시간`, price: v2.priceKrw };
+  }
   const plan = PRICING_PLANS.find((p) => p.id === planId);
   if (!plan) return { title: planId, price: null };
+  // LEGACY v1 계산식 — 신규 결제 발급 금지, 예전 구독 이력 표시용.
   const price = plan.sessions * plan.subjects * (plan.sessions === 4 ? 100_000 : 90_000);
   return { title: `${plan.title} · ${plan.subtitle}`, price };
 }

@@ -4,7 +4,7 @@ import type { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
@@ -13,16 +13,10 @@ import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
-import {
-  getPlanLabel,
-  getPriceBreakdown,
-  type SessionPlan,
-  type SubjectCount,
-} from "@/lib/order-pricing";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
 import type { GroupedSiteContent } from "@/lib/site-content";
-import { PLAN_INCLUDES } from "@/lib/pricing-plans";
+import { getV2PlanById, PLAN_INCLUDES, PRICING_PLANS_V2 } from "@/lib/pricing-plans";
 
 import type { PMW } from "./CheckoutTossWidget";
 
@@ -43,8 +37,8 @@ const SUBJECT_OPTIONS = ["국어", "영어", "수학", "사회탐구", "과학�
 
 type CheckoutContentProps = {
   tutorId: string;
-  sessions: SessionPlan;
-  subjects: SubjectCount;
+  /** v2 planId (예: "high-w2h2"). page.tsx가 검증·폴백 후 넘겨준다. */
+  planId: string;
   siteContent?: GroupedSiteContent;
   needsSignup: boolean;
   isEditMode?: boolean;
@@ -68,8 +62,7 @@ function CmsText({
 
 export function CheckoutContent({
   tutorId,
-  sessions,
-  subjects,
+  planId,
   siteContent,
   needsSignup,
   isEditMode: isEditModeProp,
@@ -78,9 +71,14 @@ export function CheckoutContent({
   const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
   const c = (key: string, fb: string) => getCmsSectionValue(siteContent, "checkout_page", key, fb);
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
-  const planLabel = getPlanLabel(sessions, subjects);
 
-  const { total, platformFee, lessonFee } = getPriceBreakdown(sessions, subjects);
+  // v2 플랜 결정. 알 수 없는 id면 안전 폴백(고등·주2·2시간).
+  const plan = useMemo(
+    () => getV2PlanById(planId) ?? PRICING_PLANS_V2[0]!,
+    [planId],
+  );
+  const planLabel = plan.title;
+  const total = plan.priceKrw;
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -90,6 +88,7 @@ export function CheckoutContent({
   const [gender, setGender] = useState<ProfileGender | "">("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  // v2 이후 과목 수 곱셈 폐지. 희망 과목은 참고용 다중 선택(0-N), 필수 개수 검증 없음.
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [widgetReady, setWidgetReady] = useState(false);
@@ -104,16 +103,12 @@ export function CheckoutContent({
     setError(message);
   }, []);
 
-  const toggleSubject = useCallback(
-    (subject: string) => {
-      setSelectedSubjects((prev) => {
-        if (prev.includes(subject)) return prev.filter((item) => item !== subject);
-        if (prev.length >= subjects) return prev;
-        return [...prev, subject];
-      });
-    },
-    [subjects],
-  );
+  const toggleSubject = useCallback((subject: string) => {
+    setSelectedSubjects((prev) => {
+      if (prev.includes(subject)) return prev.filter((item) => item !== subject);
+      return [...prev, subject];
+    });
+  }, []);
 
   const handlePay = useCallback(async () => {
     setError(null);
@@ -138,10 +133,6 @@ export function CheckoutContent({
       const guardianPhoneDigits = normalizePhoneDigits(guardianPhone);
       if (guardianPhone.trim() && (guardianPhoneDigits.length < 10 || guardianPhoneDigits.length > 11)) {
         setError("부모님 연락처를 올바르게 입력해 주세요.");
-        return;
-      }
-      if (selectedSubjects.length !== subjects) {
-        setError(`가입을 위해 희망 과목을 ${subjects}개 선택해 주세요.`);
         return;
       }
       if (password.length < 8) {
@@ -193,7 +184,7 @@ export function CheckoutContent({
         customerEmail: email.trim(),
         customerMobilePhone: phoneDigits,
         successUrl: `${origin}/success`,
-        failUrl: `${origin}/checkout?tutor=${encodeURIComponent(tutorId)}&sessions=${sessions}&subjects=${subjects}&error=1`,
+        failUrl: `${origin}/checkout?tutor=${encodeURIComponent(tutorId)}&plan=${encodeURIComponent(plan.id)}&error=1`,
       });
     } catch (e) {
       console.error(e);
@@ -210,10 +201,9 @@ export function CheckoutContent({
     needsSignup,
     password,
     passwordConfirm,
+    plan.id,
     planLabel,
     selectedSubjects,
-    sessions,
-    subjects,
     termsAgreed,
     tutorId,
     tutorName,
@@ -255,10 +245,10 @@ export function CheckoutContent({
                     <dd>{planLabel}</dd>
                   </div>
                   <div className="kv-row">
-                    <CmsText active={isEditMode} cmsKey="dt_subjects">
-                      <dt>{c("dt_subjects", "과목 수")}</dt>
+                    <CmsText active={isEditMode} cmsKey="dt_monthly_hours">
+                      <dt>{c("dt_monthly_hours", "월 수업 시간")}</dt>
                     </CmsText>
-                    <dd>{subjects}과목</dd>
+                    <dd>{plan.monthlyHours}시간 / 월</dd>
                   </div>
                   <div className="kv-row">
                     <CmsText active={isEditMode} cmsKey="dt_tutor">
@@ -267,20 +257,26 @@ export function CheckoutContent({
                     <dd>{tutorName}</dd>
                   </div>
                   <div className="kv-row">
-                    <CmsText active={isEditMode} cmsKey="dt_platform">
-                      <dt>{c("dt_platform", "플랫폼 이용료")}</dt>
+                    <CmsText active={isEditMode} cmsKey="dt_list_price">
+                      <dt>{c("dt_list_price", "정가 (시간당 5만원)")}</dt>
                     </CmsText>
-                    <dd>{formatKRW(platformFee)}</dd>
+                    <dd style={{ textDecoration: plan.discountRate ? "line-through" : "none", opacity: plan.discountRate ? 0.7 : 1 }}>
+                      {formatKRW(plan.listPriceKrw)}
+                    </dd>
                   </div>
-                  <div className="kv-row">
-                    <CmsText active={isEditMode} cmsKey="dt_lesson">
-                      <dt>{c("dt_lesson", "수업료")}</dt>
-                    </CmsText>
-                    <dd>{formatKRW(lessonFee)}</dd>
-                  </div>
+                  {plan.discountRate ? (
+                    <div className="kv-row">
+                      <CmsText active={isEditMode} cmsKey="dt_discount">
+                        <dt>{c("dt_discount", "할인")}</dt>
+                      </CmsText>
+                      <dd style={{ color: "var(--acc-text, #FF6B6B)", fontWeight: 700 }}>
+                        {plan.discountRate}% ↓
+                      </dd>
+                    </div>
+                  ) : null}
                   <div className="kv-row total">
                     <CmsText active={isEditMode} cmsKey="dt_total">
-                      <dt>{c("dt_total", "총 결제금액")}</dt>
+                      <dt>{c("dt_total", "월정액")}</dt>
                     </CmsText>
                     <dd>{formatKRW(total)}</dd>
                   </div>
@@ -395,9 +391,9 @@ export function CheckoutContent({
                         </p>
                       </div>
                       <div className="field">
-                        <label>희망 과목</label>
+                        <label>희망 과목 (선택)</label>
                         <p className="panel-note" style={{ marginTop: 0, marginBottom: 10 }}>
-                          {subjects}과목 플랜이므로 {subjects}개를 선택해 주세요.
+                          상담 시 담당 매니저와 조율됩니다. 원하시는 과목을 자유롭게 선택해 주세요.
                         </p>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                           {SUBJECT_OPTIONS.map((subject) => {

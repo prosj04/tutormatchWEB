@@ -1,6 +1,6 @@
 import { assignChiefManagerToStudent } from "@/lib/student-enrollment";
 import { prisma } from "@/lib/prisma";
-import { PRICING_PLANS } from "@/lib/pricing-plans";
+import { allKnownPlanIds } from "@/lib/pricing-plans";
 import { confirmTossPayment, type CashReceipt } from "@/lib/toss-payments";
 
 type CompleteStudentPaymentParams = {
@@ -14,11 +14,15 @@ type CompleteStudentPaymentParams = {
   cashReceipt?: CashReceipt;
 };
 
-const DEFAULT_PAYMENT_PLAN = "8-1";
+/** v2 기본 플랜(고등 · 주2회 · 회당 2시간) — 유효성 실패 시 폴백. */
+const DEFAULT_PAYMENT_PLAN = "high-w2h2";
+
+const KNOWN_PLAN_IDS: Set<string> = new Set(allKnownPlanIds());
 
 function normalizePlan(plan: string | null | undefined) {
   const candidate = typeof plan === "string" && plan.trim() ? plan.trim() : DEFAULT_PAYMENT_PLAN;
-  return PRICING_PLANS.some((p) => p.id === candidate) ? candidate : DEFAULT_PAYMENT_PLAN;
+  // v2 신규 id + legacy(4-1/8-1/4-2/8-2) 모두 허용. planIdFromAmount가 서버 신뢰의 원천.
+  return KNOWN_PLAN_IDS.has(candidate) ? candidate : DEFAULT_PAYMENT_PLAN;
 }
 
 function addMonths(date: Date, months: number) {

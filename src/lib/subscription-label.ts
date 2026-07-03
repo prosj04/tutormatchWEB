@@ -1,7 +1,12 @@
-import { PRICING_PLANS } from "@/lib/pricing-plans";
+import { getV2PlanById, PRICING_PLANS } from "@/lib/pricing-plans";
 
 export function formatSubscriptionPlanLabel(planId: string | null | undefined): string {
   if (!planId) return "플랜 없음";
+  const v2 = getV2PlanById(planId);
+  if (v2) {
+    const tierLabel = v2.tier === "middle" ? "중등" : "고등";
+    return `${tierLabel} · 주 ${v2.weekly}회 · 회당 ${v2.hoursPerLesson}시간`;
+  }
   const found = PRICING_PLANS.find((p) => p.id === planId);
   if (found) return found.subtitle;
   const weekly = planId.startsWith("8") ? 2 : 1;

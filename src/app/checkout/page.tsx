@@ -8,6 +8,7 @@ import {
   type SessionPlan,
   type SubjectCount,
 } from "@/lib/order-pricing";
+import { getV2PlanById, PRICING_PLANS_V2 } from "@/lib/pricing-plans";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 type Search = Record<string, string | string[] | undefined>;
@@ -24,15 +25,33 @@ type PageProps = {
   searchParams: Search;
 };
 
+/**
+ * v1 (sessions, subjects) → v2 planId 매핑. 요금제 카드의 legacy href 폴백용.
+ * PricingPlanCard.tsx가 여전히 legacy 파라미터로 링크를 생성한다.
+ */
+function legacyToV2PlanId(sessions: SessionPlan, subjects: SubjectCount): string {
+  const weekly = sessions === 8 ? 2 : 1;
+  const hours = subjects === 2 ? 3 : 2;
+  return `high-w${weekly}h${hours}`;
+}
+
 export default async function CheckoutPage({ searchParams }: PageProps) {
   const [session, siteContent] = await Promise.all([
     auth(),
     getGroupedSiteContentBySections(["checkout_page"]),
   ]);
   const tutorId = first(searchParams.tutor) ?? "1";
+
+  // Prefer v2 ?plan=<id>. Fall back to legacy ?sessions=&subjects=.
+  const planParam = first(searchParams.plan);
   const sessionsRaw = first(searchParams.sessions);
   const sessions: SessionPlan = parseSessionsParam(sessionsRaw);
   const subjects: SubjectCount = parseSubjectsParam(first(searchParams.subjects));
+
+  const resolvedV2 =
+    (planParam && getV2PlanById(planParam)) || getV2PlanById(legacyToV2PlanId(sessions, subjects));
+  const planId = resolvedV2?.id ?? PRICING_PLANS_V2[0]!.id;
+
   const needsSignup =
     !session?.user?.id || session.user.role !== "STUDENT";
   const isEditMode = first(searchParams.cms_edit) === "1";
@@ -64,8 +83,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
       ) : null}
       <CheckoutContent
         tutorId={tutorId}
-        sessions={sessions}
-        subjects={subjects}
+        planId={planId}
         siteContent={siteContent}
         needsSignup={needsSignup}
         isEditMode={isEditMode}

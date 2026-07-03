@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { autoApplyFirstLessonHomeworkTemplate } from "@/lib/homework-distribution";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
+import { getV2PlanById } from "@/lib/pricing-plans";
 import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
 import { requireTeacher } from "@/lib/teacher-auth";
 
@@ -63,13 +64,25 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid time" }, { status: 400 });
   }
 
+  // v2 구독 플랜(hoursPerLesson)에 맞춰 기본 durationMin 산출. body에 명시가 없을 때만 적용.
+  let defaultDurationMin = 50;
+  const activeSubscription = await prisma.subscription.findFirst({
+    where: { studentId, status: "ACTIVE" },
+    orderBy: { createdAt: "desc" },
+    select: { plan: true },
+  });
+  const v2Plan = getV2PlanById(activeSubscription?.plan);
+  if (v2Plan) {
+    defaultDurationMin = v2Plan.hoursPerLesson * 60;
+  }
+
   const durationMin =
     typeof body.durationMin === "number" &&
     Number.isInteger(body.durationMin) &&
     body.durationMin > 0 &&
     body.durationMin <= 300
       ? body.durationMin
-      : 50;
+      : defaultDurationMin;
   const joinUrl =
     typeof body.joinUrl === "string" && body.joinUrl.trim()
       ? body.joinUrl.trim()
