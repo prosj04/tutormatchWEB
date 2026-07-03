@@ -452,6 +452,13 @@ export function CheckoutContent({
                   </p>
                 ) : null}
 
+                <div className="panel-note" style={{ marginTop: 16, fontSize: 13, textAlign: "center", padding: "10px 12px", backgroundColor: "rgba(var(--acc-rgb), 0.08)", borderRadius: "8px" }}>
+                  <span>{c("refund_guarantee", "첫 수업 후 불만족 시 100% 환불해 드립니다. ")}</span>
+                  <Link href="/refund" style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
+                    {c("refund_policy_link", "환불정책")}
+                  </Link>
+                </div>
+
                 <CmsText active={isEditMode} cmsKey="pay_button">
                   <button
                     type="button"

@@ -46,10 +46,8 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
           </div>
         </div>
         <div className="foot-meta">
-          {get("company_name", "주식회사 컨코드에듀케이션")} · 대표 {get("company_rep", "홍길동")} · 사업자등록번호{" "}
-          {get("company_reg", "123-45-67890")}
+          {get("company_name", "콘코드")}
           <br />
-          {get("company_address", "서울특별시 강남구 테헤란로 000, 00층")}
           <div className="legal">
             <Link href="/terms">{get("label_terms", "이용약관")}</Link>
             <Link href="/privacy">{get("label_privacy", "개인정보처리방침")}</Link>
