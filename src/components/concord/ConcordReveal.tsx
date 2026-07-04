@@ -41,13 +41,8 @@ export function ConcordReveal({
     );
     io.observe(el);
 
-    const fallback = window.setTimeout(() => {
-      if (!el.classList.contains("in")) el.classList.add("in");
-    }, 2400);
-
     return () => {
       io.disconnect();
-      window.clearTimeout(fallback);
     };
   }, []);
 

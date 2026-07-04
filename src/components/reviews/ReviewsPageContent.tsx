@@ -55,8 +55,8 @@ export function ReviewsPageContent({
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="rev-masonry">
-            {testimonials.map((item, i) => (
-              <ConcordReveal key={`${item.info}-${item.quote.slice(0, 24)}`} as="article" className="card rev-card" delay={Math.min(i * 80, 320)}>
+            {testimonials.map((item) => (
+              <ConcordReveal key={`${item.info}-${item.quote.slice(0, 24)}`} as="article" className="card rev-card">
                 <div className="rev-stars">★★★★★</div>
                 <p className="qt">{item.quote}</p>
                 <ReviewByLine info={item.info} />

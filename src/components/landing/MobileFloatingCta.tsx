@@ -27,6 +27,7 @@ export function MobileFloatingCta() {
       className={`lp2-float-cta${visible ? " is-visible" : ""}`}
       data-visible={visible ? "true" : "false"}
     >
+      <div className="lp2-float-note">첫 수업 100% 환불 · 상담 신청 30초</div>
       <ConsultationApplyButton
         className="lp2-btn lp2-btn-acc"
         source="landing_float_cta"

@@ -99,7 +99,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
 
           <div data-tier={tier}>
             <div className="price-grid">
-              {items.map((item, itemIndex) => {
+              {items.map((item) => {
                 const plan = item.plan;
                 const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
                 const tierLabel = tier === "middle" ? "중등" : "고등";
@@ -113,7 +113,6 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                     key={plan.id}
                     as="article"
                     className={`card price-card${isRec ? " rec" : ""}`}
-                    delay={Math.min(itemIndex * 80, 320)}
                   >
                     {isRec ? <span className="rec-badge">추천</span> : null}
                     <div className="ptag">

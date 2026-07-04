@@ -22,6 +22,19 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
             <div className="foot-meta">
               {get("hours_chat", "채팅문의 10:00~22:00")} · {get("hours_call", "전화문의 평일 10:00~19:00")}
             </div>
+            <div className="foot-meta">
+              <a href={`mailto:${get("contact_email", "help@concordedu.kr")}`}>
+                {get("contact_email", "help@concordedu.kr")}
+              </a>
+              {get("contact_phone", "").trim() ? (
+                <>
+                  {" · "}
+                  <a href={`tel:${get("contact_phone", "").replace(/[^0-9+]/g, "")}`}>
+                    {get("contact_phone", "")}
+                  </a>
+                </>
+              ) : null}
+            </div>
           </div>
           <div className="foot-cols">
             <div className="foot-col">

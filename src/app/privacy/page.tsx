@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { LegalToc } from "@/components/concord/LegalToc";
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function PrivacyPage() {
       />
       <section className="sec" style={{ paddingTop: 0 }}>
         <div className="wrap" style={{ maxWidth: 720 }}>
-          <div
+          <ConcordReveal
             className="card"
             style={{ padding: "clamp(1.5rem, 4vw, 3rem)", lineHeight: 1.8 }}
           >
@@ -345,7 +346,7 @@ export default function PrivacyPage() {
                 help@concordedu.kr
               </a>
             </p>
-          </div>
+          </ConcordReveal>
         </div>
       </section>
     </main>
