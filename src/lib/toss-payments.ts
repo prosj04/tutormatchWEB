@@ -149,6 +149,60 @@ export async function confirmTossPayment(
   throw new Error(`TOSS_CONFIRM_FAILED:${errorCode}`);
 }
 
+/**
+ * Toss 결제 취소 API. 환불 시 DB 상태 변경 전에 반드시 호출해 실제 결제를 취소한다.
+ * ALREADY_CANCELED_PAYMENT는 성공으로 취급(재시도·동시 요청 멱등성).
+ * TOSS_SECRET_KEY 없음 + production: 에러 / dev·test: 경고 후 통과(confirm과 동일 규약).
+ */
+export async function cancelTossPayment(
+  paymentKey: string,
+  cancelReason: string,
+): Promise<void> {
+  const secret = process.env.TOSS_SECRET_KEY;
+
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("TOSS_SECRET_KEY is required in production");
+    }
+    console.warn(
+      "[toss-payments] TOSS_SECRET_KEY not set — skipping Toss cancel (dev-only bypass)",
+    );
+    return;
+  }
+
+  if (!paymentKey) {
+    throw new Error("TOSS_CANCEL_MISSING_PAYMENT_KEY");
+  }
+
+  const credentials = Buffer.from(`${secret}:`).toString("base64");
+  const url = `${TOSS_FETCH_URL}/${encodeURIComponent(paymentKey)}/cancel`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cancelReason: (cancelReason || "관리자 환불").slice(0, 200),
+    }),
+  });
+
+  if (res.ok) return;
+
+  let errorCode = "";
+  try {
+    const json = (await res.json()) as { code?: string; message?: string };
+    errorCode = json.code ?? "";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_) {
+    // ignore parse error
+  }
+
+  if (errorCode === "ALREADY_CANCELED_PAYMENT") return;
+
+  throw new Error(`TOSS_CANCEL_FAILED:${errorCode}`);
+}
+
 export type IssuedBillingKey = {
   billingKey: string;
   customerKey: string;

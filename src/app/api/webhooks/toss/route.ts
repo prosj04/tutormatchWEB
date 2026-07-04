@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { stopServiceAfterRefund } from "@/lib/payment-refund";
 import { planIdFromAmount } from "@/lib/pricing-plans";
 import { completeStudentPayment } from "@/lib/student-payment";
 import { fetchTossPayment } from "@/lib/toss-payments";
@@ -49,6 +50,38 @@ export async function POST(request: Request) {
   if (!paymentKey || !orderId) {
     console.error("[toss-webhook] Missing paymentKey or orderId", { paymentKey, orderId });
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  // Toss 대시보드 등 외부에서 취소된 결제를 DB에 수렴시킨다.
+  // 부분취소(PARTIAL_CANCELED)는 구독 중단으로 직결되지 않으므로 로그만 남긴다.
+  if (status === "CANCELED") {
+    try {
+      const tossPayment = await fetchTossPayment(paymentKey);
+      if (tossPayment.orderId !== orderId || tossPayment.status !== "CANCELED") {
+        console.warn(
+          `[toss-webhook] CANCELED not confirmed by Toss (orderId: ${orderId}, toss status: ${tossPayment.status})`,
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      const updated = await prisma.paymentCompletion.updateMany({
+        where: { orderId, status: "COMPLETED" },
+        data: { status: "REFUNDED" },
+      });
+
+      if (updated.count > 0) {
+        const payment = await prisma.paymentCompletion.findUnique({
+          where: { orderId },
+          select: { subscriptionId: true, studentId: true },
+        });
+        if (payment) await stopServiceAfterRefund(payment);
+        console.log(`[toss-webhook] Synced external cancel → REFUNDED (orderId: ${orderId})`);
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      console.error(`[toss-webhook] Cancel sync failed (orderId: ${orderId}):`, msg);
+    }
+    return NextResponse.json({ ok: true });
   }
 
   if (status !== "DONE") {
