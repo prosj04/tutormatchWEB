@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function requireTeacher() {
+/**
+ * 강사 신원 확인만 수행(승인 여부 무관).
+ * 승인 대기 중인 강사도 접근해야 하는 온보딩 라우트(프로필/문서/사진)용.
+ */
+export async function requireTeacherAllowPending() {
   const session = await auth();
   if (!session?.user?.id) {
     return {
@@ -27,4 +31,24 @@ export async function requireTeacher() {
   }
 
   return { session, teacher, userId: session.user.id } as const;
+}
+
+/**
+ * 승인된 강사만 통과(운영 라우트 — 학생/수업/숙제/플랜 등).
+ * MANAGER/CHIEF_MANAGER는 상위 권한이므로 approved 값과 무관하게 통과.
+ */
+export async function requireTeacher() {
+  const result = await requireTeacherAllowPending();
+  if ("error" in result) return result;
+
+  if (result.session.user.role === "TEACHER" && !result.teacher.approved) {
+    return {
+      error: NextResponse.json(
+        { error: "승인 대기 중입니다. 관리자 승인 후 이용할 수 있습니다." },
+        { status: 403 },
+      ),
+    } as const;
+  }
+
+  return result;
 }

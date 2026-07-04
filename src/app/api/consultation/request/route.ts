@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
-    if (msg === "ALREADY_COMPLETED") {
+    if (msg === "ALREADY_COMPLETED" || msg === "ALREADY_MATCHING") {
       return NextResponse.json(
         { error: "이미 상담이 완료되어 매칭을 진행 중입니다." },
         { status: 409 },

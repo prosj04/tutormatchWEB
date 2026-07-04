@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin-auth";
+import { softDeleteUser } from "@/lib/account-deletion";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
@@ -68,7 +69,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await prisma.user.delete({ where: { id: teacher.userId } });
+  // 하드 delete는 연관 데이터를 함께 삭제하고 복구가 불가능하므로 소프트 삭제로 통일.
+  await softDeleteUser(teacher.userId);
   revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);
   return NextResponse.json({ ok: true });
 }

@@ -79,6 +79,8 @@ model Student {
   guardianPhone       String?
   /// "MALE" | "FEMALE" — 기본 프로필 이미지 구분
   gender              String?
+  /// 거주 지역 (예: "서울", "분당·판교") — 방문 수업 가능 여부 판단용
+  region              String?
   plans               StudyPlan[]
   questions           Question[]
   teachers            TeacherStudent[]
@@ -296,6 +298,7 @@ model SatisfactionCheckin {
   requestedAt DateTime @default(now())
   respondedAt DateTime?
 
+  @@unique([studentId, trigger])
   @@index([studentId])
 }
 

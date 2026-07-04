@@ -12,6 +12,28 @@ type RequestBody = {
   tasks?: unknown;
 };
 
+/** 저장된 tasks(주로 `[{title,weight}]` JSON)를 줄바꿈 제목 텍스트로 복원. */
+function tasksToText(stored: string): string {
+  try {
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item) =>
+          typeof item === "string"
+            ? item
+            : item && typeof item === "object" && typeof item.title === "string"
+              ? item.title
+              : "",
+        )
+        .filter(Boolean)
+        .join("\n");
+    }
+  } catch {
+    // JSON이 아니면 이미 평문 — 그대로 사용.
+  }
+  return stored;
+}
+
 function parseTasks(raw: unknown) {
   if (Array.isArray(raw)) {
     return raw
@@ -37,7 +59,15 @@ export async function GET() {
     orderBy: { updatedAt: "desc" },
   });
 
-  return NextResponse.json({ templates });
+  // 저장은 `[{title,weight}]` JSON 문자열이지만, 플랜 탭 UI는 tasks를 줄바꿈 텍스트로
+  // 그대로 textarea에 넣는다. 원문 JSON을 노출하면 통째로 한 줄 숙제가 되어 재사용이
+  // 깨지므로, 제목만 뽑아 줄바꿈으로 join한 문자열로 변환해 반환한다.
+  return NextResponse.json({
+    templates: templates.map((t) => ({
+      ...t,
+      tasks: tasksToText(t.tasks),
+    })),
+  });
 }
 
 export async function POST(request: Request) {

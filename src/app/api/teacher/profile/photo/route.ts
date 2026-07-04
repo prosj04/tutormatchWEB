@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireTeacher } from "@/lib/teacher-auth";
+import { requireTeacherAllowPending } from "@/lib/teacher-auth";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
@@ -14,7 +14,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
  *  Uses the service-role admin client; the anon key is never involved.
  */
 export async function POST(request: Request) {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 

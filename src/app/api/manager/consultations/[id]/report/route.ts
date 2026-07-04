@@ -47,8 +47,9 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
+  // 취소된 상담에는 리포트를 작성/수정할 수 없도록 제한(GET 조회는 이력이라 허용).
   const booking = await prisma.consultationBooking.findFirst({
-    where: { id: id, managerId: teacher.id },
+    where: { id: id, managerId: teacher.id, status: { not: "CANCELLED" } },
   });
 
   if (!booking) {

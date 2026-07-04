@@ -16,8 +16,9 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
+  // 취소·완료된 상담에는 방문 확정 시각을 설정/변경하지 못하도록 진행 중 상태로 제한.
   const booking = await prisma.consultationBooking.findFirst({
-    where: { id, managerId: teacher.id },
+    where: { id, managerId: teacher.id, status: { notIn: ["CANCELLED", "COMPLETED"] } },
     select: { id: true },
   });
 

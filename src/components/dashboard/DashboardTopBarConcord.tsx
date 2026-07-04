@@ -36,6 +36,9 @@ export function DashboardTopBarConcord({ studentName, isEditMode = false }: Dash
         <div className="portal-topbar-actions">
           <ConcordPortalThemeControls />
           <NotificationBell />
+          <Link href="/dashboard/account" className="btn btn-ghost btn-sm hidden md:inline-flex">
+            계정
+          </Link>
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => signOut({ redirectTo: "/" })}>
             <span className="md:hidden">나가기</span>
             <span className="hidden md:inline">

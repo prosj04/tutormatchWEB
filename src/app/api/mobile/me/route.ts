@@ -33,13 +33,12 @@ export async function GET(request: Request) {
     }),
     prisma.teacherStudent.count({ where: { studentId: student.id, isActive: true } }),
     prisma.teacherStudent.count({
-      where: {
-        studentId: student.id,
-        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
-      },
+      where: { studentId: student.id, matchStatus: "PENDING_STUDENT_ACCEPT" },
     }),
     prisma.lesson.count({
-      where: { studentId: student.id, status: { not: "CANCELLED" } },
+      // 실제로 시작된(과거) 수업만 ACTIVE 판단에 사용 — 미래 예약 수업으로
+      // ACTIVE가 조기 전이되지 않도록 startAt <= now 로 제한 (student-journey.ts와 동일).
+      where: { studentId: student.id, status: { not: "CANCELLED" }, startAt: { lte: new Date() } },
     }),
     prisma.monthlyReport.findFirst({
       where: { studentId: student.id },

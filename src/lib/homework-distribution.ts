@@ -13,46 +13,14 @@ export function distributeTasks(tasks: string[], days: 4 | 7) {
   if (tasks.length === 0) return buckets;
 
   const activeDays = Math.min(days, tasks.length);
-  // 앞쪽 날짜에 살짝 더 많은 과제를 배치하되, 가능한 모든 날짜에 최소 1개씩 배분한다.
-  const weights = Array.from({ length: activeDays }, (_, index) => activeDays - index + 1);
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  const baseCounts = weights.map((weight) => Math.floor((tasks.length * weight) / totalWeight));
-
-  if (tasks.length >= activeDays) {
-    for (let i = 0; i < activeDays; i += 1) {
-      baseCounts[i] = Math.max(1, baseCounts[i]);
-    }
-  }
-
-  let assigned = baseCounts.reduce((sum, count) => sum + count, 0);
-  const remainders = weights
-    .map((weight, index) => ({
-      index,
-      value: (tasks.length * weight) / totalWeight - Math.floor((tasks.length * weight) / totalWeight),
-    }))
-    .sort((a, b) => b.value - a.value);
-
-  while (assigned < tasks.length) {
-    for (const { index } of remainders) {
-      if (assigned >= tasks.length) break;
-      baseCounts[index] += 1;
-      assigned += 1;
-    }
-  }
-
-  while (assigned > tasks.length) {
-    for (let i = activeDays - 1; i >= 0; i -= 1) {
-      if (assigned <= tasks.length) break;
-      if (baseCounts[i] > 1) {
-        baseCounts[i] -= 1;
-        assigned -= 1;
-      }
-    }
-  }
+  // 균등 분배 후 나머지를 앞쪽 날짜부터 하나씩 얹어 "앞쪽이 살짝 더 많은" 단조 비증가
+  // 분포를 보장한다. 각 활성 날짜에는 최소 1개씩 배분된다(base >= 1).
+  const base = Math.floor(tasks.length / activeDays);
+  const remainder = tasks.length % activeDays;
 
   let cursor = 0;
   for (let dayIndex = 0; dayIndex < activeDays; dayIndex += 1) {
-    const count = baseCounts[dayIndex];
+    const count = base + (dayIndex < remainder ? 1 : 0);
     buckets[dayIndex].push(...tasks.slice(cursor, cursor + count));
     cursor += count;
   }

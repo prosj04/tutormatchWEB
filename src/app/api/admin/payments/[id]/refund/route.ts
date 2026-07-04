@@ -41,7 +41,7 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  // Fetch the updated payment to get subscriptionId
+  // Fetch the updated payment to get subscriptionId + studentId
   const payment = await prisma.paymentCompletion.findUnique({ where: { id } });
 
   // Cancel related active subscription if present
@@ -49,6 +49,21 @@ export async function POST(request: Request, context: RouteContext) {
     await prisma.subscription.updateMany({
       where: { id: payment.subscriptionId, status: "ACTIVE" },
       data: { status: "CANCELLED" },
+    });
+  }
+
+  // 갱신결제는 기존 구독을 CANCELLED로 닫고 새 ACTIVE 구독을 만들기 때문에, 최초
+  // 결제의 subscriptionId는 이미 지난 구독을 가리킨다. 환불 시 서비스가 계속되지
+  // 않도록 학생의 현재 ACTIVE 구독도 취소하고, dunning 재청구를 막기 위해
+  // 자동결제도 끈다.
+  if (payment?.studentId) {
+    await prisma.subscription.updateMany({
+      where: { studentId: payment.studentId, status: "ACTIVE" },
+      data: { status: "CANCELLED" },
+    });
+    await prisma.billingProfile.updateMany({
+      where: { studentId: payment.studentId },
+      data: { autoRenew: false },
     });
   }
 

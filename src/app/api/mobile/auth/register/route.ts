@@ -62,8 +62,8 @@ async function attachConsultationIfProvided(
     return { attached: true, status: booking.status };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
-    if (msg === "ALREADY_ACTIVE" || msg === "ALREADY_COMPLETED") {
-      return { attached: true, status: msg === "ALREADY_COMPLETED" ? "COMPLETED" : "WAITING" };
+    if (msg === "ALREADY_ACTIVE" || msg === "ALREADY_COMPLETED" || msg === "ALREADY_MATCHING") {
+      return { attached: true, status: msg === "ALREADY_ACTIVE" ? "WAITING" : "COMPLETED" };
     }
     throw e;
   }

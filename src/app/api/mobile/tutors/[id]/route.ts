@@ -11,7 +11,8 @@ export async function GET(
   getMobileUser(request);
 
   const t = await prisma.teacher.findFirst({
-    where: { id: params.id, approved: true },
+    // 상세는 매니저 딥링크 호환을 위해 role 제약은 두지 않되, 데모용 [sample]은 제외.
+    where: { id: params.id, approved: true, name: { not: { startsWith: "[sample]" } } },
     select: {
       id: true,
       name: true,
@@ -38,7 +39,8 @@ export async function GET(
           student: { select: { name: true } },
         },
       },
-      _count: { select: { students: true } },
+      // 활성 매칭만 카운트 — CANCELLED/수락대기 포함 시 매칭 수 과대표기.
+      _count: { select: { students: { where: { isActive: true } } } },
     },
   });
 

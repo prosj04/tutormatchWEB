@@ -29,6 +29,7 @@ export type ManagerConsultationBooking = {
     subjects: string;
     phone: string;
     guardianPhone: string | null;
+    region: string | null;
   };
 };
 
@@ -101,6 +102,7 @@ function mapConsultationBooking(
       subjects: string;
       phone: string;
       guardianPhone: string | null;
+      region: string | null;
     };
   },
 ): ManagerConsultationBooking {
@@ -129,7 +131,7 @@ export async function getManagerWaitingConsultations(): Promise<
     where: { status: "WAITING", managerId: null },
     include: {
       student: {
-        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true },
+        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true, region: true },
       },
     },
     orderBy: { createdAt: "asc" },
@@ -145,7 +147,7 @@ export async function getManagerMineConsultations(
     where: { managerId },
     include: {
       student: {
-        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true },
+        select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true, region: true },
       },
     },
     orderBy: [{ assignedAt: "desc" }, { createdAt: "desc" }],
@@ -165,7 +167,7 @@ export async function getManagerMatchingData(managerId: string): Promise<{
       studentId: true,
       note: true,
       managerNote: true,
-      student: { select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true } },
+      student: { select: { id: true, name: true, grade: true, subjects: true, phone: true, guardianPhone: true, region: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -178,10 +180,15 @@ export async function getManagerMatchingData(managerId: string): Promise<{
     candidates.push(booking);
   }
 
+  // 매칭 POST 가드와 동일 기준: 수락 대기(PENDING) 또는 활성(ACTIVE) 매칭이 있으면 이미 배정된 학생.
+  // (CANCELLED은 재매칭 대상이므로 후보에 남긴다.)
   const alreadyMatchedIds = new Set(
     (
       await prisma.teacherStudent.findMany({
-        where: { studentId: { in: candidates.map((c) => c.studentId) }, isActive: true },
+        where: {
+          studentId: { in: candidates.map((c) => c.studentId) },
+          matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+        },
         select: { studentId: true },
       })
     ).map((m) => m.studentId),
@@ -201,6 +208,7 @@ export async function getManagerMatchingData(managerId: string): Promise<{
   const teachers = await prisma.teacher.findMany({
     where: {
       approved: true,
+      name: { not: { startsWith: "[sample]" } },
       user: { role: { in: ["TEACHER", "MANAGER", "CHIEF_MANAGER"] } },
     },
     include: {

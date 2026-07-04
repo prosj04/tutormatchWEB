@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
+import { softDeleteUser } from "@/lib/account-deletion";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 
@@ -14,7 +15,11 @@ export async function GET() {
   if ("error" in authResult) return authResult.error;
 
   const pendingTeachers = await prisma.teacher.findMany({
-    where: { approved: false, name: { not: { startsWith: "[sample]" } } },
+    where: {
+      approved: false,
+      name: { not: { startsWith: "[sample]" } },
+      user: { deletedAt: null },
+    },
     orderBy: { user: { createdAt: "desc" } },
     select: {
       id: true,
@@ -57,10 +62,19 @@ export async function POST(request: Request) {
 
   const teacher = await prisma.teacher.findUnique({
     where: { id: teacherId },
-    select: { id: true, userId: true },
+    select: { id: true, userId: true, approved: true, user: { select: { role: true, deletedAt: true } } },
   });
-  if (!teacher) {
+  if (!teacher || teacher.user.deletedAt) {
     return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+  }
+
+  // 승인/거절은 '미승인 강사 지원서'에만 적용 — 승인된 강사·매니저·치프·어드민을
+  // 이 엔드포인트로 소프트 삭제(계정 익명화+매칭/구독/수업 취소)하지 못하도록 차단.
+  if (teacher.approved || teacher.user.role !== "TEACHER") {
+    return NextResponse.json(
+      { error: "미승인 강사 지원서에만 처리할 수 있습니다." },
+      { status: 409 },
+    );
   }
 
   if (approve) {
@@ -69,7 +83,8 @@ export async function POST(request: Request) {
       data: { approved: true },
     });
   } else {
-    await prisma.user.delete({ where: { id: teacher.userId } });
+    // 거절 = 소프트 삭제(감사/복구 가능). 하드 delete는 연관 데이터가 함께 사라짐.
+    await softDeleteUser(teacher.userId);
   }
 
   revalidatePublicCms(PUBLIC_TEACHERS_CACHE_TAG);

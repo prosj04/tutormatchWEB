@@ -35,7 +35,8 @@ export async function acceptTeacherStudentMatch(
     return { ok: false, error: "not_found" };
   }
 
-  if (existing.isActive) {
+  // 이미 수락된 매칭 — 중복 알림 없이 현재 상태 반환
+  if (existing.matchStatus === "ACTIVE") {
     return {
       ok: true,
       alreadyActive: true,
@@ -50,9 +51,22 @@ export async function acceptTeacherStudentMatch(
     };
   }
 
-  const updated = await prisma.teacherStudent.update({
-    where: { id: existing.id },
+  // 취소된(또는 수락 대기가 아닌) 매칭은 되살릴 수 없다
+  if (existing.matchStatus !== "PENDING_STUDENT_ACCEPT") {
+    return { ok: false, error: "not_found" };
+  }
+
+  // 원자적 수락 — 매니저의 동시 취소와 경합해도 PENDING일 때만 전환
+  const claimed = await prisma.teacherStudent.updateMany({
+    where: { id: existing.id, studentId, matchStatus: "PENDING_STUDENT_ACCEPT" },
     data: { isActive: true, matchStatus: "ACTIVE", respondedAt: new Date() },
+  });
+  if (claimed.count === 0) {
+    return { ok: false, error: "not_found" };
+  }
+
+  const updated = await prisma.teacherStudent.findFirstOrThrow({
+    where: { id: existing.id },
     include: { teacher: { select: { id: true, name: true, userId: true } } },
   });
 

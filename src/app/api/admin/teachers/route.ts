@@ -15,6 +15,9 @@ export async function GET(request: Request) {
   const where = {
     AND: [
       { name: { not: { startsWith: "[sample]" } } },
+      // 탈퇴(소프트 삭제)한 강사는 익명화된 채 approved:false 로 남으므로
+      // 관리자 목록(특히 pending 필터)에 유령으로 노출되지 않도록 제외.
+      { user: { deletedAt: null } },
       q
         ? {
             OR: [

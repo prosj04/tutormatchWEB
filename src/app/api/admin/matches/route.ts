@@ -52,8 +52,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid fields" }, { status: 400 });
   }
 
-  const teacher = await prisma.teacher.findUnique({ where: { id: teacherId } });
-  const student = await prisma.student.findUnique({ where: { id: studentId } });
+  const teacher = await prisma.teacher.findFirst({
+    where: { id: teacherId, approved: true, user: { deletedAt: null } },
+  });
+  const student = await prisma.student.findFirst({
+    where: { id: studentId, deletedAt: null },
+  });
   if (!teacher || !student) {
     return NextResponse.json({ error: "Teacher or student not found" }, { status: 404 });
   }
@@ -63,22 +67,46 @@ export async function POST(request: Request) {
   });
 
   if (existing) {
-    const remainsActive = existing.isActive;
+    // 이미 ACTIVE면 과목/시작일만 갱신하고 상태 유지.
+    if (existing.matchStatus === "ACTIVE") {
+      const match = await prisma.teacherStudent.update({
+        where: { id: existing.id },
+        data: { subjects: subjects.trim(), startDate },
+        include: {
+          teacher: { select: { id: true, name: true } },
+          student: { select: { id: true, name: true, grade: true } },
+        },
+      });
+      await trackJourneyActiveIfFirst(studentId);
+      return NextResponse.json({ match });
+    }
+
+    // PENDING/CANCELLED → 수락 대기로 (재)배정. CANCELLED 부활은 조용히 처리하지 않고
+    // 학생에게 다시 알림을 보내 명시적 재배정으로 만든다.
+    const wasCancelled = existing.matchStatus === "CANCELLED";
     const match = await prisma.teacherStudent.update({
       where: { id: existing.id },
       data: {
         subjects: subjects.trim(),
         startDate,
-        isActive: remainsActive,
-        matchStatus: remainsActive ? "ACTIVE" : "PENDING_STUDENT_ACCEPT",
-        respondedAt: remainsActive ? existing.respondedAt ?? new Date() : null,
+        isActive: false,
+        matchStatus: "PENDING_STUDENT_ACCEPT",
+        respondedAt: null,
       },
       include: {
         teacher: { select: { id: true, name: true } },
         student: { select: { id: true, name: true, grade: true } },
       },
     });
-    if (remainsActive) await trackJourneyActiveIfFirst(studentId);
+    if (wasCancelled) {
+      await createNotification({
+        userId: student.userId,
+        type: "TEACHER_ASSIGNED",
+        title: "선생님이 배정되었습니다",
+        body: `${teacher.name} 선생님이 다시 배정되었습니다. 선생님 정보를 확인하고 수락해 주세요.`,
+        relatedId: teacherId,
+      });
+    }
     return NextResponse.json({ match });
   }
 

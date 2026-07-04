@@ -15,6 +15,9 @@ export async function GET(request: Request) {
   const teachers = await prisma.teacher.findMany({
     where: {
       approved: true,
+      // 공개 강사진과 동일 규칙: 수업 담당 TEACHER만, 데모용 [sample] 계정 제외
+      user: { role: "TEACHER" },
+      NOT: { name: { startsWith: "[sample]" } },
       ...(subject ? { subjects: { contains: subject } } : {}),
       ...(q
         ? {
@@ -37,7 +40,8 @@ export async function GET(request: Request) {
       gender: true,
       profile: { select: { photoUrl: true, intro: true } },
       reviews: { select: { rating: true } },
-      _count: { select: { students: true } },
+      // CANCELLED/수락대기 매칭까지 세면 매칭 수가 부풀려지므로 활성만 카운트.
+      _count: { select: { students: { where: { isActive: true } } } },
     },
   });
 

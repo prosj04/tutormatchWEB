@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server";
 
+import { authorizeCron } from "@/lib/cron-auth";
 import {
   generateMonthlyReportsForMonth,
   getPreviousMonth,
 } from "@/lib/generate-monthly-report";
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return NextResponse.json(
-      { error: "CRON_SECRET not configured" },
-      { status: 500 },
-    );
-  }
-  const isVercelCron = request.headers.get("x-vercel-cron") !== null;
-  const isAuthorized = request.headers.get("Authorization") === `Bearer ${secret}`;
-
-  if (!isVercelCron && !isAuthorized) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = authorizeCron(request);
+  if (denied) return denied;
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month") ?? getPreviousMonth();

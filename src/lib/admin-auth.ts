@@ -33,6 +33,22 @@ export async function requireChiefManagerOrAdmin() {
   return { session, userId: session.user.id } as const;
 }
 
+export async function requireManagerOrAbove() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
+  const role = session.user.role;
+  if (role !== "ADMIN" && role !== "CHIEF_MANAGER" && role !== "MANAGER") {
+    return {
+      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    } as const;
+  }
+  return { session, userId: session.user.id } as const;
+}
+
 export function parsePagination(searchParams: URLSearchParams) {
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit")) || 20));

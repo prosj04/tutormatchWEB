@@ -46,7 +46,7 @@ export default async function ConsultationPage({
     prisma.teacherStudent.findFirst({
       where: {
         studentId: student.id,
-        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+        matchStatus: "PENDING_STUDENT_ACCEPT",
       },
       select: {
         id: true,

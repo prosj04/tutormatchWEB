@@ -6,7 +6,11 @@ import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms
 import { prisma } from "@/lib/prisma";
 import { recordAudit } from "@/lib/audit-log";
 
-const ALLOWED_ROLES = [UserRole.TEACHER, UserRole.MANAGER] as const;
+const ALLOWED_ROLES = [
+  UserRole.TEACHER,
+  UserRole.MANAGER,
+  UserRole.CHIEF_MANAGER,
+] as const;
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -37,15 +41,12 @@ export async function PATCH(request: Request, context: RouteContext) {
   const role = ALLOWED_ROLES.find((r) => r === rawRole);
   if (!role) {
     return NextResponse.json(
-      { error: "role must be TEACHER or MANAGER" },
+      { error: "role must be TEACHER, MANAGER, or CHIEF_MANAGER" },
       { status: 400 },
     );
   }
 
-  if (
-    teacher.user.role !== UserRole.TEACHER &&
-    teacher.user.role !== UserRole.MANAGER
-  ) {
+  if (!ALLOWED_ROLES.some((r) => r === teacher.user.role)) {
     return NextResponse.json(
       { error: "Cannot change role for this account" },
       { status: 400 },

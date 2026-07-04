@@ -472,16 +472,16 @@ export async function runAlertChecks() {
   // ── 5. Pending teacher-student match acceptance reminders ──────────────────
   //
   // Find TeacherStudent records created more than 24h ago where the student
-  // has not yet accepted. Prefer the explicit matchStatus, but also match on
-  // isActive = false for rows that predate the matchStatus backfill. Send one
-  // in-app reminder per match, deduped against MATCH_ACCEPTANCE_REMINDER
-  // notifications from the last 24h keyed by match.id.
+  // has not yet accepted (matchStatus === PENDING_STUDENT_ACCEPT). Cancelled
+  // matches must be excluded so students are not nudged to accept a teacher
+  // that was already withdrawn. Send one in-app reminder per match, deduped
+  // against MATCH_ACCEPTANCE_REMINDER notifications from the last 24h.
 
   const pendingMatchCutoff = new Date(Date.now() - DAY_MS);
 
   const pendingMatches = await prisma.teacherStudent.findMany({
     where: {
-      OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
+      matchStatus: "PENDING_STUDENT_ACCEPT",
       createdAt: { lt: pendingMatchCutoff },
     },
     select: {
@@ -1410,17 +1410,28 @@ export async function runAlertChecks() {
   const checkinCandidates = Array.from(firstCompletedByStudent.values());
 
   for (const candidate of checkinCandidates) {
-    // Create SatisfactionCheckin row (this is the dedup — unique per student
-    // assumed here; if a concurrent run inserts one simultaneously, a DB
-    // unique constraint would catch it; we tolerate the rare double-create
-    // since no unique index is defined on (studentId, trigger)).
-    await prisma.satisfactionCheckin.create({
-      data: {
-        studentId: candidate.studentId,
-        trigger: "FIRST_LESSON_D7",
-        requestedAt: new Date(),
-      },
-    });
+    // Hard dedup: @@unique([studentId, trigger]) on SatisfactionCheckin. A
+    // concurrent cron run inserting the same row throws P2002 — skip it and
+    // its notification instead of crashing the whole alert pass.
+    try {
+      await prisma.satisfactionCheckin.create({
+        data: {
+          studentId: candidate.studentId,
+          trigger: "FIRST_LESSON_D7",
+          requestedAt: new Date(),
+        },
+      });
+    } catch (err) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        (err as { code?: unknown }).code === "P2002"
+      ) {
+        continue;
+      }
+      throw err;
+    }
 
     // In-app notification (createNotification dispatches SMS automatically
     // because SATISFACTION_CHECKIN_REQUEST is in SMS_NOTIFICATION_TYPES).
@@ -1634,6 +1645,15 @@ export async function runAlertChecks() {
         customerName: sub.student.name,
       });
 
+      // Toss가 HTTP 200을 주더라도 status가 DONE이 아니면(대기·중단 등) 실제 결제가
+      // 확정된 게 아니므로 성공 처리 금지 — throw로 아래 실패(FAILED) 분기로 보낸다.
+      // 금액도 서버 신뢰값과 일치하는지 재확인(유령 ACTIVE 구독·오알림 방지).
+      if (charged.status !== "DONE" || charged.amount !== v2Plan.priceKrw) {
+        throw new Error(
+          `TOSS_BILLING_NOT_DONE:status=${charged.status}:amount=${charged.amount}`,
+        );
+      }
+
       // Preserve immutable history + issue a new Subscription period. We do NOT
       // reuse completeStudentPayment here because it re-runs confirmTossPayment
       // which requires a widget-issued paymentKey — renewal charges instead go
@@ -1696,25 +1716,33 @@ export async function runAlertChecks() {
       renewalChargesFailed++;
       console.error("[renewal] chargeBillingKey failed:", chargeError);
 
-      // Mark PaymentCompletion FAILED (create or update) so next dunning bucket
-      // can detect prior failure and gate correctly.
+      // Mark PaymentCompletion FAILED so the next dunning bucket can detect prior
+      // failure and gate correctly. Guard the update on status so a concurrent
+      // run that already COMPLETED/REFUNDED this order (same-bucket race) is never
+      // clobbered back to FAILED — that would falsely re-charge a paid student.
       const failedMsg =
         chargeError instanceof Error ? chargeError.message : String(chargeError);
-      await prisma.paymentCompletion.upsert({
-        where: { orderId },
-        create: {
-          orderId,
-          studentId: sub.studentId,
-          plan: sub.plan,
-          status: "FAILED",
-          amount: v2Plan.priceKrw,
-        },
-        update: {
-          status: "FAILED",
-          amount: v2Plan.priceKrw,
-          plan: sub.plan,
-        },
+      const failedUpdate = await prisma.paymentCompletion.updateMany({
+        where: { orderId, status: { notIn: ["COMPLETED", "REFUNDED"] } },
+        data: { status: "FAILED", amount: v2Plan.priceKrw, plan: sub.plan },
       });
+      if (failedUpdate.count === 0) {
+        const existing = await prisma.paymentCompletion.findUnique({
+          where: { orderId },
+          select: { id: true },
+        });
+        if (!existing) {
+          await prisma.paymentCompletion.create({
+            data: {
+              orderId,
+              studentId: sub.studentId,
+              plan: sub.plan,
+              status: "FAILED",
+              amount: v2Plan.priceKrw,
+            },
+          });
+        }
+      }
       void failedMsg;
 
       // Transition Subscription → PAST_DUE (from ACTIVE) so dunning gate applies.

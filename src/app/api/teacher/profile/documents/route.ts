@@ -5,7 +5,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { TEACHER_DOCUMENT_BUCKET } from "@/lib/supabase-client";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
 import { parseJsonArray } from "@/lib/teacher-profile-types";
-import { requireTeacher } from "@/lib/teacher-auth";
+import { requireTeacherAllowPending } from "@/lib/teacher-auth";
 
 type DocumentType = "resume" | "document";
 
@@ -79,7 +79,7 @@ async function getDocumentPayload(teacherId: string) {
 }
 
 export async function GET() {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
@@ -91,7 +91,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 

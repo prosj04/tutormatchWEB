@@ -227,7 +227,8 @@ export async function GET() {
 
   // 1. Fetch all managers (Teacher rows where user.role is MANAGER or CHIEF_MANAGER)
   const managerTeachers = await prisma.teacher.findMany({
-    where: { user: { role: { in: ["MANAGER", "CHIEF_MANAGER"] } } },
+    // 탈퇴(소프트 삭제)한 매니저가 익명화된 채 성과 지표에 남지 않도록 제외.
+    where: { user: { role: { in: ["MANAGER", "CHIEF_MANAGER"] }, deletedAt: null } },
     select: {
       id: true,
       name: true,

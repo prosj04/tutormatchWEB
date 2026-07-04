@@ -8,14 +8,14 @@ import {
   type EducationEntry,
   parseJsonArray,
 } from "@/lib/teacher-profile-types";
-import { requireTeacher } from "@/lib/teacher-auth";
+import { requireTeacherAllowPending } from "@/lib/teacher-auth";
 
 function serializeEntries<T>(entries: T[]): string {
   return JSON.stringify(entries);
 }
 
 export async function GET() {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
@@ -46,7 +46,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const authResult = await requireTeacher();
+  const authResult = await requireTeacherAllowPending();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 

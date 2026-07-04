@@ -1,4 +1,5 @@
 import { ManagerConsultationsPage } from "@/components/teacher-portal/ManagerConsultationsPage";
+import { ManagerUnassignedQuestions } from "@/components/teacher-portal/ManagerUnassignedQuestions";
 import { getManagerWaitingConsultations } from "@/lib/manager-portal-data";
 import { requireManagerPage } from "@/lib/manager-page-auth";
 
@@ -9,10 +10,13 @@ export default async function ConsultationsPage() {
   const initialWaiting = await getManagerWaitingConsultations();
 
   return (
-    <ManagerConsultationsPage
-      initialWaiting={initialWaiting}
-      initialMine={[]}
-      initialMineLoaded={false}
-    />
+    <>
+      <ManagerConsultationsPage
+        initialWaiting={initialWaiting}
+        initialMine={[]}
+        initialMineLoaded={false}
+      />
+      <ManagerUnassignedQuestions />
+    </>
   );
 }

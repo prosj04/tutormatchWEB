@@ -11,7 +11,11 @@ export async function GET(request: Request) {
   const { student } = authResult;
 
   const matches = await prisma.teacherStudent.findMany({
-    where: { studentId: student.id },
+    // CANCELLED 매칭은 유령 카드로 남지 않도록 제외 (수락 대기/활성만 노출).
+    where: {
+      studentId: student.id,
+      matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+    },
     orderBy: { createdAt: "asc" },
     select: {
       id: true,

@@ -20,6 +20,7 @@ type StudentBody = {
   gender?: unknown;
   password?: unknown;
   guardianPhone?: unknown;
+  region?: unknown;
   /** true: 상담 대기 없이 대표 매니저 즉시 배정 */
   instantEnroll?: unknown;
   /** true: 보호자(법정대리인)가 개인정보 수집·이용에 동의 */
@@ -40,32 +41,36 @@ export async function POST(request: Request) {
 
   const { name, grade, subjects, phone, password, guardianPhone: rawGuardianPhone, guardianConsent } = body;
 
-  if (
-    !isNonEmptyString(name) ||
-    !isNonEmptyString(grade) ||
-    !isNonEmptyString(phone) ||
-    !isNonEmptyString(password)
-  ) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  if (!isNonEmptyString(name)) {
+    return NextResponse.json({ error: "이름을 입력해 주세요." }, { status: 400 });
+  }
+  if (!isNonEmptyString(grade)) {
+    return NextResponse.json({ error: "학년을 선택해 주세요." }, { status: 400 });
+  }
+  if (!isNonEmptyString(phone)) {
+    return NextResponse.json({ error: "전화번호를 입력해 주세요." }, { status: 400 });
+  }
+  if (!isNonEmptyString(password) || password.length < 8) {
+    return NextResponse.json({ error: "비밀번호는 8자 이상이어야 합니다." }, { status: 400 });
   }
 
   const phoneDigits = normalizePhoneDigits(phone);
   if (phoneDigits.length < 10 || phoneDigits.length > 11) {
-    return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
+    return NextResponse.json({ error: "올바른 휴대전화 번호를 입력해 주세요." }, { status: 400 });
   }
 
   const gender = parseProfileGender(body.gender);
   if (!gender) {
-    return NextResponse.json({ error: "Gender required" }, { status: 400 });
+    return NextResponse.json({ error: "성별을 선택해 주세요." }, { status: 400 });
   }
 
   if (!Array.isArray(subjects) || subjects.length === 0) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    return NextResponse.json({ error: "희망 과목을 한 개 이상 선택해 주세요." }, { status: 400 });
   }
 
   const subjectStrings = subjects.filter(isNonEmptyString);
   if (subjectStrings.length !== subjects.length) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    return NextResponse.json({ error: "희망 과목을 한 개 이상 선택해 주세요." }, { status: 400 });
   }
 
   const subjectsCsv = subjectStrings.join(",");
@@ -73,8 +78,9 @@ export async function POST(request: Request) {
     ? normalizePhoneDigits(rawGuardianPhone)
     : undefined;
   if (guardianPhone && (guardianPhone.length < 10 || guardianPhone.length > 11)) {
-    return NextResponse.json({ error: "Invalid guardian phone number" }, { status: 400 });
+    return NextResponse.json({ error: "올바른 보호자 휴대전화 번호를 입력해 주세요." }, { status: 400 });
   }
+  const region = isNonEmptyString(body.region) ? body.region.trim().slice(0, 30) : undefined;
   const email = studentSyntheticEmailFromDigits(phoneDigits);
 
   const existing = await prisma.user.findFirst({
@@ -87,7 +93,7 @@ export async function POST(request: Request) {
     },
   });
   if (existing) {
-    return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
+    return NextResponse.json({ error: "이미 가입된 전화번호입니다." }, { status: 409 });
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -110,6 +116,7 @@ export async function POST(request: Request) {
               phone: phoneDigits,
               guardianPhone,
               gender,
+              region,
               guardianConsentAt,
             },
           },
@@ -144,7 +151,11 @@ export async function POST(request: Request) {
         });
       } catch (e) {
         const msg = e instanceof Error ? e.message : "";
-        if (msg !== "ALREADY_ACTIVE" && msg !== "ALREADY_COMPLETED") {
+        if (
+          msg !== "ALREADY_ACTIVE" &&
+          msg !== "ALREADY_COMPLETED" &&
+          msg !== "ALREADY_MATCHING"
+        ) {
           throw e;
         }
       }
@@ -163,7 +174,7 @@ export async function POST(request: Request) {
     );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
+      return NextResponse.json({ error: "이미 가입된 전화번호입니다." }, { status: 409 });
     }
     throw e;
   }

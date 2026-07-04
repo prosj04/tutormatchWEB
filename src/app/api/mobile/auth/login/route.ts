@@ -15,6 +15,7 @@ const userForAuthSelect = {
   email: true,
   password: true,
   role: true,
+  deletedAt: true,
   student: { select: { name: true } },
   teacher: { select: { name: true } },
 } satisfies Prisma.UserSelect;
@@ -70,6 +71,14 @@ export async function POST(request: Request) {
   }
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
+    return NextResponse.json(
+      { error: "아이디 또는 비밀번호가 올바르지 않습니다." },
+      { status: 401 },
+    );
+  }
+
+  // 탈퇴(소프트 삭제)한 계정은 로그인 차단 — 웹 auth.ts와 동일 정책.
+  if (user.deletedAt) {
     return NextResponse.json(
       { error: "아이디 또는 비밀번호가 올바르지 않습니다." },
       { status: 401 },

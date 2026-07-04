@@ -32,7 +32,7 @@ export const CONSULTATION_STATUS_COPY: Record<
 > = {
   WAITING: {
     label: "상담 접수·배정 대기",
-    body: "매니저 배정 후 방문 상담 희망 시간을 안내해 주세요.",
+    body: "담당 매니저가 24시간 안에 연락드립니다. 배정되면 방문 상담 희망 시간을 입력하실 수 있어요. 급한 문의는 help@concordedu.kr 로 보내주세요.",
   },
   ASSIGNED: {
     label: "매니저 배정 완료",
@@ -142,13 +142,12 @@ export async function resolveStudentJourneyStage(
       where: { studentId, isActive: true },
     }),
     prisma.teacherStudent.count({
-      where: {
-        studentId,
-        OR: [{ matchStatus: "PENDING_STUDENT_ACCEPT" }, { isActive: false }],
-      },
+      where: { studentId, matchStatus: "PENDING_STUDENT_ACCEPT" },
     }),
     prisma.lesson.count({
-      where: { studentId, status: { not: "CANCELLED" } },
+      // 실제로 시작된(과거) 수업만 ACTIVE 판단에 사용 — 미래 예약 수업이
+      // 아직 시작 전인데 ACTIVE로 조기 전이되지 않도록 startAt <= now 로 제한.
+      where: { studentId, status: { not: "CANCELLED" }, startAt: { lte: new Date() } },
     }),
     prisma.consultationBooking.findFirst({
       where: { studentId },

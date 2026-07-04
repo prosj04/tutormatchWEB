@@ -42,6 +42,20 @@ export async function createConsultationRequest({
     throw new Error("ALREADY_ACTIVE");
   }
 
+  // 상담이 COMPLETED로 종료돼 open booking이 없더라도, 이미 배정된(수락 대기/활성)
+  // 선생님 매칭이 진행 중이면 새 상담 신청을 막는다 — 매니저 인박스에 유령 상담이
+  // 생기고 진행 중인 매칭과 충돌하지 않도록.
+  const liveMatch = await prisma.teacherStudent.findFirst({
+    where: {
+      studentId,
+      matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+    },
+    select: { id: true },
+  });
+  if (liveMatch) {
+    throw new Error("ALREADY_MATCHING");
+  }
+
   const booking = await prisma.consultationBooking.create({
     data: {
       studentId,

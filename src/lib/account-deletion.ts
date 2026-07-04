@@ -57,6 +57,12 @@ export async function softDeleteUser(userId: string): Promise<void> {
         where: { studentId: user.student.id, status: "ACTIVE" },
         data: { status: "CANCELLED" },
       });
+
+      // 예정된 수업도 취소 — 앱에 유령 수업/참여 링크가 남지 않도록.
+      await tx.lesson.updateMany({
+        where: { studentId: user.student.id, status: "SCHEDULED" },
+        data: { status: "CANCELLED", cancelledBy: "STUDENT" },
+      });
     }
 
     // If teacher record exists, anonymize it
@@ -72,6 +78,25 @@ export async function softDeleteUser(userId: string): Promise<void> {
           gender: null,
           approved: false,
         },
+      });
+
+      // 학생 branch와 대칭: 탈퇴 강사의 활성/수락대기 매칭을 정리해
+      // 학생이 '탈퇴한강사'와의 매칭에 묶이지 않도록 한다.
+      await tx.teacherStudent.updateMany({
+        where: {
+          teacherId: user.teacher.id,
+          OR: [{ isActive: true }, { matchStatus: "PENDING_STUDENT_ACCEPT" }],
+        },
+        data: {
+          isActive: false,
+          matchStatus: "CANCELLED",
+        },
+      });
+
+      // 탈퇴 강사의 예정된 수업도 취소 — 학생 앱에 '탈퇴한강사' 수업이 남지 않도록.
+      await tx.lesson.updateMany({
+        where: { teacherId: user.teacher.id, status: "SCHEDULED" },
+        data: { status: "CANCELLED", cancelledBy: "TEACHER" },
       });
     }
   });

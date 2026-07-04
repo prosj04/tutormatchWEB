@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { AccountDeleteSection } from "@/components/account/AccountDeleteSection";
 import { TeacherProfileEditor } from "@/components/teacher-portal/TeacherProfileEditor";
 import { auth } from "@/auth";
 import { startPerfTimer, timeAsync } from "@/lib/perf-timer";
@@ -56,6 +57,7 @@ export default async function TeacherProfilePage() {
           initialForm={initialForm}
         />
       </div>
+      <AccountDeleteSection />
     </div>
   );
   timer.end({ teacherId: teacher.id });

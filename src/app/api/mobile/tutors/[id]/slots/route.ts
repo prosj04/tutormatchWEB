@@ -12,6 +12,15 @@ export async function GET(
 ) {
   getMobileUser(request);
 
+  // 승인된(데모 아닌) 강사의 슬롯만 노출 — 임의 teacherId로 가용시간 조회 차단.
+  const tutor = await prisma.teacher.findFirst({
+    where: { id: params.id, approved: true, name: { not: { startsWith: "[sample]" } } },
+    select: { id: true },
+  });
+  if (!tutor) {
+    return NextResponse.json({ slots: [] });
+  }
+
   const slots = await prisma.tutorAvailability.findMany({
     where: { teacherId: params.id },
     orderBy: [{ weekday: "asc" }, { time: "asc" }],

@@ -26,9 +26,11 @@ export async function GET() {
     assignedConsultations,
     managerLoad,
   ] = await Promise.all([
-    prisma.student.count({ where: { name: { not: { startsWith: "[sample]" } } } }),
-    prisma.teacher.count({ where: { approved: true, name: { not: { startsWith: "[sample]" } } } }),
-    prisma.teacher.count({ where: { approved: false, name: { not: { startsWith: "[sample]" } } } }),
+    // 탈퇴(소프트 삭제)한 학생/강사는 익명화된 채 남으므로 집계에서 제외.
+    prisma.student.count({ where: { name: { not: { startsWith: "[sample]" } }, deletedAt: null } }),
+    prisma.teacher.count({ where: { approved: true, name: { not: { startsWith: "[sample]" } }, user: { deletedAt: null } } }),
+    // 탈퇴 강사는 approved:false 로 남아 pending 카운트를 부풀리므로 반드시 제외.
+    prisma.teacher.count({ where: { approved: false, name: { not: { startsWith: "[sample]" } }, user: { deletedAt: null } } }),
     prisma.teacherStudent.count({ where: { isActive: true, student: { name: { not: { startsWith: "[sample]" } } } } }),
     prisma.questionMessage.count({
       where: {
@@ -41,7 +43,7 @@ export async function GET() {
     prisma.student.findMany({
       take: 5,
       orderBy: { user: { createdAt: "desc" } },
-      where: { name: { not: { startsWith: "[sample]" } } },
+      where: { name: { not: { startsWith: "[sample]" } }, deletedAt: null },
       select: {
         name: true,
         user: { select: { createdAt: true } },
@@ -58,7 +60,7 @@ export async function GET() {
     prisma.consultationBooking.count({ where: { status: "WAITING", student: { name: { not: { startsWith: "[sample]" } } } } }),
     prisma.consultationBooking.count({ where: { status: "ASSIGNED", student: { name: { not: { startsWith: "[sample]" } } } } }),
     prisma.teacher.findMany({
-      where: { managerStudents: { some: {} }, name: { not: { startsWith: "[sample]" } } },
+      where: { managerStudents: { some: {} }, name: { not: { startsWith: "[sample]" } }, user: { deletedAt: null } },
       select: {
         name: true,
         _count: { select: { managerStudents: true } },

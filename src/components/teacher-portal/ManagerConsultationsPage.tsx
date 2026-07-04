@@ -612,6 +612,11 @@ function WaitingCard({
             <span className="ml-2 text-sm font-normal text-text-secondary">
               {booking.student.grade}
             </span>
+            {booking.student.region ? (
+              <span className="ml-2 text-sm font-normal text-text-secondary">
+                · {booking.student.region}
+              </span>
+            ) : null}
           </p>
           <p className="mt-1 text-sm text-primary">{booking.student.subjects}</p>
         </div>
@@ -670,6 +675,11 @@ function MineCard({
             <span className="ml-2 text-sm font-normal text-text-secondary">
               {booking.student.grade}
             </span>
+            {booking.student.region ? (
+              <span className="ml-2 text-sm font-normal text-text-secondary">
+                · {booking.student.region}
+              </span>
+            ) : null}
           </p>
           <p className="mt-1 text-sm text-primary">{booking.student.subjects}</p>
         </div>
