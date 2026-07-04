@@ -465,11 +465,18 @@ export function CheckoutContent({
                   </p>
                 ) : null}
 
-                <div className="panel-note" style={{ marginTop: 16, fontSize: 13, textAlign: "center", padding: "10px 12px", backgroundColor: "rgba(var(--acc-rgb), 0.08)", borderRadius: "8px" }}>
-                  <span>{c("refund_guarantee", "첫 수업 후 불만족 시 100% 환불해 드립니다. ")}</span>
-                  <Link href="/refund" style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
-                    {c("refund_policy_link", "환불정책")}
-                  </Link>
+                <div className="panel-note" style={{ marginTop: 16, fontSize: 13, padding: "12px 14px", backgroundColor: "rgba(var(--acc-rgb), 0.08)", borderRadius: "8px" }}>
+                  <p style={{ textAlign: "center", margin: 0 }}>
+                    <span>{c("refund_guarantee", "첫 수업 후 불만족 시 100% 환불해 드립니다. ")}</span>
+                    <Link href="/refund" style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
+                      {c("refund_policy_link", "환불정책")}
+                    </Link>
+                  </p>
+                  <ul style={{ margin: "10px 0 0", paddingLeft: "1.1rem", fontSize: 12, lineHeight: 1.7, color: "var(--mut)" }}>
+                    <li>수업 시작 전: 전액 환불</li>
+                    <li>첫 수업 후 3일 이내: 위약금 없이 100% 환불 (최초 1회)</li>
+                    <li>월 중도 해지: 진행된 회차의 정가만 공제 후 잔액 환불</li>
+                  </ul>
                 </div>
 
                 <CmsText active={isEditMode} cmsKey="pay_button">
