@@ -19,6 +19,7 @@ type PendingCheckoutSignup = {
   gender: "MALE" | "FEMALE";
   password: string;
   subjects: string[];
+  guardianConsent?: boolean;
 };
 
 type Status = "loading" | "done" | "no-data" | "error";
@@ -70,6 +71,8 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
           gender: payload.gender,
           subjects: payload.subjects,
           instantEnroll: true,
+          // 구버전 세션 payload(필드 부재)는 결제 시점 필수 약관 동의를 근거로 true 처리
+          guardianConsent: payload.guardianConsent !== false,
         }),
       });
 

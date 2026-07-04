@@ -113,8 +113,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "이미 가입된 전화번호 또는 이메일입니다." }, { status: 409 });
   }
 
+  // 학생 회원은 미성년자 전제 — 법정대리인(보호자) 동의 없이는 가입 불가 (BR-8).
+  if (body.guardianConsent !== true) {
+    return NextResponse.json(
+      { error: "보호자(법정대리인) 동의가 필요합니다." },
+      { status: 400 },
+    );
+  }
+
   const hashed = await bcrypt.hash(password, 10);
-  const guardianConsentAt = body.guardianConsent === true ? new Date() : undefined;
+  const guardianConsentAt = new Date();
 
   const user = await prisma.user.create({
     data: {

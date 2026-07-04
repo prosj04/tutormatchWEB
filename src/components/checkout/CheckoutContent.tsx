@@ -172,6 +172,8 @@ export function CheckoutContent({
             gender,
             password,
             subjects: selectedSubjects,
+            // termsAgreed 필수 체크가 보호자 동의 문구를 포함하므로 이 시점엔 항상 true
+            guardianConsent: true,
           }),
         );
       } else {
@@ -452,7 +454,8 @@ export function CheckoutContent({
                     <Link href="/privacy" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
                       개인정보처리방침
                     </Link>
-                    에 동의합니다. (필수)
+                    에 동의하며, 미성년 학생의 경우 보호자(법정대리인)로서
+                    개인정보 수집·이용 및 서비스 이용에 동의합니다. (필수)
                   </span>
                 </label>
 
