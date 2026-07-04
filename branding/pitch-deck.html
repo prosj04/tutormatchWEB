@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord IR Deck</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-press:#0CA372; --green-text:#07875A;
+    --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  @page{ size:338.67mm 190.5mm; margin:0; }
+  .slide{ width:338.67mm; height:190.5mm; page-break-after:always; position:relative; overflow:hidden;
+    background:var(--bg); padding:14mm 18mm 12mm; display:flex; flex-direction:column; }
+  .slide:last-child{ page-break-after:auto; }
+
+  .sh{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6mm; }
+  .sh .no{ font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); }
+  .sh .wm{ font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--mut2); }
+  .sf{ position:absolute; bottom:7mm; left:18mm; right:18mm; display:flex; justify-content:space-between;
+    font-size:9px; color:var(--mut2); }
+
+  h1.t{ font-size:30px; font-weight:800; letter-spacing:-.035em; line-height:1.12; margin-bottom:3mm; }
+  .lede{ font-size:13.5px; color:var(--mut); max-width:120ch; margin-bottom:7mm; }
+  .kw{ color:var(--green-text); }
+
+  .grid{ display:grid; gap:5mm; }
+  .c2{ grid-template-columns:1fr 1fr; } .c3{ grid-template-columns:1fr 1fr 1fr; } .c4{ grid-template-columns:repeat(4,1fr); }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:6mm 7mm;
+    box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06); }
+  .card h3{ font-size:15px; font-weight:800; letter-spacing:-.02em; margin-bottom:2mm; }
+  .card p, .card li{ font-size:11.5px; color:var(--mut); }
+  .eyebrow{ display:inline-block; font-size:10px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); margin-bottom:2mm; }
+
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+
+  .dark{ background:var(--fg); color:#fff; }
+  .dark .grid-bg{ position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:60px 60px;
+    -webkit-mask-image:radial-gradient(1000px 660px at 82% -8%,#000,transparent 78%); }
+  .dark .glow{ position:absolute; inset:0; background:radial-gradient(900px 560px at 84% -14%, rgba(16,185,129,.28), transparent 62%); }
+  .dark .sf{ color:rgba(255,255,255,.4); }
+
+  ul.t{ list-style:none; } ul.t li{ padding-left:4.5mm; position:relative; margin-bottom:2mm; }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.5em; width:2mm; height:2mm; border-radius:50%; background:var(--green); }
+  ul.t b{ color:var(--fg); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ font-size:10.5px; font-weight:700; color:var(--mut2); text-align:left; padding:2.4mm 3mm; border-bottom:1.5px solid var(--line2); letter-spacing:.04em; }
+  td{ font-size:11.5px; padding:2.6mm 3mm; border-bottom:1px solid var(--line); color:var(--mut); font-variant-numeric:tabular-nums; }
+  td b{ color:var(--fg); } tr:last-child td{ border-bottom:0; }
+  tr.hl td{ background:rgba(16,185,129,.07); }
+
+  .big{ font-size:38px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05; }
+  .big em{ font-style:normal; color:var(--green-text); }
+  .cap{ font-size:10px; color:var(--mut2); }
+
+  .flowrow{ display:grid; grid-template-columns:repeat(6,1fr); gap:3.5mm; }
+  .fstep{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4mm; }
+  .fstep .sn{ font-size:9px; font-weight:800; letter-spacing:.16em; color:var(--green-text); }
+  .fstep b{ display:block; font-size:11px; letter-spacing:-.02em; margin:1mm 0 .5mm; color:var(--fg); }
+  .fstep span{ font-size:9.5px; color:var(--mut); line-height:1.45; display:block; }
+
+  .shot{ border-radius:14px; border:1px solid var(--line2); box-shadow:0 14px 34px rgba(34,38,30,.14); width:100%; }
+</style>
+</head>
+<body>
+
+<!-- ═══ 1. COVER ═══ -->
+<div class="slide dark" style="justify-content:space-between;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;"><img src="concord-appicon.png" style="width:19mm; height:19mm; border-radius:28.5%; box-shadow:0 12px 34px rgba(16,185,129,.35);"></div>
+  <div style="position:relative;">
+    <div class="wordmark" style="font-size:26px;">Concord<span class="dot"></span></div>
+    <h1 style="font-size:52px; font-weight:800; letter-spacing:-.04em; line-height:1.08; margin:6mm 0 5mm;">검증된 선생님과 전담 매니저가<br>완성하는 <span style="color:#5EE0AC;">대면 1:1 과외</span></h1>
+    <p style="font-size:15px; color:rgba(255,255,255,.72);">서울·분당 프리미엄 과외 매칭 · 학습 관리 플랫폼 — Investor &amp; 창업지원사업 IR</p>
+    <div style="display:flex; gap:12mm; font-size:11.5px; color:rgba(255,255,255,.55); margin-top:7mm;">
+      <div><b style="color:#fff; display:block;">2026. 07 · v1.0</b>IR Deck</div>
+      <div><b style="color:#fff; display:block;">tutormatch-web.vercel.app</b>라이브 서비스</div>
+      <div><b style="color:#fff; display:block;">대표자 [기재 필요]</b>Concord Private Tutoring</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. PROBLEM ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">01 — Problem</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">선생님은 넘쳐나는데,<br><span class="kw">'검증된 선생님'</span>은 찾을 수 없습니다</h1>
+  <p class="lede">강사 실력·성실성·궁합은 몇 주를 가르쳐 봐야 아는 경험재인데, 학부모는 학력·사진·자기소개만 보고 고액 계약을 강요받습니다. 공급은 과잉이지만 '검증된 공급'은 희소한 <b>정보 비대칭</b>이 이 시장의 핵심 문제입니다.</p>
+  <div class="grid c3" style="margin-bottom:6mm;">
+    <div class="card"><span class="eyebrow">검증 비대칭</span><h3>사전 검증 수단이 없다</h3><p>학부모마다, 계약마다 검증 비용을 처음부터 중복 지불. 신뢰할 신호는 학력·사진뿐.</p></div>
+    <div class="card"><span class="eyebrow">매칭 실패 비용</span><h3>실패하면 전부 학부모 부담</h3><p>재탐색·계약해지·환불 분쟁·학습 공백. 학군지 1가정당 연 수백만 원 손실 사례.</p></div>
+    <div class="card"><span class="eyebrow">관리 부재</span><h3>매칭 이후는 '깜깜이'</h3><p>진도·과제·성적 변화를 확인할 채널이 없어 학부모는 불안하고, 강사는 평판 리스크.</p></div>
+  </div>
+  <div class="card" style="display:flex; gap:14mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none;">
+    <div><div class="big">29.2조</div><span class="cap">2024 사교육비 총액 · 4년 연속 최고치</span></div>
+    <div><div class="big">80.0%</div><span class="cap">사교육 참여율</span></div>
+    <div><div class="big">43.9만</div><span class="cap">1:1 과외 월평균(참여학생) — 최고단가 유형</span></div>
+    <div><div class="big">62.8만</div><span class="cap">서울 1인당 월평균 — 전국 1위</span></div>
+    <div style="margin-left:auto; max-width:60mm;"><span class="cap">출처: 교육부·통계청 「초중고 사교육비조사」 (2024·2023)</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>2</span></div>
+</div>
+
+<!-- ═══ 3. MARKET ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">02 — Market</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">가장 비싼 사교육, 가장 낙후된 거래 구조</h1>
+  <p class="lede">1:1 과외는 사교육 중 최고 단가·최고 관여 영역이지만, 거래는 여전히 카카오톡 단체방·지인 소개·나열형 앱에 의존합니다. 시장은 크고 성장하는데 구조는 20년 전과 같습니다.</p>
+  <div class="grid" style="grid-template-columns:1.2fr 1fr; flex:1;">
+    <div style="display:flex; flex-direction:column; gap:4mm; justify-content:center;">
+      <div class="card" style="padding:5mm 8mm; display:flex; align-items:center; gap:8mm;">
+        <div class="big" style="min-width:44mm;">29.2조</div>
+        <div><b style="font-size:13px;">TAM — 국내 초중고 사교육 시장</b><p class="cap">교육부·통계청 공식 통계 (2024)</p></div>
+      </div>
+      <div class="card" style="padding:5mm 8mm; display:flex; align-items:center; gap:8mm; width:86%;">
+        <div class="big" style="min-width:44mm;">약 3조</div>
+        <div><b style="font-size:13px;">SAM — 1:1 개인과외 시장</b><p class="cap">유형별 비중 적용 자체 추산 (신청 시 재확인)</p></div>
+      </div>
+      <div class="card" style="padding:5mm 8mm; display:flex; align-items:center; gap:8mm; width:72%; border-color:var(--green); border-width:1.5px;">
+        <div class="big" style="min-width:44mm;"><em>400~500억</em></div>
+        <div><b style="font-size:13px;">SOM — 서울·분당 프리미엄 1:1 과외</b><p class="cap">3년 내 유효시장 · 3년차 목표는 SOM의 약 2%</p></div>
+      </div>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Why Now</span>
+      <ul class="t" style="margin-top:2mm;">
+        <li><b>지불 의향의 비탄력성</b> — 학생 수 감소에도 사교육비 4년 연속 최고치 경신</li>
+        <li><b>LLM 보편화</b> — 수업 외 학습 공백을 AI 질답으로 저비용 커버 가능해짐</li>
+        <li><b>인프라 성숙</b> — 토스페이먼츠·Vercel·Supabase로 소규모 팀도 안정 운영</li>
+        <li><b>디지털 수용성</b> — 코로나 이후 학부모의 학습관리 앱 수용도 급상승</li>
+      </ul>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>3</span></div>
+</div>
+
+<!-- ═══ 4. SOLUTION ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">03 — Solution</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">검증·매칭·관리를 플랫폼이 대신 떠안고,<br>그 편익을 <span class="kw">프리미엄 마진</span>으로 회수합니다</h1>
+  <p class="lede">학부모가 개별 부담하던 검증·탐색·관리 비용을 플랫폼이 한 번만 수행해 모든 수요자에게 재사용시키는 구조 — 로펌이 변호사를 배정하듯, 매니저가 선생님을 배정합니다.</p>
+  <div class="grid c3" style="margin-bottom:6mm;">
+    <div class="card"><span class="eyebrow">① 검증 Verify</span><h3>면접 · 서류 · 범죄경력조회</h3><p>3단계 검증을 통과한 강사만 등록. 시장의 과잉 공급을 '검증된 공급'으로 전환.</p></div>
+    <div class="card"><span class="eyebrow">② 매칭 Match</span><h3>매니저 대면 상담 → 배정 → 학생 수락</h3><p>전담 매니저가 직접 만나 파악 후 배정. 학생이 수락 버튼으로 확정해야 수업 시작. 미스매치는 무료 재매칭.</p></div>
+    <div class="card"><span class="eyebrow">③ 관리 Care</span><h3>수업 밖까지 앱으로</h3><p>주간 숙제 자동 분배, AI 즉시 질답 + 강사 답변, 진도·과제 실시간 열람과 학습 리포트.</p></div>
+  </div>
+  <span class="eyebrow">Service Flow — 전 과정이 이미 시스템으로 구현되어 있습니다</span>
+  <div class="flowrow" style="margin-top:2mm;">
+    <div class="fstep"><span class="sn">1</span><b>상담 신청/결제</b><span>결제 시 매니저 자동 배정</span></div>
+    <div class="fstep"><span class="sn">2</span><b>대면 심층 상담</b><span>매니저가 직접 방문</span></div>
+    <div class="fstep"><span class="sn">3</span><b>강사 배정</b><span>매니저 자율 매칭</span></div>
+    <div class="fstep"><span class="sn">4</span><b>학생 수락</b><span>명시적 승인 버튼</span></div>
+    <div class="fstep"><span class="sn">5</span><b>수업 + 숙제 분배</b><span>주간 숙제 자동 분배·템플릿</span></div>
+    <div class="fstep"><span class="sn">6</span><b>질답·리포트·정산</b><span>AI 질답, 월말 시급 정산</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>4</span></div>
+</div>
+
+<!-- ═══ 5. PRODUCT ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">04 — Product</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">아이디어가 아니라, <span class="kw">작동하는 소프트웨어</span>입니다</h1>
+  <p class="lede">웹 플랫폼과 모바일 백엔드가 실서비스 수준으로 완성 — 1인 풀스택 자체 개발. 심사 대상은 기획서가 아니라 라이브 제품입니다.</p>
+  <div class="grid" style="grid-template-columns:1.15fr 1fr; flex:1; align-items:start;">
+    <div>
+      <img class="shot" src="site-home.png" alt="Concord 라이브 서비스">
+      <p class="cap" style="margin-top:2mm; text-align:center;">라이브 서비스 — tutormatch-web.vercel.app</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <div class="card" style="padding:5mm 6mm;">
+        <span class="eyebrow">웹 플랫폼 — 완성</span>
+        <ul class="t" style="margin-top:1mm;">
+          <li>4역할 포털 완전 분리 (학생·강사·매니저·관리자)</li>
+          <li>토스페이먼츠 결제 + 서버 승인 검증, 보호자 동의·결제자 확인</li>
+          <li>캘린더 학습 플랜(DnD) · 가중치 기반 숙제 자동 분배 · 반복 템플릿</li>
+          <li>학생 질문 → Claude AI 즉시 답변 + 강사 답변 이중 구조</li>
+          <li>관리자 CMS · 인앱 알림 · 일일 자동 배치(미답변·진도 경고)</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:5mm 6mm;">
+        <span class="eyebrow">모바일 — 백엔드 완성</span>
+        <p>학생/강사 API 58종 · JWT 인증 · 푸시 스키마 완성. React Native 앱은 <b>지원금으로 완성 예정</b>.</p>
+      </div>
+      <div class="card" style="padding:5mm 6mm;">
+        <span class="eyebrow">Stack</span>
+        <p>Next.js 14 · TypeScript · Prisma · Supabase PostgreSQL · Vercel · 토스페이먼츠 · Anthropic Claude</p>
+      </div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>5</span></div>
+</div>
+
+<!-- ═══ 6. BUSINESS MODEL ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">05 — Business Model</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">선불 월정액 − 시급 정산 = <span class="kw">평균 마진 34.2%</span></h1>
+  <p class="lede">학부모가 월 수업료를 선불 결제하고, 강사에게 시급 30,000원/h로 월말 정산합니다. 차액이 플랫폼 매출 — 단순하고 투명하며, 코드에 이미 구현된 정산 구조입니다.</p>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr; flex:1; align-items:start;">
+    <div class="card">
+      <span class="eyebrow">8개 플랜 단가 구조 (2026-07 시행)</span>
+      <table style="margin-top:2mm;">
+        <tr><th>플랜</th><th>월 수업</th><th>판매가</th><th>강사비</th><th>기여마진</th><th>마진율</th></tr>
+        <tr><td>중등 주1·2h</td><td>8h</td><td>380,000</td><td>240,000</td><td>131,640</td><td>34.6%</td></tr>
+        <tr><td>중등 주2·2h</td><td>16h</td><td>760,000</td><td>480,000</td><td>263,280</td><td>34.6%</td></tr>
+        <tr><td>고등 주1·2h</td><td>8h</td><td>430,000</td><td>240,000</td><td>180,540</td><td>42.0%</td></tr>
+        <tr><td>고등 주2·3h</td><td>24h</td><td>1,120,000</td><td>720,000</td><td>375,360</td><td>33.5%</td></tr>
+        <tr class="hl"><td><b>8플랜 평균</b></td><td>15h</td><td><b>707,500</b></td><td>450,000</td><td><b>241,935</b></td><td><b>34.2%</b></td></tr>
+      </table>
+      <p class="cap" style="margin-top:2mm;">변동비 = 강사 시급 30,000원/h × 월 수업시간 + PG 2.2%(토스). 마진율 범위 29.9~42.0%. 대표 4개 플랜 발췌 — 전체 8플랜은 재무계획 §1-3.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <div class="card" style="padding:5mm 6mm;">
+        <span class="eyebrow">확장 수익 (파일럿 검증 후)</span>
+        <ul class="t" style="margin-top:1mm;">
+          <li>매니저형 학원 SaaS 라이선스</li>
+          <li>학습 데이터 기반 진로·컨설팅 상품</li>
+          <li>B2B 학원 파트너십</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:5mm 6mm; background:var(--fg); border:0; color:#fff;">
+        <span class="eyebrow" style="color:#5EE0AC;">왜 방어되는가</span>
+        <p style="color:rgba(255,255,255,.78);">검증 데이터·매칭 이력·학습 기록이 플랫폼에 축적 → 직거래로 이탈하면 매니저 관리·리포트·재매칭 보장을 모두 잃는 <b style="color:#fff;">락인 구조</b>. 강사 계약서 직거래 금지 조항 병행.</p>
+      </div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>6</span></div>
+</div>
+
+<!-- ═══ 7. UNIT ECONOMICS ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">06 — Unit Economics</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">활성 학생 5명이면 손익분기 —<br>고정비가 거의 없는 구조</h1>
+  <p class="lede">30명까지 대표자가 직접 운영해 월 고정비 약 65~120만 원. 이후 매니저 보수도 담당 학생 기여마진의 일정 비율(변동비)로 설계되어, 고정 인건비 없이 확장됩니다.</p>
+  <div class="grid c4" style="margin-bottom:6mm;">
+    <div class="card"><span class="eyebrow">객단가 (월)</span><div class="big">65만</div><span class="cap">파일럿 믹스 가정 · 8플랜 평균 70.75만</span></div>
+    <div class="card"><span class="eyebrow">학생 1인 월 기여마진</span><div class="big"><em>21.6만</em></div><span class="cap">플랜 믹스별 21.6~24.2만 원</span></div>
+    <div class="card"><span class="eyebrow">BEP</span><div class="big">5명 / 14명</div><span class="cap">Phase 1 (고정비 100만) / Phase 2 (고정비 300만)</span></div>
+    <div class="card"><span class="eyebrow">LTV / CAC 목표</span><div class="big"><em>5 : 1</em></div><span class="cap">LTV 130~200만 · CAC 20~25만 (기본 시나리오)</span></div>
+  </div>
+  <div class="grid c2">
+    <div class="card">
+      <span class="eyebrow">학생 1인 월 손익 (기본 시나리오)</span>
+      <table style="margin-top:2mm;">
+        <tr><td>월 수업료 (객단가)</td><td style="text-align:right;"><b>+650,000</b></td></tr>
+        <tr><td>강사 정산 (14h × 30,000원)</td><td style="text-align:right;">−420,000</td></tr>
+        <tr><td>PG 수수료 (2.2%)</td><td style="text-align:right;">−14,300</td></tr>
+        <tr class="hl"><td><b>월 기여마진</b></td><td style="text-align:right;"><b>+215,700</b></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="eyebrow">비용 구조의 특징</span>
+      <ul class="t" style="margin-top:2mm;">
+        <li><b>고정비 최소</b> — 인프라(Vercel·Supabase) 월 10~30만 원 수준, 사무실 불필요</li>
+        <li><b>매니저 = 변동비</b> — 담당 학생 기여마진 연동 성과급, 학생 없으면 비용 0</li>
+        <li><b>마케팅은 계측 후 증액</b> — GA4·픽셀로 CAC 검증된 채널만 확대</li>
+      </ul>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>7</span></div>
+</div>
+
+<!-- ═══ 8. COMPETITION ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">07 — Competition</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">정면 경쟁이 아니라, <span class="kw">빈 카테고리 선점</span>입니다</h1>
+  <p class="lede">비대면 태블릿(콴다과외·설탭)과 나열형 중개(김과외·숨고) 사이 — "검증된 대면 1:1 + 전담 매니저 관리"를 제공하는 사업자는 현재 국내에 없습니다.</p>
+  <div class="card" style="margin-bottom:5mm;">
+    <table>
+      <tr><th></th><th>수업 형태</th><th>강사 검증</th><th>매칭 방식</th><th>사후 학습관리</th><th>타겟</th></tr>
+      <tr><td><b>콴다과외 · 설탭</b></td><td>비대면 (태블릿)</td><td>자체 검증</td><td>앱 매칭</td><td>앱 내 도구</td><td>중저가 대중</td></tr>
+      <tr><td><b>김과외 · 숨고</b></td><td>대면 (중개만)</td><td>없음</td><td>학부모 셀프</td><td>없음</td><td>셀프 검증 가능층</td></tr>
+      <tr><td><b>대형 학원</b></td><td>집합 수업</td><td>—</td><td>—</td><td>일괄 진도</td><td>대중</td></tr>
+      <tr class="hl"><td><b style="color:var(--green-text);">Concord</b></td><td><b>대면 1:1</b></td><td><b>면접·서류·범죄경력조회</b></td><td><b>매니저 대면 상담 후 배정</b></td><td><b>매니저 밀착 + 앱</b></td><td><b>서울·분당 학군지 프리미엄</b></td></tr>
+    </table>
+  </div>
+  <div class="grid c3">
+    <div class="card"><h3 style="color:var(--green-text);">vs 비대면 태블릿</h3><p>대면 수요(특히 초·중등, 학군지)는 태블릿이 대체 불가. 다른 카테고리로 포지셔닝해 경쟁 회피.</p></div>
+    <div class="card"><h3 style="color:var(--green-text);">vs 나열형 중개</h3><p>저관여·셀프 검증층과 오버랩 낮음. 프리미엄층은 '목록'이 아니라 '책임 배정'을 구매.</p></div>
+    <div class="card"><h3 style="color:var(--green-text);">vs 지인 소개</h3><p>매니저 대면 상담이 소개의 '체감 신뢰'를 대체하고, 검증·재매칭·리포트는 소개가 못 주는 가치.</p></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>8</span></div>
+</div>
+
+<!-- ═══ 9. GTM ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">08 — Go-to-Market</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">파일럿 → 증거 → 유료 채널 → 지역 확장</h1>
+  <p class="lede">허수 지표 대신 실후기·실촬영·성적 사례를 먼저 확보하고, CAC가 검증된 채널에만 예산을 증액하는 순서로 확장합니다.</p>
+  <div class="flowrow" style="flex:1; align-items:stretch;">
+    <div class="fstep"><span class="sn">PHASE 0 · D-8~0</span><b>공급 확보</b><span>검증 강사 5~10명 + 매니저 1명. 대학 커뮤니티, '창립 멤버' 우대 조건</span></div>
+    <div class="fstep"><span class="sn">PHASE 1 · ~10주</span><b>유상 파일럿</b><span>서울·분당 5~10가정. 후기·사진 동의 조건 할인</span></div>
+    <div class="fstep"><span class="sn">PHASE 2 · ~6M</span><b>증거 전환</b><span>실촬영·실후기·성적 사례로 사이트 마케팅 자산 전면 교체</span></div>
+    <div class="fstep"><span class="sn">PHASE 3 · ~12M</span><b>유료 채널 개시</b><span>활성 50명 · 강사 20명. 네이버 검색·스마트플레이스, 카카오톡 채널, GA4 계측</span></div>
+    <div class="fstep"><span class="sn">PHASE 4 · ~24M</span><b>지역 확장</b><span>활성 100명+. 서초·용인·수지, 지역 매니저 채용(변동비)</span></div>
+    <div class="fstep"><span class="sn">PHASE 5 · ~36M</span><b>전국 · B2B</b><span>활성 150~170명. 학원 SaaS 파일럿, 매니저 프랜차이즈형</span></div>
+  </div>
+  <div class="card" style="margin-top:5mm; background:var(--panel-2); border:0; box-shadow:none; padding:4.5mm 7mm;">
+    <p style="font-size:11.5px;"><b>핵심 KPI</b> — 월 활성 학생(MAS) · 상담→결제 전환율 30~40% · 3개월 학생 유지율 80%+ · 6개월 강사 유지율 70%+ · NPS · LTV/CAC 5:1+</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>9</span></div>
+</div>
+
+<!-- ═══ 10. FINANCIALS ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">09 — Financials</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">3년, 활성 170명 · 누적 거래 15억 ·<br>기여마진 <span class="kw">5.1억</span> (기본 시나리오)</h1>
+  <p class="lede">보수/기본/공격 3개 시나리오로 설계했으며, 모든 가정(전환율·이탈률·객단가)은 파일럿 실측 후 갱신하도록 명시했습니다.</p>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr; flex:1; align-items:start;">
+    <div class="card">
+      <span class="eyebrow">기본 시나리오 램프업 (전환율 30% · 월 이탈 5%)</span>
+      <table style="margin-top:2mm;">
+        <tr><th>반기</th><th>월 신규 상담</th><th>반기말 활성 학생</th><th>매출(수업료)</th></tr>
+        <tr><td>2026 H2 (파일럿)</td><td>15건</td><td>15명</td><td>0.3억</td></tr>
+        <tr><td>2027</td><td>30→60건</td><td>75명</td><td>연 2.5억</td></tr>
+        <tr><td>2028</td><td>90→120건</td><td>145명</td><td>연 6.0억</td></tr>
+        <tr class="hl"><td><b>2029 H1</b></td><td>150건</td><td><b>170명</b></td><td><b>반기 6.2억</b></td></tr>
+      </table>
+      <p class="cap" style="margin-top:2mm;">시나리오 범위: 보수(3년 누적 거래 8.9억·마진 3.0억) ~ 공격(26.0억·8.9억)</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <div class="card" style="padding:5mm 6mm;"><span class="eyebrow">자립 시점</span><div class="big" style="font-size:26px;">지원금 소진 후 <em>12개월 내</em></div><span class="cap">기본 시나리오 · Phase 2 BEP(활성 14명)는 2027 H1</span></div>
+      <div class="card" style="padding:5mm 6mm;"><span class="eyebrow">후속 자금</span><p>3차년도 활성 150명·플랫폼 매출 5억 규모 도달 후 TIPS·에듀테크 액셀러레이터·Pre-A 라운드 검토. B2B SaaS·지역 확장·AI 매칭이 시리즈 A 성장 축.</p></div>
+      <div class="card" style="padding:5mm 6mm; background:var(--panel-2); border:0; box-shadow:none;"><p class="cap">상세: 부속 「3개년 재무계획」 — 실제 요금제 코드(src/lib/pricing-plans.ts) 단가 기반, 가정 명시형.</p></div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>10</span></div>
+</div>
+
+<!-- ═══ 11. TEAM ═══ -->
+<div class="slide">
+  <div class="sh"><span class="no">10 — Team</span><span class="wm">Concord IR</span></div>
+  <h1 class="t">문제를 겪은 사람이, 직접 제품까지 만들었습니다</h1>
+  <p class="lede">과외·학원 강사 2년 경력의 도메인 전문성과 풀스택 개발 역량의 결합 — 기획에서 배포까지 1인 완결 구조로 실행 속도가 가장 빠릅니다.</p>
+  <div class="grid c2" style="margin-bottom:5mm;">
+    <div class="card">
+      <span class="eyebrow">Founder</span>
+      <table style="margin-top:2mm;">
+        <tr><td>성명 · 생년</td><td><b>[기재 필요]</b></td></tr>
+        <tr><td>학력</td><td>[기재 필요] (성균관대학교 경영학과 재학 — 신청 시점 확인)</td></tr>
+        <tr><td>도메인</td><td><b>학원·개인 과외 강사 2년+</b> — 학부모·학생·강사 3자 관점 체득</td></tr>
+        <tr><td>기술</td><td>Next.js · React · TypeScript · Prisma · PostgreSQL 풀스택 단독 구현</td></tr>
+        <tr><td>역할</td><td>기획 · 개발 · 초기 매니저 겸무</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="eyebrow">실행 역량의 증거</span>
+      <ul class="t" style="margin-top:2mm;">
+        <li><b>이미 만든 제품</b> — 4역할 포털·결제·AI·CMS의 라이브 플랫폼 + 모바일 API 58종</li>
+        <li><b>문제 → 설계 직결</b> — 강사 경력에서 도출한 검증 비대칭·관리 부재가 그대로 기능이 됨</li>
+        <li><b>리스크 사전 식별</b> — 법률·재무·마케팅 리스크 30여 항목을 내부 문서로 관리, 개시 전 블로커 해소 계획 수립</li>
+      </ul>
+    </div>
+  </div>
+  <span class="eyebrow">채용 로드맵 — 지원금 인건비의 사용처</span>
+  <div class="grid c4" style="margin-top:2mm;">
+    <div class="card" style="padding:4.5mm 5mm;"><b style="font-size:12px;">개시 직후</b><p>학습 매니저 1~2명 — 상담·배정·모니터링. 대표는 개발·전략 집중</p></div>
+    <div class="card" style="padding:4.5mm 5mm;"><b style="font-size:12px;">~6개월</b><p>마케팅 파트너 — SNS·맘카페·네이버 콘텐츠</p></div>
+    <div class="card" style="padding:4.5mm 5mm;"><b style="font-size:12px;">~12개월</b><p>모바일 개발 (채용 또는 외주) — RN 앱 완성</p></div>
+    <div class="card" style="padding:4.5mm 5mm;"><b style="font-size:12px;">~24개월</b><p>AI·매칭 개발자 — 강사 추천 알고리즘 고도화</p></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>11</span></div>
+</div>
+
+<!-- ═══ 12. ASK ═══ -->
+<div class="slide dark">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div class="sh" style="position:relative;"><span class="no" style="color:#5EE0AC;">11 — Ask</span><span class="wm" style="color:rgba(255,255,255,.4);">Concord IR</span></div>
+  <div style="position:relative;">
+    <h1 class="t" style="color:#fff;">지원금 1억 원 — 개발이 아니라<br><span style="color:#5EE0AC;">시장 검증과 성장</span>에 씁니다</h1>
+    <p class="lede" style="color:rgba(255,255,255,.65);">제품이 이미 완성되어 있다는 것이 Concord의 가장 큰 자본 효율입니다. 예비창업패키지 1억 원 기준 배분:</p>
+  </div>
+  <div style="position:relative; display:flex; height:16mm; border-radius:999px; overflow:hidden; font-size:11px; font-weight:800; margin-bottom:6mm;">
+    <div style="flex:30; background:#10B981; display:flex; align-items:center; justify-content:center;">인건비 30%</div>
+    <div style="flex:25; background:#0CA372; display:flex; align-items:center; justify-content:center;">사업화 25%</div>
+    <div style="flex:25; background:#07875A; display:flex; align-items:center; justify-content:center;">마케팅 25%</div>
+    <div style="flex:15; background:#2e3d36; display:flex; align-items:center; justify-content:center;">운영 15%</div>
+    <div style="flex:5; background:#454a47; display:flex; align-items:center; justify-content:center;">5%</div>
+  </div>
+  <div class="grid c4" style="position:relative;">
+    <div><b style="color:#5EE0AC; font-size:12.5px;">인건비 3,000만</b><p style="font-size:11px; color:rgba(255,255,255,.65); margin-top:1mm;">학습 매니저 1~2인 채용 (개시~9M). 대표자는 개발·전략 집중</p></div>
+    <div><b style="color:#5EE0AC; font-size:12.5px;">사업화 2,500만</b><p style="font-size:11px; color:rgba(255,255,255,.65); margin-top:1mm;">RN 모바일 앱 완성, 토스 빌링키 자동결제, 강사 추천 알고리즘 1차</p></div>
+    <div><b style="color:#5EE0AC; font-size:12.5px;">마케팅 2,500만</b><p style="font-size:11px; color:rgba(255,255,255,.65); margin-top:1mm;">네이버 검색·스마트플레이스, 카카오톡 채널, 실촬영·후기 자산</p></div>
+    <div><b style="color:#5EE0AC; font-size:12.5px;">운영 1,500만 + 예비 500만</b><p style="font-size:11px; color:rgba(255,255,255,.65); margin-top:1mm;">법인 설립·신고, 법무·세무, 약관·개인정보 정비, 배상책임보험 / 환불 준비금</p></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — IR Deck v1.0</span><span>12</span></div>
+</div>
+
+<!-- ═══ 13. CLOSING ═══ -->
+<div class="slide dark" style="justify-content:center; align-items:center; text-align:center;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; display:flex; flex-direction:column; align-items:center; gap:7mm;">
+    <img src="concord-appicon.png" style="width:17mm; height:17mm; border-radius:28.5%; box-shadow:0 12px 34px rgba(16,185,129,.35);">
+    <div class="wordmark" style="font-size:40px; color:#fff;">Concord<span class="dot"></span></div>
+    <p style="font-size:19px; font-weight:800; letter-spacing:-.03em; line-height:1.4;">"학생마다 맞는 선생님이 다릅니다."<br><span style="color:#5EE0AC;">맞는 만남을 찾고, 그 만남을 끝까지 관리합니다.</span></p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">tutormatch-web.vercel.app · 대표자 [기재 필요] · prosj04@gmail.com<br>Concord IR Deck v1.0 · 2026. 07 — 세부 근거: 사업계획서(PSST)·3개년 재무계획 부속 문서</p>
+  </div>
+</div>
+
+</body>
+</html>
