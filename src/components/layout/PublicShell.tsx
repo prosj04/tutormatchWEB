@@ -1,5 +1,7 @@
 import { ConcordSiteFooter } from "@/components/concord/ConcordSiteFooter";
 import { ConcordSiteHeader } from "@/components/concord/ConcordSiteHeader";
+import { StickyConsultCta } from "@/components/layout/StickyConsultCta";
+import { TopUrgencyBanner } from "@/components/layout/TopUrgencyBanner";
 import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
@@ -13,12 +15,18 @@ export async function PublicShell({
   showFooter?: boolean;
   showCompareLink?: boolean;
 }) {
-  const siteContent = await getGroupedSiteContentBySections(["faq_page", "reviews_page", "footer"]);
+  const siteContent = await getGroupedSiteContentBySections([
+    "faq_page",
+    "reviews_page",
+    "footer",
+    "site_banner",
+  ]);
   const showFaqLink = isPublicSectionVisible(siteContent, "faq_page", "show_page", true);
   const showReviewsLink = isPublicSectionVisible(siteContent, "reviews_page", "show_page", true);
 
   return (
     <PublicAppProviders>
+      <TopUrgencyBanner siteContent={siteContent} />
       <ConcordSiteHeader
         showFaqLink={showFaqLink}
         showReviewsLink={showReviewsLink}
@@ -26,6 +34,7 @@ export async function PublicShell({
       />
       {children}
       {showFooter ? <ConcordSiteFooter siteContent={siteContent} /> : null}
+      <StickyConsultCta />
     </PublicAppProviders>
   );
 }

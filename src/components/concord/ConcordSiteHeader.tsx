@@ -15,8 +15,8 @@ type NavItem = { href: string; label: string; id: string };
 
 const BASE_NAV: NavItem[] = [
   { href: "/pricing", label: "요금제", id: "pricing" },
-  { href: "/tutors", label: "강사진", id: "tutors" },
-  { href: "/reviews", label: "후기", id: "reviews" },
+  { href: "/tutors", label: "선생님", id: "tutors" },
+  { href: "/reviews", label: "수강후기", id: "reviews" },
   { href: "/faq", label: "FAQ", id: "faq" },
   { href: "/docs", label: "자료실", id: "docs" },
 ];
