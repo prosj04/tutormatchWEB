@@ -241,6 +241,25 @@ model ConsultationBooking {
   @@index([studentId, createdAt])
 }
 
+model ConsultationLead {
+  id             String   @id @default(uuid())
+  name           String?
+  phone          String
+  grade          String
+  subjects       String   @default("[]")
+  preferredTime  String?
+  marketingOptIn Boolean  @default(false)
+  status         String   @default("NEW")
+  // "NEW" | "CONTACTED" | "CONVERTED" | "CLOSED"
+  source         String?
+  note           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
 model Notification {
   id        String   @id @default(uuid())
   userId    String
