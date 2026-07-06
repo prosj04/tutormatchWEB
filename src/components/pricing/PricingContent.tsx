@@ -1,18 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
-import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
-import { buildCheckoutHrefV2, PLAN_INCLUDES } from "@/lib/pricing-plans";
-import { formatKRW } from "@/lib/format-won";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 function ShieldIcon() {
@@ -100,82 +97,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
           </ConcordReveal>
 
           <div data-tier={tier}>
-            <div className="price-grid">
-              {items.map((item) => {
-                const plan = item.plan;
-                const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
-                const tierLabel = tier === "middle" ? "중등" : "고등";
-                const priceFormatted = plan.priceKrw
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                const displayTitle = item.title ?? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
-                const displaySubtitle = item.subtitle ?? `월 ${plan.monthlyHours}시간`;
-                return (
-                  <ConcordReveal
-                    key={plan.id}
-                    as="article"
-                    className={`card price-card${isRec ? " rec" : ""}`}
-                  >
-                    {isRec ? <span className="rec-badge">추천</span> : null}
-                    <div className="ptag">
-                      1:1 맞춤 과외 · {tierLabel}
-                    </div>
-                    <div className="pname">{displayTitle}</div>
-                    <div className="punit" style={{ marginBottom: 4 }}>{displaySubtitle}</div>
-                    {plan.discountRate !== null ? (
-                      <div className="pdiscount" style={{ marginBottom: 4 }}>
-                        <span style={{ textDecoration: "line-through", color: "rgba(255,255,255,0.45)", fontSize: "0.85rem" }}>
-                          정가 {formatKRW(plan.listPriceKrw)}
-                        </span>
-                        {" "}
-                        <span className="rec-badge" style={{ fontSize: "0.75rem", padding: "2px 7px" }}>
-                          {plan.discountRate}% 할인
-                        </span>
-                      </div>
-                    ) : null}
-                    <div className="price">
-                      {priceFormatted}
-                      <small>원 / 월</small>
-                    </div>
-                    <ul className="pfeat">
-                      {(item.features ?? []).map((f) => (
-                        <li key={f}>{f}</li>
-                      ))}
-                    </ul>
-                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase" }}>
-                        모든 플랜 공통 포함
-                      </p>
-                      <ul className="pfeat" style={{ fontSize: "0.875rem" }}>
-                        {PLAN_INCLUDES.map((inc) => (
-                          <li key={inc}>{inc}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <ConsultationApplyButton
-                      className={`btn btn-block${isRec ? " btn-acc" : " btn-ghost"}`}
-                      source={`pricing_plan_${plan.id}`}
-                    >
-                      이 플랜으로 시작
-                    </ConsultationApplyButton>
-                    <Link
-                      className="punit"
-                      href={buildCheckoutHrefV2(plan.id)}
-                      style={{
-                        display: "block",
-                        textAlign: "center",
-                        marginTop: 8,
-                        fontSize: "0.8rem",
-                        color: "rgba(255,255,255,0.55)",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      바로 결제하기 →
-                    </Link>
-                  </ConcordReveal>
-                );
-              })}
-            </div>
+            <PricingPlanCards items={items} tier={tier} sourcePrefix="pricing_plan" />
           </div>
 
           <ConcordReveal className="assure" as="div">

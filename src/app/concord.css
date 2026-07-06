@@ -121,10 +121,10 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .tier-tabs{ display:inline-flex; padding:4px; gap:4px; background:var(--panel-2); border:1px solid var(--line); border-radius:var(--r-pill); margin-bottom:40px; }
 .tier-tabs button{ border:0; background:transparent; color:var(--mut); font-weight:700; font-size:15px; padding:10px 22px; border-radius:var(--r-pill); cursor:pointer; transition:color .2s,background .2s; }
 .tier-tabs button.on{ background:var(--panel); color:var(--fg); box-shadow:var(--shadow-sm); }
-.price-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; max-width:860px; }
-.price-card{ position:relative; padding:38px 34px 40px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
+.price-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; max-width:1180px; }
+.price-card{ position:relative; padding:30px 24px 32px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }
-.rec-badge{ position:absolute; top:-13px; left:34px; background:var(--acc); color:var(--on-acc); font-size:12px; font-weight:700; padding:6px 14px; border-radius:var(--r-pill); letter-spacing:.04em; }
+.rec-badge{ position:absolute; top:-13px; left:24px; background:var(--acc); color:var(--on-acc); font-size:12px; font-weight:700; padding:6px 14px; border-radius:var(--r-pill); letter-spacing:.04em; }
 .price-card .ptag{ font-size:14px; font-weight:600; color:var(--mut); }
 .price-card .pname{ font-size:clamp(21px,1.2rem + .8vw,25px); font-weight:700; margin-top:6px; letter-spacing:-.025em; color:var(--fg); }
 .price-card .price{ font-size:clamp(2rem,1.4rem + 2.2vw,42px); font-weight:800; margin-top:8px; letter-spacing:-.03em; font-variant-numeric:tabular-nums; color:var(--fg); }
@@ -365,6 +365,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 @media (max-width:960px){ .nav-links{ display:none; } .nav-hamburger{ display:grid; } .nav-session-desktop{ display:none; }
   .nav-right .seg,.nav-right > .theme-toggle{ display:none; }
   .tutor-grid{ grid-template-columns:repeat(2,1fr); } .rev-masonry{ columns:2; }
+  .price-grid{ grid-template-columns:repeat(2,1fr); max-width:640px; }
   .page-head h1{ font-size:clamp(30px, 7.5vw, 52px); }
   .nav-right{ gap:8px; } }
 @media (max-width:680px){
