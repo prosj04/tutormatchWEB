@@ -11,23 +11,23 @@ export type SafetyStoryData = {
   steps: { title: string; desc: string }[];
 };
 
-type Stage =
-  | { kind: "intro"; text: string }
-  | { kind: "news"; quote: string; press: string; year: string; url: string }
-  | { kind: "closer"; text: string }
-  | { kind: "pivot"; text: string };
-
-const STAGE_VH = 80;
 const STEP_VH = 50;
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
+/**
+ * 시퀀스: intro(스크롤 트리거) → [자동 재생: 뉴스 3개 누적 → 클로저] → 체크+전환(스크롤 재개)
+ * 자동 재생 동안 스크롤 잠금, 전환 화면에서 해제.
+ */
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const stepsPinRef = useRef<HTMLDivElement | null>(null);
-  const [active, setActive] = useState(0);
+  const startedRef = useRef(false);
+  const timersRef = useRef<number[]>([]);
+  const [newsShown, setNewsShown] = useState(0); // 0..news.length
+  const [phase, setPhase] = useState<"intro" | "news" | "closer" | "pivot">("intro");
   const [stepsOn, setStepsOn] = useState(0);
   const [reduced, setReduced] = useState(false);
 
@@ -36,20 +36,39 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const stages: Stage[] = [
-    { kind: "intro", text: data.intro },
-    ...data.news.map((n) => ({ kind: "news" as const, ...n })),
-    { kind: "closer", text: data.closer },
-    ...pivotLines.map((line) => ({ kind: "pivot" as const, text: line })),
-  ];
-  const darkStart = 1;
-  const darkEnd = 1 + data.news.length; // closer까지 다크
-
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setReduced(true);
       return;
     }
+
+    const lock = () => {
+      document.documentElement.style.overflow = "hidden";
+    };
+    const unlock = () => {
+      document.documentElement.style.overflow = "";
+    };
+    const later = (fn: () => void, ms: number) => {
+      timersRef.current.push(window.setTimeout(fn, ms));
+    };
+
+    const startSequence = () => {
+      if (startedRef.current) return;
+      startedRef.current = true;
+      lock();
+      setPhase("news");
+      const gap = 1500;
+      data.news.forEach((_, i) => {
+        later(() => setNewsShown(i + 1), 300 + gap * i);
+      });
+      const afterNews = 300 + gap * (data.news.length - 1) + 1900;
+      later(() => setPhase("closer"), afterNews);
+      later(() => {
+        setPhase("pivot");
+        unlock();
+      }, afterNews + 2300);
+    };
+
     let raf = 0;
     const onScroll = () => {
       if (raf) return;
@@ -57,13 +76,11 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         raf = 0;
         const vh = window.innerHeight;
         const pin = pinRef.current;
-        if (pin) {
+        if (pin && !startedRef.current) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          // 스크롤은 스테이지 전환 트리거로만 사용 — 모션은 CSS 이징이 담당
-          const idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
-          setActive(idx);
+          if (progress > 0.3) startSequence();
         }
         const sp = stepsPinRef.current;
         if (sp) {
@@ -81,27 +98,30 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      timersRef.current.forEach((t) => clearTimeout(t));
+      unlock();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stages.length, data.steps.length]);
+  }, [data.news.length, data.steps.length]);
 
-  const isDark = active >= darkStart && active <= darkEnd;
+  const isDark = phase === "news" || phase === "closer";
 
   if (reduced) {
     return (
       <section className="lp2-story lp2-story-static" aria-label="안전한 선생님 배정">
-        {stages.map((st, i) => (
-          <div key={i} className={`lp2-story-sblock${st.kind === "news" || st.kind === "closer" ? " dark" : ""}`}>
-            {st.kind === "news" ? (
-              <a href={st.url} target="_blank" rel="noopener noreferrer" className="lp2-story-newsline">
-                <span className="q">{st.quote}</span>
-                <span className="s">{st.year} · {st.press}</span>
-              </a>
-            ) : (
-              <h2>{st.text}</h2>
-            )}
-          </div>
-        ))}
+        <div className="lp2-story-sblock"><h2>{data.intro}</h2></div>
+        <div className="lp2-story-sblock dark">
+          {data.news.map((n) => (
+            <a key={n.quote} href={n.url} target="_blank" rel="noopener noreferrer" className="lp2-story-newsline">
+              <span className="q">{n.quote}</span>
+              <span className="s">{n.year} · {n.press}</span>
+            </a>
+          ))}
+        </div>
+        <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
+        <div className="lp2-story-sblock">
+          {pivotLines.map((l) => <h2 key={l}>{l}</h2>)}
+        </div>
         <ol className="lp2-story-steps">
           {data.steps.map((s, i) => (
             <li key={s.title} className="lp2-story-step on">
@@ -119,39 +139,57 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   return (
     <section className="lp2-story" aria-label="안전한 선생님 배정">
-      {/* 핀 구간 1: 카피·뉴스·클로저·전환 — 스테이지 전환 시 CSS 이징으로 스르륵 */}
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${stages.length * STAGE_VH + 100}vh` }}>
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: "240vh" }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
-          {stages.map((st, i) => {
-            const pos = i < active ? " is-passed" : i === active ? " is-active" : "";
-            if (st.kind === "news") {
-              return (
-                <a
-                  key={i}
-                  className={`lp2-story-item lp2-story-newsline${pos}`}
-                  href={st.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  tabIndex={i === active ? 0 : -1}
-                >
-                  <span className="q">{st.quote}</span>
-                  <span className="s">{st.year} · {st.press}</span>
-                </a>
-              );
-            }
-            return (
-              <div key={i} className={`lp2-story-item lp2-story-${st.kind}${pos}`}>
-                <h2>{st.text}</h2>
-              </div>
-            );
-          })}
+          {/* 인트로 */}
+          <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
+            <h2>{data.intro}</h2>
+          </div>
+
+          {/* 뉴스 3개 — 자동으로 하나씩 아래로 붙음 */}
+          <div
+            className={`lp2-story-item lp2-story-newsstack${phase === "news" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
+          >
+            {data.news.map((n, i) => (
+              <a
+                key={n.quote}
+                className={`lp2-story-newsline${i < newsShown ? " on" : ""}`}
+                href={n.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={phase === "news" && i < newsShown ? 0 : -1}
+              >
+                <span className="q">{n.quote}</span>
+                <span className="s">{n.year} · {n.press}</span>
+              </a>
+            ))}
+          </div>
+
+          {/* 클로저 */}
+          <div
+            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot" ? " is-passed" : ""}`}
+          >
+            <h2>{data.closer}</h2>
+          </div>
+
+          {/* 전환: 체크 + 카피 — 여기서부터 스크롤 재개 */}
+          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
+            <svg className="lp2-story-check" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="29" fill="none" strokeWidth="4" />
+              <path d="M20 33.5 28.5 42 45 24" fill="none" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {pivotLines.map((l, i) => (
+              <h2 key={l} style={{ transitionDelay: `${0.25 + i * 0.18}s` }}>{l}</h2>
+            ))}
+          </div>
+
           <p className="lp2-story-caption" style={{ opacity: isDark ? 1 : 0 }}>
             {data.newsNote}
           </p>
         </div>
       </div>
 
-      {/* 핀 구간 2: 절차 5단계 — 하나씩 스르륵 올라와 누적 */}
+      {/* 절차 5단계 — 스크롤에 따라 하나씩 누적 */}
       <div
         ref={stepsPinRef}
         className="lp2-story-steps-pin"

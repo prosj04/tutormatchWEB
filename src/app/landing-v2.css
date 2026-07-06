@@ -852,10 +852,18 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-closer h2 { font-weight: 900; }
 .is-dark .lp2-story-item h2 { color: #f4f1ea; }
 
+/* 뉴스 스택 — 자동 재생으로 하나씩 아래로 붙음 */
+.lp2-story-newsstack { display: flex; flex-direction: column; gap: clamp(22px, 3.2vh, 38px); }
 .lp2-story-newsline { display: block; text-decoration: none; color: inherit; }
+.lp2-story-newsstack .lp2-story-newsline {
+  opacity: 0;
+  transform: translateY(44px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lp2-story-newsstack .lp2-story-newsline.on { opacity: 1; transform: none; }
 .lp2-story-newsline .q {
   display: block;
-  font-size: clamp(20px, 3vw, 33px);
+  font-size: clamp(18px, 2.4vw, 28px);
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.5;
@@ -863,13 +871,39 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-story-newsline .s {
   display: block;
-  margin-top: 14px;
+  margin-top: 10px;
   font-size: 13px;
   font-weight: 600;
   color: var(--mut);
 }
 .is-dark .lp2-story-newsline .q { color: #f4f1ea; }
 .is-dark .lp2-story-newsline .s { color: rgba(244, 241, 234, 0.5); }
+
+/* 전환 화면: 체크 + 카피 */
+.lp2-story-pivot h2 {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lp2-story-pivot.is-active h2 { opacity: 1; transform: none; }
+.lp2-story-pivot h2 + h2 { margin-top: 14px; }
+.lp2-story-check {
+  width: clamp(56px, 6vw, 76px);
+  height: clamp(56px, 6vw, 76px);
+  margin: 0 auto 26px;
+  display: block;
+  stroke: var(--acc);
+}
+.lp2-story-check circle { stroke-dasharray: 183; stroke-dashoffset: 183; }
+.lp2-story-check path { stroke-dasharray: 42; stroke-dashoffset: 42; }
+.lp2-story-pivot.is-active .lp2-story-check circle {
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+  stroke-dashoffset: 0;
+}
+.lp2-story-pivot.is-active .lp2-story-check path {
+  transition: stroke-dashoffset 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.65s;
+  stroke-dashoffset: 0;
+}
 
 .lp2-story-caption {
   position: absolute;
@@ -903,9 +937,9 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-story-step {
   display: grid;
-  grid-template-columns: 56px 1fr;
-  gap: 16px;
-  padding: 22px 0;
+  grid-template-columns: clamp(64px, 6vw, 104px) 1fr;
+  gap: clamp(16px, 2vw, 28px);
+  padding: clamp(24px, 3vh, 34px) 0;
   border-top: 1px solid var(--line);
   opacity: 0;
   transform: translateY(30px);
@@ -914,20 +948,22 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-step:first-child { border-top: none; }
 .lp2-story-step.on { opacity: 1; transform: none; }
 .lp2-story-step .num {
-  font-size: 14px;
+  font-size: clamp(32px, 3.4vw, 54px);
   font-weight: 800;
-  color: var(--acc);
-  letter-spacing: 0.06em;
-  padding-top: 3px;
+  color: var(--acc-text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
 }
 .lp2-story-step h3 {
-  font-size: 17.5px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  margin: 0 0 7px;
+  font-size: clamp(19px, 1.6vw, 24px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 9px;
   color: var(--fg);
 }
-.lp2-story-step p { font-size: 14.5px; line-height: 1.65; color: var(--mut); margin: 0; }
+.lp2-story-step p { font-size: clamp(15px, 1.15vw, 17px); line-height: 1.7; color: var(--mut); margin: 0; }
 
 /* reduced-motion 정적 폴백 */
 .lp2-story-static .lp2-story-sblock { padding: 90px 24px; text-align: center; }
