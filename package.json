@@ -11,6 +11,7 @@
     "check-env": "ts-node --transpile-only -O '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/check-env.ts",
     "setup-storage": "ts-node --transpile-only -O '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/setup-storage.ts",
     "seed:sample": "ts-node --transpile-only -O '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/seed-sample-data.ts",
+    "seed:reviews": "ts-node --transpile-only -O '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/seed-reviews.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

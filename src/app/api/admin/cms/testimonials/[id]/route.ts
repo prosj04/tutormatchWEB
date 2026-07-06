@@ -16,6 +16,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     quote?: unknown;
     author?: unknown;
     imageUrl?: unknown;
+    gradeFrom?: unknown;
+    gradeTo?: unknown;
+    category?: unknown;
+    tags?: unknown;
     order?: unknown;
     isActive?: unknown;
     showOnHome?: unknown;
@@ -31,6 +35,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     quote?: string;
     author?: string;
     imageUrl?: string | null;
+    gradeFrom?: string | null;
+    gradeTo?: string | null;
+    category?: string | null;
+    tags?: string | null;
     order?: number;
     isActive?: boolean;
     showOnHome?: boolean;
@@ -41,6 +49,14 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (typeof body.author === "string") data.author = body.author;
   if (typeof body.imageUrl === "string") data.imageUrl = body.imageUrl;
   if (body.imageUrl === null) data.imageUrl = null;
+  if (typeof body.gradeFrom === "string") data.gradeFrom = body.gradeFrom;
+  if (body.gradeFrom === null) data.gradeFrom = null;
+  if (typeof body.gradeTo === "string") data.gradeTo = body.gradeTo;
+  if (body.gradeTo === null) data.gradeTo = null;
+  if (typeof body.category === "string") data.category = body.category;
+  if (body.category === null) data.category = null;
+  if (typeof body.tags === "string") data.tags = body.tags;
+  if (body.tags === null) data.tags = null;
   if (typeof body.order === "number" && Number.isFinite(body.order)) {
     data.order = body.order;
   }

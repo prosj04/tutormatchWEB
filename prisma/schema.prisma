@@ -340,6 +340,10 @@ model Testimonial {
   quote             String
   author            String // e.g. "고2 · 수학 · 학부모"
   imageUrl          String?
+  gradeFrom         String? // e.g. "3등급" — 성적 변화 뱃지 시작
+  gradeTo           String? // e.g. "1등급" — 성적 변화 뱃지 도착
+  category          String? // 고민 카테고리: 성적정체·기초부족·자신감하락·습관부재
+  tags              String? // 줄바꿈 구분 태그
   order             Int      @default(0)
   isActive          Boolean  @default(true)
   showOnHome        Boolean  @default(false)
