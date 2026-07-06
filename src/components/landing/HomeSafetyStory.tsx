@@ -17,33 +17,18 @@ type Stage =
   | { kind: "closer"; text: string }
   | { kind: "pivot"; text: string };
 
-const STAGE_VH = 85;
-const STEP_VH = 55;
+const STAGE_VH = 80;
+const STEP_VH = 50;
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
-/** 스테이지 로컬 진행도 p(=t-idx)를 opacity/translateY로 변환 */
-function stageStyle(p: number): { opacity: number; y: number } {
-  if (p < -0.45) return { opacity: 0, y: 72 };
-  if (p < 0) {
-    const k = (p + 0.45) / 0.45;
-    return { opacity: k, y: 72 * (1 - k) };
-  }
-  if (p < 0.55) return { opacity: 1, y: 0 };
-  if (p < 1) {
-    const k = (p - 0.55) / 0.45;
-    return { opacity: 1 - k, y: -72 * k };
-  }
-  return { opacity: 0, y: -72 };
-}
-
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const stepsPinRef = useRef<HTMLDivElement | null>(null);
-  const [t, setT] = useState(0);
-  const [stepT, setStepT] = useState(0);
+  const [active, setActive] = useState(0);
+  const [stepsOn, setStepsOn] = useState(0);
   const [reduced, setReduced] = useState(false);
 
   const pivotLines = data.pivot
@@ -76,14 +61,16 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          setT(progress * stages.length);
+          // 스크롤은 스테이지 전환 트리거로만 사용 — 모션은 CSS 이징이 담당
+          const idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
+          setActive(idx);
         }
         const sp = stepsPinRef.current;
         if (sp) {
           const rect = sp.getBoundingClientRect();
           const total = sp.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          setStepT(progress * (data.steps.length + 0.6));
+          setStepsOn(Math.min(data.steps.length, Math.floor(progress * (data.steps.length + 0.6) + 0.45)));
         }
       });
     };
@@ -98,7 +85,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stages.length, data.steps.length]);
 
-  const isDark = t >= darkStart - 0.4 && t <= darkEnd + 0.55;
+  const isDark = active >= darkStart && active <= darkEnd;
 
   if (reduced) {
     return (
@@ -132,25 +119,20 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   return (
     <section className="lp2-story" aria-label="안전한 선생님 배정">
-      {/* 핀 구간 1: 카피·뉴스·클로저·전환 */}
+      {/* 핀 구간 1: 카피·뉴스·클로저·전환 — 스테이지 전환 시 CSS 이징으로 스르륵 */}
       <div ref={pinRef} className="lp2-story-pin" style={{ height: `${stages.length * STAGE_VH + 100}vh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {stages.map((st, i) => {
-            const { opacity, y } = stageStyle(t - i);
-            const style = {
-              opacity,
-              transform: `translate(-50%, -50%) translateY(${y}px)`,
-              pointerEvents: opacity > 0.5 ? ("auto" as const) : ("none" as const),
-            };
+            const pos = i < active ? " is-passed" : i === active ? " is-active" : "";
             if (st.kind === "news") {
               return (
                 <a
                   key={i}
-                  className="lp2-story-item lp2-story-newsline"
-                  style={style}
+                  className={`lp2-story-item lp2-story-newsline${pos}`}
                   href={st.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  tabIndex={i === active ? 0 : -1}
                 >
                   <span className="q">{st.quote}</span>
                   <span className="s">{st.year} · {st.press}</span>
@@ -158,7 +140,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
               );
             }
             return (
-              <div key={i} className={`lp2-story-item lp2-story-${st.kind}`} style={style}>
+              <div key={i} className={`lp2-story-item lp2-story-${st.kind}${pos}`}>
                 <h2>{st.text}</h2>
               </div>
             );
@@ -169,7 +151,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         </div>
       </div>
 
-      {/* 핀 구간 2: 절차 5단계 — 하나씩 올라와 누적 */}
+      {/* 핀 구간 2: 절차 5단계 — 하나씩 스르륵 올라와 누적 */}
       <div
         ref={stepsPinRef}
         className="lp2-story-steps-pin"
@@ -178,7 +160,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         <div className="lp2-story-steps-vp">
           <ol className="lp2-story-steps">
             {data.steps.map((s, i) => (
-              <li key={s.title} className={`lp2-story-step${stepT >= i + 0.55 ? " on" : ""}`}>
+              <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
                 <span className="num">0{i + 1}</span>
                 <div>
                   <h3>{s.title}</h3>

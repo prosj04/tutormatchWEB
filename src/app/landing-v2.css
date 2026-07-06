@@ -826,7 +826,20 @@ body:has(.lp2-root) footer.site .logo span {
   top: 50%;
   width: min(920px, calc(100% - 48px));
   text-align: center;
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(60px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
   will-change: transform, opacity;
+}
+.lp2-story-item.is-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0);
+  pointer-events: auto;
+}
+.lp2-story-item.is-passed {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(-60px);
 }
 .lp2-story-item h2 {
   font-size: clamp(24px, 3.6vw, 40px);
@@ -895,8 +908,8 @@ body:has(.lp2-root) footer.site .logo span {
   padding: 22px 0;
   border-top: 1px solid var(--line);
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  transform: translateY(30px);
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .lp2-story-step:first-child { border-top: none; }
 .lp2-story-step.on { opacity: 1; transform: none; }
