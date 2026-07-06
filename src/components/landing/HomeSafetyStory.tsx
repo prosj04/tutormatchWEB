@@ -27,7 +27,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const startedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
   const [newsShown, setNewsShown] = useState(0); // 0..news.length
-  const [phase, setPhase] = useState<"intro" | "news" | "closer" | "pivot">("intro");
+  const [phase, setPhase] = useState<"intro" | "news" | "closer" | "pivot1" | "pivot2">("intro");
   const [stepsOn, setStepsOn] = useState(0);
   const [reduced, setReduced] = useState(false);
 
@@ -63,10 +63,11 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       });
       const afterNews = 300 + gap * (data.news.length - 1) + 1900;
       later(() => setPhase("closer"), afterNews);
+      later(() => setPhase("pivot1"), afterNews + 2300);
       later(() => {
-        setPhase("pivot");
+        setPhase("pivot2");
         unlock();
-      }, afterNews + 2300);
+      }, afterNews + 2300 + 2300);
     };
 
     let raf = 0;
@@ -105,6 +106,12 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   }, [data.news.length, data.steps.length]);
 
   const isDark = phase === "news" || phase === "closer";
+
+  // 다크 구간: 네비게이션·배너까지 검게, 하단 상담 버튼은 잠시 숨김
+  useEffect(() => {
+    document.body.classList.toggle("story-dark", isDark && !reduced);
+    return () => document.body.classList.remove("story-dark");
+  }, [isDark, reduced]);
 
   if (reduced) {
     return (
@@ -167,20 +174,21 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
           {/* 클로저 */}
           <div
-            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot" ? " is-passed" : ""}`}
+            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot1" || phase === "pivot2" ? " is-passed" : ""}`}
           >
             <h2>{data.closer}</h2>
           </div>
 
-          {/* 전환: 체크 + 카피 — 여기서부터 스크롤 재개 */}
-          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
-            <svg className="lp2-story-check" viewBox="0 0 64 64" aria-hidden="true">
-              <circle cx="32" cy="32" r="29" fill="none" strokeWidth="4" />
-              <path d="M20 33.5 28.5 42 45 24" fill="none" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {pivotLines.map((l, i) => (
-              <h2 key={l} style={{ transitionDelay: `${0.25 + i * 0.18}s` }}>{l}</h2>
-            ))}
+          {/* 전환 1: 먼저 나왔다 사라짐 */}
+          <div
+            className={`lp2-story-item lp2-story-pivot${phase === "pivot1" ? " is-active" : phase === "pivot2" ? " is-passed" : ""}`}
+          >
+            <h2>{pivotLines[0]}</h2>
+          </div>
+
+          {/* 전환 2: 나오고 멈춤 — 여기서부터 스크롤 재개 */}
+          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot2" ? " is-active" : ""}`}>
+            <h2>{pivotLines[1] ?? pivotLines[0]}</h2>
           </div>
 
           <p className="lp2-story-caption" style={{ opacity: isDark ? 1 : 0 }}>

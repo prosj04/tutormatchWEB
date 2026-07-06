@@ -879,30 +879,26 @@ body:has(.lp2-root) footer.site .logo span {
 .is-dark .lp2-story-newsline .q { color: #f4f1ea; }
 .is-dark .lp2-story-newsline .s { color: rgba(244, 241, 234, 0.5); }
 
-/* 전환 화면: 체크 + 카피 */
-.lp2-story-pivot h2 {
-  opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+/* 다크 구간: 네비게이션·배너까지 검게, 하단 상담 CTA 숨김 */
+body.story-dark header.site {
+  background: #0a0a0a;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transition: background 0.5s ease;
 }
-.lp2-story-pivot.is-active h2 { opacity: 1; transform: none; }
-.lp2-story-pivot h2 + h2 { margin-top: 14px; }
-.lp2-story-check {
-  width: clamp(56px, 6vw, 76px);
-  height: clamp(56px, 6vw, 76px);
-  margin: 0 auto 26px;
-  display: block;
-  stroke: var(--acc);
+body.story-dark header.site :is(a, button, .logo, .nav-links a) { color: #f4f1ea; }
+body.story-dark header.site .logo span { color: var(--acc); }
+body.story-dark .site-banner {
+  background: #0a0a0a;
+  color: rgba(244, 241, 234, 0.85);
+  border-color: transparent;
+  transition: background 0.5s ease;
 }
-.lp2-story-check circle { stroke-dasharray: 183; stroke-dashoffset: 183; }
-.lp2-story-check path { stroke-dasharray: 42; stroke-dashoffset: 42; }
-.lp2-story-pivot.is-active .lp2-story-check circle {
-  transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
-  stroke-dashoffset: 0;
-}
-.lp2-story-pivot.is-active .lp2-story-check path {
-  transition: stroke-dashoffset 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.65s;
-  stroke-dashoffset: 0;
+body.story-dark .sticky-cta {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translate(-50%, 16px) !important;
 }
 
 .lp2-story-caption {
