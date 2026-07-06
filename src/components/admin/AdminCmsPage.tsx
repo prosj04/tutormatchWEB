@@ -28,9 +28,14 @@ import {
   CMS_SPACING_DEFAULT_PX,
   CMS_TEXT_SIZE_OPTIONS,
   extraPublicPagesDefaults,
+  FEATURED_TUTOR_CARD_COUNT,
+  featuredTutorFieldKey,
   footerDefaults,
   getCmsTextStyleTarget,
+  homeBenchmarkSectionsDefaults,
   homeLabelsDefaults,
+  reviewsBenchmarkDefaults,
+  tutorsFeaturedDefaults,
   portalPagesDefaults,
   portalPagesFieldLabels,
   pricingBoxFieldKey,
@@ -39,6 +44,7 @@ import {
 import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 import { COMPARE_ROW_COUNT } from "@/lib/compare-cms";
 import { PRICING_PLANS_V2 } from "@/lib/pricing-plans";
+import { REVIEW_CATEGORIES } from "@/lib/reviews-html-fallback";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type CmsContent = Record<string, Record<string, string>>;
@@ -48,11 +54,17 @@ type TestimonialRow = {
   quote: string;
   author: string;
   imageUrl: string | null;
+  gradeFrom: string | null;
+  gradeTo: string | null;
+  category: string | null;
+  tags: string | null;
   order: number;
   isActive: boolean;
   showOnHome: boolean;
   showOnReviewsPage: boolean;
 };
+
+const REVIEW_CATEGORY_OPTIONS = REVIEW_CATEGORIES;
 
 type FaqRow = {
   id: string;
@@ -123,50 +135,6 @@ const resultDefaults = [
   { student: "고1 학생", before: "수학 69점→", after: "92점으로 상승", image: RESULT_CARD_IMAGES[5] },
 ];
 
-const teacherDefaults = [
-  {
-    subject: "수학",
-    name: "Teacher Noah",
-    image: "/images/teachers/default-male.png",
-    highlight: "전교꼴등에서 서울대학교 입학했어요",
-    careers: "서울대학교 수리과학부\n입시 수학 7년\n최상위권 심화반 운영",
-  },
-  {
-    subject: "영어",
-    name: "Teacher Olivia",
-    image: "/images/teachers/default-female.png",
-    highlight: "읽기 습관만 바꿔도 점수는 달라집니다",
-    careers: "연세대학교 영어영문학과\n국제학교/토플 지도\n첨삭 1,800시간+",
-  },
-  {
-    subject: "물리",
-    name: "Teacher Peter",
-    image: "/images/teachers/default-male.png",
-    highlight: "공식보다 먼저 직관을 세워요",
-    careers: "KAIST 전기및전자공학부\n물리·수학 통합 지도\nSTEM 멘토 수상",
-  },
-  {
-    subject: "국어",
-    name: "Teacher Jiwoo",
-    image: "/images/teachers/default-female.png",
-    highlight: "지문을 읽는 규칙을 훈련합니다",
-    careers: "서울대학교 국어국문학과\n논술 전문 프라이빗\n내신 국어 맞춤 관리",
-  },
-  {
-    subject: "화학",
-    name: "Teacher Quinn",
-    image: "/images/teachers/default-male.png",
-    highlight: "개념 연결도를 먼저 그립니다",
-    careers: "서울대학교 화학부\n수능 화학 6년\n실험·서술형 병행",
-  },
-  {
-    subject: "생명",
-    name: "Teacher Rachel",
-    image: "/images/teachers/default-female.png",
-    highlight: "암기를 줄이고 흐름으로 기억하게 합니다",
-    careers: "연세대학교 생화학\n수능 생명 5년\ndiagram 정리 전문",
-  },
-];
 
 const stepDefaults = [
   {
@@ -567,6 +535,102 @@ function buildExtraFields(section: string): TextFieldConfig[] {
         ...(long ? { kind: "textarea" as const, rows: 3 } : {}),
       };
     });
+}
+
+type CmsDefaultRow = { section: string; key: string; value: string; type: string; order?: number };
+
+const BENCHMARK_FIELD_LABELS: Record<string, Record<string, string>> = {
+  reviews_page: {
+    hero_kicker: "히어로 kicker",
+    hero_title: "히어로 제목",
+    hero_subtext: "히어로 설명",
+    band_title: "통계 밴드 제목",
+    band_stat1_number: "통계 1 숫자",
+    band_stat1_label: "통계 1 라벨",
+    band_stat2_number: "통계 2 숫자",
+    band_stat2_label: "통계 2 라벨",
+    band_footnote: "통계 밴드 각주",
+    list_title: "후기 목록 제목",
+    list_subtext: "후기 목록 설명",
+    cta_title: "하단 CTA 제목",
+    cta_subtext: "하단 CTA 설명",
+  },
+  reviews_success: {
+    section_title: "섹션 제목",
+    section_footnote: "섹션 각주",
+  },
+  reviews_proof: {
+    section_title: "섹션 제목",
+    section_footnote: "섹션 각주",
+  },
+  home_problem: {
+    headline: "문제 제기 헤드라인",
+    subtext: "문제 제기 설명",
+  },
+  tutors_featured: {
+    home_title: "홈 선생님 섹션 제목",
+    home_subtext: "홈 선생님 섹션 설명",
+  },
+};
+
+function benchmarkKeyLabel(section: string, key: string): string {
+  const direct = BENCHMARK_FIELD_LABELS[section]?.[key];
+  if (direct) return direct;
+  const successCard = key.match(/^card(\d+)_(from|to|result|student|tags|visible)$/);
+  if (successCard) {
+    const suffix: Record<string, string> = {
+      from: "변화 전",
+      to: "변화 후",
+      result: "결과 설명",
+      student: "학생 표기",
+      tags: "태그(줄바꿈)",
+      visible: "노출",
+    };
+    return `사례 ${successCard[1]} · ${suffix[successCard[2]!] ?? successCard[2]}`;
+  }
+  const proofCard = key.match(/^proof(\d+)_(image|student|comment|visible)$/);
+  if (proofCard) {
+    const suffix: Record<string, string> = {
+      image: "이미지",
+      student: "학생 표기",
+      comment: "코멘트",
+      visible: "노출",
+    };
+    return `인증 ${proofCard[1]} · ${suffix[proofCard[2]!] ?? proofCard[2]}`;
+  }
+  return key;
+}
+
+function buildFieldsFromDefaults(
+  defaults: readonly CmsDefaultRow[],
+  section: string,
+): TextFieldConfig[] {
+  return defaults
+    .filter((row) => row.section === section && row.type !== "image")
+    .map((row) => {
+      const long = row.value.includes("\n") || row.value.length > 60;
+      return {
+        label: benchmarkKeyLabel(section, row.key),
+        section: row.section,
+        keyName: row.key,
+        defaultValue: row.value,
+        ...(long ? { kind: "textarea" as const, rows: 3 } : {}),
+      };
+    });
+}
+
+function buildImageFieldsFromDefaults(
+  defaults: readonly CmsDefaultRow[],
+  section: string,
+): ImageFieldConfig[] {
+  return defaults
+    .filter((row) => row.section === section && row.type === "image")
+    .map((row) => ({
+      label: benchmarkKeyLabel(section, row.key),
+      section: row.section,
+      keyName: row.key,
+      defaultValue: row.value,
+    }));
 }
 
 function buildPortalFields(section: string): TextFieldConfig[] {
@@ -1072,11 +1136,43 @@ export function AdminCmsPage() {
                   />
                 ))}
               </div>
-              <ImageField
-                field={{ label: "히어로 배경 이미지", section: "hero", keyName: "bg_image_url", defaultValue: "" }}
-                value={getValue("hero", "bg_image_url", "")}
-                onSave={saveContent}
-              />
+              <div className="grid gap-4">
+                <ImageField
+                  field={{ label: "히어로 우측 사진 (단일)", section: "hero", keyName: "model_image", defaultValue: "/images/placeholders/hero-model.png" }}
+                  value={getValue("hero", "model_image", "/images/placeholders/hero-model.png")}
+                  onSave={saveContent}
+                />
+                <ImageField
+                  field={{ label: "히어로 배경 이미지", section: "hero", keyName: "bg_image_url", defaultValue: "" }}
+                  value={getValue("hero", "bg_image_url", "")}
+                  onSave={saveContent}
+                />
+              </div>
+            </div>
+          </EditorSection>
+
+          <EditorSection eyebrow="PROBLEM" title="문제 제기 섹션">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {buildFieldsFromDefaults(
+                [
+                  { section: "home_problem", key: "headline", value: "선생님을 잘못 만나면\n1~2달을 잃습니다", type: "text" },
+                  {
+                    section: "home_problem",
+                    key: "subtext",
+                    value:
+                      "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
+                    type: "text",
+                  },
+                ],
+                "home_problem",
+              ).map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={saveContent}
+                />
+              ))}
             </div>
           </EditorSection>
 
@@ -1188,41 +1284,24 @@ export function AdminCmsPage() {
             </div>
           </EditorSection>
 
-          <EditorSection eyebrow="TEACHERS" title="선생님 카드">
+          <EditorSection eyebrow="TEACHERS" title="검증 선생님 카드">
             <p className="mb-4 text-sm text-text-secondary">
-              홈 「선생님」 섹션 스크롤 카드입니다. 박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}까지 편집할 수 있으며, 체크를 끄면 해당 카드만 숨길 수 있습니다.
+              홈·강사진 페이지에 공통으로 노출되는 큐레이션 카드입니다. 총 {FEATURED_TUTOR_CARD_COUNT}장 중 체크된 카드만 노출되며, 홈에는 앞에서부터 3장이 표시됩니다.
             </p>
             <div className="grid gap-4">
-              <ContentField
-                field={{
-                  label: "섹션 제목",
-                  section: "teachers",
-                  keyName: "section_title",
-                  defaultValue: "명문대 출신부터\n경력 5년 이상\n전문가까지",
-                  kind: "textarea",
-                  rows: 3,
-                }}
-                value={getValue("teachers", "section_title", "명문대 출신부터\n경력 5년 이상\n전문가까지")}
-                onSave={saveContent}
-              />
-              <ContentField
-                field={{
-                  label: "섹션 설명",
-                  section: "teachers",
-                  keyName: "section_subtext",
-                  defaultValue: "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.",
-                  kind: "textarea",
-                  rows: 2,
-                }}
-                value={getValue("teachers", "section_subtext", "학생 성향과 목표에 딱 맞는 나만의 선생님을 배정해드립니다.")}
-                onSave={saveContent}
-              />
+              {buildFieldsFromDefaults(homeBenchmarkSectionsDefaults, "tutors_featured").map((field) => (
+                <ContentField
+                  key={`${field.section}-${field.keyName}`}
+                  field={field}
+                  value={getValue(field.section, field.keyName, field.defaultValue)}
+                  onSave={saveContent}
+                />
+              ))}
               <CmsCardBoxGrid>
-                {teacherDefaults.map((teacher, index) => (
-                  <TeacherCardEditor
+                {Array.from({ length: FEATURED_TUTOR_CARD_COUNT }, (_, index) => (
+                  <FeaturedTutorCardEditor
                     key={index}
                     index={index}
-                    defaults={teacher}
                     getValue={getValue}
                     onSave={saveContent}
                   />
@@ -1663,8 +1742,48 @@ export function AdminCmsPage() {
                   />
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
-                  {buildExtraFields("reviews_page").map((field) => (
+                  {[
+                    ...buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_page"),
+                    ...buildExtraFields("reviews_page"),
+                  ].map((field) => (
                     <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={saveContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+              <EditorSection eyebrow="REVIEWS · SUCCESS" title="성적 변화 사례 카드">
+                <p className="mb-4 text-sm text-text-secondary">
+                  후기 페이지 상단 성적 변화 캐러셀입니다. 카드별 노출은 &quot;노출&quot; 값을 0으로 두면 숨겨집니다.
+                </p>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_success").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={saveContent}
+                    />
+                  ))}
+                </div>
+              </EditorSection>
+              <EditorSection eyebrow="REVIEWS · PROOF" title="실물 인증 카드">
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_proof").map((field) => (
+                    <ContentField
+                      key={`${field.section}-${field.keyName}`}
+                      field={field}
+                      value={getValue(field.section, field.keyName, field.defaultValue)}
+                      onSave={saveContent}
+                    />
+                  ))}
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  {buildImageFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_proof").map((field) => (
+                    <ImageField
                       key={`${field.section}-${field.keyName}`}
                       field={field}
                       value={getValue(field.section, field.keyName, field.defaultValue)}
@@ -2295,57 +2414,55 @@ function ImageUploader({
   );
 }
 
-function TeacherCardEditor({
+const FEATURED_TUTOR_DEFAULT_MAP: Record<string, string> = Object.fromEntries(
+  tutorsFeaturedDefaults
+    .filter((row) => row.section === "tutors_featured")
+    .map((row) => [row.key, row.value]),
+);
+
+function featuredTutorDefault(cardIndex: number, field: Parameters<typeof featuredTutorFieldKey>[1]): string {
+  return FEATURED_TUTOR_DEFAULT_MAP[featuredTutorFieldKey(cardIndex, field)] ?? "";
+}
+
+function FeaturedTutorCardEditor({
   index,
-  defaults,
   getValue,
   onSave,
 }: {
   index: number;
-  defaults: (typeof teacherDefaults)[number];
   getValue: (section: string, keyName: string, defaultValue: string) => string;
   onSave: (section: string, key: string, value: string) => Promise<void>;
 }) {
-  const number = index + 1;
+  const n = index + 1;
   const textFields: TextFieldConfig[] = [
-    { label: "과목", section: "teachers", keyName: `teacher${number}_subject`, defaultValue: defaults.subject },
-    { label: "이름", section: "teachers", keyName: `teacher${number}_name`, defaultValue: defaults.name },
-    {
-      label: "강조 문구",
-      section: "teachers",
-      keyName: `teacher${number}_highlight`,
-      defaultValue: defaults.highlight,
-      kind: "textarea",
-      rows: 2,
-    },
-    {
-      label: "이력 (줄바꿈으로 구분)",
-      section: "teachers",
-      keyName: `teacher${number}_careers`,
-      defaultValue: defaults.careers,
-      kind: "textarea",
-      rows: 3,
-    },
+    { label: "이름", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "name"), defaultValue: featuredTutorDefault(n, "name") },
+    { label: "대표 과목 태그", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "tag"), defaultValue: featuredTutorDefault(n, "tag") },
+    { label: "출신 대학", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "university"), defaultValue: featuredTutorDefault(n, "university") },
+    { label: "지도 과목 (쉼표 구분)", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "subjects"), defaultValue: featuredTutorDefault(n, "subjects") },
+    { label: "한 줄 소개", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "blurb"), defaultValue: featuredTutorDefault(n, "blurb"), kind: "textarea", rows: 2 },
+    { label: "강점 (줄바꿈 구분)", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "highlights"), defaultValue: featuredTutorDefault(n, "highlights"), kind: "textarea", rows: 2 },
+    { label: "해시태그 (줄바꿈 구분)", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "tags"), defaultValue: featuredTutorDefault(n, "tags"), kind: "textarea", rows: 2 },
+    { label: "경력 뱃지", section: "tutors_featured", keyName: featuredTutorFieldKey(n, "career_badge"), defaultValue: featuredTutorDefault(n, "career_badge") },
   ];
 
   return (
     <CmsCardBox
-      label={`선생님 카드 박스 ${number}`}
-      section="teachers"
-      visibilityKey={`teacher${number}_visible`}
-      visibilityDefault={number <= 4 ? "1" : "0"}
+      label={`검증 선생님 카드 ${n}`}
+      section="tutors_featured"
+      visibilityKey={featuredTutorFieldKey(n, "visible")}
+      visibilityDefault={n <= 3 ? "1" : "0"}
       getValue={getValue}
       onToggleVisible={onSave}
     >
       <div className="grid gap-4">
         <ImageField
           field={{
-            label: "프로필 이미지",
-            section: "teachers",
-            keyName: `teacher${number}_image`,
-            defaultValue: defaults.image,
+            label: "프로필 사진",
+            section: "tutors_featured",
+            keyName: featuredTutorFieldKey(n, "photo"),
+            defaultValue: featuredTutorDefault(n, "photo"),
           }}
-          value={getValue("teachers", `teacher${number}_image`, defaults.image)}
+          value={getValue("tutors_featured", featuredTutorFieldKey(n, "photo"), featuredTutorDefault(n, "photo"))}
           onSave={onSave}
         />
         <div className="space-y-3">
@@ -2465,7 +2582,41 @@ function SortableTestimonial({
       </button>
       <div className="grid gap-3">
         <AutoSaveInput label="후기 문구" value={item.quote} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { quote: value })} />
-        <AutoSaveInput label="작성자" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
+        <AutoSaveInput label="작성자 (예: 고2 수학 · 학부모)" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <AutoSaveInput
+            label="성적 변화 시작 (예: 3등급 · 비우면 별점 표시)"
+            value={item.gradeFrom ?? ""}
+            onSave={(value) => onSave(item.id, { gradeFrom: value || null })}
+          />
+          <AutoSaveInput
+            label="성적 변화 도착 (예: 1등급)"
+            value={item.gradeTo ?? ""}
+            onSave={(value) => onSave(item.id, { gradeTo: value || null })}
+          />
+        </div>
+        <label className="grid gap-1 text-sm">
+          <span className="font-semibold text-text-secondary">고민 카테고리</span>
+          <select
+            className="rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            value={item.category ?? ""}
+            onChange={(event) => void onSave(item.id, { category: event.target.value || null })}
+          >
+            <option value="">선택 안 함</option>
+            {REVIEW_CATEGORY_OPTIONS.map((cat) => (
+              <option key={cat} value={cat}>
+                #{cat}
+              </option>
+            ))}
+          </select>
+        </label>
+        <AutoSaveInput
+          label="태그 (줄바꿈으로 구분)"
+          value={item.tags ?? ""}
+          kind="textarea"
+          rows={2}
+          onSave={(value) => onSave(item.id, { tags: value || null })}
+        />
         <div className="flex flex-wrap gap-2">
           <SurfaceToggleButton
             active={item.isActive}
