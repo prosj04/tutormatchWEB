@@ -21,7 +21,7 @@ body:has(.lp2-root) footer.site .logo span {
   font-feature-settings: "ss03","cv01";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip; /* hidden은 하위 position:sticky를 깨뜨림 */
   transition: background .4s var(--ease), color .4s var(--ease);
 }
 
