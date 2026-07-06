@@ -653,28 +653,19 @@ body:has(.lp2-root) footer.site .logo span {
 /* ── hero visual (모델 사진 + 목업 카드) ── */
 .lp2-hero-visual {
   position: relative;
-  width: clamp(320px, 30vw, 430px);
+  width: clamp(320px, 32vw, 460px);
 }
 .lp2-hero-model {
   position: relative;
-  width: clamp(260px, 24vw, 360px);
+  width: 100%;
   aspect-ratio: 4 / 5;
-  margin-left: auto;
+  margin: 0 auto;
   border-radius: 26px;
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--panel-2);
   box-shadow: var(--shadow-md);
 }
-.lp2-hero-visual .lp2-hero-proof {
-  position: absolute;
-  left: 0;
-  bottom: -28px;
-  width: clamp(240px, 20vw, 280px);
-  gap: 12px;
-}
-.lp2-hero-visual .lp2-proof-card { padding: 14px 16px; }
-.lp2-hero-visual .lp2-proof-card.lp2-proof-score { margin-right: 0; }
 
 /* ── consult bridge band (무료 학습컨설팅) ── */
 .lp2-band-sec { padding-top: 0; }
@@ -745,7 +736,6 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-hero-cols { grid-template-columns: 1fr; }
   .lp2-hero-visual { width: 100%; margin-top: 36px; }
   .lp2-hero-model { width: min(84vw, 380px); margin: 0 auto; }
-  .lp2-hero-visual .lp2-hero-proof { display: none; }
   .lp2-care-cols { grid-template-columns: 1fr; }
   .lp2-care-mock { max-width: 460px; }
   .lp2-proc-cols { grid-template-columns: 1fr; }

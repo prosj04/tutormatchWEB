@@ -394,31 +394,6 @@ export function LandingPageV2({
                   />
                 </CmsEdit>
               </div>
-              <div className="lp2-hero-proof">
-                <div className="lp2-proof-card lp2-proof-match">
-                  <div className="lp2-proof-head">
-                    <span className="lp2-proof-dot" />
-                    선생님 매칭 완료
-                  </div>
-                  <div className="lp2-proof-match-body">
-                    <div className="lp2-proof-avatar">N</div>
-                    <div>
-                      <div className="lp2-proof-name">Teacher Noah</div>
-                      <div className="lp2-proof-sub">서울대 수리과학부 · 수학</div>
-                    </div>
-                  </div>
-                  <div className="lp2-proof-tags">
-                    <span>주 2회 · 회당 2시간</span>
-                    <span>대면 수업</span>
-                  </div>
-                </div>
-                <div className="lp2-proof-card lp2-proof-score">
-                  <span className="s-before">수학 5등급</span>
-                  <span className="s-arr">→</span>
-                  <span className="s-after">2등급</span>
-                  <span className="s-months">3개월</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
