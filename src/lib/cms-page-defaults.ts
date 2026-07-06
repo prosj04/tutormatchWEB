@@ -1434,11 +1434,11 @@ export function getTutorPublicPhotoUrl(
 /** 홈 안전 스토리(스크롤텔링) 섹션 기본값 */
 export const homeSafetyStoryDefaults = [
   { section: "safety_story", key: "intro", value: "과외는 많은 학생에게 최고의 해결책이지만..", type: "text", order: 1 },
-  { section: "safety_story", key: "news1_quote", value: "“13세 성추행 과외교사는 ○○○” 사진·이름 등 신상 확산…", type: "text", order: 10 },
-  { section: "safety_story", key: "news1_press", value: "서울신문", type: "text", order: 11 },
+  { section: "safety_story", key: "news1_quote", value: "“딸이 유혹했다” 적반하장 대학생 과외 교사… 1심 집행유예에 ‘공분’", type: "text", order: 10 },
+  { section: "safety_story", key: "news1_press", value: "뉴시스", type: "text", order: 11 },
   { section: "safety_story", key: "news1_year", value: "2026", type: "text", order: 12 },
-  { section: "safety_story", key: "news1_url", value: "https://www.seoul.co.kr/news/society/2026/04/14/20260414500211", type: "text", order: 13 },
-  { section: "safety_story", key: "news2_quote", value: "‘정유정’ 사건에 불안 커진 과외 중개 앱…", type: "text", order: 14 },
+  { section: "safety_story", key: "news1_url", value: "https://www.newsis.com/view/NISX20260410_0003585764", type: "text", order: 13 },
+  { section: "safety_story", key: "news2_quote", value: "‘정**’ 사건에 불안 커진 과외 중개 앱…", type: "text", order: 14 },
   { section: "safety_story", key: "news2_press", value: "서울신문", type: "text", order: 15 },
   { section: "safety_story", key: "news2_year", value: "2023", type: "text", order: 16 },
   { section: "safety_story", key: "news2_url", value: "https://www.seoul.co.kr/news/newsView.php?id=20230604500093", type: "text", order: 17 },

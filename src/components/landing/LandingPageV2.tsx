@@ -264,8 +264,8 @@ export function LandingPageV2({
   const safetyStory: SafetyStoryData = useMemo(() => {
     const S = "safety_story";
     const newsDefaults = [
-      ["“13세 성추행 과외교사는 ○○○” 사진·이름 등 신상 확산…", "서울신문", "2026", "https://www.seoul.co.kr/news/society/2026/04/14/20260414500211"],
-      ["‘정유정’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
+      ["“딸이 유혹했다” 적반하장 대학생 과외 교사… 1심 집행유예에 ‘공분’", "뉴시스", "2026", "https://www.newsis.com/view/NISX20260410_0003585764"],
+      ["‘정**’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
       ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
     ] as const;
     const stepDefaults = [
