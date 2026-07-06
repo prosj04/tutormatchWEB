@@ -113,6 +113,37 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-cta-note { margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--mut-2); }
 
+/* ── trust bar (post-hero) ── */
+.lp2-trustbar {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.lp2-trustbar-row {
+  list-style: none; margin: 0; padding: 20px 0;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 14px 34px;
+}
+.lp2-trustbar-row li {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-size: clamp(14px, 1.05vw, 16px); font-weight: 700; color: var(--fg);
+}
+.lp2-trustbar-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 999px;
+  background: var(--acc); color: var(--on-acc); font-size: 11px; font-weight: 800;
+}
+
+/* ── problem statement ── */
+.lp2-problem-sec .lp2-sec-head {
+  max-width: 760px; margin-left: auto; margin-right: auto;
+  text-align: center; margin-bottom: 0;
+}
+.lp2-problem-sec .lp2-sec-head p { margin-left: auto; margin-right: auto; }
+
+/* ── pricing section (home) ── */
+.lp2-price-sec .price-grid { margin-top: 0; }
+
 /* ── hero proof cards ── */
 .lp2-hero-cols {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
