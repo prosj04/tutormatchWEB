@@ -69,6 +69,14 @@ const DOCS: DocItem[] = [
     pages: "웹",
   },
   {
+    id: "copy-proposals",
+    title: "카피 제안서",
+    desc: "매칭 철학 기반 섹션별 문구 복수안(추천안 표시) + 실제 사건 뉴스 활용 수위 3안과 표현 가이드.",
+    category: "브랜드 · 앱",
+    file: "/docs/copy-proposals.html",
+    pages: "웹",
+  },
+  {
     id: "benchmark-seoltab",
     title: "설탭 벤치마크 리포트",
     desc: "설탭 전 페이지 조사: 전환 설계 10원칙·페이지 구조·상담폼 필드·채택/제외 판정표·촬영 목록.",
