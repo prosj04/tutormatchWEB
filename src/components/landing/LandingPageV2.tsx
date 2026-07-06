@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { HomeSafetyStory, type SafetyStoryData } from "@/components/landing/HomeSafetyStory";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
 import {
@@ -260,6 +261,38 @@ export function LandingPageV2({
     [cms?.siteContent, tier],
   );
 
+  const safetyStory: SafetyStoryData = useMemo(() => {
+    const S = "safety_story";
+    const newsDefaults = [
+      ["“13세 성추행 과외교사는 ○○○” 사진·이름 등 신상 확산…", "서울신문", "2026", "https://www.seoul.co.kr/news/society/2026/04/14/20260414500211"],
+      ["‘정유정’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
+      ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
+    ] as const;
+    const stepDefaults = [
+      ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
+      ["매니저 직접 매칭", "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다."],
+      ["공부 계획·질문 관리", "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다."],
+      ["매월 수업 리포트 제공", "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다."],
+      ["매니저의 사후 관리", "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다."],
+    ] as const;
+    return {
+      intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
+      closer: getCmsMultiline(S, "closer", "여전히 검증은 학생의 몫입니다"),
+      pivot: getCmsMultiline(S, "pivot", "부담 없이 수업에만 집중할 수 있도록,\n우리는 최고의 선생님만 배정합니다."),
+      newsNote: getCmsValue(S, "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다"),
+      news: newsDefaults.map(([quote, press, year, url], i) => ({
+        quote: getCmsValue(S, `news${i + 1}_quote`, quote),
+        press: getCmsValue(S, `news${i + 1}_press`, press),
+        year: getCmsValue(S, `news${i + 1}_year`, year),
+        url: getCmsValue(S, `news${i + 1}_url`, url),
+      })),
+      steps: stepDefaults.map(([title, desc], i) => ({
+        title: getCmsValue(S, `step${i + 1}_title`, title),
+        desc: getCmsMultiline(S, `step${i + 1}_desc`, desc),
+      })),
+    };
+  }, [getCmsValue, getCmsMultiline]);
+
   return (
     <div className="lp2-root">
       {/* ══ 1. HERO ═══════════════════════════════════════ */}
@@ -332,16 +365,8 @@ export function LandingPageV2({
         </div>
       </section>
 
-      {/* ══ 3. PROBLEM ════════════════════════════════════ */}
-      <section className="lp2-sec lp2-problem-sec">
-        <div className="lp2-wrap">
-          <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Why it matters</span>
-            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.problem}</h2>
-            <p>{sectionTitles.problemSubtext}</p>
-          </div>
-        </div>
-      </section>
+      {/* ══ 3. SAFETY STORY (스크롤텔링: 밝음 → 뉴스 다크 → 절차 밝음) ══ */}
+      <HomeSafetyStory data={safetyStory} />
 
       {/* ══ 4. PROCESS (Concord 방식 5단계) ════════════════ */}
       <section id="process" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>

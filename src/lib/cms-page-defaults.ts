@@ -1430,3 +1430,33 @@ export function getTutorPublicPhotoUrl(
 ): string {
   return getEffectivePhotoUrl(photoUrl, gender, siteContent);
 }
+
+/** 홈 안전 스토리(스크롤텔링) 섹션 기본값 */
+export const homeSafetyStoryDefaults = [
+  { section: "safety_story", key: "intro", value: "과외는 많은 학생에게 최고의 해결책이지만..", type: "text", order: 1 },
+  { section: "safety_story", key: "news1_quote", value: "“13세 성추행 과외교사는 ○○○” 사진·이름 등 신상 확산…", type: "text", order: 10 },
+  { section: "safety_story", key: "news1_press", value: "서울신문", type: "text", order: 11 },
+  { section: "safety_story", key: "news1_year", value: "2026", type: "text", order: 12 },
+  { section: "safety_story", key: "news1_url", value: "https://www.seoul.co.kr/news/society/2026/04/14/20260414500211", type: "text", order: 13 },
+  { section: "safety_story", key: "news2_quote", value: "‘정유정’ 사건에 불안 커진 과외 중개 앱…", type: "text", order: 14 },
+  { section: "safety_story", key: "news2_press", value: "서울신문", type: "text", order: 15 },
+  { section: "safety_story", key: "news2_year", value: "2023", type: "text", order: 16 },
+  { section: "safety_story", key: "news2_url", value: "https://www.seoul.co.kr/news/newsView.php?id=20230604500093", type: "text", order: 17 },
+  { section: "safety_story", key: "news3_quote", value: "학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", type: "text", order: 18 },
+  { section: "safety_story", key: "news3_press", value: "경인일보", type: "text", order: 19 },
+  { section: "safety_story", key: "news3_year", value: "2020", type: "text", order: 20 },
+  { section: "safety_story", key: "news3_url", value: "https://www.kyeongin.com/article/1523526", type: "text", order: 21 },
+  { section: "safety_story", key: "news_note", value: "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다", type: "text", order: 29 },
+  { section: "safety_story", key: "closer", value: "여전히 검증은 학생의 몫입니다", type: "text", order: 30 },
+  { section: "safety_story", key: "pivot", value: "부담 없이 수업에만 집중할 수 있도록,\n우리는 최고의 선생님만 배정합니다.", type: "text", order: 40 },
+  { section: "safety_story", key: "step1_title", value: "대표 직접 면접", type: "text", order: 50 },
+  { section: "safety_story", key: "step1_desc", value: "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다.", type: "text", order: 51 },
+  { section: "safety_story", key: "step2_title", value: "매니저 직접 매칭", type: "text", order: 52 },
+  { section: "safety_story", key: "step2_desc", value: "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다.", type: "text", order: 53 },
+  { section: "safety_story", key: "step3_title", value: "공부 계획·질문 관리", type: "text", order: 54 },
+  { section: "safety_story", key: "step3_desc", value: "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다.", type: "text", order: 55 },
+  { section: "safety_story", key: "step4_title", value: "매월 수업 리포트 제공", type: "text", order: 56 },
+  { section: "safety_story", key: "step4_desc", value: "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다.", type: "text", order: 57 },
+  { section: "safety_story", key: "step5_title", value: "매니저의 사후 관리", type: "text", order: 58 },
+  { section: "safety_story", key: "step5_desc", value: "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다.", type: "text", order: 59 },
+];
