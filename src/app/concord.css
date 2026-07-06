@@ -110,6 +110,10 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .reveal{ opacity:0; transform:translateY(56px); transition:opacity 2s cubic-bezier(.45,.05,.25,1),transform 2s cubic-bezier(.45,.05,.25,1); }
 .reveal.in{ opacity:1; transform:none; }
 @media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; transition-delay:0ms!important; } html{ scroll-behavior:auto; } }
+/* fail-safe: 스크립트가 하이드레이션되지 못하면(구버전 캐시 HTML→청크 404 등) 2.5초 뒤 강제 표시.
+   React 마운트 시 html.js-hydrated가 붙어 이 규칙은 비활성화되고 기존 스크롤-리빌이 동작한다. */
+@keyframes reveal-failsafe{ to{ opacity:1; transform:none; } }
+html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forwards; }
 
 /* =========================================================
    PRICING
@@ -199,7 +203,10 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .auth-bg{ position:absolute; inset:0; z-index:0; pointer-events:none;
   background:radial-gradient(620px 440px at 50% -10%, rgba(var(--acc-rgb),.12), transparent 62%); }
 .auth-card{ position:relative; z-index:1; width:100%; max-width:min(420px, calc(100vw - 2 * var(--page-x, 40px))); background:var(--panel); border:1px solid var(--line);
-  border-radius:var(--r-card-lg); box-shadow:var(--shadow-md); padding:40px 36px 36px; }
+  border-radius:var(--r-card-lg); box-shadow:var(--shadow-md); padding:40px 36px 36px;
+  animation:auth-card-in .7s cubic-bezier(.45,.05,.25,1) both; }
+@keyframes auth-card-in{ from{ opacity:0; transform:translateY(24px); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce){ .auth-card{ animation:none; } }
 .auth-card .brand{ font-size:24px; font-weight:800; letter-spacing:-.03em; text-align:center; }
 .auth-card .brand span{ color:var(--acc-text); }
 .auth-card h1{ font-size:22px; font-weight:700; letter-spacing:-.025em; margin-top:22px; text-align:center; }

@@ -7,6 +7,7 @@ import "./concord.css";
 import "./dark-mode-bridge.css";
 import "./responsive.css";
 
+import { HydrationMarker } from "@/components/layout/HydrationMarker";
 import { getPortalDesign } from "@/lib/portal-design";
 import { SITE_URL } from "@/lib/site-config";
 
@@ -116,6 +117,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <HydrationMarker />
         {children}
         {GA_MEASUREMENT_ID && (
           <>

@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 
@@ -302,7 +301,8 @@ export function LoginForm({
     <main>
       <div className="auth-wrap">
         <div className="auth-bg" />
-        <ConcordReveal className="auth-card">
+        {/* 로그인 카드는 JS 리빌에 의존하지 않음 — 스크립트 로드 실패 시에도 보여야 하는 핵심 UI */}
+        <div className="auth-card">
           <div className="brand">
             Concord<span>.</span>
           </div>
@@ -373,7 +373,7 @@ export function LoginForm({
           {showAdminSetup && !adminSetupHidden ? (
             <AdminToolsSection onDismiss={() => setAdminSetupHidden(true)} />
           ) : null}
-        </ConcordReveal>
+        </div>
       </div>
     </main>
   );
