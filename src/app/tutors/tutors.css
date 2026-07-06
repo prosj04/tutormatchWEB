@@ -1,0 +1,95 @@
+/* /tutors 설탭식 재구축 스타일 — concord.css 토큰(--acc, --panel, --fg, --bg 등)만 사용 */
+
+.tp-sec-head { text-align: center; max-width: 720px; margin: 0 auto clamp(28px, 3.4vw, 48px); }
+.tp-sec-head h2 { font-size: clamp(24px, 2.8vw, 38px); font-weight: 800; letter-spacing: -.03em; line-height: 1.22; }
+.tp-sec-head p { margin-top: 14px; color: var(--mut); font-size: 15px; text-wrap: pretty; }
+
+.tp-footnote { margin-top: 18px; text-align: center; color: var(--mut-2); font-size: 12px; }
+
+/* ── 다크 히어로 (--fg 반전, 홈 환불 밴드와 동일 방식) ── */
+.tp-hero { position: relative; overflow: hidden; background: var(--fg); color: var(--bg); }
+.tp-hero-media { position: absolute; inset: 0; opacity: .34; }
+.tp-hero-media img { filter: saturate(.85); }
+.tp-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.45)); pointer-events: none; }
+.tp-hero-inner { position: relative; z-index: 1; text-align: center; padding-top: clamp(72px, 9vw, 140px); padding-bottom: clamp(72px, 9vw, 140px); }
+.tp-hero-inner h1 { font-size: clamp(30px, 4.4vw, 56px); font-weight: 900; letter-spacing: -.035em; line-height: 1.16; color: var(--bg); }
+.tp-hero-sub { margin-top: 16px; font-size: clamp(15px, 1.4vw, 18px); color: var(--bg); opacity: .78; }
+.tp-hero-btn { margin-top: 30px; }
+
+/* ── 통계 카운터 ── */
+.tp-stats-sec { border-bottom: 1px solid var(--line); }
+.tp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; text-align: center; }
+.tp-stat { display: flex; flex-direction: column; gap: 6px; }
+.tp-stat-n { font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; letter-spacing: -.03em; color: var(--acc-text); }
+.tp-stat-l { color: var(--mut); font-size: 14px; font-weight: 600; }
+
+/* ── 인터뷰 매칭 ── */
+.tp-interview-sec { background: var(--panel-2); }
+.tp-iv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.tp-iv-card { overflow: hidden; display: flex; flex-direction: column; }
+.tp-iv-media { position: relative; aspect-ratio: 16/10; background: var(--panel); }
+.tp-iv-body { padding: 24px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.tp-iv-label { font-size: 13px; font-weight: 800; color: var(--acc-text); letter-spacing: .04em; }
+.tp-iv-body blockquote { margin: 0; font-size: clamp(17px, 1.7vw, 21px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; }
+
+/* ── 이달의 선생님 캐러셀 (스크롤 스냅) ── */
+.tp-carousel {
+  display: flex; gap: 20px; overflow-x: auto; padding: 8px max(calc((100vw - var(--sub-wrap)) / 2 + var(--page-x, 32px)), 20px) 18px;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+}
+.tp-carousel-card { flex: 0 0 clamp(280px, 30vw, 360px); scroll-snap-align: center; position: relative; }
+.tp-card-tags { padding: 16px 16px 0; }
+.tp-card-univ { font-size: 13px; font-weight: 600; color: var(--mut); margin-bottom: 4px; }
+.tp-card-foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.tp-card-subjects { display: flex; gap: 6px; flex-wrap: wrap; }
+.tp-card-subjects span { background: rgba(var(--acc-rgb), .1); color: var(--acc-text); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); }
+.tp-career-badge { font-size: 12px; font-weight: 700; color: var(--mut); border: 1px solid var(--line2); padding: 4px 10px; border-radius: var(--r-pill); }
+
+/* ── Q&A 3종 ── */
+.tp-why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.tp-why-card { position: relative; padding: 26px 24px 30px; display: flex; flex-direction: column; gap: 10px; }
+.tp-why-q { color: var(--mut-2); font-size: 14px; font-weight: 600; }
+.tp-why-card h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--acc-text); }
+.tp-why-card p { color: var(--mut); font-size: 14px; line-height: 1.6; }
+.tp-why-n { position: absolute; top: 20px; right: 22px; font-size: 13px; font-weight: 800; color: var(--mut-2); }
+
+/* ── 성적 인증 그리드 ── */
+.tp-proof-sec { background: var(--panel-2); }
+.tp-proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.tp-proof-card { overflow: hidden; display: flex; flex-direction: column; }
+.tp-proof-media { position: relative; aspect-ratio: 16/11; background: var(--panel); }
+.tp-proof-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; }
+.tp-proof-student { font-size: 13px; color: var(--mut); font-weight: 600; }
+.tp-proof-line { font-size: 18px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+.tp-proof-line .arr { color: var(--acc-text); font-weight: 900; }
+.tp-proof-line em { font-style: normal; color: var(--acc-text); font-weight: 900; font-size: 21px; }
+.tp-proof-months { font-size: 13px; color: var(--mut-2); }
+
+/* ── 변경 보장 밴드 ── */
+.tp-rematch-band {
+  background: var(--fg); color: var(--bg); border-radius: 24px;
+  padding: clamp(32px, 4vw, 52px) clamp(24px, 4.5vw, 56px);
+  display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
+}
+.tp-rematch-band h2 { font-size: clamp(22px, 2.6vw, 32px); font-weight: 800; letter-spacing: -.03em; color: var(--bg); }
+.tp-rematch-band p { margin-top: 10px; color: var(--bg); opacity: .72; font-size: 15px; }
+.tp-rematch-btn { background: var(--bg); color: var(--fg); }
+.tp-rematch-btn:hover { background: var(--acc); color: var(--on-acc); }
+
+/* ── 가격 앵커 ── */
+.tp-price { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.tp-price-kicker { font-size: clamp(16px, 1.7vw, 20px); font-weight: 700; color: var(--mut); }
+.tp-price-value { font-size: clamp(38px, 5.4vw, 64px); font-weight: 900; letter-spacing: -.04em; color: var(--acc-text); line-height: 1.05; }
+.tp-price-sub { color: var(--mut); font-size: 15px; }
+.tp-price .btn { margin-top: 10px; }
+
+@media (max-width: 960px) {
+  .tp-iv-grid, .tp-why-grid { grid-template-columns: 1fr; }
+  .tp-proof-grid { grid-template-columns: repeat(2, 1fr); }
+  .tp-carousel-card { flex-basis: min(78vw, 330px); }
+}
+@media (max-width: 640px) {
+  .tp-stats { grid-template-columns: 1fr; gap: 26px; }
+  .tp-proof-grid { grid-template-columns: 1fr; }
+  .tp-rematch-band { text-align: center; justify-content: center; }
+}
