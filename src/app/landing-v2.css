@@ -806,140 +806,126 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-cmp th, .lp2-cmp td { padding: 12px 14px; font-size: 14px; }
 }
 
-/* ── 5-b. Safety story (scroll-telling: light → dark news → light steps) ── */
-.lp2-story {
-  background: var(--bg);
-  transition: background-color 0.7s ease;
-  padding: 24px 0 96px;
-}
-.lp2-story[data-phase="dark"] { background: #0f1f18; }
-.lp2-story .lp2-story-block {
-  opacity: 0;
-  transform: translateY(36px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-}
-.lp2-story .lp2-story-block.is-in { opacity: 1; transform: none; }
+/* ── 5-b. Safety story (핀 고정 스크롤텔링) ── */
+.lp2-story { position: relative; }
 
-.lp2-story-intro {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 110px 24px 130px;
-  text-align: center;
+.lp2-story-pin { position: relative; }
+.lp2-story-stagevp {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  transition: background-color 0.6s ease;
 }
-.lp2-story-intro h2 {
-  font-size: clamp(24px, 3.6vw, 38px);
+.lp2-story-stagevp.is-dark { background: #0a0a0a; }
+
+.lp2-story-item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(920px, calc(100% - 48px));
+  text-align: center;
+  will-change: transform, opacity;
+}
+.lp2-story-item h2 {
+  font-size: clamp(24px, 3.6vw, 40px);
   font-weight: 800;
   letter-spacing: -0.01em;
-  line-height: 1.42;
+  line-height: 1.45;
   color: var(--fg);
+  transition: color 0.6s ease;
 }
-.lp2-story[data-phase="dark"] .lp2-story-intro h2 { color: rgba(244, 241, 234, 0.6); }
+.lp2-story-closer h2 { font-weight: 900; }
+.is-dark .lp2-story-item h2 { color: #f4f1ea; }
 
-.lp2-story-darkzone { padding: 20px 24px 40px; }
-.lp2-story-clip {
+.lp2-story-newsline { display: block; text-decoration: none; color: inherit; }
+.lp2-story-newsline .q {
   display: block;
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 44px 24px;
-  text-align: center;
-  text-decoration: none;
-  color: inherit;
-}
-.lp2-story-clip .q {
-  display: block;
-  font-size: clamp(19px, 2.7vw, 29px);
+  font-size: clamp(20px, 3vw, 33px);
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.5;
   color: var(--fg);
 }
-.lp2-story-clip .s {
+.lp2-story-newsline .s {
   display: block;
-  margin-top: 10px;
-  font-size: 12.5px;
+  margin-top: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--mut);
 }
-.lp2-story[data-phase="dark"] .lp2-story-clip .q { color: #f4f1ea; }
-.lp2-story[data-phase="dark"] .lp2-story-clip .s { color: rgba(244, 241, 234, 0.5); }
+.is-dark .lp2-story-newsline .q { color: #f4f1ea; }
+.is-dark .lp2-story-newsline .s { color: rgba(244, 241, 234, 0.5); }
 
-.lp2-story-note {
+.lp2-story-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 32px;
   text-align: center;
   font-size: 12px;
-  color: var(--mut);
-  margin-top: 18px;
-}
-.lp2-story[data-phase="dark"] .lp2-story-note { color: rgba(244, 241, 234, 0.45); }
-
-.lp2-story-closer {
-  padding: 130px 24px 150px;
-  text-align: center;
-}
-.lp2-story-closer h2 {
-  font-size: clamp(26px, 4vw, 42px);
-  font-weight: 900;
-  letter-spacing: -0.01em;
-  line-height: 1.4;
-  color: var(--fg);
-}
-.lp2-story[data-phase="dark"] .lp2-story-closer h2 { color: #f4f1ea; }
-
-.lp2-story-pivot {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 96px 24px;
-  text-align: center;
-}
-.lp2-story-darkzone + .lp2-story-pivot { padding-top: 150px; }
-.lp2-story-pivot h2 {
-  font-size: clamp(23px, 3.2vw, 34px);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.5;
-  color: var(--fg);
-}
-.lp2-story-pivot h2 em,
-.lp2-story-pivot h2 strong {
-  font-style: normal;
-  color: var(--acc);
+  color: rgba(244, 241, 234, 0.42);
+  transition: opacity 0.5s ease;
+  pointer-events: none;
 }
 
+/* 절차 5단계 — 누적 등장 */
+.lp2-story-steps-pin { position: relative; }
+.lp2-story-steps-vp {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 48px 24px;
+}
 .lp2-story-steps {
   list-style: none;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 10px 24px 0;
+  width: min(860px, 100%);
+  margin: 0;
+  padding: 0;
 }
 .lp2-story-step {
   display: grid;
-  grid-template-columns: 62px 1fr;
-  gap: 18px;
-  padding: 30px 0;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  padding: 22px 0;
   border-top: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
-.lp2-story[data-phase="dark"] .lp2-story-step { border-top-color: rgba(255, 255, 255, 0.12); }
+.lp2-story-step:first-child { border-top: none; }
+.lp2-story-step.on { opacity: 1; transform: none; }
 .lp2-story-step .num {
   font-size: 14px;
   font-weight: 800;
   color: var(--acc);
   letter-spacing: 0.06em;
-  padding-top: 4px;
+  padding-top: 3px;
 }
 .lp2-story-step h3 {
-  font-size: 18px;
+  font-size: 17.5px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  margin-bottom: 8px;
+  margin: 0 0 7px;
   color: var(--fg);
 }
-.lp2-story-step p { font-size: 15px; line-height: 1.7; color: var(--mut); }
-.lp2-story[data-phase="dark"] .lp2-story-step h3 { color: #f4f1ea; }
-.lp2-story[data-phase="dark"] .lp2-story-step p { color: rgba(244, 241, 234, 0.7); }
+.lp2-story-step p { font-size: 14.5px; line-height: 1.65; color: var(--mut); margin: 0; }
+
+/* reduced-motion 정적 폴백 */
+.lp2-story-static .lp2-story-sblock { padding: 90px 24px; text-align: center; }
+.lp2-story-static .lp2-story-sblock.dark { background: #0a0a0a; }
+.lp2-story-static .lp2-story-sblock.dark h2,
+.lp2-story-static .lp2-story-sblock.dark .q { color: #f4f1ea; }
+.lp2-story-static .lp2-story-sblock h2 { font-size: clamp(24px, 3.6vw, 38px); font-weight: 800; }
+.lp2-story-static .lp2-story-steps { margin: 40px auto 90px; padding: 0 24px; }
 
 @media (max-width: 680px) {
-  .lp2-story-intro { padding: 80px 20px 96px; }
-  .lp2-story-closer { padding: 96px 20px 110px; }
-  .lp2-story-pivot { padding: 104px 20px 52px; }
-  .lp2-story-clip { flex-direction: column; gap: 8px; }
-  .lp2-story-step { grid-template-columns: 44px 1fr; gap: 12px; padding: 24px 0; }
+  .lp2-story-item h2 { font-size: clamp(21px, 6vw, 28px); }
+  .lp2-story-newsline .q { font-size: clamp(17px, 5.4vw, 24px); }
+  .lp2-story-step { grid-template-columns: 42px 1fr; gap: 12px; padding: 18px 0; }
 }
