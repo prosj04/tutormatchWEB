@@ -105,3 +105,39 @@
   .tp-proof-grid { grid-template-columns: 1fr; }
   .tp-rematch-band { text-align: center; justify-content: center; }
 }
+
+/* ── 뉴스 근거 각주 (검증 섹션 도입) ── */
+.tp-newsref { margin-bottom: clamp(40px, 5vw, 64px); }
+.tp-newsref-lead {
+  font-size: clamp(15px, 1.2vw, 17px);
+  font-weight: 700;
+  color: var(--mut);
+  margin: 0 0 14px;
+}
+.tp-newsref-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.tp-newsref-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+.tp-newsref-card:hover { border-color: var(--mut); }
+.tp-newsref-card .q {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tp-newsref-card .s { font-size: 11.5px; font-weight: 600; color: var(--mut); }
+.tp-newsref-note { margin: 10px 0 0; font-size: 11.5px; color: var(--mut); opacity: 0.75; }
+@media (max-width: 760px) { .tp-newsref-row { grid-template-columns: 1fr; } }

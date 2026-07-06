@@ -24,6 +24,12 @@ const SECTION = "tutors_featured";
 const PROOF_SECTION = "tutors_proof";
 const PROOF_COUNT = 6;
 
+const NEWS_REF_FALLBACK: [string, string, string, string][] = [
+  ["“딸이 유혹했다” 적반하장 대학생 과외 교사… 1심 집행유예에 ‘공분’", "뉴시스", "2026", "https://www.newsis.com/view/NISX20260410_0003585764"],
+  ["‘정**’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
+  ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
+];
+
 function FeaturedCard({
   card,
   ctaLabel,
@@ -185,11 +191,16 @@ export function FeaturedTutors({
     }))
     .filter((s) => s.number && s.label);
 
+  const WHY_FALLBACK: [string, string, string][] = [
+    ["다 같은 명문대 출신 아닌가요?", "같은 학벌이어도 다릅니다", "서류·수업 시연·대면 인터뷰 3단계로 인성부터 강의력까지 검증합니다."],
+    ["대학생이라 무책임하지 않나요?", "믿고 맡길 수 있습니다", "매 수업이 끝나면 진도와 피드백을 리포트로 공유해 바로 확인할 수 있습니다."],
+    ["교습 경험이 있는 선생님인가요?", "검증된 경력 위주로 선발합니다", "교습 경험과 지도 사례를 확인한 선생님을 우선 배정합니다."],
+  ];
   const whys = [1, 2, 3]
     .map((n) => ({
-      q: get(`why${n}_q`, ""),
-      a: get(`why${n}_a`, ""),
-      desc: get(`why${n}_desc`, ""),
+      q: get(`why${n}_q`, WHY_FALLBACK[n - 1][0]),
+      a: get(`why${n}_a`, WHY_FALLBACK[n - 1][1]),
+      desc: get(`why${n}_desc`, WHY_FALLBACK[n - 1][2]),
     }))
     .filter((w) => w.q && w.a);
 
@@ -368,6 +379,31 @@ export function FeaturedTutors({
       {whys.length > 0 ? (
         <section className="sec tp-why-sec">
           <div className="wrap">
+            <ConcordReveal className="tp-newsref" as="div" aria-label="관련 보도">
+              <p className="tp-newsref-lead">
+                {getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}
+              </p>
+              <div className="tp-newsref-row">
+                {NEWS_REF_FALLBACK.map(([fq, fp, fy, fu], idx) => {
+                  const n = idx + 1;
+                  const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
+                  const url = getCmsSectionValue(siteContent, "safety_story", `news${n}_url`, fu);
+                  const press = getCmsSectionValue(siteContent, "safety_story", `news${n}_press`, fp);
+                  const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
+                  if (!quote || !url) return null;
+                  return (
+                    <a key={n} href={url} target="_blank" rel="noopener noreferrer" className="tp-newsref-card">
+                      <span className="q">{quote}</span>
+                      <span className="s">{year} · {press}</span>
+                    </a>
+                  );
+                })}
+              </div>
+              <p className="tp-newsref-note">
+                {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다")}
+              </p>
+            </ConcordReveal>
+
             <ConcordReveal className="tp-sec-head" as="div">
               <h2 style={{ whiteSpace: "pre-line" }}>
                 {edit("why_title", formatCmsMultiline(get("why_title", "Concord 선생님이\n특별한 이유 3가지")))}
