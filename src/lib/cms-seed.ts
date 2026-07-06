@@ -33,8 +33,8 @@ const siteContentDefaults = [
   { section: "stats", key: "stat3_number", value: "", type: "number", order: 5 },
   { section: "stats", key: "stat3_label", value: "학생 만족도", type: "text", order: 6 },
 
-  { section: "cta", key: "headline", value: "첫 수업이 마음에 안 들면\n100% 환불해드립니다", type: "text", order: 1 },
-  { section: "cta", key: "subtext", value: "무료 상담 1회 · 1~3일 내 선생님 배정 · 첫 수업 100% 환불 보장", type: "text", order: 2 },
+  { section: "cta", key: "headline", value: "판단은 첫 수업을 보고 하셔도 됩니다.", type: "text", order: 1 },
+  { section: "cta", key: "subtext", value: "결정은 천천히, 진단은 먼저 받아보세요.", type: "text", order: 2 },
   { section: "cta", key: "button", value: "지금 무료 상담 신청하기", type: "text", order: 3 },
   { section: "cta", key: "cta_box_1_visible", value: "1", type: "text", order: 10 },
   { section: "cta", key: "cta_box_1_title", value: "무료 상담 1회", type: "text", order: 11 },
@@ -247,7 +247,7 @@ const testimonialDefaults = [
     order: 1,
   },
   {
-    quote: "처음엔 비대면 과외가 효과 있을까 반신반의했어요. 그런데 매 수업 후 매니저님이 오늘 내용과 숙제를 정리해서 보내주시더라고요. 아이 상황을 직접 확인할 수 있으니 훨씬 안심됐고, 영어 내신이 두 등급이나 올랐습니다.",
+    quote: "처음엔 과외가 우리 아이한테 맞을까 반신반의했어요. 그런데 매 수업 후 매니저님이 오늘 내용과 숙제를 정리해서 보내주시더라고요. 아이 상황을 직접 확인할 수 있으니 훨씬 안심됐고, 영어 내신이 두 등급이나 올랐습니다.",
     author: "중3 영어 · 학부모",
     imageUrl: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
     order: 2,
