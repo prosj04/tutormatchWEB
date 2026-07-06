@@ -95,6 +95,12 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
         <div className="consult-done-icon" aria-hidden="true">✓</div>
         <h2>상담 신청이 접수됐어요</h2>
         <p>{phoneNotice}</p>
+        <p className="consult-done-label">상담에서 확인하실 것</p>
+        <ul className="consult-done-list">
+          <li>학생의 공부 성향 진단과 그에 맞는 선생님 방향</li>
+          <li>과목별 현재 위치와 3개월 학습 계획</li>
+          <li>수업·요금 안내와 첫 수업 환불 조건</li>
+        </ul>
         <p className="consult-done-sub">
           계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.
         </p>

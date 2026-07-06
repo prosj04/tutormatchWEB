@@ -193,8 +193,43 @@
   margin: 0;
 }
 
+.consult-done-label {
+  margin-top: 18px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  color: var(--acc, #10b981) !important;
+}
+
+.consult-done-list {
+  list-style: none;
+  margin: 8px auto 0;
+  padding: 0;
+  max-width: 340px;
+  text-align: left;
+  display: grid;
+  gap: 8px;
+}
+
+.consult-done-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14px;
+  color: var(--fg, #1a2b23);
+  line-height: 1.5;
+}
+
+.consult-done-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--acc, #10b981);
+  font-weight: 800;
+}
+
 .consult-done-sub {
-  margin-top: 6px;
+  margin-top: 12px;
 }
 
 .consult-done-actions {
