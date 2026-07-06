@@ -5,12 +5,15 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-import { MobileFloatingCta } from "@/components/landing/MobileFloatingCta";
+import { CountUpStat } from "@/components/common/CountUpStat";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
-import { formatCmsMultiline, parseCmsVisibility } from "@/lib/cms-page-defaults";
+import {
+  formatCmsMultiline,
+  getFeaturedTutorCards,
+  parseCmsVisibility,
+} from "@/lib/cms-page-defaults";
 import { buildVisibleCompareRows, getCompareTableTitle } from "@/lib/compare-cms";
-import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
-import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
+import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 
 /* ─── static fallback data ─── */
@@ -20,6 +23,7 @@ const stats = [
   { value: "1,200+", label: "누적 상담" },
   { value: "500+", label: "매칭 완료" },
   { value: "98%", label: "학생 만족도" },
+  { value: "4.9", label: "상담 평점" },
 ];
 
 const results: [string, string, string, string][] = [
@@ -31,19 +35,30 @@ const results: [string, string, string, string][] = [
   ["고1 학생", "수학 69점", "92점으로 상승", "3개월"],
 ];
 
-const teachers = [
-  { subject: "수학", name: "Teacher Noah", image: "/images/teachers/default-male.png", highlight: "전교 꼴등에서 서울대학교 입학했어요", careers: ["서울대학교 수리과학부", "입시 수학 7년", "최상위권 심화반 운영"] },
-  { subject: "영어", name: "Teacher Olivia", image: "/images/teachers/default-female.png", highlight: "읽기 습관만 바꿔도 점수는 달라집니다", careers: ["연세대학교 영어영문학과", "국제학교·토플 지도", "첨삭 1,800시간+"] },
-  { subject: "물리", name: "Teacher Peter", image: "/images/teachers/default-male.png", highlight: "공식보다 먼저 직관을 세워요", careers: ["KAIST 전기및전자공학부", "물리·수학 통합 지도", "STEM 멘토 수상"] },
-  { subject: "국어", name: "Teacher Jiwoo", image: "/images/teachers/default-female.png", highlight: "지문을 읽는 규칙을 훈련합니다", careers: ["서울대학교 국어국문학과", "논술 전문 프라이빗", "내신 국어 맞춤 관리"] },
-];
-
 const steps = [
-  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요." },
+  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분합니다." },
   { number: "02", title: "매니저 배정·전화 상담", desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다." },
   { number: "03", title: "선생님 추천·매칭", desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다." },
-  { number: "04", title: "수업 시작", desc: "첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다." },
+  { number: "04", title: "수업 시작", desc: "첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다. 불만족 시 100% 환불해드립니다." },
   { number: "05", title: "학습 리포트·관리", desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다." },
+];
+
+const assuranceItems = [
+  {
+    n: "01",
+    title: "깐깐하게 선별합니다",
+    desc: "서류·학력 인증, 수업 시연, 대면 인터뷰까지. 지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다.",
+  },
+  {
+    n: "02",
+    title: "전문적으로 매칭합니다",
+    desc: "성적표 위 숫자만 보지 않습니다. 학생의 성향과 목표, 공부 습관까지 듣고 가장 잘 가르칠 선생님을 찾습니다.",
+  },
+  {
+    n: "03",
+    title: "매칭 후에도 관리합니다",
+    desc: "좋은 수업을 위해 매칭 이후에도 꾸준한 모니터링과 피드백으로 수업 퀄리티를 약속드립니다.",
+  },
 ];
 
 const heroTrustPills = [
@@ -90,20 +105,14 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     getCmsValue("home_page", "pricing_title", "월 38만원부터"),
   );
 
-  const cmsStats = [
-    {
-      value: getCmsValue("stats", "stat1_number", stats[0].value),
-      label: getCmsValue("stats", "stat1_label", stats[0].label),
-    },
-    {
-      value: getCmsValue("stats", "stat2_number", stats[1].value),
-      label: getCmsValue("stats", "stat2_label", stats[1].label),
-    },
-    {
-      value: getCmsValue("stats", "stat3_number", stats[2].value),
-      label: getCmsValue("stats", "stat3_label", stats[2].label),
-    },
-  ];
+  const cmsStats = stats.map((s, index) => {
+    const n = index + 1;
+    return {
+      value: getCmsValue("stats", `stat${n}_number`, s.value),
+      label: getCmsValue("stats", `stat${n}_label`, s.label),
+    };
+  });
+  const statsFootnote = getCmsValue("stats", "footnote", "* 서비스 운영 데이터 기준");
 
   const cmsResults = results.flatMap(([student, before, after, months], index) => {
     const n = index + 1;
@@ -125,25 +134,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
   });
   const doubledResults = cmsResults.length > 0 ? [...cmsResults, ...cmsResults] : [];
 
-  const cmsTeachers = teachers.flatMap((t, index) => {
-    const n = index + 1;
-    const vis = getCmsValue("teachers", `teacher${n}_visible`, "1");
-    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis)) return [];
-    const careers = getCmsValue("teachers", `teacher${n}_careers`, t.careers.join("\n"))
-      .split("\n")
-      .map((c) => c.trim())
-      .filter(Boolean);
-    return [
-      {
-        subject: getCmsValue("teachers", `teacher${n}_subject`, t.subject),
-        name: getCmsValue("teachers", `teacher${n}_name`, t.name),
-        image: getCmsValue("teachers", `teacher${n}_image`, t.image),
-        highlight: getCmsValue("teachers", `teacher${n}_highlight`, t.highlight),
-        careers: careers.length > 0 ? careers : t.careers,
-      },
-    ];
-  });
-
   const cmsSteps = steps.flatMap((step, index) => {
     const n = index + 1;
     const vis = getCmsValue("features", `step${n}_visible`, "1");
@@ -161,9 +151,18 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     const vis = getCmsValue("management", `item${n}_visible`, "1");
     if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
     const defaults: Record<number, { label: string; desc: string }> = {
-      1: { label: "진도 관리", desc: "주간 진도와 목표 달성률을 매니저·가정과 공유합니다." },
-      2: { label: "질문 관리", desc: "복습 질문에 대한 즉각 피드백으로 자기주도 학습을 돕습니다." },
-      3: { label: "리포트", desc: "월간 학습 데이터와 취약 유형 분석을 리포트로 제공합니다." },
+      1: {
+        label: "학부모 안심리뷰",
+        desc: "매 수업이 끝날 때마다 진도, 피드백, 숙제, 다음 일정을 정리해 보내드립니다.",
+      },
+      2: {
+        label: "맞춤형 월간 리포트",
+        desc: "우리 아이의 성장과 변화, 취약 유형 분석을 한 달 단위 리포트로 확인하실 수 있습니다.",
+      },
+      3: {
+        label: "매니저 상담",
+        desc: "선생님께 직접 말하기 어려운 요청은 매니저에게 전하세요. 수업에 반영되도록 조율합니다.",
+      },
     };
     const d = defaults[n]!;
     return [
@@ -177,11 +176,11 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 
   const cmsTestimonials =
     cms && cms.testimonials.length > 0
-      ? cms.testimonials.slice(0, 3)
+      ? cms.testimonials.slice(0, 4)
       : [
           {
             quote:
-              "공부하러 가서도 시간만내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
+              "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
             info: "고2 수학 · 학부모",
             img: "",
           },
@@ -197,24 +196,65 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
             info: "중3 영어 · 학생",
             img: "",
           },
+          {
+            quote:
+              "선생님께 직접 말하기 어려운 요청도 매니저님께 전하면 다음 수업에 바로 반영돼요. 아이가 수업에 빨리 적응했어요.",
+            info: "중2 수학 · 학부모",
+            img: "",
+          },
         ];
 
   const kickers = {
+    assurance: getCmsValue("home_labels", "kicker_assurance", "Responsibility"),
     teachers: getCmsValue("home_labels", "kicker_teachers", "Teachers"),
     management: getCmsValue("home_labels", "kicker_management", "Learning Care"),
     process: getCmsValue("home_labels", "kicker_process", "Process"),
     plans: getCmsValue("home_labels", "kicker_plans", "Plans"),
     compare: getCmsValue("compare", "kicker", "Compare"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "Reviews"),
+    numbers: getCmsValue("home_labels", "kicker_numbers", "Numbers"),
   };
 
   const sectionTitles = {
-    teachers: getCmsMultiline("teachers", "section_title", "명문대 출신부터\n경력 10년 이상 전문가까지"),
+    assurance: getCmsMultiline(
+      "assurance",
+      "section_title",
+      "선생님 선별부터 매칭, 관리까지\nConcord가 책임집니다",
+    ),
+    assuranceSubtext: getCmsValue(
+      "assurance",
+      "section_subtext",
+      "좋은 과외는 좋은 선생님에서 끝나지 않습니다. 선별, 매칭, 그 이후의 관리까지가 저희의 일입니다.",
+    ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n아실 수 있습니다"),
     process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
     processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요."),
-    teachersCta: getCmsValue("teachers", "cta", "전체 선생님 보기 →"),
-    reviews: getCmsValue("home_labels", "section_title_reviews", "성적보다 습관이 먼저 바뀌었어요"),
+    teachers: getCmsMultiline("tutors_featured", "home_title", "이달의 검증 선생님"),
+    teachersSubtext: getCmsValue(
+      "tutors_featured",
+      "home_subtext",
+      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님으로 상담을 신청하시면 매니저가 매칭을 도와드립니다.",
+    ),
+    reviews: getCmsValue("home_labels", "section_title_reviews", "실제 학부모님들의 이야기를 확인해보세요"),
+    numbers: getCmsValue("stats", "section_title", "숫자로 보는 Concord"),
+    consultBridge: getCmsMultiline(
+      "consult_bridge",
+      "headline",
+      "사교육, 당장 결정이 어렵다면?\n무료 학습컨설팅부터 가볍게 받아보세요",
+    ),
+    consultBridgeSubtext: getCmsValue(
+      "consult_bridge",
+      "subtext",
+      "아이마다 필요한 학습 전략이 다릅니다. 오직 우리 아이 맞춤으로 세워지는 학습 전략, 더 이상의 시간 낭비는 그만.",
+    ),
+    consultBridgeCta: getCmsValue("consult_bridge", "cta_label", "30초, 상담신청 남기기"),
+    refund: getCmsMultiline("refund_band", "headline", "첫 수업 후 불만족 시\n100% 환불 보장"),
+    refundSubtext: getCmsValue(
+      "refund_band",
+      "subtext",
+      "자신있게 제안합니다. 상담 후 첫 수업까지만 받아보세요.",
+    ),
+    pricingAnchor: getCmsValue("home_page", "pricing_anchor_title", "맞춤수업부터 관리까지, 이 모든 게"),
   };
 
   return {
@@ -222,12 +262,13 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     getCmsMultiline,
     pricingTitleParts,
     cmsStats,
+    statsFootnote,
     cmsResults,
     doubledResults,
-    cmsTeachers,
     cmsSteps,
     managementItems,
     cmsTestimonials,
+    featuredTutors: getFeaturedTutorCards(cms?.siteContent).slice(0, 3),
     compareTitle: getCompareTableTitle(cms?.siteContent),
     kickers,
     sectionTitles,
@@ -269,19 +310,20 @@ export function LandingPageV2({
   isEditMode?: boolean;
 }) {
   useReveal();
-  const [pricingTier] = usePricingSchoolTier();
+  const goConsultation = useConsultationCta();
 
   const {
     getCmsValue,
     getCmsMultiline,
     pricingTitleParts,
     cmsStats,
+    statsFootnote,
     cmsResults,
     doubledResults,
-    cmsTeachers,
     cmsSteps,
     managementItems,
     cmsTestimonials,
+    featuredTutors,
     compareTitle,
     kickers,
     sectionTitles,
@@ -291,15 +333,6 @@ export function LandingPageV2({
     () => buildVisibleCompareRows(cms?.siteContent),
     [cms?.siteContent],
   );
-
-  const homePricingItems = useMemo(() => {
-    const all = buildVisiblePricingPlanItems(cms?.siteContent, pricingTier);
-    // Pick 주1회2시간 (slot 0) and 주2회2시간 (slot 2) as the two representative cards
-    const w1h2 = all.find((it) => it.plan.weekly === 1 && it.plan.hoursPerLesson === 2);
-    const w2h2 = all.find((it) => it.plan.weekly === 2 && it.plan.hoursPerLesson === 2);
-    const picked = [w1h2, w2h2].filter(Boolean) as typeof all;
-    return picked.length >= 2 ? picked : all.slice(0, 2);
-  }, [cms?.siteContent, pricingTier]);
 
   return (
     <div className="lp2-root">
@@ -322,14 +355,14 @@ export function LandingPageV2({
                   {getCmsMultiline(
                     "hero",
                     "subtext",
-                    "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
+                    "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.",
                   )}
                 </CmsEdit>
               </p>
               <div className="lp2-cta-row">
-                <ConsultationApplyButton className="lp2-btn lp2-btn-acc">
+                <ConsultationApplyButton className="lp2-btn lp2-btn-acc" source="home_hero">
                   <CmsEdit active={isEditMode} section="hero" cmsKey="cta_primary" type="text">
-                    {getCmsValue("hero", "cta_primary", "무료 상담 신청")}
+                    {getCmsValue("hero", "cta_primary", "딱 맞는 선생님 추천받기")}
                   </CmsEdit>
                 </ConsultationApplyButton>
                 <a href="#teachers" className="lp2-btn lp2-btn-ghost">
@@ -348,69 +381,239 @@ export function LandingPageV2({
               </div>
             </div>
 
-            <div className="lp2-hero-proof" aria-hidden="true">
-              <div className="lp2-proof-card lp2-proof-match">
-                <div className="lp2-proof-head">
-                  <span className="lp2-proof-dot" />
-                  선생님 매칭 완료
-                </div>
-                <div className="lp2-proof-match-body">
-                  <div className="lp2-proof-avatar">N</div>
-                  <div>
-                    <div className="lp2-proof-name">Teacher Noah</div>
-                    <div className="lp2-proof-sub">서울대 수리과학부 · 수학</div>
-                  </div>
-                </div>
-                <div className="lp2-proof-tags">
-                  <span>주 2회 · 회당 2시간</span>
-                  <span>대면 수업</span>
-                </div>
+            <div className="lp2-hero-visual" aria-hidden="true">
+              <div className="lp2-hero-model">
+                <CmsEdit active={isEditMode} section="hero" cmsKey="model_image" type="image">
+                  <Image
+                    src={getCmsValue("hero", "model_image", "/images/placeholders/hero-model.png")}
+                    alt=""
+                    fill
+                    sizes="(max-width:960px) 84vw, 400px"
+                    className="object-cover"
+                    priority
+                  />
+                </CmsEdit>
               </div>
-              <div className="lp2-proof-card lp2-proof-report">
-                <div className="lp2-proof-head">
-                  <span className="lp2-proof-dot" />
-                  오늘 수업 리포트
+              <div className="lp2-hero-proof">
+                <div className="lp2-proof-card lp2-proof-match">
+                  <div className="lp2-proof-head">
+                    <span className="lp2-proof-dot" />
+                    선생님 매칭 완료
+                  </div>
+                  <div className="lp2-proof-match-body">
+                    <div className="lp2-proof-avatar">N</div>
+                    <div>
+                      <div className="lp2-proof-name">Teacher Noah</div>
+                      <div className="lp2-proof-sub">서울대 수리과학부 · 수학</div>
+                    </div>
+                  </div>
+                  <div className="lp2-proof-tags">
+                    <span>주 2회 · 회당 2시간</span>
+                    <span>대면 수업</span>
+                  </div>
                 </div>
-                <dl className="lp2-proof-rows">
-                  <div>
-                    <dt>진도</dt>
-                    <dd>이차함수 그래프 활용</dd>
-                  </div>
-                  <div>
-                    <dt>숙제</dt>
-                    <dd>유형 연습 12문항</dd>
-                  </div>
-                  <div>
-                    <dt>다음 수업</dt>
-                    <dd>목요일 19:00</dd>
-                  </div>
-                </dl>
-              </div>
-              <div className="lp2-proof-card lp2-proof-score">
-                <span className="s-before">수학 5등급</span>
-                <span className="s-arr">→</span>
-                <span className="s-after">2등급</span>
-                <span className="s-months">3개월</span>
+                <div className="lp2-proof-card lp2-proof-score">
+                  <span className="s-before">수학 5등급</span>
+                  <span className="s-arr">→</span>
+                  <span className="s-after">2등급</span>
+                  <span className="s-months">3개월</span>
+                </div>
               </div>
             </div>
           </div>
-          {/* Stats */}
-          <div className="lp2-stats reveal">
-            {cmsStats.map((s) => {
-              const hasPlus = s.value.includes("+");
-              const hasPct = s.value.includes("%");
-              const base = s.value.replace(/[+%]/, "");
-              const suffix = hasPlus ? "+" : hasPct ? "%" : "";
-              return (
-                <div key={s.label} className="lp2-stat">
-                  <div className="n">
-                    {base}
-                    {suffix && <em>{suffix}</em>}
+        </div>
+      </section>
+
+      {/* ══ ASSURANCE (선별→매칭→관리 책임) ═══════════════ */}
+      <section id="assurance" className="lp2-sec lp2-assure-sec" style={{ scrollMarginTop: "80px" }}>
+        <div className="lp2-wrap">
+          <div className="lp2-sec-head reveal">
+            <span className="lp2-eyebrow">{kickers.assurance}</span>
+            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.assurance}</h2>
+            <p>{sectionTitles.assuranceSubtext}</p>
+          </div>
+
+          <div className="lp2-grid-3">
+            {assuranceItems.map((item, index) => (
+              <div key={item.n} className="lp2-care-card reveal">
+                <div className="num">{item.n}</div>
+                <h3>{getCmsValue("assurance", `item${index + 1}_title`, item.title)}</h3>
+                <p>{getCmsMultiline("assurance", `item${index + 1}_desc`, item.desc)}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="lp2-verify-lead reveal">
+            모든 선생님은 3단계 검증을 통과합니다
+          </p>
+          <div className="lp2-verify-row reveal" aria-label="선발 절차">
+            <span className="lp2-verify-pill">
+              <em>01</em> 서류·학력 인증
+            </span>
+            <span className="lp2-verify-sep" aria-hidden="true">→</span>
+            <span className="lp2-verify-pill">
+              <em>02</em> 수업 시연
+            </span>
+            <span className="lp2-verify-sep" aria-hidden="true">→</span>
+            <span className="lp2-verify-pill">
+              <em>03</em> 대면 인터뷰
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ PROMISE ═══════════════════════════════════════ */}
+      <section id="promise" className="lp2-sec lp2-promise-sec" style={{ scrollMarginTop: "80px" }}>
+        <div className="lp2-wrap">
+          <div className="lp2-sec-head reveal">
+            <span className="lp2-eyebrow">Our Promise</span>
+            <h2>
+              선생님이 맞지 않으면
+              <br />
+              어떡하죠?
+            </h2>
+            <p>
+              가장 많이 받는 질문입니다. Concord는 학생이 잘 맞는 선생님을 만날
+              때까지 끝까지 책임집니다.
+            </p>
+          </div>
+
+          <div className="lp2-grid-3">
+            {[
+              {
+                n: "01",
+                title: "추가 비용 없는 재매칭",
+                desc: "첫 배정 선생님이 맞지 않으면, 추가 비용 없이 다시 찾아드립니다. 맞는 선생님을 만날 때까지가 저희의 일입니다.",
+              },
+              {
+                n: "02",
+                title: "첫 수업 100% 환불",
+                desc: "첫 수업 후 마음에 들지 않으면 위약 조건 없이 전액 환불해드립니다. 판단은 수업을 본 뒤에 하셔도 됩니다.",
+              },
+              {
+                n: "03",
+                title: "전담 매니저가 중간에서",
+                desc: "선생님께 직접 말하기 어려운 요청은 매니저에게 전하세요. 수업에 반영되도록 저희가 조율합니다.",
+              },
+            ].map((item) => (
+              <div key={item.n} className="lp2-promise-card reveal">
+                <div className="num">{item.n}</div>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ LEARNING CARE · 학부모 소통 ════════════════════ */}
+      <section
+        id="management"
+        className="lp2-sec"
+        style={{ scrollMarginTop: "80px" }}
+      >
+        <div className="lp2-wrap">
+          <div className="lp2-care-cols">
+            <div className="lp2-care-left">
+              <div className="lp2-sec-head reveal">
+                <span className="lp2-eyebrow">{kickers.management}</span>
+                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
+                <p>
+                  {getCmsValue(
+                    "management",
+                    "subtext",
+                    "Concord는 학부모님과 정기적으로 소통합니다. 진도, 숙제, 질문, 리포트를 한 흐름으로 연결합니다.",
+                  )}
+                </p>
+              </div>
+
+              <div className="lp2-care-list">
+                {managementItems.map((item) => (
+                  <div key={item.n} className="lp2-care-row reveal">
+                    <div className="num">0{item.n}</div>
+                    <div>
+                      <h3>{item.label}</h3>
+                      <p>{item.desc}</p>
+                    </div>
                   </div>
-                  <div className="l">{s.label}</div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lp2-care-mock reveal" aria-hidden="true">
+              <div className="lp2-report-card">
+                <div className="lp2-report-head">
+                  <span className="lp2-proof-dot" />
+                  <strong>Concord 학습 리포트</strong>
+                  <span className="t">6월 리포트</span>
                 </div>
-              );
-            })}
+                <div className="lp2-report-body">
+                  <div className="lp2-report-row">
+                    <span className="k">이달 진도</span>
+                    <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
+                  </div>
+                  <div className="lp2-report-row">
+                    <span className="k">숙제</span>
+                    <span className="v">유형 연습 12문항 · 오답노트 3개</span>
+                  </div>
+                  <div className="lp2-report-row">
+                    <span className="k">선생님 코멘트</span>
+                    <span className="v">
+                      응용 문제에 접근하는 방식이 눈에 띄게 좋아졌습니다. 다음 달은
+                      실수 유형을 함께 줄여보겠습니다.
+                    </span>
+                  </div>
+                </div>
+                <div className="lp2-report-foot">매월 학습 리포트로 정리해 학부모님께 전달됩니다</div>
+              </div>
+
+              <div className="lp2-qna-card">
+                <div className="lp2-report-head">
+                  <span className="lp2-proof-dot" />
+                  <strong>질문·답변</strong>
+                  <span className="t">수업 없는 날에도</span>
+                </div>
+                <div className="lp2-qna-body">
+                  <div className="lp2-bubble student">
+                    <span className="who">학생 · 밤 11:24</span>
+                    <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
+                  </div>
+                  <div className="lp2-bubble teacher">
+                    <span className="who">선생님 · 아침 7:40</span>
+                    <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ CONSULT BRIDGE (무료 학습컨설팅) ═══════════════ */}
+      <section className="lp2-sec lp2-band-sec">
+        <div className="lp2-wrap">
+          <div className="lp2-consult-band reveal">
+            <span className="lp2-eyebrow">Free Consulting</span>
+            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.consultBridge}</h2>
+            <p>{sectionTitles.consultBridgeSubtext}</p>
+            <ConsultationApplyButton className="lp2-btn lp2-btn-acc" source="home_consult_bridge">
+              {sectionTitles.consultBridgeCta}
+            </ConsultationApplyButton>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ REFUND BAND (100% 환불 보장) ═══════════════════ */}
+      <section className="lp2-sec lp2-refund-sec">
+        <div className="lp2-wrap">
+          <div className="lp2-refund-band reveal">
+            <div>
+              <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.refund}</h2>
+              <p>{sectionTitles.refundSubtext}</p>
+            </div>
+            <ConsultationApplyButton className="lp2-btn lp2-refund-btn" source="home_refund_band">
+              부담 없이 상담받기
+            </ConsultationApplyButton>
           </div>
         </div>
       </section>
@@ -495,7 +698,7 @@ export function LandingPageV2({
         </section>
       )}
 
-      {/* ══ TEACHERS ══════════════════════════════════════ */}
+      {/* ══ FEATURED TEACHERS (이달의 검증 선생님 미리보기) ═ */}
       <section
         id="teachers"
         className="lp2-sec"
@@ -505,203 +708,109 @@ export function LandingPageV2({
           <div className="lp2-sec-head reveal">
             <span className="lp2-eyebrow">{kickers.teachers}</span>
             <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.teachers}</h2>
-            <p>
-              {getCmsValue(
-                "teachers",
-                "section_subtext",
-                "확실한 서류 인증과 채용 절차로 엄선된, 인품과 실력 모두 확실한 선생님을 배정해드립니다.",
-              )}
-            </p>
+            <p>{sectionTitles.teachersSubtext}</p>
           </div>
 
-          <div className="lp2-grid-4">
-            {cmsTeachers.map((t, i) => (
-              <Link
-                key={`${t.name}-${i}`}
-                href="/tutors"
-                className="lp2-t-card reveal"
-                aria-label={`${t.name} 선생님 소개 보기`}
-              >
-                <div className="lp2-t-body">
-                  <div className="lp2-t-top">
-                    <div className="lp2-t-avatar">
-                      <Image
-                        src={t.image}
-                        alt={t.name}
-                        fill
-                        className="object-cover object-top"
-                        sizes="56px"
-                      />
-                    </div>
-                    <div>
-                      <div className="lp2-t-name">{t.name}</div>
-                      <span className="lp2-t-tag">{t.subject}</span>
-                    </div>
+          <div className="lp2-grid-3 lp2-ft-grid">
+            {featuredTutors.map((card) => {
+              const chips = [
+                ...(card.tag ? [card.tag] : []),
+                ...card.subjects,
+              ].slice(0, 3);
+              return (
+                <article key={card.index} className="lp2-ft-card reveal">
+                  <div className="lp2-ft-photo">
+                    <Image
+                      src={card.photo}
+                      alt={`${card.name} 선생님 프로필 사진`}
+                      fill
+                      sizes="(max-width:680px) 90vw, 33vw"
+                      className="object-cover object-top"
+                    />
                   </div>
-                  <p className="lp2-t-line">{t.highlight}</p>
-                  {t.careers[0] && <div className="lp2-t-edu">{t.careers[0]}</div>}
-                  {t.careers.length > 1 && (
-                    <ul className="lp2-t-items">
-                      {t.careers.slice(1).map((c) => (
-                        <li key={c}>{c}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <p className="lp2-verify-lead reveal">
-            모든 선생님은 3단계 검증을 통과합니다
-          </p>
-          <div className="lp2-verify-row reveal" aria-label="선발 절차">
-            <span className="lp2-verify-pill">
-              <em>01</em> 서류·학력 인증
-            </span>
-            <span className="lp2-verify-sep" aria-hidden="true">→</span>
-            <span className="lp2-verify-pill">
-              <em>02</em> 수업 시연
-            </span>
-            <span className="lp2-verify-sep" aria-hidden="true">→</span>
-            <span className="lp2-verify-pill">
-              <em>03</em> 대면 인터뷰
-            </span>
+                  <div className="lp2-ft-body">
+                    {chips.length > 0 && (
+                      <div className="tag-chip-row">
+                        {chips.map((chip) => (
+                          <span key={chip} className="tag-chip">#{chip}</span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="lp2-ft-name">
+                      {card.name}
+                      <span className="lp2-ft-verified">✓ 검증</span>
+                    </div>
+                    {card.university && <div className="lp2-ft-edu">{card.university}</div>}
+                    {card.blurb && <p className="lp2-ft-blurb">{card.blurb}</p>}
+                    <button
+                      type="button"
+                      className="lp2-btn lp2-btn-acc lp2-btn-sm lp2-ft-btn"
+                      onClick={() => void goConsultation(`home_featured_${card.index}`)}
+                    >
+                      빠른 매칭받기
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
-              {sectionTitles.teachersCta}
+              선생님 전체 보기 →
             </Link>
           </div>
-
         </div>
       </section>
 
-      {/* ══ PROMISE ═══════════════════════════════════════ */}
-      <section id="promise" className="lp2-sec lp2-promise-sec" style={{ scrollMarginTop: "80px" }}>
-        <div className="lp2-wrap">
-          <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Our Promise</span>
-            <h2>
-              선생님이 맞지 않으면
-              <br />
-              어떡하죠?
-            </h2>
-            <p>
-              가장 많이 받는 질문입니다. 그래서 시작하기 전에, 세 가지를 먼저
-              약속드립니다.
-            </p>
-          </div>
-
-          <div className="lp2-grid-3">
-            {[
-              {
-                n: "01",
-                title: "추가 비용 없는 재매칭",
-                desc: "첫 배정 선생님이 맞지 않으면, 추가 비용 없이 다시 찾아드립니다. 맞는 선생님을 만날 때까지가 저희의 일입니다.",
-              },
-              {
-                n: "02",
-                title: "첫 수업 100% 환불",
-                desc: "첫 수업 후 마음에 들지 않으면 위약 조건 없이 전액 환불해드립니다. 판단은 수업을 본 뒤에 하셔도 됩니다.",
-              },
-              {
-                n: "03",
-                title: "전담 매니저가 중간에서",
-                desc: "선생님께 직접 말하기 어려운 요청은 매니저에게 전하세요. 수업에 반영되도록 저희가 조율합니다.",
-              },
-            ].map((item) => (
-              <div key={item.n} className="lp2-promise-card reveal">
-                <div className="num">{item.n}</div>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ LEARNING CARE ═════════════════════════════════ */}
+      {/* ══ REVIEWS (학부모 후기 캐러셀) ═══════════════════ */}
       <section
-        id="management"
-        className="lp2-sec"
+        id="reviews"
+        className="lp2-sec lp2-rev-sec"
         style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
-          <div className="lp2-care-cols">
-            <div className="lp2-care-left">
-              <div className="lp2-sec-head reveal">
-                <span className="lp2-eyebrow">{kickers.management}</span>
-                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
-                <p>
-                  {getCmsValue(
-                    "management",
-                    "subtext",
-                    "진도, 숙제, 질문, 리포트를 한 화면에서 연결해 학생·선생님·매니저가 같은 목표를 봅니다.",
-                  )}
-                </p>
-              </div>
-
-              <div className="lp2-care-list">
-                {managementItems.map((item) => (
-                  <div key={item.n} className="lp2-care-row reveal">
-                    <div className="num">0{item.n}</div>
-                    <div>
-                      <h3>{item.label}</h3>
-                      <p>{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lp2-care-mock reveal" aria-hidden="true">
-              <div className="lp2-report-card">
-                <div className="lp2-report-head">
-                  <span className="lp2-proof-dot" />
-                  <strong>Concord 학습 리포트</strong>
-                  <span className="t">6월 리포트</span>
-                </div>
-                <div className="lp2-report-body">
-                  <div className="lp2-report-row">
-                    <span className="k">이달 진도</span>
-                    <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
-                  </div>
-                  <div className="lp2-report-row">
-                    <span className="k">숙제</span>
-                    <span className="v">유형 연습 12문항 · 오답노트 3개</span>
-                  </div>
-                  <div className="lp2-report-row">
-                    <span className="k">선생님 코멘트</span>
-                    <span className="v">
-                      응용 문제에 접근하는 방식이 눈에 띄게 좋아졌습니다. 다음 달은
-                      실수 유형을 함께 줄여보겠습니다.
-                    </span>
-                  </div>
-                </div>
-                <div className="lp2-report-foot">매월 학습 리포트로 정리해 학부모님께 전달됩니다</div>
-              </div>
-
-              <div className="lp2-qna-card">
-                <div className="lp2-report-head">
-                  <span className="lp2-proof-dot" />
-                  <strong>질문·답변</strong>
-                  <span className="t">수업 없는 날에도</span>
-                </div>
-                <div className="lp2-qna-body">
-                  <div className="lp2-bubble student">
-                    <span className="who">학생 · 밤 11:24</span>
-                    <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
-                  </div>
-                  <div className="lp2-bubble teacher">
-                    <span className="who">선생님 · 아침 7:40</span>
-                    <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="lp2-sec-head reveal">
+            <span className="lp2-eyebrow">{kickers.reviews}</span>
+            <h2>{sectionTitles.reviews}</h2>
           </div>
+
+          <div className="lp2-rev-scroll reveal" role="list">
+            {cmsTestimonials.map((t, i) => (
+              <div key={i} className="lp2-rev-card" role="listitem">
+                <div className="quote">&ldquo;</div>
+                <p className="qt">{t.quote}</p>
+                <div className="by">{t.info}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
+            <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
+              후기 전체 보기 →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ NUMBERS (누적 통계 카운터) ═════════════════════ */}
+      <section className="lp2-sec lp2-counter-sec">
+        <div className="lp2-wrap">
+          <div className="lp2-sec-head reveal">
+            <span className="lp2-eyebrow">{kickers.numbers}</span>
+            <h2>{sectionTitles.numbers}</h2>
+          </div>
+          <div className="lp2-stats reveal">
+            {cmsStats.map((s) => (
+              <div key={s.label} className="lp2-stat">
+                <div className="n">
+                  <CountUpStat value={s.value} />
+                </div>
+                <div className="l">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <p className="lp2-stats-note reveal">{statsFootnote}</p>
         </div>
       </section>
 
@@ -719,15 +828,16 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-proc-cols">
-            <div>
-              {cmsSteps.map((step) => (
-                <div key={step.number} className="lp2-proc-row reveal">
-                  <div className="lp2-proc-n">{step.number}</div>
-                  <div className="lp2-proc-c">
-                    <h3>{step.title}</h3>
-                    <p>{step.desc}</p>
-                  </div>
-                </div>
+            <div className="lp2-proc-list">
+              {cmsSteps.map((step, index) => (
+                <details key={step.number} className="lp2-proc-item reveal" open={index === 0}>
+                  <summary>
+                    <span className="lp2-proc-n">{step.number}</span>
+                    <span className="lp2-proc-t">{step.title}</span>
+                    <span className="lp2-faq-ind" aria-hidden="true">+</span>
+                  </summary>
+                  <p className="lp2-proc-p">{step.desc}</p>
+                </details>
               ))}
             </div>
 
@@ -763,68 +873,36 @@ export function LandingPageV2({
         </div>
       </section>
 
-      {/* ══ PRICING ═══════════════════════════════════════ */}
+      {/* ══ PRICING ANCHOR ════════════════════════════════ */}
       <section
         id="pricing"
-        className="lp2-sec"
+        className="lp2-sec lp2-price-anchor-sec"
         style={{ scrollMarginTop: "80px" }}
       >
         <div className="lp2-wrap">
-          <div className="lp2-sec-head reveal">
+          <div className="lp2-price-anchor reveal">
             <span className="lp2-eyebrow">{kickers.plans}</span>
-            <h2>
-              1:1 맞춤 과외,{" "}
+            <h2>{sectionTitles.pricingAnchor}</h2>
+            <div className="lp2-price-anchor-num">
               <span className="lp2-hl">{pricingTitleParts.highlight}</span>
-              {pricingTitleParts.suffix}
-            </h2>
+              <em>{pricingTitleParts.suffix}</em>
+            </div>
             <p>
               {getCmsValue(
                 "home_page",
                 "pricing_subtext",
-                "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
+                "학습 리포트·매니저 관리·강사 첨삭이 모두 포함된 금액입니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
               )}
             </p>
-          </div>
-
-          <div className="lp2-price-grid reveal">
-            {homePricingItems.map((item) => {
-              const plan = item.plan;
-              const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
-              const featureList = item.features ?? [];
-              const numOnly = plan.priceKrw.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-              const displayTitle = item.title ?? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
-              const displaySubtitle = item.subtitle ?? `월 ${plan.monthlyHours}시간`;
-              return (
-                <div
-                  key={plan.id}
-                  className={`lp2-price-card${isRec ? " rec" : ""}`}
-                >
-                  {isRec && <span className="lp2-rec-badge">추천</span>}
-                  <div className="ptag">{displaySubtitle}</div>
-                  <div className="pname">{displayTitle}</div>
-                  <div className="price">
-                    {numOnly}
-                    <small>원 / 월</small>
-                  </div>
-                  <ul className="lp2-pfeat">
-                    {featureList.map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
-                  <ConsultationApplyButton
-                    className={`lp2-btn${isRec ? " lp2-btn-acc" : " lp2-btn-ghost"}`}
-                  >
-                    이 플랜으로 시작
-                  </ConsultationApplyButton>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="reveal" style={{ marginTop: "32px" }}>
-            <Link href="/pricing" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-              요금제 더보기 →
-            </Link>
+            <p className="lp2-price-anchor-note">상담 신청은 30초면 충분합니다</p>
+            <div className="lp2-cta-row lp2-price-anchor-cta">
+              <ConsultationApplyButton className="lp2-btn lp2-btn-acc" source="home_pricing_anchor">
+                무료 상담 신청
+              </ConsultationApplyButton>
+              <Link href="/pricing" className="lp2-btn lp2-btn-ghost">
+                요금 자세히 보기 →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -891,36 +969,6 @@ export function LandingPageV2({
         </div>
       </section>
 
-      {/* ══ REVIEWS ═══════════════════════════════════════ */}
-      <section
-        id="reviews"
-        className="lp2-sec"
-        style={{ scrollMarginTop: "80px" }}
-      >
-        <div className="lp2-wrap">
-          <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">{kickers.reviews}</span>
-            <h2>{sectionTitles.reviews}</h2>
-          </div>
-
-          <div className="lp2-rev-grid">
-            {cmsTestimonials.map((t, i) => (
-              <div key={i} className="lp2-rev-card reveal">
-                <div className="quote">&ldquo;</div>
-                <p className="qt">{t.quote}</p>
-                <div className="by">{t.info}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
-            <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-              후기 전체 보기 →
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* ══ FAQ ═══════════════════════════════════════════ */}
       {cms?.faqs && cms.faqs.length > 0 && (
         <section id="faq" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
@@ -971,14 +1019,12 @@ export function LandingPageV2({
                 )}
               </p>
             </div>
-            <ConsultationApplyButton className="lp2-btn">
+            <ConsultationApplyButton className="lp2-btn" source="home_cta_band">
               지금 무료 상담 신청하기
             </ConsultationApplyButton>
           </div>
         </div>
       </section>
-
-      <MobileFloatingCta />
     </div>
   );
 }

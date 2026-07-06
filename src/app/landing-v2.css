@@ -408,52 +408,56 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-care-card h3 { font-size: 22px; font-weight: 700; margin-top: 22px; letter-spacing: -.025em; color: var(--fg); }
 .lp2-care-card p { color: var(--mut); font-size: 15px; margin-top: 12px; line-height: 1.6; text-wrap: pretty; }
 
-/* ── process ── */
-.lp2-proc-row {
-  display: grid; grid-template-columns: 120px 1fr; gap: 32px; align-items: baseline;
-  padding: 32px 0; border-top: 1px solid var(--line);
+/* ── process (클릭 아코디언) ── */
+.lp2-proc-list { border-top: 1px solid var(--line); }
+.lp2-proc-item { border-bottom: 1px solid var(--line); }
+.lp2-proc-item > summary {
+  display: flex; align-items: center; gap: clamp(18px, 2.4vw, 32px);
+  padding: 26px 0; cursor: pointer; list-style: none;
   transition: padding-left .25s var(--ease);
 }
-.lp2-proc-row:last-child { border-bottom: 1px solid var(--line); }
-.lp2-proc-row:hover { padding-left: 14px; }
+.lp2-proc-item > summary::-webkit-details-marker { display: none; }
+.lp2-proc-item > summary:hover { padding-left: 14px; }
 .lp2-proc-n {
-  font-size: clamp(40px,4.2vw,72px); font-weight: 800; color: var(--mut-2);
+  flex-shrink: 0; width: clamp(64px, 6vw, 110px);
+  font-size: clamp(36px,3.8vw,64px); font-weight: 800; color: var(--mut-2);
   letter-spacing: -.03em; line-height: 1; transition: color .25s;
   font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
 }
-.lp2-proc-row:hover .lp2-proc-n { color: var(--acc-text); }
-.lp2-proc-c h3 { font-size: 24px; font-weight: 700; letter-spacing: -.025em; color: var(--fg); }
-.lp2-proc-c p { color: var(--mut); font-size: 16px; margin-top: 10px; max-width: 54ch; text-wrap: pretty; }
+.lp2-proc-item[open] .lp2-proc-n,
+.lp2-proc-item > summary:hover .lp2-proc-n { color: var(--acc-text); }
+.lp2-proc-t { flex: 1; font-size: clamp(19px, 1.6vw, 24px); font-weight: 700; letter-spacing: -.025em; color: var(--fg); }
+.lp2-proc-item .lp2-faq-ind { flex-shrink: 0; }
+.lp2-proc-item[open] > summary .lp2-faq-ind {
+  transform: rotate(45deg); color: var(--acc-text); border-color: var(--acc-text);
+}
+.lp2-proc-p {
+  color: var(--mut); font-size: 16px; line-height: 1.65;
+  padding: 0 0 26px calc(clamp(64px, 6vw, 110px) + clamp(18px, 2.4vw, 32px));
+  max-width: 62ch; text-wrap: pretty;
+}
 
-/* ── pricing ── */
-.lp2-price-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 22px; max-width: 840px; }
-.lp2-price-card {
-  background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
-  padding: 38px 34px 40px; position: relative; display: flex; flex-direction: column;
-  box-shadow: var(--shadow-sm);
-  transition: background .4s var(--ease), border-color .4s var(--ease), box-shadow .25s;
+/* ── pricing anchor (설탭식 가격 앵커) ── */
+.lp2-price-anchor-sec { padding-top: clamp(72px, 7vw, 130px); }
+.lp2-price-anchor {
+  text-align: center; max-width: 760px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
 }
-.lp2-price-card.rec {
-  border-color: var(--acc-text);
-  background: linear-gradient(180deg,rgba(var(--acc-rgb),.06),rgba(var(--acc-rgb),0) 40%),var(--panel);
-  box-shadow: var(--shadow-md);
+.lp2-price-anchor h2 {
+  font-size: clamp(26px, 3vw, 42px); font-weight: 700; letter-spacing: -.03em;
+  margin-top: 18px; color: var(--fg);
 }
-.lp2-rec-badge {
-  position: absolute; top: -13px; left: 34px; background: var(--acc); color: var(--on-acc);
-  font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 999px; letter-spacing: .04em;
-}
-.lp2-price-card .ptag { font-size: 14px; font-weight: 600; color: var(--mut); }
-.lp2-price-card .pname { font-size: clamp(22px, 1.2rem + .8vw, 26px); font-weight: 700; margin-top: 6px; letter-spacing: -.025em; color: var(--fg); }
-.lp2-price-card .price {
-  font-size: clamp(2rem, 1.4rem + 2.2vw, 42px); font-weight: 800; margin-top: 8px; letter-spacing: -.03em; color: var(--fg);
+.lp2-price-anchor-num {
+  margin-top: 14px; line-height: 1;
+  font-size: clamp(52px, 7vw, 104px); font-weight: 800; letter-spacing: -.04em;
   font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
 }
-.lp2-price-card .price small { font-size: 18px; font-weight: 600; color: var(--mut); margin-left: 4px; }
-.lp2-price-card .punit { color: var(--mut); font-size: 14px; margin-top: 6px; }
-.lp2-pfeat { margin-top: 26px; display: flex; flex-direction: column; gap: 13px; flex: 1; }
-.lp2-pfeat li { list-style: none; display: flex; gap: 11px; align-items: baseline; font-size: 15px; color: var(--fg); }
-.lp2-pfeat li::before { content: "✓"; color: var(--acc-text); font-weight: 800; flex-shrink: 0; }
-.lp2-price-card .lp2-btn { margin-top: 30px; width: 100%; }
+.lp2-price-anchor-num em {
+  font-style: normal; font-size: .42em; font-weight: 700; color: var(--mut); margin-left: 6px;
+}
+.lp2-price-anchor > p { color: var(--mut); font-size: clamp(15px, 1.1vw, 18px); margin-top: 22px; max-width: 52ch; text-wrap: pretty; }
+.lp2-price-anchor-note { font-weight: 700; color: var(--fg) !important; margin-top: 14px !important; }
+.lp2-price-anchor-cta { justify-content: center; margin-top: 30px; }
 
 /* ── compare table ── */
 .lp2-cmp-wrap {
@@ -478,8 +482,17 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-ok { color: var(--acc-text); font-weight: 800; margin-right: 8px; }
 .lp2-no { color: var(--mut-2); font-weight: 800; margin-right: 8px; }
 
-/* ── reviews ── */
-.lp2-rev-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+/* ── reviews (학부모 후기 가로 캐러셀) ── */
+.lp2-rev-scroll {
+  display: flex; gap: 20px; overflow-x: auto; padding: 4px 4px 18px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.lp2-rev-scroll .lp2-rev-card {
+  flex: 0 0 clamp(280px, 32vw, 380px);
+  scroll-snap-align: start;
+}
 .lp2-rev-card {
   background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
   padding: 32px 30px; display: flex; flex-direction: column;
@@ -529,9 +542,7 @@ body:has(.lp2-root) footer.site .logo span {
 @media (min-width:1500px) {
   .lp2-wrap { padding: 0 48px; }
   .lp2-grid-4 { gap: 26px; }
-  .lp2-grid-3, .lp2-rev-grid { gap: 26px; }
-  .lp2-price-grid { max-width: 960px; }
-  .lp2-proc-row { grid-template-columns: 160px 1fr; gap: 44px; }
+  .lp2-grid-3 { gap: 26px; }
   .lp2-cmp th, .lp2-cmp td { padding: 24px 30px; font-size: 17px; }
   .lp2-cta-band { padding: 88px 72px; }
   .lp2-stat { padding: 40px 56px 40px 0; margin-right: 56px; }
@@ -639,52 +650,102 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-faq-ind { transition: none; }
 }
 
-/* ── mobile floating CTA ── */
-.lp2-float-cta {
-  position: fixed;
+/* ── hero visual (모델 사진 + 목업 카드) ── */
+.lp2-hero-visual {
+  position: relative;
+  width: clamp(320px, 30vw, 430px);
+}
+.lp2-hero-model {
+  position: relative;
+  width: clamp(260px, 24vw, 360px);
+  aspect-ratio: 4 / 5;
+  margin-left: auto;
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  box-shadow: var(--shadow-md);
+}
+.lp2-hero-visual .lp2-hero-proof {
+  position: absolute;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 60;
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: var(--panel);
-  border-top: 1px solid var(--line);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transform: translateY(110%);
-  visibility: hidden;
-  pointer-events: none;
-  transition: transform .28s var(--ease), visibility 0s linear .28s;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, .06);
+  bottom: -28px;
+  width: clamp(240px, 20vw, 280px);
+  gap: 12px;
 }
-.lp2-float-cta.is-visible {
-  transform: translateY(0);
-  visibility: visible;
-  pointer-events: auto;
-  transition: transform .28s var(--ease), visibility 0s linear 0s;
-}
-.lp2-float-cta .lp2-btn {
-  width: 100%;
-}
-.lp2-float-note {
+.lp2-hero-visual .lp2-proof-card { padding: 14px 16px; }
+.lp2-hero-visual .lp2-proof-card.lp2-proof-score { margin-right: 0; }
+
+/* ── consult bridge band (무료 학습컨설팅) ── */
+.lp2-band-sec { padding-top: 0; }
+.lp2-consult-band {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 28px;
+  padding: clamp(48px, 5vw, 80px) clamp(28px, 5vw, 72px);
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--mut);
-  margin-bottom: 8px;
+  display: flex; flex-direction: column; align-items: center;
+  box-shadow: var(--shadow-sm);
 }
-@media (min-width: 681px) {
-  .lp2-float-cta { display: none; }
+.lp2-consult-band h2 {
+  font-size: clamp(26px, 3.4vw, 46px); font-weight: 800; letter-spacing: -.035em;
+  line-height: 1.18; margin-top: 16px; color: var(--fg);
 }
-@media (prefers-reduced-motion: reduce) {
-  .lp2-float-cta { transition: none; }
+.lp2-consult-band p { color: var(--mut); font-size: clamp(15px, 1.15vw, 18px); margin-top: 16px; max-width: 52ch; text-wrap: pretty; }
+.lp2-consult-band .lp2-btn { margin-top: 28px; }
+
+/* ── refund band (100% 환불 보장) ── */
+.lp2-refund-sec { padding-top: 0; }
+.lp2-refund-band {
+  background: var(--fg); color: var(--bg); border-radius: 28px;
+  padding: clamp(44px, 4.6vw, 72px) clamp(28px, 5vw, 64px);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 32px; flex-wrap: wrap;
 }
+.lp2-refund-band h2 {
+  font-size: clamp(28px, 3.4vw, 46px); font-weight: 800; letter-spacing: -.035em;
+  line-height: 1.14; color: var(--bg);
+}
+.lp2-refund-band p { font-size: 16px; font-weight: 600; margin-top: 14px; opacity: .72; color: var(--bg); }
+.lp2-refund-btn { background: var(--bg); color: var(--fg); }
+.lp2-refund-btn:hover { background: var(--acc); color: var(--on-acc); transform: translateY(-2px); }
+
+/* ── featured tutors preview (이달의 검증 선생님) ── */
+.lp2-ft-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: transform .25s var(--ease), border-color .25s, box-shadow .25s;
+}
+.lp2-ft-card:hover { transform: translateY(-6px); border-color: var(--line-2); box-shadow: var(--shadow-md); }
+.lp2-ft-photo {
+  position: relative; width: 100%; aspect-ratio: 4 / 3;
+  background: var(--panel-2); overflow: hidden; flex-shrink: 0;
+}
+.lp2-ft-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; gap: 0; }
+.lp2-ft-name {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 18px; font-weight: 700; letter-spacing: -.02em; color: var(--fg);
+  margin-top: 14px;
+}
+.lp2-ft-verified {
+  font-size: 11px; font-weight: 800; color: var(--acc-text);
+  background: rgba(var(--acc-rgb),.12); border-radius: 999px; padding: 3px 9px;
+}
+.lp2-ft-edu { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--mut); }
+.lp2-ft-blurb { color: var(--mut); font-size: 14px; margin-top: 12px; line-height: 1.55; flex: 1; text-wrap: pretty; }
+.lp2-ft-btn { margin-top: 18px; width: 100%; }
+
+/* ── numbers 카운터 ── */
+.lp2-counter-sec { padding-top: 0; }
+.lp2-counter-sec .lp2-stats { margin-top: 0; }
+.lp2-stats-note { margin-top: 16px; font-size: 12.5px; font-weight: 500; color: var(--mut-2); }
 
 /* ── responsive ── */
 @media (max-width:960px) {
   .lp2-grid-4 { grid-template-columns: repeat(2,1fr); }
   .lp2-hero-cols { grid-template-columns: 1fr; }
-  .lp2-hero-proof { display: none; }
+  .lp2-hero-visual { width: 100%; margin-top: 36px; }
+  .lp2-hero-model { width: min(84vw, 380px); margin: 0 auto; }
+  .lp2-hero-visual .lp2-hero-proof { display: none; }
   .lp2-care-cols { grid-template-columns: 1fr; }
   .lp2-care-mock { max-width: 460px; }
   .lp2-proc-cols { grid-template-columns: 1fr; }
@@ -697,13 +758,18 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-sec-head h2 { font-size: clamp(26px, 6.5vw, 40px); }
 }
 @media (max-width:680px) {
-  .lp2-grid-3, .lp2-rev-grid, .lp2-price-grid { grid-template-columns: 1fr; }
+  .lp2-grid-3 { grid-template-columns: 1fr; }
   .lp2-grid-4 { grid-template-columns: 1fr; }
   .lp2-stats { flex-wrap: wrap; }
   .lp2-stat { border-right: 0; margin-right: 0; padding: 20px 0; width: 50%; }
-  .lp2-proc-row { grid-template-columns: 56px 1fr; gap: 16px; }
+  .lp2-proc-n { width: 52px; font-size: 30px; }
+  .lp2-proc-p { padding-left: 0; }
   .lp2-cta-band { padding: clamp(36px, 8vw, 48px) clamp(24px, 5vw, 32px); }
   .lp2-cta-band .lp2-btn { width: 100%; }
+  .lp2-refund-band { padding: 36px 26px; }
+  .lp2-refund-band .lp2-btn { width: 100%; }
+  .lp2-consult-band { padding: 40px 24px; }
+  .lp2-rev-scroll .lp2-rev-card { flex-basis: 84vw; }
   .lp2-hero h1 { font-size: clamp(32px, 9vw, 44px); max-width: none; }
   .lp2-sec-head { max-width: 100%; }
   .lp2-cmp th, .lp2-cmp td { padding: 12px 14px; font-size: 14px; }

@@ -3,6 +3,7 @@ import {
   cmsTextStyleDefaults,
   extraPublicPagesDefaults,
   footerDefaults,
+  homeBenchmarkSectionsDefaults,
   homeLabelsDefaults,
   homePageVisibilityDefaults,
   portalPagesDefaults,
@@ -10,14 +11,16 @@ import {
   spacingDefaults,
   tutorsPageDefaults,
   tutorsFeaturedDefaults,
+  tutorsBenchmarkDefaults,
+  reviewsBenchmarkDefaults,
 } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
 import { LEGACY_RESULT_IMAGE_PLACEHOLDERS, RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 
 const siteContentDefaults = [
-  { section: "hero", key: "headline", value: "아이마다 맞는\n선생님이 다릅니다", type: "text", order: 1 },
-  { section: "hero", key: "subtext", value: "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.", type: "text", order: 2 },
-  { section: "hero", key: "cta_primary", value: "무료 상담 신청", type: "text", order: 3 },
+  { section: "hero", key: "headline", value: "학생마다 맞는\n선생님이 다릅니다", type: "text", order: 1 },
+  { section: "hero", key: "subtext", value: "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.", type: "text", order: 2 },
+  { section: "hero", key: "cta_primary", value: "딱 맞는 선생님 추천받기", type: "text", order: 3 },
   { section: "hero", key: "cta_secondary", value: "선생님 둘러보기", type: "text", order: 4 },
   { section: "hero", key: "bg_image_url", value: "", type: "image", order: 5 },
   { section: "hero", key: "trust_text", value: "", type: "text", order: 6 },
@@ -223,9 +226,12 @@ const siteContentDefaults = [
   ...pricingPageDefaults,
   ...tutorsPageDefaults,
   ...tutorsFeaturedDefaults,
+  ...tutorsBenchmarkDefaults,
+  ...reviewsBenchmarkDefaults,
   ...homePageVisibilityDefaults,
   ...footerDefaults,
   ...homeLabelsDefaults,
+  ...homeBenchmarkSectionsDefaults,
   ...compareDefaults,
   ...cmsTextStyleDefaults,
   ...spacingDefaults,

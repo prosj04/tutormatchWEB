@@ -433,7 +433,17 @@ export const FEATURED_TUTOR_CARD_COUNT = 6;
 /** 예: 카드 2 이름 → featured_2_name */
 export function featuredTutorFieldKey(
   cardIndex1Based: number,
-  field: "visible" | "name" | "tag" | "university" | "subjects" | "blurb" | "highlights" | "photo",
+  field:
+    | "visible"
+    | "name"
+    | "tag"
+    | "university"
+    | "subjects"
+    | "blurb"
+    | "highlights"
+    | "photo"
+    | "tags"
+    | "career_badge",
 ): string {
   return `featured_${cardIndex1Based}_${field}`;
 }
@@ -446,6 +456,8 @@ type FeaturedTutorSeed = {
   blurb: string;
   highlights: string;
   photo: string;
+  tags: string;
+  careerBadge: string;
 };
 
 /**
@@ -462,6 +474,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "개념의 '왜'부터 잡아 스스로 풀어내게 만드는 수업.",
     highlights: "정시 수학 4→1등급 다수 배출\n내신 심화·킬러문항 대비",
     photo: "/images/teachers/default-female.png",
+    tags: "#개념부터설계\n#킬러문항대비\n#수능수학",
+    careerBadge: "교습 경력 3년+",
   },
   {
     name: "이준호",
@@ -471,6 +485,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "구문 독해부터 서술형까지 균형 있게 끌어올립니다.",
     highlights: "내신 1등급 밀착 관리\n수능 영어 1등급 다수 지도",
     photo: "/images/teachers/default-male.png",
+    tags: "#구문독해\n#서술형첨삭\n#내신영어",
+    careerBadge: "교습 경력 4년+",
   },
   {
     name: "박지민",
@@ -480,6 +496,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "암기 대신 원리로 설계하는 탐구 전략.",
     highlights: "화학·생명 통합 지도\n모의고사 등급 상승 사례 다수",
     photo: "/images/teachers/default-female.png",
+    tags: "#원리탐구\n#화학생명\n#내신과학",
+    careerBadge: "교습 경력 2년+",
   },
   {
     name: "최유진",
@@ -489,6 +507,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "비문학 지문을 구조로 읽어내는 훈련.",
     highlights: "수능 국어 1등급 지도\n논술·서술형 첨삭",
     photo: "/images/teachers/default-female.png",
+    tags: "#비문학구조독해\n#논술첨삭\n#수능국어",
+    careerBadge: "교습 경력 5년+",
   },
   {
     name: "정민석",
@@ -498,6 +518,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "실수 없는 계산 습관과 킬러문항 접근법.",
     highlights: "미적분·기하 전문\n재수·반수생 정시 관리",
     photo: "/images/teachers/default-male.png",
+    tags: "#정시수학\n#재수반수관리\n#계산습관교정",
+    careerBadge: "교습 경력 3년+",
   },
   {
     name: "한소희",
@@ -507,6 +529,8 @@ const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
     blurb: "말하기·쓰기까지 챙기는 내신 밀착 관리.",
     highlights: "내신 서술형 대비\n저학년 기초 설계",
     photo: "/images/teachers/default-female.png",
+    tags: "#기초부터탄탄\n#내신밀착관리\n#서술형대비",
+    careerBadge: "교습 경력 2년+",
   },
 ];
 
@@ -522,7 +546,7 @@ export const tutorsFeaturedDefaults = [
     type: "text",
     order: 3,
   },
-  { section: "tutors_featured", key: "cta_label", value: "이 선생님으로 매칭받기", type: "text", order: 4 },
+  { section: "tutors_featured", key: "cta_label", value: "빠른 매칭받기", type: "text", order: 4 },
   { section: "tutors_featured", key: "badge_1", value: "첫 수업 후 100% 환불", type: "text", order: 5 },
   { section: "tutors_featured", key: "badge_2", value: "안 맞으면 무료 교체", type: "text", order: 6 },
   { section: "tutors_featured", key: "badge_3", value: "서류·시연·면접 3단계 검증", type: "text", order: 7 },
@@ -538,6 +562,143 @@ export const tutorsFeaturedDefaults = [
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "blurb"), value: seed.blurb, type: "text" as const, order: orderBase + 5 },
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "highlights"), value: seed.highlights, type: "text" as const, order: orderBase + 6 },
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "photo"), value: seed.photo, type: "image" as const, order: orderBase + 7 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "tags"), value: seed.tags, type: "text" as const, order: orderBase + 8 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "career_badge"), value: seed.careerBadge, type: "text" as const, order: orderBase + 9 },
+    ];
+  }),
+] as const;
+
+/** /tutors 설탭식 재구축 섹션(다크 히어로·통계·인터뷰·Q&A·변경보장·가격 앵커) 기본값 */
+export const tutorsBenchmarkDefaults = [
+  { section: "tutors_featured", key: "hero_title", value: "우리 아이와 잘 맞는 선생님,\nConcord에는 있습니다", type: "text", order: 101 },
+  { section: "tutors_featured", key: "hero_subtext", value: "학습 조건부터 학생 성향까지 정밀하게 맞추는 1:1 매칭", type: "text", order: 102 },
+  { section: "tutors_featured", key: "hero_cta", value: "만나보기", type: "text", order: 103 },
+  { section: "tutors_featured", key: "hero_image", value: "/images/placeholders/tutors-hero.png", type: "image", order: 104 },
+  { section: "tutors_featured", key: "stat1_number", value: "500+", type: "text", order: 110 },
+  { section: "tutors_featured", key: "stat1_label", value: "누적 매칭", type: "text", order: 111 },
+  { section: "tutors_featured", key: "stat2_number", value: "98%", type: "text", order: 112 },
+  { section: "tutors_featured", key: "stat2_label", value: "첫 수업 만족도", type: "text", order: 113 },
+  { section: "tutors_featured", key: "stat3_number", value: "47%", type: "text", order: 114 },
+  { section: "tutors_featured", key: "stat3_label", value: "선발 통과율", type: "text", order: 115 },
+  { section: "tutors_featured", key: "stats_footnote", value: "* Concord 운영 데이터 기준", type: "text", order: 116 },
+  { section: "tutors_featured", key: "iv_title", value: "잘 맞는 선생님을 만나면\n공부 전략이 달라집니다", type: "text", order: 120 },
+  { section: "tutors_featured", key: "iv_student_label", value: "이런 수업 원해요", type: "text", order: 121 },
+  { section: "tutors_featured", key: "iv_student_quote", value: "“강압적인 학원 수업에 지쳤어요.\n제 속도에 맞춰 다시 시작하고 싶어요”", type: "text", order: 122 },
+  { section: "tutors_featured", key: "iv_student_tags", value: "#기초부터\n#공부법조언\n#차분한설명", type: "text", order: 123 },
+  { section: "tutors_featured", key: "iv_student_image", value: "/images/placeholders/student-interview.png", type: "image", order: 124 },
+  { section: "tutors_featured", key: "iv_teacher_label", value: "이런 수업 잘해요", type: "text", order: 125 },
+  { section: "tutors_featured", key: "iv_teacher_quote", value: "“칭찬으로 학생이 스스로\n공부하게 만듭니다”", type: "text", order: 126 },
+  { section: "tutors_featured", key: "iv_teacher_tags", value: "#기초부터\n#동기부여\n#공부법전수", type: "text", order: 127 },
+  { section: "tutors_featured", key: "iv_teacher_image", value: "/images/placeholders/teacher-interview.png", type: "image", order: 128 },
+  { section: "tutors_featured", key: "iv_footnote", value: "*실제 인터뷰를 바탕으로 재구성했습니다", type: "text", order: 129 },
+  { section: "tutors_featured", key: "why_title", value: "Concord 선생님이\n특별한 이유 3가지", type: "text", order: 130 },
+  { section: "tutors_featured", key: "why1_q", value: "다 같은 명문대 출신 아닌가요?", type: "text", order: 131 },
+  { section: "tutors_featured", key: "why1_a", value: "같은 학벌이어도 다릅니다", type: "text", order: 132 },
+  { section: "tutors_featured", key: "why1_desc", value: "서류·수업 시연·대면 인터뷰 3단계로 인성부터 강의력까지 검증합니다.", type: "text", order: 133 },
+  { section: "tutors_featured", key: "why2_q", value: "대학생이라 무책임하지 않나요?", type: "text", order: 134 },
+  { section: "tutors_featured", key: "why2_a", value: "믿고 맡길 수 있습니다", type: "text", order: 135 },
+  { section: "tutors_featured", key: "why2_desc", value: "매 수업이 끝나면 진도와 피드백을 리포트로 공유해 바로 확인할 수 있습니다.", type: "text", order: 136 },
+  { section: "tutors_featured", key: "why3_q", value: "교습 경험이 있는 선생님인가요?", type: "text", order: 137 },
+  { section: "tutors_featured", key: "why3_a", value: "검증된 경력 위주로 선발합니다", type: "text", order: 138 },
+  { section: "tutors_featured", key: "why3_desc", value: "교습 경험과 지도 사례를 확인한 선생님을 우선 배정합니다.", type: "text", order: 139 },
+  { section: "tutors_featured", key: "rematch_title", value: "선생님이 마음에 안 들면 어떡하죠?", type: "text", order: 140 },
+  { section: "tutors_featured", key: "rematch_subtext", value: "마음에 들 때까지 선생님을 만나보세요. 변경 비용은 0원입니다.", type: "text", order: 141 },
+  { section: "tutors_featured", key: "rematch_cta", value: "맞춤 선생님 제안 받기", type: "text", order: 142 },
+  { section: "tutors_featured", key: "price_title", value: "맞춤수업부터 관리까지 이 모든 게", type: "text", order: 150 },
+  { section: "tutors_featured", key: "price_value", value: "월 38만원~", type: "text", order: 151 },
+  { section: "tutors_featured", key: "price_subtext", value: "상담 신청은 30초면 충분합니다. 우리 아이의 인생 선생님을 찾아드립니다.", type: "text", order: 152 },
+  { section: "tutors_featured", key: "price_cta", value: "무료 상담 신청", type: "text", order: 153 },
+  { section: "tutors_proof", key: "section_title", value: "학원에서는 성적이 안 올랐다면?\nConcord 학생들은 지금도 오르고 있습니다", type: "text", order: 1 },
+  { section: "tutors_proof", key: "section_footnote", value: "* 학부모·학생 동의를 받아 게재한 사례입니다", type: "text", order: 2 },
+  ...[
+    { subject: "수학", before: "52점", after: "86점", months: "5개월", student: "경기 일반고 2학년, 박*진 학생" },
+    { subject: "영어", before: "3등급", after: "1등급", months: "4개월", student: "서울 일반고 1학년, 김*아 학생" },
+    { subject: "국어", before: "61점", after: "88점", months: "6개월", student: "인천 일반고 2학년, 이*준 학생" },
+    { subject: "과학", before: "58점", after: "91점", months: "5개월", student: "경기 일반중 3학년, 정*원 학생" },
+    { subject: "수학", before: "4등급", after: "2등급", months: "3개월", student: "서울 자사고 2학년, 한*빈 학생" },
+    { subject: "영어", before: "47점", after: "79점", months: "4개월", student: "부산 일반고 1학년, 최*서 학생" },
+  ].flatMap((p, idx) => {
+    const n = idx + 1;
+    const orderBase = 10 + idx * 8;
+    return [
+      { section: "tutors_proof" as const, key: `proof${n}_visible`, value: "1", type: "text" as const, order: orderBase },
+      { section: "tutors_proof" as const, key: `proof${n}_subject`, value: p.subject, type: "text" as const, order: orderBase + 1 },
+      { section: "tutors_proof" as const, key: `proof${n}_before`, value: p.before, type: "text" as const, order: orderBase + 2 },
+      { section: "tutors_proof" as const, key: `proof${n}_after`, value: p.after, type: "text" as const, order: orderBase + 3 },
+      { section: "tutors_proof" as const, key: `proof${n}_months`, value: p.months, type: "text" as const, order: orderBase + 4 },
+      { section: "tutors_proof" as const, key: `proof${n}_student`, value: p.student, type: "text" as const, order: orderBase + 5 },
+      { section: "tutors_proof" as const, key: `proof${n}_image`, value: `/images/placeholders/grade-proof-${n}.png`, type: "image" as const, order: orderBase + 6 },
+    ];
+  }),
+] as const;
+
+/** /reviews 설탭식 개편 섹션(다크 히어로·성공사례·통계 밴드·실물 인증·카테고리) 기본값 */
+export const reviewsBenchmarkDefaults = [
+  { section: "reviews_page", key: "hero_kicker", value: "REVIEWS", type: "text", order: 101 },
+  { section: "reviews_page", key: "hero_title", value: "Concord 학생이 직접 경험한\n성적 상승 후기를 만나보세요", type: "text", order: 102 },
+  { section: "reviews_page", key: "hero_subtext", value: "학부모·학생이 직접 남긴 이야기와 변화의 기록입니다.", type: "text", order: 103 },
+  { section: "reviews_page", key: "band_title", value: "Concord 학생 대부분이\n첫 3개월 안에 변화를 경험합니다", type: "text", order: 110 },
+  { section: "reviews_page", key: "band_stat1_number", value: "98%", type: "text", order: 111 },
+  { section: "reviews_page", key: "band_stat1_label", value: "학생 만족도", type: "text", order: 112 },
+  { section: "reviews_page", key: "band_stat2_number", value: "500+", type: "text", order: 113 },
+  { section: "reviews_page", key: "band_stat2_label", value: "매칭 완료", type: "text", order: 114 },
+  { section: "reviews_page", key: "band_footnote", value: "* Concord 운영 데이터 기준", type: "text", order: 115 },
+  { section: "reviews_page", key: "list_title", value: "성적보다 습관이\n먼저 바뀌었어요", type: "text", order: 120 },
+  {
+    section: "reviews_page",
+    key: "list_subtext",
+    value: "Concord와 함께한 가정의 실제 후기입니다. 비슷한 고민을 골라 살펴보세요.",
+    type: "text",
+    order: 121,
+  },
+  { section: "reviews_page", key: "cta_title", value: "우리 아이도 같은 변화를 경험할 수 있어요", type: "text", order: 122 },
+  {
+    section: "reviews_page",
+    key: "cta_subtext",
+    value: "무료 상담으로 학생에게 딱 맞는 학습 플랜을 확인해 보세요.",
+    type: "text",
+    order: 123,
+  },
+  { section: "reviews_success", key: "section_title", value: "숫자로 확인하는\n성적 변화 사례", type: "text", order: 1 },
+  {
+    section: "reviews_success",
+    key: "section_footnote",
+    value: "* 학부모·학생 동의를 받아 게재한 사례로, 결과는 학생마다 다를 수 있습니다",
+    type: "text",
+    order: 2,
+  },
+  ...[
+    { from: "3등급", to: "1등급", result: "고1 화학 내신, 3개월", student: "일반고, 김*아 학생", tags: "#화학\n#내신\n#성적급상승" },
+    { from: "4등급", to: "2등급", result: "고3 국어 모의고사, 6개월", student: "일반고, 이*준 학생", tags: "#국어\n#모의고사\n#독해훈련" },
+    { from: "64점", to: "87점", result: "중3 영어 학교시험, 4개월", student: "일반중, 박*서 학생", tags: "#영어\n#기초부터" },
+    { from: "5등급", to: "2등급", result: "고2 수학 내신, 3개월", student: "일반고, 정*원 학생", tags: "#수학\n#내신" },
+    { from: "55점", to: "78점", result: "고1 국어 내신, 3개월", student: "일반고, 한*빈 학생", tags: "#국어\n#공부습관" },
+  ].flatMap((c, idx) => {
+    const n = idx + 1;
+    const orderBase = 10 + idx * 8;
+    return [
+      { section: "reviews_success" as const, key: `card${n}_visible`, value: "1", type: "text" as const, order: orderBase },
+      { section: "reviews_success" as const, key: `card${n}_from`, value: c.from, type: "text" as const, order: orderBase + 1 },
+      { section: "reviews_success" as const, key: `card${n}_to`, value: c.to, type: "text" as const, order: orderBase + 2 },
+      { section: "reviews_success" as const, key: `card${n}_result`, value: c.result, type: "text" as const, order: orderBase + 3 },
+      { section: "reviews_success" as const, key: `card${n}_student`, value: c.student, type: "text" as const, order: orderBase + 4 },
+      { section: "reviews_success" as const, key: `card${n}_tags`, value: c.tags, type: "text" as const, order: orderBase + 5 },
+    ];
+  }),
+  { section: "reviews_proof", key: "section_title", value: "기록으로 남은 변화,\n직접 확인해 보세요", type: "text", order: 1 },
+  { section: "reviews_proof", key: "section_footnote", value: "* 학부모·학생 동의를 받아 게재한 자료입니다", type: "text", order: 2 },
+  ...[
+    { student: "고1 화학 | 2025년 수강", comment: "막히는 단원을 정확히 찾아주니 3개월 만에 내신이 달라졌어요" },
+    { student: "고3 국어 | 2025년 수강", comment: "지문 읽는 방법부터 훈련하니 모의고사가 안정적으로 올랐어요" },
+    { student: "중3 영어 | 2026년 수강", comment: "기초부터 다시 잡아주셔서 시험이 두렵지 않게 됐어요" },
+  ].flatMap((p, idx) => {
+    const n = idx + 1;
+    const orderBase = 10 + idx * 6;
+    return [
+      { section: "reviews_proof" as const, key: `proof${n}_visible`, value: "1", type: "text" as const, order: orderBase },
+      { section: "reviews_proof" as const, key: `proof${n}_image`, value: `/images/placeholders/review-proof-${n}.png`, type: "image" as const, order: orderBase + 1 },
+      { section: "reviews_proof" as const, key: `proof${n}_student`, value: p.student, type: "text" as const, order: orderBase + 2 },
+      { section: "reviews_proof" as const, key: `proof${n}_comment`, value: p.comment, type: "text" as const, order: orderBase + 3 },
     ];
   }),
 ] as const;
@@ -551,6 +712,8 @@ export type FeaturedTutorCard = {
   blurb: string;
   highlights: string[];
   photo: string;
+  tags: string[];
+  careerBadge: string;
 };
 
 function splitCsv(value: string): string[] {
@@ -582,6 +745,8 @@ export function getFeaturedTutorCards(
       blurb: raw("blurb", seed?.blurb ?? "").trim(),
       highlights: parseMultilineList(raw("highlights", seed?.highlights ?? ""), []),
       photo: raw("photo", seed?.photo ?? "/images/teachers/default-male.png").trim(),
+      tags: parseMultilineList(raw("tags", seed?.tags ?? ""), []),
+      careerBadge: raw("career_badge", seed?.careerBadge ?? "").trim(),
     });
   }
   return cards;
@@ -638,7 +803,34 @@ export const homeLabelsDefaults = [
   { section: "home_labels", key: "kicker_process", value: "PROCESS", type: "text", order: 14 },
   { section: "home_labels", key: "kicker_plans", value: "PLANS", type: "text", order: 15 },
   { section: "home_labels", key: "section_title_faq", value: "자주 묻는 질문", type: "text", order: 16 },
-  { section: "home_labels", key: "section_title_reviews", value: "학습 후기", type: "text", order: 17 },
+  { section: "home_labels", key: "section_title_reviews", value: "실제 학부모님들의 이야기를 확인해보세요", type: "text", order: 17 },
+  { section: "home_labels", key: "kicker_assurance", value: "RESPONSIBILITY", type: "text", order: 18 },
+  { section: "home_labels", key: "kicker_numbers", value: "NUMBERS", type: "text", order: 19 },
+] as const;
+
+/** 홈 설탭 벤치마크 섹션 (책임 3단계·컨설팅 브릿지·환불 밴드·누적 통계) */
+export const homeBenchmarkSectionsDefaults = [
+  { section: "hero", key: "model_image", value: "/images/placeholders/hero-model.png", type: "image", order: 0 },
+  { section: "assurance", key: "section_title", value: "선생님 선별부터 매칭, 관리까지\nConcord가 책임집니다", type: "text", order: 1 },
+  { section: "assurance", key: "section_subtext", value: "좋은 과외는 좋은 선생님에서 끝나지 않습니다. 선별, 매칭, 그 이후의 관리까지가 저희의 일입니다.", type: "text", order: 2 },
+  { section: "assurance", key: "item1_title", value: "깐깐하게 선별합니다", type: "text", order: 3 },
+  { section: "assurance", key: "item1_desc", value: "서류·학력 인증, 수업 시연, 대면 인터뷰까지. 지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다.", type: "text", order: 4 },
+  { section: "assurance", key: "item2_title", value: "전문적으로 매칭합니다", type: "text", order: 5 },
+  { section: "assurance", key: "item2_desc", value: "성적표 위 숫자만 보지 않습니다. 학생의 성향과 목표, 공부 습관까지 듣고 가장 잘 가르칠 선생님을 찾습니다.", type: "text", order: 6 },
+  { section: "assurance", key: "item3_title", value: "매칭 후에도 관리합니다", type: "text", order: 7 },
+  { section: "assurance", key: "item3_desc", value: "좋은 수업을 위해 매칭 이후에도 꾸준한 모니터링과 피드백으로 수업 퀄리티를 약속드립니다.", type: "text", order: 8 },
+  { section: "consult_bridge", key: "headline", value: "사교육, 당장 결정이 어렵다면?\n무료 학습컨설팅부터 가볍게 받아보세요", type: "text", order: 1 },
+  { section: "consult_bridge", key: "subtext", value: "아이마다 필요한 학습 전략이 다릅니다. 오직 우리 아이 맞춤으로 세워지는 학습 전략, 더 이상의 시간 낭비는 그만.", type: "text", order: 2 },
+  { section: "consult_bridge", key: "cta_label", value: "30초, 상담신청 남기기", type: "text", order: 3 },
+  { section: "refund_band", key: "headline", value: "첫 수업 후 불만족 시\n100% 환불 보장", type: "text", order: 1 },
+  { section: "refund_band", key: "subtext", value: "자신있게 제안합니다. 상담 후 첫 수업까지만 받아보세요.", type: "text", order: 2 },
+  { section: "stats", key: "section_title", value: "숫자로 보는 Concord", type: "text", order: 0 },
+  { section: "stats", key: "stat4_number", value: "4.9", type: "text", order: 9 },
+  { section: "stats", key: "stat4_label", value: "상담 평점", type: "text", order: 10 },
+  { section: "stats", key: "footnote", value: "* 서비스 운영 데이터 기준", type: "text", order: 11 },
+  { section: "tutors_featured", key: "home_title", value: "이달의 검증 선생님", type: "text", order: 90 },
+  { section: "tutors_featured", key: "home_subtext", value: "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님으로 상담을 신청하시면 매니저가 매칭을 도와드립니다.", type: "text", order: 91 },
+  { section: "home_page", key: "pricing_anchor_title", value: "맞춤수업부터 관리까지, 이 모든 게", type: "text", order: 6 },
 ] as const;
 
 const COMPARE_SEED_ROWS = [
