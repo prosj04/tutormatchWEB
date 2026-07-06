@@ -184,10 +184,15 @@ export function FeaturedTutors({
     get("badge_3", "서류·시연·면접 3단계 검증"),
   ].filter(Boolean);
 
+  const STAT_FALLBACK: [string, string][] = [
+    ["500+", "누적 매칭"],
+    ["98%", "첫 수업 만족도"],
+    ["47%", "선발 통과율"],
+  ];
   const stats = [1, 2, 3]
     .map((n) => ({
-      number: get(`stat${n}_number`, ""),
-      label: get(`stat${n}_label`, ""),
+      number: get(`stat${n}_number`, STAT_FALLBACK[n - 1][0]),
+      label: get(`stat${n}_label`, STAT_FALLBACK[n - 1][1]),
     }))
     .filter((s) => s.number && s.label);
 
@@ -251,6 +256,38 @@ export function FeaturedTutors({
             {get("hero_cta", "만나보기")} ↓
           </a>
         </ConcordReveal>
+      </section>
+
+      {/* ── 뉴스 근거: 대형 타이포 스택 (흰 배경) ── */}
+      <section className="sec tp-newsintro-sec">
+        <div className="wrap">
+          <ConcordReveal className="tp-newsintro-head" as="div">
+            <h2>{getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}</h2>
+          </ConcordReveal>
+          <div className="tp-newsintro-stack">
+            {NEWS_REF_FALLBACK.map(([fq, fp, fy, fu], idx) => {
+              const n = idx + 1;
+              const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
+              const url = getCmsSectionValue(siteContent, "safety_story", `news${n}_url`, fu);
+              const press = getCmsSectionValue(siteContent, "safety_story", `news${n}_press`, fp);
+              const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
+              if (!quote || !url) return null;
+              return (
+                <ConcordReveal key={n} as="div">
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="tp-newsintro-line">
+                    <span className="q">{quote}</span>
+                    <span className="s">{year} · {press}</span>
+                  </a>
+                </ConcordReveal>
+              );
+            })}
+          </div>
+          <ConcordReveal as="div">
+            <p className="tp-newsintro-note">
+              {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다")}
+            </p>
+          </ConcordReveal>
+        </div>
       </section>
 
       {/* ── 통계 카운터 ── */}
@@ -379,31 +416,6 @@ export function FeaturedTutors({
       {whys.length > 0 ? (
         <section className="sec tp-why-sec">
           <div className="wrap">
-            <ConcordReveal className="tp-newsref" as="div" aria-label="관련 보도">
-              <p className="tp-newsref-lead">
-                {getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}
-              </p>
-              <div className="tp-newsref-row">
-                {NEWS_REF_FALLBACK.map(([fq, fp, fy, fu], idx) => {
-                  const n = idx + 1;
-                  const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
-                  const url = getCmsSectionValue(siteContent, "safety_story", `news${n}_url`, fu);
-                  const press = getCmsSectionValue(siteContent, "safety_story", `news${n}_press`, fp);
-                  const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
-                  if (!quote || !url) return null;
-                  return (
-                    <a key={n} href={url} target="_blank" rel="noopener noreferrer" className="tp-newsref-card">
-                      <span className="q">{quote}</span>
-                      <span className="s">{year} · {press}</span>
-                    </a>
-                  );
-                })}
-              </div>
-              <p className="tp-newsref-note">
-                {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다")}
-              </p>
-            </ConcordReveal>
-
             <ConcordReveal className="tp-sec-head" as="div">
               <h2 style={{ whiteSpace: "pre-line" }}>
                 {edit("why_title", formatCmsMultiline(get("why_title", "Concord 선생님이\n특별한 이유 3가지")))}

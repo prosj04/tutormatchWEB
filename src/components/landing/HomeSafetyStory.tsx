@@ -10,99 +10,34 @@ export type SafetyStoryData = {
   steps: { title: string; desc: string }[];
 };
 
+const UNIT_VH = 55;
 const STEP_VH = 50;
-const SEEN_KEY = "concord_story_seen";
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
 /**
- * 시퀀스: intro(스크롤 트리거) → [자동: 매칭 4쌍 누적 → 클로저] → 전환(멈춤, 스크롤 재개)
- * 재생 중 스크롤 잠금 + 스크롤/클릭/키 입력 시 다음 단계로 스킵. 세션당 1회만 재생.
+ * 스크롤 연동 스토리텔링: 핀 고정 화면에서 스크롤이 단계를 넘기고,
+ * 모션 자체는 CSS 이징(스르륵)이 담당. 잠금·자동재생 없음.
+ * 단계: intro → 매칭 4쌍 누적 → 클로저 → 전환(멈춤).
  */
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const stepsPinRef = useRef<HTMLDivElement | null>(null);
-  const startedRef = useRef(false);
-  const timerRef = useRef<number | null>(null);
-  const milestoneRef = useRef(0);
-  const runNextRef = useRef<() => void>(() => {});
-  const [matchShown, setMatchShown] = useState(0);
-  const [phase, setPhase] = useState<"intro" | "match" | "closer" | "pivot">("intro");
+  const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
   const [stepsOn, setStepsOn] = useState(0);
-  const [staticMode, setStaticMode] = useState(false);
+  const [reduced, setReduced] = useState(false);
 
+  const matchCount = data.matches.length;
+  const totalUnits = 1 + matchCount + 1 + 1; // intro + matches + closer + pivot
   const pivotText = data.pivot.replace(/\n/g, " ").trim();
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const seen = window.sessionStorage.getItem(SEEN_KEY) === "1";
-    if (reduced || seen) {
-      setStaticMode(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setReduced(true);
       return;
     }
-
-    const lock = () => {
-      document.documentElement.style.overflow = "hidden";
-    };
-    const unlock = () => {
-      document.documentElement.style.overflow = "";
-    };
-
-    // 마일스톤: [지연ms, 실행fn] — 실행 후 다음 마일스톤을 예약. 스킵 시 즉시 다음 실행.
-    const milestones: [number, () => void][] = [
-      ...data.matches.map((_, i) => [i === 0 ? 350 : 1200, () => setMatchShown(i + 1)] as [number, () => void]),
-      [1600, () => setPhase("closer")],
-      [
-        1700,
-        () => {
-          setPhase("pivot");
-          unlock();
-          try {
-            window.sessionStorage.setItem(SEEN_KEY, "1");
-          } catch {
-            /* storage 불가 환경 무시 */
-          }
-        },
-      ],
-    ];
-
-    const scheduleNext = () => {
-      const idx = milestoneRef.current;
-      if (idx >= milestones.length) return;
-      timerRef.current = window.setTimeout(() => runNextRef.current(), milestones[idx][0]);
-    };
-    runNextRef.current = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-      const idx = milestoneRef.current;
-      if (idx >= milestones.length) return;
-      milestoneRef.current = idx + 1;
-      milestones[idx][1]();
-      scheduleNext();
-    };
-
-    const startSequence = () => {
-      if (startedRef.current) return;
-      startedRef.current = true;
-      lock();
-      setPhase("match");
-      scheduleNext();
-    };
-
-    // 잠금 중 입력 → 다음 단계로 스킵
-    const skip = (e: Event) => {
-      if (!startedRef.current || milestoneRef.current >= milestones.length) return;
-      e.preventDefault();
-      runNextRef.current();
-    };
-    const keySkip = (e: KeyboardEvent) => {
-      if ([" ", "ArrowDown", "PageDown", "Enter"].includes(e.key)) skip(e);
-    };
-
     let raf = 0;
     const onScroll = () => {
       if (raf) return;
@@ -110,11 +45,11 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         raf = 0;
         const vh = window.innerHeight;
         const pin = pinRef.current;
-        if (pin && !startedRef.current) {
+        if (pin) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          if (progress > 0.3) startSequence();
+          setUnit(Math.min(totalUnits - 1, Math.floor(progress * totalUnits)));
         }
         const sp = stepsPinRef.current;
         if (sp) {
@@ -128,33 +63,26 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    window.addEventListener("wheel", skip, { passive: false });
-    window.addEventListener("touchmove", skip, { passive: false });
-    window.addEventListener("pointerdown", skip);
-    window.addEventListener("keydown", keySkip);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      window.removeEventListener("wheel", skip);
-      window.removeEventListener("touchmove", skip);
-      window.removeEventListener("pointerdown", skip);
-      window.removeEventListener("keydown", keySkip);
       if (raf) cancelAnimationFrame(raf);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      unlock();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.matches.length, data.steps.length]);
+  }, [totalUnits, data.steps.length]);
 
+  const phase: "intro" | "match" | "closer" | "pivot" =
+    unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
+  const matchShown = phase === "match" ? unit : phase === "intro" ? 0 : matchCount;
   const isDark = phase === "match" || phase === "closer";
 
   // 다크 구간: 네비게이션·배너까지 검게, 하단 상담 버튼은 잠시 숨김
   useEffect(() => {
-    document.body.classList.toggle("story-dark", isDark && !staticMode);
+    document.body.classList.toggle("story-dark", isDark && !reduced);
     return () => document.body.classList.remove("story-dark");
-  }, [isDark, staticMode]);
+  }, [isDark, reduced]);
 
-  if (staticMode) {
+  if (reduced) {
     return (
       <section className="lp2-story lp2-story-static" aria-label="성향 맞춤 선생님 배정">
         <div className="lp2-story-sblock"><h2>{data.intro}</h2></div>
@@ -182,14 +110,14 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: "240vh" }}>
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${totalUnits * UNIT_VH + 100}vh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
           <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
             <h2>{data.intro}</h2>
           </div>
 
-          {/* 매칭 4쌍 — 자동으로 하나씩 아래로 붙음 */}
+          {/* 매칭 4쌍 — 스크롤에 따라 하나씩 아래로 붙음 */}
           <div
             className={`lp2-story-item lp2-story-newsstack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
           >
@@ -205,7 +133,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             <h2>{data.closer}</h2>
           </div>
 
-          {/* 전환 — 나오고 멈춤, 여기서부터 스크롤 재개 */}
+          {/* 전환 — 나오고 멈춤 */}
           <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
             <h2>{pivotText}</h2>
           </div>
