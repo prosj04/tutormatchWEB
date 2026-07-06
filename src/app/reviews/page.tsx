@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 
+import "./reviews.css";
+
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getReviewsPageTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
@@ -23,7 +25,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams?: Sea
   const timer = startPerfTimer("page.reviews.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const [siteContent, testimonials] = await Promise.all([
-    getGroupedSiteContentBySections(["reviews_page", "spacing"]),
+    getGroupedSiteContentBySections(["reviews_page", "reviews_success", "reviews_proof", "spacing"]),
     getReviewsPageTestimonials(),
   ]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {

@@ -1,0 +1,63 @@
+/* /reviews 설탭식 개편 스타일 — concord.css 토큰(--acc, --panel, --fg, --bg 등)만 사용 */
+
+.rp-sec-head { text-align: center; max-width: 720px; margin: 0 auto clamp(28px, 3.4vw, 48px); }
+.rp-sec-head h2 { font-size: clamp(24px, 2.8vw, 38px); font-weight: 800; letter-spacing: -.03em; line-height: 1.22; white-space: pre-line; }
+.rp-sec-head p { margin-top: 14px; color: var(--mut); font-size: 15px; text-wrap: pretty; }
+.rp-footnote { margin-top: 18px; text-align: center; color: var(--mut-2); font-size: 12px; }
+
+/* ── 다크 히어로 ── */
+.rp-hero { position: relative; overflow: hidden; background: var(--fg); color: var(--bg); }
+.rp-hero-inner { position: relative; z-index: 1; text-align: center; padding-top: clamp(64px, 8vw, 120px); padding-bottom: clamp(64px, 8vw, 120px); }
+.rp-hero-kicker { font-size: 13px; font-weight: 800; letter-spacing: .12em; color: var(--acc); }
+.rp-hero-inner h1 { margin-top: 14px; font-size: clamp(28px, 4vw, 52px); font-weight: 900; letter-spacing: -.035em; line-height: 1.18; color: var(--bg); white-space: pre-line; }
+.rp-hero-inner h1 em { font-style: normal; color: var(--acc); }
+.rp-hero-sub { margin-top: 16px; font-size: clamp(14px, 1.4vw, 17px); color: var(--bg); opacity: .75; }
+
+/* ── 성공사례 캐러셀 ── */
+.rp-carousel {
+  display: flex; gap: 20px; overflow-x: auto; padding: 8px 20px 18px;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+}
+.rp-success-card { flex: 0 0 clamp(260px, 28vw, 330px); scroll-snap-align: center; padding: 26px 24px; display: flex; flex-direction: column; gap: 12px; }
+.rp-success-delta { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-weight: 900; letter-spacing: -.03em; }
+.rp-success-from { font-size: clamp(19px, 2vw, 24px); color: var(--mut-2); text-decoration: line-through; text-decoration-thickness: 2px; }
+.rp-success-arrow { font-size: clamp(19px, 2vw, 24px); color: var(--mut); }
+.rp-success-to { font-size: clamp(26px, 2.8vw, 34px); color: var(--acc-text); }
+.rp-success-result { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+.rp-success-student { color: var(--mut); font-size: 13px; }
+
+/* ── 통계 밴드 (다크) ── */
+.rp-band { background: var(--fg); color: var(--bg); }
+.rp-band-inner { text-align: center; padding-top: clamp(48px, 6vw, 88px); padding-bottom: clamp(48px, 6vw, 88px); }
+.rp-band-inner h2 { font-size: clamp(22px, 2.6vw, 36px); font-weight: 800; letter-spacing: -.03em; line-height: 1.25; color: var(--bg); white-space: pre-line; }
+.rp-band-inner h2 em { font-style: normal; color: var(--acc); }
+.rp-band-stats { margin-top: clamp(24px, 3vw, 40px); display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); justify-content: center; gap: 18px; }
+.rp-band-stat { display: flex; flex-direction: column; gap: 6px; }
+.rp-band-n { font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; letter-spacing: -.03em; color: var(--acc); }
+.rp-band-l { font-size: 14px; font-weight: 600; color: var(--bg); opacity: .72; }
+.rp-band .rp-footnote { color: var(--bg); opacity: .5; }
+
+/* ── 실물 인증 카드 ── */
+.rp-proof-sec { background: var(--panel-2); }
+.rp-proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.rp-proof-card { overflow: hidden; display: flex; flex-direction: column; }
+.rp-proof-media { position: relative; aspect-ratio: 4/3; background: var(--panel); }
+.rp-proof-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+.rp-proof-student { font-size: 13px; font-weight: 700; color: var(--mut); }
+.rp-proof-comment { font-size: 15px; font-weight: 700; letter-spacing: -.015em; line-height: 1.45; }
+
+/* ── 고민 카테고리 필터 ── */
+.rp-filter-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: clamp(24px, 3vw, 36px); }
+.rp-filter-chip {
+  border: 1px solid var(--line2); background: transparent; color: var(--mut);
+  font-size: 14px; font-weight: 700; padding: 8px 16px; border-radius: var(--r-pill); cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+.rp-filter-chip:hover { border-color: rgba(var(--acc-rgb), .5); color: var(--acc-text); }
+.rp-filter-chip.on { background: rgba(var(--acc-rgb), .12); border-color: rgba(var(--acc-rgb), .55); color: var(--acc-text); }
+.rp-empty { text-align: center; color: var(--mut); padding: 40px 0; }
+
+@media (max-width: 900px) {
+  .rp-proof-grid { grid-template-columns: 1fr; }
+  .rp-band-stats { grid-template-columns: repeat(2, 1fr); }
+}
