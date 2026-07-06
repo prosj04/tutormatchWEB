@@ -57,19 +57,19 @@ const fallbackTestimonials = [
     quote:
       "사춘기라 잔소리하면 방 들어가버리는 아이인데, 선생님한테는 먼저 질문을 하더라고요. 3개월 만에 수학 4등급에서 2등급으로 올랐고, 무엇보다 매니저님이 중간에서 다 챙겨줘서 불안한 게 없었어요.",
     info: "고2 수학 · 학부모",
-    img: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=640&h=520&fit=crop&q=80",
+    img: "/images/photos/selfies/selfie-1.jpg",
   },
   {
     quote:
       "처음엔 과외가 우리 아이한테 맞을까 반신반의했어요. 그런데 매 수업 후 매니저님이 오늘 내용과 숙제를 정리해서 보내주시더라고요. 아이 상황을 직접 확인할 수 있으니 훨씬 안심됐고, 영어 내신이 두 등급이나 올랐습니다.",
     info: "중3 영어 · 학부모",
-    img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+    img: "/images/photos/selfies/selfie-2.jpg",
   },
   {
     quote:
       "혼자선 계속 미루던 수학 공부가, 선생님이랑 매일 플랜 점검하면서 자연스럽게 루틴이 됐어요. 3개월 만에 모의고사 수학이 69점에서 92점으로 올랐는데, 성적보다 제가 먼저 공부 습관이 바뀐 게 더 신기해요.",
     info: "고1 수학 · 학생",
-    img: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+    img: "/images/photos/selfies/selfie-2.jpg",
   },
 ];
 

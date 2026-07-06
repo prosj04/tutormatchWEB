@@ -48,7 +48,7 @@ function mapTestimonialRows(
     info: item.author,
     img:
       item.imageUrl ||
-      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+      "/images/photos/selfies/selfie-2.jpg",
     ...(item.gradeFrom ? { gradeFrom: item.gradeFrom } : {}),
     ...(item.gradeTo ? { gradeTo: item.gradeTo } : {}),
     ...(item.category ? { category: item.category } : {}),

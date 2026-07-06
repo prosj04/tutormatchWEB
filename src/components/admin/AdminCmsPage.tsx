@@ -140,32 +140,32 @@ const stepDefaults = [
   {
     title: "무료 상담 신청",
     desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요.",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-1.jpg",
   },
   {
     title: "매니저 배정 및 전화 상담",
     desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다.",
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-2.jpg",
   },
   {
     title: "선생님 추천 및 매칭",
     desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다.",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-3.jpg",
   },
   {
     title: "수업 시작",
     desc: "첫 수업 후 적합도를 확인하고 필요한 조정을 진행합니다.",
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-4.jpg",
   },
   {
     title: "학습 리포트 & 관리",
     desc: "진도, 숙제, 질문, 리포트를 한 흐름으로 관리합니다.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-5.jpg",
   },
   {
     title: "",
     desc: "",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=840&h=380&fit=crop&q=80",
+    image: "/images/photos/scenes/scene-1.jpg",
   },
 ];
 
@@ -979,7 +979,7 @@ export function AdminCmsPage() {
       body: JSON.stringify({
         quote: "새 후기를 입력하세요.",
         author: "학년 · 과목 · 작성자",
-        imageUrl: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+        imageUrl: "/images/photos/scenes/scene-6.jpg",
       }),
     });
     if (res.ok) await load();
