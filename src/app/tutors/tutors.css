@@ -38,6 +38,18 @@
   scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
 }
 .tp-carousel-card { flex: 0 0 clamp(280px, 30vw, 360px); scroll-snap-align: center; position: relative; }
+.tp-carousel-wrap { position: relative; }
+.tp-carousel-arrow {
+  position: absolute; top: 42%; transform: translateY(-50%); z-index: 3;
+  width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--panel); color: var(--fg); border: 1px solid var(--line2);
+  box-shadow: var(--shadow-md); font-size: 26px; line-height: 1; cursor: pointer;
+  transition: opacity .2s, background .2s;
+}
+.tp-carousel-arrow:hover:not(:disabled) { background: var(--panel-2); }
+.tp-carousel-arrow:disabled { opacity: 0; pointer-events: none; }
+.tp-arrow-prev { left: 10px; }
+.tp-arrow-next { right: 10px; }
 .tp-card-tags { padding: 16px 16px 0; }
 .tp-card-univ { font-size: 13px; font-weight: 600; color: var(--mut); margin-bottom: 4px; }
 .tp-card-foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }

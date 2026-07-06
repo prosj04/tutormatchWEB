@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { CountUpStat } from "@/components/common/CountUpStat";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
-import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import {
   formatCmsMultiline,
@@ -16,6 +17,7 @@ import {
   parseMultilineList,
   type FeaturedTutorCard,
 } from "@/lib/cms-page-defaults";
+import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 const SECTION = "tutors_featured";
@@ -87,6 +89,69 @@ function FeaturedCard({
   );
 }
 
+function TutorCarousel({
+  cards,
+  ctaLabel,
+  onMatch,
+}: {
+  cards: FeaturedTutorCard[];
+  ctaLabel: string;
+  onMatch: (cardIndex: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    setAtStart(el.scrollLeft <= 1);
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [update]);
+
+  const scrollByCard = (dir: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".tp-carousel-card");
+    const amount = card ? card.offsetWidth + 20 : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * amount, behavior: "smooth" });
+  };
+
+  return (
+    <div className="tp-carousel-wrap">
+      <button
+        type="button"
+        className="tp-carousel-arrow tp-arrow-prev"
+        onClick={() => scrollByCard(-1)}
+        disabled={atStart}
+        aria-label="이전 선생님"
+      >
+        ‹
+      </button>
+      <div className="tp-carousel" role="list" ref={ref} onScroll={update}>
+        {cards.map((card) => (
+          <FeaturedCard key={card.index} card={card} ctaLabel={ctaLabel} onMatch={onMatch} />
+        ))}
+      </div>
+      <button
+        type="button"
+        className="tp-carousel-arrow tp-arrow-next"
+        onClick={() => scrollByCard(1)}
+        disabled={atEnd}
+        aria-label="다음 선생님"
+      >
+        ›
+      </button>
+    </div>
+  );
+}
+
 export function FeaturedTutors({
   siteContent,
   isEditMode = false,
@@ -143,6 +208,8 @@ export function FeaturedTutors({
 
   const studentTags = parseMultilineList(get("iv_student_tags", ""), []);
   const teacherTags = parseMultilineList(get("iv_teacher_tags", ""), []);
+
+  const pricingItems = buildVisiblePricingPlanItems(siteContent, "high");
 
   return (
     <main>
@@ -290,16 +357,11 @@ export function FeaturedTutors({
           ) : null}
         </div>
 
-        <div className="tp-carousel" role="list">
-          {cards.map((card) => (
-            <FeaturedCard
-              key={card.index}
-              card={card}
-              ctaLabel={ctaLabel}
-              onMatch={(i) => void goConsultation(`tutors_featured_${i}`)}
-            />
-          ))}
-        </div>
+        <TutorCarousel
+          cards={cards}
+          ctaLabel={ctaLabel}
+          onMatch={(i) => void goConsultation(`tutors_featured_${i}`)}
+        />
       </section>
 
       {/* ── 특별한 이유 3가지 (Q&A) ── */}
@@ -395,22 +457,22 @@ export function FeaturedTutors({
         </div>
       </section>
 
-      {/* ── 가격 앵커 ── */}
+      {/* ── 요금제 카드 ── */}
       <section className="sec tp-price-sec">
         <div className="wrap">
-          <ConcordReveal className="tp-price" as="div">
-            <p className="tp-price-kicker">{edit("price_title", get("price_title", "맞춤수업부터 관리까지 이 모든 게"))}</p>
-            <p className="tp-price-value">{edit("price_value", get("price_value", "월 38만원~"))}</p>
-            <p className="tp-price-sub">
+          <ConcordReveal className="tp-sec-head" as="div">
+            <span className="eyebrow">{edit("price_kicker", get("price_kicker", "PLANS"))}</span>
+            <h2>{edit("price_title", get("price_title", "맞춤수업부터 관리까지, 한 번에"))}</h2>
+            <p>
               {edit(
                 "price_subtext",
-                get("price_subtext", "상담 신청은 30초면 충분합니다. 우리 아이의 인생 선생님을 찾아드립니다."),
+                get("price_subtext", "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 상담 신청은 30초면 충분합니다."),
               )}
             </p>
-            <ConsultationApplyButton className="btn btn-acc btn-lg" source="tutors_price_anchor">
-              {get("price_cta", "무료 상담 신청")}
-            </ConsultationApplyButton>
           </ConcordReveal>
+          <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+            <PricingPlanCards items={pricingItems} tier="high" sourcePrefix="tutors_pricing_plan" />
+          </div>
         </div>
       </section>
 
