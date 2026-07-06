@@ -61,6 +61,14 @@ const DOCS: DocItem[] = [
     pages: "11p",
   },
   {
+    id: "design-direction",
+    title: "사이트 방향 정의서",
+    desc: "포지셔닝·시각 언어·짜침 배제·전환 설계·상담 UX·요금 정책·선생님 노출 원칙과 결정 이력.",
+    category: "브랜드 · 앱",
+    file: "/docs/design-direction.html",
+    pages: "웹",
+  },
+  {
     id: "benchmark-seoltab",
     title: "설탭 벤치마크 리포트",
     desc: "설탭 전 페이지 조사: 전환 설계 10원칙·페이지 구조·상담폼 필드·채택/제외 판정표·촬영 목록.",

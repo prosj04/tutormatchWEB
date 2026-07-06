@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Concord 사이트 방향 정의서 · Concord 내부자료</title>
+<style>
+  :root {
+    --green: #10b981;
+    --ink: #1a2b23;
+    --mut: #5c6f66;
+    --bg: #faf8f4;
+    --panel: #ffffff;
+    --line: #e5e0d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 28px 96px; }
+  .cover {
+    background: #0f1f18;
+    color: #f4f1ea;
+    border-radius: 18px;
+    padding: 44px 40px;
+    margin-bottom: 40px;
+  }
+  .cover .kicker {
+    font-size: 12px; font-weight: 800; letter-spacing: .16em;
+    color: var(--green); text-transform: uppercase; margin: 0 0 12px;
+  }
+  .cover h1 { font-size: 30px; margin: 0 0 10px; line-height: 1.3; }
+  .cover p { margin: 0; color: rgba(244,241,234,.75); font-size: 14px; }
+  h2 {
+    font-size: 21px; margin: 44px 0 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--green);
+  }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  p, li { font-size: 14.5px; }
+  ol li, ul li { margin-bottom: 6px; }
+  strong { color: #0c5c42; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 14px 0 22px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; font-size: 13.5px;
+  }
+  th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: #f1ede4; font-weight: 700; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .note {
+    background: #eef7f2; border: 1px solid #cfe8dc; border-radius: 12px;
+    padding: 12px 16px; font-size: 13.5px; color: #14533e; margin: 14px 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cover">
+    <p class="kicker">Concord Internal · Design Direction</p>
+    <h1>Concord 사이트 방향 정의서</h1>
+    <p>그동안의 리디자인 결정을 종합한 기준 문서 — 새 페이지·섹션 작업 시 이 문서를 기준으로 판단한다. 최종 갱신 2026-07-06</p>
+  </div>
+
+  <h2>1. 포지셔닝 — "시스템이 있는 프리미엄 대면 과외"</h2>
+  <ul>
+    <li>서울·분당 방문 수업. 저렴한 온라인 과외가 아니라 <strong>관리형 프리미엄</strong>.</li>
+    <li>매니저가 직접 상담·매칭하고, <strong>학생이 수락해야 수업이 시작</strong>되는 구조 자체가 상품.</li>
+    <li>차별점은 선생님 개인기가 아니라 시스템: 숙제 자동 배분 · 질문답변 · 월간 리포트 · 매니저 케어.</li>
+  </ul>
+
+  <h2>2. 시각 언어</h2>
+  <table>
+    <tr><th>항목</th><th>기준</th></tr>
+    <tr><td>컬러</td><td>Concord Green(#10B981) + 웜 아이보리. 라이트/다크 섹션 교차로 리듬. 보라·형광 금지</td></tr>
+    <tr><td>타이포</td><td>Pretendard. 큰 국문 헤드라인 2줄, 강조어에만 accent</td></tr>
+    <tr><td>다크모드</td><td>전 페이지 지원 유지</td></tr>
+    <tr><td>이미지</td><td><strong>사진보다 제품 목업 우선</strong>(리포트·매칭 카드·질문답변 UI). 선생님 이미지는 작게 — 크면 부담스럽다 (2026-07-04 확정)</td></tr>
+    <tr><td>히어로</td><td>우측은 <strong>단일 사진 1장</strong>. 요소를 겹치지 않는다 (2026-07-06 확정)</td></tr>
+  </table>
+
+  <h2>3. 톤 — "짜침 배제" 원칙</h2>
+  <ul>
+    <li>이모지·사이렌·형광 배너·"1등" 남발 금지.</li>
+    <li><strong>허위·검증불가 통계 금지.</strong> 실데이터만 쓰고, 쓰면 반드시 각주(기준·기간)를 단다.</li>
+    <li>카피는 짧고 단정하게. 과장 대신 보장(환불·재매칭)으로 설득한다.</li>
+  </ul>
+
+  <h2>4. 전환 설계 — "구조는 설탭, 피부는 Concord"</h2>
+  <p>설탭 벤치마크에서 <strong>차용한 것</strong>:</p>
+  <ol>
+    <li>모든 CTA가 상담 하나로 수렴 (매칭받기·플랜 시작·배너 전부)</li>
+    <li>리스크 제거 3종: 첫 수업 100% 환불 · 무료 재매칭 · 상담만 해도 혜택</li>
+    <li>하단 고정 CTA + 환불 툴팁, 상단 안내 배너</li>
+    <li>숫자 증거(카운트업)와 성적 변화 화살표(3등급→1등급) 표기</li>
+    <li>해시태그 칩, Q&amp;A 반박형 신뢰 섹션, 고민 카테고리 후기</li>
+  </ol>
+  <div class="note"><strong>배제한 것</strong>: 보라 시각 언어, 이모지 배너, 허위 통계, 명예의전당(연혁상 불가), 인강 번들, 손글씨 개인화 히어로.</div>
+
+  <h2>5. 상담 UX — 가벼운 모달이 기본</h2>
+  <ul>
+    <li>상담 신청은 <strong>화면 위에 뜨는 가벼운 카드(모달)</strong> 방식. 페이지 이탈 없이 그 자리에서 신청 (2026-07-06 확정).</li>
+    <li>/consult 공개 폼 페이지는 광고 유입·직접 링크용으로 유지하되, 사이트 내 CTA는 모달을 띄운다.</li>
+    <li>폼은 초저마찰: 꼭 필요한 항목만, 제출까지 30초.</li>
+  </ul>
+
+  <h2>6. 요금 정책 — 앵커링보다 투명성</h2>
+  <ul>
+    <li>"월 X만원~" 앵커링 한 줄보다 <strong>실제 요금제 카드를 노출</strong>하는 쪽을 택한다 (2026-07-06 확정).</li>
+    <li><strong>할인률 뱃지 등 세일 연출 금지</strong> — 프리미엄 포지셔닝과 충돌.</li>
+    <li>카드는 상하 스택이 아니라 <strong>일렬(가로) 배치</strong>.</li>
+    <li>요금제 카드의 CTA도 결제 직행이 아닌 상담 수렴(결제는 보조 링크).</li>
+  </ul>
+
+  <h2>7. 선생님 노출 — 큐레이션, 디렉토리 아님</h2>
+  <ul>
+    <li>전체 목록·개인 상세 페이지 없음. <strong>소수 검증 카드만 큐레이션</strong>("이달의 검증 선생님").</li>
+    <li>카드는 <strong>좌우 화살표 캐러셀</strong>로 넘긴다(설탭식).</li>
+    <li>카드마다 "빠른 매칭받기" → 상담. 선생님을 고르는 경험이 아니라 <strong>추천받는 경험</strong>.</li>
+  </ul>
+
+  <h2>8. 결정 이력</h2>
+  <table>
+    <tr><th>날짜</th><th>결정</th></tr>
+    <tr><td>2026-07-04</td><td>홈 방향 확정: 제품 목업 확대, 선생님 이미지 축소, 짜침 배제 지속</td></tr>
+    <tr><td>2026-07-06</td><td>설탭 구조 전면 이식(홈·선생님·후기·상담·글로벌 CTA), 벤치마크 문서화</td></tr>
+    <tr><td>2026-07-06</td><td>후속 조정: 상담은 모달 복원, 히어로 단일 사진, 요금제 카드 노출·할인 뱃지 제거·일렬 배치, 선생님 캐러셀 화살표, 히어로 헤드라인 복원(시즌 카피는 부제로)</td></tr>
+  </table>
+  <div class="note"><strong>해석</strong>: 설탭의 <em>마케팅 구조</em>는 수용하되, <em>UX 마찰</em>(페이지 이동)과 <em>세일즈 냄새</em>(할인 뱃지, 가격 숨기기, 과장)는 제거하는 것이 일관된 방향이다.</div>
+</div>
+</body>
+</html>
