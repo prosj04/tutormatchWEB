@@ -609,8 +609,6 @@ export function LandingPageV2({
           </div>
         </div>
 
-        <HallOfFameCarousel items={hallItems} />
-
         {doubledResults.length > 0 && (
           <div className="lp2-result-marquee">
             <div className="lp2-result-track">
@@ -682,6 +680,10 @@ export function LandingPageV2({
           <div className="lp2-sec-head reveal" style={{ marginTop: 56 }}>
             <span className="lp2-eyebrow">{kickers.reviews}</span>
             <h2>{sectionTitles.reviews}</h2>
+          </div>
+
+          <div className="reveal" style={{ marginBottom: 40 }}>
+            <HallOfFameCarousel items={hallItems} />
           </div>
 
           <div className="lp2-rev-scroll reveal" role="list">

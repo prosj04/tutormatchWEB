@@ -150,3 +150,14 @@
   color: var(--mut);
   opacity: 0.75;
 }
+
+/* ── 카드 최상단 과목 뱃지 + 프로필 사진 칸 보정 ── */
+.tp-card-subject { padding: 16px 16px 0; }
+.tp-subject-chip {
+  background: var(--acc);
+  color: var(--on-acc);
+  border: none;
+  font-weight: 800;
+}
+.tp-card-tags { padding: 10px 16px 0; }
+.tp-carousel-card .tutor-media { aspect-ratio: 4 / 5; }

@@ -41,6 +41,11 @@ function FeaturedCard({
 }) {
   return (
     <ConcordReveal as="article" className="card tutor-card tp-carousel-card">
+      {card.tag ? (
+        <div className="tp-card-subject">
+          <span className="tag-chip tp-subject-chip">#{card.tag}</span>
+        </div>
+      ) : null}
       {card.tags.length > 0 ? (
         <div className="tag-chip-row tp-card-tags">
           {card.tags.slice(0, 3).map((t) => (
@@ -51,12 +56,11 @@ function FeaturedCard({
         </div>
       ) : null}
       <div className="tutor-media" style={{ position: "relative", overflow: "hidden" }}>
-        {card.tag ? <span className="tutor-tag">{card.tag}</span> : null}
         <Image
           src={card.photo}
           alt={`${card.name} 선생님 프로필 사진`}
           fill
-          className="object-cover"
+          className="object-cover object-top"
           sizes="(max-width:960px) 80vw, 33vw"
         />
       </div>
