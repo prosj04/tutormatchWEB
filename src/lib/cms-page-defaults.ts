@@ -427,6 +427,166 @@ export const tutorsPageDefaults = [
   },
 ] as const;
 
+/** 이달의 선생님(큐레이션) 카드 수 — 관리자 CMS·공개 페이지 공용 */
+export const FEATURED_TUTOR_CARD_COUNT = 6;
+
+/** 예: 카드 2 이름 → featured_2_name */
+export function featuredTutorFieldKey(
+  cardIndex1Based: number,
+  field: "visible" | "name" | "tag" | "university" | "subjects" | "blurb" | "highlights" | "photo",
+): string {
+  return `featured_${cardIndex1Based}_${field}`;
+}
+
+type FeaturedTutorSeed = {
+  name: string;
+  tag: string;
+  university: string;
+  subjects: string;
+  blurb: string;
+  highlights: string;
+  photo: string;
+};
+
+/**
+ * 임의(placeholder) 큐레이션 강사 데이터. 관리자 CMS에서 교체 전까지 노출되는 기본값.
+ * photo는 기존 성별 기본 얼굴로 채워 둠 — 실제 인물 사진으로 교체 예정.
+ * (원하는 사진 방향은 docs/seoltab-teardown.md 부록 메모 참고)
+ */
+const FEATURED_TUTOR_SEED: FeaturedTutorSeed[] = [
+  {
+    name: "김서연",
+    tag: "수학",
+    university: "서울대학교 수리과학부",
+    subjects: "수학, 미적분, 기하",
+    blurb: "개념의 '왜'부터 잡아 스스로 풀어내게 만드는 수업.",
+    highlights: "정시 수학 4→1등급 다수 배출\n내신 심화·킬러문항 대비",
+    photo: "/images/teachers/default-female.png",
+  },
+  {
+    name: "이준호",
+    tag: "영어",
+    university: "연세대학교 영어영문학과",
+    subjects: "영어, 내신, 수능",
+    blurb: "구문 독해부터 서술형까지 균형 있게 끌어올립니다.",
+    highlights: "내신 1등급 밀착 관리\n수능 영어 1등급 다수 지도",
+    photo: "/images/teachers/default-male.png",
+  },
+  {
+    name: "박지민",
+    tag: "과학",
+    university: "고려대학교 화학과",
+    subjects: "화학, 생명과학, 통합과학",
+    blurb: "암기 대신 원리로 설계하는 탐구 전략.",
+    highlights: "화학·생명 통합 지도\n모의고사 등급 상승 사례 다수",
+    photo: "/images/teachers/default-female.png",
+  },
+  {
+    name: "최유진",
+    tag: "국어",
+    university: "서울대학교 국어교육과",
+    subjects: "국어, 비문학, 논술",
+    blurb: "비문학 지문을 구조로 읽어내는 훈련.",
+    highlights: "수능 국어 1등급 지도\n논술·서술형 첨삭",
+    photo: "/images/teachers/default-female.png",
+  },
+  {
+    name: "정민석",
+    tag: "수학",
+    university: "연세대학교 수학과",
+    subjects: "수학, 미적분, 확률과통계",
+    blurb: "실수 없는 계산 습관과 킬러문항 접근법.",
+    highlights: "미적분·기하 전문\n재수·반수생 정시 관리",
+    photo: "/images/teachers/default-male.png",
+  },
+  {
+    name: "한소희",
+    tag: "영어",
+    university: "고려대학교 영어교육과",
+    subjects: "영어, 내신, 저학년 기초",
+    blurb: "말하기·쓰기까지 챙기는 내신 밀착 관리.",
+    highlights: "내신 서술형 대비\n저학년 기초 설계",
+    photo: "/images/teachers/default-female.png",
+  },
+];
+
+/** 이달의 선생님(큐레이션) 섹션 — 디렉터리 대신 소수 카드만 노출, CTA는 상담으로 */
+export const tutorsFeaturedDefaults = [
+  { section: "tutors_featured", key: "header_kicker", value: "TEACHERS", type: "text", order: 1 },
+  { section: "tutors_featured", key: "header_title", value: "이달의 검증 선생님", type: "text", order: 2 },
+  {
+    section: "tutors_featured",
+    key: "header_subtext",
+    value:
+      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님으로 무료 상담을 신청하시면 매니저가 매칭을 도와드립니다.",
+    type: "text",
+    order: 3,
+  },
+  { section: "tutors_featured", key: "cta_label", value: "이 선생님으로 매칭받기", type: "text", order: 4 },
+  { section: "tutors_featured", key: "badge_1", value: "첫 수업 후 100% 환불", type: "text", order: 5 },
+  { section: "tutors_featured", key: "badge_2", value: "안 맞으면 무료 교체", type: "text", order: 6 },
+  { section: "tutors_featured", key: "badge_3", value: "서류·시연·면접 3단계 검증", type: "text", order: 7 },
+  ...FEATURED_TUTOR_SEED.flatMap((seed, idx) => {
+    const n = idx + 1;
+    const orderBase = 10 + idx * 8;
+    return [
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "visible"), value: "1", type: "text" as const, order: orderBase },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "name"), value: seed.name, type: "text" as const, order: orderBase + 1 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "tag"), value: seed.tag, type: "text" as const, order: orderBase + 2 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "university"), value: seed.university, type: "text" as const, order: orderBase + 3 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "subjects"), value: seed.subjects, type: "text" as const, order: orderBase + 4 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "blurb"), value: seed.blurb, type: "text" as const, order: orderBase + 5 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "highlights"), value: seed.highlights, type: "text" as const, order: orderBase + 6 },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "photo"), value: seed.photo, type: "image" as const, order: orderBase + 7 },
+    ];
+  }),
+] as const;
+
+export type FeaturedTutorCard = {
+  index: number;
+  name: string;
+  tag: string;
+  university: string;
+  subjects: string[];
+  blurb: string;
+  highlights: string[];
+  photo: string;
+};
+
+function splitCsv(value: string): string[] {
+  return value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** CMS 값 우선, 없으면 seed 폴백으로 노출용 큐레이션 강사 카드 배열 생성 */
+export function getFeaturedTutorCards(
+  siteContent: Record<string, Record<string, string>> | undefined,
+): FeaturedTutorCard[] {
+  const sec = siteContent?.tutors_featured;
+  const cards: FeaturedTutorCard[] = [];
+  for (let n = 1; n <= FEATURED_TUTOR_CARD_COUNT; n += 1) {
+    const seed = FEATURED_TUTOR_SEED[n - 1];
+    const raw = (field: Parameters<typeof featuredTutorFieldKey>[1], fallback: string) =>
+      sec?.[featuredTutorFieldKey(n, field)] ?? fallback;
+    if (!parseCmsVisibility(sec?.[featuredTutorFieldKey(n, "visible")], Boolean(seed))) continue;
+    const name = raw("name", seed?.name ?? "").trim();
+    if (!name) continue;
+    cards.push({
+      index: n,
+      name,
+      tag: raw("tag", seed?.tag ?? "").trim(),
+      university: raw("university", seed?.university ?? "").trim(),
+      subjects: splitCsv(raw("subjects", seed?.subjects ?? "")),
+      blurb: raw("blurb", seed?.blurb ?? "").trim(),
+      highlights: parseMultilineList(raw("highlights", seed?.highlights ?? ""), []),
+      photo: raw("photo", seed?.photo ?? "/images/teachers/default-male.png").trim(),
+    });
+  }
+  return cards;
+}
+
 /** 홈 푸터 */
 export const footerDefaults = [
   { section: "footer", key: "cta_title", value: "상담이 필요하신가요?", type: "text", order: 1 },

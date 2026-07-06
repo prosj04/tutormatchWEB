@@ -156,6 +156,11 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .tutor-items{ margin-top:10px; display:flex; flex-direction:column; gap:7px; }
 .tutor-items li{ list-style:none; color:var(--mut); font-size:13px; display:flex; gap:8px; align-items:baseline; }
 .tutor-items li::before{ content:""; width:5px; height:5px; border-radius:50%; background:var(--acc-text); flex:0 0 auto; transform:translateY(-1px); }
+.tutor-match-btn{ margin-top:18px; }
+.tutor-badge-row{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:26px; }
+.tutor-badge{ display:inline-flex; align-items:center; gap:7px; background:var(--panel-2); border:1px solid var(--line2); color:var(--fg);
+  font-size:13px; font-weight:600; padding:8px 15px; border-radius:var(--r-pill); }
+.tutor-badge::before{ content:"✓"; color:var(--acc-text); font-weight:800; }
 
 /* =========================================================
    FAQ

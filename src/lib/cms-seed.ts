@@ -9,6 +9,7 @@ import {
   pricingPageDefaults,
   spacingDefaults,
   tutorsPageDefaults,
+  tutorsFeaturedDefaults,
 } from "@/lib/cms-page-defaults";
 import { prisma } from "@/lib/prisma";
 import { LEGACY_RESULT_IMAGE_PLACEHOLDERS, RESULT_CARD_IMAGES } from "@/lib/result-card-images";
@@ -221,6 +222,7 @@ const siteContentDefaults = [
 
   ...pricingPageDefaults,
   ...tutorsPageDefaults,
+  ...tutorsFeaturedDefaults,
   ...homePageVisibilityDefaults,
   ...footerDefaults,
   ...homeLabelsDefaults,
