@@ -641,7 +641,18 @@ export function LandingPageV2({
           <div className="lp2-rev-scroll reveal" role="list">
             {cmsTestimonials.map((t, i) => (
               <div key={i} className="lp2-rev-card" role="listitem">
-                <div className="quote">&ldquo;</div>
+                {t.gradeFrom && t.gradeTo ? (
+                  <div
+                    className="lp2-rev-grade"
+                    aria-label={`${t.gradeFrom}에서 ${t.gradeTo}로 향상`}
+                  >
+                    <span className="from">{t.gradeFrom}</span>
+                    <span className="arrow" aria-hidden="true">→</span>
+                    <span className="to">{t.gradeTo}</span>
+                  </div>
+                ) : (
+                  <div className="quote">&ldquo;</div>
+                )}
                 <p className="qt">{t.quote}</p>
                 <div className="by">{t.info}</div>
               </div>

@@ -531,6 +531,16 @@ body:has(.lp2-root) footer.site .logo span {
   transition: background .4s var(--ease), border-color .4s var(--ease);
 }
 .lp2-rev-card .quote { font-size: 28px; font-weight: 800; color: var(--acc-text); line-height: 1; }
+.lp2-rev-grade {
+  display: inline-flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--acc-soft, rgba(16,185,129,.12));
+  font-weight: 800; font-size: 15px;
+}
+.lp2-rev-grade .from { color: var(--mut); }
+.lp2-rev-grade .arrow { color: var(--acc-text); }
+.lp2-rev-grade .to { color: var(--acc-text); }
 .lp2-rev-card .qt { font-size: 16px; line-height: 1.65; margin-top: 18px; color: var(--fg); flex: 1; text-wrap: pretty; }
 .lp2-rev-card .by { margin-top: 22px; font-size: 14px; color: var(--mut); font-weight: 600; }
 

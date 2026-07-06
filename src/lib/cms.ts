@@ -15,6 +15,10 @@ export type LandingCmsContent = {
     quote: string;
     info: string;
     img: string;
+    gradeFrom?: string;
+    gradeTo?: string;
+    category?: string;
+    tags?: string[];
   }>;
   faqs: Array<{
     q: string;
@@ -29,7 +33,15 @@ const EMPTY_LANDING_CMS: LandingCmsContent = {
 };
 
 function mapTestimonialRows(
-  testimonials: Array<{ quote: string; author: string; imageUrl: string | null }>,
+  testimonials: Array<{
+    quote: string;
+    author: string;
+    imageUrl: string | null;
+    gradeFrom?: string | null;
+    gradeTo?: string | null;
+    category?: string | null;
+    tags?: string | null;
+  }>,
 ): LandingCmsContent["testimonials"] {
   return testimonials.map((item) => ({
     quote: item.quote,
@@ -37,6 +49,12 @@ function mapTestimonialRows(
     img:
       item.imageUrl ||
       "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=640&h=520&fit=crop&q=80",
+    ...(item.gradeFrom ? { gradeFrom: item.gradeFrom } : {}),
+    ...(item.gradeTo ? { gradeTo: item.gradeTo } : {}),
+    ...(item.category ? { category: item.category } : {}),
+    ...(item.tags
+      ? { tags: item.tags.split("\n").map((t) => t.trim()).filter(Boolean) }
+      : {}),
   }));
 }
 
@@ -50,7 +68,15 @@ const getCachedHomeTestimonials = unstable_cache(
       prisma.testimonial.findMany({
         where: { isActive: true, showOnHome: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-        select: { quote: true, author: true, imageUrl: true },
+        select: {
+          quote: true,
+          author: true,
+          imageUrl: true,
+          gradeFrom: true,
+          gradeTo: true,
+          category: true,
+          tags: true,
+        },
       }),
     );
     return mapTestimonialRows(testimonials);
@@ -68,7 +94,15 @@ const getCachedReviewsPageTestimonials = unstable_cache(
       prisma.testimonial.findMany({
         where: { isActive: true, showOnReviewsPage: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
-        select: { quote: true, author: true, imageUrl: true },
+        select: {
+          quote: true,
+          author: true,
+          imageUrl: true,
+          gradeFrom: true,
+          gradeTo: true,
+          category: true,
+          tags: true,
+        },
       }),
     );
     return mapTestimonialRows(testimonials);

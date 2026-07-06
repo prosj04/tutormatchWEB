@@ -1,4 +1,11 @@
-export const REVIEW_CATEGORIES = ["성적정체", "기초부족", "자신감하락", "습관부재"] as const;
+export const REVIEW_CATEGORIES = [
+  "성적정체",
+  "기초부족",
+  "자신감하락",
+  "습관부재",
+  "성향매칭",
+  "안전신뢰",
+] as const;
 
 export type ReviewCategory = (typeof REVIEW_CATEGORIES)[number];
 

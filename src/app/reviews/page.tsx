@@ -35,7 +35,14 @@ export default async function ReviewsPage({ searchParams }: { searchParams?: Sea
 
   const items: ReviewCardItem[] =
     testimonials.length > 0
-      ? testimonials.map((t) => ({ quote: t.quote, info: t.info }))
+      ? testimonials.map((t) => ({
+          quote: t.quote,
+          info: t.info,
+          ...(t.gradeFrom ? { gradeFrom: t.gradeFrom } : {}),
+          ...(t.gradeTo ? { gradeTo: t.gradeTo } : {}),
+          ...(t.category ? { category: t.category } : {}),
+          ...(t.tags && t.tags.length > 0 ? { tags: t.tags } : {}),
+        }))
       : [...REVIEWS_HTML_FALLBACK];
 
   const page = (
