@@ -57,8 +57,25 @@ export function ReviewsPageContent({
           <div className="rev-masonry">
             {testimonials.map((item) => (
               <ConcordReveal key={`${item.info}-${item.quote.slice(0, 24)}`} as="article" className="card rev-card">
-                <div className="rev-stars">★★★★★</div>
+                {item.gradeFrom && item.gradeTo ? (
+                  <div className="rev-grade" aria-label={`${item.gradeFrom}에서 ${item.gradeTo}로 향상`}>
+                    <span className="rev-grade-from">{item.gradeFrom}</span>
+                    <span className="rev-grade-arrow" aria-hidden="true">→</span>
+                    <span className="rev-grade-to">{item.gradeTo}</span>
+                  </div>
+                ) : (
+                  <div className="rev-stars">★★★★★</div>
+                )}
                 <p className="qt">{item.quote}</p>
+                {item.tags && item.tags.length > 0 ? (
+                  <div className="rev-tags">
+                    {item.tags.map((tag) => (
+                      <span key={tag} className="rev-tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
                 <ReviewByLine info={item.info} />
               </ConcordReveal>
             ))}

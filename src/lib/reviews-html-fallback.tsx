@@ -33,6 +33,9 @@ export const REVIEWS_HTML_FALLBACK = [
     quote:
       "학원을 몇 번 옮겨도 안 되던 아이였는데, 1:1로 보니 어디서 막히는지 정확히 알게 됐어요. 화학 내신이 3등급에서 1등급이 됐습니다.",
     info: "고1 화학 · 학부모",
+    gradeFrom: "3등급",
+    gradeTo: "1등급",
+    tags: ["고1 화학 내신", "3개월"],
   },
   {
     quote:
@@ -43,10 +46,19 @@ export const REVIEWS_HTML_FALLBACK = [
     quote:
       "국어 지문을 읽는 방법 자체를 훈련해 주셔서, 처음 보는 지문도 덜 두려워졌어요. 모의고사 등급이 안정적으로 올랐습니다.",
     info: "고3 국어 · 학생",
+    gradeFrom: "4등급",
+    gradeTo: "2등급",
+    tags: ["고3 국어 모의고사", "6개월"],
   },
 ] as const;
 
-export type ReviewCardItem = { quote: string; info: string };
+export type ReviewCardItem = {
+  quote: string;
+  info: string;
+  gradeFrom?: string;
+  gradeTo?: string;
+  tags?: readonly string[];
+};
 
 function parseByLine(info: string) {
   const idx = info.indexOf("·");
