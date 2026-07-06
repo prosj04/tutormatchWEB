@@ -60,9 +60,17 @@ const DOCS: DocItem[] = [
     file: "/docs/Concord-Brand-Guidelines.pdf",
     pages: "11p",
   },
+  {
+    id: "benchmark-seoltab",
+    title: "설탭 벤치마크 리포트",
+    desc: "설탭 전 페이지 조사: 전환 설계 10원칙·페이지 구조·상담폼 필드·채택/제외 판정표·촬영 목록.",
+    category: "벤치마크 · 리서치",
+    file: "/docs/benchmark-seoltab.html",
+    pages: "웹",
+  },
 ];
 
-const CATEGORIES = ["제안 · 전략", "IR · 투자", "브랜드 · 앱"];
+const CATEGORIES = ["제안 · 전략", "IR · 투자", "브랜드 · 앱", "벤치마크 · 리서치"];
 
 export function DocsLibrary() {
   const [active, setActive] = useState<DocItem>(DOCS[0]);

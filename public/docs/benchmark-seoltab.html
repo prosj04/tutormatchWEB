@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>설탭 벤치마크 리포트 · Concord 내부자료</title>
+<style>
+  :root {
+    --green: #10b981;
+    --ink: #1a2b23;
+    --mut: #5c6f66;
+    --bg: #faf8f4;
+    --panel: #ffffff;
+    --line: #e5e0d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 28px 96px; }
+  .cover {
+    background: #0f1f18;
+    color: #f4f1ea;
+    border-radius: 18px;
+    padding: 44px 40px;
+    margin-bottom: 40px;
+  }
+  .cover .kicker {
+    font-size: 12px; font-weight: 800; letter-spacing: .16em;
+    color: var(--green); text-transform: uppercase; margin: 0 0 12px;
+  }
+  .cover h1 { font-size: 30px; margin: 0 0 10px; line-height: 1.3; }
+  .cover p { margin: 0; color: rgba(244,241,234,.75); font-size: 14px; }
+  h2 {
+    font-size: 21px; margin: 44px 0 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--green);
+  }
+  h3 { font-size: 16px; margin: 26px 0 8px; }
+  p, li { font-size: 14.5px; }
+  ol li, ul li { margin-bottom: 6px; }
+  strong { color: #0c5c42; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 14px 0 22px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; font-size: 13.5px;
+  }
+  th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: #f1ede4; font-weight: 700; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .note {
+    background: #eef7f2; border: 1px solid #cfe8dc; border-radius: 12px;
+    padding: 12px 16px; font-size: 13.5px; color: #14533e; margin: 14px 0;
+  }
+  .ok { color: #0c7a55; font-weight: 700; }
+  .warn { color: #a26a00; font-weight: 700; }
+  .no { color: #b3392f; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cover">
+    <p class="kicker">Concord Internal · Benchmark</p>
+    <h1>설탭(Seoltab) 벤치마크 리포트</h1>
+    <p>조사일 2026-07-06 · 대상: index.seoltab.com 전 페이지 · 사이트 전면 개편(설탭 구조 이식)의 기준 문서</p>
+  </div>
+
+  <h2>1. 전환 설계 핵심 10가지</h2>
+  <ol>
+    <li><strong>단일 전환점 = 상담신청.</strong> 모든 CTA(히어로·선생님 카드 "빠른 매칭받기"·FAQ 하단)가 상담신청 한 곳으로 수렴.</li>
+    <li><strong>초저마찰 폼.</strong> 이름조차 받지 않음: 학년 + 과목 + 연락처 + 희망 시간 + 약관. "5초면 충분"을 카피로 반복.</li>
+    <li><strong>리스크 제거 3종.</strong> 첫 수업 후 100% 환불 / 선생님 무료 변경(+무료수업 추가) / 상담만 해도 학습진단 무료.</li>
+    <li><strong>하단 고정 CTA.</strong> 전 페이지에서 추천받기 버튼 + "첫 수업 후 불만족시 100% 환불" 툴팁이 상시 고정.</li>
+    <li><strong>상단 긴급성 배너.</strong> 상담 대기 연출 + 바로 결제 우회로.</li>
+    <li><strong>숫자 증거 반복.</strong> 만족도 97%·2명 중 1명 성적 상승·합격률 53.3%·누적 카운트업. 전 수치에 조사 기준 각주.</li>
+    <li><strong>성적 변화 정형 표기.</strong> "4등급 → 1등급!" 화살표 + #과목 #전형 #대학 해시태그.</li>
+    <li><strong>실물 증거 인증.</strong> 합격통지서·성적표 스캔 + 학생 사진·코멘트 오버레이.</li>
+    <li><strong>학부모 안심 장치.</strong> 매니저 중개(안심리뷰·월간 리포트·상담) + 학부모 화법 후기.</li>
+    <li><strong>가격 앵커링.</strong> 요금표 대신 "월 199,000원~" 한 줄, 나머지는 상담으로.</li>
+  </ol>
+
+  <h2>2. 페이지별 섹션 구조</h2>
+  <h3>메인(/)</h3>
+  <p>긴급성 배너 → 시즌 캠페인 히어로(모델 사진) → 명예의전당 캐러셀 → 선별·매칭·관리 책임 3단계 → 변경 보장 → 수업 모니터링 → 내신 프로그램 → 무료 학습컨설팅 브릿지 → 100% 환불 밴드 → 만족도 → 서비스 소개 → 내신 상세(전략→수업→리뷰) → 질문 교수법 → 인강 번들 → 성적상승 통계 → 학부모 소통 3종 → 학부모 후기 4개 → 누적 카운터 4종 → STEP1~4 아코디언 → 가격 앵커 → FAQ → 최종 CTA → 푸터.</p>
+  <h3>선생님(/tutor)</h3>
+  <p>다크 히어로(개인화 카피 + 만나보기 앵커) → 카운터 3종 → 학생 인터뷰 2컷(니즈↔강점 해시태그 매칭) → <strong>이달의 선생님 캐러셀</strong>(해시태그 배지 3개·프로필·대학(전형)·이름(나이)·3줄 스토리·과목 칩·경력 배지·대학 워터마크·카드별 매칭 버튼) → 특별한 이유 3가지(Q&amp;A 반박형) → 성적표 인증 12건 그리드 → 변경 보장 → 가격 앵커 → CTA.</p>
+  <h3>수강후기(/review)</h3>
+  <p>다크 히어로 → 성공사례 캐러셀(등급 화살표 + 해시태그) → 통계 밴드 → 합격통지서 실물 인증 3종 → 고민 카테고리 후기(#성적정체 #기초개념부족 #자신감하락 #목표부실) → CTA.</p>
+  <h3>상담신청(/consult_request) 폼</h3>
+  <table>
+    <tr><th>순서</th><th>필드</th><th>형식</th><th>비고</th></tr>
+    <tr><td>0</td><td>혜택 배너</td><td>이미지</td><td>시즌 프로모션 3종 혜택</td></tr>
+    <tr><td>1</td><td>학년</td><td>select</td><td>예비중1~N수, "26년도 기준"</td></tr>
+    <tr><td>2</td><td>과목</td><td>체크</td><td>국·수·영·과·사</td></tr>
+    <tr><td>3</td><td>연락처</td><td>tel</td><td>이름 필드 없음</td></tr>
+    <tr><td>4</td><td>희망 상담시간</td><td>select</td><td>일부 슬롯에 "전문 학습 설계사" 라벨로 유도</td></tr>
+    <tr><td>5</td><td>약관</td><td>체크 3종</td><td>전체/필수(개인정보)/선택(마케팅)</td></tr>
+    <tr><td>6</td><td>제출</td><td>버튼</td><td>1영업일 내 전화 상담 안내</td></tr>
+  </table>
+
+  <h2>3. 디자인 언어</h2>
+  <ul>
+    <li>보라 단일 브랜드 컬러, 다크 네이비 ↔ 라이트 섹션 교차.</li>
+    <li>큰 국문 2줄 헤드라인, 강조어만 포인트 컬러.</li>
+    <li>해시태그 칩을 정보+장식으로 광범위 사용.</li>
+    <li>일러스트 대신 실물 사진·스캔 위주. 전 통계에 각주.</li>
+    <li>상단 배너 + 하단 고정 CTA로 화면 상·하단 상시 점유.</li>
+  </ul>
+
+  <h2>4. Concord 대비 격차</h2>
+  <table>
+    <tr><th>격차</th><th>설탭</th><th>Concord 현재</th></tr>
+    <tr><td>공개 상담 폼</td><td>비로그인 5초 폼</td><td>없음(가입 모달) — <strong>최대 격차</strong></td></tr>
+    <tr><td>하단 고정 CTA</td><td>전 페이지 + 환불 툴팁</td><td>모바일 전용</td></tr>
+    <tr><td>긴급성 배너</td><td>상시</td><td>없음</td></tr>
+    <tr><td>카운트업 통계</td><td>4종</td><td>정적 3종</td></tr>
+    <tr><td>해시태그 칩</td><td>전면 사용</td><td>없음</td></tr>
+    <tr><td>실물 인증</td><td>성적표·합격증 12건+</td><td>없음</td></tr>
+    <tr><td>학생 인터뷰 연출</td><td>2컷 매칭</td><td>없음</td></tr>
+    <tr><td>Q&amp;A 반박 섹션</td><td>3문답</td><td>없음</td></tr>
+    <tr><td>가격 표시</td><td>앵커 한 줄</td><td>요금표 전체 노출</td></tr>
+    <tr><td>시즌 캠페인</td><td>여름방학 히어로</td><td>상시 카피</td></tr>
+  </table>
+
+  <h2>5. 채택/제외 판정표</h2>
+  <table>
+    <tr><th>요소</th><th>판정</th><th>처리</th></tr>
+    <tr><td>상담 수렴형 CTA 구조</td><td class="ok">채택</td><td>모든 CTA → /consult 공개 폼</td></tr>
+    <tr><td>초저마찰 상담 폼</td><td class="ok">채택</td><td>동일 필드 구성</td></tr>
+    <tr><td>하단 고정 CTA + 환불 툴팁</td><td class="ok">채택</td><td>데스크톱+모바일</td></tr>
+    <tr><td>카운트업·각주 표기</td><td class="ok">채택</td><td>실데이터만 사용</td></tr>
+    <tr><td>해시태그 칩·성적 화살표</td><td class="ok">채택</td><td>선생님·후기 카드 공용</td></tr>
+    <tr><td>Q&amp;A 반박형 섹션</td><td class="ok">채택</td><td>Concord 3문답</td></tr>
+    <tr><td>가격 앵커링</td><td class="ok">채택</td><td>"월 38만원~" + 상세 /pricing</td></tr>
+    <tr><td>긴급성 배너</td><td class="warn">조정</td><td>이모지 제거·절제 문구·CMS 토글</td></tr>
+    <tr><td>미작동 "0만+" 카운터</td><td class="warn">조정</td><td>실수치, 작으면 문구 대체</td></tr>
+    <tr><td>학생 실명·실사진</td><td class="warn">조정</td><td>이니셜 + 촬영본 교체</td></tr>
+    <tr><td>바로 결제 배너 CTA</td><td class="warn">조정</td><td>상담 연결, 결제 준비 후 교체</td></tr>
+    <tr><td>검증불가 통계 차용</td><td class="no">제외</td><td>실데이터만, 형식만 차용</td></tr>
+    <tr><td>명예의전당</td><td class="no">제외</td><td>성적 인증 그리드로 대체</td></tr>
+    <tr><td>개념인강 번들</td><td class="no">제외</td><td>숙제·질문답변·리포트 섹션으로 대체</td></tr>
+    <tr><td>시즌 드롭다운 메뉴</td><td class="no">제외</td><td>콘텐츠 확보 후 재검토</td></tr>
+    <tr><td>손글씨 개인화 히어로</td><td class="no">제외</td><td>일반 헤드라인</td></tr>
+  </table>
+
+  <h2>6. 사진 촬영 필요 목록</h2>
+  <table>
+    <tr><th>ID</th><th>용도</th><th>스펙</th></tr>
+    <tr><td>PHOTO-1</td><td>홈 히어로 모델(태블릿/교재)</td><td>가로 1600px+, 단순 배경</td></tr>
+    <tr><td>PHOTO-2</td><td>성적표 인증 스캔 6~12장</td><td>개인정보 마스킹</td></tr>
+    <tr><td>PHOTO-3</td><td>/tutors 히어로 배경(수업 장면)</td><td>가로 1920px</td></tr>
+    <tr><td>PHOTO-4·5</td><td>학생·선생님 인터뷰 컷</td><td>상반신, 밝은 배경</td></tr>
+    <tr><td>PHOTO-6~</td><td>선생님 프로필 6~8명</td><td>정방형 800px+, 통일 배경</td></tr>
+    <tr><td>PHOTO-R</td><td>합격증/후기 인증 3~6장</td><td>마스킹</td></tr>
+  </table>
+  <div class="note">구현은 회색 placeholder + CMS image 키로 선배선. 촬영본은 어드민에서 업로드 교체만 하면 완성.</div>
+</div>
+</body>
+</html>
