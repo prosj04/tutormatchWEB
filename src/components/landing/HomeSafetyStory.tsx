@@ -6,39 +6,40 @@ export type SafetyStoryData = {
   intro: string;
   closer: string;
   pivot: string;
-  newsNote: string;
-  news: { quote: string; press: string; year: string; url: string }[];
+  matches: string[];
   steps: { title: string; desc: string }[];
 };
 
 const STEP_VH = 50;
+const SEEN_KEY = "concord_story_seen";
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
 }
 
 /**
- * 시퀀스: intro(스크롤 트리거) → [자동 재생: 뉴스 3개 누적 → 클로저] → 체크+전환(스크롤 재개)
- * 자동 재생 동안 스크롤 잠금, 전환 화면에서 해제.
+ * 시퀀스: intro(스크롤 트리거) → [자동: 매칭 4쌍 누적 → 클로저] → 전환(멈춤, 스크롤 재개)
+ * 재생 중 스크롤 잠금 + 스크롤/클릭/키 입력 시 다음 단계로 스킵. 세션당 1회만 재생.
  */
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
   const stepsPinRef = useRef<HTMLDivElement | null>(null);
   const startedRef = useRef(false);
-  const timersRef = useRef<number[]>([]);
-  const [newsShown, setNewsShown] = useState(0); // 0..news.length
-  const [phase, setPhase] = useState<"intro" | "news" | "closer" | "pivot1" | "pivot2">("intro");
+  const timerRef = useRef<number | null>(null);
+  const milestoneRef = useRef(0);
+  const runNextRef = useRef<() => void>(() => {});
+  const [matchShown, setMatchShown] = useState(0);
+  const [phase, setPhase] = useState<"intro" | "match" | "closer" | "pivot">("intro");
   const [stepsOn, setStepsOn] = useState(0);
-  const [reduced, setReduced] = useState(false);
+  const [staticMode, setStaticMode] = useState(false);
 
-  const pivotLines = data.pivot
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
+  const pivotText = data.pivot.replace(/\n/g, " ").trim();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReduced(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const seen = window.sessionStorage.getItem(SEEN_KEY) === "1";
+    if (reduced || seen) {
+      setStaticMode(true);
       return;
     }
 
@@ -48,26 +49,58 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     const unlock = () => {
       document.documentElement.style.overflow = "";
     };
-    const later = (fn: () => void, ms: number) => {
-      timersRef.current.push(window.setTimeout(fn, ms));
+
+    // 마일스톤: [지연ms, 실행fn] — 실행 후 다음 마일스톤을 예약. 스킵 시 즉시 다음 실행.
+    const milestones: [number, () => void][] = [
+      ...data.matches.map((_, i) => [i === 0 ? 350 : 1200, () => setMatchShown(i + 1)] as [number, () => void]),
+      [1600, () => setPhase("closer")],
+      [
+        1700,
+        () => {
+          setPhase("pivot");
+          unlock();
+          try {
+            window.sessionStorage.setItem(SEEN_KEY, "1");
+          } catch {
+            /* storage 불가 환경 무시 */
+          }
+        },
+      ],
+    ];
+
+    const scheduleNext = () => {
+      const idx = milestoneRef.current;
+      if (idx >= milestones.length) return;
+      timerRef.current = window.setTimeout(() => runNextRef.current(), milestones[idx][0]);
+    };
+    runNextRef.current = () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      const idx = milestoneRef.current;
+      if (idx >= milestones.length) return;
+      milestoneRef.current = idx + 1;
+      milestones[idx][1]();
+      scheduleNext();
     };
 
     const startSequence = () => {
       if (startedRef.current) return;
       startedRef.current = true;
       lock();
-      setPhase("news");
-      const gap = 1500;
-      data.news.forEach((_, i) => {
-        later(() => setNewsShown(i + 1), 300 + gap * i);
-      });
-      const afterNews = 300 + gap * (data.news.length - 1) + 1900;
-      later(() => setPhase("closer"), afterNews);
-      later(() => setPhase("pivot1"), afterNews + 2300);
-      later(() => {
-        setPhase("pivot2");
-        unlock();
-      }, afterNews + 2300 + 2300);
+      setPhase("match");
+      scheduleNext();
+    };
+
+    // 잠금 중 입력 → 다음 단계로 스킵
+    const skip = (e: Event) => {
+      if (!startedRef.current || milestoneRef.current >= milestones.length) return;
+      e.preventDefault();
+      runNextRef.current();
+    };
+    const keySkip = (e: KeyboardEvent) => {
+      if ([" ", "ArrowDown", "PageDown", "Enter"].includes(e.key)) skip(e);
     };
 
     let raf = 0;
@@ -95,40 +128,43 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    window.addEventListener("wheel", skip, { passive: false });
+    window.addEventListener("touchmove", skip, { passive: false });
+    window.addEventListener("pointerdown", skip);
+    window.addEventListener("keydown", keySkip);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener("wheel", skip);
+      window.removeEventListener("touchmove", skip);
+      window.removeEventListener("pointerdown", skip);
+      window.removeEventListener("keydown", keySkip);
       if (raf) cancelAnimationFrame(raf);
-      timersRef.current.forEach((t) => clearTimeout(t));
+      if (timerRef.current) clearTimeout(timerRef.current);
       unlock();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.news.length, data.steps.length]);
+  }, [data.matches.length, data.steps.length]);
 
-  const isDark = phase === "news" || phase === "closer";
+  const isDark = phase === "match" || phase === "closer";
 
   // 다크 구간: 네비게이션·배너까지 검게, 하단 상담 버튼은 잠시 숨김
   useEffect(() => {
-    document.body.classList.toggle("story-dark", isDark && !reduced);
+    document.body.classList.toggle("story-dark", isDark && !staticMode);
     return () => document.body.classList.remove("story-dark");
-  }, [isDark, reduced]);
+  }, [isDark, staticMode]);
 
-  if (reduced) {
+  if (staticMode) {
     return (
-      <section className="lp2-story lp2-story-static" aria-label="안전한 선생님 배정">
+      <section className="lp2-story lp2-story-static" aria-label="성향 맞춤 선생님 배정">
         <div className="lp2-story-sblock"><h2>{data.intro}</h2></div>
         <div className="lp2-story-sblock dark">
-          {data.news.map((n) => (
-            <a key={n.quote} href={n.url} target="_blank" rel="noopener noreferrer" className="lp2-story-newsline">
-              <span className="q">{n.quote}</span>
-              <span className="s">{n.year} · {n.press}</span>
-            </a>
+          {data.matches.map((m) => (
+            <p key={m} className="lp2-story-matchline">{m}</p>
           ))}
         </div>
         <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
-        <div className="lp2-story-sblock">
-          {pivotLines.map((l) => <h2 key={l}>{l}</h2>)}
-        </div>
+        <div className="lp2-story-sblock"><h2>{pivotText}</h2></div>
         <ol className="lp2-story-steps">
           {data.steps.map((s, i) => (
             <li key={s.title} className="lp2-story-step on">
@@ -145,7 +181,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   }
 
   return (
-    <section className="lp2-story" aria-label="안전한 선생님 배정">
+    <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
       <div ref={pinRef} className="lp2-story-pin" style={{ height: "240vh" }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
@@ -153,47 +189,26 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             <h2>{data.intro}</h2>
           </div>
 
-          {/* 뉴스 3개 — 자동으로 하나씩 아래로 붙음 */}
+          {/* 매칭 4쌍 — 자동으로 하나씩 아래로 붙음 */}
           <div
-            className={`lp2-story-item lp2-story-newsstack${phase === "news" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
+            className={`lp2-story-item lp2-story-newsstack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
           >
-            {data.news.map((n, i) => (
-              <a
-                key={n.quote}
-                className={`lp2-story-newsline${i < newsShown ? " on" : ""}`}
-                href={n.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                tabIndex={phase === "news" && i < newsShown ? 0 : -1}
-              >
-                <span className="q">{n.quote}</span>
-                <span className="s">{n.year} · {n.press}</span>
-              </a>
+            {data.matches.map((m, i) => (
+              <p key={m} className={`lp2-story-matchline${i < matchShown ? " on" : ""}`}>{m}</p>
             ))}
           </div>
 
           {/* 클로저 */}
           <div
-            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot1" || phase === "pivot2" ? " is-passed" : ""}`}
+            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot" ? " is-passed" : ""}`}
           >
             <h2>{data.closer}</h2>
           </div>
 
-          {/* 전환 1: 먼저 나왔다 사라짐 */}
-          <div
-            className={`lp2-story-item lp2-story-pivot${phase === "pivot1" ? " is-active" : phase === "pivot2" ? " is-passed" : ""}`}
-          >
-            <h2>{pivotLines[0]}</h2>
+          {/* 전환 — 나오고 멈춤, 여기서부터 스크롤 재개 */}
+          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
+            <h2>{pivotText}</h2>
           </div>
-
-          {/* 전환 2: 나오고 멈춤 — 여기서부터 스크롤 재개 */}
-          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot2" ? " is-active" : ""}`}>
-            <h2>{pivotLines[1] ?? pivotLines[0]}</h2>
-          </div>
-
-          <p className="lp2-story-caption" style={{ opacity: isDark ? 1 : 0 }}>
-            {data.newsNote}
-          </p>
         </div>
       </div>
 

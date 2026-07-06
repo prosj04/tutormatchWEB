@@ -263,11 +263,12 @@ export function LandingPageV2({
 
   const safetyStory: SafetyStoryData = useMemo(() => {
     const S = "safety_story";
-    const newsDefaults = [
-      ["“딸이 유혹했다” 적반하장 대학생 과외 교사… 1심 집행유예에 ‘공분’", "뉴시스", "2026", "https://www.newsis.com/view/NISX20260410_0003585764"],
-      ["‘정**’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
-      ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
-    ] as const;
+    const matchDefaults = [
+      "활발한 아이에게는 — 끌려가지 않게 잡아주는 선생님",
+      "여린 아이에게는 — 틀려도 기다려주는 선생님",
+      "게으른 아이에게는 — 옆에서 본보기가 되는 선생님",
+      "롤모델이 없는 아이에게는 — 존경할 만한 선생님",
+    ];
     const stepDefaults = [
       ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
       ["매니저 직접 매칭", "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다."],
@@ -277,15 +278,9 @@ export function LandingPageV2({
     ] as const;
     return {
       intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
-      closer: getCmsMultiline(S, "closer", "여전히 검증은 학생의 몫입니다"),
-      pivot: getCmsMultiline(S, "pivot", "부담 없이 수업에만 집중할 수 있도록,\n우리는 최고의 선생님만 배정합니다."),
-      newsNote: getCmsValue(S, "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다"),
-      news: newsDefaults.map(([quote, press, year, url], i) => ({
-        quote: getCmsValue(S, `news${i + 1}_quote`, quote),
-        press: getCmsValue(S, `news${i + 1}_press`, press),
-        year: getCmsValue(S, `news${i + 1}_year`, year),
-        url: getCmsValue(S, `news${i + 1}_url`, url),
-      })),
+      closer: getCmsMultiline(S, "closer", "아이가 다르면, 선생님도 달라야 합니다"),
+      pivot: getCmsMultiline(S, "pivot", "그래서 Concord는 모든 선생님을\n대표가 직접 만나 고릅니다."),
+      matches: matchDefaults.map((m, i) => getCmsValue(S, `match${i + 1}`, m)),
       steps: stepDefaults.map(([title, desc], i) => ({
         title: getCmsValue(S, `step${i + 1}_title`, title),
         desc: getCmsMultiline(S, `step${i + 1}_desc`, desc),

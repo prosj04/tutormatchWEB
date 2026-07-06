@@ -852,32 +852,21 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-closer h2 { font-weight: 900; }
 .is-dark .lp2-story-item h2 { color: #f4f1ea; }
 
-/* 뉴스 스택 — 자동 재생으로 하나씩 아래로 붙음 */
-.lp2-story-newsstack { display: flex; flex-direction: column; gap: clamp(22px, 3.2vh, 38px); }
-.lp2-story-newsline { display: block; text-decoration: none; color: inherit; }
-.lp2-story-newsstack .lp2-story-newsline {
-  opacity: 0;
-  transform: translateY(44px);
-  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.lp2-story-newsstack .lp2-story-newsline.on { opacity: 1; transform: none; }
-.lp2-story-newsline .q {
-  display: block;
-  font-size: clamp(18px, 2.4vw, 28px);
+/* 매칭 스택 — 자동 재생으로 하나씩 아래로 붙음 */
+.lp2-story-newsstack { display: flex; flex-direction: column; gap: clamp(20px, 3vh, 34px); }
+.lp2-story-matchline {
+  margin: 0;
+  font-size: clamp(19px, 2.5vw, 30px);
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.5;
   color: var(--fg);
+  opacity: 0;
+  transform: translateY(44px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.lp2-story-newsline .s {
-  display: block;
-  margin-top: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--mut);
-}
-.is-dark .lp2-story-newsline .q { color: #f4f1ea; }
-.is-dark .lp2-story-newsline .s { color: rgba(244, 241, 234, 0.5); }
+.lp2-story-matchline.on { opacity: 1; transform: none; }
+.is-dark .lp2-story-matchline { color: #f4f1ea; }
 
 /* 다크 구간: 네비게이션·배너까지 검게, 하단 상담 CTA 숨김 */
 body.story-dark header.site {
@@ -965,7 +954,9 @@ body.story-dark .sticky-cta {
 .lp2-story-static .lp2-story-sblock { padding: 90px 24px; text-align: center; }
 .lp2-story-static .lp2-story-sblock.dark { background: #0a0a0a; }
 .lp2-story-static .lp2-story-sblock.dark h2,
-.lp2-story-static .lp2-story-sblock.dark .q { color: #f4f1ea; }
+.lp2-story-static .lp2-story-sblock.dark .q,
+.lp2-story-static .lp2-story-sblock.dark .lp2-story-matchline { color: #f4f1ea; }
+.lp2-story-static .lp2-story-matchline { opacity: 1; transform: none; margin: 14px 0; }
 .lp2-story-static .lp2-story-sblock h2 { font-size: clamp(24px, 3.6vw, 38px); font-weight: 800; }
 .lp2-story-static .lp2-story-steps { margin: 40px auto 90px; padding: 0 24px; }
 
