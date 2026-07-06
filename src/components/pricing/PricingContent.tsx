@@ -6,6 +6,8 @@ import { useMemo } from "react";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
+import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
+import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
@@ -150,11 +152,25 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
                         ))}
                       </ul>
                     </div>
-                    <Link
+                    <ConsultationApplyButton
                       className={`btn btn-block${isRec ? " btn-acc" : " btn-ghost"}`}
-                      href={buildCheckoutHrefV2(plan.id)}
+                      source={`pricing_plan_${plan.id}`}
                     >
                       이 플랜으로 시작
+                    </ConsultationApplyButton>
+                    <Link
+                      className="punit"
+                      href={buildCheckoutHrefV2(plan.id)}
+                      style={{
+                        display: "block",
+                        textAlign: "center",
+                        marginTop: 8,
+                        fontSize: "0.8rem",
+                        color: "rgba(255,255,255,0.55)",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      바로 결제하기 →
                     </Link>
                   </ConcordReveal>
                 );
@@ -171,6 +187,8 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
           </ConcordReveal>
         </div>
       </section>
+
+      <ConcordSubpageCta source="pricing_page_cta" />
     </main>
   );
 }

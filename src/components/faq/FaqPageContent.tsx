@@ -1,5 +1,6 @@
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
+import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { FaqAccordionList, type FaqItem } from "@/components/faq/FaqAccordionList";
 import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -55,6 +56,8 @@ export function FaqPageContent({
           <FaqAccordionList faqs={faqs} />
         </div>
       </section>
+
+      <ConcordSubpageCta source="faq_page_cta" />
     </main>
   );
 }
