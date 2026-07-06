@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
 import { HomeSafetyStory, type SafetyStoryData } from "@/components/landing/HomeSafetyStory";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
@@ -260,6 +261,29 @@ export function LandingPageV2({
     () => buildVisiblePricingPlanItems(cms?.siteContent, tier),
     [cms?.siteContent, tier],
   );
+
+  const hallItems: HallItem[] = useMemo(() => {
+    const HALL_FALLBACK: [string, string][] = [
+      ["연세대학교 합격", "김*연 · 고3 수학"],
+      ["고려대학교 합격", "이*준 · 재수 국어"],
+      ["성균관대학교 합격", "박*서 · 고3 영어"],
+      ["한양대학교 합격", "정*원 · 고3 수학"],
+      ["이화여자대학교 합격", "최*아 · 고3 국어"],
+      ["서강대학교 합격", "강*민 · 재수 수학"],
+      ["중앙대학교 합격", "윤*재 · 고3 영어"],
+      ["경희대학교 합격", "임*지 · 고3 과학"],
+      ["건국대학교 합격", "한*수 · 고3 수학"],
+      ["동국대학교 합격", "서*현 · 고3 국어"],
+    ];
+    return Array.from({ length: 10 }, (_, i) => i + 1)
+      .filter((n) => parseCmsVisibility(getCmsValue("hall", `hall${n}_visible`, "1"), true))
+      .map((n) => ({
+        image: getCmsValue("hall", `hall${n}_image`, `/images/photos/interviews/int-${n}.jpg`),
+        title: getCmsValue("hall", `hall${n}_title`, HALL_FALLBACK[n - 1][0]),
+        sub: getCmsValue("hall", `hall${n}_sub`, HALL_FALLBACK[n - 1][1]),
+      }))
+      .filter((it) => it.title);
+  }, [getCmsValue]);
 
   const safetyStory: SafetyStoryData = useMemo(() => {
     const S = "safety_story";
@@ -584,6 +608,8 @@ export function LandingPageV2({
             </h2>
           </div>
         </div>
+
+        <HallOfFameCarousel items={hallItems} />
 
         {doubledResults.length > 0 && (
           <div className="lp2-result-marquee">

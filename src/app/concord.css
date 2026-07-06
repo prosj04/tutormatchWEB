@@ -375,3 +375,44 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   .mobile-drawer-inner{ padding:16px var(--page-x, 20px) 24px; }
   .faq-q h3{ font-size:clamp(16px, 4.2vw, 18px); }
 }
+
+/* ── 합격 인터뷰 카드 무한 캐러셀 ── */
+.hall-marquee { overflow: hidden; width: 100%; padding: 8px 0 4px; }
+.hall-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  animation: hall-scroll 48s linear infinite;
+}
+.hall-marquee:hover .hall-track { animation-play-state: paused; }
+@keyframes hall-scroll { to { transform: translateX(-50%); } }
+.hall-card {
+  position: relative;
+  flex: none;
+  width: clamp(230px, 24vw, 320px);
+  aspect-ratio: 3 / 4;
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--panel-2, #eee);
+}
+.hall-card figcaption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 44px 18px 16px;
+  background: linear-gradient(transparent, rgba(8, 12, 10, 0.78));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.hall-card figcaption strong {
+  font-size: clamp(17px, 1.7vw, 22px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.hall-card figcaption span { font-size: 12.5px; opacity: 0.85; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) {
+  .hall-track { animation: none; }
+  .hall-marquee { overflow-x: auto; }
+}

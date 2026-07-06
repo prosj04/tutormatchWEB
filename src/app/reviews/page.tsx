@@ -25,7 +25,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams?: Sea
   const timer = startPerfTimer("page.reviews.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const [siteContent, testimonials] = await Promise.all([
-    getGroupedSiteContentBySections(["reviews_page", "reviews_success", "reviews_proof", "spacing"]),
+    getGroupedSiteContentBySections(["reviews_page", "reviews_success", "reviews_proof", "hall", "spacing"]),
     getReviewsPageTestimonials(),
   ]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {

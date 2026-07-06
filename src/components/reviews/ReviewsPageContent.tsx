@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { CountUpStat } from "@/components/common/CountUpStat";
+import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { formatCmsMultiline, getCmsSectionValue, parseCmsVisibility } from "@/lib/cms-page-defaults";
@@ -93,6 +94,31 @@ export function ReviewsPageContent({
 
   const [activeCategory, setActiveCategory] = useState<string>("전체");
 
+  const hallItems: HallItem[] = useMemo(() => {
+    const HALL_FALLBACK: [string, string][] = [
+      ["연세대학교 합격", "김*연 · 고3 수학"],
+      ["고려대학교 합격", "이*준 · 재수 국어"],
+      ["성균관대학교 합격", "박*서 · 고3 영어"],
+      ["한양대학교 합격", "정*원 · 고3 수학"],
+      ["이화여자대학교 합격", "최*아 · 고3 국어"],
+      ["서강대학교 합격", "강*민 · 재수 수학"],
+      ["중앙대학교 합격", "윤*재 · 고3 영어"],
+      ["경희대학교 합격", "임*지 · 고3 과학"],
+      ["건국대학교 합격", "한*수 · 고3 수학"],
+      ["동국대학교 합격", "서*현 · 고3 국어"],
+    ];
+    const getHall = (key: string, fallback: string) =>
+      getCmsSectionValue(siteContent, "hall", key, fallback);
+    return Array.from({ length: 10 }, (_, i) => i + 1)
+      .filter((n) => parseCmsVisibility(getHall(`hall${n}_visible`, "1"), true))
+      .map((n) => ({
+        image: getHall(`hall${n}_image`, `/images/photos/interviews/int-${n}.jpg`),
+        title: getHall(`hall${n}_title`, HALL_FALLBACK[n - 1][0]),
+        sub: getHall(`hall${n}_sub`, HALL_FALLBACK[n - 1][1]),
+      }))
+      .filter((it) => it.title);
+  }, [siteContent]);
+
   const successCards: SuccessCard[] = useMemo(
     () =>
       SUCCESS_DEFAULTS.flatMap((d, idx) => {
@@ -178,6 +204,11 @@ export function ReviewsPageContent({
             </CmsEdit>
           </p>
         </div>
+      </section>
+
+      {/* ── 합격 인터뷰 카드 무한 캐러셀 ── */}
+      <section className="sec-sm">
+        <HallOfFameCarousel items={hallItems} />
       </section>
 
       {/* ── 성공사례 캐러셀 ── */}
