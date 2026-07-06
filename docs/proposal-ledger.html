@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord — 제안 원장 컴펜디움</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-press:#0CA372; --green-text:#07875A;
+    --blue:#2563EB;
+    --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  @page{ size:338.67mm 190.5mm; margin:0; }
+  .slide{ width:338.67mm; height:190.5mm; page-break-after:always; position:relative; overflow:hidden;
+    background:var(--bg); padding:13mm 18mm 12mm; display:flex; flex-direction:column; }
+  .slide:last-child{ page-break-after:auto; }
+
+  .sh{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4mm; }
+  .sh .no{ font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); }
+  .sh .wm{ font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--mut2); }
+  .sf{ position:absolute; bottom:7mm; left:18mm; right:18mm; display:flex; justify-content:space-between; font-size:9px; color:var(--mut2); }
+
+  h1.t{ font-size:26px; font-weight:800; letter-spacing:-.035em; line-height:1.12; margin-bottom:2mm; }
+  .lede{ font-size:12.5px; color:var(--mut); max-width:170ch; margin-bottom:3.5mm; }
+  .kw{ color:var(--green-text); }
+
+  .grid{ display:grid; gap:5mm; }
+  .c2{ grid-template-columns:1fr 1fr; } .c3{ grid-template-columns:1fr 1fr 1fr; } .c4{ grid-template-columns:repeat(4,1fr); }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:5mm 6mm;
+    box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06); }
+  .card h3{ font-size:14px; font-weight:800; letter-spacing:-.02em; margin-bottom:1.5mm; }
+  .card p, .card li{ font-size:11px; color:var(--mut); }
+  .eyebrow{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--green-text); margin-bottom:1.5mm; }
+
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+
+  .dark{ background:var(--fg); color:#fff; }
+  .dark .grid-bg{ position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:60px 60px; -webkit-mask-image:radial-gradient(1000px 660px at 82% -8%,#000,transparent 78%); }
+  .dark .glow{ position:absolute; inset:0; background:radial-gradient(900px 560px at 84% -14%, rgba(16,185,129,.28), transparent 62%); }
+  .dark .sf{ color:rgba(255,255,255,.4); }
+  .dark .eyebrow{ color:#5EE0AC; }
+
+  ul.t{ list-style:none; } ul.t li{ padding-left:4.5mm; position:relative; margin-bottom:1.4mm; font-size:11px; color:var(--mut); line-height:1.45; }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.5em; width:2mm; height:2mm; border-radius:50%; background:var(--green); }
+  ul.t b{ color:var(--fg); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ font-size:10px; font-weight:700; color:var(--mut2); text-align:left; padding:2.2mm 3mm; border-bottom:1.5px solid var(--line2); letter-spacing:.04em; }
+  td{ font-size:11px; padding:2.2mm 3mm; border-bottom:1px solid var(--line); color:var(--mut); font-variant-numeric:tabular-nums; vertical-align:top; }
+  td b{ color:var(--fg); } tr:last-child td{ border-bottom:0; }
+  tr.hl td{ background:rgba(16,185,129,.07); }
+
+  /* 원장(ledger) 밀집 테이블 */
+  table.led th{ font-size:9px; padding:1.8mm 2.5mm; }
+  table.led td{ font-size:9.6px; padding:1.6mm 2.5mm; line-height:1.4; }
+  table.led td.id{ font-weight:800; color:var(--green-text); white-space:nowrap; font-variant-numeric:normal; }
+  table.led td.nm{ color:var(--fg); font-weight:600; }
+  .two-col-tables{ display:grid; grid-template-columns:1fr 1fr; gap:4mm 8mm; align-items:start; }
+
+  .big{ font-size:34px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05; }
+  .big em{ font-style:normal; color:var(--green-text); }
+  .cap{ font-size:10px; color:var(--mut2); }
+
+  .divider{ justify-content:center; }
+  .divider .secno{ font-size:15px; font-weight:800; letter-spacing:.3em; color:#5EE0AC; }
+  .divider h2{ font-size:42px; font-weight:800; letter-spacing:-.04em; line-height:1.1; margin:4mm 0 4mm; }
+  .divider p{ font-size:13.5px; color:rgba(255,255,255,.66); max-width:120ch; }
+  .divider .meta{ display:flex; gap:10mm; margin-top:7mm; font-size:11px; color:rgba(255,255,255,.5); }
+  .divider .meta b{ color:#fff; display:block; font-size:13px; }
+
+  .tag{ display:inline-block; font-size:8.5px; font-weight:700; padding:.5mm 2mm; border-radius:999px; background:rgba(16,185,129,.1); color:var(--green-text); margin-left:1.5mm; vertical-align:middle; }
+  .tag.g{ background:rgba(37,99,235,.1); color:#2563EB; }
+
+  /* 원장 가독성: 행 얼룩(zebra)으로 스캔성 향상 — 높이 비용 없음 */
+  table.led tr:nth-child(2n) td{ background:rgba(34,38,30,.03); }
+  table.led tr.hl td{ background:rgba(16,185,129,.1); }
+  table.led td.def{ color:var(--fg); }
+  .gloss-cap{ font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--green-text); margin:0 0 1.5mm; }
+  .gloss-cap.b{ color:var(--blue); }
+
+  /* 인쇄(PDF) 시 블러 그림자가 사각형으로 래스터화되는 Chrome 한계 회피 — 화면은 유지 */
+  @media print{
+    .card{ box-shadow:none; border-color:var(--line2); }
+    .dark img[style*="box-shadow"]{ box-shadow:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 01 · 커버 -->
+<div class="slide dark" style="justify-content:space-between;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;"><img src="../branding/concord-appicon.png" style="width:19mm; height:19mm; border-radius:28.5%; box-shadow:0 12px 34px rgba(16,185,129,.35);"></div>
+  <div style="position:relative;">
+    <div class="wordmark" style="font-size:26px;">Concord<span class="dot"></span></div>
+    <h1 style="font-size:48px; font-weight:800; letter-spacing:-.04em; line-height:1.08; margin:6mm 0 5mm;">제안 원장 <span style="color:#5EE0AC;">컴펜디움</span><br>모든 제안·개선·홍보를 한 권으로</h1>
+    <p style="font-size:15px; color:rgba(255,255,255,.72); max-width:130ch;">사업·마케팅·수익모델·성장·리팩토링·제품/디자인 전 제안 원장을 ID 단위로 빠짐없이 집대성 — 요약본(경영자 제안)의 근거 전문(全文)</p>
+    <div style="display:flex; gap:12mm; font-size:11.5px; color:rgba(255,255,255,.55); margin-top:7mm;">
+      <div><b style="color:#fff; display:block;">2026. 07 · v1.0</b>전략 제안 전문</div>
+      <div><b style="color:#fff; display:block;">6개 원장 문서 통합</b>BR·BM·NX·AD·R·FI</div>
+      <div><b style="color:#fff; display:block;">tutormatch-web.vercel.app</b>라이브 서비스</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 · 목차 -->
+<div class="slide">
+  <div class="sh"><span class="no">Table of Contents · 원장 지도</span><span class="wm">Concord</span></div>
+  <h1 class="t">6개 원장 · 전 제안 <span class="kw">한눈에</span></h1>
+  <p class="lede">6개 소스 문서를 <b>5개 원장</b>으로 통합하고, 그 위에 신규 <b>확장·창의 제안(⑥)</b>을 얹었다. 각 제안은 <b>ID 단위</b>로 수록 — 범례: <b style="color:var(--green-text);">초록 ID</b>=제안번호, <span style="color:#DC2626;">●</span>=선행/중대, 태그=원본·담당. 용어·ID 접두어는 다음 2장(용어 해설) 참조.</p>
+  <div class="grid c2" style="gap:4mm 6mm; margin-top:1mm;">
+    <div class="card">
+      <span class="eyebrow">Ledger ① · 통합 리뷰</span>
+      <h3>사업 · 마케팅 · 리스크 · 성장</h3>
+      <p style="margin:1.5mm 0 2mm;">구 문서 3종 병합. 사업·법률·재무·운영 리스크와 마케팅 결함, 성장 제안을 전수 수록.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">BR-1~23 · MK-1~8 · 성장 §1~9 · 2차 순회 G2-1~17 <span class="tag">BUSINESS_REVIEW.md</span></p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Ledger ② · 비즈니스 설계 v3</span>
+      <h3>반드시 성공할 수밖에 없는 설계</h3>
+      <p style="margin:1.5mm 0 2mm;">실패모드·수익 제안 26건·해자·게이트·워게임·리스크 레지스터·90일+12개월 로드맵.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">F-1~10 · BM-A~Z · 해자 M-1~5 · RR-1~10 · 워게임 W-1~4 · Go/Fix/Kill <span class="tag">BM_EVOLUTION.md</span></p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Ledger ③ · 4차 고도화 v4.1</span>
+      <h3>"결제 이후" 플라이휠</h3>
+      <p style="margin:1.5mm 0 2mm;">활성화·NRR·바이럴공학·증거자동화·데이터해자·강사도구·현금공학·커뮤니티·공급다변화.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">NX-1~53 · 기존확장 EXP-1~8 · 실행분담 Part D~F <span class="tag">BM_EVOLUTION_V4.md</span></p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Ledger ④ · 마케팅 실행 v3</span>
+      <h3>채널 · 소재 · 광고 시나리오</h3>
+      <p style="margin:1.5mm 0 2mm;">4트랙 채널 매트릭스·예산·플레이북·페르소나·영상 콘티·광고 소재 완성본·신규 제안.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">4트랙 · §10~29 · 콘티 V-1~13 · 브레인 C-1~12 · 신규 AD-1~14 <span class="tag">MARKETING_PLAN.md</span></p>
+    </div>
+    <div class="card">
+      <span class="eyebrow">Ledger ⑤ · 코드 실측 개선</span>
+      <h3>리팩토링 · 제품 · 디자인</h3>
+      <p style="margin:1.5mm 0 2mm;">보안·정합성·히스토리 진단 리팩토링과 디자인 개선, 죽은 기능·플로우 엣지케이스를 파일:라인 근거로.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">R-1~16 · 디자인 §1~8 · 죽은기능 FI-1~10 · 엣지 EC-1~10 · 구조 IMP-1~6 <span class="tag">REFACTORING · PRODUCT_DESIGN</span></p>
+    </div>
+    <div class="card" style="border-color:var(--green); box-shadow:none;">
+      <span class="eyebrow">Ledger ⑥ · 확장·창의 <span class="tag">NEW</span></span>
+      <h3>확장 · 창의 제안</h3>
+      <p style="margin:1.5mm 0 2mm;">기존 5개 원장 위에 얹는 신규 발상 — 수익 라인·오프라인 해자·데이터/AI·커뮤니티·강사 사다리·운영 자동화·대담한 베팅.</p>
+      <p style="font-size:9.5px; color:var(--mut2);">X-1~28 · 7개 테마 · 우선순위 매트릭스 <span class="tag">본 컴펜디움 신규 집필</span></p>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>목차 · 원장 지도</span></div>
+</div>
+
+<!-- 03 · 용어 해설 ① -->
+<div class="slide">
+  <div class="sh"><span class="no">Glossary · 용어 해설 ①</span><span class="wm">Concord</span></div>
+  <h1 class="t">이 원장에서 <span class="kw">자주 나오는 용어</span> — 재무·성장 · 기술·보안</h1>
+  <p class="lede">원장 표에 약어로 압축된 지표·기술 용어를 풀어 설명한다. 표를 읽다 막히면 이 두 장(용어 해설 ①·②)으로 돌아오면 된다.</p>
+  <div class="two-col-tables">
+    <div>
+      <div class="gloss-cap">재무 · 성장 지표</div>
+      <table class="led">
+        <tr><th style="width:24%">용어</th><th>뜻</th></tr>
+        <tr><td class="id">CAC</td><td class="def">고객 획득 비용. 유료 고객 1명을 확보하는 데 든 마케팅비</td></tr>
+        <tr><td class="id">LTV</td><td class="def">고객 생애가치. 한 고객이 이탈까지 만드는 누적 매출·마진</td></tr>
+        <tr><td class="id">LTV/CAC</td><td class="def">투자 회수 배수. 통상 3배 이상이면 건전한 구조</td></tr>
+        <tr><td class="id">NRR</td><td class="def">순매출유지율. 기존 고객군의 N개월 후 매출 비율(100%↑=확장)</td></tr>
+        <tr><td class="id">ARPU</td><td class="def">사용자 1인당 평균 매출</td></tr>
+        <tr><td class="id">MAS</td><td class="def">월 활성 학생 수. 이 사업의 핵심 규모 지표</td></tr>
+        <tr><td class="id">BEP</td><td class="def">손익분기점. 고정비를 마진으로 회수하는 인원·매출 수준</td></tr>
+        <tr><td class="id">K-factor</td><td class="def">바이럴 계수. 기존 1명이 데려오는 신규 수(1↑=자가확산)</td></tr>
+        <tr><td class="id">CPL / CPV</td><td class="def">리드(상담신청)당 · 영상 조회당 광고 비용</td></tr>
+        <tr><td class="id">CRO</td><td class="def">전환율 최적화. 방문→상담→결제 단계 전환을 끌어올리는 작업</td></tr>
+        <tr><td class="id">QAS</td><td class="def">KPI 트리 최상위 지표 묶음(원장 ② 정의 참조)</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="gloss-cap">기술 · 보안</div>
+      <table class="led">
+        <tr><th style="width:24%">용어</th><th>뜻</th></tr>
+        <tr><td class="id">RLS</td><td class="def">DB 행 단위 접근제어. 사용자별로 조회 가능한 데이터 행을 제한</td></tr>
+        <tr><td class="id">HMAC</td><td class="def">서명 검증. 웹훅 요청이 위·변조되지 않았음을 확인하는 해시 서명</td></tr>
+        <tr><td class="id">웹훅</td><td class="def">결제사 등 외부가 이벤트 발생 시 우리 서버로 보내는 콜백 호출</td></tr>
+        <tr><td class="id">서버 검증</td><td class="def">결제 성공을 클라이언트 말이 아닌 서버가 PG에 직접 재확인</td></tr>
+        <tr><td class="id">크론(Cron)</td><td class="def">정해진 시각에 자동 실행되는 예약 작업</td></tr>
+        <tr><td class="id">PG / 토스</td><td class="def">결제대행사(Payment Gateway). 카드·간편결제 처리</td></tr>
+        <tr><td class="id">GA4</td><td class="def">구글 애널리틱스 4. 웹 사용자 행동·전환 분석 도구</td></tr>
+        <tr><td class="id">UTM</td><td class="def">유입경로 추적용 URL 태그. 캠페인별 성과를 구분</td></tr>
+        <tr><td class="id">CMS</td><td class="def">콘텐츠 관리 시스템. 사이트 문구·후기 등을 코드 없이 편집</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>용어 해설 ①</span></div>
+</div>
+
+<!-- 04 · 용어 해설 ② -->
+<div class="slide">
+  <div class="sh"><span class="no">Glossary · 용어 해설 ②</span><span class="wm">Concord</span></div>
+  <h1 class="t">마케팅·광고 · 프로세스 · <span class="kw">ID 접두어 읽는 법</span></h1>
+  <p class="lede">각 제안은 <b>접두어+번호</b>로 식별되고 서로 교차참조된다(예: <b>NX-9</b>가 <b>BM-D</b>를 참조). 아래 범례로 어느 원장의 제안인지 바로 알 수 있다.</p>
+  <div class="two-col-tables">
+    <div>
+      <div class="gloss-cap">마케팅 · 광고</div>
+      <table class="led">
+        <tr><th style="width:24%">용어</th><th>뜻</th></tr>
+        <tr><td class="id">SA</td><td class="def">검색광고. 네이버 파워링크 등 검색어에 대응해 노출되는 광고</td></tr>
+        <tr><td class="id">메타</td><td class="def">Meta(인스타그램·페이스북) 광고</td></tr>
+        <tr><td class="id">리타겟</td><td class="def">한 번 방문했던 사용자에게 다시 노출하는 재방문 유도 광고</td></tr>
+        <tr><td class="id">페르소나</td><td class="def">대표 고객을 구체화한 가상 인물(나이·지역·고민)</td></tr>
+        <tr><td class="id">UGC</td><td class="def">사용자 생성 콘텐츠. 실사용 후기·촬영 영상 등</td></tr>
+        <tr><td class="id">콘티</td><td class="def">영상 스토리보드. 장면·대사·초 단위 흐름 설계</td></tr>
+      </table>
+      <div class="gloss-cap" style="margin-top:3mm;">프로세스 · 게이트</div>
+      <table class="led">
+        <tr><th style="width:24%">용어</th><th>뜻</th></tr>
+        <tr><td class="id">Gate 0~3</td><td class="def">단계별 진행 관문. 조건을 충족해야 다음 단계로 확장</td></tr>
+        <tr><td class="id">Go/Fix/Kill</td><td class="def">게이트 판정: 계속 진행 / 보완 후 재검토 / 중단</td></tr>
+        <tr><td class="id">이중화</td><td class="def">한 실패모드에 차단장치를 2개 이상 겹쳐 배치</td></tr>
+        <tr><td class="id">before/after</td><td class="def">성적 전·후 비교. 효과를 보여주는 성과 증거</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="gloss-cap b">ID 접두어 범례 — 어느 원장의 제안인가</div>
+      <table class="led">
+        <tr><th style="width:22%">접두어</th><th>원장 · 의미</th></tr>
+        <tr><td class="id">BR</td><td class="def">① 사업·법률·재무·운영 리스크</td></tr>
+        <tr><td class="id">MK</td><td class="def">① 홈페이지·마케팅 결함</td></tr>
+        <tr><td class="id">§1~9 · G2</td><td class="def">① 성장 제안 · 2차 순회</td></tr>
+        <tr><td class="id">F</td><td class="def">② 실패모드(죽는 경로) 역설계</td></tr>
+        <tr><td class="id">BM</td><td class="def">② 수익 모델 제안(A~Z)</td></tr>
+        <tr><td class="id">M · RR · W</td><td class="def">② 해자 · 리스크 레지스터 · 워게임</td></tr>
+        <tr><td class="id">NX · EXP</td><td class="def">③ 4차 신규 제안 · 기존안 확장</td></tr>
+        <tr><td class="id">V · C · AD</td><td class="def">④ 영상 콘티 · 브레인스토밍 · 광고 제안</td></tr>
+        <tr><td class="id">R · FI · EC · IMP</td><td class="def">⑤ 리팩토링 · 죽은 기능 · 엣지케이스 · 구조 개선</td></tr>
+        <tr><td class="id">X</td><td class="def">⑥ 확장·창의 제안(본 컴펜디움 신규)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>용어 해설 ②</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ① BUSINESS_REVIEW ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ①</div>
+    <h2>사업 · 마케팅 · 리스크 · 성장<br><span style="color:#5EE0AC;">통합 리뷰 원장</span></h2>
+    <p>구 문서 3종을 병합한 통합 리뷰. 사업 리스크(BR)·마케팅 결함(MK)·성장 제안(§)·2차 순회(G2)를 ID 단위로 전수 수록. 원본: <b style="color:#fff;">BUSINESS_REVIEW.md</b></p>
+    <div class="meta">
+      <div><b>BR-1~23</b>사업·법률·재무·운영 리스크</div>
+      <div><b>MK-1~8</b>홈페이지·마케팅</div>
+      <div><b>§1~9</b>출시 성장 제안</div>
+      <div><b>G2-1~17</b>2차 순회 신규</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ①</span></div>
+</div>
+
+<!-- ①-1 · BR-1~6 사업 리스크 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 1-A</span><span class="wm">Concord</span></div>
+  <h1 class="t">사업 측면 리스크 <span class="kw">BR-1~6</span></h1>
+  <p class="lede">라이브 실사 + 코드 실측 기반. 이 유형 플랫폼의 3대 고전 리스크(탈중개·재결제·분쟁)가 모두 실재하며, 공통 원인은 "수업 실적이 시스템에 안 찍힌다"로 수렴.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">진단</th><th>실행</th></tr>
+    <tr><td class="id">BR-1</td><td class="nm">재결제 구조 부재 — periodEnd 고정·빌링키 없음, 만료알림·재결제버튼·만료처리 코드에 없음. 구독이 아니라 <b>매달 신규판매 반복</b>.</td><td>checkSubscriptionExpiry cron(D-5/D-1 알림+연장버튼) → 토스 빌링키 자동결제 → 만료 후 PAST_DUE 정책(열람허용·작성제한).</td></tr>
+    <tr><td class="id">BR-2</td><td class="nm">탈중개 방어선 부재 + 강사 정산(Payout) 코드 전무 — 락인이 매니저 인간관계뿐.</td><td>FI-1 리포트·FI-3 그래프 활성화=탈중개 방어, 계약서 직거래 금지조항, 수업 실적 원장(EC-7 COMPLETED) 확보.</td></tr>
+    <tr><td class="id">BR-3</td><td class="nm">Chief 매니저 단일 깔때기 — 월 결제상한=Chief 상담캘린더, 지역=이동반경, bus factor 1.</td><td>CHIEF_MANAGER_EMAIL 경고, 주간 상담 처리량 임계 알림, 가입설문에 지역필드 선수집→지역기반 라우팅.</td></tr>
+    <tr><td class="id">BR-4</td><td class="nm">선불 고액+환불규정·수업기록 부재=분쟁 패배. Lesson 영원히 SCHEDULED, 통신판매업신고번호 없음.</td><td>통신판매업 신고+환불규정 문서화(회차 일할), checkout 환불 3줄, EC-7 수업완료+출석 UI P1 승격.</td></tr>
+    <tr><td class="id">BR-5</td><td class="nm">하이터치 운영 vs 얇은 테이크레이트(약 9%) — 단위경제 측정 데이터 없음.</td><td>가격 인상보다 측정 먼저 — "매니저 시간당 관리 학생 수" 지표 추가 후 이용료 vs 관리강도 조정.</td></tr>
+    <tr><td class="id">BR-6</td><td class="nm">미성년 대면인데 신원검증이 서류·면접뿐 — 범죄·성범죄경력 조회 절차 부재(아청법 의무).</td><td>성범죄경력회신서 온보딩 단계, documentUrls 서류타입 구분+승인 체크리스트, 검증절차 사이트 명시(→MK-8).</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① BR-1~6</span></div>
+</div>
+
+<!-- ①-2 · MK-1~8 마케팅 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 1-B</span><span class="wm">Concord</span></div>
+  <h1 class="t">홈페이지 / 마케팅 <span class="kw">MK-1~8</span> <span class="tag">라이브 실사</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">진단</th><th>실행</th></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> MK-1</td><td class="nm">푸터 더미(대표 "홍길동", 123-45-67890) 실서비스 노출 — 사업자 조회 시 사기 의심. <b>SNS 부분해소, 사업자정보 미해소.</b></td><td>footer CMS에서 실 상호·대표자·사업자번호·주소·통신판매업신고번호 교체(코드 0). 확정 전이면 비노출이 더미보다 낫다.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> MK-2</td><td class="nm">강사진 기본아바타 7명+샘플 계정 — "명문대 검증" 주장과 충돌. <b>✅해소(커밋 0eefa8c).</b></td><td>샘플 approved=false 비노출, "대표 강사 큐레이션"으로 전환, 사진 없는 강사 목록 제외 필터.</td></tr>
+    <tr><td class="id">MK-3</td><td class="nm">대면 서비스인데 서비스 지역이 어디에도 없음 — 양방향 손실.</td><td>히어로 뱃지 "서울·분당 방문 수업"(CMS), FAQ 1번 승격, 상담폼 지역(구) 필드→BR-3 라우팅 데이터.</td></tr>
+    <tr><td class="id">MK-4</td><td class="nm">38~108만원 선불 직전에 환불 이야기 없음(푸터 링크뿐).</td><td>요금제 카드 하단+체크아웃 버튼 위 2줄 고정: "미진행 회차 환불 / 첫 강사 무료 재매칭"(CMS).</td></tr>
+    <tr><td class="id">MK-5</td><td class="nm">고가 상품에 진입 사다리 없음 — 무료 방문상담이 사실상 무료 진단인데 결제와 병렬 배치.</td><td>무료 상담 경로를 시각적 1순위로, 결제는 보조 경로로. 단 FI-6 퍼널 먼저 심고 2주 데이터로 판단.</td></tr>
+    <tr><td class="id">MK-6</td><td class="nm">수치 주장 교차검증 실패("1,200+ 매칭·98% 만족" vs 강사 7명·후기 0).</td><td>검증 불가 총량수치 제거→구체 사례(등급 5→2, 영어 64→87점) 스토리형으로 교체(stats CMS). FI-2 장기해법.</td></tr>
+    <tr><td class="id">MK-7</td><td class="nm">40대 학부모 타깃인데 카카오톡 채널 없음 — 초기 관심층 이탈.</td><td>카카오톡 채널 개설(무료)+전 페이지 플로팅 버튼(반나절), 응대는 매니저 업무 편입.</td></tr>
+    <tr><td class="id">MK-8</td><td class="nm">진짜 차별화(전담 매니저 밀착관리)가 히어로에 없음 — 첫 3초에 미전달.</td><td>히어로 서브카피를 차별화 서술로 교체+신뢰 뱃지 라인(신원검증·재매칭·환불 보장) 배치.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① MK-1~8</span></div>
+</div>
+
+<!-- ①-3 · BR-7~11 법률 블로커 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 2-A</span><span class="wm">Concord</span></div>
+  <h1 class="t">법률 — 개시 블로커 <span class="kw">BR-7~11</span></h1>
+  <p class="lede">결제를 받는 순간 문제가 되는 것. 법률 자문이 아닌 리스크 식별 — 개시 전 변호사·세무사 확인 1회 강력 권장.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">리스크</th><th>실행</th></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> BR-7</td><td class="nm">약관·개인정보처리방침·환불정책이 전부 "준비 중" 플레이스홀더 — 개인정보처리방침은 <b>현재 위반 상태</b>(이미 수집 중).</td><td>3종 문서 작성+CMS화(legal_terms/privacy/refund), 가입·체크아웃 동의 체크박스+termsAgreedAt/privacyAgreedAt 저장.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> BR-8</td><td class="nm">초등생 가입 대상인데 법정대리인 동의 없음(개보법 22조의2, 만14세 미만) — 과징금 대상.</td><td>Student.guardianName/Phone 추가, 초등~중1이면 보호자 필수+동의 SMS(Solapi), "학부모/학생 본인" 선택.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> BR-9</td><td class="nm">미성년 명의 결제 — 민법상 언제든 취소 가능(취소 시 전액 반환). 토스 심사도 확인.</td><td>체크아웃 결제자(보호자) 성명·관계 확인+동의 체크→payerName·payerConsentAt 기록(BR-8 프리필).</td></tr>
+    <tr><td class="id">BR-10</td><td class="nm">등록·신고 의무: 통신판매업·개인과외교습자(강사)·학원/교습소 해당·직업정보제공사업.</td><td>통신판매업 신고+푸터 표기, 강사 지원에 신고번호 입력(선택)·안내, 사업 형태 확정 후 전문가 확인.</td></tr>
+    <tr><td class="id">BR-11</td><td class="nm">광고 수치의 실증 책임(표시광고법) — 성적 후기도 증빙 없으면 과장광고.</td><td>개시 수치는 실데이터만(FI-6·FI-2), 성적 사례는 학부모 동의서+성적표 사본 내부 보관 절차.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① BR-7~11</span></div>
+</div>
+
+<!-- ①-4 · BR-12~16 개인정보·보안 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 2-B</span><span class="wm">Concord</span></div>
+  <h1 class="t">개인정보 · 보안 · 데이터 <span class="kw">BR-12~16</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">리스크</th><th>실행</th></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> BR-12</td><td class="nm">결제·거래 기록이 학생 삭제와 함께 Cascade 소멸 — 전상법 5년 보존의무 위반 구조.</td><td>onDelete: Restrict + 스냅샷(studentNameSnapshot), 또는 <b>soft delete</b>(개인정보 파기+거래 보존) 표준 패턴.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> BR-13</td><td class="nm">회원 탈퇴 기능 없음 — 개보법 파기요구권 + 애플 5.1.1(v) 계정삭제 필수 이중 블로커.</td><td>DELETE /api/mobile/me + POST /api/account/delete, BR-12 soft delete 호출, MY탭·설정 탈퇴 UI+30일 유예.</td></tr>
+    <tr><td class="id">BR-14</td><td class="nm">Supabase RLS·스토리지 정책 미설정 — 신분증·이력서·미성년 필적 사진 저장 버킷.</td><td>3개 버킷 정책 실사(anon 권한), setup-storage에 정책 SQL 실행코드화, 업로드 service role 경유, 쿠키파일 정리+gitignore.</td></tr>
+    <tr><td class="id">BR-15</td><td class="nm">개인정보 취급 감사 로그 부재 — 접속기록 1년 보관 의무, 내부자 유출 추적 불가.</td><td>AuditLog 모델(actor·action·target·meta·createdAt)+변경성 라우트에 기록 헬퍼 1줄. 조회화면 P3.</td></tr>
+    <tr><td class="id">BR-16</td><td class="nm">매칭 후 연락처 노출 범위 미정의 — 최소제공 원칙+직거래(BR-2) 방조 우려.</td><td>정책 먼저: 첫 수업 확정 전 연락처 비노출·매니저 경유→API select에서 phone 제거/조건부.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① BR-12~16</span></div>
+</div>
+
+<!-- ①-5 · BR-17~23 재무·운영 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 2-C/D</span><span class="wm">Concord</span></div>
+  <h1 class="t">재무·세무 · 운영 정책 공백 <span class="kw">BR-17~23</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">항목</th><th>실행</th></tr>
+    <tr><td class="id">BR-17</td><td class="nm">강사 지급 원천징수(3.3%)+반기 지급명세서 — 정산 부재의 세무 버전.</td><td>개시 첫 달부터 지급 대장(강사·월·수업수·지급액·원천세) 운영, 시스템화는 BR-2 Payout 통합.</td></tr>
+    <tr><td class="id">BR-18</td><td class="nm">부가세 혼합거래 — 과외 용역(면세 가능)과 중개 수수료(과세) 세무처리 상이, 지금 총액 단일결제.</td><td>PaymentCompletion에 tuitionAmount/feeAmount 분리 저장(로직 존재), 현금영수증 토스 API 연동.</td></tr>
+    <tr><td class="id">BR-19</td><td class="nm">선수금=부채 — 선불 매출을 운영비로 소진 시 환불 대량발생에 지급불능.</td><td>월말 미진행 회차 상당액 별도계좌 유지(EC-7 수업기록이 회차 계산 기초).</td></tr>
+    <tr><td class="id">BR-20</td><td class="nm">수업 취소·보강·이월 규정이 시스템·약관에 없음 — CS 최다 빈도 이슈.</td><td>취소 시한(24h)·보강·이월 상한 문서화, Lesson.rescheduledToId+보강 생성 플로우+회차 카운터(P2).</td></tr>
+    <tr><td class="id">BR-21</td><td class="nm">강사 중도 이탈 시 학생 인계 절차 부재.</td><td>위탁계약에 통보기한·인수인계 의무, TeacherStudent ENDED+매니저 재매칭 태스크, 잔여회차 승계 명시.</td></tr>
+    <tr><td class="id">BR-22</td><td class="nm">배상책임보험 미확인 — 가정 방문 대면 수업의 사고 접점.</td><td>개시 전 영업배상책임보험 가입(저렴)+"보험 가입 완료"를 신뢰 뱃지(MK-8)로 역이용.</td></tr>
+    <tr><td class="id">BR-23</td><td class="nm">매니저·강사 노무 분류 — 매니저는 지휘·감독 구조라 근로자성 인정 리스크.</td><td>매니저 근로계약 권장, 강사 위탁계약+업무 지시 최소화(도구 제공 무방, 강제 주의).</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① BR-17~23</span></div>
+</div>
+
+<!-- ①-6 · 개시 전 체크리스트 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 2-E</span><span class="wm">Concord</span></div>
+  <h1 class="t">개시 전 체크리스트 — <span class="kw">시점별 요약</span></h1>
+  <div class="grid c3" style="flex:1; align-content:start;">
+    <div class="card"><span class="eyebrow" style="color:#DC2626;">🔴 결제 전 (블로커)</span>
+      <ul class="t" style="margin-top:1mm;"><li>약관·개인정보·환불 게시+동의(BR-7)</li><li>만14세 보호자 동의(BR-8)</li><li>결제자=보호자 확인(BR-9)</li><li>통신판매업 신고+표기(BR-10)</li><li>토스 서버 승인 검증(P0 E1-E3)</li><li>결제기록 Cascade 제거(BR-12)</li><li>Supabase 버킷 정책+쿠키 정리(BR-14)</li></ul></div>
+    <div class="card"><span class="eyebrow" style="color:#D97706;">🟡 개시 후 30일</span>
+      <ul class="t" style="margin-top:1mm;"><li>회원 탈퇴(BR-13, 앱 제출 전엔 블로커)</li><li>감사 로그(BR-15)</li><li>연락처 노출 정책(BR-16)</li><li>취소·보강 정책 문서화(BR-20)</li><li>배상책임보험(BR-22)</li><li>강사 원천징수 대장(BR-17)</li><li>만료 리마인더(BR-1)</li></ul></div>
+    <div class="card"><span class="eyebrow">🟢 분기 내</span>
+      <ul class="t" style="margin-top:1mm;"><li>정산 시스템(BR-2·17)</li><li>부가세 분리 저장(BR-18)</li><li>빌링 자동결제(BR-1)</li><li>노무 계약 정비(BR-23)</li><li>성범죄경력 조회 절차(BR-6)</li></ul>
+      <p style="margin-top:2mm; font-size:9.5px;"><b>스키마 변경 일괄</b>: termsAgreedAt·guardian*·payer*·tuition/feeAmount·onDelete Restrict·AuditLog·탈퇴 API 2종을 마이그레이션 1건에 동승.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① 체크리스트</span></div>
+</div>
+
+<!-- ①-7 · 성장 §1~9 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 3</span><span class="wm">Concord</span></div>
+  <h1 class="t">출시 성장 제안 <span class="kw">§1~9</span></h1>
+  <p class="lede">디자인 1차 완료 이후 시점의 성장 제안 — 기존 BR/MK와 중복되지 않는 신규분만.</p>
+  <table class="led">
+    <tr><th style="width:7%;">§</th><th style="width:42%;">제안</th><th>실행 요지</th></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> §1</td><td class="nm">브랜드·도메인 불일치 — 결제 사이트가 *.vercel.app이면 안 됨.</td><td>커스텀 도메인(concord.kr 등)+Vercel 연결, 도메인 기반 이메일. 카카오·네이버·사업자등록 선행조건.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> §2</td><td class="nm">계측 제로 — GA4·픽셀·Analytics 전무. 광고 집행 시 돈 새는 곳 모름.</td><td>GA4+Vercel Analytics(반나절), 전환 이벤트 4개(상담신청·플로팅CTA·요금제카드·전화), 카카오/네이버 픽셀.</td></tr>
+    <tr><td class="id">§3</td><td class="nm">사진 전략 — AI 생성은 브릿지(재사용·면책·역풍 리스크), 본안은 반나절 실촬영.</td><td>초기 강사 2~3명+매니저 스튜디오 촬영 1회→홈·강사상세·블로그·카톡·광고 소재 전부 해결.</td></tr>
+    <tr><td class="id">§4</td><td class="nm">네이버 생태계 — 학부모 검색 시작점(플레이스·블로그·맘카페·파워링크).</td><td>사업자 등록 후 스마트플레이스 즉시, 주1회 블로그(상담사례), 맘카페는 파일럿 후기로, 파워링크 롱테일 소액.</td></tr>
+    <tr><td class="id">§5</td><td class="nm">후기 자산 루프 — Testimonial DB 0행, 하드코딩 ★5.</td><td>수업 4주차 학부모 후기 요청(초기 매니저 수동)→실명 일부+등급변화+개별 별점 적재. 파일럿 10명=8주 6~8개.</td></tr>
+    <tr><td class="id">§6</td><td class="nm">콜드스타트 순서 — "증거 없이 광고 먼저"가 최대 낭비.</td><td>주0~2 공급(강사 5~10)→주2~6 파일럿 5~10가정→주6~10 증거 전환→주10~ 유료 채널. 주장수치→실측 소수치.</td></tr>
+    <tr><td class="id">§7</td><td class="nm">상담 응답 SLA 운영화 — 고액 리드는 1시간 내 첫 터치가 전환 좌우, 알림 인앱뿐.</td><td>상담 신청→매니저 폰 즉시 알림(텔레그램/카카오워크 웹훅→SMS), 약속 문구를 실측 "평균 응답시간"으로.</td></tr>
+    <tr><td class="id">§8</td><td class="nm">포지셔닝 — 콴다·설탭(비대면)과 정면 비교 회피, "대면+매니저"는 다른 카테고리.</td><td>비교 테이블 "개인 vs 앱 vs Concord" 3자 구도, "화면 너머가 아니라 옆자리에서", 지역한정을 프리미엄 근거로.</td></tr>
+    <tr><td class="id">§9</td><td class="nm">기타 소품(각 1시간 이하).</td><td>OG 이미지 브랜드 확인(카톡 공유 첫인상), favicon·터치아이콘, 브랜드·도메인 표기 통일, 강사지원 링크 점검.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① §1~9</span></div>
+</div>
+
+<!-- ①-8 · G2-1~8 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 4</span><span class="wm">Concord</span></div>
+  <h1 class="t">2차 순회 — 전환 · 사업 구조 <span class="kw">G2-1~8</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>실행 요지</th></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> G2-1</td><td class="nm">상담 신청이 회원가입 강제(7개 입력) — 최대 전환 손실. 경쟁사는 3필드 즉시.</td><td>리드 폼(이름·전화·학년 3필드)과 계정 생성 분리, 임시계정 자동생성 후 첫 로그인 시 비번. 파일럿 전 최우선 실험.</td></tr>
+    <tr><td class="id">G2-2</td><td class="nm">신청 직후 기대 관리 부재 — 고액 리드가 식음.</td><td>완료 화면·문자에 "내일 10~19시 담당 매니저 OOO 전화" + 매니저 수동 문자 SOP.</td></tr>
+    <tr><td class="id">G2-3</td><td class="nm">학부모/학생 이중 타깃 메시지 혼재.</td><td>히어로·가격·보장은 학부모 화법 통일, 학생 화법은 후기·습관 섹션에 격리.</td></tr>
+    <tr><td class="id"><span style="color:#DC2626">●</span> G2-4</td><td class="nm">시급 30,000원 고정의 공급 리스크 — 서울 대면 SKY 시세 4~6만, "명문대 검증"과 충돌.</td><td>검증 등급별 차등 시급 조기 도입 / 프리미엄 티어 신설 / 비금전 보상 패키지 중 택일(파일럿 전).</td></tr>
+    <tr><td class="id">G2-5</td><td class="nm">계절성 캘린더 부재 — 지금(7월 초)이 여름방학 직전 연중 피크.</td><td>파일럿을 "여름방학 집중 관리" 프레임으로 즉시 태우기, 연간 캠페인 캘린더 1장.</td></tr>
+    <tr><td class="id">G2-6</td><td class="nm">리퍼럴(소개) 제도 부재 — 과외 1위 획득 채널이 학부모 간 소개.</td><td>"소개·피소개 양측 1회차 할인" 단순 설계로 시작, 파일럿 후기 요청과 묶어 운영.</td></tr>
+    <tr><td class="id">G2-7</td><td class="nm">형제자매·복수과목 정책 공백 — 객단가 상향 최저비용 경로.</td><td>2자녀/2과목 할인·매니저 일원화 정책을 요금 정책에 명시.</td></tr>
+    <tr><td class="id">G2-8</td><td class="nm">지역 확장 단위경제 미정의 — 제약은 매니저·강사 이동시간.</td><td>"매니저 1명당 동시 관리 학생 수"·"강사 이동 반경" 파일럿 실측→다음 지역 손익 기준선.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① G2-1~8</span></div>
+</div>
+
+<!-- ①-9 · G2-9~17 -->
+<div class="slide">
+  <div class="sh"><span class="no">① Business Review · Part 4</span><span class="wm">Concord</span></div>
+  <h1 class="t">2차 순회 — 마케팅·신뢰 · 운영 <span class="kw">G2-9~17</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>실행 요지</th></tr>
+    <tr><td class="id">G2-9</td><td class="nm">회사 소개(About) 페이지 부재 — 선불 결제 마지막 관문 "누가 운영하는가".</td><td>대표 스토리·미션·매니저 소개·연혁 1페이지, 인물 사진 작업과 묶기.</td></tr>
+    <tr><td class="id">G2-10</td><td class="nm">선별 체계 상세 페이지 — 3단계 검증 배지를 별도 페이지로.</td><td>서류→시연→인터뷰 단계별 탈락률 공개, 강사 지원 페이지와 연결(공급·수요 양쪽 신뢰).</td></tr>
+    <tr><td class="id">G2-11</td><td class="nm">학습 리포트 샘플 미공개 — 실차별화가 마케팅에 안 쓰임.</td><td>개인정보 블러 리포트 샘플 1~2장 랜딩·블로그 공개 — "관리" 추상어를 증거로.</td></tr>
+    <tr><td class="id">G2-12</td><td class="nm">지역 대기자 명단(수요 지도) 부재.</td><td>서비스 지역 외 "우리 동네 오픈 알림" 폼 — 확장 우선순위 데이터화, 이탈 트래픽 자산화.</td></tr>
+    <tr><td class="id">G2-13</td><td class="nm">카카오톡 공유 버튼 부재 — 확산 경로가 카톡 단톡방.</td><td>후기·강사 카드·리포트 샘플에 공유 CTA+OG 최적화(§9).</td></tr>
+    <tr><td class="id">G2-14</td><td class="nm">이탈 조기경보 미운영 — 숙제 미제출·질문 급감·리포트 미열람 시그널이 이미 축적.</td><td>매니저 대시보드 경보로 전환(run-alert-checks.ts 확장)→환불·이탈 선제 방어.</td></tr>
+    <tr><td class="id">G2-15</td><td class="nm">첫 수업 QA 체크리스트 부재 — "첫 수업 100% 환불" 원가 절감 장치.</td><td>강사용 첫 수업 체크리스트(레벨진단→목표합의→플랜제시)+수업 직후 매니저 해피콜 SOP.</td></tr>
+    <tr><td class="id">G2-16</td><td class="nm">분쟁·악성 후기 대응 플레이북 부재 — 환불 1건이 맘카페 글 1개.</td><td>응대 원칙(24h 내 1차 응답·환불 재량 한도·공개 댓글 톤) 사전 문서화.</td></tr>
+    <tr><td class="id">G2-17</td><td class="nm">정부 인증 로드맵 부재 — 창업지원사업 진행 중.</td><td>벤처기업확인·기업부설연구소·여성/청년기업 해당 여부를 가점·세제 캘린더로 관리.</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>① G2-9~17</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ② BM_EVOLUTION v3 ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ②</div>
+    <h2>반드시 성공할 수밖에 없는<br><span style="color:#5EE0AC;">비즈니스 설계 v3</span></h2>
+    <p>리뷰(①)가 문제를 식별했다면, 이 원장은 그것을 요금·정산·상품·조직의 <b style="color:#fff;">설계 결정</b>으로 변환한다. 실패 모드를 구조적으로 제거하고, 안전마진을 다중화하고, 단계 게이트로 자본 낭비를 차단. 원본: <b style="color:#fff;">BM_EVOLUTION.md</b></p>
+    <div class="meta">
+      <div><b>F-1~10</b>실패 모드 역설계</div>
+      <div><b>BM-A~Z</b>수익 구조 26건</div>
+      <div><b>M-1~5</b>해자 · Gate 0~4</div>
+      <div><b>RR-1~10 · W-1~4</b>리스크·워게임</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ②</span></div>
+</div>
+
+<!-- ②-1 · 설계철학 + 현재 BM 한계 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 0~1</span><span class="wm">Concord</span></div>
+  <h1 class="t">설계 철학 · 현재 BM의 구조적 한계 <span class="kw">H-1~6</span></h1>
+  <p class="lede">"성공이 보장된 사업"은 없다. 있는 것은 <b>실패 확률을 체계적으로 깎아낸 사업</b>. 이 원장은 그것을 7개 레이어로 구현한다 — 실패모드 제거·수익 다중화·안전마진 계량·검증 게이트·성장 엔진 수학·계기판·시간표.</p>
+  <div class="grid c3" style="margin-bottom:3mm;">
+    <div class="card" style="padding:3.5mm 4.5mm;"><h3 style="font-size:12px;">구조적 이점 ①</h3><p style="font-size:10px;"><b>선불 현금흐름 + 변동비</b> — 운전자본 음(-), 고정비 월 65~120만. <b>BEP 활성 5명</b>이라는 이례적으로 낮은 생존선.</p></div>
+    <div class="card" style="padding:3.5mm 4.5mm;"><h3 style="font-size:12px;">구조적 이점 ②</h3><p style="font-size:10px;"><b>제품이 이미 완성</b> — 경쟁자는 개발비·시간이 든다. 지원금·자본을 전액 시장 검증에 투입 가능.</p></div>
+    <div class="card" style="padding:3.5mm 4.5mm;"><h3 style="font-size:12px;">구조적 이점 ③</h3><p style="font-size:10px;"><b>빈 카테고리</b> — "검증된 대면 1:1 + 매니저 관리"는 설탭·콴다(비대면)·김과외·숨고(나열중개) 누구의 본진도 아니다.</p></div>
+  </div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:46%;">한계</th><th>해소 설계</th></tr>
+    <tr><td class="id">H-1</td><td class="nm">공급 천장 — 시급 3.0만 고정은 학군지 시세(4~6만)와 충돌, 상위 강사 유입·잔류 유인 부재 (G2-4🔴)</td><td>BM-A 등급·차등시급, BM-L 강사 락인</td></tr>
+    <tr><td class="id">H-2</td><td class="nm">단일 수익원 — 수업료 마진 외 수익 0, 학생 수에만 의존</td><td>BM-F/G/N/O/P/S 부가·B2B 수익</td></tr>
+    <tr><td class="id">H-3</td><td class="nm">락인 부재 — 매월 수동 재결제, 이탈 기본값이 "종료" (BR-1)</td><td>BM-B 약정, BM-K 하이브리드 보강</td></tr>
+    <tr><td class="id">H-4</td><td class="nm">진입 사다리 부재 — 최저 상품 월 38만 선불, 체험 없이 고액 강요 (MK-5, G2-1)</td><td>BM-H 보증, BM-J 진단·체험, BM-P AI티어</td></tr>
+    <tr><td class="id">H-5</td><td class="nm">확장 모델 미정의 — 매니저 1인 관리 한계·지역 복제법 미정 (BR-3, G2-8)</td><td>BM-M 셀 P&L, Gate 3</td></tr>
+    <tr><td class="id">H-6</td><td class="nm">가격 결정 메커니즘 부재 — 정가 인상 규칙 없음, 인플레·시급 인상분 흡수처 없음</td><td>BM-T 연1회 정가 조정</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② H-1~6</span></div>
+</div>
+
+<!-- ②-2 · F-1~5 실패모드 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 2</span><span class="wm">Concord</span></div>
+  <h1 class="t">실패 모드 역설계 <span class="kw">F-1~5</span></h1>
+  <p class="lede">스타트업이 죽는 경로를 전수 나열하고 각각의 차단 장치를 설계. <b>원칙: 모든 실패 모드에 차단 장치 2개 이상(이중화).</b></p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:33%;">죽는 경로</th><th>차단 장치 (이중화)</th></tr>
+    <tr><td class="id">F-1</td><td class="nm">수요 실패 — 무명 브랜드+*.vercel.app+후기0으로는 광고 태워도 리드 0</td><td>①채널 포트폴리오(지인·네이버·카톡·오프라인·시즌훅), 2주 연속 0채널 교체 ②진입 사다리(BM-J) ③대기자 수요지도(G2-12)</td></tr>
+    <tr><td class="id">F-2</td><td class="nm">전환 실패 — 상담은 오는데 결제 안함. 전환 30%→15%면 성장 반토막</td><td>①첫달 보증(BM-H) ②상담 SLA+표준 스크립트(G2-15) ③환불 규정 전면 공개(MK-4, BR-7)</td></tr>
+    <tr><td class="id">F-3</td><td class="nm">유지 실패 — 3개월 못 넘김. 이탈 5→8%면 3년 마진 5.1억→3.0억 (민감도 1위)</td><td>①가치 가시화(리포트·이행률 주간 노출) ②이탈 조기경보(G2-14, R-5) ③약정(BM-B)+재매칭 보장</td></tr>
+    <tr><td class="id">F-4</td><td class="nm">공급 실패 — 상위강사 미유입·직거래 유출·성수기 부족 (BR-2)</td><td>①등급·차등시급(BM-A)+락인(BM-L) ②직거래의 경제적 무력화 ③공급 선행 채용(학생 목표 1.3배, 방학 6주 전)</td></tr>
+    <tr><td class="id">F-5</td><td class="nm">매칭 품질 실패 — 첫 4주 실망→보증 환불+악성후기→F-1 역류</td><td>①첫 수업 QA 의무화(G2-15) ②적극적 재매칭(요청 전 선제) ③분쟁 플레이북(G2-16)</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② F-1~5</span></div>
+</div>
+
+<!-- ②-3 · F-6~10 실패모드 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 2</span><span class="wm">Concord</span></div>
+  <h1 class="t">실패 모드 역설계 <span class="kw">F-6~10</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:33%;">죽는 경로</th><th>차단 장치 (이중화)</th></tr>
+    <tr><td class="id">F-6</td><td class="nm">현금 실패 — 선수금이 역회전. 환불 러시 시 현금 없으면 즉사 (BR-19)</td><td>①환불 준비금 분리(초기 30%, 별도계좌) ②현금 대시보드(이행의무 대비 가용현금 100% 미만 시 지출 동결) ③낮은 BEP 유지</td></tr>
+    <tr><td class="id">F-7</td><td class="nm">법률·규제 실패 — 약관 플레이스홀더로 결제 수령, 법정대리인 동의 부재 (BR-7~11)</td><td>BR Part2 🔴블로커를 파일럿 하드게이트(Gate 0)로. <b>BM 변경은 반드시 약관·계약서 갱신과 한 커밋</b>. 규제를 해자로(G2-17)</td></tr>
+    <tr><td class="id">F-8</td><td class="nm">키맨 실패 — 1인 대표가 병목이자 단일 장애점 (BR-3). 심사역 1순위 공격점</td><td>①운영 문서화·시스템화(MANAGER_GUIDELINES) ②매니저 조기 채용(지원금 인건비 30% 용도) ③제품이 이미 시스템</td></tr>
+    <tr><td class="id">F-9</td><td class="nm">경쟁 실패 — 자본 있는 플레이어가 카테고리 카피</td><td>①지역 밀도 해자(M-1, 좁게 깊게) ②공급 락인(BM-L) ③속도 — 대형사는 자기 BM 부정해야(혁신가의 딜레마)</td></tr>
+    <tr><td class="id">F-10</td><td class="nm">확장 실패 — 크면서 품질 붕괴. 무리한 확장→관리 저하→이탈→F-3</td><td>①관리 한계 실측(가설 25~30명=셀 분리 기준) ②확장 게이트(Gate 3~4) ③표준화 우선 투자(QA·리포트·경보 자동화)</td></tr>
+  </table>
+  <div class="grid c2" style="margin-top:3mm;">
+    <div class="card" style="padding:3.5mm 5mm; background:rgba(16,185,129,.05);"><h3 style="font-size:12px;">이중화 원칙</h3><p style="font-size:10px;">단일 차단 장치는 언젠가 뚫린다. 모든 실패 모드에 성격이 다른 방어 2개 이상 — 하나가 실패해도 사업이 죽지 않게.</p></div>
+    <div class="card" style="padding:3.5mm 5mm; background:rgba(220,38,38,.04);"><h3 style="font-size:12px;">되돌릴 수 없는 유형</h3><p style="font-size:10px;">F-7(법률)만은 일정 압박으로 우회 금지. 나머지는 복구 가능하나 법률 사고는 첫 결제 1건으로 회사가 끝날 수 있다.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② F-6~10</span></div>
+</div>
+
+<!-- ②-4 · BM-A~E 코어 수업료 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 3-A</span><span class="wm">Concord</span></div>
+  <h1 class="t">수익 구조 — 코어 수업료 <span class="kw">BM-A~E</span></h1>
+  <p class="lede">기준선: 객단가 65.0만 · 학생 1인 월 기여마진 21.6만 · 평균 마진율 34.2%. 각 제안은 이 기준 대비 효과로 계량.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">제안</th><th>기대효과·경제</th></tr>
+    <tr><td class="id">BM-A🔴</td><td class="nm">강사 등급제+차등시급+프리미엄 티어 — Associate(3.0만)/Senior(4.0만·Signature)/Master(5.0만·Black), 인상분 전액 학생가 전가</td><td>Signature/Black 20% 믹스 시 객단가 65→72만, 기여마진 +11%. 파일럿은 단일등급, 강사 10명+ 시점 도입 (H-1, F-4)</td></tr>
+    <tr><td class="id">BM-B</td><td class="nm">빌링키 정기결제+약정 — 월갱신/3개월 −4%/6개월 −7%+인텐시브 우선권</td><td>이탈 기본값을 "계속"으로. 월 이탈 2~4%p 개선→LTV 수십% ↑. 할인은 마진율 흡수 가능 (H-3, F-3)</td></tr>
+    <tr><td class="id">BM-C</td><td class="nm">가족 번들 — 2번째 등록 −5%, 3번째 −8%. <b>할인은 추가분에만</b></td><td>CAC 0의 매출 배수. 10가정 중 2가정 번들=BEP(5명)의 40% 무료 충당 (G2-7)</td></tr>
+    <tr><td class="id">BM-D</td><td class="nm">리퍼럴 경제 — 추천·신규 각 10만 크레딧, 신규 <b>2번째 결제 완료 시</b> 지급</td><td>1건 20만=CAC 동일하나 소개 유입은 전환·유지 구조적 우위. 지역 밀도 해자(M-1) 핵심 엔진 (G2-6, F-1)</td></tr>
+    <tr><td class="id">BM-E</td><td class="nm">계절성 상품 — 방학 6~8주 인텐시브 SKU (주 시수 1.5~2배)</td><td>8주×주6h×5.4만≈260만/건, 마진 85~100만/건. <b>7월 초 지금이 적기</b> — 파일럿을 여름 인텐시브로 프레이밍 (G2-5)</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② BM-A~E</span></div>
+</div>
+
+<!-- ②-5 · BM-H~K 진입사다리·전환 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 3-B</span><span class="wm">Concord</span></div>
+  <h1 class="t">진입 사다리 · 전환 장치 <span class="kw">BM-H · I · J · K</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">제안</th><th>기대효과·경제</th></tr>
+    <tr><td class="id">BM-H</td><td class="nm">첫 달 만족 보증 — "4주 내 불만족 시 잔여 전액+진행분 50% 환불"을 결제 페이지 전면에</td><td>고액 선불 최대 심리장벽(공포) 제거. 전환 +5~10%p, 30→35%는 성장 +17%. 발동률 5%면 비용 객단가 ~3% (F-2, MK-4)</td></tr>
+    <tr><td class="id">BM-I</td><td class="nm">소그룹 2:1 상품 — 2인 각 솔로가 65~70%, <b>동반 신청 시에만 판매</b></td><td>강사비 시간 기준(그룹 할증 3.5만)→마진율 44%(전 플랜 최고). 상품 자체가 리퍼럴 내장. 잠식 방어=단독자 비노출</td></tr>
+    <tr><td class="id">BM-J</td><td class="nm">진입 사다리 — 무료상담→<b>유료 진단 9.9만</b>(전환 시 크레딧)→4주 체험 38만→정규 약정</td><td>리드 정의를 "38만 의향"→"9.9만 의향"으로 낮춰 깔때기 확대. 진단 구매자=최고 순도 리드, 비전환 시 마진 70%+ (H-4, F-1/2)</td></tr>
+    <tr><td class="id">BM-K</td><td class="nm">하이브리드 보강 세션 — 월 2회 30분 비대면(시험 전 질문·오답 리뷰), Signature+ 포함/기본 회당 2.5만</td><td>시험기간 "더 필요" 수요를 이탈 아닌 자사 매출로. 모바일 앱 킬러 유스케이스. 추가분 마진 ~40% (H-3)</td></tr>
+  </table>
+  <div class="grid c2" style="margin-top:3mm;">
+    <div class="card" style="padding:3.5mm 5mm;"><h3 style="font-size:12px;">사다리의 원리</h3><p style="font-size:10px;">각 계단이 다음 계단의 전환 장치. 진단비를 크레딧으로 소멸시키면 "공짜는 아닌데 손해도 아닌" 최적 커밋 포인트가 된다.</p></div>
+    <div class="card" style="padding:3.5mm 5mm;"><h3 style="font-size:12px;">결제 직전 3요소</h3><p style="font-size:10px;">①보증 배지(BM-H) ②환불 규정 요약표(MK-4) ③해당 지역·학년 실후기 1건 — 리스크·정보·증거의 최종 반론 처리.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② BM-H~K</span></div>
+</div>
+
+<!-- ②-6 · BM-F/N/O/P 부가수익 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 3-C</span><span class="wm">Concord</span></div>
+  <h1 class="t">부가 수익원 <span class="kw">BM-F · N · O · P</span></h1>
+  <p class="lede">단일 수익원(수업료 마진)이 흔들려도 버티는 수익 포트폴리오. 공통점: 한계비용이 낮아 마진율 70~90%대.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">제안</th><th>기대효과·시점</th></tr>
+    <tr><td class="id">BM-F</td><td class="nm">데이터 자산 유료화 — 입학 진단 패키지(비수강생 15~25만)+수강생 분기 심화 리포트·입시 전략 세션(10~20만)</td><td>학생 30명 시점 월 100~200만, 마진 70%+. 선행: 리포트 샘플 공개(G2-11)로 지불 가치 입증 (H-2)</td></tr>
+    <tr><td class="id">BM-N</td><td class="nm">교재·콘텐츠 커머스 — 제휴 링크(쿠팡·예스24)+자체 진단지·오답노트 PDF(5천~2만)</td><td>학생당 월 5천~1만 소액, 한계비용 0. 본질은 매출보다 "교재가 숙제 시스템에 구조화 유입". <b>강매 금지</b></td></tr>
+    <tr><td class="id">BM-O</td><td class="nm">제휴 수수료 네트워크 — 입시 컨설팅(10~15%)·유학·심리검사·(장기)교육비 금융을 검증 파트너에 소개</td><td>매니저는 이미 교육 전반 상담 창구. 신뢰 트래픽을 무수익으로 흘리지 않는 설계. 파트너 검증=강사 검증 수준 (H-2)</td></tr>
+    <tr><td class="id">BM-P</td><td class="nm">AI 셀프서브 저가 티어 — 대면 없이 AI 질답+숙제 관리+주간 리포트, 월 4.9~9.9만 구독</td><td>비지역·저예산 유입 수익화(지금 전부 버림). COGS API 수천 원=마진 90%대. <b>게이트</b>: 앱 완성+Gate2 이후, 파일럿 착수 금지 (H-2/4)</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② BM-F/N/O/P</span></div>
+</div>
+
+<!-- ②-7 · BM-L/M/Q/R/T 공급·조직·거버넌스 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 3-D/E</span><span class="wm">Concord</span></div>
+  <h1 class="t">공급 · 조직 · 가격 거버넌스 <span class="kw">BM-L · M · Q · R · T</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">제안</th><th>핵심·경제</th></tr>
+    <tr><td class="id">BM-L</td><td class="nm">강사 락인 경제(이직 비용 설계) — 재계약 보너스 5~10만/3개월·승급 경로 공개·안정 시수 보장·비금전 보상</td><td>인센티브를 "수업 소화"→"학생 유지"로 정렬. 이탈(F-3)·직거래(F-4) 동시 타격. 비용은 이탈 1건 방지 가치가 압도 (H-1)</td></tr>
+    <tr><td class="id">BM-M</td><td class="nm">매니저 셀 P&L — 확장 단위 "지역 셀"(매니저1+학생25~30+강사10~15), 셀 리더 기여마진 20~30% 성과급</td><td>고정 인건비 없는 확장(BEP 불변). 인센티브가 유지율·객단가와 정렬. 대표 병목(F-8) 해소. 선행: 셀1 표준 P&L 실측(Gate3)</td></tr>
+    <tr><td class="id">BM-Q</td><td class="nm">대기자 예치금·시즌 선점권 — 인기 강사·성수기 슬롯 예치금 5만(크레딧 전환)</td><td>수요 진지성 필터+수요 예측 데이터(공급 선행의 입력값)+"자리 없어 대기" 프리미엄 증거. 매출보다 수요 계측 장치</td></tr>
+    <tr><td class="id">BM-R</td><td class="nm">장학 슬롯 — 활성 20명당 1명 수업료 면제(강사비 회사 부담 42만/월)</td><td>"교육 철학 있는 회사" 브랜드 격차+정부 과제 사회적 가치 실증+장학생 성과 스토리. 슬롯을 활성비례 고정(마진 ~2% 상한)</td></tr>
+    <tr><td class="id">BM-T</td><td class="nm">연 1회 정가 조정 — 매년 2월 정가 시급 재산정(시세+인플레+마진 하한30%), 기존 수강생 6개월 유예</td><td>인상을 "사건"이 아닌 "연례 규칙"으로. 약정(BM-B)과 결합 시 "지금 약정하면 인상 전 고정" 갱신 촉진 (H-6)</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② BM-L/M/Q/R/T</span></div>
+</div>
+
+<!-- ②-8 · BM-G/S/U/V/W/X/Y/Z 신규·복원 8건 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 12</span><span class="wm">Concord</span></div>
+  <h1 class="t">신규·복원 제안 <span class="kw">BM-G · S · U~Z</span> <span class="tag">알파벳 26건 완성</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:40%;">제안</th><th>시점·조건</th></tr>
+    <tr><td class="id">BM-G</td><td class="nm">B2B 학원 SaaS — 관리 레이어(숙제·리포트·정산·알림, 매칭 제외)를 학생 좌석당 월 5천~1만 라이선스</td><td>자사 운영 실증이 영업 자료. <b>Gate 1 Kill 시나리오의 피벗 본체</b> — 최악에도 자산이 남는 이중 설계. Gate 4 이후</td></tr>
+    <tr><td class="id">BM-S</td><td class="nm">데이터 벤치마크 리포트(B2B2C) — 익명 학년·과목별 학습량·성취 벤치마크 분기 발행</td><td>1단계 무료 마케팅 콘텐츠(SEO), 2단계(n≥수백) 학원·출판사 유료화. <b>n&lt;100 발행 금지</b>(재식별 리스크)</td></tr>
+    <tr><td class="id">BM-U</td><td class="nm">초등 4~6 라인 — 주1·1.5h 저강도 30~45만</td><td><b>LTV 최장 코호트</b>(초5 획득 시 7~8년). 초등은 학원 대체재 강력·성과 가시화 난. 2027 Gate2 후 소규모 테스트</td></tr>
+    <tr><td class="id">BM-V</td><td class="nm">학부모 설명회·입시 세미나 — 분기 1회, 하이퍼로컬 주제("OO중 내신의 구조")</td><td>비용 30~50만/회, 리드 10~20건(참석=최고 순도 필터). 파일럿은 5~8가정 라운드테이블(~10만). 자료 3회 재활용</td></tr>
+    <tr><td class="id">BM-W</td><td class="nm">강사 아카데미·수습 제도 — 내부(온보딩·수료증·첫4주 수습)+외부 개방(대학생 유료 과정=채용 파이프라인)</td><td>F-5(품질 편차) 근본 처방+"Concord 수료" 공급측 브랜드. 시급 삭감 아닌 QA 밀착·보너스 유예. 내부 2027/외부 2028+</td></tr>
+    <tr><td class="id">BM-X</td><td class="nm">기업 복지 B2B 제휴 — 판교 IT 임직원 자녀 교육 복지(복지 포인트 연동/제휴가 5%)</td><td>계약 1건=수십 가정+급여소득 안정 결제. 판교-분당 같은 생활권. 후기 확보 후 2027 H2, 대기업 1곳부터</td></tr>
+    <tr><td class="id">BM-Y</td><td class="nm">아파트·입주민 커뮤니티 제휴 — 분당 대단지 카페·게시판·행사 단위</td><td>"OO아파트 5가정 이용 중" 소셜 프루프. <b>단지 침투=지역 밀도 해자(M-1) 최속 경로</b>+이동시간↓ 마진 개선. 단지별 계측</td></tr>
+    <tr><td class="id">BM-Z</td><td class="nm">컨시어지 최상위 티어 — 월 150~250만(복수과목 통합+주간 리포트 콜+분기 전략+Master 우선)</td><td>"교육 총괄 외주" 수요(S2 상위). 셀당 2~3가정 상한. 판매량보다 <b>앵커 효과+최상위 후기</b> 생산. BM-A(Black) 안착 후</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② BM-G/S/U~Z</span></div>
+</div>
+
+<!-- ②-9 · Part 4 민감도·스트레스 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 4</span><span class="wm">Concord</span></div>
+  <h1 class="t">민감도 · 스트레스 테스트</h1>
+  <p class="lede">핵심 가정이 빗나갈 때 무엇이 얼마나 흔들리는가. 기준: 객단가 65만·월 14h·시급 3.0만·기여마진 21.6만.</p>
+  <div class="two-col-tables">
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">민감도 순위 (치명도)</p>
+      <table class="led">
+        <tr><th style="width:12%;">순위</th><th style="width:33%;">변수</th><th>방어 장치</th></tr>
+        <tr><td class="id">1</td><td class="nm">이탈률 — LTV에 비선형(1/churn), 5→8%로 LTV −38%</td><td>BM-B/D/K/L, F-3 3종</td></tr>
+        <tr><td class="id">2</td><td class="nm">강사 시급 — 변동비 96%, +0.5만/h로 마진 −32%</td><td>BM-A 전가, BM-T</td></tr>
+        <tr><td class="id">3</td><td class="nm">객단가 — 가격 −10%=마진 −29%(3배 레버리지)</td><td>할인 남발 금지, BM-C</td></tr>
+        <tr><td class="id">4</td><td class="nm">전환율 — 성장 속도에 선형</td><td>BM-H/J, F-2</td></tr>
+        <tr><td class="id">5</td><td class="nm">CAC — LTV/CAC 여유 커 상대적 둔감</td><td>리퍼럴(BM-D)</td></tr>
+      </table>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">이탈률 민감도 (LTV·3년 마진)</p>
+      <table class="led">
+        <tr><th>월 이탈</th><th>유지</th><th>LTV/CAC</th><th>3년 마진</th></tr>
+        <tr><td class="id">3%(공격)</td><td>33개월</td><td>36:1</td><td>8.9억</td></tr>
+        <tr class="hl"><td class="id">5%(기본)</td><td>20개월</td><td>22:1</td><td>5.1억</td></tr>
+        <tr><td class="id">8%(보수)</td><td>12.5개월</td><td>13:1</td><td>3.0억</td></tr>
+        <tr><td class="id">12%(위험)</td><td>8.3개월</td><td>9:1</td><td>시나리오 이하</td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;"><b>함의</b>: 어느 가정에서도 LTV/CAC는 목표 5:1 상회 — 병목은 획득이 아니라 <b>유지율과 공급</b>. 이탈 1%p=3년 마진 수천만 원.</p>
+    </div>
+  </div>
+  <div class="card" style="padding:3.5mm 5mm; margin-top:3mm; background:rgba(16,185,129,.05);"><h3 style="font-size:12px;">복합 스트레스 (최악 동시: 시급 3.25만+객단가 −5%+이탈 8%) → <span style="color:var(--green-text);">판정: 생존</span></h3><p style="font-size:10px;">기여마진 14.9만·P1 BEP 7명·LTV/CAC 9:1. 성장은 느려지나 P1 고정비 구조에서 죽지 않는다. <b>최대 방어력=낮은 고정비 그 자체</b> — Phase1에서 고정비 늘리는 모든 결정(사무실·고정급)은 이 표를 다시 그린 후에만.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Part 4</span></div>
+</div>
+
+<!-- ②-10 · Part 5 해자 M-1~5 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 5</span><span class="wm">Concord</span></div>
+  <h1 class="t">해자 설계 — 시간이 만드는 방어벽 <span class="kw">M-1~5</span></h1>
+  <p class="lede">파일럿 첫날부터 의도적으로 쌓는 자산 5종. 공통점: <b>돈으로 단기간에 살 수 없고, 쌓이는 데 시간이 걸린다</b> — 그래서 후발이 못 따라온다.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:20%;">해자</th><th style="width:38%;">축적 메커니즘</th><th>첫날부터 할 일</th></tr>
+    <tr><td class="id">M-1</td><td class="nm">지역 밀도</td><td>같은 동네 학생↑→이동시간↓·리드타임↓·옆집 후기 신뢰↑ = 전환·마진 동시 개선 플라이휠</td><td>파일럿을 지리 집중(분당 1~2개 동), 15명을 흩뿌리지 말 것</td></tr>
+    <tr><td class="id">M-2</td><td class="nm">강사 성과 데이터</td><td>재계약률·성적변화·QA점수 축적→매칭 정확도가 데이터량의 함수. 강사는 뺏겨도 이력은 못 뺏김</td><td>첫 강사부터 전 지표 기록(시스템 이미 보유)</td></tr>
+    <tr><td class="id">M-3</td><td class="nm">학습 이력·전환비용</td><td>숙제·오답·AI 질답 컨텍스트 축적→"옮기면 처음부터" 비용 상승</td><td>리포트에 누적 뷰("함께한 6개월") 노출</td></tr>
+    <tr><td class="id">M-4</td><td class="nm">지역 신뢰 브랜드</td><td>실명 후기·장학(BM-R)·품격 있는 분쟁 처리가 맘카페 평판으로 복리 축적</td><td>후기 루프 첫 학생부터, 분쟁 1호를 최고 품질로</td></tr>
+    <tr><td class="id">M-5</td><td class="nm">공급 락인</td><td>BM-L 경제로 강사 잔류가 합리적 선택이 됨</td><td>첫 강사 계약부터 L-2에 승급 경로 명시</td></tr>
+  </table>
+  <div class="card" style="padding:3.5mm 5mm; margin-top:3mm; background:rgba(220,38,38,.04);"><h3 style="font-size:12px;">반(反)해자 경고</h3><p style="font-size:10px;">이 단계에서 해자가 <b>아닌</b> 것 — AI 매칭 알고리즘(데이터 없이는 규칙 나열)·앱 기능(카피 가능)·가격(출혈 경쟁 초대장). 심사·IR에서 해자를 물으면 M-1~5로 답하고, 기술은 "해자를 빨리 쌓게 하는 도구"로 위치시킬 것.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② M-1~5</span></div>
+</div>
+
+<!-- ②-11 · Part 6 게이트 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 6</span><span class="wm">Concord</span></div>
+  <h1 class="t">단계별 검증 게이트 <span class="kw">Go / Fix / Kill</span></h1>
+  <p class="lede">"성공할 수밖에 없는" 설계의 마지막 조각 — <b>가정이 틀렸음을 가장 싸게·빨리 아는 구조.</b> 각 게이트는 Go·Fix·Kill을 사전에 명문화(매몰비용이 판단을 오염시키기 전에).</p>
+  <table class="led">
+    <tr><th style="width:15%;">게이트</th><th style="width:42%;">Go 조건</th><th>Fix / Kill</th></tr>
+    <tr><td class="id">Gate 0<br>개시 전(지금)</td><td class="nm">BR 🔴블로커 전건 해소(약관·환불·법정대리인·미성년결제·신고)+R-1 웹훅서명·R-2 RLS+환불 준비금 계좌 분리+인텐시브 SKU·상담 SLA 가동</td><td><b>일정 압박으로 우회 금지</b> — F-7은 되돌릴 수 없음</td></tr>
+    <tr><td class="id">Gate 1<br>3개월(10월경)</td><td class="nm">전환율 ≥20% · 첫 재결제율 ≥70% · 실명 후기 3건+ · 강사 이탈 0</td><td><b>Fix</b>: 전환 10~20%→BM-J/H 강화. <b>Kill</b>: 전환&lt;10%+재결제&lt;50% 동시→피벗(고등 집중/인텐시브 중심/BM-G B2B 전환)</td></tr>
+    <tr><td class="id">Gate 2<br>15명·6개월</td><td class="nm">월 이탈 ≤8% · CAC ≤30만 · 주간 체크인 유지 · BEP 상회 지속 → 유료 채널+리퍼럴·빌링키 가동</td><td><b>Fix</b>: 이탈&gt;8%→성장 지출 동결, F-3 3종 전량 투자. "새는 양동이에 물 붓기 금지"</td></tr>
+    <tr><td class="id">Gate 3<br>50명</td><td class="nm">셀1 표준 P&L 실측(관리 한계 확정)·강사 재계약률 ≥80%·자립 → 매니저 채용·셀 분리(BM-M)+등급제(BM-A)</td><td><b>Fix</b>: 관리 한계가 가설보다 낮으면→셀 인원 하향(속도 하향이지 중단 아님)</td></tr>
+    <tr><td class="id">Gate 4<br>100명</td><td class="nm">2개 셀+ 표준 P&L 재현·신규 지역 대기자 확인(G2-12/BM-Q) → 지역 확장+Signature/Black+유료 진단</td><td>이후: B2B(BM-G)·AI(BM-P)·Pre-A는 이 게이트 뒤에만</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Gate 0~4</span></div>
+</div>
+
+<!-- ②-12 · Part 9 수요 엔진 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 9</span><span class="wm">Concord</span></div>
+  <h1 class="t">수요 엔진 — 세그먼트 · JTBD · 퍼널</h1>
+  <div class="two-col-tables">
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">고객 세그먼트 S1~S5</p>
+      <table class="led">
+        <tr><th style="width:12%;">#</th><th style="width:48%;">세그먼트·JTBD</th><th>우선순위</th></tr>
+        <tr><td class="id">S1</td><td class="nm">중등 내신 관리형 — "일일이 안 챙겨도 되게"(관리 니즈)</td><td>주력(파일럿)</td></tr>
+        <tr><td class="id">S2</td><td class="nm">고등 내신·수능 병행 — 강사 실력 1순위, 결정 빠름</td><td>주력(객단가 최고)</td></tr>
+        <tr><td class="id">S3</td><td class="nm">예비고1(중3, 11~2월) — 연중 최대 전환 창</td><td>계절 집중</td></tr>
+        <tr><td class="id">S4</td><td class="nm">초등 고학년 선행(BM-U) — LTV 최장</td><td>2027 검토</td></tr>
+        <tr><td class="id">S5</td><td class="nm">재수·N수 — 자택 대면과 부정합</td><td><b>명시적 비타깃</b></td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;">S5를 "안 한다"고 못 박는 것 자체가 설계 — 성공 파일럿의 조건은 <b>타깃의 좁힘</b>이지 넓힘이 아니다.</p>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">퍼널 수학 (월 결제 5명 역산)</p>
+      <table class="led">
+        <tr><th style="width:32%;">단계</th><th style="width:18%;">전환</th><th>최저비용 레버</th></tr>
+        <tr><td class="nm">노출</td><td>—</td><td>~10,000</td></tr>
+        <tr><td class="nm">→ 방문</td><td>5%</td><td>500 · 콘텐츠 훅</td></tr>
+        <tr class="hl"><td class="nm">→ 상담 신청</td><td>4.2%</td><td>21 · <b>G2-1 폼 마찰 제거</b></td></tr>
+        <tr><td class="nm">→ 상담 실시</td><td>−20%</td><td>17 · SLA+화상 스크리닝</td></tr>
+        <tr><td class="nm">→ 결제</td><td>30%</td><td>5 · BM-H/J·환불표</td></tr>
+        <tr><td class="nm">→ 2개월 재결제</td><td>85%</td><td>4.25 · 첫수업 QA</td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;"><b>JTBD 3층</b>: 광고=감정층(불안·죄책감 해소), 상담=기능층(성적·검증), 후기=사회층(옆집에 설명 가능). 층별 채널 배정.</p>
+    </div>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><p style="font-size:10px;"><b>채널 플레이북</b>(CAC 가설): 리퍼럴 20만(최상)·네이버 플레이스 ~0(M1)·맘카페 오가닉(어뷰징 금지)·카톡 채널·아파트 게시판·설명회 회당 30~50만·네이버 검색광고(후기 3건+ 이후)·인스타/블로그. <b>규칙</b>: 파일럿은 CAC ≤20만 채널만, 2주 연속 0이면 교체. <b>학사 캘린더</b>: 예산 60%를 11~3월(수능→신학기) 집중, 고3 졸업 이탈은 지표에서 분리.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Part 9</span></div>
+</div>
+
+<!-- ②-13 · Part 10~11 공급 엔진·가격 심화 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 10~11</span><span class="wm">Concord</span></div>
+  <h1 class="t">공급 엔진 · 가격 메뉴 심화</h1>
+  <div class="two-col-tables">
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">강사 관점 유닛 이코노믹스 — "시급"이 아니라 "월 수입의 분산"</p>
+      <table class="led">
+        <tr><th style="width:26%;">항목</th><th style="width:37%;">타 플랫폼(4~5만)</th><th>Concord(3.0만+BM-L)</th></tr>
+        <tr><td class="nm">리드 획득</td><td>이용권·경쟁(시간+돈)</td><td>0 — 배정됨</td></tr>
+        <tr><td class="nm">공백률</td><td>이탈 시 재모집 공백</td><td>재배정 — 연속성</td></tr>
+        <tr><td class="nm">수금·노쇼</td><td>본인 부담</td><td>0 — 선불 흡수</td></tr>
+        <tr><td class="nm">도구·성장</td><td>없음</td><td>숙제·리포트·승급</td></tr>
+        <tr class="hl"><td class="nm">월 실효(14h)</td><td>명목 63만±·변동 큼</td><td><b>42만 확정+보너스</b></td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;"><b>매니저 용량 수학</b>: 상담 48h+온보딩 12h+유지 60h=120h → 학생 30명+월 상담 12건이 포화점(Gate 3 셀 가설 재확인). 확장 레버: 지역 밀도·리포트 자동화·15분 화상 사전 스크리닝.</p>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">가격 규율 3원칙</p>
+      <ul class="t" style="font-size:10px;">
+        <li><b>직접 할인 금지</b> — 가격 −10%=마진 −29%. 할인은 반드시 반대급부(약정·번들 추가분·크레딧)로만</li>
+        <li><b>인상은 연례 규칙으로</b> — BM-T, "2월의 캘린더"로 만들면 반발 관리 가능</li>
+        <li><b>티어로 올리고 기본가는 지킨다</b> — 객단가 상향은 기본 인상이 아니라 믹스 개선(BM-A/I/Z)</li>
+      </ul>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin:3mm 0 1.5mm;">메뉴 아키텍처</p>
+      <p style="font-size:10px; color:var(--mut);">8개 플랜=가격표가 아니라 인지 부하. 학년 토글+<b>3패키지 프레임</b>(스타터/코어"가장 많이 선택"/인텐시브). 디코이·앵커: 76만을 106만 옆에, BM-Z(150~250만)는 상위 앵커로 112만을 "중간"으로 만든다.</p>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;"><b>코호트 페이백</b>: 회계 0.9개월, 현금 <b>즉시 음(-)</b> — 성장할수록 현금이 마르지 않는다. 단 전제는 환불 준비금 격리(F-6).</p>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Part 10~11</span></div>
+</div>
+
+<!-- ②-14 · Part 13 KPI·계기판 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 13</span><span class="wm">Concord</span></div>
+  <h1 class="t">KPI 트리 · 노스스타 · 주간 계기판</h1>
+  <div class="two-col-tables">
+    <div>
+      <div class="card" style="padding:4mm 5mm; background:rgba(16,185,129,.05); margin-bottom:3mm;"><span class="eyebrow">노스스타 지표</span><h3 style="font-size:15px;">QAS · Quality Active Students</h3><p style="font-size:10px; margin-top:1mm;">"이번 주 수업·숙제·리포트가 모두 정상 가동된 활성 학생 수." 매출은 후행 지표(선불) — QAS가 무너지면 4~8주 뒤 이탈로 나타난다. 결제만 하고 관리 붕괴된 학생을 성장으로 세면 F-10을 계기판이 은폐한다.</p></div>
+      <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4mm 5mm; font-family:monospace; font-size:9px; color:var(--mut); line-height:1.7;">QAS = 활성 학생 × 주간 정상가동률<br>&nbsp;├─ 활성 = 전월×(1−이탈[졸업제외]) + 신규<br>&nbsp;│&nbsp;&nbsp;&nbsp;├─ 이탈 ← 경보·재계약·약정(F-3,BM-B/L)<br>&nbsp;│&nbsp;&nbsp;&nbsp;└─ 신규 = Σ리드×실시율×전환율<br>&nbsp;└─ 정상가동 = 수업×숙제×리포트(자동 계측)</div>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">주간 계기판 12지표 (매주 월요일 1장)</p>
+      <table class="led">
+        <tr><th style="width:12%;">#</th><th style="width:52%;">지표</th><th>연결</th></tr>
+        <tr><td class="id">1~4</td><td class="nm">채널별 노출·방문·상담신청·실시율</td><td>Gate 1</td></tr>
+        <tr><td class="id">5</td><td class="nm">결제 전환율(주 누적)</td><td>Gate 1</td></tr>
+        <tr class="hl"><td class="id">6</td><td class="nm">QAS 및 정상가동률</td><td>Gate 2~4</td></tr>
+        <tr><td class="id">7</td><td class="nm">이탈 경보 발생·대응 건수</td><td>Gate 2</td></tr>
+        <tr><td class="id">8</td><td class="nm">재결제율(코호트별)</td><td>Gate 1~2</td></tr>
+        <tr><td class="id">9</td><td class="nm">강사 가동률·파이프라인(1.3배)</td><td>F-4</td></tr>
+        <tr><td class="id">10</td><td class="nm">매니저 시간 사용(분해 대비)</td><td>Gate 3</td></tr>
+        <tr><td class="id">11</td><td class="nm">가용 현금 ÷ 이행 의무</td><td>F-6 동결</td></tr>
+        <tr><td class="id">12</td><td class="nm">NPS·후기 신규 건수(월)</td><td>M-4</td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;">모든 게이트 판정은 이 수치로만. "느낌상 좋아지고 있다"는 게이트 근거가 될 수 없다.</p>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Part 13</span></div>
+</div>
+
+<!-- ②-15 · Part 14~15 워게임·리스크 레지스터 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 14~15</span><span class="wm">Concord</span></div>
+  <h1 class="t">경쟁 워게임 <span class="kw">W-1~4</span> · 리스크 레지스터 <span class="kw">RR-1~10</span></h1>
+  <div class="two-col-tables">
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">경쟁 워게임</p>
+      <table class="led">
+        <tr><th style="width:12%;">ID</th><th style="width:40%;">시나리오</th><th>우리가 이기는 이유</th></tr>
+        <tr><td class="id">W-1</td><td class="nm">설탭·콴다 "대면 프리미엄" 출시</td><td>지역 밀도전, 대면 진출은 자기 BM 부정(혁신가의 딜레마)</td></tr>
+        <tr><td class="id">W-2</td><td class="nm">김과외·숨고 "검증 배지" 도입</td><td>검증 강화는 자기 매출(리드 수) 축소와 상충, 사후관리 부재</td></tr>
+        <tr><td class="id">W-3</td><td class="nm">지역 보습학원 1:1 관리 출시</td><td>학원은 공간·시간표·소속강사에 묶임, 매칭 폭 열위</td></tr>
+        <tr><td class="id">W-4</td><td class="nm">자본력 신규 진입자 직접 카피</td><td>시간 해자·공급 락인 선점속도. SOM 400~500억은 대자본에 작음(→인수 옵션)</td></tr>
+      </table>
+      <p style="font-size:9.5px; color:var(--mut); margin-top:2mm;"><b>공통 규칙</b>: 어떤 시나리오에서도 대응에서 "가격 인하" 제외 — 3배 레버리지는 방어전에서 자해.</p>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">리스크 레지스터 (확률×영향)</p>
+      <table class="led">
+        <tr><th style="width:12%;">ID</th><th style="width:44%;">리스크 · 확률/영향</th><th>차단</th></tr>
+        <tr><td class="id">RR-1</td><td class="nm">안전사고·범죄 · 낮음/<b>치명</b></td><td>경력조회+보험+행동강령</td></tr>
+        <tr><td class="id">RR-2</td><td class="nm">환불 분쟁 바이럴 · 중/높음</td><td>BM-H 선제환불·준비금</td></tr>
+        <tr><td class="id">RR-3</td><td class="nm">대표 유고·번아웃 · 중/치명</td><td>F-8 3종</td></tr>
+        <tr><td class="id">RR-4</td><td class="nm">지원금 탈락 · 중/중</td><td><b>플랜B: BEP 5명 자력</b></td></tr>
+        <tr><td class="id">RR-5</td><td class="nm">이탈 가정 붕괴 · 중/높음</td><td>§4-3·Gate2 Fix</td></tr>
+        <tr><td class="id">RR-6</td><td class="nm">강사 수급 실패 · 중/높음</td><td>BM-A/L/W·1.3배</td></tr>
+        <tr><td class="id">RR-7</td><td class="nm">데이터 유출 · 낮음/높음</td><td>R-1/R-2·BR-14/15</td></tr>
+        <tr><td class="id">RR-8</td><td class="nm">규제·경기침체 · 낮음/중</td><td>프리미엄 경기방어적</td></tr>
+        <tr><td class="id">RR-9</td><td class="nm">저출산 · 확실/낮음(3년)</td><td>1인 지출↑이 더 빠름</td></tr>
+        <tr><td class="id">RR-10</td><td class="nm">직거래 우회 · <b>높음</b>/중</td><td>F-4 경제적 무력화</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② W-1~4 · RR-1~10</span></div>
+</div>
+
+<!-- ②-16 · Part 7·16 로드맵 -->
+<div class="slide">
+  <div class="sh"><span class="no">② BM Evolution · Part 7 · 16</span><span class="wm">Concord</span></div>
+  <h1 class="t">90일 실행 플랜 · 12개월 로드맵</h1>
+  <p class="lede">여름방학 시즌(BM-E)을 파일럿 개시 파도로. <b>로드맵의 주인은 캘린더가 아니라 게이트</b> — 날짜가 되어도 게이트 미통과면 진행하지 않는다.</p>
+  <div class="grid c4" style="align-content:start;">
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">2026 Q3 · 90일</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li><b>W1~2 Gate 0</b>: 법률 블로커·R-1/R-2·준비금·인텐시브 SKU·상담 SLA</li><li><b>W3~6 모집</b>: 지인 웨이브·분당 집중·네이버·강사 1.3배·GA4</li><li><b>W7~10 품질</b>: 첫수업 QA 100%·후기 수집·번들</li><li><b>W11~13 전환</b>: 정규 전환·리퍼럴 소프트·<b>Gate 1 리뷰</b></li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">2026 Q4 · 최대 창</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li>10월: <b>Gate 1 판정</b>+재무 가정 실측 갱신</li><li>11월: 수능 직후 <b>예비고1(S3)</b>+겨울 조기예약(BM-Q)</li><li>12월: 겨울 인텐시브·빌링키 착수·설명회 1호</li><li>고3 졸업 이탈 분리 집계</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">2027 Q1 · 체제 전환</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li>1~2월: 겨울→신학기 전환·<b>2월 첫 정가 리뷰(BM-T)</b>·매니저 1호 공고</li><li>3월: <b>Gate 2 판정</b>→리퍼럴 전면화·약정 출시·유료 검색광고</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">2027 Q2 · 확장 준비</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li>소그룹 2:1(BM-I)·아파트 제휴(BM-Y)·강사 수습(BM-W)</li><li>셀 표준 P&L 실측 개시(Gate 3 데이터)</li><li>시험 캠페인+여름 2기 조기예약</li><li>(조건부) 초등 라인 테스트 설계</li></ul></div>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:3mm; background:rgba(16,185,129,.05);"><p style="font-size:10px;"><b>이후</b>: Gate 3(50명) 도달 시 성장 단계로 승계. <b>하지 말 것</b>: ①파일럿의 등급제·B2B·AI티어 조기 착수(집중 파괴=1인 창업 최대 사인) ②할인으로 성장 사기 ③이탈 미해결 상태 유료 마케팅 증액 ④고정비 확대 ⑤BM 변경과 약관·계약서 분리 배포.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>② Part 7 · 16</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ③ BM_EVOLUTION v4.1 ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ③</div>
+    <h2>4차 고도화 v4.1<br><span style="color:#5EE0AC;">"결제 이후" 플라이휠</span></h2>
+    <p>v3가 결제까지의 퍼널·가격·공급을 설계했다면, v4는 <b style="color:#fff;">결제 다음 순간부터</b> 재결제·확장·추천·증거로 이어지는 후단 플라이휠을 계량 가능한 시스템으로 만든다. 원본: <b style="color:#fff;">BM_EVOLUTION_V4_2026-07.md</b></p>
+    <div class="meta">
+      <div><b>NX-1~53</b>신규 고도화 53건</div>
+      <div><b>EXP-1~8</b>기존 방안 확장</div>
+      <div><b>Part C</b>미해결 통합(실측)</div>
+      <div><b>Part D·E</b>실행 분담 🤖🤝👤</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ③</span></div>
+</div>
+
+<!-- ③-1 · Part A 재분석 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ BM Evolution v4 · Part A</span><span class="wm">Concord</span></div>
+  <h1 class="t">재분석 — 이 사업의 진짜 병목</h1>
+  <p class="lede">v3 민감도 분석이 이미 답을 냈다: <b>병목은 획득(CAC)이 아니라 유지율·공급, 그리고 "가치 전달의 증거화"다.</b> 어느 시나리오에서도 LTV/CAC ≥9:1, 현금 페이백 즉시 음(-) — 돈을 태워 성장하는 곡선이 아니다.</p>
+  <div class="card" style="padding:4mm 6mm; margin-bottom:4mm; background:rgba(16,185,129,.05);"><h3 style="font-size:15px;">설계 원칙: "결제 이후"를 공학화한다</h3><p style="font-size:11px; margin-top:1mm;">v4는 결제 다음 순간부터 재결제·확장·추천·증거로 이어지는 후단(後段) 플라이휠을 계량 가능한 시스템으로 만든다 — 이것이 F-3(유지)·F-5(품질)·F-1(수요 재생산)을 동시에 때리는 유일한 지렛대.</p></div>
+  <p style="font-size:11px; font-weight:800; color:var(--green-text); margin-bottom:2mm;">v3가 원칙은 세웠으나 "작동 시스템"으로는 미설계인 4대 공백 → NX-1~30이 채움</p>
+  <div class="grid c4">
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">공백 ①</span><h3 style="font-size:12.5px;">활성화</h3><p style="font-size:10px;">결제~첫 수업~습관 형성의 첫 30일 무설계 — 재결제율(85% 가정)의 실제 결정 구간.</p></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">공백 ②</span><h3 style="font-size:12.5px;">확장 매출</h3><p style="font-size:10px;">유지=이탈 방지로만 정의. NRR·업셀 자동화 부재로 프리미엄 코호트 매출 배수를 놓침.</p></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">공백 ③</span><h3 style="font-size:12.5px;">증거 자동화</h3><p style="font-size:10px;">후기·성적·선별률이 해자라면서 수집이 전부 수동. 첫 100명 자동 파이프라인 없으면 해자가 안 쌓임.</p></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">공백 ④</span><h3 style="font-size:12.5px;">1인 레버리지</h3><p style="font-size:10px;">F-8을 셀(BM-M)로만 풀려 함. 셀 이전 단계, 대표 1인이 30명 감당하는 도구화가 빔.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ Part A</span></div>
+</div>
+
+<!-- ③-2 · NX-1~8 활성화·유지 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · B-1/B-2</span><span class="wm">Concord</span></div>
+  <h1 class="t">활성화 · 유지 계량 <span class="kw">NX-1~8</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안 (인접→차별)</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-1</td><td class="nm">첫 72시간 활성화 시퀀스 — 환영 카톡+준비물 체크+첫수업 리마인드로 buyer's remorse 구간 흡수</td><td>조기환불↓·재결제 기저↑ · 파일럿</td></tr>
+    <tr><td class="id">NX-2</td><td class="nm">학부모 전용 주간 요약 채널 — 주1회 카톡 "수업·이행률·목표" 3줄 (FI-1 월간→<b>주간·학부모·초경량</b>)</td><td>재결제·NRR↑·이탈신호 · 파일럿</td></tr>
+    <tr><td class="id">NX-3</td><td class="nm">"첫 성취 이벤트" 의도적 설계 — 첫 4주 win 하나를 온보딩 목표에서 역설계 (G2-15 QA→<b>성취 생산</b>)</td><td>재결제+후기 원천(→NX-12) · 파일럿</td></tr>
+    <tr><td class="id">NX-4</td><td class="nm">확장 매출 트리거(업셀 자동화) — 시험 4주·방학 6주 전 "시수+1/과목추가/인텐시브" 태스크 자동</td><td>코호트 NRR 100%+ · Gate 2</td></tr>
+    <tr><td class="id">NX-5</td><td class="nm">윈백 시퀀스 — 이탈 가정 30/90일·방학 직전 3-터치 재접촉(복귀 크레딧)</td><td>실효 이탈↓=LTV 비선형 · Gate 2</td></tr>
+    <tr><td class="id">NX-6</td><td class="nm">이탈 예측 스코어카드+개입 플레이북 — 규칙 기반(ML 아님) 리스크 스코어, 임계 초과 시 태스크</td><td>이탈 5→4% 여지 · Gate 2</td></tr>
+    <tr><td class="id">NX-7</td><td class="nm">재결제 게이트 마이크로 리뷰 — "목표 대비 진척" 1페이지로 재결제를 가치 재확인 의식으로</td><td>재결제율+업셀 접점 · Gate 2</td></tr>
+    <tr><td class="id">NX-8</td><td class="nm">NRR·코호트 리텐션 KPI — QAS 옆에 월별 리텐션 커브+순매출유지율 추가</td><td>성장 질 조기 진단 · Gate 2</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-1~8</span></div>
+</div>
+
+<!-- ③-3 · NX-9~17 바이럴·증거·데이터 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · B-3/B-4/B-5</span><span class="wm">Concord</span></div>
+  <h1 class="t">바이럴 공학 · 증거·데이터 해자 <span class="kw">NX-9~17</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-9</td><td class="nm">공유 가능한 성취 카드 — 리포트·첫성취를 자랑하기 좋은 브랜드 카드 자동 생성 (BM-D 크레딧→<b>공유자산 제품화</b>)</td><td>K-factor↑+후기 축적 · Gate 2</td></tr>
+    <tr><td class="id">NX-10</td><td class="nm">단지·학교 단위 그룹 오퍼 — "우리 아파트 N가정" 소셜프루프 시스템 집계, 임계 도달 시 혜택</td><td>지역 밀도 플라이휠 가속 · Gate 2</td></tr>
+    <tr><td class="id">NX-11</td><td class="nm">강사↔학생 교차 추천 루프 — 강사 추천+학생 리퍼럴을 하나의 추천 그래프로, 출처별 유지율 계측</td><td>실효 CAC 최저 채널 확대 · Gate 2</td></tr>
+    <tr><td class="id">NX-12</td><td class="nm">후기 자산 파이프라인 자동화 — 첫성취/재결제 트리거→동의→CMS 게시 워크플로우 (§5·FI-2)</td><td>검색광고 개시 조건 충족 · 파일럿</td></tr>
+    <tr><td class="id">NX-13</td><td class="nm">성적 향상 증거의 구조적 수집 — 기준/결과 성적 입력→before/after 자동 집계(익명)</td><td>광고 컴플라이언스+콘텐츠 · 파일럿</td></tr>
+    <tr><td class="id">NX-14</td><td class="nm">선별 투명성 라이브 카운터 — "지원 N명 중 M명 합격 X%"를 선별 페이지에 실데이터 자동 노출</td><td>학부모 신뢰+강사 자부심 · Gate 2</td></tr>
+    <tr><td class="id">NX-15</td><td class="nm">매칭 품질 피드백 루프 계량 — matchReason×만족·재결제·성적 상관 분석으로 규칙 개선</td><td>매칭 정확도↑=F-5↓ · Gate 3</td></tr>
+    <tr><td class="id">NX-16</td><td class="nm">학습 이력 누적 뷰 제품화 — "함께한 N개월·완료 단원·정복 오답·누적 시간" 상시 노출 (M-3 원칙→화면)</td><td>이탈↓+재결제 정당화 · Gate 2</td></tr>
+    <tr><td class="id">NX-17</td><td class="nm">지역·학교별 벤치마크 내부 도구 — 상담 화면에 하이퍼로컬 데이터(BM-S 내부 선행, n&lt;100 대외금지)</td><td>상담 전환율↑ · Gate 3</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-9~17</span></div>
+</div>
+
+<!-- ③-4 · NX-18~23 강사·가격 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · B-6/B-7</span><span class="wm">Concord</span></div>
+  <h1 class="t">강사 생산성 · 가격·현금 공학 <span class="kw">NX-18~23</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-18</td><td class="nm">강사 수업 준비 자동화(AI 보조) — 이력·오답·목표 기반 수업안·숙제 초안 제안, 강사 편집 (BM-P와 달리 <b>강사 내부 도구</b>)</td><td>강사 유지+품질 균질화 · Gate 3</td></tr>
+    <tr><td class="id">NX-19</td><td class="nm">강사 성과 대시보드 — 재계약률·QA·성적 추세+승급 경로 진척 바(BM-A 등급 가시화)</td><td>강사 동기·재계약률↑ · Gate 3</td></tr>
+    <tr><td class="id">NX-20</td><td class="nm">수업 노트→리포트 자동 생성 — 구조화 노트를 월간 리포트(FI-1) 입력으로 자동 집계</td><td>리포트율↑·매니저 용량↑ · Gate 2</td></tr>
+    <tr><td class="id">NX-21</td><td class="nm">교육비 분납·금융 제휴 — 고액 선불에 3~6개월 무이자 분납(제휴사 리스크 인수, 회사는 선불 수령)</td><td>전환율↑·BM-Z 접근성 · Gate 3</td></tr>
+    <tr><td class="id">NX-22</td><td class="nm">선불 크레딧 지갑+이월·보강 규정 시스템화 — 크레딧 잔액 모델로 BR-20 해소 (BM-Q 예약→<b>기납입 시수 관리</b>)</td><td>분쟁↓·현금 가시성↑ · 파일럿 후반</td></tr>
+    <tr><td class="id">NX-23</td><td class="nm">동적 조기예약 인센티브 — 성수기/인기 강사 슬롯 수급을 조기예약 할인·대기예치로 동적 조정</td><td>강사 가동률 평탄화 · Gate 3</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-18~23</span></div>
+</div>
+
+<!-- ③-5 · NX-24~30 계측·브랜드·조직 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · B-8/B-9/B-10</span><span class="wm">Concord</span></div>
+  <h1 class="t">계측·실험 · 브랜드 · 조직 복원력 <span class="kw">NX-24~30</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-24</td><td class="nm">실험(A/B) 프레임워크 — 랜딩 카피·가격 프레임·오퍼를 통제 A/B로(피처 플래그+이벤트)</td><td>퍼널 1%p 개선 근거 · Gate 2</td></tr>
+    <tr><td class="id">NX-25</td><td class="nm">퍼널·게이트 지표 자동 대시보드 — FI-6+/api/admin/funnel을 Gate 0~4 지표로 자동 조립</td><td>Go/Fix/Kill 데이터화 · 파일럿</td></tr>
+    <tr><td class="id">NX-26</td><td class="nm">상담 품질 스코어링 — consultationReport×결제 여부 상관으로 스크립트·매니저별 전환율 계량</td><td>전환율 반복 개선 루프 · Gate 2</td></tr>
+    <tr><td class="id">NX-27</td><td class="nm">하이퍼로컬 콘텐츠 SEO 엔진 — 학사 캘린더·학교 시험 정박 콘텐츠 반복 생산(1제작 3소비)</td><td>오가닉 CAC~0 채널 · Gate 2</td></tr>
+    <tr><td class="id">NX-28</td><td class="nm">"관리형 과외" 카테고리 정의 캠페인 — 학원·직거래와 다른 제3 카테고리로 규정(F-9 방어=카테고리 소유)</td><td>브랜드 해자+검색 우위 · Gate 2</td></tr>
+    <tr><td class="id">NX-29</td><td class="nm">대표 병목 자동화(1인 레버리지) — 반복 의사결정을 규칙+대시보드+태스크 큐로 (BM-M 조직→<b>1인 용량 확장</b>)</td><td>셀 포화 30→35명+ · 파일럿</td></tr>
+    <tr><td class="id">NX-30</td><td class="nm">직거래 이탈 탐지+경쟁 방어 플레이북 — 이행률 급락·연락 회피 신호 스코어링, 락인 선제 대응</td><td>F-4 조기 차단·GMV 누수↓ · Gate 3</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-24~30</span></div>
+</div>
+
+<!-- ③-6 · EXP-1~8 기존 확장 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ EXP · Part B+1</span><span class="wm">Concord</span></div>
+  <h1 class="t">기존 방안 확장 <span class="kw">EXP-1~8</span></h1>
+  <p class="lede">기존 코드(BM·NX·MK·9장)의 뼈대를 유지하되 적용 범위·형태를 넓혀 지렛대를 키우는 확장안.</p>
+  <table class="led">
+    <tr><th style="width:8%;">ID</th><th style="width:42%;">확장 (원안→확장)</th><th>효과·시점</th></tr>
+    <tr><td class="id">EXP-1</td><td class="nm">시험 3주 부트캠프 (BM-E 확장) — 방학 인텐시브를 학기 중 시험 사이클(연4회)로, D-21 자동 오퍼</td><td>매출 피크 2→6회·ARPU↑ · Gate 2</td></tr>
+    <tr><td class="id">EXP-2</td><td class="nm">계층형 앰배서더 (BM-D/NX-9) — 리퍼럴 상위 학부모를 단지·학교당 1인 공식 앰배서더(현금 아닌 크레딧)</td><td>밀도 플라이휠에 휴먼 노드 · Gate 2</td></tr>
+    <tr><td class="id">EXP-3</td><td class="nm">설명회 온라인 병행 (MK) — 오프라인 설명회를 웨비나 동시 송출+녹화 재활용(챕터→유튜브·블로그)</td><td>CAC 희석+상시 전환 콘텐츠 · 파일럿 후반</td></tr>
+    <tr><td class="id">EXP-4</td><td class="nm">학부모 읽기전용 웹뷰 (NX-2) — 주간 요약 링크를 <b>로그인 없는 서명 토큰 웹뷰</b>(마찰 0)</td><td>주간 터치 체류 전환 · 파일럿</td></tr>
+    <tr><td class="id">EXP-5</td><td class="nm">사다리 0단: 무료 자가진단 (9-3 퍼널) — 상담 신청 앞에 5분 익명 진단→결과지→상담 연결</td><td>리드 볼륨+상담 질↑ · Gate 2 (→NX-37)</td></tr>
+    <tr><td class="id">EXP-6</td><td class="nm">AI 콘텐츠 공장 (BM-V/NX-27) — 콘텐츠 생산 자체를 AI 파이프라인화, 대표는 검수·발행만</td><td>주간 N편 상시 발행 · Gate 2</td></tr>
+    <tr><td class="id">EXP-7</td><td class="nm">보증의 제품화 (BM-H) — "첫 4주" 보증을 문구가 아닌 제품 규정+UI(카운터·환불 플로우 내장)</td><td>결제 마지막 1미터 전환 · 파일럿 후반</td></tr>
+    <tr><td class="id">EXP-8</td><td class="nm">통합 리스크 스코어 (NX-6+NX-30) — 이탈 예측+직거래 탐지를 하나의 엔진(스코어1+원인 태그)</td><td>구현 반값·개입 정확도↑ · Gate 2</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ EXP-1~8</span></div>
+</div>
+
+<!-- ③-7 · NX-31~38 5차 신규 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · Part B+2</span><span class="wm">Concord</span></div>
+  <h1 class="t">5차 신규 — 커뮤니티·공급·전환 <span class="kw">NX-31~38</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-31</td><td class="nm">학부모 라운지 멤버십 — 입시·학습 정보 커뮤니티(월 세미나+브리핑+질문 채널), 이탈 후 라이트 잔류</td><td>이탈해도 안 끊기는 리드 풀 · Gate 2</td></tr>
+    <tr><td class="id">NX-32</td><td class="nm">성과연동 보증 2.0 — 합의 목표 미달 시 크레딧 자동 지급(NX-13 실측 인프라 위, 후발 모방 난)</td><td>전환율 점프+책임 포지셔닝 · Gate 3</td></tr>
+    <tr><td class="id">NX-33</td><td class="nm">시니어 공급 트랙 — 은퇴·경력 교사·전업 강사 병설(별도 선별·시급·"베테랑 지명")</td><td>공급 계절성 완화+프리미엄 · Gate 3</td></tr>
+    <tr><td class="id">NX-34</td><td class="nm">알럼나이 커리어 브랜드 — "콩코드 출신 강사" 수료증·추천서·네트워크(경력 증명=락인)</td><td>채용 무기+락인 완성 · Gate 2</td></tr>
+    <tr><td class="id">NX-35</td><td class="nm">학교별 시험 경향 아카이브 — 시험 후기·출제 경향을 학교·학년·과목 단위 구조화(동네 해상도 해자)</td><td>수업·상담·콘텐츠 무기 · 파일럿(수집)</td></tr>
+    <tr><td class="id">NX-36</td><td class="nm">즉시응대 AI 컨시어지 — 신청~매니저 첫 연락 공백을 AI가 커버(범위 제한, P1-I 교훈)</td><td>리드 냉각 방지 · Gate 2</td></tr>
+    <tr><td class="id">NX-37</td><td class="nm">무료 자가진단 위젯 (EXP-5 제품) — 5분 진단→공유 가능 결과 카드→상담 (리드젠+바이럴 한 제품)</td><td>0단 퍼널+K-factor · Gate 2</td></tr>
+    <tr><td class="id">NX-38</td><td class="nm">갈아타기 키트 — 타 학원·과외 이탈 가정 전용 온보딩(이력 인수인계·공백 없는 전환·적응 케어)</td><td>최고 온도 세그먼트 전환 · Gate 2</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-31~38</span></div>
+</div>
+
+<!-- ③-8 · NX-39~45 세그먼트·확장 아키텍처 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · Part B+2</span><span class="wm">Concord</span></div>
+  <h1 class="t">세그먼트·채널 신설 · 애셋라이트 확장 <span class="kw">NX-39~45</span></h1>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:42%;">제안</th><th>효과·시점</th></tr>
+    <tr><td class="id">NX-39</td><td class="nm">국제학교·특목 세그먼트(S6) — IB·AP·특목 대비 별도 세그먼트(전용 강사 태그·영어 상담·고단가)</td><td>ARPU 최상위·대안 극소 · Gate 3</td></tr>
+    <tr><td class="id">NX-40</td><td class="nm">공교육·바우처 채널(B2G) — 교육청 방과후·바우처·지자체 공급 파트너 등록(신뢰 인증+저비용 리드)</td><td>신뢰 배지+보조 리드(서류 절차) · Gate 3</td></tr>
+    <tr><td class="id">NX-41</td><td class="nm">강사 복지 패키지 — 교재 실비·자격 스터디 지원·분기 리워드(직거래가 못 주는 소속 가치)</td><td>강사 유지·직거래 억제 · Gate 2</td></tr>
+    <tr><td class="id">NX-42</td><td class="nm">수업 리캡 카드 — 매 수업 종료 시 노트에서 "오늘 3줄+다음 할 것" 자동 카드(데일리 터치, 한계비용 0)</td><td>가치 체감 빈도↑ · 파일럿</td></tr>
+    <tr><td class="id">NX-43</td><td class="nm">애셋라이트 거점 네트워크 — 스터디카페·독서실 제휴로 상담·수업·설명회 공간 필요 시간만(고정 임대 0)</td><td>대면 전환+지역 앵커 0고정비 · Gate 2</td></tr>
+    <tr><td class="id">NX-44</td><td class="nm">과외조직 롤업 인수·제휴 — 동네 공부방·1인 교습소를 인수/제휴 전환(학생·강사·평판 통째 흡수)</td><td>비유기적 밀도+경쟁 사전 흡수 · Gate 3+</td></tr>
+    <tr><td class="id">NX-45</td><td class="nm">라이선스 셀 (플레이북 수출) — 검증된 운영 플레이북+브랜드를 타 지역 파트너에 라이선스(QA 원격 검증 후)</td><td>자본 효율 최상 확장+Pre-A · Gate 4</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-39~45</span></div>
+</div>
+
+<!-- ③-9 · NX-46~53 보완 브레인스토밍 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ NX · Part B+4</span><span class="wm">Concord</span></div>
+  <h1 class="t">보완 브레인스토밍 <span class="kw">NX-46~53</span> <span class="tag">교차 발굴</span></h1>
+  <p class="lede">본체 완료 후 독립 세션으로 여백만 재탐색 — 기존 전 코드 비중복 확인. 각 항목에 트리아지 노트 병기.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:44%;">제안 (새로움)</th><th>트리아지·시점</th></tr>
+    <tr><td class="id">NX-46</td><td class="nm">학생 계약서 — 학생이 목표·주간 약속 서명, 대시보드 상시 노출(지불자≠사용자 문제를 <b>사용자 쪽</b>에서)</td><td>NX-3과 한 화면·S2-3 흡수 · 파일럿</td></tr>
+    <tr><td class="id">NX-47</td><td class="nm">가족 후원자 그래프 — 조부모·친척이 마일스톤 크레딧 선물(사교육 실질 지불원 조부모를 지불 그래프 최초 편입)</td><td>NX-22 지갑 선행 · Gate 2</td></tr>
+    <tr><td class="id">NX-48</td><td class="nm">죽은 시간대 미시경제 — 평일 오전·빈 저녁을 저단가 "자습 감독+실시간 질답"으로(수업 밖 시간 재고 판매)</td><td>정규 잠식 방지 설계·QA 후 · Gate 3</td></tr>
+    <tr><td class="id">NX-49</td><td class="nm">이탈 인터뷰 아카이브 — 환불·이탈 시 15분 구조화 인터뷰(+복귀 크레딧), 사유 태깅(이탈 최초 정량화)</td><td>EXP-8 사후 검증 데이터 · Gate 2</td></tr>
+    <tr><td class="id">NX-50</td><td class="nm">만료 사이클 마케팅 — 학원 월말·타 과외 만료 시점 추정, D-7~D-3 정밀 타깃(결심 시점을 능동적으로)</td><td>NX-49서 결제주기 수집 선행 · Gate 2</td></tr>
+    <tr><td class="id">NX-51</td><td class="nm">강사 페어멘토링 자생 커뮤니티 — 고등급이 신입 멘토링, 멘티 QA 상승분 일부를 멘토 보너스(수평 관계)</td><td>등급제 선행·Gate 3 패키지 · Gate 3</td></tr>
+    <tr><td class="id">NX-52</td><td class="nm">물성 리포트 — 학기말 하드커버 성과책자 우편 발송 연2회(카피 불가 물성·조부모 도달·거실 광고물)</td><td>NX-20/16서 자동 조판·인쇄만 외주 · Gate 2</td></tr>
+    <tr><td class="id">NX-53</td><td class="nm">데이터 역방향 판매(B2B 데이터 셀) — 시험·성적·벤치마크 축적분을 익명 트렌드 리포트로 학원·출판사 판매</td><td>n&lt;100 금지·비식별화 법률 검토 · Gate 3+</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ NX-46~53</span></div>
+</div>
+
+<!-- ③-10 · Part C 미해결 통합 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ BM Evolution v4 · Part C</span><span class="wm">Concord</span></div>
+  <h1 class="t">미해결 기존안 통합 <span class="kw">코드 실측 재확인</span></h1>
+  <p class="lede">문서상 "미해결"이던 항목 중 코드로 이미 해소된 것을 실측으로 정정(✅). 이 목록이 v4 실행 전 정리해야 할 부채다.</p>
+  <div class="two-col-tables">
+    <div>
+      <p style="font-size:10px; font-weight:800; color:var(--green-text); margin-bottom:1.5mm;">C-0 정정 — 문서는 미해결이나 코드상 (부분)해소</p>
+      <table class="led">
+        <tr><th style="width:22%;">코드</th><th>실측 상태</th></tr>
+        <tr class="hl"><td class="id">BR-13</td><td class="nm">✅ 회원탈퇴 해소 — account-deletion.ts+mobile/me DELETE</td></tr>
+        <tr class="hl"><td class="id">§2</td><td class="nm">✅ 계측 부분해소 — 내부 이벤트 존재. 잔여: 외부 GA4/픽셀+게이트 조립(NX-25)</td></tr>
+        <tr class="hl"><td class="id">BR-12</td><td class="nm">부분정정 — softDelete 익명화로 연쇄삭제 위험↓. 잔여: 5년 보존 정책</td></tr>
+        <tr><td class="id">P1-H</td><td class="nm">웹훅 서명검증 여전히 OPEN(=R-1)</td></tr>
+      </table>
+    </div>
+    <div>
+      <p style="font-size:10px; font-weight:800; color:#DC2626; margin-bottom:1.5mm;">C-1 🔴 Gate 0 블로커 (유료 개시 전 필수·우회 금지)</p>
+      <table class="led">
+        <tr><th style="width:24%;">코드</th><th>상태</th></tr>
+        <tr><td class="id">BR-7</td><td class="nm">약관·개인정보·환불 페이지 존재하나 충실도 미확정</td></tr>
+        <tr><td class="id">BR-8/9</td><td class="nm">법정대리인 동의·미성년 결제 취소 OPEN</td></tr>
+        <tr><td class="id">BR-10</td><td class="nm">통신판매업·개인과외교습자 신고 OPEN(대외)</td></tr>
+        <tr><td class="id">BR-14</td><td class="nm">RLS·스토리지 정책 OPEN(=R-2)</td></tr>
+        <tr><td class="id">E1~3·R-1</td><td class="nm">결제 서버검증·웹훅 서명 OPEN</td></tr>
+        <tr><td class="id">P1-C</td><td class="nm">환불이 실제 Toss 취소 미호출 OPEN</td></tr>
+        <tr><td class="id">F-6</td><td class="nm">환불 준비금 계좌 분리 운영 미확인</td></tr>
+      </table>
+    </div>
+  </div>
+  <p style="font-size:9.5px; color:var(--mut); margin-top:2.5mm;"><b>C-2 성장 엔진 OPEN(Gate 1~2)</b>: G2-1 폼마찰·G2-6 리퍼럴·G2-7 형제·G2-9 About·G2-13 카톡공유·§5 후기·MK-3/4·MK-6/BR-11·§1 도메인 → 각 NX 연결. <b>C-3 FI 전건 미구현</b> → NX 매핑. <b>C-4 R 계열·P1/P2 잔여</b> OPEN(connection_limit=1 병목·DB 정리 포함).</p>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ Part C</span></div>
+</div>
+
+<!-- ③-11 · Part D 실행 분담 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ BM Evolution v4 · Part D</span><span class="wm">Concord</span></div>
+  <h1 class="t">실행 분담 총괄 · 시스템 스프린트</h1>
+  <p class="lede">전 제안(NX·EXP·미해결)을 <b>🤖 Claude 단독 17건 · 🤝 혼합 24건 · 👤 경영자 주도 17건</b>으로 분해. 제약: 프로덕션 DB 쓰기 금지(SQL 준비만), 커밋·배포·대외 신고는 경영자 승인 후.</p>
+  <div class="grid c4" style="align-content:start;">
+    <div class="card" style="padding:4mm 4.5mm; background:rgba(16,185,129,.06);"><span class="eyebrow">S1 · Gate 0 기술</span><p style="font-size:9.5px; margin-top:1mm;"><b>✅ 완료(07-05)</b> 7건. 1-1 결제 서버검증·1-2 웹훅서명은 <b>실측 결과 이미 해소</b>(문서 stale). 1-3~7: 환불 Toss취소·보호자 동의·RLS SQL·GA4·법률 페이지 구현. 잔여 차단은 전부 경영자 몫.</p></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">S2 · 결제 이후 8건</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>2-1 72h 시퀀스·2-2 학부모 웹뷰</li><li>2-3 첫성취+학생계약서·2-4 후기</li><li>2-5 성적 증거·2-6 게이트 대시보드</li><li>2-7 리캡카드·2-8 1인 레버리지 큐</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">S3 · 성장 12건</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>3-1 폼마찰·3-2 자가진단·3-3 공유카드</li><li>3-4 통합리스크·3-5 선별카운터</li><li>3-6 누적뷰·3-7 크레딧지갑·3-8 A/B</li><li>3-9 AI컨시어지·3-10 About+보증UI</li><li>3-11 시험아카이브·3-12 R-3~5</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">S4+ · 게이트 백로그</span><p style="font-size:9px; margin-top:1mm;"><b>Gate 2</b>: NX-4/5/7/49·10·11/G2-6·34·EXP-1·47·26·27/EXP-6·38·52·G2-7. <b>Gate 3</b>: NX-15·17·18·19·23·32·53. <b>상시</b>: P1/P2·R 잔여를 pilot-verify로 소진.</p></div>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:3mm; background:rgba(220,38,38,.04);"><p style="font-size:10px;"><b>실행 규칙</b>: 순서 고정 — 스프린트 1 완료 전 2·3 착수 금지(Gate 0 신성불가침). 각 항목 최소 변경+tsc/lint/prisma validate 통과+회귀 검증. 스키마 변경은 전부 "SQL 준비만", 적용 승인은 경영자(E4-5).</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ Part D</span></div>
+</div>
+
+<!-- ③-12 · Part E 경영자 수행 -->
+<div class="slide">
+  <div class="sh"><span class="no">③ BM Evolution v4 · Part E · F</span><span class="wm">Concord</span></div>
+  <h1 class="t">경영자 직접 수행 목록 <span class="kw">시스템으로 대체 불가</span></h1>
+  <p class="lede">Claude가 준비·문서화까지 돕지만 실행 주체가 반드시 경영자인 항목. ⛔ = Gate 0 블로커(유료 개시 전 필수).</p>
+  <div class="grid c4" style="align-content:start;">
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow" style="color:#DC2626;">E-1 법률·행정</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>⛔ 통신판매업 신고+교습자 확인</li><li>⛔ 약관·계약서(L-1/2) 변호사 검토</li><li>⛔ 성범죄경력조회 절차</li><li>⛔ 환불 준비금 계좌 분리</li><li>배상책임보험·세무사·미성년 결제 정책</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">E-2 채널·자산 개설</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>브랜드 도메인 구매·연결</li><li><b>카카오 채널+알림톡 프로필</b>(NX-1/2/42 전제·최우선)</li><li>네이버 플레이스·블로그</li><li>GA4·광고 계정→측정 ID 전달</li><li>실사 촬영</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">E-3 영업·대면</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>강사 면접·선별·위촉(합격률 10~15%)</li><li>지인·소개 파일럿 첫 웨이브</li><li>대면 상담+스크립트 개선 루프</li><li>맘카페·커뮤니티 활동</li><li>설명회·거점 제휴·금융/바우처·앰배서더</li></ul></div>
+    <div class="card" style="padding:4mm 4.5mm;"><span class="eyebrow">E-4 거버넌스·승인</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>SKU·가격 확정(할인 금지 원칙)</li><li>시급 테이블·복지 승인(+0.25만/h 내)</li><li>보증 규정 발동 조건</li><li>주간 Gate 리뷰(Go/Fix/Kill)</li><li>RLS 적용·배포·DB 정리 승인</li></ul></div>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:3mm; background:rgba(16,185,129,.05);"><p style="font-size:10px;"><b>Part F 결론</b>: v3가 "왜 안 죽는가"를 증명했다면 v4는 "왜 복리로 커지는가"를 설계. 파일럿 즉시 6건(NX-1·2·3·12·25·29)만으로 재결제·후기·계측·1인 용량 4대 공백의 초기 시스템이 선다. <b>스프린트1(Gate0 기술)+E-1(Gate0 행정) 모두 끝나야 유료 개시</b> — 경영자 시간은 E-3(영업·대면)에 집중, 나머지는 시스템이 흡수.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>③ Part E · F</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ④ MARKETING_PLAN ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ④</div>
+    <h2>마케팅 실행 계획 v3<br><span style="color:#5EE0AC;">채널 · 소재 · 광고 시나리오 원장</span></h2>
+    <p>"무엇을·어디서"(§1~9) → "정확히 어떻게"(플레이북 §10~21) → "광고 한 편을 어떻게 만들고 누구에게 쏘는가"(Part 3 §22~29). 우선순위: ①학생 → ②학부모 → ③강사 → ④매니저. 원본: <b style="color:#fff;">MARKETING_PLAN.md</b></p>
+    <div class="meta">
+      <div><b>4트랙 + 예산 + 90일</b>§0~9 전략</div>
+      <div><b>플레이북 §10~21</b>실행 SOP</div>
+      <div><b>V-1~13 · C-1~12</b>영상 콘티·브레인스토밍</div>
+      <div><b>AD-1~14</b>신규 광고 제안</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ④</span></div>
+</div>
+
+<!-- ④-1 · §0 전제·원칙 + §1 공통 선행 자산 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 전제 · 선행자산</span><span class="wm">Concord</span></div>
+  <h1 class="t">전제·원칙 <span class="kw">§0</span> · 공통 선행 자산 <span class="kw">A-1~7</span></h1>
+  <p class="lede">돈은 학부모(구매자), 사용은 학생(사용자)의 이중 구조. <b>공급(강사)은 수요에 2~6주 선행</b>(F-4). 증거 없이 유료광고 금지 — 자산→무료채널→후기 3건→유료.</p>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:20%;">원칙</th><th>내용</th></tr>
+      <tr><td class="id">1 이중구조</td><td class="nm">학생 트랙 목표=결제 아닌 "엄마 이거 봐봐" 가정내 추천+수락·유지</td></tr>
+      <tr><td class="id">2 시점</td><td class="nm">공급이 수요에 선행 — 강사채용 2~6주 먼저, 모집 후 매칭 실패=이탈 전이</td></tr>
+      <tr><td class="id">3 콜드스타트</td><td class="nm">증거(후기·사진·페이지) 없이 유료광고 금지. 자산→무료→후기 3건→유료</td></tr>
+      <tr><td class="id">4 지역집중</td><td class="nm">분당 1~2개 동 반경 우선(M-1). "전국에 얕게"=마케팅비 소각</td></tr>
+      <tr><td class="id">5 CAC규율</td><td class="nm">파일럿 CAC≤20만 채널만, 주간 계측, 2주 연속 리드 0이면 교체</td></tr>
+      <tr><td class="id">6 보이스</td><td class="nm">차분한 확신·과장 금지·근거 보존(BR-11). "학생마다 맞는 선생님이 다릅니다"</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:12%;">#</th><th style="width:32%;">자산</th><th>용도·근거</th></tr>
+      <tr><td class="id">A-1</td><td class="nm">커스텀 도메인 <span style="color:#DC2626">●</span></td><td>*.vercel.app로는 결제 신뢰 불가 (§1 🔴)</td></tr>
+      <tr><td class="id">A-2</td><td class="nm">카카오톡 채널</td><td>전 트랙의 재접촉 인프라 (MK-7)</td></tr>
+      <tr><td class="id">A-3</td><td class="nm">선별 체계 페이지+About</td><td>"지원자 10명 중 1명" 신뢰 증거 (G2-9/10)</td></tr>
+      <tr><td class="id">A-4</td><td class="nm">학습 리포트 샘플</td><td>학부모 전환·강사 채용 양쪽 사용 (G2-11)</td></tr>
+      <tr><td class="id">A-5</td><td class="nm">실촬영 반나절</td><td>AI는 브릿지, 본안은 실촬영 (수업·매니저)</td></tr>
+      <tr><td class="id">A-6</td><td class="nm">GA4+전환계측+UTM <span style="color:#DC2626">●</span></td><td>모든 KPI의 데이터 원천 (§2 🔴)</td></tr>
+      <tr><td class="id">A-7</td><td class="nm">네이버 플레이스+블로그</td><td>로컬 검색 의도 선점(무료)</td></tr>
+    </table>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §0 · A-1~7</span></div>
+</div>
+
+<!-- ④-2 · Track 1 학생 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Track 1</span><span class="wm">Concord</span></div>
+  <h1 class="t">Track 1 — 학생 <span class="tag">우선순위 1</span></h1>
+  <p class="lede">타깃: 분당·서울 학군지 중2~고2. 광고를 보여주지 말고 <b>쓸모(AI 질답·숙제 관리)를 먼저 쥐여주고</b> 학생이 학부모에게 가져가게 한다. 역할=가정내 추천 트리거+수락·유지 결정자.</p>
+  <table class="led">
+    <tr><th style="width:20%;">플랫폼</th><th style="width:44%;">콘텐츠·전술</th><th>비용·시점</th></tr>
+    <tr><td class="nm">인스타 릴스</td><td>①내신 D-14 스터디플랜 ②AI 질답 15초 데모("새벽 2시에도 답이 온다") ③합격강사 공부법 1분(BM-L 겸용) ④공스타그램 해시태그</td><td>광고 시 월 10~20만 / M1~</td></tr>
+    <tr><td class="nm">유튜브 숏츠·틱톡</td><td>릴스 재게시(1제작 3배포) + "중간고사 이렇게 나온다" 유형 분석</td><td>시간 / M1~M2</td></tr>
+    <tr><td class="nm">입시 커뮤니티</td><td>수만휘·오르비 — 홍보 금지, 순수 정보만(공부법·플래너). 어뷰징은 M-4 파괴 절대금지</td><td>0 / M2~</td></tr>
+    <tr><td class="nm">제품 내 장치 ⚡</td><td>가입만으로 AI 질답 주 N회 무료(BM-P 전단계) — 학생이 먼저 도구 경험</td><td>개발 소 / M1</td></tr>
+    <tr class="hl"><td class="nm">제품 내 장치 ⚡</td><td><b>"부모님께 보내기" 버튼(G2-13)</b> — 진단·플랜을 카톡으로 부모 공유. <b>Track 1의 전환 장치</b></td><td>개발 소 / M1</td></tr>
+    <tr><td class="nm">친구 초대</td><td>친구 가입 시 양쪽 기프티콘 5천(BM-D 학생 버전, 가입 기준 소액)</td><td>건당 1만 / M3~</td></tr>
+    <tr><td class="nm">스터디카페 제휴</td><td>분당 2~3곳 AI 질답 무료쿠폰 비치+테이블 스티커 — 전단보다 톤 정합</td><td>지역당 5~10만 / M2~</td></tr>
+  </table>
+  <div class="grid c2" style="margin-top:3mm; gap:4mm;">
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">카피 방향 (기능층 직격·잔소리 금지)</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li>"숙제가 알아서 요일별로 나눠져 있는 과외"</li><li>"모르는 문제, 새벽에도 물어볼 데가 있다"</li><li>"선생님이 안 맞으면 바꿔달라고 <b>네가</b> 말할 수 있어"</li></ul></div>
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">KPI</span><p style="font-size:10px;">숏폼 조회·프로필 방문 → 가입(무료 AI 체험) → <b>"부모님께 보내기" 발송 수 → 그로부터 발생한 상담 신청</b>(UTM 분리). 성패는 마지막 지표 하나로 판정.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ Track 1</span></div>
+</div>
+
+<!-- ④-3 · Track 2 학부모 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Track 2</span><span class="wm">Concord</span></div>
+  <h1 class="t">Track 2 — 학부모 <span class="tag">우선순위 2 · 결제 전환 본진</span></h1>
+  <p class="lede">S1(중등 내신 관리형 엄마) 주력, S2(고등) 병행, 11~2월 S3(예비고1). 카피=감정층: 불안·죄책감 해소 — "전문가가 챙기고 있고, 나는 확인만 하면 된다."</p>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:26%;">플랫폼</th><th>전술 · 시점</th></tr>
+      <tr><td class="nm">네이버 맘카페</td><td>정보성(겨울 로드맵)+실후기+제휴배너(후기 3건 후). M1~</td></tr>
+      <tr><td class="nm">네이버 블로그</td><td>로컬 롱테일("분당 수학과외") 주 2회. M1~</td></tr>
+      <tr><td class="nm">스마트플레이스</td><td>"분당 과외" 지도 선점+후기 루틴. <b>M1</b></td></tr>
+      <tr><td class="nm">네이버 검색광고</td><td>로컬 키워드 한정, 리드 5~15만. 후기 3건 후 M4~</td></tr>
+      <tr><td class="nm">카카오톡 채널</td><td>상담직후 기대관리+미결제 7일 시퀀스+월간 리포트. M1</td></tr>
+      <tr><td class="nm">카카오 모먼트</td><td>지역×3040 여성, 리포트·보증(BM-H) 소재. M4~</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:26%;">플랫폼</th><th>전술 · 시점</th></tr>
+      <tr><td class="nm">당근</td><td>비즈프로필(매니저 실명)+동네생활 정보글. M2~</td></tr>
+      <tr><td class="nm">인스타</td><td>릴스 재활용+매니저 검증과정 비하인드. M2~</td></tr>
+      <tr><td class="nm">네이버 밴드</td><td>BM-Y 단지제휴 결합, 입주민 설명회. M3~</td></tr>
+      <tr><td class="nm">설명회(BM-V)</td><td>라운드테이블 5~8가정→분기 세미나. 최고순도 리드. M2~</td></tr>
+      <tr><td class="nm">아파트 게시판</td><td>BM-Y 제휴단지 "OO아파트 O가정 이용중". M3~</td></tr>
+    </table>
+  </div>
+  <div class="grid c2" style="margin-top:3mm; gap:4mm;">
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">카피 방향 (감정층)</span><ul class="t" style="font-size:9.5px; margin-top:1mm;"><li>"챙겨야 할 게 많다면, 챙기는 사람을 두세요"</li><li>"묻지 않아도 매주 옵니다"(리포트)</li><li>"면접·범죄경력조회 통과 선생님만 옆자리에"(사회층)</li><li>결제 직전: 보증(BM-H)+환불표+지역 실후기 1건</li></ul></div>
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">KPI</span><p style="font-size:10px;">채널별 리드(상담)·상담 실시율·결제 전환율·CAC. 퍼널 수학(월 노출 1만→신청 21→결제 5)을 채널별 분해해 주간 추적.</p></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ Track 2</span></div>
+</div>
+
+<!-- ④-4 · Track 3 강사 + Track 4 매니저 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Track 3 · 4</span><span class="wm">Concord</span></div>
+  <h1 class="t">Track 3 강사 <span class="tag">시점 최선행</span> · Track 4 매니저 <span class="tag">Gate 2 후</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:30%;">Track 3 강사 채널</th><th>전술</th></tr>
+      <tr><td class="nm">에브리타임</td><td>서울권 상위 10대학+교대·사범대. 모집 6주 전</td></tr>
+      <tr><td class="nm">캠퍼스픽·링커리어</td><td>"교육 스타트업 파트너 강사" 커리어 프레임</td></tr>
+      <tr><td class="nm">학과 게시판</td><td>종이+QR, 교직 준비생 "경력+증명서" 소구</td></tr>
+      <tr><td class="nm">알바몬·천국</td><td>볼륨용, 서류 필터 강하게. M2~</td></tr>
+      <tr><td class="nm">타 플랫폼 강사</td><td>"수수료 비교"·"수금 스트레스" SEO 유입</td></tr>
+      <tr><td class="nm">재직 강사 추천</td><td>최종합격+첫수업 시 10만(최고품질). 강사 3명+ 후</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:30%;">Track 4 매니저 채널</th><th>전술 · 시점</th></tr>
+      <tr><td class="nm">원티드·사람인</td><td>"지역 러닝 매니저(셀 리더)" 셀 P&L·성과급 공개. Gate 2 후(2027 Q1)</td></tr>
+      <tr><td class="nm">지역 커뮤니티</td><td>"분당 거주·교육업 경험" 맘카페·당근 구인</td></tr>
+      <tr><td class="nm">업계 네트워크</td><td>학원 상담실장 다이렉트 서치(1호는 서치가 빠름). Gate 2 직후</td></tr>
+      <tr><td class="nm">자사 채널</td><td>"매니저의 하루" 콘텐츠 겸용. M3~</td></tr>
+    </table>
+  </div>
+  <div class="grid c2" style="margin-top:2.5mm; gap:4mm;">
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">강사 카피·KPI</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>"시급이 아니라 통장에 찍히는 돈의 안정성"(리드비·수금·공백 0)</li><li>"지원자 10명 중 1명. 그 선별이 당신의 경력"</li><li>명시: 시급 3.0만 확정+재계약 보너스(BM-L)+승급경로</li><li>KPI: <b>파이프라인 잔고=학생 목표 1.3배</b>(계기판 #9), 방학 6주 전 채용 파도</li></ul></div>
+    <div class="card" style="padding:3.5mm 5mm;"><span class="eyebrow">매니저 카피·JD·KPI</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>"월급이 아니라 지역을 드립니다" — 셀=자기 P&L</li><li>"학생 25~30·강사 10~15명, 당신의 동네 교육 단위"</li><li>기준: 상담경력·지역연고·꼼꼼함. 노무분류(BR-23) 공고 전 완료</li><li>KPI: <b>최종 후보 3명 확보 여부</b>(소수 채용)</li></ul></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ Track 3·4</span></div>
+</div>
+
+<!-- ④-5 · §6 예산 + §7 90일 + §8 계측 + §9 금지 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 예산 · 캘린더 · 거버넌스</span><span class="wm">Concord</span></div>
+  <h1 class="t">예산 배분 <span class="kw">§6</span> · 90일 캘린더 <span class="kw">§7</span> · 거버넌스 <span class="kw">§8·9</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th colspan="3" style="color:var(--green-text); border-bottom:1.5px solid var(--line2);">파일럿 월 30~50만 (자력)</th></tr>
+      <tr><td class="nm">학부모 T2</td><td>50% · 15~25만</td><td>스터디카페·당근·설명회·맘카페</td></tr>
+      <tr><td class="nm">학생 T1</td><td>20% · 6~10만</td><td>숏폼 소품·친구초대 기프티콘</td></tr>
+      <tr><td class="nm">강사 T3</td><td>20% · 6~10만</td><td>공고비·추천 보너스</td></tr>
+      <tr><td class="nm">예비</td><td>10% · 3~5만</td><td>성과 채널 증액</td></tr>
+    </table>
+    <table class="led">
+      <tr><th colspan="3" style="color:var(--green-text); border-bottom:1.5px solid var(--line2);">지원금 마케팅비 2,500만 (12개월)</th></tr>
+      <tr><td class="nm">콘텐츠 자산</td><td>20% · 500만</td><td>실촬영·리포트·숏폼</td></tr>
+      <tr><td class="nm">네이버 생태계</td><td>28% · 700만</td><td>SA·블로그·카페 제휴</td></tr>
+      <tr><td class="nm">카카오·당근·인스타</td><td>20% · 500만</td><td>지역 디스플레이</td></tr>
+      <tr><td class="nm">오프라인</td><td>20% · 500만</td><td>BM-V/Y 설명회·단지</td></tr>
+      <tr><td class="nm">리퍼럴 재원 · 예비</td><td>8%+4% · 300만</td><td>BM-D 10건 · 증액</td></tr>
+    </table>
+  </div>
+  <p class="lede" style="margin:2.5mm 0 2mm;"><b>배분 규칙</b>: 월 예산 60%를 11~3월(수능→신학기)에 가중(9-5). CAC 2개월 연속 40만 초과 시 채널 중단. <b>90일(§7)</b>: W1~2 강사 공고 최선행+공통자산, W3~4 콘텐츠 개시+합격 3~5명, W5~8 첫 매칭+설명회 1호, W9~13 후기 3건→유료 준비.</p>
+  <div class="grid c2" style="gap:4mm;">
+    <div class="card" style="padding:3mm 5mm;"><span class="eyebrow">§8 계측·거버넌스</span><p style="font-size:9.5px;">전 링크 UTM 규격(A-6 없이 채널 미가동). 주간 계기판 #1~5(퍼널)·#9(강사)가 성적표. 월 1회 CAC 표→FINANCIAL_PLAN 가정 대체. 미검증 수치(500+/98%) 금지(MK-6).</p></div>
+    <div class="card" style="padding:3mm 5mm;"><span class="eyebrow" style="color:#DC2626;">§9 금지 (신뢰 해자 M-4)</span><ul class="t" style="font-size:9px; margin-top:1mm;"><li>맘카페 위장후기·어뷰징 금지</li><li>대가성 후기 표시의무 준수</li><li>학생 대상 성적보장·공포소구 금지</li><li>미성년 개인정보 최소(BR-8)·경쟁사 비방 금지</li></ul></div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §6~9</span></div>
+</div>
+
+<!-- ④-6 · §10 숏폼 플레이북 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 플레이북 §10</span><span class="wm">Concord</span></div>
+  <h1 class="t">콘텐츠 엔진 — 숏폼 플레이북 <span class="kw">§10</span></h1>
+  <p class="lede">구조: 훅(0~3초 큰 자막) → 몸통(3~20초, 포인트 3개) → CTA(3초 "프로필 링크 무료 진단"). 제작: 일요일 2시간 배치촬영 → 캡컷 템플릿 1종(#10B981 자막바) → 릴스·숏츠·틱톡 3배포, 개당 30분 이내.</p>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:18%;">필러</th><th style="width:24%;">대상</th><th>목적·비중</th></tr>
+      <tr><td class="id">P1 공부실전</td><td class="nm">학생</td><td>도달·팔로우(쓸모) 40%</td></tr>
+      <tr><td class="id">P2 제품데모</td><td class="nm">학생→학부모</td><td>AI·숙제·리포트→체험 25%</td></tr>
+      <tr><td class="id">P3 신뢰비하인드</td><td class="nm">학부모·강사</td><td>면접·매니저·합격률 20%</td></tr>
+      <tr><td class="id">P4 사람이야기</td><td class="nm">전체</td><td>강사 인터뷰·후기 15%</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:10%;">훅#</th><th>공식 (필러)</th></tr>
+      <tr><td class="id">1·3</td><td class="nm">과목 실수 유형 · D-14 순서 (P1)</td></tr>
+      <tr><td class="id">2·6</td><td class="nm">고를 때 이 질문 · 10명 중 9명 탈락 (P3)</td></tr>
+      <tr><td class="id">4·5</td><td class="nm">새벽 2시 질문 · 요일별 숙제 분배 (P2)</td></tr>
+      <tr><td class="id">7</td><td class="nm">고1 첫 중간고사, 중학교와 뭐가 다른가 (P1)</td></tr>
+      <tr><td class="id">8</td><td class="nm">매주 받는 리포트 실물 공개 (P2/P3)</td></tr>
+      <tr><td class="id">9·10</td><td class="nm">성적 오르는 학생 공통점 · 엄마 설득법 (P4/P1)</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">30일 캘린더 (주 3회 월·수·금 19시 하교후) · 성과판정</span><p style="font-size:9.5px;">W1 훅1·4·6 / W2 훅3·5+강사인터뷰 / W3 훅7·8+매니저의하루 / W4 훅10+체험후기 리그램. <b>4주 후</b> 소재별 조회·방문·체험가입 집계 → 상위 20% 유형만 증산, 필러 비중 재조정. 예시 풀스크립트(훅4): "새벽 2시 모르는 문제 누구한테?" → AI 단계풀이 → "선생님이 다음 수업에서 이어받아요" → "가입만 하면 주 O회 무료".</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §10</span></div>
+</div>
+
+<!-- ④-7 · §11 블로그 SEO + §12 맘카페 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 플레이북 §11 · 12</span><span class="wm">Concord</span></div>
+  <h1 class="t">네이버 블로그·SEO <span class="kw">§11</span> · 맘카페 <span class="kw">§12</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:24%;">키워드 층</th><th>키워드·대응 (거래형 우선 발행)</th></tr>
+      <tr><td class="id">거래형 로컬</td><td class="nm">분당·정자동·수내·판교 수학/영어 과외 → 지역소개+검증+상담 CTA</td></tr>
+      <tr><td class="id">거래형 비용</td><td class="nm">과외비 시세·중학생 비용 → 정직한 시세+자사 요금 공개</td></tr>
+      <tr><td class="id">정보형 시즌</td><td class="nm">예비고1 겨울·중2 내신·고1 첫시험 → 학사캘린더 로드맵</td></tr>
+      <tr><td class="id">정보형 비교</td><td class="nm">과외 vs 학원·비대면 단점·중개앱 비교 → 사실 비교표</td></tr>
+      <tr><td class="id">신뢰형</td><td class="nm">선생님 검증·환불규정·계약서 → 절차·보증 공개글</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:30%;">§12 맘카페 3종</th><th>템플릿</th></tr>
+      <tr><td class="nm">정보성(월 2회)</td><td>블로그 요약+원문 링크, 자사 언급은 서명뿐</td></tr>
+      <tr><td class="nm">Q&A 응답(상시)</td><td>실용 답변, 서비스 언급은 물을 때만</td></tr>
+      <tr><td class="nm">후기 협조(발생시)</td><td>자발 작성(대가 시 표시), 문구 개입 금지</td></tr>
+      <tr><td class="nm" colspan="2" style="color:var(--fg);"><b>원칙</b>: 실명("Concord 매니저 OOO")+허용 게시판만. 정보 기여 4 : 자사 언급 1. 부정언급→§21 위기 SOP(카페 내 반박 금지)</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">글 구조 템플릿 · 12주 발행(24편)</span><p style="font-size:9.5px;">제목(키워드 앞배치 32자)→3줄 요약→H2 3~4개(표·체크리스트 필수)→내부링크 2개(A-3·A-4)→CTA. 화·금 주 2회, 1,500자+, 실사진 1장. <b>W1~4</b> 거래형 로컬 6+신뢰형 2 / <b>W5~8</b> 비용 3+시즌 4+후기 1 / <b>W9~12</b> 비교 3+2학기 선행 4+리포트 1. 이후 시즌 키워드 6주 선행 발행(색인이 검색수요보다 먼저).</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §11·12</span></div>
+</div>
+
+<!-- ④-8 · §13 SA + §14 카톡 CRM + §15 당근·오프라인 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 플레이북 §13~15</span><span class="wm">Concord</span></div>
+  <h1 class="t">검색광고 <span class="kw">§13</span> · 카톡 CRM <span class="kw">§14</span> · 당근·오프라인 <span class="kw">§15</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:22%;">§13 캠페인</th><th>키워드·일예산</th></tr>
+      <tr><td class="id">① 브랜드방어</td><td class="nm">concord/콘코드 완전일치, 2천원</td></tr>
+      <tr><td class="id">② 지역×과목</td><td class="nm">분당수학·영어·정자·판교·고등, 구문일치 CPC 3천, 그룹당 5천~1만</td></tr>
+      <tr><td class="id">③ 정보형</td><td class="nm">과외비·예비고1 블로그 랜딩, 3천</td></tr>
+      <tr><td class="nm" colspan="2" style="color:var(--fg);">제외: 무료·알바·구함·인강·대행. 리드당 15만 초과 2주 시 그룹 정지, CAC 40만 2개월 시 중단. 시즌 일예산 2배</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:20%;">§14 시퀀스</th><th>실문구 요지</th></tr>
+      <tr><td class="id">D0(4h내)</td><td class="nm">접수 확인+매니저 오늘중 연락+선별체계 링크(G2-2)</td></tr>
+      <tr><td class="id">D+1</td><td class="nm">상담 정리: 추천플랜·배정 선생님·4주 보증→결제링크</td></tr>
+      <tr><td class="id">D+3</td><td class="nm">리포트 샘플(A-4)</td></tr>
+      <tr><td class="id">D+7(마지막)</td><td class="nm">지역 후기→월 1회 뉴스레터 전환</td></tr>
+      <tr><td class="id">재학</td><td class="nm">주간리포트·월간요약·이탈경보 매니저 개인(자동 금지)·둘째 시즌(C-2)</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">§15 당근·오프라인</span><p style="font-size:9.5px;"><b>당근 비즈프로필</b>: 매니저 실명·실사진, 기업톤 자제. <b>동네생활</b> 월 2~3회 정보글, M2 5만원 소액 테스트. <b>스터디카페</b>: "무료 AI 쿠폰=고객서비스"로 제안(비용 0 상호이득)+테이블 스티커 QR, 지역당 2~3곳 UTM 분리. <b>아파트(BM-Y)</b>: 관리사무소 공식절차만, 엘리베이터 모니터 단지당 10~30만+QR. 카톡 규칙: 광고표기·10~20시·주 1회 초과 금지(리포트 제외).</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §13~15</span></div>
+</div>
+
+<!-- ④-9 · §16~21 나머지 플레이북 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · 플레이북 §16~21</span><span class="wm">Concord</span></div>
+  <h1 class="t">설명회·후기·시즌·CRO·채용·위기 <span class="kw">§16~21</span></h1>
+  <table class="led">
+    <tr><th style="width:16%;">§</th><th>핵심 실행</th></tr>
+    <tr><td class="id">§16 설명회</td><td class="nm">60분 식순: 지역데이터 10·로드맵 15·시스템 라이브 시연 10·Q&A 15·진단예약 10. 참석 10명 중 예약 4건+이면 정례화. 후속 D+1 PDF→D+3 진단크레딧.</td></tr>
+    <tr><td class="id">§17 후기루프</td><td class="nm">수집 트리거 4개(첫달 리포트·성적확인·재결제·졸업). 동의 3단계 체크(게재·지역공개·소재재활용). 후기 1건→랜딩→블로그→숏폼 자막 3채널 소진. <b>별점 아닌 문장</b>을 모은다.</td></tr>
+    <tr><td class="id">§18 시즌</td><td class="nm"><b>C-1 여름(7~8월)</b> "6주가 2학기 결정" 오가닉만 / <b>C-2 예비고1(11/20~2월, 연중최대)</b> 수능 다음날 개시+조기예약(BM-Q)+가격고정(BM-T) / <b>C-3 신학기(2~3월)</b> 겨울 코호트 정규전환+시험 리포트 후기수집</td></tr>
+    <tr><td class="id">§19 CRO·A/B</td><td class="nm">체크리스트: 폼 필드 3개↓(G2-1 🔴)·검증3요소·보증배지·LCP 3초·후기 3건·환불표·카톡 대안. A/B(월 1개): 히어로 카피·폼 필드·보증 위치·요금 표기·CTA 문구</td></tr>
+    <tr><td class="id">§20 채용공고</td><td class="nm">강사: "지원자 10명 중 1명 — 시급 3.0만 확정+보너스" 수금·모집 0. 매니저 JD(Gate 2 후): "월급 아니라 지역 — 셀 기여마진 20~30% 성과급(30명 셀≈650만)"</td></tr>
+    <tr><td class="id">§21 UTM·위기</td><td class="nm">UTM source/medium/campaign 규격+주간 리포트(노출·방문·리드·상담·결제·CAC·판정). <b>위기 SOP</b>: 24h내 사과→사실확인→귀책이면 선제환불(RR-2)→종결 후속글. 법적대응은 최후수단</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §16~21</span></div>
+</div>
+
+<!-- ④-10 · §22 페르소나 + 메시지하우스 + 반박표 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §22</span><span class="wm">Concord</span></div>
+  <h1 class="t">페르소나 4종 <span class="kw">P-A~D</span> · 메시지 하우스 · 반박표</h1>
+  <p class="lede">광고는 "누가, 어느 순간에 보는가"로 설계. 소재 1편 = 페르소나 1명 × 필러 1개(2개 이상 욱여넣지 않는다). 필러 비중 파일럿 2(관리):1(검증):1(보증).</p>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:14%;">코드</th><th style="width:38%;">페르소나·상황</th><th>트리거 모먼트</th></tr>
+      <tr><td class="id">P-A</td><td class="nm">수내동 지현맘(46) 중2, 학원 3년 정체</td><td>성적표 배부주간(7월중·12월말)</td></tr>
+      <tr><td class="id">P-B</td><td class="nm">정자동 워킹맘 은영(44) 고1, 시간 없음</td><td>첫 모의고사 밤 침대 폰스크롤</td></tr>
+      <tr><td class="id">P-C</td><td class="nm">민준(중3) 시험 D-2 밤 막힌 문제</td><td>시험 2주전 밤 숏폼(불안 자극 금지·쓸모로)</td></tr>
+      <tr><td class="id">P-D</td><td class="nm">승우맘(48) 예비고1(11~2월)</td><td>수능 다음날~성적발표 주간</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:38%;">반박 (속마음)</th><th>실카피</th></tr>
+      <tr><td class="nm">과외는 비싸다</td><td>"학원 두 과목 값으로, 챙기는 사람까지"</td></tr>
+      <tr><td class="nm">학원이 체계적</td><td>"30명 진도가 아니라, 한 명의 진도표"</td></tr>
+      <tr><td class="nm">직거래가 싸다</td><td>"그 선생님 무엇으로 검증? 저흰 3단계"</td></tr>
+      <tr><td class="nm">애가 싫어한다</td><td>"선생님은 학생이 최종 선택, 바꿀 권리도"</td></tr>
+      <tr><td class="nm">효과 모르겠다</td><td>"첫 수업 후 판단, 불만족 시 전액 환불"</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">메시지 하우스 — 루프탑 "옆자리에서, 시스템으로 챙기는 과외"</span><p style="font-size:9.5px;"><b>필러 1 검증된 사람</b> "지원자 10명 중 1명"(증거 A-3·NX-14) · <b>필러 2 보이는 관리</b> "묻지 않아도 매주 옵니다"(증거 A-4·제품화면) · <b>필러 3 위험 없는 시작</b> "첫 수업 불만족 시 100% 환불"(증거 환불정책·결제화면 S1-7)</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §22</span></div>
+</div>
+
+<!-- ④-11 · §23 영상 콘티 V-1~7 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §23</span><span class="wm">Concord</span></div>
+  <h1 class="t">영상 광고 콘티 13편 <span class="kw">V-1~7</span> <span class="tag">초 단위</span></h1>
+  <p class="lede">공통: 세로 9:16, 자막 필수(무음 70%+), #10B981 자막바, 로고는 마지막 2초. 소스는 실촬영(A-5) 우선, 확보 전 폰+제품 실화면으로 V-1부터.</p>
+  <table class="led">
+    <tr><th style="width:16%;">편</th><th style="width:12%;">타깃·필러</th><th>훅·설계·제작조건</th></tr>
+    <tr><td class="id">V-1 새벽 2시</td><td class="nm">P-C→B·관리 15초</td><td>"새벽 2시 이 문제 누구한테?"→AI 단계풀이→선생님이 다음수업 이어받음. <b>즉시 제작(폰+화면녹화)·1호 소재</b>. 훅유지 70%+시 광고 승격</td></tr>
+    <tr><td class="id">V-2 리포트 도착</td><td class="nm">P-B·관리 20초</td><td>"오늘도 못 챙겼다"→카톡 리포트 알림→진도·숙제·코멘트→"챙기는 사람을 두세요". 메타 세트 B 주력. 선행: A-4. CTA는 "리포트 샘플 보기"(마찰↓)</td></tr>
+    <tr><td class="id">V-3 10명 중 9명</td><td class="nm">P-A·검증 30초</td><td>이력서 뭉치→서류·면접·시강·범죄경력조회→"그래야 옆자리에". 유튜브·설명회 겸용. 선행: A-5. "9명" 실증 전엔 "대부분 떨어뜨립니다"(BR-11)</td></tr>
+    <tr><td class="id">V-4 숙제 분배</td><td class="nm">P-C·관리 15초</td><td>"몰아서 하는 숙제, 왜 나만?"→요일별 자동분배 애니→"오늘 할 만큼만". <b>즉시 제작(V-1과 함께)</b></td></tr>
+    <tr><td class="id">V-5 "몰라"</td><td class="nm">P-A·관리 20초</td><td>"오늘 뭐 배웠어?"—"몰라"→리포트가 대신 답→"대화가 달라진다". 아이 얼굴 미노출. A-4 후, 메타 세트 A(V-2 로테이션)</td></tr>
+    <tr><td class="id">V-6 보증 직격</td><td class="nm">P-A/B·보증 15초</td><td>결제 버튼 멈칫→실제 환불문구 실화면→"첫 수업 보고 결정". <b>리타겟 R-B·C 전용</b>, 화면녹화만 제작비 0</td></tr>
+    <tr><td class="id">V-7 수락 버튼</td><td class="nm">P-C→A·검증 20초</td><td>"선생님 네가 최종 결정?"→수락/다른선생님 요청→"안 맞으면 바꿀 권리". <b>경쟁사가 카피 못하는 구조적 차별점</b>(제품 실플로우)</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ V-1~7</span></div>
+</div>
+
+<!-- ④-12 · §23 영상 콘티 V-8~13 + 편성표 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §23</span><span class="wm">Concord</span></div>
+  <h1 class="t">영상 콘티 <span class="kw">V-8~13</span> · 13편 편성표 <span class="kw">§23-1</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:22%;">편·타깃</th><th>훅·설계</th></tr>
+      <tr><td class="id">V-8 매니저의 하루<br><span style="font-weight:400;color:var(--mut2)">P-B·관리 30초</span></td><td class="nm">상담→강사 비교→체크인·리포트→이탈경보 시 "시스템보다 먼저 전화". 채용(T4) 브랜딩 겸용, 선행 A-5</td></tr>
+      <tr><td class="id">V-9 다른 게임<br><span style="font-weight:400;color:var(--mut2)">P-D·시즌 20초</span></td><td class="nm">중3→고1 스와이프→범위3배·서술형·등급제→겨울 12주 역순. CTA는 결제 아닌 설명회(§9-3 준수). 11월</td></tr>
+      <tr><td class="id">V-10 체크리스트<br><span style="font-weight:400;color:var(--mut2)">P-A·검증 15초</span></td><td class="nm">"구하기 전 이 5개 확인"→신분·경력·범죄조회·환불·교체→PDF 무료. <b>도구 배포</b>(직거래층도 저장), AD-2 선행판</td></tr>
+      <tr><td class="id">V-11 폼 귀찮<br><span style="font-weight:400;color:var(--mut2)">P-B·전환 15초</span></td><td class="nm">긴 폼 뒤로가기→"번호만"→매니저 오늘 전화. 리타겟 R-A·B+당근. 선행: AD-9 콜백 위젯</td></tr>
+      <tr><td class="id">V-12 성적표 받은날<br><span style="font-weight:400;color:var(--mut2)">P-A·시즌 20초</span></td><td class="nm">정적→"혼내는 날 아니라 계획 다시 짜는 날"→원인분해·플랜. 질책 연출 금지. 배부주간 ±1주만</td></tr>
+      <tr><td class="id">V-13 후기 원문<br><span style="font-weight:400;color:var(--mut2)">P-A/B·UGC 15초</span></td><td class="nm">타이핑 애니로 실후기 원문(오탈자 그대로)+표시광고 고지. 제작비 0, 후기 1건=15초 1편. 후기 5건+</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:38%;">편성표 (시점)</th><th>제작조건</th></tr>
+      <tr class="hl"><td class="nm">V-1·4·6·7·10 (즉시)</td><td>화면녹화 ✅</td></tr>
+      <tr><td class="nm">V-5·2 (A-4 후)</td><td>실루엣 촬영 소</td></tr>
+      <tr><td class="nm">V-12 (7월중 ON)</td><td>소품 촬영 소</td></tr>
+      <tr><td class="nm">V-11 (AD-9 후)</td><td>화면녹화</td></tr>
+      <tr><td class="nm">V-3·8 (A-5 후)</td><td>촬영 중</td></tr>
+      <tr><td class="nm">V-9 (11월)</td><td>그래픽 위주</td></tr>
+      <tr><td class="nm">V-13 (후기 5건+)</td><td>템플릿 ✅</td></tr>
+      <tr><td class="nm" colspan="2" style="color:var(--fg);"><b>운영</b>: 동시 4~5편. 즉시 5편 오가닉 4주 검증→상위 2편 유료 승격</td></tr>
+    </table>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ V-8~13</span></div>
+</div>
+
+<!-- ④-13 · §23-2 브레인스토밍 C-1~12 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §23-2</span><span class="wm">Concord</span></div>
+  <h1 class="t">보완 브레인스토밍 <span class="kw">C-1~12</span> <span class="tag">트리아지 완료</span></h1>
+  <p class="lede">V-1~13 확정 후 별도 라운드 12건. ✅채택 6 + ⚠️조건부 3 + ⏸보류 2. 즉시 제작군에 C-7·C-11 추가(7편). C-2는 §14 CRM에, C-8은 §28 4~6월 행에 편입.</p>
+  <table class="led">
+    <tr><th style="width:8%;">#</th><th style="width:34%;">아이디어 (훅)</th><th>판정·트리아지 노트</th></tr>
+    <tr><td class="id">C-1</td><td class="nm">아빠의 첫 상담("이번엔 내가 전화")</td><td>✅ 콜백(V-11) 결합, 다큐톤·희화화 금지 — 아빠 결정권자 희소지대</td></tr>
+    <tr><td class="id">C-2</td><td class="nm">형·언니의 리포트(둘째 그때)</td><td>✅ 주무대는 광고 아닌 재학 CRM(§14-2), 광고판은 Gate 2 (G2-7 형제번들)</td></tr>
+    <tr><td class="id">C-3</td><td class="nm">마지막 학원 셔틀</td><td>✅ 강력 훅. 학원 부정묘사 금지선(§9-5), "우리 애엔 다른 방식"만</td></tr>
+    <tr><td class="id">C-4</td><td class="nm">분당 지도 한 블록(우리 아파트에도)</td><td>⚠️ 단지 실수치 BR-11+개인정보 검토, Gate 2, "OO동 함께" 완화</td></tr>
+    <tr><td class="id">C-5</td><td class="nm">탄천 러닝 카메오</td><td>⏸ 연출티=위장콘텐츠 M-4 역효과, 인격화는 V-8로 충분</td></tr>
+    <tr><td class="id">C-6</td><td class="nm">탈락 지원자의 편지</td><td>✅ V-3 최고 보완재, <b>실제 탈락자 동의 원문만</b>(창작 금지), 채용 가동 후</td></tr>
+    <tr><td class="id">C-7</td><td class="nm">선생님의 준비 노트</td><td>✅ 제작비 최저(손 ASMR), T3 채용 겸용, <b>즉시 제작군 추가</b></td></tr>
+    <tr><td class="id">C-8</td><td class="nm">4월의 오답노트(3월이 진짜)</td><td>✅ §28 4~6월 공백 채움, 3월 모의고사 블로그와 세트</td></tr>
+    <tr><td class="id">C-9</td><td class="nm">방학 D-30 슬라이더 스토리</td><td>⚠️ 인터랙티브는 팔로워 500+ 후, 저장·공유로 판정</td></tr>
+    <tr><td class="id">C-10</td><td class="nm">진짜/가짜 후기 퀴즈</td><td>⏸ 오독 리스크(자사가 가짜 만든다), V-13 원문방식이 안전</td></tr>
+    <tr><td class="id">C-11</td><td class="nm">매니저 손글씨 메모</td><td>✅ 15초 무음+자막 제작비 0, UI컷 피로 해소 로테이션, <b>즉시 제작군</b></td></tr>
+    <tr><td class="id">C-12</td><td class="nm">형제 상담 라이브</td><td>⚠️ 실통화 개인정보 부담→각색 재연(고지), C-2·G2-7과 다자녀 시즌</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ C-1~12</span></div>
+</div>
+
+<!-- ④-14 · §24 SA소재 + §25 메타 + §26 카카오·당근 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §24~26</span><span class="wm">Concord</span></div>
+  <h1 class="t">SA 소재집 <span class="kw">§24</span> · 메타 세트 <span class="kw">§25</span> · 카카오·당근 <span class="kw">§26</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:26%;">§24 SA 그룹</th><th>소재 (제목/설명)</th></tr>
+      <tr><td class="nm">②-1 분당수학</td><td>"분당 수학과외 콘코드"/"검증부터 다릅니다" · 3단계 통과+100% 환불</td></tr>
+      <tr><td class="nm">②-2 분당영어</td><td>과목만 치환("영어, 선생님이 문제였습니다")</td></tr>
+      <tr><td class="nm">②-3 지역동</td><td>정자·수내·서현·판교 "우리 동네 검증된 과외"</td></tr>
+      <tr><td class="nm">②-4 고등·내신</td><td>"고등 내신, 관리가 답"/"첫 시험 전에" 100% 환불</td></tr>
+      <tr><td class="nm">③ 정보형</td><td>과외비 시세 정직 공개·예비고1 로드맵(11월 ON)</td></tr>
+      <tr><td class="nm" colspan="2" style="color:var(--fg);">입찰 CPC 3천(완전일치 4천), 시즌 +50%. 확장: 가격링크·서브링크·콜백(AD-9)</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:26%;">§25 메타 세트</th><th>설정·소재</th></tr>
+      <tr><td class="nm">세트 A 콜드</td><td>분당구+반경 8km(수지·죽전), 38~54 여성, 일 1.5만. V-1·V-2+IMG</td></tr>
+      <tr><td class="nm">세트 B 유사</td><td>전환 50건+ 후 상담신청 유사 1%</td></tr>
+      <tr><td class="nm">세트 C 리타겟</td><td>§27 시나리오, 일 5천</td></tr>
+      <tr><td class="nm">세트 D 학생</td><td>V-1+무료체험 CTA(가입 목표), 일 5천</td></tr>
+      <tr><td class="nm">이미지 2종</td><td>IMG-1 리포트 실물·IMG-2 체크리스트(면접·시강·조회)</td></tr>
+      <tr><td class="nm" colspan="2" style="color:var(--fg);">CTA "자세히 알아보기"(가입 금지). §25-3 인스턴트폼 스플릿(AD-14)→상담 실시율 판정. CPL 3만 초과 교체</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">§26 카카오·당근 소재</span><p style="font-size:9.5px;"><b>카카오 비즈보드</b>(월 10~20만): 분당구 35~54 여성, 랜딩=<b>채널 추가</b>(CRM 자산). 배너 "아이 학습 리포트 받아보세요"/"검증 3단계 공개"/"(11월)예비고1 로드맵". 웰컴 버튼 응답=세그먼트 태깅. <b>당근 지역광고</b>(M2~ 월 5~10만): 수내·정자·서현·이매·판교, 매니저 실명·실사진 동네 문법. 5만원 소진 시 채팅당 비용 1.5만↓ 증액·3만↑ 교체.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §24~26</span></div>
+</div>
+
+<!-- ④-15 · §27 리타겟 + §28 타이밍 매트릭스 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §27 · 28</span><span class="wm">Concord</span></div>
+  <h1 class="t">리타겟 5종 <span class="kw">R-A~E</span> · 학사캘린더 광고 타이밍 <span class="kw">§28</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:14%;">#</th><th style="width:30%;">세그먼트</th><th>소재(새 정보)</th></tr>
+      <tr><td class="id">R-A</td><td class="nm">랜딩 이탈(방문·폼X)</td><td>IMG-1 리포트 "실제 받는 리포트부터"</td></tr>
+      <tr><td class="id">R-B</td><td class="nm">폼 중단</td><td>반박처리 "고민은 비용? 요금표 공개"</td></tr>
+      <tr><td class="id">R-C</td><td class="nm">상담 후 미결제</td><td><b>카톡 §14-1이 주채널</b>+보증 소재</td></tr>
+      <tr><td class="id">R-D</td><td class="nm">체크아웃 이탈</td><td>카톡 D0 4h "결제 중 불편?" 1회</td></tr>
+      <tr><td class="id">R-E</td><td class="nm">학생 체험만</td><td>"부모님께 보내기" 리마인드(G2-13)</td></tr>
+      <tr><td class="nm" colspan="3" style="color:var(--fg);">빈도 주 4회, 30일 무반응 제외. 결제 완료 즉시 전 리타겟 제외(전환 API)</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:14%;">월</th><th style="width:44%;">주력 메시지·ON</th><th>가중</th></tr>
+      <tr><td class="id">7월</td><td class="nm">C-1 런칭 오가닉만, V-1 제작</td><td>0.7×</td></tr>
+      <tr><td class="id">8월</td><td class="nm">블로그 시즌글+설명회 1회</td><td>0.7×</td></tr>
+      <tr><td class="id">9월</td><td class="nm">AD-5 D-30 1차(오가닉+당근)</td><td>1.0×</td></tr>
+      <tr><td class="id">10월</td><td class="nm">후기 3건→SA·메타 첫 ON</td><td>1.0×</td></tr>
+      <tr class="hl"><td class="id">11월</td><td class="nm">C-2 개시(수능 다음날)·SA·설명회 2회</td><td><b>2.0×</b></td></tr>
+      <tr class="hl"><td class="id">12월</td><td class="nm">C-2 풀가동+AD-6 성적표</td><td><b>2.0×</b></td></tr>
+      <tr><td class="id">1월</td><td class="nm">C-2 유지+후기 수집 집중</td><td>1.5×</td></tr>
+      <tr><td class="id">2월</td><td class="nm">C-3 개시+AD-13 모교 소재</td><td>1.5×</td></tr>
+      <tr><td class="id">3월</td><td class="nm">AD-5 2차·리캡/리포트 전면</td><td>1.3×</td></tr>
+      <tr><td class="id">4~6월</td><td class="nm">상시 최적화+C-8 오답노트 ON</td><td>1.0×</td></tr>
+    </table>
+  </div>
+  <p class="lede" style="margin-top:2.5mm;">규칙: <b>광고는 학부모 "결정 모먼트" 2주 전에 ON</b> — 당일에 켜면 이미 늦다.</p>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ §27·28</span></div>
+</div>
+
+<!-- ④-16 · §29 AD-1~14 -->
+<div class="slide">
+  <div class="sh"><span class="no">④ Marketing · Part 3 §29</span><span class="wm">Concord</span></div>
+  <h1 class="t">신규 광고 제안 <span class="kw">AD-1~14</span> <span class="tag">🤖 단독</span><span class="tag g">🤝 혼합</span><span class="tag">👤 경영자</span></h1>
+  <table class="led">
+    <tr><th style="width:8%;">#</th><th style="width:30%;">제안</th><th>내용·왜 · 분담·시점</th></tr>
+    <tr><td class="id">AD-1</td><td class="nm">학교별 전용 랜딩</td><td>/schools/수내중 등 10곳 "OO중 내신·기출·관리법"(NX-35 원천). 🤖페이지/👤검수 · Gate 1</td></tr>
+    <tr><td class="id">AD-2</td><td class="nm">자가진단 리드마그넷</td><td>NX-37 진단을 오퍼로 "3분 진단"이 CPL↓+카톡 진입점. 🤝위젯 S3-2/👤집행 · S3-2 후</td></tr>
+    <tr><td class="id">AD-3</td><td class="nm">네이버 지식iN·엑스퍼트</td><td>"분당 과외" 실명 답변 누적+무료상담 채널. 👤계정/🤖초안 · M2~</td></tr>
+    <tr><td class="id">AD-4</td><td class="nm">오픈채팅 분당 입시방</td><td>매니저 운영 리드 육성풀(맘카페 자사판). 👤운영/🤖발행물 · M3~</td></tr>
+    <tr><td class="id">AD-5</td><td class="nm">시험 D-30 트리거</td><td>학교 일정 DB(NX-35)→D-30 학교명 소재 자동 ON, D-3 OFF. 🤝 · Gate 1</td></tr>
+    <tr><td class="id">AD-6</td><td class="nm">성적표 D-day</td><td>배부주간(7월중·12월말) 1주 집중, "다음 학기 계획" 프레임. 🤝 · 7월·12월</td></tr>
+    <tr><td class="id">AD-7</td><td class="nm">네이버 파워콘텐츠</td><td>검증·과외비 글을 광고 승격, SA보다 CPC↓ 신뢰정합. 🤝원고/👤집행 · SA와 동시</td></tr>
+    <tr><td class="id">AD-8</td><td class="nm">질문 무제한 위크</td><td>시험 2주전 AI 질답 무료개방(가입자)→"평소에도" 전환. 🤝 · Gate 1</td></tr>
+    <tr><td class="id">AD-9</td><td class="nm">콜백 위젯+통화 계측</td><td>"10초 신청, 매니저가 겁니다"+전화 전환 GA4(현재 사각). 🤖 · S3-1과 동시</td></tr>
+    <tr><td class="id">AD-10</td><td class="nm">UGC 후기 광고 파이프</td><td>동의 3단계에 "④광고 활용" 추가→원문 캡처 소재(제작비 0). 🤝 · 후기 5건+</td></tr>
+    <tr><td class="id">AD-11</td><td class="nm">유튜브 인스트림(V-3)</td><td>분당 반경 CPV 30~50원, 설명회·11월 직전 2주 펄스. 👤 · C-2 직전</td></tr>
+    <tr><td class="id">AD-12</td><td class="nm">학원가 시간대 접점</td><td>정자·수내 픽업대기(21:40~22:10) 제휴 카페·상가 QR카드. 👤 · M3~</td></tr>
+    <tr><td class="id">AD-13</td><td class="nm">선생님들의 모교 시즌</td><td>2월 합격시즌 강사 출신교(동의) 소재, 채용 겸용. 🤝 · 2월</td></tr>
+    <tr><td class="id">AD-14</td><td class="nm">인스턴트 폼 스플릿</td><td>랜딩 vs 리드폼 상담 실시율 판정=G2-1 실증. 🤝 · 메타 ON과 동시</td></tr>
+  </table>
+  <p class="lede" style="margin-top:2mm;"><b>착수 순서</b>: 즉시(V-1·AD-6 오가닉·AD-3 초안) → Gate 1(§24 SA·§25 메타·AD-7·9·14) → 시즌 11월(C-2·AD-11) → Gate 2(AD-1·5·2). <b>경영자 선행 의존</b>: 전 유료채널이 광고계정·카톡채널·후기 3건에 걸림.</p>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>④ AD-1~14</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ⑤ REFACTORING + PRODUCT_DESIGN ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ⑤</div>
+    <h2>리팩토링 · 제품 · 디자인<br><span style="color:#5EE0AC;">코드 실측 개선 원장</span></h2>
+    <p>파일럿 전엔 보안·정합성(P0~P1)만, 구조개선(P2)은 통행세로. 제품/디자인은 코드 실측(파일:라인 근거)으로 죽은 기능·엣지케이스·전환 약점을 전수. 원본: <b style="color:#fff;">REFACTORING_PLAN.md · PRODUCT_DESIGN_TRACKER.md</b></p>
+    <div class="meta">
+      <div><b>R-1~16</b>P0 보안·P1 정합·P1.5 히스토리·P2 분할</div>
+      <div><b>디자인 §1~8</b>인물사진·신뢰·CTA·구현현황</div>
+      <div><b>FI-1~10</b>죽은 기능·퍼널·UX</div>
+      <div><b>EC-1~10 · IMP-1~6</b>플로우 데드락·구조개선</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ⑤</span></div>
+</div>
+
+<!-- ⑤-1 · R-1~7 P0·P1 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Refactoring · P0 보안 · P1 정합성</span><span class="wm">Concord</span></div>
+  <h1 class="t">보안·데이터 정합성 <span class="kw">R-1~7</span></h1>
+  <p class="lede">원칙: 리팩토링을 위한 리팩토링 금지, 스프린트당 리팩토링 지분 ≤20% — 다음 피처의 통행세로 낸다.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:9%;">등급</th><th style="width:40%;">현황</th><th>제안·상태</th></tr>
+    <tr><td class="id">R-1</td><td>P0</td><td class="nm">Toss 웹훅 서명 검증 부재</td><td><b>✅ 종결</b> — Toss는 HMAC 미제공, fetchTossPayment 재조회가 올바른 현행 패턴(S1-2 실측)</td></tr>
+    <tr><td class="id">R-2</td><td>P0</td><td class="nm">Supabase RLS 미설정 — anon 키 존재 시 방어선 0</td><td>전 테이블 DENY ALL 기본 정책. ✅ SQL 준비(20260705_rls, 98d5715), <b>적용은 경영자 승인(E4-5) 대기</b></td></tr>
+    <tr><td class="id">R-3</td><td>P0</td><td class="nm">CHIEF 미들웨어 경로 검증 [확인 필요] — API는 보호되나 페이지 미들웨어 미검증</td><td>4역할×경로 매트릭스로 검증, 구멍 발견 시에만 수정(소, 2h)</td></tr>
+    <tr><td class="id">R-4</td><td>P1</td><td class="nm">QnA 모델 이중화(Question→QuestionMessage) 읽기·쓰기 분기 비용</td><td>🔶 부분해소(7/4 통일 완료). 잔여: 구 Question 모델 제거만(중, 1~2일)</td></tr>
+    <tr><td class="id">R-5</td><td>P1</td><td class="nm">Journey 상태 드리프트(FIRST_LESSON_PENDING) — 매니저가 잘못된 상태로 행동</td><td>상태 전이 단일 함수 수렴+드리프트 검출 배치를 run-alert-checks에</td></tr>
+    <tr><td class="id">R-6</td><td>P1</td><td class="nm">connection_limit=1 병렬쿼리 금지가 암묵 규약 — 프로덕션만 간헐 실패</td><td>api 전수 grep 감사+ESLint/AGENTS.md 명문화+pgbouncer 상향 검토</td></tr>
+    <tr><td class="id">R-7</td><td>P1</td><td class="nm">정산 시급 상수 하드코딩(TEACHER_HOURLY_RATE_KRW)</td><td>지금 유지. BM-A(등급 차등시급) 채택 시 Teacher 필드로 이관. <b>선제 구현 금지</b></td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ R-1~7</span></div>
+</div>
+
+<!-- ⑤-2 · R-8~16 P2·P1.5 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Refactoring · P2 · P1.5 히스토리 진단</span><span class="wm">Concord</span></div>
+  <h1 class="t">유지보수성 <span class="kw">R-8~11</span> · 히스토리 진단 <span class="kw">R-12~16</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:12%;">ID</th><th>P2 유지보수성 (점진)</th></tr>
+      <tr><td class="id">R-8</td><td class="nm">대형파일 분할(보이스카우트 룰): AdminCmsPage 2,545·run-alert-checks 1,806·cms-defaults 1,080·LandingPageV2 802·ManagerConsultations 750·AdminTeachers 705·register/teacher 658</td></tr>
+      <tr><td class="id">R-9</td><td class="nm">합성 이메일 *@concord.local — 단기: isSyntheticEmail 헬퍼 수렴. 근본: email nullable+phone 1급 식별자(대)</td></tr>
+      <tr><td class="id">R-10</td><td class="nm">인증 가드 헬퍼 통합 — 현재 7파일 313줄 양호, 신규 역할 추가 시에만 requireRole 제네릭 검토</td></tr>
+      <tr><td class="id">R-11</td><td class="nm">CMS 캐시 5분 지연 — 저장 시 revalidateTag 온디맨드 무효화(소)</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:12%;">ID</th><th>P1.5 (커밋 155건 진단)</th></tr>
+      <tr class="hl"><td class="id">R-12</td><td class="nm"><span style="color:#DC2626">●</span> 돈 경로 통합 테스트(유일 선행) — vitest+결제 불변식 10~15개(confirm 멱등·환불 순서·레이스 409·더닝). 커버리지% 금지. <b>S2 착수 전 반세션</b></td></tr>
+      <tr><td class="id">R-13</td><td class="nm">run-alert-checks 레지스트리 전환 — 1,834줄 최다 순증, 체크 1개=모듈 1개+try/catch. S2-1과 동시(빅뱅 금지)</td></tr>
+      <tr><td class="id">R-14</td><td class="nm">랜딩 구버전 삭제 — LandingPage/Themed/V2 3벌 공존, 경영자 확인 1개로 2벌+CSS 삭제(소)</td></tr>
+      <tr><td class="id">R-15</td><td class="nm">인증 관용구 표준화 — 직접검사 7개→헬퍼, R-3 매트릭스, AGENTS.md 명문화. S3-12 편입</td></tr>
+      <tr><td class="id">R-16</td><td class="nm">CMS 오버레이 동결(코드 0) — 신규 페이지 CMS 키 기본 OFF, 6개월 무수정 키 Gate 2 하드코딩 회귀</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm; background:rgba(220,38,38,.04);"><p style="font-size:9.5px;"><b>하지 않을 것(반결정)</b>: 레이어드/DDD · 커버리지 %목표 · CMS 재설계 · 모바일-웹 통합 — Gate 1~2 검증 전엔 유지보수를 위한 유지보수. <b>실행순서</b>: 즉시(R-1✅·R-2 승인대기·R-16) → S2 전 R-12 → S2 중 R-13·R-4·R-6 → 운영 전후 R-14·R-5·R-11 → S3~ R-15·R-8·R-9 → BM-A·역할추가 시 R-7·R-10</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ R-8~16</span></div>
+</div>
+
+<!-- ⑤-3 · 디자인 §1~3 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Design · 진단 · 인물사진 · 신뢰</span><span class="wm">Concord</span></div>
+  <h1 class="t">홈 디자인 <span class="kw">§1~3</span> — 핵심 약점 "사람이 안 보인다"</h1>
+  <p class="lede">기준 tutormatch-web(LandingPageV2), 참고 콴다·설탭. 미니멀·타이포 유지하며 신뢰·전환 보강. 대면·전담매니저·엄선강사가 셀링인데 페이지에 실제 인물 0명.</p>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:12%;">§2 인물</th><th>제안</th></tr>
+      <tr><td class="id">2-1 🔴</td><td class="nm">선생님 카드=범용 라인아트 아바타→실사진(또는 "실제와 다를 수 있음" 면책 병기). CSS 이미 인물용, <b>이미지 교체만</b></td></tr>
+      <tr><td class="id">2-2 🔴</td><td class="nm">매니저 얼굴 부재 — 실물+실명+경력 1줄 카드. 전화 전 얼굴 보기=대면 모델 신뢰장치</td></tr>
+      <tr><td class="id">2-3 🟡</td><td class="nm">히어로는 타이포 유지(전면 이미지 금지). 우측 여백에 수업 장면 카드 1장 절충</td></tr>
+      <tr><td class="id">2-4 🟠</td><td class="nm">후기 실체화 — 원형 아바타+"김○○ 어머니·고2". fallbackTestimonials.img 필드 있으나 미렌더</td></tr>
+      <tr><td class="id">2-5 🟠</td><td class="nm">Results 카드 Unsplash 스톡→모자이크 성적표·리포트 스크린샷 또는 등급변화 타이포</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:12%;">§3 신뢰</th><th>제안</th></tr>
+      <tr><td class="id">3-1 🔴</td><td class="nm">stats 논리오류 "상담 500+/매칭 1,200+"(매칭>상담 불가). CMS 수정+기준시점 병기</td></tr>
+      <tr><td class="id">3-2 🔴</td><td class="nm">사업자 정보(상호·대표·사업자번호·통신판매·주소·연락처) 푸터 필수(전상법 의무)</td></tr>
+      <tr><td class="id">3-3 🟠</td><td class="nm">선발 절차 시각화 — 스텝 배지 3개(서류·학력→시연→인터뷰, 합격률 n%). hero-pill 재사용</td></tr>
+      <tr><td class="id">3-4 🟡</td><td class="nm">후기 출처·수량 명시+"전체 보기 →/reviews" 링크</td></tr>
+    </table>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ 디자인 §1~3</span></div>
+</div>
+
+<!-- ⑤-4 · 디자인 §4~8 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Design · CTA · 기술 · 구현현황</span><span class="wm">Concord</span></div>
+  <h1 class="t">전환 <span class="kw">§4</span> · 기술 <span class="kw">§5</span> · 우선순위 <span class="kw">§6</span> · 구현현황 <span class="kw">§7·8</span></h1>
+  <div class="two-col-tables">
+    <table class="led">
+      <tr><th style="width:14%;">§4 CTA</th><th>제안</th></tr>
+      <tr><td class="id">4-1 🔴</td><td class="nm">모바일 플로팅 CTA — 스크롤 시 사라짐. 하단 고정바(lp2-btn-acc)</td></tr>
+      <tr><td class="id">4-2 🟠</td><td class="nm">카카오톡 채널 버튼 — 폼·전화보다 진입장벽 낮음(플로팅/밴드)</td></tr>
+      <tr><td class="id">4-3 🟠</td><td class="nm">랜딩 FAQ 부재 — page.tsx가 faqs fetch하나 V2 미렌더(죽은 데이터). 가격 뒤 아코디언</td></tr>
+      <tr><td class="id">4-4 🟡</td><td class="nm">전화번호 노출 — 40~50대 대상, 푸터·CTA 밴드</td></tr>
+      <tr><td class="id">§5</td><td class="nm">외부이미지 자체호스팅·다크 사진처리·카드 링크·img 필드·hero-pill CMS·마퀴 접근성</td></tr>
+    </table>
+    <table class="led">
+      <tr><th style="width:14%;">§8 잔여</th><th>비고</th></tr>
+      <tr><td class="id">🔴</td><td class="nm">CMS DB 전체 비어있음(코드 기본값 렌더) — 시드 조율 필요</td></tr>
+      <tr><td class="id">🔴</td><td class="nm">법적 페이지 [기재 예정] 다수(terms 4·privacy 6·refund) — 사업자 정보 필요</td></tr>
+      <tr><td class="id">🔴</td><td class="nm">/login 비밀번호 찾기 부재 — 재설정 플로우 선행 개발</td></tr>
+      <tr><td class="id">🟠</td><td class="nm">/reviews 전 카드 ★★★★★ 하드코딩 — 결정 필요</td></tr>
+      <tr><td class="id">✅</td><td class="nm">/tutors [sample]·매니저 노출 → TEACHER 전용 필터 완료</td></tr>
+    </table>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">§6 우선순위 · §7 구현 완료</span><p style="font-size:9.5px;"><b>§6 순위</b>: ①선생님 실사진 ②stats 수정 ③플로팅 CTA ④푸터 사업자정보 ⑤매니저 사진 ⑥랜딩 FAQ ⑦후기 아바타 ⑧Results 국내화. 사진 투입처는 히어로 아닌 <b>선생님→매니저→후기</b> 순. <b>§7 완료</b>: 통계 오류 수정·모바일 플로팅 CTA·랜딩 FAQ·선발 배지·후기 링크·이미지 자체호스팅·가격 콤마·CTA 추가·FAQ JSON-LD·데드코드 삭제·법적 목차.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ 디자인 §4~8</span></div>
+</div>
+
+<!-- ⑤-5 · FI-1~10 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Product · 기능 개선 FI</span><span class="wm">Concord</span></div>
+  <h1 class="t">기능적 개선 <span class="kw">FI-1~10</span> <span class="tag">코드 실측</span></h1>
+  <p class="lede">"지어놓고 안 쓰는 기능" 4개 — 모델+조회 API+화면 완성인데 쓰기 코드 0줄이라 유료 사용자에 영구 빈 화면: 월간 리포트·강사 평점·주간 학습시간·온보딩 설문. 쓰기 경로만 붙이면 살아나는 ROI 최상.</p>
+  <table class="led">
+    <tr><th style="width:8%;">ID</th><th style="width:9%;">등급</th><th>지시 요지</th></tr>
+    <tr><td class="id">FI-1</td><td>P1</td><td class="nm">월간 리포트 자동생성 — generate-monthly-report.ts+월 1일 Cron, StudyTask·질문·Lesson 집계→Claude summary/weakTypes upsert. 해지 방어 "돈값" 증거</td></tr>
+    <tr><td class="id">FI-2</td><td>P2</td><td class="nm">수업 후 평점→TutorReview→Testimonial 마케팅 파이프. POST /mobile/reviews+누적 4회째 REVIEW_REQUEST+Admin 후기 복사</td></tr>
+    <tr><td class="id">FI-3</td><td>P1.5</td><td class="nm">학습시간 그래프 실데이터 — closePastLessons가 StudySession upsert, {lessonMinutes,tasksDone} 복합. 임의 추정 금지</td></tr>
+    <tr><td class="id">FI-4</td><td>P2</td><td class="nm">온보딩 설문 수집→상담·매칭 근거. 가입 후 3문항+상담 모달+매니저 카드 표시</td></tr>
+    <tr><td class="id">FI-5</td><td>P1</td><td class="nm">매칭 "추천 사유"를 매니저가 직접 — TeacherStudent.matchReason(마이그레이션 동승 필수)+수락 카드 why 우선순위. 수락률 직결</td></tr>
+    <tr><td class="id">FI-6</td><td>P1</td><td class="nm">결제 구간 퍼널 이벤트 전무 — pricing_viewed·checkout·payment_completed/failed 추가+/admin/funnel 구간</td></tr>
+    <tr><td class="id">FI-7</td><td>P1.5</td><td class="nm">상담 후 이탈 리인게이지(인앱·푸시만) — checkVisitTimesMissing·checkConsultCompletedNoPlan. SMS 금지(수신동의 없음)</td></tr>
+    <tr><td class="id">FI-8</td><td>P3</td><td class="nm">방치 리드 Admin 세그먼트 뷰 — 가입만/WAITING/상담완료 미결제/수락대기/활성+CSV(통화용)</td></tr>
+    <tr><td class="id">FI-9</td><td>P1.5</td><td class="nm">수업 리마인더 푸시(노쇼 방지) — Cron 시간별 상향+checkUpcomingLessons 24h/1h. EC-6·7과 동일 세션</td></tr>
+    <tr><td class="id">FI-10</td><td>P2</td><td class="nm">매칭 전 타임라인 노출 — journey snapshot에 timeline 배열(저장 불필요)+체크리스트 UI+매니저 프로필 카드</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ FI-1~10</span></div>
+</div>
+
+<!-- ⑤-6 · EC-1~10 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Product · 플로우 엣지케이스 EC</span><span class="wm">Concord</span></div>
+  <h1 class="t">플로우 Walk-through 엣지케이스 <span class="kw">EC-1~10</span> <span class="tag">파일:라인 근거</span></h1>
+  <p class="lede">현행 코드가 핸드오프보다 앞서 있음 — 수락 API는 있으나 <b>거절·취소·재배정이 전부 없어 데드락</b>. 아래가 우선한다.</p>
+  <table class="led">
+    <tr><th style="width:8%;">ID</th><th style="width:9%;">등급</th><th style="width:42%;">문제</th><th>지시</th></tr>
+    <tr><td class="id">EC-1</td><td>P0</td><td class="nm">선생님 거절 수단 없음+매니저 되돌리기 불가=영원히 재매칭 불가(Admin DB만 해결)</td><td>mobile/matches action:decline+DELETE /manager/matches/[id]+중복체크 좁힘+거절 버튼</td></tr>
+    <tr><td class="id">EC-2</td><td>P1</td><td class="nm">2과목 결제(144만) 학생이 둘째 선생님 배정 시 409 — 요금은 2과목 파나 매칭은 1선생님</td><td>중복체크를 (studentId,과목 겹침)으로. 플랜 초과 3번째는 경고만(매니저 재량)</td></tr>
+    <tr><td class="id">EC-3</td><td>P0</td><td class="nm">웹 가입 학생은 수락 자체 불가 — 수락 API가 모바일 JWT 전용, 웹 UI·API 없음</td><td>match-response.ts 추출+POST /student/match-response+상담 화면 수락/거절 버튼</td></tr>
+    <tr><td class="id">EC-4</td><td>P1</td><td class="nm">제안 시 선생님 "배정" 알림 오나 포털에 학생 안 보임(isActive:true만 조회)+중복 알림</td><td>MATCH_PROPOSED_TEACHER 신규 타입+pending 학생 status:PENDING 포함+"수락 대기" 뱃지</td></tr>
+    <tr><td class="id">EC-5</td><td>P0</td><td class="nm">Chief 없이 결제→503→설정 후 재시도 500 영구실패(FAILED 분기 없어 P2002)</td><td>FAILED→PROCESSING 재전환+/admin/payments/incomplete·retry+success localStorage 재시도</td></tr>
+    <tr><td class="id">EC-6</td><td>P1</td><td class="nm">수락 전인데 수업 시작일 박힘+아무도 감시 안 함(Cron에 pending 매칭 검사 없음)</td><td>checkStalePendingMatches·checkFirstLessonNotSet+startDate 제안 시 미기입</td></tr>
+    <tr><td class="id">EC-7</td><td>P2</td><td class="nm">first-lesson 재호출 시 과거 수업 덮어씀+모든 수업 영원히 SCHEDULED</td><td>lessonType:FIRST&startAt>now만 update, 과거 있으면 409+closePastLessons COMPLETED 전환</td></tr>
+    <tr><td class="id">EC-8</td><td>P1</td><td class="nm">상담 끝낸 학생 결제 시 담당이 Chief로 강탈+상태 역행+중복 상담 준비</td><td>assignChief 수정 — managerId 있으면 기존 유지, COMPLETED 역행 금지, null일 때만 Chief</td></tr>
+    <tr><td class="id">EC-9</td><td>P2</td><td class="nm">CHIEF_MANAGER_EMAIL 오타 시 임의 매니저에 소리없이 배정(로그·경고 0)</td><td>매치 실패 시 console.error+OPS_CONFIG_WARNING 1일 1회. 폴백은 유지</td></tr>
+    <tr><td class="id">EC-10</td><td>P2</td><td class="nm">COMPLETED 학생 매칭 없이 재상담 불가(ALREADY_COMPLETED+studentId unique)</td><td>COMPLETED&active 매칭 0건이면 WAITING 리셋 허용. 근본(1:N)은 P3-10</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ EC-1~10</span></div>
+</div>
+
+<!-- ⑤-7 · IMP-1~6 + Part3 우선순위 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑤ Product · 구조적 개선 IMP</span><span class="wm">Concord</span></div>
+  <h1 class="t">기존 기능 구조적 개선 <span class="kw">IMP-1~6</span></h1>
+  <table class="led">
+    <tr><th style="width:9%;">ID</th><th style="width:44%;">사용자 행동·현재 구조</th><th>지시</th></tr>
+    <tr><td class="id">IMP-1</td><td class="nm">숙제 자동분배가 학생 직접 플랜을 통째 삭제(deleteMany:{}) — 완료 이력까지 증발, 완료율 왜곡</td><td>append로 전환+StudyTask.origin(TEACHER/STUDENT) 마이그레이션 동승, 재분배 시 origin:TEACHER&미완료만 삭제+"선생님" 뱃지</td></tr>
+    <tr><td class="id">IMP-2</td><td class="nm">알림이 1회성 인앱 벨에 갇힘 — 놓친 사용자는 EC-6처럼 플로우 멈춤. 홈은 매 접속 봄</td><td>home·journey 응답에 actionRequired 필드(ACCEPT_MATCH·CONFIRM_FIRST_LESSON)+홈 배너. Cron은 보조수단화</td></tr>
+    <tr><td class="id">IMP-3</td><td class="nm">매니저 매칭 화면이 "생성"만 있고 "추적" 없음 — 방치 매칭 안 보임</td><td>파생 상태(PENDING_ACCEPT·FIRST_LESSON_PENDING·ACTIVE)+3열 파이프라인 뷰+24h 경고+Admin 재사용</td></tr>
+    <tr><td class="id">IMP-4</td><td class="nm">미답변 감시가 웹 Question만 봄 — 앱 QnA(QuestionMessage)는 방치되어 썩음</td><td>checkUnansweredQnaMessages — 마지막 메시지 sender:me&24h 스레드→선생님+매니저 QUESTION_UNANSWERED</td></tr>
+    <tr><td class="id">IMP-5</td><td class="nm">결제→배정이 클라이언트 fetch 1회에 매달림 — 탭 닫으면 돈만 나가고 아무 일 없음(웹훅 없음)</td><td>POST /payments/webhook(멱등)+orderId에 studentId 인코딩+세션 일치 검증. success fetch는 UX용, 웹훅은 신뢰경로</td></tr>
+    <tr><td class="id">IMP-6</td><td class="nm">방문 희망시간이 다음 7일 고정 — 배정 지연 시 지난 날짜를 보고 전화</td><td>과거 슬롯 expired 구분+취소선·"재요청"+배정 시 전부 과거면 자동 재요청 발동</td></tr>
+  </table>
+  <div class="card" style="padding:3mm 5mm; margin-top:2.5mm;"><span class="eyebrow">Part 3 우선순위 · 세션 단위 실행</span><p style="font-size:9.5px;"><b>P0(돈·데드락)</b> EC-5·IMP-5·EC-1·EC-3 · <b>P1</b> EC-2·4·6·8·IMP-1·2·3 · <b>P2</b> EC-7·9·10·IMP-4·6. <b>순서</b>: ①EC-5 단독 → ②마이그레이션에 StudyTask.origin 통합 → ③EC-1+3+4(매칭 라이프사이클 일괄) → ④EC-6+7 크론 → ⑤IMP-1 → ⑥IMP-2+3. 문제 없음 확인: 수락 동시성(멱등)·방문시간 보존·미승인 강사 차단·토큰지갑 lazy 생성.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑤ IMP-1~6</span></div>
+</div>
+
+<!-- ═══════════ 섹션 ⑥ 확장·창의 제안 (신규 집필) ═══════════ -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">LEDGER ⑥ · NEW</div>
+    <h2>확장 · 창의 제안<br><span style="color:#5EE0AC;">기존 원장 위에 얹는 신규 발상</span></h2>
+    <p>앞의 5개 원장을 재료 삼아 새로 도출한 확장안 <b style="color:#fff;">X-1~28</b>. 각 항목은 기존 제안(BM·NX·EXP·§)에 <b style="color:#fff;">연계·확장</b>되도록 설계 — 중복이 아니라 위에 쌓는 층이다.</p>
+    <div class="meta">
+      <div><b>7개 테마</b>수익·해자·데이터·커뮤니티·공급·운영·베팅</div>
+      <div><b>X-1~28</b>28건 신규</div>
+      <div><b>우선순위 매트릭스</b>임팩트 × 노력</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>LEDGER ⑥</span></div>
+</div>
+
+<!-- ⑥-1 · 신규 수익 라인 + 오프라인 해자 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑥ Expansion · A 수익 라인 · B 오프라인 해자</span><span class="wm">Concord</span></div>
+  <h1 class="t">신규 수익 라인 <span class="kw">X-1~6</span> · 오프라인·물리 해자 <span class="kw">X-7~9</span></h1>
+  <div class="gloss-cap">테마 A · 신규 수익 라인 (애셋라이트·번들)</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-1</td><td><b>입시 로드맵 컨설팅 번들</b> — 대면 과외에 학기별 입시 전략 세션(수시/정시 설계)을 애드온</td><td>고3·예비고3 ARPU↑ · 연계 BM 요금·AD-6/13 시즌</td></tr>
+    <tr><td class="id">X-2</td><td><b>방학 집중 부트캠프</b> — 방학 4주 오프라인 1:N 소그룹 세션</td><td>대면 마진 극대·신규 리드 퍼널 · 연계 해자 M·S2</td></tr>
+    <tr><td class="id">X-3</td><td><b>형제·가구 통합 플랜</b> — 한 가구 2인+ 통합 관리·요금</td><td>가구 LTV↑·이탈 저항 · 연계 NRR</td></tr>
+    <tr><td class="id">X-4</td><td><b>성적 보증 프리미엄</b> — 목표 미달 시 부분 크레딧 환급을 유료 보증 상품화</td><td>전환 촉진·자신감 신호 · 연계 BM-B·F-2 <span style="color:#DC2626;">●</span>현금 리스크</td></tr>
+    <tr><td class="id">X-5</td><td><b>학습 매니저 단독 구독</b> — 과외 없이 '관리+주간 리포트+상담'만 저가 진입</td><td>퍼널 상단 확장→과외 업셀 · 연계 S2 주간요약</td></tr>
+    <tr><td class="id">X-6</td><td><b>오답 문제은행 판매</b> — 강사 축적 오답을 큐레이션한 맞춤 문제집(PDF/인쇄)</td><td>데이터→상품·부가매출 · 연계 NX-13 성적증거</td></tr>
+  </table>
+  <div class="gloss-cap" style="margin-top:3mm;">테마 B · 오프라인·물리 해자</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-7</td><td><b>Concord 라운지(분당 거점)</b> — 대면 상담·자습·강사 미팅 물리 공간</td><td>신뢰 상징·매칭 전환↑ · 연계 해자 M·매칭</td></tr>
+    <tr><td class="id">X-8</td><td><b>동(洞) 단위 밀도 정복</b> — 목표 동에서 임계 강사·학생 밀도 달성 후 확장</td><td>이동효율·입소문·리뷰 밀도 · 연계 F-1 수요지도</td></tr>
+    <tr><td class="id">X-9</td><td><b>오프라인 신뢰 이벤트</b> — 분기 학부모 설명회/입시 세미나(라운지 연계)</td><td>리드 획득·브랜드 · 연계 §16 설명회</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑥ X-1~9</span></div>
+</div>
+
+<!-- ⑥-2 · 데이터·AI + 커뮤니티 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑥ Expansion · C 데이터·AI · D 커뮤니티</span><span class="wm">Concord</span></div>
+  <h1 class="t">데이터·AI 심화 <span class="kw">X-10~14</span> · 커뮤니티·바이럴 <span class="kw">X-15~17</span></h1>
+  <div class="gloss-cap">테마 C · 데이터 · AI 심화</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-10</td><td><b>강사 AI 수업 준비 코파일럿</b> — 오답→약점 진단→맞춤 문제·수업안 자동 생성</td><td>수업 품질 표준화·강사 시간↓ · 연계 EXP 강사도구·숙제배분</td></tr>
+    <tr><td class="id">X-11</td><td><b>학습 이력 여권</b> — 학생 누적 학습·성적·강사 이력을 이식 가능한 자산으로</td><td>강사교체·전학 연속성=락인·데이터 해자 · 연계 NX 데이터해자</td></tr>
+    <tr><td class="id">X-12</td><td><b>지역 성적 벤치마크 리포트</b> — 익명 집계로 "우리 동/학교 대비 위치" 제공</td><td>유료 인사이트·재방문 · 연계 NX-17 벤치마크</td></tr>
+    <tr><td class="id">X-13</td><td><b>숙제 자동배분 고도화</b> — 난이도·망각곡선·시험일 역산 가중치로 4일/1주 자동 분배</td><td>강사 시간↓·완료율↑ · 연계 제품 노스스타 8·9</td></tr>
+    <tr><td class="id">X-14</td><td><b>이탈 조기경보 엔진</b> — 노쇼·성적정체·상담무응답 신호로 위험 학생 자동 플래그</td><td>유지율↑·매니저 선제 개입 · 연계 NX 리스크엔진·EC</td></tr>
+  </table>
+  <div class="gloss-cap" style="margin-top:3mm;">테마 D · 커뮤니티 · 바이럴 심화</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-15</td><td><b>학부모 앰버서더 프로그램</b> — 검증 학부모에 추천 크레딧+등급 혜택</td><td>고신뢰 채널 K-factor↑ · 연계 K-factor·공유카드</td></tr>
+    <tr><td class="id">X-16</td><td><b>향상·합격 스토리 스튜디오</b> — 동의 기반으로 시즌 성과를 콘텐츠로 자동 패키징</td><td>증거 자산·PR·SEO · 연계 NX 증거자동화·V 콘티</td></tr>
+    <tr><td class="id">X-17</td><td><b>폐쇄형 프리미엄 학부모 멤버십</b> — 입시 정보·세미나·우선배정을 묶은 등급 커뮤니티</td><td>리텐션·소속감·NRR↑ · 연계 커뮤니티 NX</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑥ X-10~17</span></div>
+</div>
+
+<!-- ⑥-3 · 강사 사다리 + 운영 자동화 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑥ Expansion · E 강사 공급 · F 운영 자동화</span><span class="wm">Concord</span></div>
+  <h1 class="t">강사 공급 사다리 <span class="kw">X-18~20</span> · 운영 자동화 <span class="kw">X-21~23</span></h1>
+  <div class="gloss-cap">테마 E · 강사 공급 사다리</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-18</td><td><b>강사 성장 티어(주니어→시니어→마스터)</b> — 성과·리텐션 기반 등급·시급·배정 우선권</td><td>공급 리텐션·품질↑ · 연계 위촉계약·공급엔진</td></tr>
+    <tr><td class="id">X-19</td><td><b>강사 공개 신뢰 배지</b> — 검증·후기·향상률을 공개 프로필 배지화</td><td>매칭 전환↑·직거래 유인↓ · 연계 신원확인·직거래금지</td></tr>
+    <tr><td class="id">X-20</td><td><b>강사 리퍼럴 채용</b> — 검증 강사가 강사를 추천하면 보상</td><td>저비용 공급 확보 · 연계 공급 다변화 EXP</td></tr>
+  </table>
+  <div class="gloss-cap" style="margin-top:3mm;">테마 F · 운영 자동화</div>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:56%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-21</td><td><b>매니저 배정 추천 엔진</b> — 과목·지역·시간·성향 매칭 점수로 강사 후보 자동 추천(결정은 매니저)</td><td>배정 속도·품질↑ · 연계 매칭 무결성</td></tr>
+    <tr><td class="id">X-22</td><td><b>상담→배정 SLA 대시보드</b> — 결제 후 배정·수락 시간 KPI 실시간 추적·지연 알림</td><td>병목 가시화·CS↓ · 연계 게이트 대시보드 S2·EC</td></tr>
+    <tr><td class="id">X-23</td><td><b>반복 숙제 템플릿 라이브러리</b> — 주간 패턴 저장·재사용·공유</td><td>강사 생산성↑ · 연계 제품 노스스타 9</td></tr>
+  </table>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑥ X-18~23</span></div>
+</div>
+
+<!-- ⑥-4 · 대담한 베팅 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑥ Expansion · G 대담한 베팅 (Moonshots)</span><span class="wm">Concord</span></div>
+  <h1 class="t">대담한 베팅 <span class="kw">X-24~28</span> — 판을 키우는 확장</h1>
+  <p class="lede">고임팩트·고위험 장기 베팅. 유닛 이코노믹스가 검증된 뒤 게이트를 통과한 항목만 선택적으로 착수한다.</p>
+  <table class="led">
+    <tr><th style="width:7%;">ID</th><th style="width:52%;">제안 — 핵심</th><th>기대효과 · 연계</th></tr>
+    <tr><td class="id">X-24</td><td><b>프랜차이즈형 지역 파트너</b> — 검증 매니저에게 지역 운영권을 위임(레버니지 셰어)</td><td>애셋라이트 지역 확장 · 연계 애셋라이트 EXP <span style="color:#DC2626;">●</span>품질 관리 리스크</td></tr>
+    <tr><td class="id">X-25</td><td><b>대면+온라인 하이브리드 보충</b> — 대면 세션 사이에 짧은 온라인 보충</td><td>접점 밀도·ARPU↑ · 연계 EXP 온라인</td></tr>
+    <tr><td class="id">X-26</td><td><b>성과연동 요금 실험</b> — 일부 상품에 향상 연동 보너스 요금(소규모 파일럿)</td><td>강력한 신뢰 신호 · 연계 X-4·F-2 <span style="color:#DC2626;">●</span>현금·분쟁 고위험</td></tr>
+    <tr><td class="id">X-27</td><td><b>B2B 임직원 자녀 복지 채널</b> — 기업 복지 제휴로 대량 리드 확보</td><td>CAC↓·안정 유입 · 연계 학교 랜딩 NX-35</td></tr>
+    <tr><td class="id">X-28</td><td><b>Concord 지수</b> — 지역·과목별 난이도/성취를 공개 지수화</td><td>브랜드 신뢰·언론·SEO · 연계 X-12·§11 블로그</td></tr>
+  </table>
+  <div class="card" style="padding:3mm 5mm; margin-top:3mm;"><span class="eyebrow">공통 원칙</span><p style="font-size:9.5px;">베팅은 <b>기존 대면 프리미엄·매니저 매개·직거래 금지</b> 해자를 <b>강화</b>하는 방향으로만. 현금·분쟁 리스크(<span style="color:#DC2626;">●</span> X-4·X-26)는 반드시 소규모 파일럿→실측→확대. 지역 확장(X-24)은 품질 표준(X-10·X-19)이 먼저 자리 잡은 뒤.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑥ X-24~28</span></div>
+</div>
+
+<!-- ⑥-5 · 우선순위 매트릭스 -->
+<div class="slide">
+  <div class="sh"><span class="no">⑥ Expansion · 우선순위 · 착수 순서</span><span class="wm">Concord</span></div>
+  <h1 class="t">우선순위 매트릭스 — <span class="kw">임팩트 × 노력</span></h1>
+  <p class="lede">28건을 임팩트와 실행 노력으로 4분면 배치. 저노력·고임팩트(퀵윈)부터 착수해 레버리지를 확보하고, 빅벳은 게이트 통과 후 선택한다.</p>
+  <div class="grid c2" style="gap:4mm 6mm;">
+    <div class="card" style="box-shadow:none;">
+      <span class="eyebrow">퀵윈 · 고임팩트 · 저노력 (먼저)</span>
+      <ul class="t" style="margin-top:1mm;">
+        <li><b>X-13</b> 숙제 자동배분 고도화 · <b>X-23</b> 숙제 템플릿 — 제품 노스스타, 코드 레버리지</li>
+        <li><b>X-22</b> SLA 대시보드 · <b>X-19</b> 신뢰 배지 — 운영·전환 즉효</li>
+        <li><b>X-3</b> 가구 플랜 · <b>X-15</b> 앰버서더 — LTV·바이럴 저비용</li>
+      </ul>
+    </div>
+    <div class="card" style="box-shadow:none;">
+      <span class="eyebrow">빅벳 · 고임팩트 · 고노력 (게이트 후)</span>
+      <ul class="t" style="margin-top:1mm;">
+        <li><b>X-10</b> 강사 AI 코파일럿 · <b>X-11</b> 학습 이력 여권 — 데이터·품질 해자</li>
+        <li><b>X-7</b> Concord 라운지 · <b>X-1</b> 입시 컨설팅 번들 — 대면 해자·ARPU</li>
+        <li><b>X-24</b> 지역 프랜차이즈 — 애셋라이트 스케일(품질 표준 선행)</li>
+      </ul>
+    </div>
+    <div class="card" style="box-shadow:none;">
+      <span class="eyebrow">필인 · 실험 (여력 될 때)</span>
+      <ul class="t" style="margin-top:1mm;">
+        <li><b>X-6</b> 문제은행 · <b>X-12</b> 벤치마크 리포트 — 데이터 부가매출</li>
+        <li><b>X-16</b> 스토리 스튜디오 · <b>X-9</b> 오프라인 이벤트 — 증거·리드</li>
+        <li><b>X-5</b> 매니저 단독 구독 · <b>X-20</b> 강사 리퍼럴 · <b>X-27</b> B2B 채널</li>
+      </ul>
+    </div>
+    <div class="card" style="box-shadow:none; border-color:#DC2626;">
+      <span class="eyebrow" style="color:#DC2626;">신중 · 고위험 (파일럿 필수)</span>
+      <ul class="t" style="margin-top:1mm;">
+        <li><b>X-4</b> 성적 보증 · <b>X-26</b> 성과연동 요금 — 현금·분쟁 리스크</li>
+        <li><b>X-25</b> 하이브리드 보충 — 대면 프리미엄 희석 주의</li>
+        <li><b>X-8</b> 동 단위 밀도 · <b>X-17</b> 프리미엄 멤버십 · <b>X-28</b> 지수 — 실행 난이도↑</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="padding:3mm 5mm; margin-top:3mm; background:var(--panel-2); border-color:var(--line2);"><span class="eyebrow">착수 순서 권고</span><p style="font-size:9.5px;"><b>1)</b> 퀵윈 5건(X-13·23·22·19·15) — 저위험·즉효 → <b>2)</b> Gate 통과 후 빅벳 1~2개 선택(X-10 또는 X-7) → <b>3)</b> 신뢰 상품(X-1·X-4)은 파일럿 실측 후 → <b>4)</b> 고위험 베팅(X-26·X-24)은 유닛 이코노믹스 검증 뒤. <b>전 항목 공통</b>: 기존 해자 강화 여부로 채택 판정.</p></div>
+  <div class="sf"><span>Concord — 제안 원장 컴펜디움</span><span>⑥ 우선순위 매트릭스</span></div>
+</div>
+
+<!-- INSERT:SECTIONS -->
+
+<!-- 클로징 -->
+<div class="slide dark" style="justify-content:center; align-items:center; text-align:center;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; display:flex; flex-direction:column; align-items:center; gap:7mm;">
+    <div class="wordmark" style="font-size:40px; color:#fff;">Concord<span class="dot"></span></div>
+    <p style="font-size:19px; font-weight:800; letter-spacing:-.03em; line-height:1.4;">제안은 원장에, 실행은 로드맵에.<br><span style="color:#5EE0AC;">빠짐없이 기록하고, 규율 있게 집행한다.</span></p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">원본: BUSINESS_REVIEW · BM_EVOLUTION · BM_EVOLUTION_V4 · MARKETING_PLAN · REFACTORING_PLAN · PRODUCT_DESIGN_TRACKER</p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">tutormatch-web.vercel.app · Concord Private Tutoring · 제안 원장 컴펜디움 v1.0</p>
+  </div>
+</div>
+
+</body>
+</html>

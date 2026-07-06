@@ -10,6 +10,9 @@
 | [BUSINESS_PLAN_PSST.md](external/BUSINESS_PLAN_PSST.md) | 창업지원사업 제출용 사업계획서 (PSST 구조) | 초안 — [기재 필요] 항목 채우면 제출 가능 |
 | [FINANCIAL_PLAN.md](external/FINANCIAL_PLAN.md) | 3개년 재무계획 (실제 V2 요금제 단가 기반, 3시나리오) | 초안 — 파일럿 실측치로 갱신 예정 |
 | [IR_ONE_PAGER.md](external/IR_ONE_PAGER.md) | 투자·지원사업 1페이지 요약 (PDF: `branding/Concord-IR-OnePager.pdf`) | 완료 — 대표자 정보 [기재 필요] |
+| 앱 설명 자료 (덱) — `branding/Concord-App-Guide.pdf` (소스 `docs/app-guide.html`) | pitch-deck 양식 32슬라이드, 캡처 프레임 임베드로 문서만 봐도 앱 파악 | 완료 — 텍스트 원본 `external/APP_GUIDE.md` |
+| 경영자 제안 (덱) — `branding/Concord-CEO-Proposal.pdf` (소스 `docs/ceo-proposal.html`) | pitch-deck 양식 13슬라이드, Problem~Ask + 스크린샷 증거 | 완료 — 텍스트 원본 `external/CEO_PROPOSAL.md`, 대표자 정보 [기재 필요] |
+| [APP_GUIDE.md](external/APP_GUIDE.md) · [CEO_PROPOSAL.md](external/CEO_PROPOSAL.md) | 위 두 덱의 텍스트 원본(마크다운) | 완료 — 덱 갱신 시 함께 수정 |
 | IR 피치덱 — `branding/Concord-IR-Deck.pdf` (소스 `branding/pitch-deck.html`) | 발표·투자 미팅용 13장 덱 (PSST·재무계획 수치 기반) | 완료 — 대표자 정보 [기재 필요] |
 | 브랜드 가이드라인 — `branding/Concord-Brand-Guidelines.pdf` (소스 `branding/brand-guidelines.html`) | 로고·컬러·타이포·보이스 규정집 v1.1 (11p) | 완료 |
 | [../docs/PHOTO_GENERATION_PROMPT.md](PHOTO_GENERATION_PROMPT.md) | 이미지 생성 AI 전달용 프롬프트 (인물 사진 6종×5장) | 완료 (작업 보류 중 — 실사 확보 시 폐기) |
@@ -42,6 +45,7 @@
 
 | 문서 | 내용 |
 |---|---|
+| **제안 원장 컴펜디움 (덱)** — `branding/Concord-Proposal-Ledger.pdf` (소스 `docs/proposal-ledger.html`) | 아래 5개 원장 문서의 **전 제안을 ID 단위로 빠짐없이** 집대성하고 그 위에 신규 **확장·창의 제안(⑥)** 을 얹은 76슬라이드 컴펜디움 덱 (요약본 CEO 제안의 근거 전문). 목차 뒤 **용어 해설 2장**(재무·기술·마케팅·ID 접두어) + 원장 표 zebra 줄무늬로 가독성 보강. ① BR·MK·성장·G2 / ② F·BM·M·RR·W / ③ NX-1~53·EXP / ④ 4트랙·V-1~13·C-1~12·AD-1~14 / ⑤ R-1~16·디자인 §1~8·FI-1~10·EC-1~10·IMP-1~6 / **⑥ 확장·창의 X-1~28**(수익라인·오프라인해자·데이터AI·커뮤니티·강사사다리·운영자동화·대담한베팅 + 우선순위 매트릭스). 재생성: HTML 수정 후 headless Chrome `--print-to-pdf` |
 | [BUSINESS_REVIEW.md](BUSINESS_REVIEW.md) | 사업·마케팅·리스크·성장 통합 (Part 1: BR-1~6/MK-1~8 · Part 2: BR-7~23 법률·재무 · Part 3: 성장 제안 §1~9) |
 | [BM_EVOLUTION.md](BM_EVOLUTION.md) | 반드시 성공할 수 밖에 없는 비즈니스 설계 v3 — 실패모드 F-1~10 · 수익 제안 BM-A~Z(26건) · 민감도 테스트 · 해자 M-1~5 · Go/Fix/Kill 게이트 · 수요/공급 엔진 수학 · KPI 트리(QAS) · 워게임 W-1~4 · 리스크 레지스터 RR-1~10 · 90일+12개월 로드맵 |
 | [BM_EVOLUTION_V4_2026-07.md](BM_EVOLUTION_V4_2026-07.md) | 4차 고도화 v4.1 — "결제 이후" 플라이휠 설계. 신규 53건 NX-1~53 + 기존 확장 8건 EXP-1~8(활성화·NRR·바이럴공학·증거자동화·데이터해자·강사도구·현금공학·커뮤니티·공급다변화·애셋라이트 확장) + 미해결 기존안 통합(코드 실측) + 실행 분담(Part D-0: 전 제안 항목별 분담 총괄표 🤖/🤝/👤 + 스프린트 1~4 / Part E: 경영자 직접 수행 E1~E4) |

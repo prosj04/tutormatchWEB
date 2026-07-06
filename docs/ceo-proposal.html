@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord — 경영자 보고용 사업·마케팅 제안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-press:#0CA372; --green-text:#07875A;
+    --blue:#2563EB;
+    --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  @page{ size:338.67mm 190.5mm; margin:0; }
+  .slide{ width:338.67mm; height:190.5mm; page-break-after:always; position:relative; overflow:hidden;
+    background:var(--bg); padding:13mm 18mm 12mm; display:flex; flex-direction:column; }
+  .slide:last-child{ page-break-after:auto; }
+
+  .sh{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5mm; }
+  .sh .no{ font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); }
+  .sh .wm{ font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--mut2); }
+  .sf{ position:absolute; bottom:7mm; left:18mm; right:18mm; display:flex; justify-content:space-between; font-size:9px; color:var(--mut2); }
+
+  h1.t{ font-size:29px; font-weight:800; letter-spacing:-.035em; line-height:1.12; margin-bottom:2.5mm; }
+  .lede{ font-size:13px; color:var(--mut); max-width:150ch; margin-bottom:5mm; }
+  .kw{ color:var(--green-text); }
+
+  .grid{ display:grid; gap:5mm; }
+  .c2{ grid-template-columns:1fr 1fr; } .c3{ grid-template-columns:1fr 1fr 1fr; } .c4{ grid-template-columns:repeat(4,1fr); }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:5mm 6mm;
+    box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06); }
+  .card h3{ font-size:14px; font-weight:800; letter-spacing:-.02em; margin-bottom:1.5mm; }
+  .card p, .card li{ font-size:11px; color:var(--mut); }
+  .eyebrow{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--green-text); margin-bottom:1.5mm; }
+
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+
+  .dark{ background:var(--fg); color:#fff; }
+  .dark .grid-bg{ position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:60px 60px; -webkit-mask-image:radial-gradient(1000px 660px at 82% -8%,#000,transparent 78%); }
+  .dark .glow{ position:absolute; inset:0; background:radial-gradient(900px 560px at 84% -14%, rgba(16,185,129,.28), transparent 62%); }
+  .dark .sf{ color:rgba(255,255,255,.4); }
+  .dark .eyebrow{ color:#5EE0AC; }
+
+  ul.t{ list-style:none; } ul.t li{ padding-left:4.5mm; position:relative; margin-bottom:1.6mm; font-size:11.5px; color:var(--mut); line-height:1.5; }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.5em; width:2mm; height:2mm; border-radius:50%; background:var(--green); }
+  ul.t b{ color:var(--fg); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ font-size:10.5px; font-weight:700; color:var(--mut2); text-align:left; padding:2.4mm 3mm; border-bottom:1.5px solid var(--line2); letter-spacing:.04em; }
+  td{ font-size:11px; padding:2.4mm 3mm; border-bottom:1px solid var(--line); color:var(--mut); font-variant-numeric:tabular-nums; }
+  td b{ color:var(--fg); } tr:last-child td{ border-bottom:0; }
+  tr.hl td{ background:rgba(16,185,129,.07); }
+
+  .big{ font-size:36px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05; }
+  .big em{ font-style:normal; color:var(--green-text); }
+  .cap{ font-size:10px; color:var(--mut2); }
+
+  .flowrow{ display:grid; grid-template-columns:repeat(6,1fr); gap:3.5mm; }
+  .fstep{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4mm; }
+  .fstep .sn{ font-size:9px; font-weight:800; letter-spacing:.16em; color:var(--green-text); }
+  .fstep b{ display:block; font-size:11px; letter-spacing:-.02em; margin:1mm 0 .5mm; color:var(--fg); }
+  .fstep span{ font-size:9.5px; color:var(--mut); line-height:1.45; display:block; }
+
+  .frame{ border-radius:12px; border:1px solid var(--line2); overflow:hidden; background:#fff;
+    box-shadow:0 14px 34px rgba(34,38,30,.14); position:relative; }
+  .frame::before{ content:""; position:absolute; top:0; left:0; right:0; height:16px; background:#F3F2EC; border-bottom:1px solid var(--line); z-index:2; }
+  .frame::after{ content:"●  ●  ●"; position:absolute; top:2.5px; left:8px; font-size:6px; letter-spacing:1px; color:#cfceC6; z-index:3; }
+  .frame img{ display:block; width:100%; height:100%; object-fit:cover; object-position:top; padding-top:16px; background:#fff; }
+  .frame.phone{ border-radius:18px; }
+  .capc{ font-size:9.5px; color:var(--mut2); text-align:center; margin-top:1.8mm; }
+  .tag{ display:inline-block; font-size:9px; font-weight:700; padding:.6mm 2mm; border-radius:999px; background:rgba(16,185,129,.1); color:var(--green-text); margin-left:1.5mm; vertical-align:middle; }
+
+  .divider{ justify-content:center; }
+  .divider .secno{ font-size:15px; font-weight:800; letter-spacing:.3em; color:#5EE0AC; }
+  .divider h2{ font-size:46px; font-weight:800; letter-spacing:-.04em; line-height:1.1; margin:4mm 0 4mm; }
+  .divider p{ font-size:14px; color:rgba(255,255,255,.66); max-width:110ch; }
+
+  .ask{ display:flex; gap:5mm; align-items:flex-start; margin-bottom:3mm; }
+  .ask .n{ flex:0 0 auto; width:9mm; height:9mm; border-radius:50%; background:rgba(16,185,129,.16); color:#5EE0AC; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
+  .ask b{ color:#fff; font-size:14px; }
+  .ask p{ font-size:11.5px; color:rgba(255,255,255,.62); margin-top:.5mm; }
+</style>
+</head>
+<body>
+
+<!-- 01 · 커버 -->
+<div class="slide dark" style="justify-content:space-between;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;"><img src="../branding/concord-appicon.png" style="width:19mm; height:19mm; border-radius:28.5%; box-shadow:0 12px 34px rgba(16,185,129,.35);"></div>
+  <div style="position:relative;">
+    <div class="wordmark" style="font-size:26px;">Concord<span class="dot"></span></div>
+    <h1 style="font-size:50px; font-weight:800; letter-spacing:-.04em; line-height:1.08; margin:6mm 0 5mm;">경영자 보고용<br>사업·마케팅 <span style="color:#5EE0AC;">제안</span></h1>
+    <p style="font-size:15px; color:rgba(255,255,255,.72); max-width:120ch;">제품 리스크는 제거됐습니다. 남은 것은 아이디어 검증이 아니라 시장 검증과 성장 실행 — 지금 무엇을, 왜 결정해야 하는가.</p>
+    <div style="display:flex; gap:12mm; font-size:11.5px; color:rgba(255,255,255,.55); margin-top:7mm;">
+      <div><b style="color:#fff; display:block;">2026. 07 · v1.0</b>의사결정용 요약</div>
+      <div><b style="color:#fff; display:block;">IR 원페이저 양식 계승</b>근거 문서 연동</div>
+      <div><b style="color:#fff; display:block;">tutormatch-web.vercel.app</b>라이브 서비스</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 · 한 장 요약 -->
+<div class="slide">
+  <div class="sh"><span class="no">00 — Executive Summary</span><span class="wm">Concord</span></div>
+  <h1 class="t">한 장 요약 — <span class="kw">지금 무엇을, 왜</span></h1>
+  <p class="lede"><b>Concord는 "검증된 대면 1:1 과외 + 전담 매니저 관리"를 소프트웨어로 표준화한 프리미엄 에듀테크입니다.</b> 제품은 이미 완성돼 작동합니다(4역할 포털·결제·AI 질답·학습관리). 남은 것은 <b>아이디어 검증이 아니라 시장 검증과 성장 실행</b>입니다.</p>
+  <div class="grid c4" style="flex:1; align-content:start;">
+    <div class="card"><span class="eyebrow">제안 1</span><h3>파일럿 개시 적기</h3><p>제품 리스크 제거 완료 → 자본은 개발이 아니라 <b>분당 1~2개 동 집중 파일럿</b>에 투입.</p></div>
+    <div class="card"><span class="eyebrow">제안 2</span><h3>공급 선(先)가동</h3><p>강사 채용을 수요 모집보다 <b>2~6주 먼저</b>. 모집 후 매칭 실패가 최대 유지 리스크.</p></div>
+    <div class="card"><span class="eyebrow">제안 3</span><h3>CAC 규율</h3><p><b>CAC ≤ 20만 원 채널만</b> 사용, 주간 계측으로 2주 무반응 채널 교체.</p></div>
+    <div class="card"><span class="eyebrow">제안 4</span><h3>지원금 배분</h3><p>1억 확보 시 <b>인건비·마케팅·모바일 앱</b>에 배분, 12개월 내 자립 목표.</p></div>
+  </div>
+  <div class="card" style="display:flex; gap:12mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none; margin-top:1mm;">
+    <div><div class="big"><em>34.2%</em></div><span class="cap">평균 마진율</span></div>
+    <div><div class="big">5<span style="font-size:15px;">명</span></div><span class="cap">Phase 1 BEP(활성)</span></div>
+    <div><div class="big">15<span style="font-size:15px;">억</span></div><span class="cap">3년 누적 거래액</span></div>
+    <div><div class="big">5:1</div><span class="cap">LTV/CAC 목표</span></div>
+    <div style="margin-left:auto; max-width:60mm;"><span class="cap">근거: IR_ONE_PAGER · FINANCIAL_PLAN · MARKETING_PLAN · BM_EVOLUTION. 제품 실물은 APP_GUIDE(캡처 98장).</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>2</span></div>
+</div>
+
+<!-- 03 · Problem -->
+<div class="slide">
+  <div class="sh"><span class="no">01 — Problem</span><span class="wm">Concord</span></div>
+  <h1 class="t">검증 비대칭 — <span class="kw">"실력을 미리 알 수 없다"</span></h1>
+  <p class="lede">사교육 시장은 크지만, 학부모는 강사의 실력·성실성·궁합을 <b>사전 검증할 수단이 없습니다.</b> 검증비용이 매 가정·매 계약마다 중복 지불됩니다.</p>
+  <div class="grid c3" style="flex:1; align-content:start;">
+    <div class="card"><span class="eyebrow">시장 규모</span><h3>사교육비 29.2조</h3><p>2024년, 4년 연속 최고치. 참여율 <b>80.0%</b>. 1:1 과외는 참여학생 1인 <b>월 43.9만 원</b>의 최고단가 영역.</p></div>
+    <div class="card"><span class="eyebrow">공급 문제</span><h3>과잉 속 검증 부재</h3><p>강사 공급은 과잉이나 <b>사전 검증 수단이 없음</b> → 검증비용이 매 가정마다 중복.</p></div>
+    <div class="card"><span class="eyebrow">관리 공백</span><h3>매칭 후 깜깜이</h3><p>매칭 실패 시 재탐색·환불 분쟁·학습 공백. 매칭 이후 진도·과제는 방치.</p></div>
+  </div>
+  <div class="card" style="display:flex; gap:14mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none;">
+    <div><div class="big">29.2<span style="font-size:15px;">조</span></div><span class="cap">사교육비 총액(2024)</span></div>
+    <div><div class="big">80.0<span style="font-size:15px;">%</span></div><span class="cap">참여율</span></div>
+    <div><div class="big"><em>43.9<span style="font-size:15px;">만</span></em></div><span class="cap">1:1 참여학생 1인 월</span></div>
+    <div style="margin-left:auto; max-width:70mm;"><span class="cap">출처: 통계청 초중고 사교육비조사(2024). 상세는 IR_ONE_PAGER.</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>3</span></div>
+</div>
+
+<!-- 04 · Solution -->
+<div class="slide">
+  <div class="sh"><span class="no">02 — Solution</span><span class="wm">Concord</span></div>
+  <h1 class="t">검증·매칭·관리를 <span class="kw">플랫폼이 대신</span></h1>
+  <div class="grid" style="grid-template-columns:1fr 1.15fr; flex:1; align-items:start; gap:9mm;">
+    <div>
+      <p class="lede" style="margin-bottom:4mm;">세 가지 검증·관리 비용을 플랫폼이 흡수합니다. 각 단계가 앱 화면으로 실재합니다.</p>
+      <table>
+        <tr><th>단계</th><th>무엇을</th><th>앱 실물(캡처)</th></tr>
+        <tr><td><b>검증</b></td><td>면접·서류·범죄경력조회 통과 강사만 등록</td><td>admin-teachers · chief-approval</td></tr>
+        <tr class="hl"><td><b>매칭</b></td><td>매니저 대면 상담 후 배정 → <b>학생 수락</b> → 무료 재매칭</td><td>tp-matching · state-pending-accept</td></tr>
+        <tr><td><b>관리</b></td><td>주간 숙제 자동 분배 · Claude AI 질답 · 학습 리포트</td><td>dashboard · questions</td></tr>
+      </table>
+      <div class="card" style="margin-top:5mm; padding:4.5mm 5mm;"><span class="eyebrow">포지셔닝</span>
+        <p style="font-size:11.5px;">콴다과외·설탭(비대면) ↔ 김과외·숨고(나열형 중개) 사이의 빈 카테고리 — <b>"검증된 대면 1:1 + 매니저 관리"</b> 선점. <span class="kw">"화면 너머가 아니라, 옆자리에서."</span></p>
+      </div>
+    </div>
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/state-pending-accept.png" alt="학생 수락"></div>
+      <div class="capc">학생 수락 화면 — 매니저 추천 이유 + "이 선생님으로 시작하기"</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>4</span></div>
+</div>
+
+<!-- 05 · Product -->
+<div class="slide">
+  <div class="sh"><span class="no">03 — Product</span><span class="wm">Concord</span></div>
+  <h1 class="t">아이디어가 아니라 <span class="kw">작동하는 소프트웨어</span></h1>
+  <p class="lede"><b>웹 완성</b>: 4역할 포털 · 토스페이먼츠 서버검증 결제 · 캘린더 학습 플랜 · 숙제 자동 분배 · AI 질답 · CMS · 정산·퍼널·감사로그 백오피스. <b>1인 풀스택 자체 개발</b>(Next.js 14 · Prisma · Supabase · Vercel).</p>
+  <div class="grid c3" style="flex:1; align-items:start; gap:6mm;">
+    <div><div class="frame" style="height:98mm;"><img src="app-screenshots/student/desktop/dashboard.png" alt="학생 대시보드"></div><div class="capc">학생 학습 대시보드 (ACTIVE)</div></div>
+    <div><div class="frame" style="height:98mm;"><img src="app-screenshots/manager/desktop/tp-matching.png" alt="매니저 매칭"></div><div class="capc">매니저 매칭 관리</div></div>
+    <div><div class="frame" style="height:98mm;"><img src="app-screenshots/admin/desktop/admin-home.png" alt="관리자 콘솔"></div><div class="capc">최고관리자 백오피스</div></div>
+  </div>
+  <div class="card" style="margin-top:1mm; padding:4mm 5mm; background:var(--panel-2); border:0; box-shadow:none;">
+    <p style="font-size:11.5px; color:var(--mut);"><b>경영자 관점의 함의</b> — 자본이 "제품이 될까?"가 아니라 <b>"얼마나 빨리 팔리는가?"</b>에만 쓰입니다. 대부분 초기 스타트업이 감당하는 개발 리스크·기간이 이미 소거됨. 모바일은 백엔드 API 58종 완성, RN 앱은 지원금 활용 개발 예정.</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>5</span></div>
+</div>
+
+<!-- 06 · Business Model & Unit Economics -->
+<div class="slide">
+  <div class="sh"><span class="no">04 — Business Model</span><span class="wm">Concord</span></div>
+  <h1 class="t">비즈니스 모델 · <span class="kw">유닛 이코노믹스</span></h1>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr; flex:1; align-items:start; gap:9mm;">
+    <div>
+      <table>
+        <tr><th>지표</th><th>값</th></tr>
+        <tr><td>요금</td><td><b>월정액 선불 38만~112만 원</b> (8개 플랜)</td></tr>
+        <tr><td>강사 정산</td><td>시급 30,000원/h (확정)</td></tr>
+        <tr class="hl"><td>평균 마진율</td><td><b>34.2%</b> (플랜별 29.9~42.0%)</td></tr>
+        <tr><td>학생 1인 월 기여마진</td><td>약 21.6만~24.2만 원</td></tr>
+        <tr><td>BEP</td><td>Phase 1 활성 <b>5명</b> / Phase 2 활성 <b>14명</b></td></tr>
+        <tr><td>LTV/CAC 목표</td><td><b>5:1 이상</b> (CAC 규율 ≤20만)</td></tr>
+      </table>
+      <div class="card" style="margin-top:5mm; padding:4.5mm 5mm;"><p style="font-size:11.5px;"><b>BEP가 활성 5명</b>이라는 점이 핵심입니다 — 파일럿에서 소수 고객만으로 손익분기에 도달, 초기 현금 리스크가 낮습니다.</p></div>
+    </div>
+    <div>
+      <div class="frame" style="height:118mm;"><img src="app-screenshots/public/desktop/pricing.png" alt="요금제"></div>
+      <div class="capc">public/desktop/pricing.png — 8개 월정액 플랜</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>6</span></div>
+</div>
+
+<!-- 07 · 3개년 목표 -->
+<div class="slide">
+  <div class="sh"><span class="no">05 — Financials</span><span class="wm">Concord</span></div>
+  <h1 class="t">3개년 목표 <span class="tag">기본 시나리오</span></h1>
+  <p class="lede">파일럿(2026 H2) 15명에서 시작해 3년 차 반기말 <b>활성 170명</b>. 보수·공격 시나리오는 FINANCIAL_PLAN 참조.</p>
+  <table style="margin-bottom:5mm;">
+    <tr><th>구분</th><th>2026 H2</th><th>2027</th><th>2028</th><th>2029 H1</th></tr>
+    <tr><td>반기말 활성 학생</td><td>15명(파일럿)</td><td>75명</td><td>145명</td><td><b>170명</b></td></tr>
+    <tr class="hl"><td>수업료 거래액</td><td>0.3억</td><td>2.5억</td><td>6.0억</td><td>반기 6.2억</td></tr>
+  </table>
+  <div class="card" style="display:flex; gap:14mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none;">
+    <div><div class="big">15<span style="font-size:15px;">억</span></div><span class="cap">3년 누적 거래액</span></div>
+    <div><div class="big"><em>5.1<span style="font-size:15px;">억</span></em></div><span class="cap">플랫폼 기여마진</span></div>
+    <div><div class="big">12<span style="font-size:15px;">개월</span></div><span class="cap">지원금 소진 후 자립</span></div>
+    <div style="margin-left:auto; max-width:66mm;"><span class="cap">3년 누적 거래액 약 15억 원 · 기여마진 약 5.1억 원. 실측치 확보 시 트랙션 리포트로 갱신.</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>7</span></div>
+</div>
+
+<!-- 08 · Go-to-Market -->
+<div class="slide">
+  <div class="sh"><span class="no">06 — Go-to-Market</span><span class="wm">Concord</span></div>
+  <h1 class="t">4트랙 마케팅 — <span class="kw">분당 1~2개 동 집중</span></h1>
+  <p class="lede">콜드스타트 순서 준수: <b>증거(후기·사진) 제작 → 무료·저비용 채널 → 후기 3건+ → 유료 채널</b>. 강사(공급) 트랙은 수요보다 2~6주 선행.</p>
+  <table style="margin-bottom:4mm;">
+    <tr><th>트랙</th><th>대상</th><th>우선순위 / 시점</th><th>핵심 채널</th><th>CAC 가설</th></tr>
+    <tr><td><b>T1 학생</b></td><td>사용자·가정 내 추천</td><td>1순위</td><td>숏폼·AI 무료체험 → "부모님께 보내기"</td><td>콘텐츠 비용</td></tr>
+    <tr class="hl"><td><b>T2 학부모</b></td><td>결제자(본진)</td><td>2순위</td><td>네이버 SA(로컬)·카카오 CRM·당근 비즈프로필</td><td>결제 CAC 20~50만</td></tr>
+    <tr><td><b>T3 강사</b></td><td>공급(최선행)</td><td>3순위 / 수요보다 2~6주 선행</td><td>채용 공고 SEO·재직 강사 추천(보너스 10만)</td><td>건당 10만</td></tr>
+    <tr><td><b>T4 매니저</b></td><td>운영 인력</td><td>4순위 / Gate 2 이후</td><td>맘카페·당근 구인(지역)</td><td>≈0 겸용</td></tr>
+  </table>
+  <div class="grid c3">
+    <div class="card" style="padding:4mm 5mm;"><span class="eyebrow">예산</span><p>파일럿 자력 월 30~50만 → 성장기 월 100~300만 → 지원금 마케팅비 <b>2,500만</b>.</p></div>
+    <div class="card" style="padding:4mm 5mm;"><span class="eyebrow">규율</span><p>채널별 주간 계측, <b>2주 연속 리드 0 → 채널 교체</b>. 학생 트랙 성패는 "부모님께 보내기 → 상담 신청" 단일 지표.</p></div>
+    <div class="card" style="padding:4mm 5mm;"><span class="eyebrow">상세</span><p>소재·콘티(영상 13편)·리타겟 시나리오 등 실행 상세는 <b>MARKETING_PLAN</b>.</p></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>8</span></div>
+</div>
+
+<!-- 09 · 운영 계측 인프라(스크린샷 증거) -->
+<div class="slide">
+  <div class="sh"><span class="no">06.1 — Operations</span><span class="wm">Concord</span></div>
+  <h1 class="t">계측은 이미 <span class="kw">제품 안에</span> — 백오피스 증거</h1>
+  <p class="lede">"주간 계측·2주 룰"을 별도 도구 없이 실행할 수 있습니다. 지표·퍼널·정산·감사로그 콘솔이 이미 구축돼 있어, 1인 운영에서 다인 운영으로 확장할 통제 인프라가 선제적으로 완비됐습니다.</p>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:104mm;"><img src="app-screenshots/admin/desktop/admin-metrics.png" alt="지표"></div><div class="capc">admin-metrics — 매출·활성·마진</div></div>
+    <div><div class="frame" style="height:104mm;"><img src="app-screenshots/admin/desktop/admin-funnel.png" alt="퍼널"></div><div class="capc">admin-funnel — 상담→결제 전환</div></div>
+    <div><div class="frame" style="height:104mm;"><img src="app-screenshots/admin/desktop/admin-settlements.png" alt="정산"></div><div class="capc">admin-settlements — 강사 정산</div></div>
+    <div><div class="frame" style="height:104mm;"><img src="app-screenshots/admin/desktop/admin-audit-logs.png" alt="감사로그"></div><div class="capc">admin-audit-logs — 변경 추적</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>9</span></div>
+</div>
+
+<!-- 10 · 90일 로드맵 -->
+<div class="slide">
+  <div class="sh"><span class="no">07 — Roadmap</span><span class="wm">Concord</span></div>
+  <h1 class="t">90일 실행 로드맵</h1>
+  <p class="lede">선행 자산 제작과 강사 파이프라인(수요 선행) → 분당 집중 무료·저비용 채널 → 후기 3건+ 후 유료 채널 소액 테스트 → 활성 5명(BEP) 도달.</p>
+  <div class="grid c3" style="flex:1; align-content:start;">
+    <div class="card"><span class="eyebrow">Week 1~3</span><h3>선행 자산 · 공급 가동</h3><ul class="t" style="margin-top:1mm;"><li>후기·사진·GA4/UTM·카카오 채널</li><li><b>강사 채용 파이프라인</b> 가동(수요 선행)</li></ul></div>
+    <div class="card"><span class="eyebrow">M1</span><h3>파일럿 개시</h3><ul class="t" style="margin-top:1mm;"><li>분당 무료·저비용 채널 개시</li><li>상담→매칭→수락 <b>플로우 실주행</b></li><li>파일럿 학생 확보</li></ul></div>
+    <div class="card"><span class="eyebrow">M2~3</span><h3>유료 채널 · BEP</h3><ul class="t" style="margin-top:1mm;"><li>후기 3건+ 확보</li><li>네이버 SA·당근 <b>소액 테스트</b></li><li><b>활성 5명(BEP) 도달</b></li></ul></div>
+  </div>
+  <div class="card" style="margin-top:1mm; padding:4mm 5mm; background:var(--panel-2); border:0; box-shadow:none;"><p style="font-size:11.5px; color:var(--mut);">게이트(Go/Fix/Kill)·리스크 레지스터는 <b>BM_EVOLUTION</b>. 각 주차 결과를 지표·퍼널 콘솔(9쪽)로 직접 계측합니다.</p></div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>10</span></div>
+</div>
+
+<!-- 11 · 리스크와 대응 -->
+<div class="slide">
+  <div class="sh"><span class="no">08 — Risk</span><span class="wm">Concord</span></div>
+  <h1 class="t">리스크와 대응</h1>
+  <table>
+    <tr><th style="width:40%;">리스크</th><th>대응</th></tr>
+    <tr><td><b>공급-수요 타이밍 역전</b><br><span style="color:var(--mut2); font-size:10px;">모집 후 매칭 실패 = 최대 유지 리스크</span></td><td>강사 채용을 수요 파도보다 2~6주 선행, 파이프라인 잔고 = 학생 목표의 <b>1.3배</b></td></tr>
+    <tr class="hl"><td><b>CAC 초과 소각</b></td><td>파일럿 CAC ≤20만 채널만, 주간 계측·<b>2주 룰</b>로 무반응 채널 교체</td></tr>
+    <tr><td><b>1인 운영 병목</b></td><td>매니저 1~2명 개시 직후 채용, 백오피스(정산·감사로그) 선구축 완료</td></tr>
+    <tr><td><b>법률·정산 리스크</b></td><td>약관·환불·개인정보 페이지 편입 완료, 정식 법률 검토는 LEGAL_ADVISORY_MEMO 후속</td></tr>
+  </table>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>11</span></div>
+</div>
+
+<!-- 12 · Ask (다크) -->
+<div class="slide dark">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; flex:1; display:flex; flex-direction:column;">
+    <span class="eyebrow" style="color:#5EE0AC;">09 — Ask</span>
+    <h1 style="font-size:34px; font-weight:800; letter-spacing:-.035em; margin:2mm 0 6mm;">경영자 의사결정 요청 — <span style="color:#5EE0AC;">즉시 결정이 필요한 4가지</span></h1>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6mm 12mm;">
+      <div class="ask"><div class="n">1</div><div><b>파일럿 개시 승인</b><p>분당 집중, M1 착수 여부 및 자력 마케팅 예산(월 30~50만) 배정.</p></div></div>
+      <div class="ask"><div class="n">2</div><div><b>강사 선행 채용 착수</b><p>수요 모집 전 강사 파이프라인 가동 승인.</p></div></div>
+      <div class="ask"><div class="n">3</div><div><b>매니저 채용 시점</b><p>Gate 2(활성 학생 임계) 도달 시 1~2명 채용안.</p></div></div>
+      <div class="ask"><div class="n">4</div><div><b>지원금 신청 방향</b><p>예비창업패키지 1억 기준 — 인건비 30% · 사업화 25% · 마케팅 25% · 운영 15% · 예비 5%.</p></div></div>
+    </div>
+    <div style="margin-top:auto; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:5mm 6mm;">
+      <p style="font-size:11.5px; color:rgba(255,255,255,.72);"><b style="color:#fff;">경영자 직접 입력이 필요한 문서 항목</b> — IR·PSST·덱의 <b style="color:#5EE0AC;">[기재 필요]</b>(대표자 프로필·창업 형태). 이 정보만 채우면 지원사업 3종 문서가 즉시 제출 가능 상태가 됩니다.</p>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 경영자 제안 v1.0</span><span>12</span></div>
+</div>
+
+<!-- 13 · 클로징 -->
+<div class="slide dark" style="justify-content:center; align-items:center; text-align:center;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; display:flex; flex-direction:column; align-items:center; gap:7mm;">
+    <div class="wordmark" style="font-size:40px; color:#fff;">Concord<span class="dot"></span></div>
+    <p style="font-size:19px; font-weight:800; letter-spacing:-.03em; line-height:1.4;">제품 리스크는 끝났습니다.<br><span style="color:#5EE0AC;">이제 시장을 검증할 시간입니다.</span></p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">별첨: APP_GUIDE(제품 실물 98장) · IR_ONE_PAGER · FINANCIAL_PLAN · MARKETING_PLAN · BUSINESS_PLAN_PSST</p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">tutormatch-web.vercel.app · Concord Private Tutoring · 경영자 제안 v1.0</p>
+  </div>
+</div>
+
+</body>
+</html>

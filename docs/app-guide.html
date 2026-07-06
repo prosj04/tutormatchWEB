@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord — 앱 상세 설명 자료</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-press:#0CA372; --green-text:#07875A;
+    --blue:#2563EB;
+    --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  @page{ size:338.67mm 190.5mm; margin:0; }
+  .slide{ width:338.67mm; height:190.5mm; page-break-after:always; position:relative; overflow:hidden;
+    background:var(--bg); padding:13mm 18mm 12mm; display:flex; flex-direction:column; }
+  .slide:last-child{ page-break-after:auto; }
+
+  .sh{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5mm; }
+  .sh .no{ font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); }
+  .sh .wm{ font-size:13px; font-weight:800; letter-spacing:-.02em; color:var(--mut2); }
+  .sf{ position:absolute; bottom:7mm; left:18mm; right:18mm; display:flex; justify-content:space-between; font-size:9px; color:var(--mut2); }
+
+  h1.t{ font-size:29px; font-weight:800; letter-spacing:-.035em; line-height:1.12; margin-bottom:2.5mm; }
+  .lede{ font-size:13px; color:var(--mut); max-width:150ch; margin-bottom:5mm; }
+  .kw{ color:var(--green-text); }
+
+  .grid{ display:grid; gap:5mm; }
+  .c2{ grid-template-columns:1fr 1fr; } .c3{ grid-template-columns:1fr 1fr 1fr; } .c4{ grid-template-columns:repeat(4,1fr); }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:5mm 6mm;
+    box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06); }
+  .card h3{ font-size:14px; font-weight:800; letter-spacing:-.02em; margin-bottom:1.5mm; }
+  .card p, .card li{ font-size:11px; color:var(--mut); }
+  .eyebrow{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--green-text); margin-bottom:1.5mm; }
+
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+
+  .dark{ background:var(--fg); color:#fff; }
+  .dark .grid-bg{ position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:60px 60px; -webkit-mask-image:radial-gradient(1000px 660px at 82% -8%,#000,transparent 78%); }
+  .dark .glow{ position:absolute; inset:0; background:radial-gradient(900px 560px at 84% -14%, rgba(16,185,129,.28), transparent 62%); }
+  .dark .sf{ color:rgba(255,255,255,.4); }
+  .dark .eyebrow{ color:#5EE0AC; }
+
+  ul.t{ list-style:none; } ul.t li{ padding-left:4.5mm; position:relative; margin-bottom:1.6mm; font-size:11.5px; color:var(--mut); line-height:1.5; }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.5em; width:2mm; height:2mm; border-radius:50%; background:var(--green); }
+  ul.t b{ color:var(--fg); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ font-size:10.5px; font-weight:700; color:var(--mut2); text-align:left; padding:2.4mm 3mm; border-bottom:1.5px solid var(--line2); letter-spacing:.04em; }
+  td{ font-size:11px; padding:2.4mm 3mm; border-bottom:1px solid var(--line); color:var(--mut); font-variant-numeric:tabular-nums; }
+  td b{ color:var(--fg); } tr:last-child td{ border-bottom:0; }
+  tr.hl td{ background:rgba(16,185,129,.07); }
+
+  .big{ font-size:36px; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05; }
+  .big em{ font-style:normal; color:var(--green-text); }
+  .cap{ font-size:10px; color:var(--mut2); }
+
+  .flowrow{ display:grid; grid-template-columns:repeat(6,1fr); gap:3.5mm; }
+  .fstep{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4mm; }
+  .fstep .sn{ font-size:9px; font-weight:800; letter-spacing:.16em; color:var(--green-text); }
+  .fstep b{ display:block; font-size:11px; letter-spacing:-.02em; margin:1mm 0 .5mm; color:var(--fg); }
+  .fstep span{ font-size:9.5px; color:var(--mut); line-height:1.45; display:block; }
+
+  /* 스크린샷 프레임 — 풀페이지 캡처는 상단을 크롭해 보여준다(object-fit:cover; top). */
+  .frame{ border-radius:12px; border:1px solid var(--line2); overflow:hidden; background:#fff;
+    box-shadow:0 14px 34px rgba(34,38,30,.14); position:relative; }
+  .frame::before{ content:""; position:absolute; top:0; left:0; right:0; height:16px; background:#F3F2EC; border-bottom:1px solid var(--line); z-index:2; }
+  .frame::after{ content:"●  ●  ●"; position:absolute; top:2.5px; left:8px; font-size:6px; letter-spacing:1px; color:#cfceC6; z-index:3; }
+  .frame img{ display:block; width:100%; height:100%; object-fit:cover; object-position:top; padding-top:16px; background:#fff; }
+  .frame.phone{ border-radius:18px; }
+  .capc{ font-size:9.5px; color:var(--mut2); text-align:center; margin-top:1.8mm; }
+  .tag{ display:inline-block; font-size:9px; font-weight:700; padding:.6mm 2mm; border-radius:999px; background:rgba(16,185,129,.1); color:var(--green-text); margin-left:1.5mm; vertical-align:middle; }
+
+  /* 섹션 디바이더(다크) */
+  .divider{ justify-content:center; }
+  .divider .secno{ font-size:15px; font-weight:800; letter-spacing:.3em; color:#5EE0AC; }
+  .divider h2{ font-size:46px; font-weight:800; letter-spacing:-.04em; line-height:1.1; margin:4mm 0 4mm; }
+  .divider p{ font-size:14px; color:rgba(255,255,255,.66); max-width:110ch; }
+</style>
+</head>
+<body>
+
+<!-- 01 · 커버 -->
+<div class="slide dark" style="justify-content:space-between;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;"><img src="../branding/concord-appicon.png" style="width:19mm; height:19mm; border-radius:28.5%; box-shadow:0 12px 34px rgba(16,185,129,.35);"></div>
+  <div style="position:relative;">
+    <div class="wordmark" style="font-size:26px;">Concord<span class="dot"></span></div>
+    <h1 style="font-size:50px; font-weight:800; letter-spacing:-.04em; line-height:1.08; margin:6mm 0 5mm;">앱 상세 설명 자료<br>화면 하나하나로 <span style="color:#5EE0AC;">제품을 증명</span>합니다</h1>
+    <p style="font-size:15px; color:rgba(255,255,255,.72); max-width:120ch;">검증된 강사 · 전담 매니저 · 대면 1:1 과외를 소프트웨어로 표준화한 프리미엄 에듀테크 — 전 역할·전 화면 실 구동 캡처</p>
+    <div style="display:flex; gap:12mm; font-size:11.5px; color:rgba(255,255,255,.55); margin-top:7mm;">
+      <div><b style="color:#fff; display:block;">2026. 07 · v1.0</b>제품 설명서</div>
+      <div><b style="color:#fff; display:block;">49개 화면 · 98컷</b>실 구동 캡처</div>
+      <div><b style="color:#fff; display:block;">tutormatch-web.vercel.app</b>라이브 서비스</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 · 한눈에 보는 Concord -->
+<div class="slide">
+  <div class="sh"><span class="no">00 — Overview</span><span class="wm">Concord</span></div>
+  <h1 class="t">한눈에 보는 <span class="kw">Concord</span></h1>
+  <p class="lede">면접·검증된 강사와 전담 매니저가 <b>대면 1:1 과외를 매칭·관리</b>하는 프리미엄 에듀테크. 아이디어 단계가 아니라 <b>웹 4역할 포털·결제·AI 질답·학습관리가 모두 작동하는 완성된 소프트웨어</b>입니다.</p>
+  <div class="grid c4" style="margin-bottom:5mm;">
+    <div class="card"><span class="eyebrow">사용자 역할</span><h3>4역할 포털</h3><p>학생/학부모 · 강사 · 매니저(+최고매니저) · 최고관리자</p></div>
+    <div class="card"><span class="eyebrow">핵심 플로우</span><h3>상담→수락→수업</h3><p>상담 신청 → 매니저 배정 → 대면 상담 → 강사 매칭 → 학생 수락 → 첫 수업 → 진행관리</p></div>
+    <div class="card"><span class="eyebrow">차별 기능</span><h3>검증·매칭·관리</h3><p>강사 검증 · 매니저 대면 매칭 · 주간 숙제 자동 분배 · Claude AI 질답 · 학습 리포트</p></div>
+    <div class="card"><span class="eyebrow">기술</span><h3>완성된 웹</h3><p>Next.js 14 · Prisma · Supabase · Vercel · 토스페이먼츠(서버 검증)</p></div>
+  </div>
+  <div class="card" style="display:flex; gap:12mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none;">
+    <div><div class="big"><em>49</em></div><span class="cap">캡처된 화면 수</span></div>
+    <div><div class="big">98컷</div><span class="cap">데스크톱 + 모바일</span></div>
+    <div><div class="big">4역할</div><span class="cap">학생·강사·매니저·관리자</span></div>
+    <div style="margin-left:auto; max-width:70mm;"><span class="cap">모든 스크린샷은 로컬 시연 데이터(가상의 학생·강사)로 촬영 — 실제 고객 개인정보 미포함. 요약 지표는 IR·재무계획 문서를 따릅니다.</span></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>2</span></div>
+</div>
+
+<!-- 03 · 목차 -->
+<div class="slide">
+  <div class="sh"><span class="no">00 — Contents</span><span class="wm">Concord</span></div>
+  <h1 class="t">문서 구성 — <span class="kw">화면 순서 = 고객 여정 순서</span></h1>
+  <p class="lede">공개 페이지에서 시작해 학생이 실제로 밟는 단계를 따라가고, 이어서 공급자(강사)·운영자(매니저)·관리자 도구를 봅니다.</p>
+  <div class="grid c3" style="flex:1; align-content:start;">
+    <div class="card"><span class="eyebrow">Part 1</span><h3>공개 페이지 (12)</h3><ul class="t" style="margin-top:1mm;"><li>홈·요금제·강사진·후기</li><li>FAQ·약관·개인정보·환불</li><li>가입·로그인</li></ul></div>
+    <div class="card"><span class="eyebrow">Part 2</span><h3>학생 여정 (10)</h3><ul class="t" style="margin-top:1mm;"><li>매칭 진행 → 수락 대기</li><li>첫 수업 → 수업 진행</li><li>AI 질답·결제·알림</li></ul></div>
+    <div class="card"><span class="eyebrow">Part 3</span><h3>강사 포털 (8)</h3><ul class="t" style="margin-top:1mm;"><li>대시보드·승인 상태</li><li>지원·프로필·학생 관리</li></ul></div>
+    <div class="card"><span class="eyebrow">Part 4</span><h3>매니저 포털 (8)</h3><ul class="t" style="margin-top:1mm;"><li>매칭 관리(운영 심장)</li><li>상담·학생·모니터링</li><li>최고매니저 강사 승인</li></ul></div>
+    <div class="card"><span class="eyebrow">Part 5</span><h3>최고관리자 (11)</h3><ul class="t" style="margin-top:1mm;"><li>학생·강사·매칭·결제</li><li>정산·지표·퍼널·감사로그</li><li>CMS·데이터 콘솔</li></ul></div>
+    <div class="card"><span class="eyebrow">Part 6</span><h3>모바일 대응</h3><ul class="t" style="margin-top:1mm;"><li>반응형 웹 (390×844)</li><li>네이티브 앱 API 58종 완비</li></ul></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>3</span></div>
+</div>
+
+<!-- 04 · Part 1 디바이더 -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">PART 1</div>
+    <h2>공개 페이지<br><span style="color:#5EE0AC;">첫인상과 신뢰 설계</span></h2>
+    <p>로그인 없이 접근하는 마케팅·전환 페이지. 서사는 "성적보다 습관이 먼저 바뀐다"는 불안 해소 카피를 축으로, 모든 페이지 우상단에 무료 상담 CTA가 상주합니다.</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>4</span></div>
+</div>
+
+<!-- 05 · 홈 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.1 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">홈(랜딩) — <span class="kw">단일 전환 퍼널</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/public/desktop/home.png" alt="홈 데스크톱"></div>
+      <div class="capc">public/desktop/home.png — 데스크톱 히어로</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm; height:100%;">
+      <p class="lede" style="margin-bottom:2mm;">히어로 → 문제 제기 → <b>검증·매칭·관리</b> 3단 약속 → 프루프 카드 → 상담 CTA로 이어지는 단일 전환 퍼널. 우상단 무료 상담 버튼이 전 페이지에 상주합니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">서사 구조</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>불안 해소</b> — "성적보다 습관이 먼저"</li><li><b>3단 약속</b> — 검증·매칭·관리</li><li><b>프루프 카드</b> — 실제 후기·근거</li><li><b>단일 CTA</b> — 무료 상담 신청</li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:78mm; align-self:center;"><img src="app-screenshots/public/mobile/home.png" alt="홈 모바일"></div>
+      <div class="capc">public/mobile/home.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>5</span></div>
+</div>
+
+<!-- 06 · 요금제 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.2 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">요금제 — <span class="kw">8개 월정액 플랜</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/public/desktop/pricing.png" alt="요금제 데스크톱"></div>
+      <div class="capc">public/desktop/pricing.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:2mm;">월정액 선불 8개 플랜(<b>38만~112만 원</b>)을 과목·횟수 조합으로 제시. 강사 시급 30,000원 정산 구조 위에 평균 마진율 <b>34.2%</b>를 확보하는 단가 체계입니다.</p>
+      <div class="card" style="display:flex; gap:8mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none; padding:4.5mm 5mm;">
+        <div><div class="big" style="font-size:26px;">38~112<span style="font-size:13px;">만</span></div><span class="cap">월정액 범위</span></div>
+        <div><div class="big" style="font-size:26px;"><em>34.2%</em></div><span class="cap">평균 마진율</span></div>
+      </div>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">가격 설계</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>선불 월정액</b> — 현금흐름 안정</li><li><b>시급 30,000원</b> 정산 고정</li><li><b>8개 플랜</b>으로 과목·횟수 커버</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>6</span></div>
+</div>
+
+<!-- 07 · 강사진 + 강사 상세 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.3 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">강사진 · 강사 상세 — <span class="kw">"사전 검증된 강사"의 시각화</span></h1>
+  <p class="lede">검증을 통과한(<b>approved</b>) 강사만 노출됩니다. 상세 페이지는 과목·경력·소개를 담아 핵심 가치를 시각화합니다.</p>
+  <div class="grid c2" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:115mm;"><img src="app-screenshots/public/desktop/tutors.png" alt="강사진"></div><div class="capc">public/desktop/tutors.png — 강사 목록</div></div>
+    <div><div class="frame" style="height:115mm;"><img src="app-screenshots/public/desktop/tutor-detail.png" alt="강사 상세"></div><div class="capc">public/desktop/tutor-detail.png — 강사 상세</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>7</span></div>
+</div>
+
+<!-- 08 · 후기 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.4 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">후기 — <span class="kw">제품 차별점이 곧 사회적 증거</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/public/desktop/reviews.png" alt="후기"></div>
+      <div class="capc">public/desktop/reviews.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">성적 수치가 아니라 <b>습관·태도 변화</b> 중심의 후기 카드. 제품의 차별점이 그대로 후기 언어가 됩니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">후기 = 기능 증거</span>
+        <ul class="t" style="margin-top:1mm;"><li>"매니저님이 <b>직접 상담</b>…" → 매니저 매칭</li><li>"밤에 올리면 <b>AI가 바로 답</b>…" → 질답</li><li>"안 맞아서 <b>무료 재매칭</b>…" → 수락 구조</li></ul>
+      </div>
+      <div class="card" style="padding:4.5mm 5mm; background:var(--panel-2); border:0; box-shadow:none;"><p style="font-size:11px; color:var(--mut);">각 후기가 특정 기능(2.2·2.5·4.1)의 실체를 지목 — 마케팅 카피와 제품이 1:1로 연결됩니다.</p></div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>8</span></div>
+</div>
+
+<!-- 09 · FAQ·약관·개인정보·환불 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.5 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">FAQ · 약관 · 개인정보 · 환불정책 — <span class="kw">신뢰·법률 골격</span></h1>
+  <p class="lede">법률·신뢰 문서가 이미 페이지로 편입되어 결제·분쟁 대응의 기본 골격을 갖췄습니다(정식 법률 검토는 별도 진행).</p>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/public/desktop/faq.png" alt="FAQ"></div><div class="capc">faq.png</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/public/desktop/terms.png" alt="이용약관"></div><div class="capc">terms.png — 이용약관</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/public/desktop/privacy.png" alt="개인정보"></div><div class="capc">privacy.png — 개인정보</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/public/desktop/refund.png" alt="환불정책"></div><div class="capc">refund.png — 환불정책</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>9</span></div>
+</div>
+
+<!-- 10 · 가입·로그인 -->
+<div class="slide">
+  <div class="sh"><span class="no">1.6 — Public</span><span class="wm">Concord</span></div>
+  <h1 class="t">가입 · 로그인 — <span class="kw">학생 가입 / 강사 지원 분리</span></h1>
+  <p class="lede">휴대폰·이메일 + 비밀번호 로그인. 가입 동선은 학생(수요)과 강사(공급)를 처음부터 분리해, 강사는 지원·심사 트랙으로 유입됩니다.</p>
+  <div class="grid c3" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:112mm;"><img src="app-screenshots/public/desktop/login.png" alt="로그인"></div><div class="capc">login.png — 로그인</div></div>
+    <div><div class="frame" style="height:112mm;"><img src="app-screenshots/public/desktop/register.png" alt="학생 가입"></div><div class="capc">register.png — 학생 회원가입</div></div>
+    <div><div class="frame" style="height:112mm;"><img src="app-screenshots/public/desktop/register-teacher.png" alt="강사 지원"></div><div class="capc">register-teacher.png — 강사 지원</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>10</span></div>
+</div>
+
+<!-- 11 · Part 2 디바이더 -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">PART 2</div>
+    <h2>학생 여정<br><span style="color:#5EE0AC;">상담부터 수업 진행까지</span></h2>
+    <p>제품 북극성은 "화면 너머가 아니라 옆자리에서". 학생 대시보드는 학습 단계(Journey Stage)에 따라 다른 화면을 보여주며, 각 단계는 실제 DB 상태에서 자동 산출됩니다.</p>
+    <div class="flowrow" style="margin-top:9mm; width:100%;">
+      <div class="fstep"><span class="sn">STEP 1</span><b>상담 대기</b><span>상담 신청 접수</span></div>
+      <div class="fstep"><span class="sn">STEP 2</span><b>매니저 배정</b><span>최고매니저 자동 배정</span></div>
+      <div class="fstep"><span class="sn">STEP 3</span><b>매칭 진행</b><span>대면 상담 완료</span></div>
+      <div class="fstep"><span class="sn">STEP 4</span><b>강사 수락 대기</b><span>학생 수락 버튼</span></div>
+      <div class="fstep"><span class="sn">STEP 5</span><b>첫 수업 대기</b><span>강사 일정 설정</span></div>
+      <div class="fstep"><span class="sn">STEP 6</span><b>수업 진행</b><span>ACTIVE 대시보드</span></div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>11</span></div>
+</div>
+
+<!-- 12 · ① 매칭 진행 -->
+<div class="slide">
+  <div class="sh"><span class="no">2.1 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">① 매칭 진행 <span class="tag">상담 완료</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/state-matching.png" alt="매칭 진행"></div>
+      <div class="capc">student/desktop/state-matching.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">대면 상담이 끝나면 "곧 맞춤 선생님을 추천해 드릴게요" 상태 카드가 뜨고, 상담 메모가 그대로 이어집니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">화면 요점</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>상태 카드</b> — 다음 단계 안내</li><li><b>상담 메모 연속</b> — "수학 내신 대비, 주 2회 대면 희망"</li><li>DB 상태에서 <b>자동 산출</b>되는 단계</li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:70mm; align-self:center;"><img src="app-screenshots/student/mobile/state-matching.png" alt="모바일"></div>
+      <div class="capc">student/mobile/state-matching.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>12</span></div>
+</div>
+
+<!-- 13 · ② 강사 수락 대기 (핵심) -->
+<div class="slide">
+  <div class="sh"><span class="no">2.2 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">② 강사 수락 대기 — <span class="kw">핵심 차별점: 동의 기반 매칭</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/state-pending-accept.png" alt="수락 대기"></div>
+      <div class="capc">student/desktop/state-pending-accept.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">매니저가 배정한 강사를 학생이 <b>직접 수락 버튼("이 선생님으로 시작하기")</b>으로 확정합니다. 일방 배정이 아닌 <b>동의 기반 매칭</b>.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">왜 차별적인가</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>매니저 추천 이유</b> 표시 — "차분한 설명 선호 성향에 맞춰"</li><li><b>학생 수락</b> 전까지 수업 미개시</li><li>미스매치 시 <b>무료 재매칭</b></li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:66mm; align-self:center;"><img src="app-screenshots/student/mobile/state-pending-accept.png" alt="모바일"></div>
+      <div class="capc">student/mobile/state-pending-accept.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>13</span></div>
+</div>
+
+<!-- 14 · ③ 첫 수업 대기 -->
+<div class="slide">
+  <div class="sh"><span class="no">2.3 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">③ 첫 수업 일정 대기</h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/state-first-lesson.png" alt="첫 수업 대기"></div>
+      <div class="capc">student/desktop/state-first-lesson.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">학생이 강사를 수락하면 강사가 첫 수업 날짜를 설정하고, 그 전까지 "첫 수업 일정 조율 중" 상태를 유지합니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">단계 전환</span>
+        <ul class="t" style="margin-top:1mm;"><li>수락 완료 → <b>강사가 첫 수업일 설정</b></li><li>설정 전: "일정 조율 중" 상태 유지</li><li>설정 후: ACTIVE 대시보드로 전환</li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:70mm; align-self:center;"><img src="app-screenshots/student/mobile/state-first-lesson.png" alt="모바일"></div>
+      <div class="capc">student/mobile/state-first-lesson.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>14</span></div>
+</div>
+
+<!-- 15 · ④ 수업 진행 대시보드 -->
+<div class="slide">
+  <div class="sh"><span class="no">2.4 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">④ 수업 진행 대시보드 <span class="tag">ACTIVE · 제품의 심장</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/dashboard.png" alt="학생 대시보드"></div>
+      <div class="capc">student/desktop/dashboard.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">수업이 시작되면 학생은 통합 학습 대시보드를 받습니다. 한 화면에 학습 플래너·담당 강사·케어 기록·질답이 모두 담깁니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">한 화면에 담기는 것</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>캘린더 학습 플래너</b> — 날짜별 할 일, "이전 날 복사" 재사용</li><li><b>담당 선생님 카드</b> + 매니저 케어 기록</li><li><b>선생님 코멘트</b> · 정량/정성 <b>학습 목표</b></li><li><b>Q&A 스레드</b> (다음 슬라이드)</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>15</span></div>
+</div>
+
+<!-- 16 · ⑤ AI+강사 질답 -->
+<div class="slide">
+  <div class="sh"><span class="no">2.5 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">⑤ AI + 강사 질답(Q&A) — <span class="kw">두 번째 차별점</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/student/desktop/questions.png" alt="질문 목록"></div>
+      <div class="capc">student/desktop/questions.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">학생이 모르는 문제를 올리면 <b>Claude AI가 즉시 1차 답변</b>하고, <b>담당 강사가 이어서 확인·보강</b>합니다. "해결됨" 플래그로 관리.</p>
+      <div class="card" style="padding:4.5mm 5mm; background:var(--panel-2); border:0; box-shadow:none;"><span class="eyebrow">실제 스레드 예시</span>
+        <ul class="t" style="margin-top:1mm;"><li>Q: "미분계수 정의에서 극한이 없으면 미분 불가능?"</li><li>AI 즉답 — 순간변화율 정의</li><li>강사 보강 — "y=|x| 예를 꼭 기억" → <b>해결됨</b></li></ul>
+      </div>
+      <div class="card" style="padding:4.5mm 5mm;"><p style="font-size:11px; color:var(--mut);"><b>사업적 의미</b> — "밤에 질문해도 방치 안 됨"의 실체이자, <b>AI 토큰 = 원가 통제 가능한 부가가치</b>.</p></div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>16</span></div>
+</div>
+
+<!-- 17 · 결제·계정·알림·상담기록 -->
+<div class="slide">
+  <div class="sh"><span class="no">2.6 — Student</span><span class="wm">Concord</span></div>
+  <h1 class="t">결제 · 결제내역 · 계정 · 알림 · 상담기록</h1>
+  <p class="lede">학생 여정을 뒷받침하는 보조 화면. <b>토스페이먼츠 서버 검증 결제</b>부터 납부·환불 이력, 계정·보호자 정보, 알림 배치까지.</p>
+  <div class="grid c3" style="flex:1; align-items:start; gap:5mm;">
+    <div><div class="frame" style="height:60mm;"><img src="app-screenshots/student/desktop/checkout.png" alt="결제"></div><div class="capc">checkout.png — 토스 결제</div></div>
+    <div><div class="frame" style="height:60mm;"><img src="app-screenshots/student/desktop/payments.png" alt="결제내역"></div><div class="capc">payments.png — 납부·환불 이력</div></div>
+    <div><div class="frame" style="height:60mm;"><img src="app-screenshots/student/desktop/dashboard-account.png" alt="계정"></div><div class="capc">dashboard-account.png — 계정·보호자</div></div>
+    <div><div class="frame" style="height:60mm;"><img src="app-screenshots/student/desktop/notifications.png" alt="알림"></div><div class="capc">notifications.png — 알림</div></div>
+    <div><div class="frame" style="height:60mm;"><img src="app-screenshots/student/desktop/dashboard-consultation.png" alt="상담 기록"></div><div class="capc">dashboard-consultation.png — 상담 기록</div></div>
+    <div class="card" style="padding:5mm;"><span class="eyebrow">결제 안전성</span><h3 style="font-size:13px;">서버 검증 결제</h3><p>토스페이먼츠 결제 승인을 <b>서버에서 재검증</b>해 위·변조를 차단. 환불 이력까지 학생 화면에 투명하게 노출됩니다.</p></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>17</span></div>
+</div>
+
+<!-- 18 · Part 3 디바이더 -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">PART 3</div>
+    <h2>강사 포털<br><span style="color:#5EE0AC;">검증된 공급자 도구</span></h2>
+    <p>강사는 별도 포털(/teacher-portal)에서 승인·학생·수업을 관리합니다. 매칭·모니터링·상담은 매니저 권한 전용으로, 일반 강사 계정에서는 권한 게이팅이 정상 동작합니다.</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>18</span></div>
+</div>
+
+<!-- 19 · 강사 대시보드 -->
+<div class="slide">
+  <div class="sh"><span class="no">3.1 — Teacher</span><span class="wm">Concord</span></div>
+  <h1 class="t">강사 대시보드 — <span class="kw">승인 상태 · 등록 정보</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/teacher/desktop/tp-dashboard.png" alt="강사 대시보드"></div>
+      <div class="capc">teacher/desktop/tp-dashboard.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">승인 상태(<b>승인 완료 → 수업을 시작하실 수 있습니다</b>)와 등록 정보(이름·담당 과목·연락처)를 노출. 상단 탭으로 프로필/학생 관리 이동.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">권한 게이팅</span>
+        <ul class="t" style="margin-top:1mm;"><li>매칭·모니터링·상담 = <b>매니저 전용</b></li><li>일반 강사는 대시보드로 안내(정상)</li><li>승인 전 강사는 수업 시작 불가</li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:70mm; align-self:center;"><img src="app-screenshots/teacher/mobile/tp-dashboard.png" alt="모바일"></div>
+      <div class="capc">teacher/mobile/tp-dashboard.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>19</span></div>
+</div>
+
+<!-- 20 · 강사 랜딩·지원·프로필·학생 -->
+<div class="slide">
+  <div class="sh"><span class="no">3.2 — Teacher</span><span class="wm">Concord</span></div>
+  <h1 class="t">강사 랜딩 · 지원 · 프로필 · 담당 학생</h1>
+  <p class="lede">공급 유입(랜딩·지원)부터 등록 후 프로필·학생 관리까지 강사 라이프사이클 전체를 한 포털에서 처리합니다.</p>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/teacher/desktop/tp-landing.png" alt="강사 랜딩"></div><div class="capc">tp-landing.png — 포털 랜딩</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/teacher/desktop/tp-apply.png" alt="강사 지원"></div><div class="capc">tp-apply.png — 지원 폼</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/teacher/desktop/tp-profile.png" alt="프로필"></div><div class="capc">tp-profile.png — 프로필 관리</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/teacher/desktop/tp-students.png" alt="담당 학생"></div><div class="capc">tp-students.png — 담당 학생</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>20</span></div>
+</div>
+
+<!-- 21 · Part 4 디바이더 -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">PART 4</div>
+    <h2>매니저 포털<br><span style="color:#5EE0AC;">운영의 중심</span></h2>
+    <p>매니저는 배정된 학생을 상담하고, 강사를 매칭하고, 진행을 모니터링합니다. 최고매니저(Chief)는 강사 승인 권한을 추가로 가집니다.</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>21</span></div>
+</div>
+
+<!-- 22 · 매칭 관리 (운영 심장) -->
+<div class="slide">
+  <div class="sh"><span class="no">4.1 — Manager</span><span class="wm">Concord</span></div>
+  <h1 class="t">매칭 관리 — <span class="kw">운영 차별점 · 학생 화면과 직결</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/manager/desktop/tp-matching.png" alt="매칭 관리"></div>
+      <div class="capc">manager/desktop/tp-matching.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">상담이 끝난 학생(예: 박유나, 고3, 물리·수학)을 좌측에서 선택 → <b>강사 후보 카드</b>(각 담당 학생 수 표시) → 과목 매칭 → <b>매칭 이유</b> 입력 → 등록.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">데이터 흐름</span>
+        <ul class="t" style="margin-top:1mm;"><li>후보 = 상담 <b>COMPLETED</b> − 활성/대기 매칭 제외</li><li>강사 카드에 <b>현재 담당 수</b> 표기(과부하 방지)</li><li>입력한 <b>매칭 이유</b> → 학생 화면(2.2)에 그대로 전달</li></ul>
+      </div>
+      <div class="frame phone" style="width:44mm; height:64mm; align-self:center;"><img src="app-screenshots/manager/mobile/tp-matching.png" alt="모바일"></div>
+      <div class="capc">manager/mobile/tp-matching.png</div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>22</span></div>
+</div>
+
+<!-- 23 · 매니저 대시보드·상담·학생·모니터링 -->
+<div class="slide">
+  <div class="sh"><span class="no">4.2 — Manager</span><span class="wm">Concord</span></div>
+  <h1 class="t">대시보드 · 상담 · 학생 · 모니터링</h1>
+  <p class="lede">배정 학생의 상담 일정·메모, 담당 학생 전체 현황, 진행률·이상징후 감시까지 운영 루프를 한 곳에서.</p>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/manager/desktop/tp-dashboard.png" alt="매니저 대시보드"></div><div class="capc">tp-dashboard.png — 대시보드</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/manager/desktop/tp-consultations.png" alt="상담 관리"></div><div class="capc">tp-consultations.png — 상담</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/manager/desktop/tp-students.png" alt="학생 관리"></div><div class="capc">tp-students.png — 학생</div></div>
+    <div><div class="frame" style="height:105mm;"><img src="app-screenshots/manager/desktop/tp-monitoring.png" alt="모니터링"></div><div class="capc">tp-monitoring.png — 모니터링</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>23</span></div>
+</div>
+
+<!-- 24 · 최고매니저 + 강사 승인 -->
+<div class="slide">
+  <div class="sh"><span class="no">4.3 — Chief</span><span class="wm">Concord</span></div>
+  <h1 class="t">최고매니저(Chief) — <span class="kw">강사 승인 권한 추가</span></h1>
+  <p class="lede">최고매니저는 매니저 기능에 더해 <b>강사 심사·승인</b> 권한을 가집니다. 검증된 강사만 공개 페이지(1.3)에 노출되는 게이트의 시작점입니다.</p>
+  <div class="grid c3" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:110mm;"><img src="app-screenshots/chief/desktop/tp-dashboard.png" alt="최고매니저 대시보드"></div><div class="capc">chief/desktop/tp-dashboard.png</div></div>
+    <div><div class="frame" style="height:110mm;"><img src="app-screenshots/chief/desktop/chief-teacher-approval.png" alt="강사 승인"></div><div class="capc">chief/desktop/chief-teacher-approval.png</div></div>
+    <div><div class="frame" style="height:110mm;"><img src="app-screenshots/manager/desktop/manager-teacher-approval.png" alt="매니저 강사 승인"></div><div class="capc">manager/desktop/manager-teacher-approval.png</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>24</span></div>
+</div>
+
+<!-- 25 · Part 5 디바이더 -->
+<div class="slide dark divider">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative;">
+    <div class="secno">PART 5</div>
+    <h2>최고관리자(Admin)<br><span style="color:#5EE0AC;">데이터 · 정산 · 운영 콘솔</span></h2>
+    <p>/admin은 사업 운영 전반을 통제하는 백오피스. 정산·퍼널·감사 로그까지 갖춰, 1인 운영에서 다인 운영으로 확장할 때 필요한 통제 인프라가 선제적으로 구축돼 있습니다.</p>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>25</span></div>
+</div>
+
+<!-- 26 · 관리자 홈 -->
+<div class="slide">
+  <div class="sh"><span class="no">5.1 — Admin</span><span class="wm">Concord</span></div>
+  <h1 class="t">관리자 홈 — <span class="kw">운영 전반의 관제탑</span></h1>
+  <div class="grid" style="grid-template-columns:1.55fr 1fr; flex:1; align-items:start; gap:8mm;">
+    <div>
+      <div class="frame" style="height:132mm;"><img src="app-screenshots/admin/desktop/admin-home.png" alt="관리자 홈"></div>
+      <div class="capc">admin/desktop/admin-home.png</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4mm;">
+      <p class="lede" style="margin-bottom:1mm;">학생·강사·매칭·결제·정산·지표·퍼널·감사로그·CMS·데이터 — 10개 콘솔로 사업 전반을 통제합니다.</p>
+      <div class="card" style="padding:4.5mm 5mm;"><span class="eyebrow">10개 콘솔</span>
+        <ul class="t" style="margin-top:1mm;"><li><b>운영</b> — 학생·강사·매칭·결제</li><li><b>재무</b> — 정산·지표·퍼널</li><li><b>거버넌스</b> — 감사로그·CMS·데이터</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>26</span></div>
+</div>
+
+<!-- 27 · 학생·강사·매칭·결제 -->
+<div class="slide">
+  <div class="sh"><span class="no">5.2 — Admin</span><span class="wm">Concord</span></div>
+  <h1 class="t">운영 콘솔 — 학생 · 강사 · 매칭 · 결제</h1>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-students.png" alt="학생 관리"></div><div class="capc">admin-students.png — 학생 상태·이력</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-teachers.png" alt="강사 관리"></div><div class="capc">admin-teachers.png — 강사 승인·정산</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-matches.png" alt="매칭 관리"></div><div class="capc">admin-matches.png — 전체 매칭</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-payments.png" alt="결제 관리"></div><div class="capc">admin-payments.png — 결제 트랜잭션</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>27</span></div>
+</div>
+
+<!-- 28 · 정산·지표·퍼널·감사로그 -->
+<div class="slide">
+  <div class="sh"><span class="no">5.3 — Admin</span><span class="wm">Concord</span></div>
+  <h1 class="t">재무·거버넌스 콘솔 — <span class="kw">확장 통제 인프라</span></h1>
+  <div class="grid c4" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-settlements.png" alt="정산"></div><div class="capc">admin-settlements.png — 정산(시급 30,000원)</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-metrics.png" alt="지표"></div><div class="capc">admin-metrics.png — 매출·활성·마진 KPI</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-funnel.png" alt="퍼널"></div><div class="capc">admin-funnel.png — 상담→결제 전환</div></div>
+    <div><div class="frame" style="height:108mm;"><img src="app-screenshots/admin/desktop/admin-audit-logs.png" alt="감사로그"></div><div class="capc">admin-audit-logs.png — 권한·데이터 추적</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>28</span></div>
+</div>
+
+<!-- 29 · CMS·데이터 -->
+<div class="slide">
+  <div class="sh"><span class="no">5.4 — Admin</span><span class="wm">Concord</span></div>
+  <h1 class="t">CMS · 데이터 — <span class="kw">콘텐츠·원장 관리</span></h1>
+  <p class="lede">공개 페이지 카피를 코드 배포 없이 수정하는 CMS와, 원장·백업·운영 데이터를 다루는 데이터 콘솔.</p>
+  <div class="grid c2" style="flex:1; align-items:start;">
+    <div><div class="frame" style="height:112mm;"><img src="app-screenshots/admin/desktop/admin-cms.png" alt="CMS"></div><div class="capc">admin/desktop/admin-cms.png — 공개 페이지 카피 관리</div></div>
+    <div><div class="frame" style="height:112mm;"><img src="app-screenshots/admin/desktop/admin-data.png" alt="데이터"></div><div class="capc">admin/desktop/admin-data.png — 원장·백업·운영 데이터</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>29</span></div>
+</div>
+
+<!-- 30 · Part 6 모바일 -->
+<div class="slide">
+  <div class="sh"><span class="no">6 — Mobile</span><span class="wm">Concord</span></div>
+  <h1 class="t">모바일 대응 — <span class="kw">반응형 웹 + 네이티브 API 완비</span></h1>
+  <p class="lede">모든 페이지는 반응형으로 모바일 화면(390×844)에서도 동일 기능을 제공합니다. 네이티브 앱(React Native)은 백엔드 API 58종이 이미 완성돼, 지원금 확보 시 프론트엔드 개발만으로 출시 가능합니다.</p>
+  <div class="grid" style="grid-template-columns:repeat(6,1fr); flex:1; align-items:start; gap:5mm;">
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/student/mobile/dashboard.png" alt="학생 대시보드"></div><div class="capc">학생 대시보드</div></div>
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/student/mobile/state-pending-accept.png" alt="수락 대기"></div><div class="capc">강사 수락 대기</div></div>
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/student/mobile/questions.png" alt="질답"></div><div class="capc">AI 질답</div></div>
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/public/mobile/pricing.png" alt="요금제"></div><div class="capc">요금제</div></div>
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/teacher/mobile/tp-dashboard.png" alt="강사"></div><div class="capc">강사 포털</div></div>
+    <div><div class="frame phone" style="height:118mm;"><img src="app-screenshots/admin/mobile/admin-home.png" alt="관리자"></div><div class="capc">관리자 홈</div></div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>30</span></div>
+</div>
+
+<!-- 31 · 캡처 커버리지 -->
+<div class="slide">
+  <div class="sh"><span class="no">Appendix — Coverage</span><span class="wm">Concord</span></div>
+  <h1 class="t">캡처 커버리지 — <span class="kw">전 역할 · 전 화면 · 양대 뷰포트</span></h1>
+  <p class="lede">전 페이지·전 역할·데스크톱/모바일을 실데이터 시연 환경에서 촬영. 문서 하나로 앱 전체를 파악할 수 있도록 구성했습니다.</p>
+  <div class="grid" style="grid-template-columns:1.2fr 1fr; flex:1; align-items:start; gap:10mm;">
+    <table>
+      <tr><th>역할</th><th>페이지 수</th><th>뷰포트</th><th>합계</th></tr>
+      <tr><td><b>공개</b></td><td>12</td><td>2</td><td>24</td></tr>
+      <tr><td><b>학생</b>(상태 3종 포함)</td><td>10</td><td>2</td><td>20</td></tr>
+      <tr><td><b>강사</b></td><td>8</td><td>2</td><td>16</td></tr>
+      <tr><td><b>매니저</b></td><td>6</td><td>2</td><td>12</td></tr>
+      <tr><td><b>최고매니저</b></td><td>2</td><td>2</td><td>4</td></tr>
+      <tr><td><b>최고관리자</b></td><td>11</td><td>2</td><td>22</td></tr>
+      <tr class="hl"><td><b>총계</b></td><td><b>49</b></td><td>—</td><td><b>98</b></td></tr>
+    </table>
+    <div style="display:flex; flex-direction:column; gap:5mm;">
+      <div class="card" style="display:flex; gap:10mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none;">
+        <div><div class="big"><em>49</em></div><span class="cap">고유 화면</span></div>
+        <div><div class="big">98</div><span class="cap">캡처 컷</span></div>
+      </div>
+      <div class="card"><span class="eyebrow">시연 데이터 원칙</span><p>가상의 학생·강사로 구성한 로컬 시연 데이터로 촬영 — <b>실제 고객 개인정보 미포함</b>. 요약·재무 수치는 IR·재무계획 문서를 따릅니다.</p></div>
+    </div>
+  </div>
+  <div class="sf"><span>Concord Private Tutoring — 앱 설명 자료 v1.0</span><span>31</span></div>
+</div>
+
+<!-- 32 · 클로징 -->
+<div class="slide dark" style="justify-content:center; align-items:center; text-align:center;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; display:flex; flex-direction:column; align-items:center; gap:7mm;">
+    <div class="wordmark" style="font-size:40px; color:#fff;">Concord<span class="dot"></span></div>
+    <p style="font-size:19px; font-weight:800; letter-spacing:-.03em; line-height:1.4;">아이디어가 아니라 작동하는 소프트웨어<br><span style="color:#5EE0AC;">화면 너머가 아니라, 옆자리에서.</span></p>
+    <p style="font-size:11px; color:rgba(255,255,255,.5);">tutormatch-web.vercel.app · Concord Private Tutoring · 앱 설명 자료 v1.0</p>
+  </div>
+</div>
+
+</body>
+</html>

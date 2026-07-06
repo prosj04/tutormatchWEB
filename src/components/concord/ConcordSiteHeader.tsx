@@ -18,6 +18,7 @@ const BASE_NAV: NavItem[] = [
   { href: "/tutors", label: "강사진", id: "tutors" },
   { href: "/reviews", label: "후기", id: "reviews" },
   { href: "/faq", label: "FAQ", id: "faq" },
+  { href: "/docs", label: "자료실", id: "docs" },
 ];
 
 function isActive(pathname: string, href: string) {
