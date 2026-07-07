@@ -299,10 +299,13 @@ export function LandingPageV2({
     uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
-  const pricingItems = useMemo(
-    () => buildVisiblePricingPlanItems(cms?.siteContent, tier),
-    [cms?.siteContent, tier],
-  );
+  const homePricingDuo = useMemo(() => {
+    const all = buildVisiblePricingPlanItems(cms?.siteContent, tier);
+    const rec = all.find((i) => i.plan.weekly === 2 && i.plan.hoursPerLesson === 2);
+    if (!rec) return all.slice(0, 2);
+    const other = all.find((i) => i !== rec);
+    return other ? [other, rec] : [rec];
+  }, [cms?.siteContent, tier]);
 
   const hallItems: HallItem[] = useMemo(() => {
     const HALL_FALLBACK: [string, string][] = [
@@ -798,37 +801,43 @@ export function LandingPageV2({
       {/* ══ 8. PRICING ════════════════════════════════════ */}
       <section id="pricing" className="lp2-sec lp2-price-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
-          <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">{kickers.plans}</span>
-            <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.plans}</h2>
-            <p>{sectionTitles.plansSubtext}</p>
-          </div>
+          <div className="lp2-price-cols reveal">
+            <div className="lp2-price-left">
+              <span className="lp2-eyebrow">{kickers.plans}</span>
+              <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.plans}</h2>
+              <p>{sectionTitles.plansSubtext}</p>
+              <Link href="/pricing" className="lp2-btn lp2-btn-ghost lp2-btn-sm" style={{ marginTop: 28 }}>
+                {uiLabels.viewAllPricing}
+              </Link>
+            </div>
 
-          <div className="tier-tabs reveal" role="group" aria-label="학년 선택" style={{ margin: "0 auto 28px", justifyContent: "center" }}>
-            <button
-              type="button"
-              className={tier === "middle" ? "on" : undefined}
-              onClick={() => setTier("middle")}
-            >
-              중등
-            </button>
-            <button
-              type="button"
-              className={tier === "high" ? "on" : undefined}
-              onClick={() => setTier("high")}
-            >
-              고등
-            </button>
-          </div>
+            <div className="lp2-price-right">
+              <div className="tier-tabs" role="group" aria-label="학년 선택" style={{ marginBottom: 20 }}>
+                <button
+                  type="button"
+                  className={tier === "middle" ? "on" : undefined}
+                  onClick={() => setTier("middle")}
+                >
+                  중등
+                </button>
+                <button
+                  type="button"
+                  className={tier === "high" ? "on" : undefined}
+                  onClick={() => setTier("high")}
+                >
+                  고등
+                </button>
+              </div>
 
-          <div data-tier={tier} className="reveal">
-            <PricingPlanCards items={pricingItems} tier={tier} sourcePrefix="home_pricing" />
-          </div>
-
-          <div className="lp2-cta-row" style={{ marginTop: 36 }}>
-            <Link href="/pricing" className="lp2-btn lp2-btn-ghost">
-              {uiLabels.viewAllPricing}
-            </Link>
+              <div data-tier={tier}>
+                <PricingPlanCards
+                  items={homePricingDuo}
+                  tier={tier}
+                  sourcePrefix="home_pricing"
+                  variant="home"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>

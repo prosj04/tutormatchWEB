@@ -63,6 +63,21 @@
 /* Compare Concord column header — HTML 시안(.cmp thead th.cc)과 동일하게 흰색 */
 .lp2-cmp thead th.lp2-cc { color:#fff; }
 
+/* KakaoTalk 채널 상담 버튼 — 브랜드 컬러는 카카오 가이드 고정값(테마 무관) */
+.kakao-btn {
+  --kakao-bg: #fee500;
+  --kakao-fg: #191919;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--kakao-bg); color: var(--kakao-fg);
+  font-weight: 700; font-size: 15px; border: 0; border-radius: 999px;
+  padding: 13px 24px; min-height: 44px; cursor: pointer; white-space: nowrap;
+  transition: transform .18s var(--ease), filter .18s;
+}
+.kakao-btn:hover { filter: brightness(.95); transform: translateY(-2px); }
+.kakao-btn svg { flex-shrink: 0; }
+.kakao-btn--sm { padding: 10px 16px; font-size: 13.5px; min-height: 38px; }
+@media (prefers-reduced-motion:reduce) { .kakao-btn { transition: none; } }
+
 /* V2 scroll-reveal */
 .reveal {
   opacity:0; transform:translateY(22px);

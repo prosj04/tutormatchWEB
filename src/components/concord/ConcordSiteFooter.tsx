@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { KAKAO_CHANNEL_CHAT_URL } from "@/lib/kakao-channel";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteContent }) {
@@ -43,6 +44,9 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
               <Link href="/pricing">요금제</Link>
               <Link href="/faq">FAQ</Link>
               <ConsultationApplyButton className="foot-consult-link">상담 신청</ConsultationApplyButton>
+              <a href={KAKAO_CHANNEL_CHAT_URL} target="_blank" rel="noopener noreferrer">
+                카카오톡 상담
+              </a>
             </div>
             {(() => {
               const isValidSnsUrl = (raw: string) => {

@@ -11,12 +11,49 @@ export function PricingPlanCards({
   items,
   tier,
   sourcePrefix,
+  variant = "full",
 }: {
   items: PricingPlanItem[];
   tier: PricingSchoolTier;
   sourcePrefix: string;
+  variant?: "full" | "home";
 }) {
   const tierLabel = tier === "middle" ? "중등" : "고등";
+
+  if (variant === "home") {
+    return (
+      <div className="lp2-price-duo">
+        {items.map((item) => {
+          const plan = item.plan;
+          const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
+          const priceFormatted = plan.priceKrw.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          const displayTitle = item.title ?? `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
+          const displaySubtitle = item.subtitle ?? `월 ${plan.monthlyHours}시간`;
+          return (
+            <ConcordReveal key={plan.id} as="article" className={`lp2-pcard${isRec ? " rec" : ""}`}>
+              {isRec ? <span className="lp2-pcard-badge">추천</span> : null}
+              <div>
+                <div className="lp2-pcard-name">{displayTitle}</div>
+                <div className="lp2-pcard-sub">
+                  {displaySubtitle} · {tierLabel}
+                </div>
+              </div>
+              <div className="lp2-pcard-price">
+                {priceFormatted}
+                <small>원 / 월</small>
+              </div>
+              <ConsultationApplyButton
+                className={`lp2-btn lp2-btn-sm${isRec ? " lp2-btn-acc" : " lp2-btn-ghost"}`}
+                source={`${sourcePrefix}_${plan.id}`}
+              >
+                이 플랜으로 시작
+              </ConsultationApplyButton>
+            </ConcordReveal>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="price-grid">

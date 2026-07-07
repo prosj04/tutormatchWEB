@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 
 const SHOW_AFTER_PX = 300;
 
@@ -47,6 +48,13 @@ export function StickyConsultCta() {
         <Link href="/tutors" className="sticky-cta-ghost" tabIndex={visible ? 0 : -1}>
           선생님 둘러보기
         </Link>
+        <KakaoConsultButton
+          className="kakao-btn kakao-btn--sm"
+          source="sticky_bottom_cta"
+          tabIndex={visible ? 0 : -1}
+        >
+          카톡 상담
+        </KakaoConsultButton>
         <ConsultationApplyButton
           className="sticky-cta-btn"
           source="sticky_bottom_cta"
