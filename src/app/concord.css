@@ -125,7 +125,8 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 
 /* ---- compact pricing cards (golden ratio · home + pricing) ---- */
 .lp2-price-duo{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,1.8vw,24px); align-items:start; }
-.lp2-pcard-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; max-width:1180px; align-items:start; }
+/* 2×2 고정: 카드 폭이 충분해야 1:1.618 황금비가 내용에 밀리지 않음 */
+.lp2-pcard-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:740px; margin:0 auto; align-items:start; }
 .lp2-pcard{
   position:relative;
   aspect-ratio:1 / 1.618;
@@ -149,18 +150,17 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 }
 .lp2-pcard-price small{ font-size:.45em; font-weight:700; color:var(--mut); margin-left:5px; letter-spacing:0; }
 .lp2-pcard-feat{
-  list-style:none; margin:18px 0 0; padding:18px 0 0; border-top:1px solid var(--line);
-  display:flex; flex-direction:column; gap:9px;
+  list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:8px;
 }
 .lp2-pcard-feat li{ position:relative; padding-left:20px; font-size:13.5px; font-weight:500; color:var(--mut); line-height:1.45; }
 .lp2-pcard-feat li::before{ content:"✓"; position:absolute; left:0; color:var(--acc-text); font-weight:800; }
-.lp2-pcard-cta{ margin-top:auto; padding-top:20px; }
+.lp2-pcard-cta{ margin-top:auto; padding-top:16px; }
 .lp2-pcard-pay{
   display:block; text-align:center; margin-top:9px;
   font-size:12.5px; font-weight:600; color:var(--mut-2); text-decoration:underline;
 }
 .lp2-pcard-pay:hover{ color:var(--fg); }
-@media (max-width:1024px){ .lp2-pcard-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:680px; } }
 @media (max-width:640px){
   /* 모바일: 세로 스택 금지 — PC 카드 비율 유지한 좌우 스와이프 캐러셀 */
   .lp2-price-duo, .lp2-pcard-grid{
@@ -169,7 +169,7 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
     scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
     scrollbar-width:thin;
   }
-  .lp2-pcard{ flex:0 0 min(76vw, 300px); scroll-snap-align:center; }
+  .lp2-pcard{ flex:0 0 min(82vw, 320px); scroll-snap-align:center; }
 }
 .price-card{ position:relative; padding:30px 24px 32px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }
