@@ -920,6 +920,13 @@ export const footerDefaults = [
   { section: "footer", key: "label_service", value: "서비스", type: "text", order: 18 },
   { section: "footer", key: "label_sns", value: "SNS", type: "text", order: 19 },
   { section: "footer", key: "label_teacher", value: "선생님이신가요?", type: "text", order: 20 },
+  { section: "footer", key: "col_service_title", value: "서비스", type: "text", order: 21 },
+  { section: "footer", key: "link_tutors", value: "강사진", type: "text", order: 22 },
+  { section: "footer", key: "link_pricing", value: "요금제", type: "text", order: 23 },
+  { section: "footer", key: "link_faq", value: "FAQ", type: "text", order: 24 },
+  { section: "footer", key: "link_consult", value: "상담 신청", type: "text", order: 25 },
+  { section: "footer", key: "link_kakao", value: "카카오톡 상담", type: "text", order: 26 },
+  { section: "footer", key: "col_sns_title", value: "SNS", type: "text", order: 27 },
 ] as const;
 
 /** 홈 스티키 탭·섹션 kicker·제목 */
@@ -1656,6 +1663,10 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "done_btn_home", value: "홈으로", type: "text", order: 29 },
   { section: "consult_page", key: "kakao_hint", value: "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.", type: "text", order: 30 },
   { section: "consult_page", key: "kakao_button", value: "카카오톡으로 상담하기", type: "text", order: 31 },
+  { section: "consult_page", key: "region_station_label", value: "인접 지하철역", type: "text", order: 32 },
+  { section: "consult_page", key: "region_none_label", value: "없음", type: "text", order: 33 },
+  { section: "consult_page", key: "region_empty_text", value: "검색 결과가 없습니다", type: "text", order: 34 },
+  { section: "consult_page", key: "region_selected_prefix", value: "선택됨:", type: "text", order: 35 },
 ];
 
 /** 사이트 헤더 내비·버튼 라벨 기본값 */
@@ -1694,6 +1705,10 @@ export const signupModalDefaults = [
   { section: "signup_modal", key: "step2_btn_skip", value: "건너뛰기", type: "text", order: 19 },
   { section: "signup_modal", key: "login_hint", value: "이미 계정이 있으신가요?", type: "text", order: 20 },
   { section: "signup_modal", key: "login_link", value: "로그인", type: "text", order: 21 },
+  { section: "signup_modal", key: "region_station_label", value: "인접 지하철역", type: "text", order: 22 },
+  { section: "signup_modal", key: "region_none_label", value: "없음", type: "text", order: 23 },
+  { section: "signup_modal", key: "region_empty_text", value: "검색 결과가 없습니다", type: "text", order: 24 },
+  { section: "signup_modal", key: "region_selected_prefix", value: "선택됨:", type: "text", order: 25 },
 ];
 
 /** /reviews 섹션 보임/숨김 토글 기본값 */
