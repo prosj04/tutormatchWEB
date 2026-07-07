@@ -742,6 +742,8 @@ body:has(.lp2-root) footer.site .logo span {
   aspect-ratio: 4 / 3;
   border-radius: 22px;
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
 }
 
 /* ── consult bridge band (무료 학습컨설팅) ── */
