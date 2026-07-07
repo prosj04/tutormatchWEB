@@ -102,7 +102,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
           </ConcordReveal>
 
           <div data-tier={tier}>
-            <PricingPlanCards items={items} tier={tier} sourcePrefix="pricing_plan" />
+            <PricingPlanCards items={items} tier={tier} sourcePrefix="pricing_plan" labels={siteContent?.["pricing_page"] ?? {}} />
           </div>
 
           {(assureVisible || isEditMode) && (

@@ -21,6 +21,7 @@ export async function PublicShell({
     "footer",
     "site_banner",
     "signup_modal",
+    "site_header",
   ]);
   const showFaqLink = isPublicSectionVisible(siteContent, "faq_page", "show_page", true);
   const showReviewsLink = isPublicSectionVisible(siteContent, "reviews_page", "show_page", true);
@@ -32,6 +33,7 @@ export async function PublicShell({
         showFaqLink={showFaqLink}
         showReviewsLink={showReviewsLink}
         showCompareLink={showCompareLink}
+        navCopy={siteContent["site_header"] ?? {}}
       />
       {children}
       {showFooter ? <ConcordSiteFooter siteContent={siteContent} /> : null}

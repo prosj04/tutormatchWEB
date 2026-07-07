@@ -6,6 +6,7 @@ import {
   consultPageDefaults,
   reviewsSectionVisibilityDefaults,
   signupModalDefaults,
+  siteHeaderDefaults,
   tutorsSectionVisibilityDefaults,
   hallOfFameDefaults,
   homeBenchmarkSectionsDefaults,
@@ -25,8 +26,8 @@ import { LEGACY_RESULT_IMAGE_PLACEHOLDERS, RESULT_CARD_IMAGES } from "@/lib/resu
 
 const siteContentDefaults = [
   { section: "hero", key: "headline", value: "학생마다 맞는\n선생님이 다릅니다", type: "text", order: 1 },
-  { section: "hero", key: "subtext", value: "잘 맞는 선생님을 만나면, 아이는 스스로 공부하게 될 겁니다.", type: "text", order: 2 },
-  { section: "hero", key: "cta_primary", value: "딱 맞는 선생님 추천받기", type: "text", order: 3 },
+  { section: "hero", key: "subtext", value: "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.", type: "text", order: 2 },
+  { section: "hero", key: "cta_primary", value: "선생님 추천받기", type: "text", order: 3 },
   { section: "hero", key: "cta_secondary", value: "선생님 둘러보기", type: "text", order: 4 },
   { section: "hero", key: "bg_image_url", value: "", type: "image", order: 5 },
   { section: "hero", key: "trust_text", value: "", type: "text", order: 6 },
@@ -243,6 +244,7 @@ const siteContentDefaults = [
   ...consultPageDefaults,
   ...reviewsSectionVisibilityDefaults,
   ...signupModalDefaults,
+  ...siteHeaderDefaults,
   ...tutorsSectionVisibilityDefaults,
   ...compareDefaults,
   ...cmsTextStyleDefaults,

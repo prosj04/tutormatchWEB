@@ -409,6 +409,10 @@ export const pricingPageDefaults = [
   { section: "pricing_page", key: "assure_strong", value: "추가 비용 없이 다시 매칭", type: "text", order: 308 },
   { section: "pricing_page", key: "assure_post", value: "해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.", type: "text", order: 309 },
   { section: "pricing_page", key: "assure_visible", value: "1", type: "text", order: 310 },
+  { section: "pricing_page", key: "card_badge_recommend", value: "추천", type: "text", order: 311 },
+  { section: "pricing_page", key: "card_per_month", value: "원 / 월", type: "text", order: 312 },
+  { section: "pricing_page", key: "card_btn_start", value: "이 플랜으로 시작", type: "text", order: 313 },
+  { section: "pricing_page", key: "card_btn_pay", value: "바로 결제하기 →", type: "text", order: 314 },
 ] as const;
 
 export const tutorsPageDefaults = [
@@ -1653,6 +1657,19 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "done_btn_home", value: "홈으로", type: "text", order: 29 },
   { section: "consult_page", key: "kakao_hint", value: "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.", type: "text", order: 30 },
   { section: "consult_page", key: "kakao_button", value: "카카오톡으로 상담하기", type: "text", order: 31 },
+];
+
+/** 사이트 헤더 내비·버튼 라벨 기본값 */
+export const siteHeaderDefaults = [
+  { section: "site_header", key: "nav_pricing", value: "요금제", type: "text", order: 1 },
+  { section: "site_header", key: "nav_tutors", value: "선생님", type: "text", order: 2 },
+  { section: "site_header", key: "nav_reviews", value: "수강후기", type: "text", order: 3 },
+  { section: "site_header", key: "nav_faq", value: "FAQ", type: "text", order: 4 },
+  { section: "site_header", key: "nav_docs", value: "자료실", type: "text", order: 5 },
+  { section: "site_header", key: "nav_compare", value: "비교하기", type: "text", order: 6 },
+  { section: "site_header", key: "btn_login", value: "로그인", type: "text", order: 7 },
+  { section: "site_header", key: "btn_logout", value: "로그아웃", type: "text", order: 8 },
+  { section: "site_header", key: "btn_consult", value: "무료 상담", type: "text", order: 9 },
 ];
 
 /** 상담 신청(가입) 모달 문구 기본값 */

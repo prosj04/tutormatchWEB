@@ -39,11 +39,15 @@ export function ConcordSiteHeader({
   showFaqLink = true,
   showReviewsLink = true,
   showCompareLink = false,
+  navCopy = {},
 }: {
   showFaqLink?: boolean;
   showReviewsLink?: boolean;
   showCompareLink?: boolean;
+  /** site_header CMS 문구 (없으면 기본값) */
+  navCopy?: Record<string, string>;
 }) {
+  const c = (key: string, fallback: string) => navCopy[key] ?? fallback;
   const pathname = usePathname();
   const goConsultation = useConsultationCta();
   const { data: session, status } = useSession();
@@ -67,8 +71,8 @@ export function ConcordSiteHeader({
       if (l.id === "faq") return showFaqLink;
       if (l.id === "reviews") return showReviewsLink;
       return true;
-    }),
-    ...(showCompareLink ? [{ href: "/#compare", label: "비교하기", id: "compare" }] : []),
+    }).map((l) => ({ ...l, label: c(`nav_${l.id}`, l.label) })),
+    ...(showCompareLink ? [{ href: "/#compare", label: c("nav_compare", "비교하기"), id: "compare" }] : []),
   ];
 
   useEffect(() => {
@@ -167,16 +171,16 @@ export function ConcordSiteHeader({
                     style={{ background: "var(--fg)", color: "var(--bg)" }}
                     onClick={() => void signOut({ redirectTo: "/" })}
                   >
-                    로그아웃
+                    {c("btn_logout", "로그아웃")}
                   </button>
                 </>
               ) : (
                 <>
                   <Link href="/login" className="btn btn-ghost btn-sm">
-                    로그인
+                    {c("btn_login", "로그인")}
                   </Link>
                   <button type="button" className="btn btn-acc btn-sm" onClick={() => void goConsultation("header")}>
-                    무료 상담
+                    {c("btn_consult", "무료 상담")}
                   </button>
                 </>
               )}
@@ -287,13 +291,13 @@ export function ConcordSiteHeader({
                       void signOut({ redirectTo: "/" });
                     }}
                   >
-                    로그아웃
+                    {c("btn_logout", "로그아웃")}
                   </button>
                 </>
               ) : (
                 <>
                   <Link href="/login" className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
-                    로그인
+                    {c("btn_login", "로그인")}
                   </Link>
                   <button
                     type="button"
@@ -303,7 +307,7 @@ export function ConcordSiteHeader({
                       void goConsultation("header_mobile");
                     }}
                   >
-                    무료 상담
+                    {c("btn_consult", "무료 상담")}
                   </button>
                 </>
               )}
