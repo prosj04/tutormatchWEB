@@ -112,27 +112,6 @@ body:has(.lp2-root) footer.site .logo span {
   backdrop-filter: blur(8px);
 }
 
-/* ── trust bar (post-hero) ── */
-.lp2-trustbar {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: var(--panel);
-}
-.lp2-trustbar-row {
-  list-style: none; margin: 0; padding: 20px 0;
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 14px 34px;
-}
-.lp2-trustbar-row li {
-  display: inline-flex; align-items: center; gap: 9px;
-  font-size: clamp(14px, 1.05vw, 16px); font-weight: 700; color: var(--fg);
-}
-.lp2-trustbar-dot {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 999px;
-  background: var(--acc); color: var(--on-acc); font-size: 11px; font-weight: 800;
-}
-
 /* ── problem statement ── */
 .lp2-problem-sec .lp2-sec-head {
   max-width: 760px; margin-left: auto; margin-right: auto;
@@ -590,29 +569,6 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-rev-card .by { margin-top: 22px; font-size: 14px; color: var(--mut); font-weight: 600; }
 
 .lp2-result-note { margin-top: 12px; font-size: 13px; font-weight: 500; color: var(--mut-2); }
-
-/* ── stats band (다크 실적) ── */
-.lp2-stats-sec {
-  background: #0b0e13;
-  color: #f4f6f8;
-  padding: clamp(76px, 7.5vw, 132px) 0;
-}
-.lp2-stats-title {
-  font-size: clamp(30px, 4.2vw, 58px); font-weight: 800; letter-spacing: -.032em;
-  line-height: 1.14; margin-top: 18px; color: #fff;
-}
-.lp2-stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: clamp(32px, 4vw, 56px) clamp(32px, 3vw, 48px);
-  margin-top: clamp(44px, 4.5vw, 72px);
-}
-.lp2-stat .lb { font-size: 14px; font-weight: 600; color: rgba(244, 246, 248, .52); }
-.lp2-stat .vl {
-  font-size: clamp(42px, 4.8vw, 76px); font-weight: 800; letter-spacing: -.03em;
-  line-height: 1.05; margin-top: 10px; color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-.lp2-stats-note { margin-top: clamp(36px, 3.5vw, 56px); font-size: 13px; color: rgba(244, 246, 248, .38); }
 
 /* ── CTA band ── */
 .lp2-cta-band {

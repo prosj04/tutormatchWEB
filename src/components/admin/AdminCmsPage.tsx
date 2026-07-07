@@ -118,31 +118,6 @@ const heroFields: TextFieldConfig[] = [
   { label: "보조 버튼", section: "hero", keyName: "cta_secondary", defaultValue: "선생님 둘러보기" },
 ];
 
-const statsFields: TextFieldConfig[] = [
-  {
-    label: "섹션 제목",
-    section: "stats",
-    keyName: "section_title",
-    defaultValue: "Concord는\n숫자로 얘기합니다",
-    kind: "textarea",
-    rows: 2,
-  },
-  { label: "통계 1 숫자", section: "stats", keyName: "stat1_number", defaultValue: "500+" },
-  { label: "통계 1 문구", section: "stats", keyName: "stat1_label", defaultValue: "누적 상담" },
-  { label: "통계 2 숫자", section: "stats", keyName: "stat2_number", defaultValue: "1,200+" },
-  { label: "통계 2 문구", section: "stats", keyName: "stat2_label", defaultValue: "매칭 완료" },
-  { label: "통계 3 숫자", section: "stats", keyName: "stat3_number", defaultValue: "98%" },
-  { label: "통계 3 문구", section: "stats", keyName: "stat3_label", defaultValue: "학생 만족도" },
-  { label: "통계 4 숫자", section: "stats", keyName: "stat4_number", defaultValue: "4.9" },
-  { label: "통계 4 문구", section: "stats", keyName: "stat4_label", defaultValue: "상담 평점" },
-  {
-    label: "기준 각주",
-    section: "stats",
-    keyName: "footnote",
-    defaultValue: "2026년 상반기 서비스 운영 데이터 기준",
-  },
-];
-
 const resultDefaults = [
   { student: "고2 학생", before: "수학 5등급→", after: "2등급으로 상승", image: RESULT_CARD_IMAGES[0] },
   { student: "중3 학생", before: "영어 64점→", after: "87점으로 상승", image: RESULT_CARD_IMAGES[1] },
@@ -837,7 +812,6 @@ function compareRowInnerFields(boxIndex: number): TextFieldConfig[] {
 function findTextFieldConfig(section: string, keyName: string): TextFieldConfig | undefined {
   const staticFields: TextFieldConfig[] = [
     ...heroFields,
-    ...statsFields,
     ...managementHeaderFields,
     ...pricingHeaderFields,
     ...homePricingFields,
@@ -1209,26 +1183,6 @@ export function AdminCmsPage() {
                   getValue={getValue}
                   onSave={saveContent}
                 />
-              ))}
-            </div>
-          </EditorSection>
-
-          <EditorSection eyebrow="STATS" title="히어로 하단 통계">
-            <div className="grid gap-4 md:grid-cols-3">
-              {[0, 2, 4].map((start, index) => (
-                <div key={index} className="rounded-2xl bg-background p-4">
-                  <p className="mb-3 text-sm font-black text-primary">통계 {index + 1}</p>
-                  <div className="space-y-3">
-                    {statsFields.slice(start, start + 2).map((field) => (
-                      <ContentField
-                        key={`${field.section}-${field.keyName}`}
-                        field={field}
-                        value={getValue(field.section, field.keyName, field.defaultValue)}
-                        onSave={saveContent}
-                      />
-                    ))}
-                  </div>
-                </div>
               ))}
             </div>
           </EditorSection>

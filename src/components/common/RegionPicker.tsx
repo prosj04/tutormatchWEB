@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   SERVICE_REGION_GROUPS,
@@ -32,6 +32,20 @@ function ComboField({
   const [open, setOpen] = useState(autoOpen ?? false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+    };
+  }, [open]);
 
   const filtered = useMemo(
     () => options.filter((u) => matchesRegionQuery(u, query)).slice(0, 40),
@@ -46,7 +60,7 @@ function ComboField({
   };
 
   return (
-    <div className={`region-combo${open ? " open" : ""}`}>
+    <div ref={rootRef} className={`region-combo${open ? " open" : ""}`}>
       <span className="region-combo-label">{label}</span>
       <input
         ref={inputRef}

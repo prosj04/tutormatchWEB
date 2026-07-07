@@ -226,7 +226,7 @@ export function ConsultationSignupForm({
 
   return (
     <div>
-      <div className="mb-6" style={{ paddingRight: 36 }}>
+      <div className="mb-5" style={{ paddingRight: 36 }}>
         <p className="eyebrow">Consultation</p>
         <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
           상담 신청
@@ -237,55 +237,59 @@ export function ConsultationSignupForm({
             : "이름과 연락처만 남기면 매니저가 연락드립니다."}
         </p>
       </div>
-      <div className="space-y-5">
-        <div className="field">
-          <label htmlFor="reg-name">이름</label>
-          <input
-            id="reg-name"
-            type="text"
-            autoComplete="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          {fieldErrors.name ? (
-            <p className="field-error">{fieldErrors.name}</p>
-          ) : null}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="field">
+            <label htmlFor="reg-name">이름</label>
+            <input
+              id="reg-name"
+              type="text"
+              autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {fieldErrors.name ? (
+              <p className="field-error">{fieldErrors.name}</p>
+            ) : null}
+          </div>
+          <div className="field">
+            <label htmlFor="reg-phone">전화번호</label>
+            <input
+              id="reg-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="010-0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
+          </div>
         </div>
-        <div className="field">
-          <label htmlFor="reg-phone">전화번호</label>
-          <input
-            id="reg-phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="010-0000-0000"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
-        </div>
-        <div className="field">
-          <label htmlFor="reg-password">비밀번호</label>
-          <input
-            id="reg-password"
-            type="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
-        </div>
-        <div className="field">
-          <label htmlFor="reg-password2">비밀번호 확인</label>
-          <input
-            id="reg-password2"
-            type="password"
-            autoComplete="new-password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-          {fieldErrors.passwordConfirm ? (
-            <p className="field-error">{fieldErrors.passwordConfirm}</p>
-          ) : null}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="field">
+            <label htmlFor="reg-password">비밀번호</label>
+            <input
+              id="reg-password"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
+          </div>
+          <div className="field">
+            <label htmlFor="reg-password2">비밀번호 확인</label>
+            <input
+              id="reg-password2"
+              type="password"
+              autoComplete="new-password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+            {fieldErrors.passwordConfirm ? (
+              <p className="field-error">{fieldErrors.passwordConfirm}</p>
+            ) : null}
+          </div>
         </div>
         <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
           <input
@@ -327,7 +331,7 @@ export function ConsultationSignupForm({
         disabled={loading}
         onClick={() => void handleSubmit()}
         className="btn btn-acc btn-block"
-        style={{ marginTop: 28 }}
+        style={{ marginTop: 20 }}
       >
         {loading ? (
           <>

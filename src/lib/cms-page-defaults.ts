@@ -928,7 +928,6 @@ export const homeLabelsDefaults = [
   { section: "home_labels", key: "section_title_faq", value: "자주 묻는 질문", type: "text", order: 16 },
   { section: "home_labels", key: "section_title_reviews", value: "왜 학부모님들은 Concord를 선택했을까요?", type: "text", order: 17 },
   { section: "home_labels", key: "kicker_assurance", value: "RESPONSIBILITY", type: "text", order: 18 },
-  { section: "home_labels", key: "kicker_numbers", value: "NUMBERS", type: "text", order: 19 },
 ] as const;
 
 /** 홈 설탭 벤치마크 섹션 (책임 3단계·컨설팅 브릿지·환불 밴드·누적 통계) */
@@ -947,16 +946,6 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "consult_bridge", key: "cta_label", value: "30초, 상담신청 남기기", type: "text", order: 3 },
   { section: "refund_band", key: "headline", value: "첫 수업 후 불만족 시\n100% 환불 보장", type: "text", order: 1 },
   { section: "refund_band", key: "subtext", value: "자신있게 제안합니다. 상담 후 첫 수업까지만 받아보세요.", type: "text", order: 2 },
-  { section: "stats", key: "section_title", value: "Concord는\n숫자로 얘기합니다", type: "text", order: 0 },
-  { section: "stats", key: "stat1_number", value: "500+", type: "text", order: 3 },
-  { section: "stats", key: "stat1_label", value: "누적 상담", type: "text", order: 4 },
-  { section: "stats", key: "stat2_number", value: "1,200+", type: "text", order: 5 },
-  { section: "stats", key: "stat2_label", value: "매칭 완료", type: "text", order: 6 },
-  { section: "stats", key: "stat3_number", value: "98%", type: "text", order: 7 },
-  { section: "stats", key: "stat3_label", value: "학생 만족도", type: "text", order: 8 },
-  { section: "stats", key: "stat4_number", value: "4.9", type: "text", order: 9 },
-  { section: "stats", key: "stat4_label", value: "상담 평점", type: "text", order: 10 },
-  { section: "stats", key: "footnote", value: "2026년 상반기 서비스 운영 데이터 기준", type: "text", order: 11 },
   { section: "tutors_featured", key: "home_title", value: "아무 선생님이나\n소개하지 않습니다", type: "text", order: 90 },
   { section: "tutors_featured", key: "home_subtext", value: "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.", type: "text", order: 91 },
 ] as const;

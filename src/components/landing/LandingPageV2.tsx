@@ -160,41 +160,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
     results: getCmsValue("home_labels", "kicker_results", "RESULTS"),
-    numbers: getCmsValue("home_labels", "kicker_numbers", "NUMBERS"),
     faq: getCmsValue("home_labels", "kicker_faq", "FAQ"),
   };
-
-  const statDefaults: [string, string][] = [
-    ["500+", "누적 상담"],
-    ["1,200+", "매칭 완료"],
-    ["98%", "학생 만족도"],
-    ["4.9", "상담 평점"],
-  ];
-  const statItems = statDefaults.flatMap(([num, label], index) => {
-    const n = index + 1;
-    const vis = getCmsValue("stats", `stat${n}_visible`, "1");
-    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
-    return [
-      {
-        n,
-        num: getCmsValue("stats", `stat${n}_number`, num),
-        label: getCmsValue("stats", `stat${n}_label`, label),
-      },
-    ];
-  });
-
-  const trustDefaults = [
-    "서울·동탄 방문 수업",
-    "전담 매니저가 처음부터 끝까지",
-    "학생이 수락해야 수업 시작",
-    "첫 수업 100% 환불",
-  ];
-  const trustItems = trustDefaults.flatMap((d, index) => {
-    const n = index + 1;
-    const vis = getCmsValue("trustbar", `item${n}_visible`, "1");
-    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
-    return [{ n, text: getCmsValue("trustbar", `item${n}`, d) }];
-  });
 
   const verifyDefaults: [string, string][] = [
     ["01", "서류·학력 인증"],
@@ -270,9 +237,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       .slice(0, 3),
     kickers,
     sectionTitles,
-    trustItems,
     verifySteps,
-    statItems,
     uiLabels,
   };
 }
@@ -330,9 +295,7 @@ export function LandingPageV2({
     featuredTutors,
     kickers,
     sectionTitles,
-    trustItems,
     verifySteps,
-    statItems,
     uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
@@ -445,20 +408,6 @@ export function LandingPageV2({
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══ 2. TRUST BAR ══════════════════════════════════ */}
-      <section className="lp2-trustbar" aria-label="핵심 안내">
-        <div className="lp2-wrap">
-          <ul className="lp2-trustbar-row reveal">
-            {trustItems.map((item) => (
-              <li key={item.n}>
-                <span className="lp2-trustbar-dot" aria-hidden="true">✓</span>
-                {item.text}
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
@@ -712,33 +661,6 @@ export function LandingPageV2({
           </div>
         </div>
       </section>
-
-      {/* ══ 6.5 STATS BAND (다크 실적) ═════════════════════ */}
-      {statItems.length > 0 && (
-        <section className="lp2-stats-sec" aria-label="핵심 지표">
-          <div className="lp2-wrap reveal">
-            <span className="lp2-eyebrow">{kickers.numbers}</span>
-            <h2 className="lp2-stats-title" style={{ whiteSpace: "pre-line" }}>
-              <CmsEdit active={isEditMode} section="stats" cmsKey="section_title" type="text">
-                {getCmsMultiline("stats", "section_title", "Concord는\n숫자로 얘기합니다")}
-              </CmsEdit>
-            </h2>
-            <div className="lp2-stats-grid">
-              {statItems.map((s) => (
-                <div key={s.n} className="lp2-stat">
-                  <div className="lb">{s.label}</div>
-                  <div className="vl">{s.num}</div>
-                </div>
-              ))}
-            </div>
-            <p className="lp2-stats-note">
-              <CmsEdit active={isEditMode} section="stats" cmsKey="footnote" type="text">
-                {getCmsValue("stats", "footnote", "2026년 상반기 서비스 운영 데이터 기준")}
-              </CmsEdit>
-            </p>
-          </div>
-        </section>
-      )}
 
       {/* ══ 7. RESULTS + REVIEWS ══════════════════════════ */}
       <section id="results" className="lp2-sec lp2-rev-sec" style={{ scrollMarginTop: "80px" }}>

@@ -43,8 +43,8 @@ export function ConsultationSignupModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="consultation-signup-title"
-        className="concord-surface auth-card relative z-10 max-h-[min(90vh,760px)] w-full max-w-xl overflow-y-auto p-7 sm:p-8"
-        style={{ margin: 0, maxWidth: "min(560px, calc(100vw - 32px))" }}
+        className="concord-surface auth-card relative z-10 max-h-[min(94vh,880px)] w-full max-w-2xl overflow-y-auto p-6 sm:p-7"
+        style={{ margin: 0, maxWidth: "min(640px, calc(100vw - 32px))" }}
       >
         <button
           type="button"
