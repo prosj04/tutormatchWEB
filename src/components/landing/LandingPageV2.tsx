@@ -15,6 +15,7 @@ import {
   getFeaturedTutorCards,
   parseCmsVisibility,
 } from "@/lib/cms-page-defaults";
+import { buildVisibleCompareRows } from "@/lib/compare-cms";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
@@ -160,6 +161,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
     results: getCmsValue("home_labels", "kicker_results", "RESULTS"),
+    compare: getCmsValue("compare", "kicker", "COMPARE"),
     faq: getCmsValue("home_labels", "kicker_faq", "FAQ"),
   };
 
@@ -307,6 +309,11 @@ export function LandingPageV2({
     verifySteps,
     uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
+
+  const compareRowsCms = useMemo(
+    () => buildVisibleCompareRows(cms?.siteContent),
+    [cms?.siteContent],
+  );
 
   const homePricingDuo = useMemo(() => {
     const all = buildVisiblePricingPlanItems(cms?.siteContent, tier);
@@ -871,6 +878,64 @@ export function LandingPageV2({
           </div>
         </div>
       </section>
+
+      {/* ══ 8.5 COMPARE (서비스 비교) ══════════════════════ */}
+      {compareRowsCms.length > 0 && (
+        <section id="compare" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+          <div className="lp2-wrap">
+            <div className="lp2-sec-head reveal">
+              <span className="lp2-eyebrow">{kickers.compare}</span>
+              <h2>
+                <CmsEdit active={isEditMode} section="compare" cmsKey="table_title" type="text">
+                  {getCmsValue("compare", "table_title", "개인 과외와 이렇게 다릅니다")}
+                </CmsEdit>
+              </h2>
+              <p>맞지 않는 선생님으로 1~2달을 낭비하지 않도록, 처음부터 핏을 맞춥니다.</p>
+            </div>
+
+            <div className="lp2-cmp-wrap reveal">
+              <table className="lp2-cmp">
+                <thead>
+                  <tr>
+                    <th>비교 항목</th>
+                    <th>개인 과외</th>
+                    <th className="lp2-col-c lp2-cc">Concord</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {compareRowsCms.map((row) => (
+                    <tr key={row.rowIndex}>
+                      <td>
+                        <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_feature`} type="text">
+                          {row.feature}
+                        </CmsEdit>
+                      </td>
+                      <td>
+                        {row.other === "✗" || row.other === "없음" ? (
+                          <>
+                            <span className="lp2-no">✗</span>
+                            {row.other.replace("✗", "").trim() || "없음"}
+                          </>
+                        ) : (
+                          <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_other`} type="text">
+                            {row.other}
+                          </CmsEdit>
+                        )}
+                      </td>
+                      <td className="lp2-col-c">
+                        <span className="lp2-ok">✓</span>
+                        <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_concord`} type="text">
+                          {row.concord.replace(/^✓\s*/, "")}
+                        </CmsEdit>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ══ 9. FAQ + FINAL CTA ════════════════════════════ */}
       {showFaq && cms?.faqs && cms.faqs.length > 0 && (

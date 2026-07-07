@@ -763,7 +763,7 @@ export const tutorsBenchmarkDefaults = [
 /** /reviews 설탭식 개편 섹션(다크 히어로·성공사례·통계 밴드·실물 인증·카테고리) 기본값 */
 export const reviewsBenchmarkDefaults = [
   { section: "reviews_page", key: "hero_kicker", value: "REVIEWS", type: "text", order: 101 },
-  { section: "reviews_page", key: "hero_title", value: "Concord 학생이 직접 경험한\n성적 상승 후기를 만나보세요", type: "text", order: 102 },
+  { section: "reviews_page", key: "hero_title", value: "Concord 학생이 직접 경험한\n성적 상승을 그대로 공개합니다", type: "text", order: 102 },
   { section: "reviews_page", key: "hero_subtext", value: "학부모·학생이 직접 남긴 이야기와 변화의 기록입니다.", type: "text", order: 103 },
   { section: "reviews_page", key: "band_title", value: "Concord 학생 대부분이\n첫 3개월 안에 변화를 경험합니다", type: "text", order: 110 },
   { section: "reviews_page", key: "band_stat1_number", value: "98%", type: "text", order: 111 },
@@ -995,7 +995,7 @@ function compareRowSeedRows(orderStart: number) {
 /** 홈 서비스 비교 테이블 */
 export const compareDefaults = [
   { section: "compare", key: "kicker", value: "COMPARE", type: "text", order: 0 },
-  { section: "compare", key: "table_title", value: "서비스 비교", type: "text", order: 1 },
+  { section: "compare", key: "table_title", value: "개인 과외와 이렇게 다릅니다", type: "text", order: 1 },
   ...compareRowSeedRows(2),
 ] as const;
 

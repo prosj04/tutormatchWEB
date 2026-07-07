@@ -186,7 +186,7 @@ export function ReviewsPageContent({
             <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_title" type="text">
               {(() => {
                 const title = formatCmsMultiline(
-                  get("hero_title", "Concord 학생이 직접 경험한\n성적 상승 후기를 만나보세요"),
+                  get("hero_title", "Concord 학생이 직접 경험한\n성적 상승을 그대로 공개합니다"),
                 );
                 const lines = title.split("\n").filter(Boolean);
                 return lines.map((line, i) => (

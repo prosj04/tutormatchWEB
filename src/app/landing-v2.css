@@ -866,6 +866,9 @@ body:has(.lp2-root) footer.site .logo span {
   /* 히어로 CTA 두 개는 모바일에서도 나란히 (선택지 병렬 의도 유지) */
   .lp2-hero .lp2-cta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .lp2-hero .lp2-cta-row .lp2-btn { min-width: 0; padding-left: 10px; padding-right: 10px; }
+  /* 비교 테이블: 3열 구조 유지 + 가로 스크롤 */
+  .lp2-cmp-wrap { overflow-x: auto; }
+  .lp2-cmp { min-width: 560px; }
   .lp2-cmp th, .lp2-cmp td { padding: 12px 14px; font-size: 14px; }
 }
 
