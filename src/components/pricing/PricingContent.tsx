@@ -7,7 +7,7 @@ import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
-import { formatCmsMultiline, getCmsSectionValue } from "@/lib/cms-page-defaults";
+import { formatCmsMultiline, getCmsSectionValue, parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -54,6 +54,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
   );
 
   const headerTitle = get("header_title", "투명한 요금,\n꼭 맞는 1:1 과외");
+  const assureVisible = parseCmsVisibility(siteContent?.["pricing_page"]?.["assure_visible"], true);
   const headerSubtext = get(
     "header_subtext",
     "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
@@ -62,7 +63,11 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
   return (
     <main>
       <ConcordPageHead
-        eyebrow="Plans"
+        eyebrow={
+          <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_eyebrow" type="text">
+            {get("header_eyebrow", "Plans")}
+          </CmsEdit>
+        }
         title={
           <CmsEdit active={isEditMode} section="pricing_page" cmsKey="header_title" type="text">
             {cmsTitleLines(headerTitle)}
@@ -84,7 +89,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
               data-tier-tab="middle"
               onClick={() => setTier("middle")}
             >
-              중등
+              {get("tier_middle_label", "중등")}
             </button>
             <button
               type="button"
@@ -92,7 +97,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
               data-tier-tab="high"
               onClick={() => setTier("high")}
             >
-              고등
+              {get("tier_high_label", "고등")}
             </button>
           </ConcordReveal>
 
@@ -100,13 +105,24 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
             <PricingPlanCards items={items} tier={tier} sourcePrefix="pricing_plan" />
           </div>
 
+          {(assureVisible || isEditMode) && (
           <ConcordReveal className="assure" as="div">
             <ShieldIcon />
             <span>
-              처음 배정된 선생님이 맞지 않으면 <strong>추가 비용 없이 다시 매칭</strong>해 드립니다. 수업료는 월
-              단위, 언제든 조정 가능합니다.
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_pre" type="text">
+                {get("assure_pre", "처음 배정된 선생님이 맞지 않으면 ")}
+              </CmsEdit>
+              <strong>
+                <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_strong" type="text">
+                  {get("assure_strong", "추가 비용 없이 다시 매칭")}
+                </CmsEdit>
+              </strong>
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_post" type="text">
+                {get("assure_post", "해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.")}
+              </CmsEdit>
             </span>
           </ConcordReveal>
+          )}
         </div>
       </section>
 

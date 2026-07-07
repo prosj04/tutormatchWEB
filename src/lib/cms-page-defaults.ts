@@ -402,6 +402,13 @@ export const pricingPageDefaults = [
   },
   { section: "pricing_page", key: "cta_button", value: "무료 상담 신청", type: "text", order: 302 },
   { section: "pricing_page", key: "cta_visible", value: "1", type: "text", order: 303 },
+  { section: "pricing_page", key: "header_eyebrow", value: "Plans", type: "text", order: 304 },
+  { section: "pricing_page", key: "tier_middle_label", value: "중등", type: "text", order: 305 },
+  { section: "pricing_page", key: "tier_high_label", value: "고등", type: "text", order: 306 },
+  { section: "pricing_page", key: "assure_pre", value: "처음 배정된 선생님이 맞지 않으면 ", type: "text", order: 307 },
+  { section: "pricing_page", key: "assure_strong", value: "추가 비용 없이 다시 매칭", type: "text", order: 308 },
+  { section: "pricing_page", key: "assure_post", value: "해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.", type: "text", order: 309 },
+  { section: "pricing_page", key: "assure_visible", value: "1", type: "text", order: 310 },
 ] as const;
 
 export const tutorsPageDefaults = [
@@ -1645,6 +1652,7 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "done_btn_register", value: "1분 만에 계정 만들기", type: "text", order: 28 },
   { section: "consult_page", key: "done_btn_home", value: "홈으로", type: "text", order: 29 },
   { section: "consult_page", key: "kakao_hint", value: "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.", type: "text", order: 30 },
+  { section: "consult_page", key: "kakao_button", value: "카카오톡으로 상담하기", type: "text", order: 31 },
 ];
 
 /** 상담 신청(가입) 모달 문구 기본값 */
