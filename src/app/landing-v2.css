@@ -125,6 +125,7 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-price-cols {
   display: grid; gap: clamp(36px, 4vw, 72px); align-items: center;
 }
+.lp2-price-cols > * { min-width: 0; }
 .lp2-price-left h2 {
   font-size: clamp(30px, 4vw, 56px); font-weight: 700; letter-spacing: -.03em;
   line-height: 1.12; margin-top: 16px; color: var(--fg);
@@ -810,7 +811,14 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-stats-note { margin-top: 16px; font-size: 12.5px; font-weight: 500; color: var(--mut-2); }
 
 /* ── responsive ── */
+.lp2-mobile-only { display: none !important; }
+
 @media (max-width:960px) {
+  .lp2-mobile-only { display: block !important; }
+  .lp2-desktop-only { display: none !important; }
+  /* 번호별 인라인 목업 (모바일) */
+  .lp2-proc-inline { margin: -4px 0 26px; display: flex; flex-direction: column; gap: 12px; }
+  .lp2-care-inline { margin: 18px 0 6px; }
   .lp2-grid-4 { grid-template-columns: repeat(2,1fr); }
   .lp2-hero-cols { grid-template-columns: 1fr; }
   .lp2-hero-visual { width: 100%; margin-top: 36px; margin-right: 0; }

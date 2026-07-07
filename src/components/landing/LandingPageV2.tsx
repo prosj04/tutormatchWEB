@@ -365,6 +365,130 @@ export function LandingPageV2({
     };
   }, [getCmsValue, getCmsMultiline]);
 
+  /* 프로세스 단계별 목업 — 데스크톱은 우측 추적 칼럼, 모바일은 열린 아코디언 아래 인라인 */
+  const procMocks = [
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          상담 신청 접수
+          <span className="t">오늘 14:02</span>
+        </div>
+        <p>담당 매니저가 24시간 안에 연락드립니다.</p>
+      </div>
+      <div className="lp2-proc-mock-note">이름 없이 연락처와 학년만으로 시작됩니다</div>
+    </>,
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          매니저 진단 메모
+          <span className="t">상담 직후</span>
+        </div>
+        <div className="lp2-notif-rows">
+          <div><span className="k">성향</span><span className="v">조용하고 신중한 편 · 질문형 수업 선호</span></div>
+          <div><span className="k">목표</span><span className="v">내신 수학 2등급, 기초 개념 재정리</span></div>
+          <div><span className="k">일정</span><span className="v">화·목 저녁 / 동탄 자택 방문</span></div>
+        </div>
+      </div>
+      <div className="lp2-proc-mock-note">성적표보다 먼저, 아이가 어떤 학생인지 듣습니다</div>
+    </>,
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          선생님 후보 도착
+          <span className="t">상담 후 1~3일</span>
+        </div>
+        <p>김서연 선생님 · 서울대 수리과학부 · 수학</p>
+        <div className="lp2-notif-tags">
+          <span>기다려주는 수업</span>
+          <span>화·목 가능</span>
+        </div>
+      </div>
+      <div className="lp2-proc-mock-note">성향과 일정까지 맞는 후보만 제안합니다</div>
+    </>,
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          선생님 배정
+          <span className="t">수락 대기</span>
+        </div>
+        <p>첫 만남 후, 마음에 들 때만 수락하세요.</p>
+        <span className="lp2-notif-btn">수락하고 첫 수업 잡기</span>
+      </div>
+      <div className="lp2-proc-mock-note">학생이 직접 수락해야 수업이 시작됩니다</div>
+    </>,
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          오늘 수업 리포트
+          <span className="t">수업 직후 발송</span>
+        </div>
+        <div className="lp2-notif-rows">
+          <div><span className="k">진도</span><span className="v">이차함수 그래프 활용</span></div>
+          <div><span className="k">숙제</span><span className="v">유형 연습 12문항 · 요일별 배분</span></div>
+          <div><span className="k">다음</span><span className="v">목요일 19:00 방문</span></div>
+        </div>
+      </div>
+      <div className="lp2-proc-mock-note">매 수업이 기록으로 남고, 학부모님께 공유됩니다</div>
+    </>,
+  ];
+
+  /* 케어 목업 — 데스크톱은 우측 칼럼, 모바일은 해당 번호 아래 인라인 */
+  const careReportMock = (
+    <div className="lp2-report-card">
+      <div className="lp2-report-head">
+        <span className="lp2-proof-dot" />
+        <strong>Concord 학습 리포트</strong>
+        <span className="t">6월 리포트</span>
+      </div>
+      <div className="lp2-report-body">
+        <div className="lp2-report-row">
+          <span className="k">이달 진도</span>
+          <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">숙제</span>
+          <span className="v">유형 연습 12문항 · 오답노트 3개</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">선생님 코멘트</span>
+          <span className="v">
+            응용 문제에 접근하는 방식이 눈에 띄게 좋아졌습니다. 다음 달은
+            실수 유형을 함께 줄여보겠습니다.
+          </span>
+        </div>
+      </div>
+      <div className="lp2-report-foot">매월 학습 리포트로 정리해 학부모님께 전달됩니다</div>
+    </div>
+  );
+  const careQnaMock = (
+    <div className="lp2-qna-card">
+      <div className="lp2-report-head">
+        <span className="lp2-proof-dot" />
+        <strong>질문·답변</strong>
+        <span className="t">수업 없는 날에도</span>
+      </div>
+      <div className="lp2-qna-body">
+        <div className="lp2-bubble student">
+          <span className="who">학생 · 밤 11:24</span>
+          <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
+        </div>
+        <div className="lp2-bubble teacher">
+          <span className="who">선생님 · 아침 7:40</span>
+          <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
+        </div>
+        <div className="lp2-bubble student">
+          <span className="who">학생 · 아침 8:05</span>
+          <p>풀이 보니까 바로 이해됐어요! 목요일에 봬요.</p>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="lp2-root">
       {/* ══ 1. HERO ═══════════════════════════════════════ */}
@@ -455,12 +579,15 @@ export function LandingPageV2({
                     <span className="lp2-faq-ind" aria-hidden="true">+</span>
                   </summary>
                   <p className="lp2-proc-p" style={{ whiteSpace: "pre-line" }}>{step.desc}</p>
+                  <div className="lp2-proc-inline lp2-mobile-only" aria-hidden="true">
+                    {procMocks[index]}
+                  </div>
                 </details>
               ))}
             </div>
 
             <div
-              className="lp2-proc-mock reveal"
+              className="lp2-proc-mock reveal lp2-desktop-only"
               aria-hidden="true"
               style={{
                 transform: `translateY(${mockY}px)`,
@@ -469,84 +596,7 @@ export function LandingPageV2({
               }}
             >
               <div className="lp2-proc-mock-view" key={activeStep}>
-                {activeStep === 0 && (
-                  <>
-                    <div className="lp2-notif-card">
-                      <div className="lp2-notif-head">
-                        <span className="lp2-proof-dot" />
-                        상담 신청 접수
-                        <span className="t">오늘 14:02</span>
-                      </div>
-                      <p>담당 매니저가 24시간 안에 연락드립니다.</p>
-                    </div>
-                    <div className="lp2-proc-mock-note">이름 없이 연락처와 학년만으로 시작됩니다</div>
-                  </>
-                )}
-                {activeStep === 1 && (
-                  <>
-                    <div className="lp2-notif-card">
-                      <div className="lp2-notif-head">
-                        <span className="lp2-proof-dot" />
-                        매니저 진단 메모
-                        <span className="t">상담 직후</span>
-                      </div>
-                      <div className="lp2-notif-rows">
-                        <div><span className="k">성향</span><span className="v">조용하고 신중한 편 · 질문형 수업 선호</span></div>
-                        <div><span className="k">목표</span><span className="v">내신 수학 2등급, 기초 개념 재정리</span></div>
-                        <div><span className="k">일정</span><span className="v">화·목 저녁 / 동탄 자택 방문</span></div>
-                      </div>
-                    </div>
-                    <div className="lp2-proc-mock-note">성적표보다 먼저, 아이가 어떤 학생인지 듣습니다</div>
-                  </>
-                )}
-                {activeStep === 2 && (
-                  <>
-                    <div className="lp2-notif-card">
-                      <div className="lp2-notif-head">
-                        <span className="lp2-proof-dot" />
-                        선생님 후보 도착
-                        <span className="t">상담 후 1~3일</span>
-                      </div>
-                      <p>김서연 선생님 · 서울대 수리과학부 · 수학</p>
-                      <div className="lp2-notif-tags">
-                        <span>기다려주는 수업</span>
-                        <span>화·목 가능</span>
-                      </div>
-                    </div>
-                    <div className="lp2-proc-mock-note">성향과 일정까지 맞는 후보만 제안합니다</div>
-                  </>
-                )}
-                {activeStep === 3 && (
-                  <>
-                    <div className="lp2-notif-card">
-                      <div className="lp2-notif-head">
-                        <span className="lp2-proof-dot" />
-                        선생님 배정
-                        <span className="t">수락 대기</span>
-                      </div>
-                      <p>첫 만남 후, 마음에 들 때만 수락하세요.</p>
-                      <span className="lp2-notif-btn">수락하고 첫 수업 잡기</span>
-                    </div>
-                    <div className="lp2-proc-mock-note">학생이 직접 수락해야 수업이 시작됩니다</div>
-                  </>
-                )}
-                {activeStep === 4 && (
-                  <>
-                    <div className="lp2-notif-card">
-                      <div className="lp2-notif-head">
-                        <span className="lp2-proof-dot" />
-                        오늘 수업 리포트
-                        <span className="t">수업 직후 발송</span>
-                      </div>
-                      <div className="lp2-notif-rows">
-                        <div><span className="k">진도</span><span className="v">이차함수 그래프 활용</span></div>
-                        <div><span className="k">숙제</span><span className="v">유형 연습 12문항 · 요일별 배분</span></div>
-                        <div><span className="k">다음</span><span className="v">목요일 19:00 방문</span></div>
-                      </div>
-                    </div>
-                    <div className="lp2-proc-mock-note">매 수업이 기록으로 남고, 학부모님께 공유됩니다</div>
-                  </>
-                )}
+                {procMocks[activeStep]}
               </div>
             </div>
           </div>
@@ -621,60 +671,25 @@ export function LandingPageV2({
                     <div>
                       <h3>{item.label}</h3>
                       <p>{item.desc}</p>
+                      {item.n === 2 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {careReportMock}
+                        </div>
+                      ) : null}
+                      {item.n === 3 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {careQnaMock}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="lp2-care-mock reveal" aria-hidden="true">
-              <div className="lp2-report-card">
-                <div className="lp2-report-head">
-                  <span className="lp2-proof-dot" />
-                  <strong>Concord 학습 리포트</strong>
-                  <span className="t">6월 리포트</span>
-                </div>
-                <div className="lp2-report-body">
-                  <div className="lp2-report-row">
-                    <span className="k">이달 진도</span>
-                    <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
-                  </div>
-                  <div className="lp2-report-row">
-                    <span className="k">숙제</span>
-                    <span className="v">유형 연습 12문항 · 오답노트 3개</span>
-                  </div>
-                  <div className="lp2-report-row">
-                    <span className="k">선생님 코멘트</span>
-                    <span className="v">
-                      응용 문제에 접근하는 방식이 눈에 띄게 좋아졌습니다. 다음 달은
-                      실수 유형을 함께 줄여보겠습니다.
-                    </span>
-                  </div>
-                </div>
-                <div className="lp2-report-foot">매월 학습 리포트로 정리해 학부모님께 전달됩니다</div>
-              </div>
-
-              <div className="lp2-qna-card">
-                <div className="lp2-report-head">
-                  <span className="lp2-proof-dot" />
-                  <strong>질문·답변</strong>
-                  <span className="t">수업 없는 날에도</span>
-                </div>
-                <div className="lp2-qna-body">
-                  <div className="lp2-bubble student">
-                    <span className="who">학생 · 밤 11:24</span>
-                    <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
-                  </div>
-                  <div className="lp2-bubble teacher">
-                    <span className="who">선생님 · 아침 7:40</span>
-                    <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
-                  </div>
-                  <div className="lp2-bubble student">
-                    <span className="who">학생 · 아침 8:05</span>
-                    <p>풀이 보니까 바로 이해됐어요! 목요일에 봬요.</p>
-                  </div>
-                </div>
-              </div>
+            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
+              {careReportMock}
+              {careQnaMock}
             </div>
           </div>
         </div>

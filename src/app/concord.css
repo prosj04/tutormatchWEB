@@ -162,8 +162,14 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .lp2-pcard-pay:hover{ color:var(--fg); }
 @media (max-width:1024px){ .lp2-pcard-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:680px; } }
 @media (max-width:640px){
-  .lp2-price-duo, .lp2-pcard-grid{ grid-template-columns:1fr; }
-  .lp2-pcard{ aspect-ratio:auto; }
+  /* 모바일: 세로 스택 금지 — PC 카드 비율 유지한 좌우 스와이프 캐러셀 */
+  .lp2-price-duo, .lp2-pcard-grid{
+    display:flex; overflow-x:auto; gap:14px;
+    margin:0 -20px; padding:4px 20px 16px;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+  }
+  .lp2-pcard{ flex:0 0 min(76vw, 300px); scroll-snap-align:center; }
 }
 .price-card{ position:relative; padding:30px 24px 32px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }
