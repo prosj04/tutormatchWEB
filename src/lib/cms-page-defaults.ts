@@ -268,8 +268,8 @@ function pricingBoxRowsForSlot(
   keyFn: typeof pricingBoxFieldKey = pricingBoxFieldKey,
 ) {
   const featuresText = v2DefaultFeatures(plan).join("\n");
-  const titleValue = `주 ${plan.weekly}회 · 회당 ${plan.hoursPerLesson}시간`;
-  const subtitleValue = `월 ${plan.monthlyHours}시간`;
+  const titleValue = `주 ${plan.weekly}회 · ${plan.hoursPerLesson}시간`;
+  const subtitleValue = "";
   return [
     {
       section: "pricing_page" as const,
