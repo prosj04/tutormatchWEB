@@ -29,16 +29,18 @@ export function PricingPlanCards({
     const isRec = plan.weekly === 2 && plan.hoursPerLesson === 2;
     const priceFormatted = plan.priceKrw.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const displayTitle = item.title ?? `주 ${plan.weekly}회 · ${plan.hoursPerLesson}시간`;
-    const displaySubtitle = item.subtitle ? `${item.subtitle} · ${tierLabel}` : tierLabel;
     const features = [...(item.features ?? []), ...PLAN_INCLUDES.slice(0, 2)];
     return (
       <ConcordReveal key={plan.id} as="article" className={`lp2-pcard${isRec ? " rec" : ""}`}>
         {isRec ? <span className="lp2-pcard-badge">{c("card_badge_recommend", "추천")}</span> : null}
-        <div className="lp2-pcard-name">{displayTitle}</div>
-        <div className="lp2-pcard-sub">{displaySubtitle}</div>
+        <div className="lp2-pcard-name">
+          {displayTitle}
+          <span className="lp2-pcard-tier">{tierLabel}</span>
+        </div>
+        {item.subtitle ? <div className="lp2-pcard-sub">{item.subtitle}</div> : null}
         <div className="lp2-pcard-price">
           {priceFormatted}
-          <small>{c("card_per_month", "원/1개월(4주 기준)")}</small>
+          <small>{c("card_per_month", "원/1개월(4주)")}</small>
         </div>
         <ul className="lp2-pcard-feat">
           {features.map((f) => (
