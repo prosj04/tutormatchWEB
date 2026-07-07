@@ -129,38 +129,8 @@ body:has(.lp2-root) footer.site .logo span {
   line-height: 1.12; margin-top: 16px; color: var(--fg);
 }
 .lp2-price-left p { color: var(--mut); font-size: clamp(16px, 1.2vw, 19px); margin-top: 16px; max-width: 38ch; text-wrap: pretty; }
-.lp2-price-duo {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 1.8vw, 24px);
-  align-items: start;
-}
-.lp2-pcard {
-  position: relative;
-  aspect-ratio: 1 / 1.618;
-  display: flex; flex-direction: column; justify-content: space-between;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
-  padding: clamp(22px, 2.2vw, 32px);
-  box-shadow: var(--shadow-sm);
-}
-.lp2-pcard.rec { border-color: var(--acc); box-shadow: 0 14px 38px rgba(var(--acc-rgb), .14); }
-.lp2-pcard-badge {
-  position: absolute; top: 18px; right: 18px;
-  background: var(--acc); color: var(--on-acc);
-  font-size: 12px; font-weight: 800; border-radius: 999px; padding: 5px 12px;
-}
-.lp2-pcard-name { font-size: clamp(18px, 1.5vw, 23px); font-weight: 800; letter-spacing: -.02em; color: var(--fg); }
-.lp2-pcard-sub { margin-top: 8px; font-size: 14px; font-weight: 600; color: var(--mut); }
-.lp2-pcard-price {
-  font-size: clamp(30px, 2.6vw, 44px); font-weight: 800; letter-spacing: -.025em;
-  color: var(--fg); font-variant-numeric: tabular-nums;
-}
-.lp2-pcard-price small { font-size: .42em; font-weight: 700; color: var(--mut); margin-left: 5px; letter-spacing: 0; }
 @media (min-width: 961px) {
   .lp2-price-cols { grid-template-columns: 0.8fr 1.2fr; }
-}
-@media (max-width: 640px) {
-  .lp2-price-duo { grid-template-columns: 1fr; }
-  .lp2-pcard { aspect-ratio: auto; gap: 22px; }
 }
 
 /* ── hero proof cards ── */

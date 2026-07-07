@@ -61,10 +61,11 @@ export default async function ConsultPage({
         <ConsultRequestForm
           source={first(searchParams?.source)}
           phoneNotice={phoneNotice}
+          copy={siteContent["consult_page"] ?? {}}
         />
 
         <div className="consult-kakao">
-          <p>양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.</p>
+          <p>{get("kakao_hint", "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.")}</p>
           <KakaoConsultButton source="consult_page" />
         </div>
       </main>

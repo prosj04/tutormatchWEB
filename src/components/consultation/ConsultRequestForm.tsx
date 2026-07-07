@@ -17,9 +17,12 @@ import { trackEvent } from "@/lib/analytics-client";
 type Props = {
   source?: string;
   phoneNotice: string;
+  /** consult_page CMS 문구 (없으면 기본값) */
+  copy?: Partial<Record<string, string>>;
 };
 
-export function ConsultRequestForm({ source, phoneNotice }: Props) {
+export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
+  const c = (key: string, fallback: string) => copy[key] ?? fallback;
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [grade, setGrade] = useState("");
@@ -103,23 +106,23 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
     return (
       <div className="consult-done card">
         <div className="consult-done-icon" aria-hidden="true">✓</div>
-        <h2>상담 신청이 접수됐어요</h2>
+        <h2>{c("done_title", "상담 신청이 접수됐어요")}</h2>
         <p>{phoneNotice}</p>
-        <p className="consult-done-label">상담에서 확인하실 것</p>
+        <p className="consult-done-label">{c("done_check_label", "상담에서 확인하실 것")}</p>
         <ul className="consult-done-list">
-          <li>학생의 공부 성향 진단과 그에 맞는 선생님 방향</li>
-          <li>과목별 현재 위치와 3개월 학습 계획</li>
-          <li>수업·요금 안내와 첫 수업 환불 조건</li>
+          <li>{c("done_item_1", "학생의 공부 성향 진단과 그에 맞는 선생님 방향")}</li>
+          <li>{c("done_item_2", "과목별 현재 위치와 3개월 학습 계획")}</li>
+          <li>{c("done_item_3", "수업·요금 안내와 첫 수업 환불 조건")}</li>
         </ul>
         <p className="consult-done-sub">
-          계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.
+          {c("done_sub", "계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.")}
         </p>
         <div className="consult-done-actions">
           <Link href="/register" className="btn btn-acc">
-            1분 만에 계정 만들기
+            {c("done_btn_register", "1분 만에 계정 만들기")}
           </Link>
           <Link href="/" className="btn btn-ghost">
-            홈으로
+            {c("done_btn_home", "홈으로")}
           </Link>
         </div>
       </div>
@@ -130,17 +133,17 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
     <form className="consult-form card" onSubmit={handleSubmit} noValidate>
       <div className="consult-row">
         <div className="consult-field consult-field-grow">
-          <label htmlFor="consult-name">이름</label>
+          <label htmlFor="consult-name">{c("label_name", "이름")}</label>
           <input
             id="consult-name"
             type="text"
-            placeholder="학생 이름"
+            placeholder={c("ph_name", "학생 이름")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="consult-field">
-          <span className="consult-label">성별</span>
+          <span className="consult-label">{c("label_gender", "성별")}</span>
           <div className="consult-gender" role="group" aria-label="성별 선택">
             {LEAD_GENDERS.map((g) => (
               <button
@@ -159,7 +162,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
 
       <div className="consult-row">
         <div className="consult-field">
-          <label htmlFor="consult-grade">학년</label>
+          <label htmlFor="consult-grade">{c("label_grade", "학년")}</label>
           <select
             id="consult-grade"
             value={grade}
@@ -167,7 +170,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
             required
           >
             <option value="" disabled>
-              2026년 기준 학년
+              {c("ph_grade", "2026년 기준 학년")}
             </option>
             {LEAD_GRADES.map((g) => (
               <option key={g} value={g}>
@@ -178,7 +181,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
         </div>
 
         <div className="consult-field consult-field-grow">
-          <label htmlFor="consult-phone">연락처</label>
+          <label htmlFor="consult-phone">{c("label_phone", "연락처")}</label>
           <input
             id="consult-phone"
             type="tel"
@@ -192,12 +195,12 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
       </div>
 
       <div className="consult-field">
-        <span className="consult-label">지역</span>
+        <span className="consult-label">{c("label_region", "지역")}</span>
         <RegionPicker value={region} onChange={setRegion} />
       </div>
 
       <div className="consult-field">
-        <span className="consult-label">과목</span>
+        <span className="consult-label">{c("label_subjects", "과목")}</span>
         <div className="consult-chips consult-chips-row" role="group" aria-label="과목 선택">
           {LEAD_SUBJECTS.map((subject) => {
             const active = subjects.includes(subject);
@@ -217,14 +220,14 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
       </div>
 
       <div className="consult-field">
-        <label htmlFor="consult-time">희망 상담 시간</label>
+        <label htmlFor="consult-time">{c("label_time", "희망 상담 시간")}</label>
         <p className="consult-notice">{phoneNotice}</p>
         <select
           id="consult-time"
           value={preferredTime}
           onChange={(e) => setPreferredTime(e.target.value)}
         >
-          <option value="">상담시간 선택</option>
+          <option value="">{c("ph_time", "상담시간 선택")}</option>
           {LEAD_TIME_SLOTS.map((slot) => (
             <option key={slot} value={slot}>
               {slot}
@@ -236,7 +239,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
       <div className="consult-agree">
         <label className="consult-agree-row consult-agree-all">
           <input type="checkbox" checked={allAgreed} onChange={toggleAll} />
-          약관 전체 동의
+          {c("agree_all", "약관 전체 동의")}
         </label>
         <label className="consult-agree-row">
           <input
@@ -245,7 +248,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
             onChange={(e) => setPrivacyAgreed(e.target.checked)}
           />
           <span>
-            [필수] 상담을 위한 개인정보 수집·이용 동의{" "}
+            {c("agree_privacy", "[필수] 상담을 위한 개인정보 수집·이용 동의")}{" "}
             <Link href="/privacy" target="_blank" className="consult-agree-link">
               보기
             </Link>
@@ -257,7 +260,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
             checked={marketingOptIn}
             onChange={(e) => setMarketingOptIn(e.target.checked)}
           />
-          [선택] 마케팅 활용 동의
+          {c("agree_marketing", "[선택] 마케팅 활용 동의")}
         </label>
       </div>
 
@@ -272,7 +275,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
         className="btn btn-acc btn-block consult-submit"
         disabled={submitting}
       >
-        {submitting ? "신청 중…" : "상담 신청하기"}
+        {submitting ? c("btn_submitting", "신청 중…") : c("btn_submit", "상담 신청하기")}
       </button>
     </form>
   );

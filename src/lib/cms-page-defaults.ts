@@ -1621,6 +1621,39 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "benefit_2", value: "전담 매니저 1:1 상담", type: "text", order: 4 },
   { section: "consult_page", key: "benefit_3", value: "첫 수업 100% 환불 보장", type: "text", order: 5 },
   { section: "consult_page", key: "phone_notice", value: "*신청 후 1영업일 내에 담당 매니저가 연락드립니다.", type: "text", order: 6 },
+  { section: "consult_page", key: "label_name", value: "이름", type: "text", order: 7 },
+  { section: "consult_page", key: "ph_name", value: "학생 이름", type: "text", order: 8 },
+  { section: "consult_page", key: "label_gender", value: "성별", type: "text", order: 9 },
+  { section: "consult_page", key: "label_grade", value: "학년", type: "text", order: 10 },
+  { section: "consult_page", key: "ph_grade", value: "2026년 기준 학년", type: "text", order: 11 },
+  { section: "consult_page", key: "label_phone", value: "연락처", type: "text", order: 12 },
+  { section: "consult_page", key: "label_region", value: "지역", type: "text", order: 13 },
+  { section: "consult_page", key: "label_subjects", value: "과목", type: "text", order: 14 },
+  { section: "consult_page", key: "label_time", value: "희망 상담 시간", type: "text", order: 15 },
+  { section: "consult_page", key: "ph_time", value: "상담시간 선택", type: "text", order: 16 },
+  { section: "consult_page", key: "agree_all", value: "약관 전체 동의", type: "text", order: 17 },
+  { section: "consult_page", key: "agree_privacy", value: "[필수] 상담을 위한 개인정보 수집·이용 동의", type: "text", order: 18 },
+  { section: "consult_page", key: "agree_marketing", value: "[선택] 마케팅 활용 동의", type: "text", order: 19 },
+  { section: "consult_page", key: "btn_submit", value: "상담 신청하기", type: "text", order: 20 },
+  { section: "consult_page", key: "btn_submitting", value: "신청 중…", type: "text", order: 21 },
+  { section: "consult_page", key: "done_title", value: "상담 신청이 접수됐어요", type: "text", order: 22 },
+  { section: "consult_page", key: "done_check_label", value: "상담에서 확인하실 것", type: "text", order: 23 },
+  { section: "consult_page", key: "done_item_1", value: "학생의 공부 성향 진단과 그에 맞는 선생님 방향", type: "text", order: 24 },
+  { section: "consult_page", key: "done_item_2", value: "과목별 현재 위치와 3개월 학습 계획", type: "text", order: 25 },
+  { section: "consult_page", key: "done_item_3", value: "수업·요금 안내와 첫 수업 환불 조건", type: "text", order: 26 },
+  { section: "consult_page", key: "done_sub", value: "계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.", type: "text", order: 27 },
+  { section: "consult_page", key: "done_btn_register", value: "1분 만에 계정 만들기", type: "text", order: 28 },
+  { section: "consult_page", key: "done_btn_home", value: "홈으로", type: "text", order: 29 },
+  { section: "consult_page", key: "kakao_hint", value: "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.", type: "text", order: 30 },
+];
+
+/** /reviews 섹션 보임/숨김 토글 기본값 */
+export const reviewsSectionVisibilityDefaults = [
+  { section: "reviews_page", key: "hall_section_visible", value: "1", type: "text", order: 300 },
+  { section: "reviews_page", key: "success_section_visible", value: "1", type: "text", order: 301 },
+  { section: "reviews_page", key: "band_section_visible", value: "1", type: "text", order: 302 },
+  { section: "reviews_page", key: "proof_section_visible", value: "1", type: "text", order: 303 },
+  { section: "reviews_page", key: "list_section_visible", value: "1", type: "text", order: 304 },
 ];
 
 /** /tutors 섹션 보임/숨김 토글 기본값 */

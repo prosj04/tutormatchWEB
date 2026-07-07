@@ -122,6 +122,49 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .tier-tabs button{ border:0; background:transparent; color:var(--mut); font-weight:700; font-size:15px; padding:10px 22px; border-radius:var(--r-pill); cursor:pointer; transition:color .2s,background .2s; }
 .tier-tabs button.on{ background:var(--panel); color:var(--fg); box-shadow:var(--shadow-sm); }
 .price-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; max-width:1180px; }
+
+/* ---- compact pricing cards (golden ratio · home + pricing) ---- */
+.lp2-price-duo{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,1.8vw,24px); align-items:start; }
+.lp2-pcard-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; max-width:1180px; align-items:start; }
+.lp2-pcard{
+  position:relative;
+  aspect-ratio:1 / 1.618;
+  display:flex; flex-direction:column;
+  background:var(--panel); border:1px solid var(--line); border-radius:20px;
+  padding:clamp(22px,2vw,30px);
+  box-shadow:var(--shadow-sm);
+}
+.lp2-pcard.rec{ border-color:var(--acc); box-shadow:0 14px 38px rgba(var(--acc-rgb),.14); }
+.lp2-pcard-badge{
+  position:absolute; top:18px; right:18px;
+  background:var(--acc); color:var(--on-acc);
+  font-size:12px; font-weight:800; border-radius:var(--r-pill); padding:5px 12px;
+}
+.lp2-pcard-name{ font-size:clamp(18px,1.4vw,22px); font-weight:800; letter-spacing:-.02em; color:var(--fg); }
+.lp2-pcard-sub{ margin-top:6px; font-size:14px; font-weight:600; color:var(--mut); }
+.lp2-pcard-price{
+  margin-top:16px;
+  font-size:clamp(26px,2.2vw,36px); font-weight:800; letter-spacing:-.025em;
+  color:var(--fg); font-variant-numeric:tabular-nums;
+}
+.lp2-pcard-price small{ font-size:.45em; font-weight:700; color:var(--mut); margin-left:5px; letter-spacing:0; }
+.lp2-pcard-feat{
+  list-style:none; margin:18px 0 0; padding:18px 0 0; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:9px;
+}
+.lp2-pcard-feat li{ position:relative; padding-left:20px; font-size:13.5px; font-weight:500; color:var(--mut); line-height:1.45; }
+.lp2-pcard-feat li::before{ content:"✓"; position:absolute; left:0; color:var(--acc-text); font-weight:800; }
+.lp2-pcard-cta{ margin-top:auto; padding-top:20px; }
+.lp2-pcard-pay{
+  display:block; text-align:center; margin-top:9px;
+  font-size:12.5px; font-weight:600; color:var(--mut-2); text-decoration:underline;
+}
+.lp2-pcard-pay:hover{ color:var(--fg); }
+@media (max-width:1024px){ .lp2-pcard-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:680px; } }
+@media (max-width:640px){
+  .lp2-price-duo, .lp2-pcard-grid{ grid-template-columns:1fr; }
+  .lp2-pcard{ aspect-ratio:auto; }
+}
 .price-card{ position:relative; padding:30px 24px 32px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }
 .rec-badge{ position:absolute; top:-13px; left:24px; background:var(--acc); color:var(--on-acc); font-size:12px; font-weight:700; padding:6px 14px; border-radius:var(--r-pill); letter-spacing:.04em; }

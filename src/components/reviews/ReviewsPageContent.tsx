@@ -87,6 +87,8 @@ export function ReviewsPageContent({
 }) {
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "reviews_page", key, fallback);
+  const secVisible = (key: string) =>
+    parseCmsVisibility(siteContent?.["reviews_page"]?.[key], true);
   const getSuccess = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "reviews_success", key, fallback);
   const getProof = (key: string, fallback: string) =>
@@ -207,12 +209,14 @@ export function ReviewsPageContent({
       </section>
 
       {/* ── 합격 인터뷰 카드 무한 캐러셀 ── */}
+      {secVisible("hall_section_visible") && (
       <section className="sec-sm">
         <HallOfFameCarousel items={hallItems} />
       </section>
+      )}
 
       {/* ── 성공사례 캐러셀 ── */}
-      {successCards.length > 0 ? (
+      {successCards.length > 0 && secVisible("success_section_visible") ? (
         <section className="sec">
           <div className="rp-sec-head">
             <h2>
@@ -252,6 +256,7 @@ export function ReviewsPageContent({
       ) : null}
 
       {/* ── 통계 밴드 ── */}
+      {secVisible("band_section_visible") && (
       <section className="rp-band">
         <div className="wrap rp-band-inner">
           <h2>
@@ -294,9 +299,10 @@ export function ReviewsPageContent({
           </p>
         </div>
       </section>
+      )}
 
       {/* ── 실물 인증 카드 ── */}
-      {proofCards.length > 0 ? (
+      {proofCards.length > 0 && secVisible("proof_section_visible") ? (
         <section className="sec rp-proof-sec">
           <div className="wrap">
             <div className="rp-sec-head">
@@ -337,6 +343,7 @@ export function ReviewsPageContent({
       ) : null}
 
       {/* ── 고민 카테고리 후기 ── */}
+      {secVisible("list_section_visible") && (
       <section className="sec">
         <div className="wrap">
           <div className="rp-sec-head">
@@ -408,6 +415,7 @@ export function ReviewsPageContent({
           )}
         </div>
       </section>
+      )}
 
       <ConcordSubpageCta
         siteContent={siteContent}
