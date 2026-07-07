@@ -1647,6 +1647,31 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "kakao_hint", value: "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.", type: "text", order: 30 },
 ];
 
+/** 상담 신청(가입) 모달 문구 기본값 */
+export const signupModalDefaults = [
+  { section: "signup_modal", key: "title", value: "상담 신청", type: "text", order: 1 },
+  { section: "signup_modal", key: "subtext", value: "이름과 연락처만 남기면 매니저가 연락드립니다.", type: "text", order: 2 },
+  { section: "signup_modal", key: "subtext_instant", value: "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다.", type: "text", order: 3 },
+  { section: "signup_modal", key: "label_name", value: "이름", type: "text", order: 4 },
+  { section: "signup_modal", key: "label_phone", value: "전화번호", type: "text", order: 5 },
+  { section: "signup_modal", key: "label_password", value: "비밀번호", type: "text", order: 6 },
+  { section: "signup_modal", key: "label_password_confirm", value: "비밀번호 확인", type: "text", order: 7 },
+  { section: "signup_modal", key: "guardian_consent_text", value: "만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.", type: "text", order: 8 },
+  { section: "signup_modal", key: "btn_submit", value: "상담 신청", type: "text", order: 9 },
+  { section: "signup_modal", key: "btn_submit_instant", value: "등록하고 시작하기", type: "text", order: 10 },
+  { section: "signup_modal", key: "btn_submitting", value: "처리 중…", type: "text", order: 11 },
+  { section: "signup_modal", key: "step2_title", value: "상담 신청 완료", type: "text", order: 12 },
+  { section: "signup_modal", key: "step2_subtext", value: "추가 정보를 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요. (선택사항)", type: "text", order: 13 },
+  { section: "signup_modal", key: "step2_label_grade", value: "학년", type: "text", order: 14 },
+  { section: "signup_modal", key: "step2_ph_grade", value: "학년 선택", type: "text", order: 15 },
+  { section: "signup_modal", key: "step2_label_region", value: "거주 지역", type: "text", order: 16 },
+  { section: "signup_modal", key: "step2_label_subjects", value: "희망 과목", type: "text", order: 17 },
+  { section: "signup_modal", key: "step2_btn_save", value: "저장하고 계속", type: "text", order: 18 },
+  { section: "signup_modal", key: "step2_btn_skip", value: "건너뛰기", type: "text", order: 19 },
+  { section: "signup_modal", key: "login_hint", value: "이미 계정이 있으신가요?", type: "text", order: 20 },
+  { section: "signup_modal", key: "login_link", value: "로그인", type: "text", order: 21 },
+];
+
 /** /reviews 섹션 보임/숨김 토글 기본값 */
 export const reviewsSectionVisibilityDefaults = [
   { section: "reviews_page", key: "hall_section_visible", value: "1", type: "text", order: 300 },

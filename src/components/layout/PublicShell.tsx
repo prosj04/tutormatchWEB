@@ -20,12 +20,13 @@ export async function PublicShell({
     "reviews_page",
     "footer",
     "site_banner",
+    "signup_modal",
   ]);
   const showFaqLink = isPublicSectionVisible(siteContent, "faq_page", "show_page", true);
   const showReviewsLink = isPublicSectionVisible(siteContent, "reviews_page", "show_page", true);
 
   return (
-    <PublicAppProviders>
+    <PublicAppProviders signupCopy={siteContent["signup_modal"] ?? {}}>
       <TopUrgencyBanner siteContent={siteContent} />
       <ConcordSiteHeader
         showFaqLink={showFaqLink}

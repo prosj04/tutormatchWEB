@@ -8,12 +8,14 @@ type ConsultationSignupModalProps = {
   open: boolean;
   onClose: () => void;
   instantEnroll?: boolean;
+  copy?: Record<string, string>;
 };
 
 export function ConsultationSignupModal({
   open,
   onClose,
   instantEnroll = false,
+  copy,
 }: ConsultationSignupModalProps) {
   useEffect(() => {
     if (!open) return;
@@ -54,7 +56,7 @@ export function ConsultationSignupModal({
         >
           <span style={{ fontSize: 18, lineHeight: 1 }}>×</span>
         </button>
-        <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} />
+        <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} copy={copy} />
       </div>
     </div>
   );

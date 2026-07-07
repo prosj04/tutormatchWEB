@@ -28,13 +28,17 @@ type ConsultationSignupFormProps = {
   showLoginLink?: boolean;
   /** 즉시 등록: 대표 매니저 배정 후 방문 시간 입력 */
   instantEnroll?: boolean;
+  /** signup_modal CMS 문구 (없으면 기본값) */
+  copy?: Record<string, string>;
 };
 
 export function ConsultationSignupForm({
   onSuccess,
   showLoginLink = true,
   instantEnroll = false,
+  copy = {},
 }: ConsultationSignupFormProps) {
+  const c = (key: string, fallback: string) => copy[key] ?? fallback;
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
@@ -156,19 +160,19 @@ export function ConsultationSignupForm({
         <div className="mb-6" style={{ paddingRight: 36 }}>
           <p className="eyebrow">Consultation</p>
           <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
-            상담 신청 완료
+            {c("step2_title", "상담 신청 완료")}
           </h2>
           <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
-            추가 정보를 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요. (선택사항)
+            {c("step2_subtext", "추가 정보를 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요. (선택사항)")}
           </p>
         </div>
         <div className="space-y-5">
           <div className="flex items-end gap-4">
             <GenderSelect value={gender} onChange={setGender} size="sm" className="shrink-0" />
             <div className="field" style={{ flex: 1 }}>
-              <label htmlFor="reg-grade">학년</label>
+              <label htmlFor="reg-grade">{c("step2_label_grade", "학년")}</label>
               <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
-                <option value="">학년 선택</option>
+                <option value="">{c("step2_ph_grade", "학년 선택")}</option>
                 {STUDENT_GRADES.map((g) => (
                   <option key={g} value={g}>
                     {g}
@@ -178,13 +182,13 @@ export function ConsultationSignupForm({
             </div>
           </div>
           <div className="field">
-            <span>거주 지역</span>
+            <span>{c("step2_label_region", "거주 지역")}</span>
             <div style={{ marginTop: 8 }}>
               <RegionPicker value={region} onChange={setRegion} />
             </div>
           </div>
           <div className="field">
-            <span>희망 과목</span>
+            <span>{c("step2_label_subjects", "희망 과목")}</span>
             <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
               {SUBJECTS.map((s) => {
                 const on = selectedSubjects.includes(s);
@@ -209,7 +213,7 @@ export function ConsultationSignupForm({
           className="btn btn-acc btn-block"
           style={{ marginTop: 28 }}
         >
-          {loading ? "저장 중…" : "저장하고 계속"}
+          {loading ? c("btn_submitting", "저장 중…") : c("step2_btn_save", "저장하고 계속")}
         </button>
         <button
           type="button"
@@ -218,7 +222,7 @@ export function ConsultationSignupForm({
           className="btn btn-ghost btn-block"
           style={{ marginTop: 10 }}
         >
-          건너뛰기
+          {c("step2_btn_skip", "건너뛰기")}
         </button>
       </div>
     );
@@ -229,18 +233,18 @@ export function ConsultationSignupForm({
       <div className="mb-5" style={{ paddingRight: 36 }}>
         <p className="eyebrow">Consultation</p>
         <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
-          상담 신청
+          {c("title", "상담 신청")}
         </h2>
         <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
           {instantEnroll
-            ? "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다."
-            : "이름과 연락처만 남기면 매니저가 연락드립니다."}
+            ? c("subtext_instant", "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다.")
+            : c("subtext", "이름과 연락처만 남기면 매니저가 연락드립니다.")}
         </p>
       </div>
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="field">
-            <label htmlFor="reg-name">이름</label>
+            <label htmlFor="reg-name">{c("label_name", "이름")}</label>
             <input
               id="reg-name"
               type="text"
@@ -253,7 +257,7 @@ export function ConsultationSignupForm({
             ) : null}
           </div>
           <div className="field">
-            <label htmlFor="reg-phone">전화번호</label>
+            <label htmlFor="reg-phone">{c("label_phone", "전화번호")}</label>
             <input
               id="reg-phone"
               type="tel"
@@ -267,7 +271,7 @@ export function ConsultationSignupForm({
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="field">
-            <label htmlFor="reg-password">비밀번호</label>
+            <label htmlFor="reg-password">{c("label_password", "비밀번호")}</label>
             <input
               id="reg-password"
               type="password"
@@ -278,7 +282,7 @@ export function ConsultationSignupForm({
             {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
           </div>
           <div className="field">
-            <label htmlFor="reg-password2">비밀번호 확인</label>
+            <label htmlFor="reg-password2">{c("label_password_confirm", "비밀번호 확인")}</label>
             <input
               id="reg-password2"
               type="password"
@@ -319,7 +323,7 @@ export function ConsultationSignupForm({
             className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
           />
           <span>
-            만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.
+            {c("guardian_consent_text", "만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.")}
             {fieldErrors.guardianConsent ? (
               <span className="field-error block">{fieldErrors.guardianConsent}</span>
             ) : null}
@@ -339,10 +343,10 @@ export function ConsultationSignupForm({
               className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
               aria-hidden
             />
-            <span>처리 중…</span>
+            <span>{c("btn_submitting", "처리 중…")}</span>
           </>
         ) : (
-          instantEnroll ? "등록하고 시작하기" : "상담 신청"
+          instantEnroll ? c("btn_submit_instant", "등록하고 시작하기") : c("btn_submit", "상담 신청")
         )}
       </button>
       {conflictError ? (
@@ -352,8 +356,8 @@ export function ConsultationSignupForm({
       ) : null}
       {showLoginLink ? (
         <p className="auth-alt">
-          이미 계정이 있으신가요?{" "}
-          <Link href="/login">로그인</Link>
+          {c("login_hint", "이미 계정이 있으신가요?")}{" "}
+          <Link href="/login">{c("login_link", "로그인")}</Link>
         </p>
       ) : null}
     </div>

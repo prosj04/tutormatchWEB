@@ -35,7 +35,7 @@ export function useConsultationSignup() {
   return ctx;
 }
 
-export function ConsultationSignupProvider({ children }: { children: ReactNode }) {
+export function ConsultationSignupProvider({ children, copy }: { children: ReactNode; copy?: Record<string, string> }) {
   const [isOpen, setIsOpen] = useState(false);
   const [instantEnroll, setInstantEnroll] = useState(false);
 
@@ -71,7 +71,7 @@ export function ConsultationSignupProvider({ children }: { children: ReactNode }
     <ConsultationSignupContext.Provider value={value}>
       {children}
       {isOpen ? (
-        <ConsultationSignupModal open={isOpen} onClose={close} instantEnroll={instantEnroll} />
+        <ConsultationSignupModal open={isOpen} onClose={close} instantEnroll={instantEnroll} copy={copy} />
       ) : null}
     </ConsultationSignupContext.Provider>
   );
