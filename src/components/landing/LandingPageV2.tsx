@@ -9,6 +9,7 @@ import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFam
 import { HomeSafetyStory, type SafetyStoryData } from "@/components/landing/HomeSafetyStory";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
+import { TutorProfileCard } from "@/components/tutors/TutorProfileCard";
 import {
   formatCmsMultiline,
   getFeaturedTutorCards,
@@ -199,7 +200,9 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     cmsSteps,
     managementItems,
     cmsTestimonials,
-    featuredTutors: getFeaturedTutorCards(cms?.siteContent).slice(0, 3),
+    featuredTutors: getFeaturedTutorCards(cms?.siteContent)
+      .filter((c) => c.home)
+      .slice(0, 3),
     kickers,
     sectionTitles,
   };
@@ -464,48 +467,16 @@ export function LandingPageV2({
             </span>
           </div>
 
-          <div className="lp2-grid-3 lp2-ft-grid">
-            {featuredTutors.map((card) => {
-              const chips = [
-                ...(card.tag ? [card.tag] : []),
-                ...card.subjects,
-              ].slice(0, 3);
-              return (
-                <article key={card.index} className="lp2-ft-card reveal">
-                  <div className="lp2-ft-photo">
-                    <Image
-                      src={card.photo}
-                      alt={`${card.name} 선생님 프로필 사진`}
-                      fill
-                      sizes="(max-width:680px) 90vw, 33vw"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                  <div className="lp2-ft-body">
-                    {chips.length > 0 && (
-                      <div className="tag-chip-row">
-                        {chips.map((chip) => (
-                          <span key={chip} className="tag-chip">#{chip}</span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="lp2-ft-name">
-                      {card.name}
-                      <span className="lp2-ft-verified">✓ 검증</span>
-                    </div>
-                    {card.university && <div className="lp2-ft-edu">{card.university}</div>}
-                    {card.blurb && <p className="lp2-ft-blurb">{card.blurb}</p>}
-                    <button
-                      type="button"
-                      className="lp2-btn lp2-btn-acc lp2-btn-sm lp2-ft-btn"
-                      onClick={() => void goConsultation(`home_featured_${card.index}`)}
-                    >
-                      빠른 매칭받기
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="lp2-tpx-grid reveal">
+            {featuredTutors.map((card) => (
+              <TutorProfileCard
+                key={card.index}
+                card={card}
+                ctaLabel="빠른 매칭받기"
+                onMatch={(i) => void goConsultation(`home_featured_${i}`)}
+                isCenter
+              />
+            ))}
           </div>
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { CountUpStat } from "@/components/common/CountUpStat";
+import { TutorProfileCard } from "@/components/tutors/TutorProfileCard";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
@@ -28,67 +29,6 @@ const NEWS_REF_FALLBACK: [string, string, string, string][] = [
   ["‘정**’ 사건에 불안 커진 과외 중개 앱…", "서울신문", "2023", "https://www.seoul.co.kr/news/newsView.php?id=20230604500093"],
   ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
 ];
-
-function FeaturedCard({
-  card,
-  ctaLabel,
-  onMatch,
-  isCenter,
-}: {
-  card: FeaturedTutorCard;
-  ctaLabel: string;
-  onMatch: (cardIndex: number) => void;
-  isCenter: boolean;
-}) {
-  const pitch = [card.blurb, ...card.highlights].filter(Boolean).join("\n");
-  return (
-    <article className={`tpx-card${isCenter ? " is-center" : ""}`}>
-      <div className="tpx-head">
-        <div className="tpx-photo">
-          <Image
-            src={card.photo}
-            alt={`${card.name} 선생님 프로필 사진`}
-            fill
-            className="object-cover"
-            sizes="140px"
-          />
-        </div>
-        {card.tags.length > 0 ? (
-          <div className="tpx-tags">
-            {card.tags.slice(0, 3).map((t) => (
-              <span key={t} className="tpx-tag">
-                {t}
-              </span>
-            ))}
-          </div>
-        ) : null}
-      </div>
-      <p className="tpx-univ">{card.university}</p>
-      <h3 className="tpx-name">
-        {card.name} 선생님{card.age ? ` (${card.age}세)` : ""}
-      </h3>
-      <p className="tpx-pitch" style={{ whiteSpace: "pre-line" }}>{pitch}</p>
-      {card.subjects.length > 0 ? (
-        <div className="tpx-subjects">
-          {card.subjects.slice(0, 3).map((sub) => (
-            <span key={sub}>{sub}</span>
-          ))}
-        </div>
-      ) : null}
-      <div className="tpx-foot">
-        <span className="tpx-career">{card.careerBadge}</span>
-        <button
-          type="button"
-          className="tpx-cta"
-          onClick={() => onMatch(card.index)}
-          tabIndex={isCenter ? 0 : -1}
-        >
-          {ctaLabel}
-        </button>
-      </div>
-    </article>
-  );
-}
 
 function TutorCarousel({
   cards,
@@ -166,7 +106,7 @@ function TutorCarousel({
     >
       <div className="tpx-track" ref={trackRef}>
         {extended.map((card, i) => (
-          <FeaturedCard
+          <TutorProfileCard
             key={`${card.index}-${i}`}
             card={card}
             ctaLabel={ctaLabel}

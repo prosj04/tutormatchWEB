@@ -416,3 +416,42 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   .hall-track { animation: none; }
   .hall-marquee { overflow-x: auto; }
 }
+
+/* ── 선생님 프로필 카드 (tpx — /tutors 캐러셀·홈 미리보기 공용) ── */
+.tpx-card {
+  box-sizing: border-box;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+  padding: 26px 26px 24px;
+}
+.tpx-head { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+.tpx-photo { position: relative; width: clamp(104px, 9vw, 136px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; flex: none; background: var(--panel-2); }
+.tpx-tags { display: flex; flex-direction: column; gap: 9px; align-items: flex-end; }
+.tpx-tag {
+  border: 1px solid rgba(var(--acc-rgb), .45); color: var(--acc-text);
+  font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px; white-space: nowrap;
+}
+.tpx-univ { font-size: 14px; color: var(--mut); font-weight: 600; }
+.tpx-name { font-size: clamp(20px, 1.9vw, 24px); font-weight: 800; letter-spacing: -.02em; margin: 6px 0 12px; color: var(--fg); }
+.tpx-pitch {
+  font-size: 14px; line-height: 1.6; color: var(--mut); min-height: 66px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tpx-subjects { display: flex; gap: 8px; margin: 14px 0 20px; flex-wrap: wrap; }
+.tpx-subjects span {
+  background: rgba(var(--acc-rgb), .12); color: var(--acc-text);
+  font-size: 13.5px; font-weight: 700; padding: 6px 14px; border-radius: 999px;
+}
+.tpx-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tpx-career { font-size: 14.5px; font-weight: 800; color: var(--fg); border-bottom: 3px solid var(--acc); padding-bottom: 3px; white-space: nowrap; }
+.tpx-cta {
+  border: 1px solid rgba(var(--acc-rgb), .5); background: rgba(var(--acc-rgb), .08); color: var(--acc-text);
+  font-weight: 800; font-size: 14.5px; padding: 12px 22px; border-radius: 999px; cursor: pointer;
+  transition: background .2s, color .2s; white-space: nowrap;
+}
+.tpx-card.is-center .tpx-cta { background: var(--acc); color: var(--on-acc); border-color: transparent; }
+.tpx-cta:hover { background: var(--acc-press); color: var(--on-acc); }
+
+/* 홈 미리보기: 캐러셀 없이 3장 그리드 */
+.lp2-tpx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.lp2-tpx-grid .tpx-card { width: 100%; }
+@media (max-width: 960px) { .lp2-tpx-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }

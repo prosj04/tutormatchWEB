@@ -184,44 +184,15 @@
   .tp-carousel-card { flex-basis: min(62vw, 240px); }
 }
 
-/* ── 센터 포커스 카드 캐러셀 (tpx) — 3장 노출·양끝 흐림·1.5s 자동 순환 ── */
+/* ── 센터 포커스 캐러셀 전용 (카드 스타일은 concord.css 공용) ── */
 .tpx-wrap { position: relative; overflow: hidden; padding: 18px 0 10px; --tpx-w: clamp(300px, 30vw, 400px); }
 .tpx-track { display: flex; gap: 28px; width: max-content; will-change: transform; }
-.tpx-card {
-  width: var(--tpx-w); flex: none; box-sizing: border-box;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
-  padding: 26px 26px 24px;
+.tpx-track .tpx-card {
+  width: var(--tpx-w); flex: none;
   opacity: .38; transform: scale(.94); filter: blur(1px) saturate(.9);
   transition: opacity .5s ease, transform .55s cubic-bezier(.22, 1, .36, 1), filter .5s ease, box-shadow .5s ease;
 }
-.tpx-card.is-center { opacity: 1; transform: none; filter: none; box-shadow: var(--shadow-md); }
-.tpx-head { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
-.tpx-photo { position: relative; width: clamp(104px, 9vw, 136px); aspect-ratio: 1; border-radius: 50%; overflow: hidden; flex: none; background: var(--panel-2); }
-.tpx-tags { display: flex; flex-direction: column; gap: 9px; align-items: flex-end; }
-.tpx-tag {
-  border: 1px solid rgba(var(--acc-rgb), .45); color: var(--acc-text);
-  font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px; white-space: nowrap;
-}
-.tpx-univ { font-size: 14px; color: var(--mut); font-weight: 600; }
-.tpx-name { font-size: clamp(20px, 1.9vw, 24px); font-weight: 800; letter-spacing: -.02em; margin: 6px 0 12px; color: var(--fg); }
-.tpx-pitch {
-  font-size: 14px; line-height: 1.6; color: var(--mut); min-height: 66px;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-}
-.tpx-subjects { display: flex; gap: 8px; margin: 14px 0 20px; flex-wrap: wrap; }
-.tpx-subjects span {
-  background: rgba(var(--acc-rgb), .12); color: var(--acc-text);
-  font-size: 13.5px; font-weight: 700; padding: 6px 14px; border-radius: 999px;
-}
-.tpx-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.tpx-career { font-size: 14.5px; font-weight: 800; color: var(--fg); border-bottom: 3px solid var(--acc); padding-bottom: 3px; white-space: nowrap; }
-.tpx-cta {
-  border: 1px solid rgba(var(--acc-rgb), .5); background: rgba(var(--acc-rgb), .08); color: var(--acc-text);
-  font-weight: 800; font-size: 14.5px; padding: 12px 22px; border-radius: 999px; cursor: pointer;
-  transition: background .2s, color .2s; white-space: nowrap;
-}
-.tpx-card.is-center .tpx-cta { background: var(--acc); color: var(--on-acc); border-color: transparent; }
-.tpx-cta:hover { background: var(--acc-press); color: var(--on-acc); }
+.tpx-track .tpx-card.is-center { opacity: 1; transform: none; filter: none; box-shadow: var(--shadow-md); }
 .tpx-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
   width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
@@ -235,5 +206,4 @@
   .tpx-wrap { --tpx-w: min(84vw, 340px); }
   .tpx-prev { left: 6px; }
   .tpx-next { right: 6px; }
-  .tpx-pitch { min-height: 0; }
 }

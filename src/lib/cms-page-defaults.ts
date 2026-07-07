@@ -435,6 +435,7 @@ export function featuredTutorFieldKey(
   cardIndex1Based: number,
   field:
     | "visible"
+    | "home_visible"
     | "name"
     | "age"
     | "tag"
@@ -671,6 +672,7 @@ export const tutorsFeaturedDefaults = [
     const orderBase = 10 + idx * 8;
     return [
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "visible"), value: "1", type: "text" as const, order: orderBase },
+      { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "home_visible"), value: n <= 3 ? "1" : "0", type: "text" as const, order: orderBase },
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "name"), value: seed.name, type: "text" as const, order: orderBase + 1 },
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "tag"), value: seed.tag, type: "text" as const, order: orderBase + 2 },
       { section: "tutors_featured" as const, key: featuredTutorFieldKey(n, "university"), value: seed.university, type: "text" as const, order: orderBase + 3 },
@@ -821,6 +823,7 @@ export const reviewsBenchmarkDefaults = [
 
 export type FeaturedTutorCard = {
   index: number;
+  home: boolean;
   name: string;
   age: string;
   tag: string;
@@ -855,6 +858,7 @@ export function getFeaturedTutorCards(
     if (!name) continue;
     cards.push({
       index: n,
+      home: parseCmsVisibility(sec?.[featuredTutorFieldKey(n, "home_visible")], n <= 3),
       name,
       age: raw("age", seed?.age ?? "").trim(),
       tag: raw("tag", seed?.tag ?? "").trim(),
