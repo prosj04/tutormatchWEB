@@ -392,6 +392,16 @@ export const pricingPageDefaults = [
     type: "text",
     order: 208,
   },
+  { section: "pricing_page", key: "cta_title", value: "지금 무료 상담으로 시작해 보세요", type: "text", order: 300 },
+  {
+    section: "pricing_page",
+    key: "cta_subtext",
+    value: "학년·과목·목표만 알려주시면 매니저가 하루 안에 맞춤 플랜을 제안합니다.",
+    type: "text",
+    order: 301,
+  },
+  { section: "pricing_page", key: "cta_button", value: "무료 상담 신청", type: "text", order: 302 },
+  { section: "pricing_page", key: "cta_visible", value: "1", type: "text", order: 303 },
 ] as const;
 
 export const tutorsPageDefaults = [
@@ -766,6 +776,8 @@ export const reviewsBenchmarkDefaults = [
     type: "text",
     order: 123,
   },
+  { section: "reviews_page", key: "cta_button", value: "무료 상담 신청", type: "text", order: 124 },
+  { section: "reviews_page", key: "cta_visible", value: "1", type: "text", order: 125 },
   { section: "reviews_success", key: "section_title", value: "숫자로 확인하는\n성적 변화 사례", type: "text", order: 1 },
   {
     section: "reviews_success",
@@ -1007,6 +1019,16 @@ export const extraPublicPagesDefaults = [
     order: 3,
   },
   { section: "faq_page", key: "empty_text", value: "등록된 FAQ가 없습니다.", type: "text", order: 4 },
+  { section: "faq_page", key: "cta_title", value: "지금 무료 상담으로 시작해 보세요", type: "text", order: 5 },
+  {
+    section: "faq_page",
+    key: "cta_subtext",
+    value: "학년·과목·목표만 알려주시면 매니저가 하루 안에 맞춤 플랜을 제안합니다.",
+    type: "text",
+    order: 6,
+  },
+  { section: "faq_page", key: "cta_button", value: "무료 상담 신청", type: "text", order: 7 },
+  { section: "faq_page", key: "cta_visible", value: "1", type: "text", order: 8 },
 
   { section: "reviews_page", key: "show_page", value: "1", type: "text", order: 0 },
   { section: "reviews_page", key: "kicker", value: "REVIEWS", type: "text", order: 1 },

@@ -410,9 +410,12 @@ export function ReviewsPageContent({
       </section>
 
       <ConcordSubpageCta
-        title={get("cta_title", "우리 아이도 같은 변화를 경험할 수 있어요")}
-        description={get("cta_subtext", "무료 상담으로 학생에게 딱 맞는 학습 플랜을 확인해 보세요.")}
+        siteContent={siteContent}
+        section="reviews_page"
+        isEditMode={isEditMode}
         source="reviews_page_cta"
+        title="우리 아이도 같은 변화를 경험할 수 있어요"
+        description="무료 상담으로 학생에게 딱 맞는 학습 플랜을 확인해 보세요."
       />
     </main>
   );

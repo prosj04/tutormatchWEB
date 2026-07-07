@@ -110,7 +110,12 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
         </div>
       </section>
 
-      <ConcordSubpageCta source="pricing_page_cta" />
+      <ConcordSubpageCta
+        siteContent={siteContent}
+        section="pricing_page"
+        isEditMode={isEditMode}
+        source="pricing_page_cta"
+      />
     </main>
   );
 }

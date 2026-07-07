@@ -57,7 +57,12 @@ export function FaqPageContent({
         </div>
       </section>
 
-      <ConcordSubpageCta source="faq_page_cta" />
+      <ConcordSubpageCta
+        siteContent={siteContent}
+        section="faq_page"
+        isEditMode={isEditMode}
+        source="faq_page_cta"
+      />
     </main>
   );
 }
