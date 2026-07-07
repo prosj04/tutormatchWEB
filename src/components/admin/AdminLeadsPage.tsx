@@ -10,6 +10,7 @@ import {
 type Lead = {
   id: string;
   name: string | null;
+  gender: string | null;
   phone: string;
   grade: string;
   subjects: string[];
@@ -148,8 +149,10 @@ export function AdminLeadsPage() {
                     </td>
                     <td className="px-4 py-3 font-bold whitespace-nowrap">
                       {formatPhone(lead.phone)}
-                      {lead.name ? (
-                        <span className="ml-1 font-normal text-text-secondary">({lead.name})</span>
+                      {lead.name || lead.gender ? (
+                        <span className="ml-1 font-normal text-text-secondary">
+                          ({[lead.name, lead.gender].filter(Boolean).join(" · ")})
+                        </span>
                       ) : null}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{lead.grade}</td>

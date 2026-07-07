@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { logAnalyticsEvent } from "@/lib/analytics";
 import {
+  LEAD_GENDERS,
   LEAD_GRADES,
   LEAD_STATUSES,
   LEAD_SUBJECTS,
@@ -89,6 +90,11 @@ export async function POST(request: Request) {
     typeof body.name === "string" && body.name.trim()
       ? body.name.trim().slice(0, 50)
       : null;
+  const gender =
+    typeof body.gender === "string" &&
+    (LEAD_GENDERS as readonly string[]).includes(body.gender)
+      ? body.gender
+      : null;
   const source =
     typeof body.source === "string" && body.source.trim()
       ? body.source.trim().slice(0, 100)
@@ -105,6 +111,7 @@ export async function POST(request: Request) {
   const lead = await prisma.consultationLead.create({
     data: {
       name,
+      gender,
       phone,
       grade,
       subjects: JSON.stringify(subjects),

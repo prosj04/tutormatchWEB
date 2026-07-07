@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import {
+  LEAD_GENDERS,
   LEAD_GRADES,
   LEAD_SUBJECTS,
   LEAD_TIME_SLOTS,
@@ -17,6 +18,8 @@ type Props = {
 };
 
 export function ConsultRequestForm({ source, phoneNotice }: Props) {
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("");
   const [grade, setGrade] = useState("");
   const [subjects, setSubjects] = useState<string[]>([]);
   const [phone, setPhone] = useState("");
@@ -64,6 +67,8 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: name || null,
+          gender: gender || null,
           grade,
           subjects,
           phone,
@@ -118,28 +123,72 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
 
   return (
     <form className="consult-form card" onSubmit={handleSubmit} noValidate>
-      <div className="consult-field">
-        <label htmlFor="consult-grade">학년</label>
-        <select
-          id="consult-grade"
-          value={grade}
-          onChange={(e) => setGrade(e.target.value)}
-          required
-        >
-          <option value="" disabled>
-            2026년 기준 학년
-          </option>
-          {LEAD_GRADES.map((g) => (
-            <option key={g} value={g}>
-              {g}
+      <div className="consult-row">
+        <div className="consult-field consult-field-grow">
+          <label htmlFor="consult-name">이름</label>
+          <input
+            id="consult-name"
+            type="text"
+            placeholder="학생 이름"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="consult-field">
+          <span className="consult-label">성별</span>
+          <div className="consult-gender" role="group" aria-label="성별 선택">
+            {LEAD_GENDERS.map((g) => (
+              <button
+                key={g}
+                type="button"
+                className={`consult-gender-btn${gender === g ? " on" : ""}`}
+                aria-pressed={gender === g}
+                onClick={() => setGender((prev) => (prev === g ? "" : g))}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="consult-row">
+        <div className="consult-field">
+          <label htmlFor="consult-grade">학년</label>
+          <select
+            id="consult-grade"
+            value={grade}
+            onChange={(e) => setGrade(e.target.value)}
+            required
+          >
+            <option value="" disabled>
+              2026년 기준 학년
             </option>
-          ))}
-        </select>
+            {LEAD_GRADES.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="consult-field consult-field-grow">
+          <label htmlFor="consult-phone">연락처</label>
+          <input
+            id="consult-phone"
+            type="tel"
+            inputMode="numeric"
+            placeholder="010-1234-5678"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+        </div>
       </div>
 
       <div className="consult-field">
         <span className="consult-label">과목</span>
-        <div className="consult-chips" role="group" aria-label="과목 선택">
+        <div className="consult-chips consult-chips-row" role="group" aria-label="과목 선택">
           {LEAD_SUBJECTS.map((subject) => {
             const active = subjects.includes(subject);
             return (
@@ -155,19 +204,6 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
             );
           })}
         </div>
-      </div>
-
-      <div className="consult-field">
-        <label htmlFor="consult-phone">연락처</label>
-        <input
-          id="consult-phone"
-          type="tel"
-          inputMode="numeric"
-          placeholder="010-1234-5678"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
       </div>
 
       <div className="consult-field">

@@ -252,3 +252,46 @@
 .consult-form input, .consult-form select { padding: 10px 12px !important; }
 .consult-subject-chips { gap: 6px !important; }
 .consult-agree { gap: 6px !important; font-size: 12.5px !important; }
+
+/* 두 필드를 한 줄에 */
+.consult-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+.consult-row .consult-field { flex: 0 0 auto; }
+.consult-row .consult-field-grow { flex: 1 1 auto; min-width: 0; }
+
+/* 성별 세그먼트 탭 (이름 옆 작게) */
+.consult-gender {
+  display: inline-flex;
+  gap: 6px;
+}
+.consult-gender-btn {
+  height: 46px;
+  min-width: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.consult-gender-btn.on {
+  border-color: var(--acc);
+  background: color-mix(in srgb, var(--acc) 12%, transparent);
+  color: var(--acc);
+}
+
+/* 과목 칩 한 줄 배치 */
+.consult-chips-row {
+  flex-wrap: nowrap;
+}
+.consult-chips-row .consult-chip {
+  flex: 1 1 0;
+  padding: 10px 4px;
+  text-align: center;
+}

@@ -11,6 +11,8 @@ export const LEAD_GRADES = [
 
 export const LEAD_SUBJECTS = ["국어", "수학", "영어", "과학", "사회"] as const;
 
+export const LEAD_GENDERS = ["남", "여"] as const;
+
 export const LEAD_STATUSES = ["NEW", "CONTACTED", "CONVERTED", "CLOSED"] as const;
 
 export const LEAD_STATUS_LABELS: Record<(typeof LEAD_STATUSES)[number], string> = {

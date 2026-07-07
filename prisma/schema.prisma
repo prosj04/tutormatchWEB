@@ -244,6 +244,7 @@ model ConsultationBooking {
 model ConsultationLead {
   id             String   @id @default(uuid())
   name           String?
+  gender         String?
   phone          String
   grade          String
   subjects       String   @default("[]")
