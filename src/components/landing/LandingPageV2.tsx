@@ -213,14 +213,14 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     teachersSubtext: getCmsValue(
       "tutors_featured",
       "home_subtext",
-      "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
+      "3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 상담에서 말씀해 주세요. 매니저가 매칭 가능 여부를 확인해 드려요.",
     ),
     reviews: getCmsValue("home_labels", "section_title_reviews", "왜 학부모님들은 Concord를 선택했을까요?"),
     plans: getCmsMultiline("home_page", "plans_title", "가격까지 숨김없이 공개합니다"),
     plansSubtext: getCmsValue(
       "home_page",
       "plans_subtext",
-      "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
+      "모든 플랜에 같은 관리가 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
     ),
   };
 
@@ -977,7 +977,11 @@ export function LandingPageV2({
                 {getCmsValue("cta", "headline", "판단은 첫 수업을 보고 하셔도 괜찮아요")}
               </h2>
               <p>
-                {getCmsValue("cta", "subtext", "결정은 천천히 하셔도 돼요. 진단부터 먼저 받아보세요 — 신청은 30초면 충분해요.")}
+                {getCmsValue(
+                  "cta",
+                  "subtext",
+                  "결정은 천천히 하셔도 돼요. 첫 수업이 맞지 않으면 100% 환불해 드립니다. 신청은 30초면 충분해요.",
+                )}
               </p>
             </div>
             <ConsultationApplyButton className="lp2-btn" source="home_cta_band">

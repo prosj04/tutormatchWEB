@@ -15,7 +15,7 @@ export function TopUrgencyBanner({ siteContent }: { siteContent?: GroupedSiteCon
     siteContent,
     SECTION,
     "text",
-    "지금 상담 신청이 많아 순차적으로 안내드리고 있습니다",
+    "상담은 신청 순서대로 안내드려요",
   );
   const ctaLabel = getCmsSectionValue(
     siteContent,

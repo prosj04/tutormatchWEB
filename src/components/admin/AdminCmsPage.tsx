@@ -231,7 +231,7 @@ const pricingHeaderFields: TextFieldConfig[] = [
     section: "pricing_page",
     keyName: "header_subtext",
     defaultValue:
-      "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
+      "모든 플랜에 같은 관리가 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
     kind: "textarea",
     rows: 3,
   },
@@ -251,7 +251,7 @@ const homePricingFields: TextFieldConfig[] = [
     label: "홈 섹션 설명",
     section: "home_page",
     keyName: "plans_subtext",
-    defaultValue: "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
+    defaultValue: "모든 플랜에 같은 관리가 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
     kind: "textarea",
     rows: 3,
   },

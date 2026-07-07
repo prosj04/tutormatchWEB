@@ -42,7 +42,7 @@ const siteContentDefaults = [
   { section: "stats", key: "stat3_label", value: "학생 만족도", type: "text", order: 6 },
 
   { section: "cta", key: "headline", value: "판단은 첫 수업을 보고 하셔도 됩니다.", type: "text", order: 1 },
-  { section: "cta", key: "subtext", value: "결정은 천천히, 진단은 먼저 받아보세요.", type: "text", order: 2 },
+  { section: "cta", key: "subtext", value: "결정은 천천히 하셔도 돼요. 첫 수업이 맞지 않으면 100% 환불해 드립니다. 신청은 30초면 충분해요.", type: "text", order: 2 },
   { section: "cta", key: "button", value: "지금 무료 상담 신청하기", type: "text", order: 3 },
   { section: "cta", key: "cta_box_1_visible", value: "1", type: "text", order: 10 },
   { section: "cta", key: "cta_box_1_title", value: "무료 상담 1회", type: "text", order: 11 },

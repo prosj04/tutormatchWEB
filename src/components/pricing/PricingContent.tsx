@@ -57,7 +57,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
   const assureVisible = parseCmsVisibility(siteContent?.["pricing_page"]?.["assure_visible"], true);
   const headerSubtext = get(
     "header_subtext",
-    "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
+    "모든 플랜에 같은 관리가 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
   );
 
   return (

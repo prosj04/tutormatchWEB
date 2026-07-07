@@ -312,7 +312,7 @@ export const pricingPageDefaults = [
   {
     section: "pricing_page",
     key: "header_subtext",
-    value: "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
+    value: "모든 플랜에 같은 관리가 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
     type: "text",
     order: 2,
   },
@@ -675,7 +675,7 @@ export const tutorsFeaturedDefaults = [
     section: "tutors_featured",
     key: "header_subtext",
     value:
-      "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
+      "3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 상담에서 말씀해 주세요. 매니저가 매칭 가능 여부를 확인해 드려요.",
     type: "text",
     order: 3,
   },
@@ -960,7 +960,7 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "refund_band", key: "headline", value: "첫 수업 후 불만족 시\n100% 환불 보장", type: "text", order: 1 },
   { section: "refund_band", key: "subtext", value: "자신있게 제안합니다. 상담 후 첫 수업까지만 받아보세요.", type: "text", order: 2 },
   { section: "tutors_featured", key: "home_title", value: "아무 선생님이나\n소개하지 않습니다", type: "text", order: 90 },
-  { section: "tutors_featured", key: "home_subtext", value: "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.", type: "text", order: 91 },
+  { section: "tutors_featured", key: "home_subtext", value: "3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 상담에서 말씀해 주세요. 매니저가 매칭 가능 여부를 확인해 드려요.", type: "text", order: 91 },
 ] as const;
 
 const COMPARE_SEED_ROWS = [
@@ -1002,7 +1002,7 @@ export const homePageVisibilityDefaults = [
   {
     section: "home_page",
     key: "plans_subtext",
-    value: "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
+    value: "모든 플랜에 같은 관리가 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
     type: "text",
     order: 4,
   },
