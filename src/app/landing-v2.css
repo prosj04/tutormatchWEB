@@ -651,6 +651,17 @@ body:has(.lp2-root) footer.site .logo span {
   align-items: center;
   margin-top: 14px;
 }
+@media (max-width: 960px) {
+  /* 선발 절차 3단계는 줄바꿈 없이 한 줄 유지 (필요 시 가로 스크롤) */
+  .lp2-verify-row {
+    flex-wrap: nowrap; justify-content: flex-start;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    margin-left: -20px; margin-right: -20px; padding: 2px 20px 8px;
+    scrollbar-width: none;
+  }
+  .lp2-verify-row::-webkit-scrollbar { display: none; }
+  .lp2-verify-pill { white-space: nowrap; flex-shrink: 0; }
+}
 .lp2-verify-pill {
   display: inline-flex;
   align-items: center;

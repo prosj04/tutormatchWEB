@@ -514,7 +514,16 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 /* 홈 미리보기: 캐러셀 없이 3장 그리드 */
 .lp2-tpx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .lp2-tpx-grid .tpx-card { width: 100%; }
-@media (max-width: 960px) { .lp2-tpx-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+/* 모바일: 세로 나열 대신 좌우 스와이프 캐러셀 — 후보를 나란히 비교하는 의도 유지 */
+@media (max-width: 960px) {
+  .lp2-tpx-grid {
+    display: flex; overflow-x: auto; gap: 14px;
+    margin: 0 -20px; padding: 4px 20px 16px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .lp2-tpx-grid .tpx-card { flex: 0 0 min(78vw, 320px); width: auto; scroll-snap-align: center; }
+}
 
 /* ── 지역 선택 (서울 지하철역/동탄 동 · 실시간 필터) ── */
 .region-picker { display: flex; flex-direction: column; gap: 10px; }

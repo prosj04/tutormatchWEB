@@ -63,11 +63,29 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalUnits, data.steps.length]);
 
-  // 절차 5단계: 섹션이 보이면 스크롤을 기다리지 않고 순차 등장 (1·2 → 3·4·5)
+  // 절차 5단계 등장 — 데스크톱: 섹션 진입 시 순차 재생 / 모바일: 각 단계가 뷰포트에 들어올 때 등장
   useEffect(() => {
     if (reduced) return;
     const sp = stepsPinRef.current;
     if (!sp) return;
+
+    if (window.matchMedia("(max-width: 960px)").matches) {
+      const items = Array.from(sp.querySelectorAll<HTMLElement>(".lp2-story-step"));
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const idx = items.indexOf(e.target as HTMLElement);
+            setStepsOn((prev) => Math.max(prev, idx + 1));
+            io.unobserve(e.target);
+          });
+        },
+        { threshold: 0.25 },
+      );
+      items.forEach((el) => io.observe(el));
+      return () => io.disconnect();
+    }
+
     let timers: ReturnType<typeof setTimeout>[] = [];
     const io = new IntersectionObserver(
       (entries) => {
