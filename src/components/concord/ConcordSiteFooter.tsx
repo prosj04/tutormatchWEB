@@ -39,13 +39,13 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
           </div>
           <div className="foot-cols">
             <div className="foot-col">
-              <h4>서비스</h4>
-              <Link href="/tutors">강사진</Link>
-              <Link href="/pricing">요금제</Link>
-              <Link href="/faq">FAQ</Link>
-              <ConsultationApplyButton className="foot-consult-link">상담 신청</ConsultationApplyButton>
+              <h4>{get("col_service_title", "서비스")}</h4>
+              <Link href="/tutors">{get("link_tutors", "강사진")}</Link>
+              <Link href="/pricing">{get("link_pricing", "요금제")}</Link>
+              <Link href="/faq">{get("link_faq", "FAQ")}</Link>
+              <ConsultationApplyButton className="foot-consult-link">{get("link_consult", "상담 신청")}</ConsultationApplyButton>
               <a href={KAKAO_CHANNEL_CHAT_URL} target="_blank" rel="noopener noreferrer">
-                카카오톡 상담
+                {get("link_kakao", "카카오톡 상담")}
               </a>
             </div>
             {(() => {
@@ -61,7 +61,7 @@ export function ConcordSiteFooter({ siteContent }: { siteContent?: GroupedSiteCo
               if (snsLinks.length === 0) return null;
               return (
                 <div className="foot-col">
-                  <h4>SNS</h4>
+                  <h4>{get("col_sns_title", "SNS")}</h4>
                   {snsLinks.map((link) => (
                     <a
                       key={link.label}

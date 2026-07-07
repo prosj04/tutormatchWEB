@@ -20,6 +20,7 @@ function ComboField({
   onSelect,
   pinnedOption,
   autoOpen,
+  emptyText = "검색 결과가 없습니다",
 }: {
   label: string;
   placeholder: string;
@@ -28,6 +29,7 @@ function ComboField({
   onSelect: (value: string) => void;
   pinnedOption?: string;
   autoOpen?: boolean;
+  emptyText?: string;
 }) {
   const [open, setOpen] = useState(autoOpen ?? false);
   const [query, setQuery] = useState("");
@@ -90,7 +92,7 @@ function ComboField({
             </li>
           ) : null}
           {filtered.length === 0 ? (
-            <li className="region-empty">검색 결과가 없습니다</li>
+            <li className="region-empty">{emptyText}</li>
           ) : (
             filtered.map((u) => (
               <li key={u}>
@@ -114,10 +116,14 @@ function ComboField({
 export function RegionPicker({
   value,
   onChange,
+  labels = {},
 }: {
   value: string;
   onChange: (region: string) => void;
+  /** CMS 라벨 오버라이드 (없으면 기본값) */
+  labels?: Record<string, string>;
 }) {
+  const lc = (key: string, fallback: string) => labels[key] ?? fallback;
   const [groupId, setGroupId] = useState<string>("");
   const [district, setDistrict] = useState("");
   const [station, setStation] = useState("");
@@ -143,7 +149,7 @@ export function RegionPicker({
     if (!group || !district) return;
     setStation(name);
     onChange(
-      name === NONE_STATION
+      name === lc("region_none_label", NONE_STATION)
         ? formatRegion(group.label, district)
         : formatRegion(group.label, district, name),
     );
@@ -174,19 +180,21 @@ export function RegionPicker({
             options={group.units}
             onSelect={selectDistrict}
             autoOpen
+            emptyText={lc("region_empty_text", "검색 결과가 없습니다")}
           />
           {isSeoul && district ? (
             <ComboField
               key={`${district}-station`}
-              label="인접 지하철역"
+              label={lc("region_station_label", "인접 지하철역")}
               placeholder={STATION_PLACEHOLDER}
               selected={station}
               options={SEOUL_STATION_OPTIONS}
               onSelect={selectStation}
-              pinnedOption={NONE_STATION}
+              pinnedOption={lc("region_none_label", NONE_STATION)}
+              emptyText={lc("region_empty_text", "검색 결과가 없습니다")}
             />
           ) : null}
-          {value ? <p className="region-selected">선택됨: {value}</p> : null}
+          {value ? <p className="region-selected">{lc("region_selected_prefix", "선택됨:")} {value}</p> : null}
         </div>
       ) : null}
     </div>

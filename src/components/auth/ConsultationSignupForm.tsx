@@ -184,7 +184,7 @@ export function ConsultationSignupForm({
           <div className="field">
             <span>{c("step2_label_region", "거주 지역")}</span>
             <div style={{ marginTop: 8 }}>
-              <RegionPicker value={region} onChange={setRegion} />
+              <RegionPicker value={region} onChange={setRegion} labels={copy} />
             </div>
           </div>
           <div className="field">

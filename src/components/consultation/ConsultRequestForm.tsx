@@ -196,7 +196,7 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
 
       <div className="consult-field">
         <span className="consult-label">{c("label_region", "지역")}</span>
-        <RegionPicker value={region} onChange={setRegion} />
+        <RegionPicker value={region} onChange={setRegion} labels={copy as Record<string, string>} />
       </div>
 
       <div className="consult-field">
