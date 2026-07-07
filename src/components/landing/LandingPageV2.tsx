@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
@@ -195,6 +195,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
   return {
     getCmsValue,
     getCmsMultiline,
+    showFaq: parseCmsVisibility(getCmsValue("home_page", "show_faq_section", ""), true),
+    showReviews: parseCmsVisibility(getCmsValue("home_page", "show_reviews_section", ""), true),
     cmsResults,
     doubledResults,
     cmsSteps,
@@ -245,10 +247,14 @@ export function LandingPageV2({
   useReveal();
   const goConsultation = useConsultationCta();
   const [tier, setTier] = usePricingSchoolTier();
+  const [activeStep, setActiveStep] = useState(0); // 우측 목업 (호버·클릭)
+  const [openStep, setOpenStep] = useState(0); // 아코디언 열림 (클릭 전용)
 
   const {
     getCmsValue,
     getCmsMultiline,
+    showFaq,
+    showReviews,
     cmsResults,
     doubledResults,
     cmsSteps,
@@ -401,8 +407,20 @@ export function LandingPageV2({
           <div className="lp2-proc-cols">
             <div className="lp2-proc-list">
               {cmsSteps.map((step, index) => (
-                <details key={step.number} className="lp2-proc-item reveal" open={index === 0}>
-                  <summary>
+                <details
+                  key={step.number}
+                  className="lp2-proc-item reveal"
+                  open={index === openStep}
+                  onMouseEnter={() => setActiveStep(index)}
+                >
+                  <summary
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpenStep(index);
+                      setActiveStep(index);
+                    }}
+                    onFocus={() => setActiveStep(index)}
+                  >
                     <span className="lp2-proc-n">{step.number}</span>
                     <span className="lp2-proc-t">{step.title}</span>
                     <span className="lp2-faq-ind" aria-hidden="true">+</span>
@@ -413,32 +431,86 @@ export function LandingPageV2({
             </div>
 
             <div className="lp2-proc-mock reveal" aria-hidden="true">
-              <div className="lp2-notif-card">
-                <div className="lp2-notif-head">
-                  <span className="lp2-proof-dot" />
-                  상담 신청 접수
-                  <span className="t">오늘 14:02</span>
-                </div>
-                <p>담당 매니저가 24시간 안에 연락드립니다.</p>
+              <div className="lp2-proc-mock-view" key={activeStep}>
+                {activeStep === 0 && (
+                  <>
+                    <div className="lp2-notif-card">
+                      <div className="lp2-notif-head">
+                        <span className="lp2-proof-dot" />
+                        상담 신청 접수
+                        <span className="t">오늘 14:02</span>
+                      </div>
+                      <p>담당 매니저가 24시간 안에 연락드립니다.</p>
+                    </div>
+                    <div className="lp2-proc-mock-note">이름 없이 연락처와 학년만으로 시작됩니다</div>
+                  </>
+                )}
+                {activeStep === 1 && (
+                  <>
+                    <div className="lp2-notif-card">
+                      <div className="lp2-notif-head">
+                        <span className="lp2-proof-dot" />
+                        매니저 진단 메모
+                        <span className="t">상담 직후</span>
+                      </div>
+                      <div className="lp2-notif-rows">
+                        <div><span className="k">성향</span><span className="v">조용하고 신중한 편 · 질문형 수업 선호</span></div>
+                        <div><span className="k">목표</span><span className="v">내신 수학 2등급, 기초 개념 재정리</span></div>
+                        <div><span className="k">일정</span><span className="v">화·목 저녁 / 분당 자택 방문</span></div>
+                      </div>
+                    </div>
+                    <div className="lp2-proc-mock-note">성적표보다 먼저, 아이가 어떤 학생인지 듣습니다</div>
+                  </>
+                )}
+                {activeStep === 2 && (
+                  <>
+                    <div className="lp2-notif-card">
+                      <div className="lp2-notif-head">
+                        <span className="lp2-proof-dot" />
+                        선생님 후보 도착
+                        <span className="t">상담 후 1~3일</span>
+                      </div>
+                      <p>김서연 선생님 · 서울대 수리과학부 · 수학</p>
+                      <div className="lp2-notif-tags">
+                        <span>기다려주는 수업</span>
+                        <span>화·목 가능</span>
+                      </div>
+                    </div>
+                    <div className="lp2-proc-mock-note">성향과 일정까지 맞는 후보만 제안합니다</div>
+                  </>
+                )}
+                {activeStep === 3 && (
+                  <>
+                    <div className="lp2-notif-card">
+                      <div className="lp2-notif-head">
+                        <span className="lp2-proof-dot" />
+                        선생님 배정
+                        <span className="t">수락 대기</span>
+                      </div>
+                      <p>첫 만남 후, 마음에 들 때만 수락하세요.</p>
+                      <span className="lp2-notif-btn">수락하고 첫 수업 잡기</span>
+                    </div>
+                    <div className="lp2-proc-mock-note">학생이 직접 수락해야 수업이 시작됩니다</div>
+                  </>
+                )}
+                {activeStep === 4 && (
+                  <>
+                    <div className="lp2-notif-card">
+                      <div className="lp2-notif-head">
+                        <span className="lp2-proof-dot" />
+                        오늘 수업 리포트
+                        <span className="t">수업 직후 발송</span>
+                      </div>
+                      <div className="lp2-notif-rows">
+                        <div><span className="k">진도</span><span className="v">이차함수 그래프 활용</span></div>
+                        <div><span className="k">숙제</span><span className="v">유형 연습 12문항 · 요일별 배분</span></div>
+                        <div><span className="k">다음</span><span className="v">목요일 19:00 방문</span></div>
+                      </div>
+                    </div>
+                    <div className="lp2-proc-mock-note">매 수업이 기록으로 남고, 학부모님께 공유됩니다</div>
+                  </>
+                )}
               </div>
-              <div className="lp2-notif-card">
-                <div className="lp2-notif-head">
-                  <span className="lp2-proof-dot" />
-                  방문 상담 확정
-                  <span className="t">수요일 15:00</span>
-                </div>
-                <p>매니저가 직접 방문해 학생의 상황을 듣습니다.</p>
-              </div>
-              <div className="lp2-notif-card">
-                <div className="lp2-notif-head">
-                  <span className="lp2-proof-dot" />
-                  선생님 배정
-                  <span className="t">수락 대기</span>
-                </div>
-                <p>Teacher Noah · 서울대 수리과학부</p>
-                <span className="lp2-notif-btn">수락하고 첫 수업 잡기</span>
-              </div>
-              <div className="lp2-proc-mock-note">학생이 직접 수락해야 수업이 시작됩니다</div>
             </div>
           </div>
         </div>
@@ -648,6 +720,7 @@ export function LandingPageV2({
           </div>
         )}
 
+        {showReviews && (
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal" style={{ marginTop: 56 }}>
             <span className="lp2-eyebrow">{kickers.reviews}</span>
@@ -685,6 +758,7 @@ export function LandingPageV2({
             </Link>
           </div>
         </div>
+        )}
       </section>
 
       {/* ══ 8. PRICING ════════════════════════════════════ */}
@@ -726,7 +800,7 @@ export function LandingPageV2({
       </section>
 
       {/* ══ 9. FAQ + FINAL CTA ════════════════════════════ */}
-      {cms?.faqs && cms.faqs.length > 0 && (
+      {showFaq && cms?.faqs && cms.faqs.length > 0 && (
         <section id="faq" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
           <div className="lp2-wrap">
             <div className="lp2-sec-head reveal">

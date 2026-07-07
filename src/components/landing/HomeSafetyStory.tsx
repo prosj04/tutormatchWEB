@@ -147,17 +147,31 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         style={{ height: `${data.steps.length * STEP_VH + 130}vh` }}
       >
         <div className="lp2-story-steps-vp">
-          <ol className="lp2-story-steps">
-            {data.steps.map((s, i) => (
-              <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
-                <span className="num">0{i + 1}</span>
-                <div>
-                  <h3>{s.title}</h3>
-                  <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          {/* 좌: 사전 검증(1·2, 강조) / 우: 사후 관리(3·4·5, 회색 번호) */}
+          <div className="lp2-story-steps-cols">
+            <ol className="lp2-story-steps pre">
+              {data.steps.slice(0, 2).map((s, i) => (
+                <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
+                  <span className="num">0{i + 1}</span>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <ol className="lp2-story-steps post">
+              {data.steps.slice(2).map((s, i) => (
+                <li key={s.title} className={`lp2-story-step${i + 2 < stepsOn ? " on" : ""}`}>
+                  <span className="num">0{i + 3}</span>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </section>

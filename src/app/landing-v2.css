@@ -965,3 +965,36 @@ body.story-dark .sticky-cta {
   .lp2-story-newsline .q { font-size: clamp(17px, 5.4vw, 24px); }
   .lp2-story-step { grid-template-columns: 42px 1fr; gap: 12px; padding: 18px 0; }
 }
+
+/* ── Process 스텝 호버 연동 목업 ── */
+.lp2-proc-mock-view { animation: lp2-mockin 0.38s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; gap: 16px; }
+@keyframes lp2-mockin {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.lp2-notif-rows { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+.lp2-notif-rows > div { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.5; }
+.lp2-notif-rows .k { flex: none; width: 40px; color: var(--mut-2); font-weight: 700; }
+.lp2-notif-rows .v { color: var(--fg); }
+.lp2-notif-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.lp2-notif-tags span {
+  font-size: 12px; font-weight: 600; color: var(--mut);
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px;
+}
+@media (prefers-reduced-motion: reduce) { .lp2-proc-mock-view { animation: none; } }
+
+/* ── 절차 5단계: 좌(사전 검증 1·2) / 우(사후 관리 3~5) 위계 배치 ── */
+.lp2-story-steps-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 4vw, 72px);
+  width: min(1080px, 100%);
+  align-items: start;
+}
+.lp2-story-steps-cols .lp2-story-steps { width: 100%; }
+.lp2-story-steps.post .lp2-story-step .num { color: var(--mut-2); }
+.lp2-story-steps.post .lp2-story-step h3 { font-weight: 700; }
+@media (max-width: 860px) {
+  .lp2-story-steps-cols { grid-template-columns: 1fr; gap: 0; }
+  .lp2-story-steps.post .lp2-story-step:first-child { border-top: 1px solid var(--line); }
+}
