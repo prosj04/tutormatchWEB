@@ -33,61 +33,60 @@ function FeaturedCard({
   card,
   ctaLabel,
   onMatch,
+  isCenter,
 }: {
   card: FeaturedTutorCard;
   ctaLabel: string;
   onMatch: (cardIndex: number) => void;
+  isCenter: boolean;
 }) {
+  const pitch = [card.blurb, ...card.highlights].filter(Boolean).join("\n");
   return (
-    <ConcordReveal as="article" className="card tutor-card tp-carousel-card">
-      {card.tag ? (
-        <div className="tp-card-subject">
-          <span className="tag-chip tp-subject-chip">{card.tag}</span>
+    <article className={`tpx-card${isCenter ? " is-center" : ""}`}>
+      <div className="tpx-head">
+        <div className="tpx-photo">
+          <Image
+            src={card.photo}
+            alt={`${card.name} 선생님 프로필 사진`}
+            fill
+            className="object-cover"
+            sizes="140px"
+          />
         </div>
-      ) : null}
-      <div className="tutor-media" style={{ position: "relative", overflow: "hidden" }}>
-        <Image
-          src={card.photo}
-          alt={`${card.name} 선생님 프로필 사진`}
-          fill
-          className="object-cover"
-          sizes="(max-width:960px) 60vw, 260px"
-        />
-      </div>
-      <div className="tutor-body">
-        {card.university ? <div className="tp-card-univ">{card.university}</div> : null}
-        <p className="tutor-name">{card.name}</p>
         {card.tags.length > 0 ? (
-          <div className="tp-card-tagline" aria-label="강점 태그">
+          <div className="tpx-tags">
             {card.tags.slice(0, 3).map((t) => (
-              <span key={t} className="tag-chip">
+              <span key={t} className="tpx-tag">
                 {t}
               </span>
             ))}
           </div>
         ) : null}
-        <p className="tutor-line">{card.blurb}</p>
-        {card.highlights.length > 0 ? (
-          <ul className="tutor-items">
-            {card.highlights.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        ) : null}
-        {card.careerBadge ? (
-          <div className="tp-card-foot">
-            <span className="tp-career-badge">{card.careerBadge}</span>
-          </div>
-        ) : null}
+      </div>
+      <p className="tpx-univ">{card.university}</p>
+      <h3 className="tpx-name">
+        {card.name} 선생님{card.age ? ` (${card.age}세)` : ""}
+      </h3>
+      <p className="tpx-pitch" style={{ whiteSpace: "pre-line" }}>{pitch}</p>
+      {card.subjects.length > 0 ? (
+        <div className="tpx-subjects">
+          {card.subjects.slice(0, 3).map((sub) => (
+            <span key={sub}>{sub}</span>
+          ))}
+        </div>
+      ) : null}
+      <div className="tpx-foot">
+        <span className="tpx-career">{card.careerBadge}</span>
         <button
           type="button"
-          className="btn btn-acc btn-block tutor-match-btn"
+          className="tpx-cta"
           onClick={() => onMatch(card.index)}
+          tabIndex={isCenter ? 0 : -1}
         >
           {ctaLabel}
         </button>
       </div>
-    </ConcordReveal>
+    </article>
   );
 }
 
@@ -100,54 +99,86 @@ function TutorCarousel({
   ctaLabel: string;
   onMatch: (cardIndex: number) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState(cards.length); // 확장 배열(3벌) 가운데 벌에서 시작
+  const [anim, setAnim] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const len = cards.length;
+  const extended = [...cards, ...cards, ...cards];
 
-  const update = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    setAtStart(el.scrollLeft <= 1);
-    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1);
-  }, []);
+  const applyTransform = useCallback(
+    (p: number, withAnim: boolean) => {
+      const track = trackRef.current;
+      const wrap = wrapRef.current;
+      if (!track || !wrap) return;
+      const cardEl = track.querySelector<HTMLElement>(".tpx-card");
+      if (!cardEl) return;
+      const gap = 28;
+      const w = cardEl.offsetWidth;
+      const x = wrap.clientWidth / 2 - (p * (w + gap) + w / 2);
+      track.style.transition = withAnim ? "transform .55s cubic-bezier(0.22, 1, 0.36, 1)" : "none";
+      track.style.transform = `translateX(${x}px)`;
+    },
+    [],
+  );
 
   useEffect(() => {
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [update]);
+    applyTransform(pos, anim);
+  }, [pos, anim, applyTransform]);
 
-  const scrollByCard = (dir: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>(".tp-carousel-card");
-    const amount = card ? card.offsetWidth + 20 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * amount, behavior: "smooth" });
-  };
+  useEffect(() => {
+    const onResize = () => applyTransform(pos, false);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [pos, applyTransform]);
+
+  // 경계 넘어가면 무전환 점프로 무한 순환
+  useEffect(() => {
+    if (pos >= len * 2 || pos < len) {
+      const t = window.setTimeout(() => {
+        setAnim(false);
+        setPos((p) => ((p % len) + len % len === 0 ? (p % len) + len : ((p % len) + len)));
+        window.setTimeout(() => setAnim(true), 30);
+      }, 570);
+      return () => window.clearTimeout(t);
+    }
+  }, [pos, len]);
+
+  const go = useCallback((dir: number) => {
+    setAnim(true);
+    setPos((p) => p + dir);
+  }, []);
+
+  // 1.5초 자동 오른쪽 순환 (호버·조작 시 일시정지/리셋)
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => go(1), 1500);
+    return () => window.clearInterval(id);
+  }, [paused, go, pos]);
 
   return (
-    <div className="tp-carousel-wrap">
-      <button
-        type="button"
-        className="tp-carousel-arrow tp-arrow-prev"
-        onClick={() => scrollByCard(-1)}
-        disabled={atStart}
-        aria-label="이전 선생님"
-      >
-        ‹
-      </button>
-      <div className="tp-carousel" role="list" ref={ref} onScroll={update}>
-        {cards.map((card) => (
-          <FeaturedCard key={card.index} card={card} ctaLabel={ctaLabel} onMatch={onMatch} />
+    <div
+      className="tpx-wrap"
+      ref={wrapRef}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="tpx-track" ref={trackRef}>
+        {extended.map((card, i) => (
+          <FeaturedCard
+            key={`${card.index}-${i}`}
+            card={card}
+            ctaLabel={ctaLabel}
+            onMatch={onMatch}
+            isCenter={i === pos}
+          />
         ))}
       </div>
-      <button
-        type="button"
-        className="tp-carousel-arrow tp-arrow-next"
-        onClick={() => scrollByCard(1)}
-        disabled={atEnd}
-        aria-label="다음 선생님"
-      >
+      <button type="button" className="tpx-arrow tpx-prev" onClick={() => go(-1)} aria-label="이전 선생님">
+        ‹
+      </button>
+      <button type="button" className="tpx-arrow tpx-next" onClick={() => go(1)} aria-label="다음 선생님">
         ›
       </button>
     </div>
