@@ -675,7 +675,7 @@ export const tutorsFeaturedDefaults = [
     section: "tutors_featured",
     key: "header_subtext",
     value:
-      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
+      "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
     type: "text",
     order: 3,
   },
@@ -949,7 +949,7 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "assurance", key: "section_title", value: "선생님 선별부터 매칭, 관리까지\nConcord가 책임집니다", type: "text", order: 1 },
   { section: "assurance", key: "section_subtext", value: "좋은 과외는 좋은 선생님에서 끝나지 않습니다. 선별, 매칭, 그 이후의 관리까지가 저희의 일입니다.", type: "text", order: 2 },
   { section: "assurance", key: "item1_title", value: "깐깐하게 선별합니다", type: "text", order: 3 },
-  { section: "assurance", key: "item1_desc", value: "서류·학력 인증, 수업 시연, 대면 인터뷰까지. 지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다.", type: "text", order: 4 },
+  { section: "assurance", key: "item1_desc", value: "서류·학력 인증, 수업 시연, 대면 인터뷰까지. 3단계 검증을 통과한 선생님만 소개합니다.", type: "text", order: 4 },
   { section: "assurance", key: "item2_title", value: "전문적으로 매칭합니다", type: "text", order: 5 },
   { section: "assurance", key: "item2_desc", value: "성적표 위 숫자만 보지 않습니다. 학생의 성향과 목표, 공부 습관까지 듣고 가장 잘 가르칠 선생님을 찾습니다.", type: "text", order: 6 },
   { section: "assurance", key: "item3_title", value: "매칭 후에도 관리합니다", type: "text", order: 7 },
@@ -960,7 +960,7 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "refund_band", key: "headline", value: "첫 수업 후 불만족 시\n100% 환불 보장", type: "text", order: 1 },
   { section: "refund_band", key: "subtext", value: "자신있게 제안합니다. 상담 후 첫 수업까지만 받아보세요.", type: "text", order: 2 },
   { section: "tutors_featured", key: "home_title", value: "아무 선생님이나\n소개하지 않습니다", type: "text", order: 90 },
-  { section: "tutors_featured", key: "home_subtext", value: "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.", type: "text", order: 91 },
+  { section: "tutors_featured", key: "home_subtext", value: "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.", type: "text", order: 91 },
 ] as const;
 
 const COMPARE_SEED_ROWS = [
@@ -1668,8 +1668,7 @@ export const consultPageDefaults = [
 export const stickyCtaDefaults = [
   { section: "sticky_cta", key: "bar_visible", value: "1", type: "text", order: 1 },
   { section: "sticky_cta", key: "badge", value: "모집중", type: "text", order: 2 },
-  { section: "sticky_cta", key: "message", value: "이번 달 신규 상담이 얼마 남지 않았어요 · 첫 수업 후 불만족 시 100% 환불", type: "text", order: 3 },
-  { section: "sticky_cta", key: "btn_tutors", value: "선생님 둘러보기", type: "text", order: 4 },
+  { section: "sticky_cta", key: "message", value: "이번 주 상담 가능 시간이 열려 있어요", type: "text", order: 3 },
   { section: "sticky_cta", key: "btn_kakao", value: "카톡 상담", type: "text", order: 5 },
   { section: "sticky_cta", key: "btn_consult", value: "딱 맞는 선생님 추천받기", type: "text", order: 6 },
 ];

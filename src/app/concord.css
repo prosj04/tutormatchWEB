@@ -164,11 +164,6 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .lp2-pcard-feat li{ position:relative; padding-left:22px; font-size:15px; font-weight:500; color:var(--mut); line-height:1.45; }
 .lp2-pcard-feat li::before{ content:"✓"; position:absolute; left:0; color:var(--acc-text); font-weight:800; }
 .lp2-pcard-cta{ margin-top:auto; padding-top:16px; }
-.lp2-pcard-pay{
-  display:block; text-align:center; margin-top:9px;
-  font-size:12.5px; font-weight:600; color:var(--mut-2); text-decoration:underline;
-}
-.lp2-pcard-pay:hover{ color:var(--fg); }
 @media (max-width:640px){
   /* 모바일: 동일하게 한 줄 스와이프, 화면에 맞는 카드 폭 */
   .lp2-price-duo, .lp2-pcard-grid{

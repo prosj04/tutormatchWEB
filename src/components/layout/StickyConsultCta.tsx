@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
@@ -52,12 +51,9 @@ export function StickyConsultCta({
     <div className={`sticky-cta${visible ? " is-visible" : ""}`} aria-hidden={!visible}>
       <span className="sticky-cta-badge">{c("badge", "모집중")}</span>
       <p className="sticky-cta-msg">
-        {c("message", "이번 달 신규 상담이 얼마 남지 않았어요 · 첫 수업 후 불만족 시 100% 환불")}
+        {c("message", "이번 주 상담 가능 시간이 열려 있어요")}
       </p>
       <div className="sticky-cta-actions">
-        <Link href="/tutors" className="sticky-cta-ghost" tabIndex={visible ? 0 : -1}>
-          {c("btn_tutors", "선생님 둘러보기")}
-        </Link>
         <KakaoConsultButton
           className="kakao-btn kakao-btn--sm"
           source="sticky_bottom_cta"

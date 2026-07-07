@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import type { PricingPlanItem } from "@/lib/pricing-cms";
-import { buildCheckoutHrefV2, PLAN_INCLUDES, type PricingSchoolTier } from "@/lib/pricing-plans";
+import { PLAN_INCLUDES, type PricingSchoolTier } from "@/lib/pricing-plans";
 
 export function PricingPlanCards({
   items,
@@ -54,11 +53,6 @@ export function PricingPlanCards({
           >
             {c("card_btn_start", "이 플랜으로 시작")}
           </ConsultationApplyButton>
-          {variant === "full" ? (
-            <Link className="lp2-pcard-pay" href={buildCheckoutHrefV2(plan.id)}>
-              {c("card_btn_pay", "바로 결제하기 →")}
-            </Link>
-          ) : null}
         </div>
       </ConcordReveal>
     );

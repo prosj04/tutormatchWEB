@@ -213,7 +213,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     teachersSubtext: getCmsValue(
       "tutors_featured",
       "home_subtext",
-      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
+      "서류·시연·대면 인터뷰, 3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
     ),
     reviews: getCmsValue("home_labels", "section_title_reviews", "왜 학부모님들은 Concord를 선택했을까요?"),
     plans: getCmsMultiline("home_page", "plans_title", "가격까지 숨김없이 공개합니다"),
@@ -419,13 +419,15 @@ export function LandingPageV2({
       <div className="lp2-notif-card">
         <div className="lp2-notif-head">
           <span className="lp2-proof-dot" />
-          선생님 배정
-          <span className="t">수락 대기</span>
+          첫 수업 확정
+          <span className="t">배정 직후</span>
         </div>
-        <p>첫 만남 후, 마음에 들 때만 수락하세요.</p>
-        <span className="lp2-notif-btn">수락하고 첫 수업 잡기</span>
+        <div className="lp2-notif-rows">
+          <div><span className="k">일시</span><span className="v">목요일 19:00 · 자택 방문</span></div>
+          <div><span className="k">준비</span><span className="v">교재는 선생님이 안내드립니다</span></div>
+        </div>
       </div>
-      <div className="lp2-proc-mock-note">학생이 직접 수락해야 수업이 시작됩니다</div>
+      <div className="lp2-proc-mock-note">날짜를 확정하면 선생님이 방문합니다</div>
     </>,
     <>
       <div className="lp2-notif-card">
