@@ -123,37 +123,44 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .tier-tabs button.on{ background:var(--panel); color:var(--fg); box-shadow:var(--shadow-sm); }
 .price-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; max-width:1180px; }
 
-/* ---- compact pricing cards (golden ratio · home + pricing) ---- */
-.lp2-price-duo{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,1.8vw,24px); align-items:start; }
-/* 2×2 고정: 카드 폭이 충분해야 1:1.618 황금비가 내용에 밀리지 않음 */
-.lp2-pcard-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:740px; margin:0 auto; align-items:start; }
+/* ---- compact pricing cards (golden ratio · home + pricing) ----
+   규칙: 카드는 절대 두 줄로 감싸지 않는다 — 항상 한 줄, 넘치면 가로 스와이프 */
+.lp2-price-duo{ display:flex; gap:clamp(14px,1.6vw,20px); align-items:flex-start; }
+.lp2-pcard-grid{
+  display:flex; gap:18px; align-items:flex-start; justify-content:center;
+  max-width:1180px; margin:0 auto;
+  overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  padding-bottom:8px; scrollbar-width:thin;
+}
 .lp2-pcard{
   position:relative;
+  flex:0 0 clamp(224px, 17vw, 252px);
   aspect-ratio:1 / 1.618;
   display:flex; flex-direction:column;
-  background:var(--panel); border:1px solid var(--line); border-radius:20px;
-  padding:clamp(22px,2vw,30px);
+  background:var(--panel); border:1px solid var(--line); border-radius:18px;
+  padding:clamp(18px,1.5vw,22px);
   box-shadow:var(--shadow-sm);
+  scroll-snap-align:center;
 }
 .lp2-pcard.rec{ border-color:var(--acc); box-shadow:0 14px 38px rgba(var(--acc-rgb),.14); }
 .lp2-pcard-badge{
-  position:absolute; top:18px; right:18px;
+  position:absolute; top:14px; right:14px;
   background:var(--acc); color:var(--on-acc);
-  font-size:12px; font-weight:800; border-radius:var(--r-pill); padding:5px 12px;
+  font-size:11px; font-weight:800; border-radius:var(--r-pill); padding:4px 10px;
 }
-.lp2-pcard-name{ font-size:clamp(18px,1.4vw,22px); font-weight:800; letter-spacing:-.02em; color:var(--fg); }
-.lp2-pcard-sub{ margin-top:6px; font-size:14px; font-weight:600; color:var(--mut); }
+.lp2-pcard-name{ font-size:clamp(16px,1.2vw,18px); font-weight:800; letter-spacing:-.02em; color:var(--fg); }
+.lp2-pcard-sub{ margin-top:5px; font-size:13px; font-weight:600; color:var(--mut); }
 .lp2-pcard-price{
-  margin-top:16px;
-  font-size:clamp(26px,2.2vw,36px); font-weight:800; letter-spacing:-.025em;
+  margin-top:12px;
+  font-size:clamp(23px,1.8vw,28px); font-weight:800; letter-spacing:-.025em;
   color:var(--fg); font-variant-numeric:tabular-nums;
 }
 .lp2-pcard-price small{ font-size:.45em; font-weight:700; color:var(--mut); margin-left:5px; letter-spacing:0; }
 .lp2-pcard-feat{
-  list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid var(--line);
-  display:flex; flex-direction:column; gap:8px;
+  list-style:none; margin:14px 0 0; padding:14px 0 0; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:7px;
 }
-.lp2-pcard-feat li{ position:relative; padding-left:20px; font-size:13.5px; font-weight:500; color:var(--mut); line-height:1.45; }
+.lp2-pcard-feat li{ position:relative; padding-left:18px; font-size:12.5px; font-weight:500; color:var(--mut); line-height:1.45; }
 .lp2-pcard-feat li::before{ content:"✓"; position:absolute; left:0; color:var(--acc-text); font-weight:800; }
 .lp2-pcard-cta{ margin-top:auto; padding-top:16px; }
 .lp2-pcard-pay{
@@ -162,14 +169,13 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 }
 .lp2-pcard-pay:hover{ color:var(--fg); }
 @media (max-width:640px){
-  /* 모바일: 세로 스택 금지 — PC 카드 비율 유지한 좌우 스와이프 캐러셀 */
+  /* 모바일: 동일하게 한 줄 스와이프, 화면에 맞는 카드 폭 */
   .lp2-price-duo, .lp2-pcard-grid{
-    display:flex; overflow-x:auto; gap:14px;
+    justify-content:flex-start;
     margin:0 -20px; padding:4px 20px 16px;
-    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
-    scrollbar-width:thin;
+    overflow-x:auto; scroll-snap-type:x mandatory;
   }
-  .lp2-pcard{ flex:0 0 min(82vw, 320px); scroll-snap-align:center; }
+  .lp2-pcard{ flex:0 0 min(66vw, 252px); }
 }
 .price-card{ position:relative; padding:30px 24px 32px; display:flex; flex-direction:column; border-radius:var(--r-card-lg); }
 .price-card.rec{ border-color:var(--acc); box-shadow:var(--shadow-md); }

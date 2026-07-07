@@ -253,16 +253,11 @@ export const spacingDefaults = CMS_HOME_SPACING_SECTIONS.flatMap((item, index) =
 });
 
 function v2DefaultFeatures(plan: PricingPlanV2): string[] {
-  const weeklyLabel = plan.weekly === 1 ? "주 1회" : "주 2회";
-  const hourLabel = `회당 ${plan.hoursPerLesson}시간`;
-  const base = [
-    `${weeklyLabel} 수업 · ${hourLabel}`,
-    "학습 진도 관리",
-    "과제 관리",
+  return [
+    "학습·과제 관리",
     plan.weekly === 2 ? "AI 질답 횟수 2배 제공" : "AI 질답 이용 가능",
     "수시 강사 첨삭, 질답",
   ];
-  return base;
 }
 
 function pricingBoxRowsForSlot(
