@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
@@ -32,10 +32,10 @@ const results: [string, string, string, string][] = [
 
 const steps = [
   { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분해요." },
-  { number: "02", title: "매니저 배정·진단 상담", desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다." },
-  { number: "03", title: "선생님 후보 추천", desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다." },
-  { number: "04", title: "학생이 직접 수락", desc: "배정된 선생님을 학생이 수락해야 수업이 시작됩니다. 맞지 않으면 무료로 재매칭합니다." },
-  { number: "05", title: "방문 수업 시작", desc: "서울·동탄 방문 수업으로 진행하고, 진도·숙제·리포트를 한 흐름으로 관리합니다." },
+  { number: "02", title: "매니저 배정·진단 상담", desc: "매니저가 방문 상담하며 학생 성향을 파악하고 학습 진단을 제공합니다." },
+  { number: "03", title: "선생님 배정", desc: "학습 진단을 바탕으로 함께 고민하여 적합한 선생님을 배정합니다" },
+  { number: "04", title: "방문 수업 시작", desc: "첫 수업 날짜를 확정하고 선생님이 방문하여 수업이 시작됩니다." },
+  { number: "05", title: "수업 관리", desc: "Concord 앱에서 학습에 관한 모든 현황을 확인할 수 있습니다.\n매니저가 항상 수업의 진행 정도를 감독하며, 언제나 매니저에게 문의하실 수 있습니다." },
 ];
 
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
@@ -205,7 +205,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
     ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n알게 되실 겁니다"),
-    process: getCmsValue("features", "section_title", "Concord는 이렇게 진행됩니다"),
+    process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
     processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다."),
     teachers: getCmsMultiline("tutors_featured", "home_title", "아무 선생님이나\n소개하지 않습니다"),
     teachersSubtext: getCmsValue(
@@ -279,8 +279,17 @@ export function LandingPageV2({
   useReveal();
   const goConsultation = useConsultationCta();
   const [tier, setTier] = usePricingSchoolTier();
-  const [activeStep, setActiveStep] = useState(0); // 우측 목업 (호버·클릭)
-  const [openStep, setOpenStep] = useState(0); // 아코디언 열림 (클릭 전용)
+  const [activeStep, setActiveStep] = useState(0); // 우측 목업 + 아코디언 (호버)
+  const procListRef = useRef<HTMLDivElement | null>(null);
+  const [mockY, setMockY] = useState(0);
+
+  useEffect(() => {
+    const list = procListRef.current;
+    if (!list) return;
+    const item = list.children[activeStep] as HTMLElement | undefined;
+    if (!item) return;
+    setMockY(item.getBoundingClientRect().top - list.getBoundingClientRect().top);
+  }, [activeStep]);
 
   const {
     getCmsValue,
@@ -336,7 +345,6 @@ export function LandingPageV2({
       "활발한 아이에게는 — 끌려가지 않게 잡아주는 선생님",
       "여린 아이에게는 — 틀려도 기다려주는 선생님",
       "게으른 아이에게는 — 옆에서 본보기가 되는 선생님",
-      "롤모델이 없는 아이에게는 — 존경할 만한 선생님",
     ];
     const stepDefaults = [
       ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
@@ -348,7 +356,7 @@ export function LandingPageV2({
     return {
       intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
       closer: getCmsMultiline(S, "closer", "아이가 다르면, 선생님도 달라야 합니다"),
-      pivot: getCmsMultiline(S, "pivot", "그래서 Concord는 모든 선생님을\n대표가 직접 만나 고릅니다."),
+      pivot: getCmsMultiline(S, "pivot", "우리는 직접 만나고,\n학생에게 맞춥니다"),
       matches: matchDefaults.map((m, i) => getCmsValue(S, `match${i + 1}`, m)),
       steps: stepDefaults.map(([title, desc], i) => ({
         title: getCmsValue(S, `step${i + 1}_title`, title),
@@ -378,14 +386,14 @@ export function LandingPageV2({
                   {getCmsMultiline(
                     "hero",
                     "subtext",
-                    "잘 맞는 선생님을 만나면, 아이는 스스로 공부하게 될 겁니다.",
+                    "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.",
                   )}
                 </CmsEdit>
               </p>
               <div className="lp2-cta-row">
                 <ConsultationApplyButton className="lp2-btn lp2-btn-acc" source="home_hero">
                   <CmsEdit active={isEditMode} section="hero" cmsKey="cta_primary" type="text">
-                    {getCmsValue("hero", "cta_primary", "딱 맞는 선생님 추천받기")}
+                    {getCmsValue("hero", "cta_primary", "선생님 추천받기")}
                   </CmsEdit>
                 </ConsultationApplyButton>
                 <a href="#teachers" className="lp2-btn lp2-btn-ghost">
@@ -400,7 +408,7 @@ export function LandingPageV2({
               <div className="lp2-hero-model">
                 <CmsEdit active={isEditMode} section="hero" cmsKey="model_image" type="image">
                   <Image
-                    src={getCmsValue("hero", "model_image", "/images/placeholders/hero-model.png")}
+                    src={getCmsValue("hero", "model_image", "/images/placeholders/hero-thumbnail.png")}
                     alt=""
                     fill
                     sizes="(max-width:960px) 84vw, 400px"
@@ -427,32 +435,36 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-proc-cols">
-            <div className="lp2-proc-list">
+            <div className="lp2-proc-list" ref={procListRef}>
               {cmsSteps.map((step, index) => (
                 <details
                   key={step.number}
                   className="lp2-proc-item reveal"
-                  open={index === openStep}
+                  open={index === activeStep}
                   onMouseEnter={() => setActiveStep(index)}
                 >
                   <summary
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenStep(index);
-                      setActiveStep(index);
-                    }}
+                    onClick={(e) => e.preventDefault()}
                     onFocus={() => setActiveStep(index)}
                   >
                     <span className="lp2-proc-n">{step.number}</span>
                     <span className="lp2-proc-t">{step.title}</span>
                     <span className="lp2-faq-ind" aria-hidden="true">+</span>
                   </summary>
-                  <p className="lp2-proc-p">{step.desc}</p>
+                  <p className="lp2-proc-p" style={{ whiteSpace: "pre-line" }}>{step.desc}</p>
                 </details>
               ))}
             </div>
 
-            <div className="lp2-proc-mock reveal" aria-hidden="true">
+            <div
+              className="lp2-proc-mock reveal"
+              aria-hidden="true"
+              style={{
+                transform: `translateY(${mockY}px)`,
+                transition:
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
+              }}
+            >
               <div className="lp2-proc-mock-view" key={activeStep}>
                 {activeStep === 0 && (
                   <>

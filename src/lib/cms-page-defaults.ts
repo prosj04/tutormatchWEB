@@ -943,7 +943,7 @@ export const homeLabelsDefaults = [
 
 /** 홈 설탭 벤치마크 섹션 (책임 3단계·컨설팅 브릿지·환불 밴드·누적 통계) */
 export const homeBenchmarkSectionsDefaults = [
-  { section: "hero", key: "model_image", value: "/images/placeholders/hero-model.png", type: "image", order: 0 },
+  { section: "hero", key: "model_image", value: "/images/placeholders/hero-thumbnail.png", type: "image", order: 0 },
   { section: "assurance", key: "section_title", value: "선생님 선별부터 매칭, 관리까지\nConcord가 책임집니다", type: "text", order: 1 },
   { section: "assurance", key: "section_subtext", value: "좋은 과외는 좋은 선생님에서 끝나지 않습니다. 선별, 매칭, 그 이후의 관리까지가 저희의 일입니다.", type: "text", order: 2 },
   { section: "assurance", key: "item1_title", value: "깐깐하게 선별합니다", type: "text", order: 3 },
@@ -1587,9 +1587,8 @@ export const homeSafetyStoryDefaults = [
   { section: "safety_story", key: "match1", value: "활발한 아이에게는 — 끌려가지 않게 잡아주는 선생님", type: "text", order: 31 },
   { section: "safety_story", key: "match2", value: "여린 아이에게는 — 틀려도 기다려주는 선생님", type: "text", order: 32 },
   { section: "safety_story", key: "match3", value: "게으른 아이에게는 — 옆에서 본보기가 되는 선생님", type: "text", order: 33 },
-  { section: "safety_story", key: "match4", value: "롤모델이 없는 아이에게는 — 존경할 만한 선생님", type: "text", order: 34 },
   { section: "safety_story", key: "closer", value: "아이가 다르면, 선생님도 달라야 합니다", type: "text", order: 35 },
-  { section: "safety_story", key: "pivot", value: "그래서 Concord는 모든 선생님을\n대표가 직접 만나 고릅니다.", type: "text", order: 40 },
+  { section: "safety_story", key: "pivot", value: "우리는 직접 만나고,\n학생에게 맞춥니다", type: "text", order: 40 },
   { section: "safety_story", key: "step1_title", value: "대표 직접 면접", type: "text", order: 50 },
   { section: "safety_story", key: "step1_desc", value: "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다.", type: "text", order: 51 },
   { section: "safety_story", key: "step2_title", value: "매니저 직접 매칭", type: "text", order: 52 },

@@ -110,11 +110,11 @@ const heroFields: TextFieldConfig[] = [
     label: "설명 문구",
     section: "hero",
     keyName: "subtext",
-    defaultValue: "잘 맞는 선생님을 만나면, 아이는 스스로 공부하게 될 겁니다.",
+    defaultValue: "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.",
     kind: "textarea",
     rows: 2,
   },
-  { label: "주요 버튼", section: "hero", keyName: "cta_primary", defaultValue: "무료 상담 신청" },
+  { label: "주요 버튼", section: "hero", keyName: "cta_primary", defaultValue: "선생님 추천받기" },
   { label: "보조 버튼", section: "hero", keyName: "cta_secondary", defaultValue: "선생님 둘러보기" },
 ];
 
@@ -1132,8 +1132,8 @@ export function AdminCmsPage() {
               </div>
               <div className="grid gap-4">
                 <ImageField
-                  field={{ label: "히어로 우측 사진 (단일)", section: "hero", keyName: "model_image", defaultValue: "/images/placeholders/hero-model.png" }}
-                  value={getValue("hero", "model_image", "/images/placeholders/hero-model.png")}
+                  field={{ label: "히어로 우측 사진 (단일)", section: "hero", keyName: "model_image", defaultValue: "/images/placeholders/hero-thumbnail.png" }}
+                  value={getValue("hero", "model_image", "/images/placeholders/hero-thumbnail.png")}
                   onSave={saveContent}
                 />
                 <ImageField

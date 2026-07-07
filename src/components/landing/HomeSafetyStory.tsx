@@ -11,7 +11,6 @@ export type SafetyStoryData = {
 };
 
 const UNIT_VH = 55;
-const STEP_VH = 50;
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
@@ -51,13 +50,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
           setUnit(Math.min(totalUnits - 1, Math.floor(progress * totalUnits)));
         }
-        const sp = stepsPinRef.current;
-        if (sp) {
-          const rect = sp.getBoundingClientRect();
-          const total = sp.offsetHeight - vh;
-          const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          setStepsOn(Math.min(data.steps.length, Math.floor(progress * (data.steps.length + 0.6) + 0.45)));
-        }
       });
     };
     onScroll();
@@ -70,6 +62,29 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalUnits, data.steps.length]);
+
+  // 절차 5단계: 섹션이 보이면 스크롤을 기다리지 않고 순차 등장 (1·2 → 3·4·5)
+  useEffect(() => {
+    if (reduced) return;
+    const sp = stepsPinRef.current;
+    if (!sp) return;
+    let timers: ReturnType<typeof setTimeout>[] = [];
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        timers = data.steps.map((_, i) =>
+          setTimeout(() => setStepsOn(i + 1), 350 + i * 550),
+        );
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(sp);
+    return () => {
+      io.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, [reduced, data.steps.length]);
 
   const phase: "intro" | "match" | "closer" | "pivot" =
     unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
@@ -140,12 +155,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         </div>
       </div>
 
-      {/* 절차 5단계 — 스크롤에 따라 하나씩 누적 */}
-      <div
-        ref={stepsPinRef}
-        className="lp2-story-steps-pin"
-        style={{ height: `${data.steps.length * STEP_VH + 130}vh` }}
-      >
+      {/* 절차 5단계 — 섹션 진입 시 자동 순차 등장 */}
+      <div ref={stepsPinRef} className="lp2-story-steps-pin">
         <div className="lp2-story-steps-vp">
           {/* 좌: 사전 검증(1·2, 강조) / 우: 사후 관리(3·4·5, 회색 번호) */}
           <div className="lp2-story-steps-cols">
