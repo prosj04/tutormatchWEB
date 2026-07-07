@@ -245,6 +245,7 @@ model ConsultationLead {
   id             String   @id @default(uuid())
   name           String?
   gender         String?
+  region            String?
   phone          String
   grade          String
   subjects       String   @default("[]")
@@ -338,6 +339,7 @@ model SiteContent {
 
 model Testimonial {
   id                String   @id @default(uuid())
+  title             String? // 카드 상단 2줄 제목 (줄바꿈 허용)
   quote             String
   author            String // e.g. "고2 · 수학 · 학부모"
   imageUrl          String?

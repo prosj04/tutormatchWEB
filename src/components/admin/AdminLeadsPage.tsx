@@ -11,6 +11,7 @@ type Lead = {
   id: string;
   name: string | null;
   gender: string | null;
+  region: string | null;
   phone: string;
   grade: string;
   subjects: string[];
@@ -121,6 +122,7 @@ export function AdminLeadsPage() {
                 <th className="px-4 py-3">신청일</th>
                 <th className="px-4 py-3">연락처</th>
                 <th className="px-4 py-3">학년</th>
+                <th className="px-4 py-3">지역</th>
                 <th className="px-4 py-3">과목</th>
                 <th className="px-4 py-3">희망 시간</th>
                 <th className="px-4 py-3">유입 경로</th>
@@ -132,7 +134,7 @@ export function AdminLeadsPage() {
             <tbody>
               {leads.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-text-secondary">
+                  <td colSpan={10} className="px-4 py-10 text-center text-text-secondary">
                     접수된 상담 신청이 없습니다.
                   </td>
                 </tr>
@@ -156,6 +158,7 @@ export function AdminLeadsPage() {
                       ) : null}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{lead.grade}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{lead.region ?? "—"}</td>
                     <td className="px-4 py-3">{lead.subjects.join(", ")}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{lead.preferredTime ?? "—"}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{lead.source ?? "—"}</td>

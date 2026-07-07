@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const authResult = await requireAdmin();
   if ("error" in authResult) return authResult.error;
 
-  let body: { quote?: unknown; author?: unknown; imageUrl?: unknown };
+  let body: { title?: unknown; quote?: unknown; author?: unknown; imageUrl?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
 
   const testimonial = await prisma.testimonial.create({
     data: {
+      title: typeof body.title === "string" && body.title.trim() ? body.title : null,
       quote: body.quote,
       author: body.author,
       imageUrl: typeof body.imageUrl === "string" ? body.imageUrl : null,

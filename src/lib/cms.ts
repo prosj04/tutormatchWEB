@@ -12,6 +12,7 @@ import { getGroupedSiteContent } from "@/lib/site-content";
 export type LandingCmsContent = {
   siteContent: Record<string, Record<string, string>>;
   testimonials: Array<{
+    title?: string;
     quote: string;
     info: string;
     img: string;
@@ -34,6 +35,7 @@ const EMPTY_LANDING_CMS: LandingCmsContent = {
 
 function mapTestimonialRows(
   testimonials: Array<{
+    title?: string | null;
     quote: string;
     author: string;
     imageUrl: string | null;
@@ -44,6 +46,7 @@ function mapTestimonialRows(
   }>,
 ): LandingCmsContent["testimonials"] {
   return testimonials.map((item) => ({
+    ...(item.title ? { title: item.title } : {}),
     quote: item.quote,
     info: item.author,
     img:
@@ -69,6 +72,7 @@ const getCachedHomeTestimonials = unstable_cache(
         where: { isActive: true, showOnHome: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: {
+          title: true,
           quote: true,
           author: true,
           imageUrl: true,
@@ -95,6 +99,7 @@ const getCachedReviewsPageTestimonials = unstable_cache(
         where: { isActive: true, showOnReviewsPage: true },
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: {
+          title: true,
           quote: true,
           author: true,
           imageUrl: true,

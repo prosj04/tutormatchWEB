@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { RegionPicker } from "@/components/common/RegionPicker";
+
 import {
   LEAD_GENDERS,
   LEAD_GRADES,
@@ -21,6 +23,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [grade, setGrade] = useState("");
+  const [region, setRegion] = useState("");
   const [subjects, setSubjects] = useState<string[]>([]);
   const [phone, setPhone] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
@@ -56,6 +59,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
     setError(null);
 
     if (!grade) return setError("학년을 선택해 주세요.");
+    if (!region) return setError("지역을 선택해 주세요.");
     if (subjects.length === 0) return setError("과목을 1개 이상 선택해 주세요.");
     if (!phoneValid) return setError("올바른 휴대폰 번호를 입력해 주세요.");
     if (!privacyAgreed)
@@ -70,6 +74,7 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
           name: name || null,
           gender: gender || null,
           grade,
+          region,
           subjects,
           phone,
           preferredTime: preferredTime || null,
@@ -184,6 +189,11 @@ export function ConsultRequestForm({ source, phoneNotice }: Props) {
             required
           />
         </div>
+      </div>
+
+      <div className="consult-field">
+        <span className="consult-label">지역</span>
+        <RegionPicker value={region} onChange={setRegion} />
       </div>
 
       <div className="consult-field">

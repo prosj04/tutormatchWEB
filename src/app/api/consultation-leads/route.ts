@@ -108,10 +108,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const region =
+    typeof body.region === "string" ? body.region.trim().slice(0, 40) || null : null;
+
   const lead = await prisma.consultationLead.create({
     data: {
       name,
       gender,
+      region,
       phone,
       grade,
       subjects: JSON.stringify(subjects),

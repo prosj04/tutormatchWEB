@@ -31,11 +31,11 @@ const results: [string, string, string, string][] = [
 ];
 
 const steps = [
-  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분합니다." },
+  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분해요." },
   { number: "02", title: "매니저 배정·진단 상담", desc: "10년 경력 매니저가 학습 상황과 가족의 우선순위를 듣습니다." },
   { number: "03", title: "선생님 후보 추천", desc: "과목, 성향, 일정에 맞는 선생님 후보를 추천합니다." },
   { number: "04", title: "학생이 직접 수락", desc: "배정된 선생님을 학생이 수락해야 수업이 시작됩니다. 맞지 않으면 무료로 재매칭합니다." },
-  { number: "05", title: "방문 수업 시작", desc: "서울·분당 방문 수업으로 진행하고, 진도·숙제·리포트를 한 흐름으로 관리합니다." },
+  { number: "05", title: "방문 수업 시작", desc: "서울·동탄 방문 수업으로 진행하고, 진도·숙제·리포트를 한 흐름으로 관리합니다." },
 ];
 
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
@@ -124,23 +124,28 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     ];
   });
 
-  const cmsTestimonials =
+  const cmsTestimonials: Array<
+    LandingCmsContent["testimonials"][number] & { title?: string }
+  > =
     cms && cms.testimonials.length > 0
       ? cms.testimonials.slice(0, 3)
       : [
           {
+            title: "시간만 보내던 아이가,\n계획을 세우는 아이로",
             quote:
               "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
             info: "고2 수학 · 학부모",
             img: "",
           },
           {
+            title: "방황하던 아이 입에서\n선생님처럼 되고 싶다는 말이",
             quote:
               "방황하는 아들의 방향을 잡아 줄 선생님이 필요했는데, 정확히 맞는 분을 찾아줬어요. 아이가 선생님처럼 되고 싶다며 열심히 합니다.",
             info: "고3 수학 · 학부모",
             img: "",
           },
           {
+            title: "성적보다 먼저,\n습관이 바뀌었어요",
             quote:
               "숙제와 공부 계획을 등록하고 선생님이랑 같이 점검하니 자연스럽게 매일 공부하게 됐어요. 성적보다 습관이 먼저 바뀌었어요.",
             info: "중3 영어 · 학생",
@@ -155,11 +160,31 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
     results: getCmsValue("home_labels", "kicker_results", "RESULTS"),
+    numbers: getCmsValue("home_labels", "kicker_numbers", "NUMBERS"),
     faq: getCmsValue("home_labels", "kicker_faq", "FAQ"),
   };
 
+  const statDefaults: [string, string][] = [
+    ["500+", "누적 상담"],
+    ["1,200+", "매칭 완료"],
+    ["98%", "학생 만족도"],
+    ["4.9", "상담 평점"],
+  ];
+  const statItems = statDefaults.flatMap(([num, label], index) => {
+    const n = index + 1;
+    const vis = getCmsValue("stats", `stat${n}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
+    return [
+      {
+        n,
+        num: getCmsValue("stats", `stat${n}_number`, num),
+        label: getCmsValue("stats", `stat${n}_label`, label),
+      },
+    ];
+  });
+
   const trustDefaults = [
-    "서울·분당 방문 수업",
+    "서울·동탄 방문 수업",
     "전담 매니저가 처음부터 끝까지",
     "학생이 수락해야 수업 시작",
     "첫 수업 100% 환불",
@@ -214,19 +239,19 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n아실 수 있습니다"),
     process: getCmsValue("features", "section_title", "Concord는 이렇게 진행됩니다"),
-    processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 1:1로 학생의 성장에 집중해요."),
+    processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다."),
     teachers: getCmsMultiline("tutors_featured", "home_title", "선생님을 고르지 마세요,\n추천받으세요"),
     teachersSubtext: getCmsValue(
       "tutors_featured",
       "home_subtext",
-      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님으로 상담을 신청하시면 매니저가 매칭을 도와드립니다.",
+      "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
     ),
-    reviews: getCmsValue("home_labels", "section_title_reviews", "실제 학부모님들의 이야기를 확인해보세요"),
-    plans: getCmsMultiline("home_page", "plans_title", "포함된 걸 먼저 보고 결정하세요"),
+    reviews: getCmsValue("home_labels", "section_title_reviews", "학부모님들의 생생한 이야기를 공개합니다"),
+    plans: getCmsMultiline("home_page", "plans_title", "가격까지 숨김없이 공개합니다"),
     plansSubtext: getCmsValue(
       "home_page",
       "plans_subtext",
-      "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
+      "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
     ),
   };
 
@@ -247,6 +272,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     sectionTitles,
     trustItems,
     verifySteps,
+    statItems,
     uiLabels,
   };
 }
@@ -306,6 +332,7 @@ export function LandingPageV2({
     sectionTitles,
     trustItems,
     verifySteps,
+    statItems,
     uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
@@ -499,7 +526,7 @@ export function LandingPageV2({
                       <div className="lp2-notif-rows">
                         <div><span className="k">성향</span><span className="v">조용하고 신중한 편 · 질문형 수업 선호</span></div>
                         <div><span className="k">목표</span><span className="v">내신 수학 2등급, 기초 개념 재정리</span></div>
-                        <div><span className="k">일정</span><span className="v">화·목 저녁 / 분당 자택 방문</span></div>
+                        <div><span className="k">일정</span><span className="v">화·목 저녁 / 동탄 자택 방문</span></div>
                       </div>
                     </div>
                     <div className="lp2-proc-mock-note">성적표보다 먼저, 아이가 어떤 학생인지 듣습니다</div>
@@ -682,6 +709,33 @@ export function LandingPageV2({
         </div>
       </section>
 
+      {/* ══ 6.5 STATS BAND (다크 실적) ═════════════════════ */}
+      {statItems.length > 0 && (
+        <section className="lp2-stats-sec" aria-label="핵심 지표">
+          <div className="lp2-wrap reveal">
+            <span className="lp2-eyebrow">{kickers.numbers}</span>
+            <h2 className="lp2-stats-title" style={{ whiteSpace: "pre-line" }}>
+              <CmsEdit active={isEditMode} section="stats" cmsKey="section_title" type="text">
+                {getCmsMultiline("stats", "section_title", "Concord는\n숫자로 얘기합니다")}
+              </CmsEdit>
+            </h2>
+            <div className="lp2-stats-grid">
+              {statItems.map((s) => (
+                <div key={s.n} className="lp2-stat">
+                  <div className="lb">{s.label}</div>
+                  <div className="vl">{s.num}</div>
+                </div>
+              ))}
+            </div>
+            <p className="lp2-stats-note">
+              <CmsEdit active={isEditMode} section="stats" cmsKey="footnote" type="text">
+                {getCmsValue("stats", "footnote", "2026년 상반기 서비스 운영 데이터 기준")}
+              </CmsEdit>
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* ══ 7. RESULTS + REVIEWS ══════════════════════════ */}
       <section id="results" className="lp2-sec lp2-rev-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
@@ -692,6 +746,11 @@ export function LandingPageV2({
                 {getCmsValue("results", "section_title", "결과로 증명합니다")}
               </CmsEdit>
             </h2>
+            <p className="lp2-result-note">
+              <CmsEdit active={isEditMode} section="results" cmsKey="section_note" type="text">
+                {getCmsValue("results", "section_note", "2026년 상반기 Concord 수강생 기준")}
+              </CmsEdit>
+            </p>
           </div>
         </div>
 
@@ -790,6 +849,11 @@ export function LandingPageV2({
                 ) : (
                   <div className="quote">&ldquo;</div>
                 )}
+                {t.title ? (
+                  <h3 className="lp2-rev-title" style={{ whiteSpace: "pre-line" }}>
+                    {t.title}
+                  </h3>
+                ) : null}
                 <p className="qt">{t.quote}</p>
                 <div className="by">{t.info}</div>
               </div>
@@ -878,10 +942,10 @@ export function LandingPageV2({
           <div className="lp2-cta-band reveal">
             <div>
               <h2 style={{ whiteSpace: "pre-line" }}>
-                {getCmsValue("cta", "headline", "판단은 첫 수업을 보고 하셔도 됩니다.")}
+                {getCmsValue("cta", "headline", "판단은 첫 수업을 보고 하셔도 괜찮아요")}
               </h2>
               <p>
-                {getCmsValue("cta", "subtext", "결정은 천천히, 진단은 먼저 받아보세요.")}
+                {getCmsValue("cta", "subtext", "결정은 천천히 하셔도 돼요. 진단부터 먼저 받아보세요 — 신청은 30초면 충분해요.")}
               </p>
             </div>
             <ConsultationApplyButton className="lp2-btn" source="home_cta_band">

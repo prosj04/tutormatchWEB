@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
+import { RegionPicker } from "@/components/common/RegionPicker";
+
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { normalizePhoneDigits } from "@/lib/phone-login";
@@ -12,8 +14,6 @@ import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
-const REGIONS = ["서울", "분당·판교", "그 외 수도권", "그 외 지역"] as const;
-const PRIMARY_REGIONS: readonly string[] = ["서울", "분당·판교"];
 
 type FieldKey =
   | "name"
@@ -213,24 +213,9 @@ export function ConsultationSignupForm({
         </div>
         <div className="field">
           <span>거주 지역</span>
-          <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {REGIONS.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRegion(r)}
-                className={region === r ? "chip-f on" : "chip-f"}
-              >
-                {r}
-              </button>
-            ))}
+          <div style={{ marginTop: 8 }}>
+            <RegionPicker value={region} onChange={setRegion} />
           </div>
-          {region && !PRIMARY_REGIONS.includes(region) ? (
-            <p className="field-hint" style={{ marginTop: 6, fontSize: 13, color: "var(--mut, #6b6b64)" }}>
-              현재 서울·분당 지역 대면 수업을 우선 운영하고 있어요. 신청은 가능하며, 매니저가
-              가능 여부를 확인해 안내드립니다.
-            </p>
-          ) : null}
           {fieldErrors.region ? <p className="field-error">{fieldErrors.region}</p> : null}
         </div>
         <div className="field">

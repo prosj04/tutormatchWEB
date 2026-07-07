@@ -144,6 +144,8 @@ export function FeaturedTutors({
   );
 
   const cards = getFeaturedTutorCards(siteContent);
+  const secVisible = (key: string) =>
+    parseCmsVisibility(siteContent?.[SECTION]?.[key], true);
   const ctaLabel = get("cta_label", "빠른 매칭받기");
   const badges = [
     get("badge_1", "첫 수업 후 100% 환불"),
@@ -224,6 +226,7 @@ export function FeaturedTutors({
       </section>
 
       {/* ── 뉴스 근거: 대형 타이포 스택 (흰 배경) ── */}
+      {secVisible("news_section_visible") && (
       <section className="sec tp-newsintro-sec">
         <div className="wrap">
           <ConcordReveal className="tp-newsintro-head" as="div">
@@ -254,9 +257,10 @@ export function FeaturedTutors({
           </ConcordReveal>
         </div>
       </section>
+      )}
 
       {/* ── 통계 카운터 ── */}
-      {stats.length > 0 ? (
+      {stats.length > 0 && secVisible("stats_section_visible") ? (
         <section className="sec-sm tp-stats-sec">
           <div className="wrap">
             <ConcordReveal className="tp-stats" as="div">
@@ -273,6 +277,7 @@ export function FeaturedTutors({
       ) : null}
 
       {/* ── 이달의 검증 선생님 ── */}
+      {secVisible("featured_section_visible") && (
       <section className="sec tp-featured-sec" id="featured" style={{ scrollMarginTop: "80px" }}>
         <div className="wrap">
           <ConcordReveal className="tp-sec-head" as="div">
@@ -306,9 +311,10 @@ export function FeaturedTutors({
           onMatch={(i) => void goConsultation(`tutors_featured_${i}`)}
         />
       </section>
+      )}
 
       {/* ── 특별한 이유 3가지 (Q&A) ── */}
-      {whys.length > 0 ? (
+      {whys.length > 0 && secVisible("why_section_visible") ? (
         <section className="sec tp-why-sec">
           <div className="wrap">
             <ConcordReveal className="tp-sec-head" as="div">
@@ -331,7 +337,7 @@ export function FeaturedTutors({
       ) : null}
 
       {/* ── 성적 인증 그리드 ── */}
-      {proofs.length > 0 ? (
+      {proofs.length > 0 && secVisible("proof_section_visible") ? (
         <section className="sec tp-proof-sec">
           <div className="wrap">
             <ConcordReveal className="tp-sec-head" as="div">
@@ -377,6 +383,7 @@ export function FeaturedTutors({
       ) : null}
 
       {/* ── 변경 보장 ── */}
+      {secVisible("rematch_section_visible") && (
       <section className="sec-sm">
         <div className="wrap">
           <ConcordReveal className="tp-rematch-band" as="div">
@@ -399,8 +406,10 @@ export function FeaturedTutors({
           </ConcordReveal>
         </div>
       </section>
+      )}
 
       {/* ── 요금제 카드 ── */}
+      {secVisible("price_section_visible") && (
       <section className="sec tp-price-sec">
         <div className="wrap">
           <ConcordReveal className="tp-sec-head" as="div">
@@ -418,6 +427,7 @@ export function FeaturedTutors({
           </div>
         </div>
       </section>
+      )}
 
       <ConcordSubpageCta
         title="원하는 선생님, 무료 상담으로 배정받으세요"

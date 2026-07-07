@@ -51,6 +51,7 @@ type CmsContent = Record<string, Record<string, string>>;
 
 type TestimonialRow = {
   id: string;
+  title: string | null;
   quote: string;
   author: string;
   imageUrl: string | null;
@@ -118,12 +119,28 @@ const heroFields: TextFieldConfig[] = [
 ];
 
 const statsFields: TextFieldConfig[] = [
+  {
+    label: "섹션 제목",
+    section: "stats",
+    keyName: "section_title",
+    defaultValue: "Concord는\n숫자로 얘기합니다",
+    kind: "textarea",
+    rows: 2,
+  },
   { label: "통계 1 숫자", section: "stats", keyName: "stat1_number", defaultValue: "500+" },
   { label: "통계 1 문구", section: "stats", keyName: "stat1_label", defaultValue: "누적 상담" },
   { label: "통계 2 숫자", section: "stats", keyName: "stat2_number", defaultValue: "1,200+" },
   { label: "통계 2 문구", section: "stats", keyName: "stat2_label", defaultValue: "매칭 완료" },
   { label: "통계 3 숫자", section: "stats", keyName: "stat3_number", defaultValue: "98%" },
   { label: "통계 3 문구", section: "stats", keyName: "stat3_label", defaultValue: "학생 만족도" },
+  { label: "통계 4 숫자", section: "stats", keyName: "stat4_number", defaultValue: "4.9" },
+  { label: "통계 4 문구", section: "stats", keyName: "stat4_label", defaultValue: "상담 평점" },
+  {
+    label: "기준 각주",
+    section: "stats",
+    keyName: "footnote",
+    defaultValue: "2026년 상반기 서비스 운영 데이터 기준",
+  },
 ];
 
 const resultDefaults = [
@@ -251,7 +268,7 @@ const homePricingFields: TextFieldConfig[] = [
     label: "홈 섹션 제목",
     section: "home_page",
     keyName: "plans_title",
-    defaultValue: "포함된 걸 먼저 보고 결정하세요",
+    defaultValue: "가격까지 숨김없이 공개합니다",
     kind: "textarea",
     rows: 2,
   },
@@ -1228,6 +1245,16 @@ export function AdminCmsPage() {
                 value={getValue("results", "section_title", "결과로 증명합니다")}
                 onSave={saveContent}
               />
+              <ContentField
+                field={{
+                  label: "기준 각주",
+                  section: "results",
+                  keyName: "section_note",
+                  defaultValue: "2026년 상반기 Concord 수강생 기준",
+                }}
+                value={getValue("results", "section_note", "2026년 상반기 Concord 수강생 기준")}
+                onSave={saveContent}
+              />
               <CmsCardBoxGrid>
                 {resultDefaults.map((result, index) => {
                   const number = index + 1;
@@ -1368,11 +1395,11 @@ export function AdminCmsPage() {
                   label: "섹션 설명",
                   section: "features",
                   keyName: "section_subtext",
-                  defaultValue: "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.",
+                  defaultValue: "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다.",
                   kind: "textarea",
                   rows: 2,
                 }}
-                value={getValue("features", "section_subtext", "상담부터 매칭, 수업까지 1:1로 학생의 성장에 집중해요.")}
+                value={getValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다.")}
                 onSave={saveContent}
               />
             </div>
@@ -2584,6 +2611,13 @@ function SortableTestimonial({
         ⋮⋮
       </button>
       <div className="grid gap-3">
+        <AutoSaveInput
+          label="카드 제목 (2줄 권장, 줄바꿈 가능 · 예: 관리는 철저하게, ↵ 공부는 자유롭게)"
+          value={item.title ?? ""}
+          kind="textarea"
+          rows={2}
+          onSave={(value) => onSave(item.id, { title: value || null })}
+        />
         <AutoSaveInput label="후기 문구" value={item.quote} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { quote: value })} />
         <AutoSaveInput label="작성자 (예: 고2 수학 · 학부모)" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
         <div className="grid gap-3 sm:grid-cols-2">

@@ -189,21 +189,32 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 /* =========================================================
    STICKY CONSULT CTA (하단 중앙 고정 CTA)
    ========================================================= */
-.sticky-cta{ position:fixed; left:50%; bottom:22px; transform:translate(-50%, 16px); z-index:60;
-  display:flex; flex-direction:column; align-items:center; gap:0;
+.sticky-cta{ position:fixed; left:0; right:0; bottom:0; transform:translateY(102%); z-index:60;
+  display:flex; align-items:center; gap:14px;
+  padding:12px clamp(16px,4vw,44px);
+  background:rgba(var(--panel-rgb, 255,255,255), .94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line); box-shadow:0 -8px 30px rgba(0,0,0,.07);
   opacity:0; pointer-events:none; transition:opacity .28s var(--ease), transform .28s var(--ease); }
-.sticky-cta.is-visible{ opacity:1; pointer-events:auto; transform:translate(-50%, 0); }
-.sticky-cta-bubble{ position:relative; background:var(--fg); color:var(--bg); font-size:12.5px; font-weight:700;
-  padding:7px 14px; border-radius:var(--r-pill); margin-bottom:9px; box-shadow:var(--shadow-md); }
-.sticky-cta-bubble::after{ content:""; position:absolute; left:50%; bottom:-5px; transform:translateX(-50%);
-  border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid var(--fg); }
-.sticky-cta-btn{ border:0; cursor:pointer; background:var(--acc); color:var(--on-acc); font-size:15.5px; font-weight:800;
-  padding:15px 34px; border-radius:var(--r-pill); box-shadow:0 10px 30px rgba(var(--acc-rgb),.38);
+.sticky-cta.is-visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
+.sticky-cta-badge{ flex-shrink:0; display:inline-flex; align-items:center;
+  background:var(--acc); color:var(--on-acc); font-size:12.5px; font-weight:800;
+  padding:6px 12px; border-radius:var(--r-pill); }
+.sticky-cta-msg{ margin:0; font-size:14.5px; font-weight:600; color:var(--fg);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.sticky-cta-actions{ margin-left:auto; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.sticky-cta-ghost{ display:inline-flex; align-items:center; font-size:14px; font-weight:700;
+  color:var(--fg); border:1px solid var(--line-2); border-radius:var(--r-pill); padding:11px 20px;
+  transition:border-color .18s var(--ease); }
+.sticky-cta-ghost:hover{ border-color:var(--fg); }
+.sticky-cta-btn{ border:0; cursor:pointer; background:var(--acc); color:var(--on-acc); font-size:15px; font-weight:800;
+  padding:12px 26px; border-radius:var(--r-pill); box-shadow:0 6px 20px rgba(var(--acc-rgb),.32);
   transition:transform .18s var(--ease), box-shadow .18s var(--ease); }
-.sticky-cta-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(var(--acc-rgb),.46); }
-@media (max-width:640px){
-  .sticky-cta{ bottom:14px; width:calc(100% - 32px); }
-  .sticky-cta-btn{ width:100%; padding:15px 20px; }
+.sticky-cta-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(var(--acc-rgb),.42); }
+@media (max-width:760px){
+  .sticky-cta{ padding:10px 14px; gap:10px; }
+  .sticky-cta-msg, .sticky-cta-ghost{ display:none; }
+  .sticky-cta-actions{ flex:1; }
+  .sticky-cta-btn{ width:100%; padding:14px 20px; }
 }
 @media (prefers-reduced-motion: reduce){
   .sticky-cta{ transition:none; }
@@ -455,3 +466,47 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .lp2-tpx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
 .lp2-tpx-grid .tpx-card { width: 100%; }
 @media (max-width: 960px) { .lp2-tpx-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+
+/* ── 지역 선택 (서울 지하철역/동탄 동 · 실시간 필터) ── */
+.region-picker { display: flex; flex-direction: column; gap: 10px; }
+.region-picker-tabs { display: flex; gap: 8px; }
+.region-tab {
+  flex: 1; padding: 11px 0; border-radius: 12px; font-weight: 700; font-size: 14.5px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--mut); cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.region-tab.on { border-color: var(--acc); color: var(--acc-text); background: rgba(var(--acc-rgb), .08); }
+.region-picker-body { display: flex; flex-direction: column; gap: 8px; }
+.region-acc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--panel); cursor: pointer; font-size: 14.5px; color: var(--mut);
+  transition: border-color .15s;
+}
+.region-acc-head strong { color: var(--fg); font-weight: 700; }
+.region-acc-head.open { border-color: var(--acc); }
+.region-acc-head.open span { color: var(--acc-text); }
+.region-acc-body { display: flex; flex-direction: column; gap: 6px; }
+.region-none-btn {
+  align-self: flex-start; padding: 7px 12px; border: 1px dashed var(--line); border-radius: 999px;
+  background: none; font-size: 13.5px; color: var(--mut); cursor: pointer;
+}
+.region-none-btn:hover { border-color: var(--acc); color: var(--acc-text); }
+.region-picker-body input {
+  width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--panel); color: var(--fg); font-size: 15px;
+}
+.region-picker-body input:focus { outline: none; border-color: var(--acc); }
+.region-options {
+  list-style: none; margin: 8px 0 0; padding: 4px;
+  max-height: 190px; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--panel);
+}
+.region-options li button {
+  display: block; width: 100%; text-align: left; padding: 9px 12px;
+  border: 0; background: none; font-size: 14.5px; color: var(--fg);
+  border-radius: 8px; cursor: pointer;
+}
+.region-options li button:hover { background: rgba(var(--acc-rgb), .1); color: var(--acc-text); }
+.region-empty { padding: 12px; font-size: 13.5px; color: var(--mut); text-align: center; }
+.region-selected { margin: 6px 0 0; font-size: 13.5px; font-weight: 700; color: var(--acc-text); }

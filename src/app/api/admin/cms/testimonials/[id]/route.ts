@@ -13,6 +13,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   let body: {
+    title?: unknown;
     quote?: unknown;
     author?: unknown;
     imageUrl?: unknown;
@@ -32,6 +33,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   const data: {
+    title?: string | null;
     quote?: string;
     author?: string;
     imageUrl?: string | null;
@@ -45,6 +47,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     showOnReviewsPage?: boolean;
   } = {};
 
+  if (typeof body.title === "string") data.title = body.title;
+  if (body.title === null) data.title = null;
   if (typeof body.quote === "string") data.quote = body.quote;
   if (typeof body.author === "string") data.author = body.author;
   if (typeof body.imageUrl === "string") data.imageUrl = body.imageUrl;
