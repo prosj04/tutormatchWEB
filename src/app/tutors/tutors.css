@@ -161,3 +161,25 @@
 }
 .tp-card-tags { padding: 10px 16px 0; }
 .tp-carousel-card .tutor-media { aspect-ratio: 4 / 5; }
+
+/* ── 카드 축소 + 1:1 사진 + 태그 한 줄 ── */
+.tp-carousel-card { flex: 0 0 clamp(200px, 21vw, 252px); }
+.tp-carousel-card .tutor-media { aspect-ratio: 1 / 1; }
+.tp-card-subject { padding: 12px 14px 0; }
+.tp-subject-chip { font-size: 12.5px; padding: 5px 12px; }
+.tp-card-tagline {
+  display: flex;
+  gap: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 8px 0 2px;
+}
+.tp-card-tagline .tag-chip { font-size: 11px; padding: 3px 8px; flex: none; }
+.tp-carousel-card .tutor-body { padding: 12px 14px 14px; }
+.tp-carousel-card .tutor-name { font-size: 16px; }
+.tp-carousel-card .tutor-line { font-size: 13px; }
+.tp-carousel-card .tutor-items li { font-size: 12px; }
+.tp-carousel-card .tp-card-univ { font-size: 12.5px; }
+@media (max-width: 680px) {
+  .tp-carousel-card { flex-basis: min(62vw, 240px); }
+}

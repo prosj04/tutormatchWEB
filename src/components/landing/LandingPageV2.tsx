@@ -17,10 +17,8 @@ import {
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
-import { RESULT_CARD_IMAGES } from "@/lib/result-card-images";
 
 /* ─── static fallback data ─── */
-const DEFAULT_RESULT_IMAGES = [...RESULT_CARD_IMAGES];
 
 const results: [string, string, string, string][] = [
   ["고2 학생", "수학 5등급", "2등급으로 상승", "3개월"],
@@ -84,7 +82,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
         image: getCmsValue(
           "results",
           `result${n}_image`,
-          DEFAULT_RESULT_IMAGES[index] ?? DEFAULT_RESULT_IMAGES[0],
+          // 실제 시험지 사진 확보 전까지 이미지 슬롯 비움 (CMS로만 채움)
+          "",
         ),
       },
     ];
@@ -617,9 +616,19 @@ export function LandingPageV2({
                 const isOriginal = i < cmsResults.length;
                 return (
                   <article key={i} className="lp2-result-card">
-                    <div className="lp2-result-img">
-                      {isOriginal ? (
-                        <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_image`} type="image">
+                    {item.image ? (
+                      <div className="lp2-result-img">
+                        {isOriginal ? (
+                          <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_image`} type="image">
+                            <Image
+                              src={item.image}
+                              alt={`${item.student} 성적 변화`}
+                              fill
+                              sizes="220px"
+                              className="object-cover"
+                            />
+                          </CmsEdit>
+                        ) : (
                           <Image
                             src={item.image}
                             alt={`${item.student} 성적 변화`}
@@ -627,17 +636,9 @@ export function LandingPageV2({
                             sizes="220px"
                             className="object-cover"
                           />
-                        </CmsEdit>
-                      ) : (
-                        <Image
-                          src={item.image}
-                          alt={`${item.student} 성적 변화`}
-                          fill
-                          sizes="220px"
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    ) : null}
                     <div className="lp2-result-body">
                       <div className="lp2-result-meta">
                         <span className="lp2-result-badge">

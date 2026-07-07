@@ -1,6 +1,5 @@
 import "./consult.css";
 
-import Image from "next/image";
 
 import { ConsultRequestForm } from "@/components/consultation/ConsultRequestForm";
 import { PublicShell } from "@/components/layout/PublicShell";
@@ -28,9 +27,8 @@ export default async function ConsultPage({
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "consult_page", key, fallback);
 
-  const headline = get("headline", "상담 신청만 해도 학습진단 100% 제공");
+  const headline = get("headline", "상담 신청만 해도 학습 전문가의 1:1 학습진단 제공");
   const subtext = get("subtext", "정확한 상담 정보를 입력해 주세요.");
-  const benefitImage = get("benefit_image", "/images/placeholders/consult-benefit.png");
   const benefits = [
     get("benefit_1", "무료 학습진단 리포트"),
     get("benefit_2", "전담 매니저 1:1 상담"),
@@ -45,15 +43,6 @@ export default async function ConsultPage({
     <PublicShell>
       <main className="consult-main">
         <div className="consult-benefit">
-          <div className="consult-benefit-img">
-            <Image
-              src={benefitImage}
-              alt="상담 신청 혜택 안내"
-              fill
-              className="object-cover"
-              sizes="560px"
-            />
-          </div>
           <div className="consult-benefit-items">
             {benefits.map((b) => (
               <div key={b} className="consult-benefit-item">

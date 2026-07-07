@@ -239,3 +239,16 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+/* ── 컴팩트 레이아웃: 첫 화면 안에 제출 버튼까지 ── */
+.consult-main { padding-top: 28px !important; }
+.consult-benefit { margin-bottom: 14px !important; }
+.consult-benefit-items { display: flex !important; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.consult-benefit-item { padding: 7px 14px !important; font-size: 12.5px !important; }
+.consult-head { margin-bottom: 16px !important; }
+.consult-head h1 { font-size: clamp(21px, 2.4vw, 27px) !important; }
+.consult-form { gap: 14px !important; }
+.consult-form label, .consult-field-label { font-size: 13px !important; }
+.consult-form input, .consult-form select { padding: 10px 12px !important; }
+.consult-subject-chips { gap: 6px !important; }
+.consult-agree { gap: 6px !important; font-size: 12.5px !important; }

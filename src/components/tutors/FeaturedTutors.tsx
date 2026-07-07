@@ -14,7 +14,6 @@ import {
   getCmsSectionValue,
   getFeaturedTutorCards,
   parseCmsVisibility,
-  parseMultilineList,
   type FeaturedTutorCard,
 } from "@/lib/cms-page-defaults";
 import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
@@ -43,16 +42,7 @@ function FeaturedCard({
     <ConcordReveal as="article" className="card tutor-card tp-carousel-card">
       {card.tag ? (
         <div className="tp-card-subject">
-          <span className="tag-chip tp-subject-chip">#{card.tag}</span>
-        </div>
-      ) : null}
-      {card.tags.length > 0 ? (
-        <div className="tag-chip-row tp-card-tags">
-          {card.tags.slice(0, 3).map((t) => (
-            <span key={t} className="tag-chip">
-              {t}
-            </span>
-          ))}
+          <span className="tag-chip tp-subject-chip">{card.tag}</span>
         </div>
       ) : null}
       <div className="tutor-media" style={{ position: "relative", overflow: "hidden" }}>
@@ -60,15 +50,22 @@ function FeaturedCard({
           src={card.photo}
           alt={`${card.name} 선생님 프로필 사진`}
           fill
-          className="object-cover object-top"
-          sizes="(max-width:960px) 80vw, 33vw"
+          className="object-cover"
+          sizes="(max-width:960px) 60vw, 260px"
         />
       </div>
       <div className="tutor-body">
         {card.university ? <div className="tp-card-univ">{card.university}</div> : null}
-        <p className="tutor-name">
-          {card.name} <span className="verified">✓ 검증</span>
-        </p>
+        <p className="tutor-name">{card.name}</p>
+        {card.tags.length > 0 ? (
+          <div className="tp-card-tagline" aria-label="강점 태그">
+            {card.tags.slice(0, 3).map((t) => (
+              <span key={t} className="tag-chip">
+                {t}
+              </span>
+            ))}
+          </div>
+        ) : null}
         <p className="tutor-line">{card.blurb}</p>
         {card.highlights.length > 0 ? (
           <ul className="tutor-items">
@@ -77,16 +74,11 @@ function FeaturedCard({
             ))}
           </ul>
         ) : null}
-        <div className="tp-card-foot">
-          {card.subjects.length > 0 ? (
-            <div className="tp-card-subjects">
-              {card.subjects.slice(0, 3).map((s) => (
-                <span key={s}>{s}</span>
-              ))}
-            </div>
-          ) : null}
-          {card.careerBadge ? <span className="tp-career-badge">{card.careerBadge}</span> : null}
-        </div>
+        {card.careerBadge ? (
+          <div className="tp-card-foot">
+            <span className="tp-career-badge">{card.careerBadge}</span>
+          </div>
+        ) : null}
         <button
           type="button"
           className="btn btn-acc btn-block tutor-match-btn"
@@ -226,8 +218,6 @@ export function FeaturedTutors({
     }))
     .filter((p) => p.subject && p.before && p.after);
 
-  const studentTags = parseMultilineList(get("iv_student_tags", ""), []);
-  const teacherTags = parseMultilineList(get("iv_teacher_tags", ""), []);
 
   const pricingItems = buildVisiblePricingPlanItems(siteContent, "high");
 
@@ -310,76 +300,6 @@ export function FeaturedTutors({
           </div>
         </section>
       ) : null}
-
-      {/* ── 학생·선생님 인터뷰 매칭 ── */}
-      <section className="sec tp-interview-sec">
-        <div className="wrap">
-          <ConcordReveal className="tp-sec-head" as="div">
-            <h2 style={{ whiteSpace: "pre-line" }}>
-              {edit("iv_title", formatCmsMultiline(get("iv_title", "잘 맞는 선생님을 만나면\n공부 전략이 달라집니다")))}
-            </h2>
-          </ConcordReveal>
-          <div className="tp-iv-grid">
-            <ConcordReveal className="card tp-iv-card" as="article">
-              <div className="tp-iv-media">
-                {edit(
-                  "iv_student_image",
-                  <Image
-                    src={get("iv_student_image", "/images/placeholders/student-interview.png")}
-                    alt="학생 인터뷰"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width:960px) 100vw, 50vw"
-                  />,
-                  "image",
-                )}
-              </div>
-              <div className="tp-iv-body">
-                <span className="tp-iv-label">{get("iv_student_label", "이런 수업 원해요")}</span>
-                <blockquote style={{ whiteSpace: "pre-line" }}>
-                  {formatCmsMultiline(get("iv_student_quote", "“강압적인 학원 수업에 지쳤어요.\n제 속도에 맞춰 다시 시작하고 싶어요”"))}
-                </blockquote>
-                <div className="tag-chip-row">
-                  {studentTags.map((t) => (
-                    <span key={t} className="tag-chip">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </ConcordReveal>
-            <ConcordReveal className="card tp-iv-card" as="article">
-              <div className="tp-iv-media">
-                {edit(
-                  "iv_teacher_image",
-                  <Image
-                    src={get("iv_teacher_image", "/images/placeholders/teacher-interview.png")}
-                    alt="선생님 인터뷰"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width:960px) 100vw, 50vw"
-                  />,
-                  "image",
-                )}
-              </div>
-              <div className="tp-iv-body">
-                <span className="tp-iv-label">{get("iv_teacher_label", "이런 수업 잘해요")}</span>
-                <blockquote style={{ whiteSpace: "pre-line" }}>
-                  {formatCmsMultiline(get("iv_teacher_quote", "“칭찬으로 학생이 스스로\n공부하게 만듭니다”"))}
-                </blockquote>
-                <div className="tag-chip-row">
-                  {teacherTags.map((t) => (
-                    <span key={t} className="tag-chip">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </ConcordReveal>
-          </div>
-          <p className="tp-footnote">{get("iv_footnote", "*실제 인터뷰를 바탕으로 재구성했습니다")}</p>
-        </div>
-      </section>
 
       {/* ── 이달의 검증 선생님 ── */}
       <section className="sec tp-featured-sec" id="featured" style={{ scrollMarginTop: "80px" }}>
