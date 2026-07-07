@@ -84,8 +84,8 @@ body:has(.lp2-root) footer.site .logo span {
 [data-theme="dark"] .lp2-hero-bg::after { opacity: .4; }
 .lp2-hero-inner { position: relative; z-index: 1; }
 .lp2-hero h1 {
-  font-size: clamp(46px, 7.4vw, 124px); font-weight: 800; letter-spacing: -.04em;
-  line-height: 1.04; margin-top: 26px; max-width: 13ch; color: var(--fg);
+  font-size: clamp(42px, 5.8vw, 92px); font-weight: 800; letter-spacing: -.04em;
+  line-height: 1.04; margin-top: 26px; color: var(--fg);
 }
 .lp2-hero .lp2-lede {
   font-size: clamp(18px, 1.55vw, 25px); color: var(--mut); margin-top: 30px;
@@ -111,7 +111,6 @@ body:has(.lp2-root) footer.site .logo span {
   font-weight: 600;
   backdrop-filter: blur(8px);
 }
-.lp2-cta-note { margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--mut-2); }
 
 /* ── trust bar (post-hero) ── */
 .lp2-trustbar {
@@ -692,20 +691,18 @@ body:has(.lp2-root) footer.site .logo span {
 }
 
 /* ── hero visual (모델 사진 + 목업 카드) ── */
+.lp2-hero-main { position: relative; z-index: 1; }
 .lp2-hero-visual {
   position: relative;
   width: clamp(320px, 32vw, 460px);
 }
 .lp2-hero-model {
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  margin: 0 auto;
-  border-radius: 26px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  box-shadow: var(--shadow-md);
+  width: 150%;
+  margin-left: -50%;
+  aspect-ratio: 5 / 4;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.4) 14%, #000 34%, #000 66%, rgba(0,0,0,.4) 86%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, rgba(0,0,0,.4) 14%, #000 34%, #000 66%, rgba(0,0,0,.4) 86%, transparent 100%);
 }
 
 /* ── consult bridge band (무료 학습컨설팅) ── */

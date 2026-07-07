@@ -38,13 +38,6 @@ const steps = [
   { number: "05", title: "방문 수업 시작", desc: "서울·분당 방문 수업으로 진행하고, 진도·숙제·리포트를 한 흐름으로 관리합니다." },
 ];
 
-const trustBarItems = [
-  "서울·분당 방문 수업",
-  "전담 매니저가 처음부터 끝까지",
-  "학생이 수락해야 수업 시작",
-  "첫 수업 100% 환불",
-];
-
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
 function heroHeadlineWithHl(text: string) {
   const lines = formatCmsMultiline(text).split("\n");
@@ -156,11 +149,56 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
         ];
 
   const kickers = {
-    teachers: getCmsValue("home_labels", "kicker_teachers", "Teachers"),
-    management: getCmsValue("home_labels", "kicker_management", "Learning Care"),
-    process: getCmsValue("home_labels", "kicker_process", "Process"),
-    plans: getCmsValue("home_labels", "kicker_plans", "Plans"),
-    reviews: getCmsValue("home_labels", "kicker_reviews", "Reviews"),
+    teachers: getCmsValue("home_labels", "kicker_teachers", "TEACHERS"),
+    management: getCmsValue("home_labels", "kicker_management", "LEARNING CARE"),
+    process: getCmsValue("home_labels", "kicker_process", "PROCESS"),
+    plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
+    reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
+    results: getCmsValue("home_labels", "kicker_results", "RESULTS"),
+    faq: getCmsValue("home_labels", "kicker_faq", "FAQ"),
+  };
+
+  const trustDefaults = [
+    "서울·분당 방문 수업",
+    "전담 매니저가 처음부터 끝까지",
+    "학생이 수락해야 수업 시작",
+    "첫 수업 100% 환불",
+  ];
+  const trustItems = trustDefaults.flatMap((d, index) => {
+    const n = index + 1;
+    const vis = getCmsValue("trustbar", `item${n}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
+    return [{ n, text: getCmsValue("trustbar", `item${n}`, d) }];
+  });
+
+  const verifyDefaults: [string, string][] = [
+    ["01", "서류·학력 인증"],
+    ["02", "수업 시연"],
+    ["03", "대면 인터뷰"],
+  ];
+  const verifySteps = verifyDefaults.flatMap(([num, label], index) => {
+    const n = index + 1;
+    const vis = getCmsValue("tutors_featured", `verify${n}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
+    return [
+      {
+        n,
+        num: getCmsValue("tutors_featured", `verify${n}_num`, num),
+        label: getCmsValue("tutors_featured", `verify${n}_label`, label),
+      },
+    ];
+  });
+
+  const uiLabels = {
+    faqTitle: getCmsValue("home_labels", "section_title_faq", "자주 묻는 질문"),
+    viewAllTeachers: getCmsValue("home_labels", "cta_view_all_teachers", "선생님 전체 보기 →"),
+    viewAllReviews: getCmsValue("home_labels", "cta_view_all_reviews", "후기 전체 보기 →"),
+    viewAllPricing: getCmsValue("home_labels", "cta_view_all_pricing", "요금 자세히 보기 →"),
+    viewAllFaq: getCmsValue("home_labels", "cta_view_all_faq", "FAQ 전체 보기 →"),
+    featuredCardCta: getCmsValue("home_labels", "featured_card_cta", "빠른 매칭받기"),
+    tierMiddle: getCmsValue("home_labels", "tier_middle", "중등"),
+    tierHigh: getCmsValue("home_labels", "tier_high", "고등"),
+    resultMonthsSuffix: getCmsValue("home_labels", "result_months_suffix", "수강"),
   };
 
   const sectionTitles = {
@@ -207,6 +245,9 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       .slice(0, 3),
     kickers,
     sectionTitles,
+    trustItems,
+    verifySteps,
+    uiLabels,
   };
 }
 
@@ -263,6 +304,9 @@ export function LandingPageV2({
     featuredTutors,
     kickers,
     sectionTitles,
+    trustItems,
+    verifySteps,
+    uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
   const pricingItems = useMemo(
@@ -357,7 +401,6 @@ export function LandingPageV2({
                   </CmsEdit>
                 </a>
               </div>
-              <p className="lp2-cta-note">상담 신청은 30초면 충분합니다</p>
             </div>
 
             <div className="lp2-hero-visual" aria-hidden="true">
@@ -382,10 +425,10 @@ export function LandingPageV2({
       <section className="lp2-trustbar" aria-label="핵심 안내">
         <div className="lp2-wrap">
           <ul className="lp2-trustbar-row reveal">
-            {trustBarItems.map((item) => (
-              <li key={item}>
+            {trustItems.map((item) => (
+              <li key={item.n}>
                 <span className="lp2-trustbar-dot" aria-hidden="true">✓</span>
-                {item}
+                {item.text}
               </li>
             ))}
           </ul>
@@ -525,26 +568,27 @@ export function LandingPageV2({
             <p>{sectionTitles.teachersSubtext}</p>
           </div>
 
-          <div className="lp2-verify-row reveal" aria-label="선발 절차">
-            <span className="lp2-verify-pill">
-              <em>01</em> 서류·학력 인증
-            </span>
-            <span className="lp2-verify-sep" aria-hidden="true">→</span>
-            <span className="lp2-verify-pill">
-              <em>02</em> 수업 시연
-            </span>
-            <span className="lp2-verify-sep" aria-hidden="true">→</span>
-            <span className="lp2-verify-pill">
-              <em>03</em> 대면 인터뷰
-            </span>
-          </div>
+          {verifySteps.length > 0 && (
+            <div className="lp2-verify-row reveal" aria-label="선발 절차">
+              {verifySteps.map((v, index) => (
+                <span key={v.n} style={{ display: "contents" }}>
+                  {index > 0 && (
+                    <span className="lp2-verify-sep" aria-hidden="true">→</span>
+                  )}
+                  <span className="lp2-verify-pill">
+                    <em>{v.num}</em> {v.label}
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="lp2-tpx-grid reveal">
             {featuredTutors.map((card) => (
               <TutorProfileCard
                 key={card.index}
                 card={card}
-                ctaLabel="빠른 매칭받기"
+                ctaLabel={uiLabels.featuredCardCta}
                 onMatch={(i) => void goConsultation(`home_featured_${i}`)}
                 isCenter
               />
@@ -553,7 +597,7 @@ export function LandingPageV2({
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
-              선생님 전체 보기 →
+              {uiLabels.viewAllTeachers}
             </Link>
           </div>
         </div>
@@ -642,7 +686,7 @@ export function LandingPageV2({
       <section id="results" className="lp2-sec lp2-rev-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
-            <span className="lp2-eyebrow">Results</span>
+            <span className="lp2-eyebrow">{kickers.results}</span>
             <h2>
               <CmsEdit active={isEditMode} section="results" cmsKey="section_title" type="text">
                 {getCmsValue("results", "section_title", "결과로 증명합니다")}
@@ -694,9 +738,9 @@ export function LandingPageV2({
                         <span className="lp2-result-months">
                           {isOriginal ? (
                             <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_months`} type="text">
-                              {item.months} 수강
+                              {item.months} {uiLabels.resultMonthsSuffix}
                             </CmsEdit>
-                          ) : `${item.months} 수강`}
+                          ) : `${item.months} ${uiLabels.resultMonthsSuffix}`}
                         </span>
                       </div>
                       <p className="lp2-result-text">
@@ -754,7 +798,7 @@ export function LandingPageV2({
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>
             <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-              후기 전체 보기 →
+              {uiLabels.viewAllReviews}
             </Link>
           </div>
         </div>
@@ -793,7 +837,7 @@ export function LandingPageV2({
 
           <div className="lp2-cta-row" style={{ marginTop: 36 }}>
             <Link href="/pricing" className="lp2-btn lp2-btn-ghost">
-              요금 자세히 보기 →
+              {uiLabels.viewAllPricing}
             </Link>
           </div>
         </div>
@@ -804,8 +848,8 @@ export function LandingPageV2({
         <section id="faq" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
           <div className="lp2-wrap">
             <div className="lp2-sec-head reveal">
-              <span className="lp2-eyebrow">FAQ</span>
-              <h2>자주 묻는 질문</h2>
+              <span className="lp2-eyebrow">{kickers.faq}</span>
+              <h2>{uiLabels.faqTitle}</h2>
             </div>
 
             <div className="lp2-faq-list reveal">
@@ -822,7 +866,7 @@ export function LandingPageV2({
 
             <div style={{ marginTop: 32 }}>
               <Link href="/faq" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-                FAQ 전체 보기 →
+                {uiLabels.viewAllFaq}
               </Link>
             </div>
           </div>
