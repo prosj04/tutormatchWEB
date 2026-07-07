@@ -1089,8 +1089,12 @@ export function AdminCmsPage() {
         ) : null}
       </div>
 
-      <div className="mt-4 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 bg-neutral-10" style={{ height: "72vh", minHeight: "520px" }}>
+      {/* 좌: 미리보기 / 우: 편집 패널 */}
+      <div
+        className="mt-4 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(400px,560px)]"
+        style={{ height: "calc(100vh - 230px)", minHeight: "560px" }}
+      >
+        <div className="min-h-[320px] border-b border-gray-200 bg-neutral-10 lg:min-h-0 lg:border-b-0 lg:border-r">
           <iframe
             ref={iframeRef}
             key={activePage}
@@ -1100,7 +1104,7 @@ export function AdminCmsPage() {
           />
         </div>
 
-        <div className="bg-background p-4">
+        <div className="min-h-0 overflow-y-auto bg-background p-4">
           {loading ? (
             <p className="text-sm text-text-secondary">불러오는 중...</p>
           ) : selectedField ? (
