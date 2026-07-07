@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
+import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 import { SuccessPaymentComplete } from "@/components/success/SuccessPaymentComplete";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { formatKRW } from "@/lib/format-won";
@@ -95,6 +96,9 @@ export default async function SuccessPage({ searchParams }: PageProps) {
                   {s("link_consultation", "상담 신청")}
                 </ConsultationApplyButton>
               </CmsEdit>
+              <KakaoConsultButton variant="add" source="success_page">
+                {s("link_kakao_channel", "카카오톡 채널 추가")}
+              </KakaoConsultButton>
             </div>
           </article>
         </div>
