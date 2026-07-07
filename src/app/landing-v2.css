@@ -818,7 +818,10 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-care-cols { grid-template-columns: 1fr; }
   .lp2-care-mock { max-width: 460px; }
   .lp2-proc-cols { grid-template-columns: 1fr; }
-  .lp2-proc-mock { position: static; max-width: 400px; }
+  /* 모바일: 목업은 아코디언 설명이 대신함 — 위치 추적 transform도 무효 */
+  .lp2-proc-mock { display: none; transform: none !important; }
+  /* 스토리 1·2번: 좁은 화면에선 가로 등장 대신 위로 떠오르기 */
+  .lp2-story-steps.pre .lp2-story-step { transform: translateY(24px); }
   .lp2-nav-links { display: none; }
   .lp2-ghost-link { display: none; }
   .lp2-hamburger { display: flex; }
@@ -841,6 +844,9 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-rev-scroll .lp2-rev-card { flex-basis: 84vw; }
   .lp2-hero h1 { font-size: clamp(32px, 9vw, 44px); max-width: none; }
   .lp2-sec-head { max-width: 100%; }
+  /* 히어로 CTA 두 개는 모바일에서도 나란히 (선택지 병렬 의도 유지) */
+  .lp2-hero .lp2-cta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lp2-hero .lp2-cta-row .lp2-btn { min-width: 0; padding-left: 10px; padding-right: 10px; }
   .lp2-cmp th, .lp2-cmp td { padding: 12px 14px; font-size: 14px; }
 }
 

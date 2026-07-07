@@ -444,7 +444,10 @@ export function LandingPageV2({
                   onMouseEnter={() => setActiveStep(index)}
                 >
                   <summary
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveStep(index); // 터치 기기에서는 탭으로 열기
+                    }}
                     onFocus={() => setActiveStep(index)}
                   >
                     <span className="lp2-proc-n">{step.number}</span>
