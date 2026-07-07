@@ -22,6 +22,7 @@ export async function PublicShell({
     "site_banner",
     "signup_modal",
     "site_header",
+    "sticky_cta",
   ]);
   const showFaqLink = isPublicSectionVisible(siteContent, "faq_page", "show_page", true);
   const showReviewsLink = isPublicSectionVisible(siteContent, "reviews_page", "show_page", true);
@@ -37,7 +38,10 @@ export async function PublicShell({
       />
       {children}
       {showFooter ? <ConcordSiteFooter siteContent={siteContent} /> : null}
-      <StickyConsultCta />
+      <StickyConsultCta
+        copy={siteContent["sticky_cta"] ?? {}}
+        enabled={isPublicSectionVisible(siteContent, "sticky_cta", "bar_visible", true)}
+      />
     </PublicAppProviders>
   );
 }

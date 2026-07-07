@@ -1669,6 +1669,16 @@ export const consultPageDefaults = [
   { section: "consult_page", key: "region_selected_prefix", value: "선택됨:", type: "text", order: 35 },
 ];
 
+/** 하단 고정 CTA 바 기본값 */
+export const stickyCtaDefaults = [
+  { section: "sticky_cta", key: "bar_visible", value: "1", type: "text", order: 1 },
+  { section: "sticky_cta", key: "badge", value: "모집중", type: "text", order: 2 },
+  { section: "sticky_cta", key: "message", value: "이번 달 신규 상담이 얼마 남지 않았어요 · 첫 수업 후 불만족 시 100% 환불", type: "text", order: 3 },
+  { section: "sticky_cta", key: "btn_tutors", value: "선생님 둘러보기", type: "text", order: 4 },
+  { section: "sticky_cta", key: "btn_kakao", value: "카톡 상담", type: "text", order: 5 },
+  { section: "sticky_cta", key: "btn_consult", value: "딱 맞는 선생님 추천받기", type: "text", order: 6 },
+];
+
 /** 사이트 헤더 내비·버튼 라벨 기본값 */
 export const siteHeaderDefaults = [
   { section: "site_header", key: "nav_pricing", value: "요금제", type: "text", order: 1 },
