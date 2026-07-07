@@ -926,7 +926,7 @@ export const homeLabelsDefaults = [
   { section: "home_labels", key: "kicker_process", value: "PROCESS", type: "text", order: 14 },
   { section: "home_labels", key: "kicker_plans", value: "PLANS", type: "text", order: 15 },
   { section: "home_labels", key: "section_title_faq", value: "자주 묻는 질문", type: "text", order: 16 },
-  { section: "home_labels", key: "section_title_reviews", value: "학부모님들의 생생한 이야기를 공개합니다", type: "text", order: 17 },
+  { section: "home_labels", key: "section_title_reviews", value: "왜 학부모님들은 Concord를 선택했을까요?", type: "text", order: 17 },
   { section: "home_labels", key: "kicker_assurance", value: "RESPONSIBILITY", type: "text", order: 18 },
   { section: "home_labels", key: "kicker_numbers", value: "NUMBERS", type: "text", order: 19 },
 ] as const;
@@ -957,7 +957,7 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "stats", key: "stat4_number", value: "4.9", type: "text", order: 9 },
   { section: "stats", key: "stat4_label", value: "상담 평점", type: "text", order: 10 },
   { section: "stats", key: "footnote", value: "2026년 상반기 서비스 운영 데이터 기준", type: "text", order: 11 },
-  { section: "tutors_featured", key: "home_title", value: "이달의 검증 선생님", type: "text", order: 90 },
+  { section: "tutors_featured", key: "home_title", value: "아무 선생님이나\n소개하지 않습니다", type: "text", order: 90 },
   { section: "tutors_featured", key: "home_subtext", value: "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.", type: "text", order: 91 },
 ] as const;
 

@@ -44,9 +44,6 @@ export async function POST(request: Request) {
   if (!isNonEmptyString(name)) {
     return NextResponse.json({ error: "이름을 입력해 주세요." }, { status: 400 });
   }
-  if (!isNonEmptyString(grade)) {
-    return NextResponse.json({ error: "학년을 선택해 주세요." }, { status: 400 });
-  }
   if (!isNonEmptyString(phone)) {
     return NextResponse.json({ error: "전화번호를 입력해 주세요." }, { status: 400 });
   }
@@ -59,21 +56,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "올바른 휴대전화 번호를 입력해 주세요." }, { status: 400 });
   }
 
-  const gender = parseProfileGender(body.gender);
-  if (!gender) {
-    return NextResponse.json({ error: "성별을 선택해 주세요." }, { status: 400 });
-  }
-
-  if (!Array.isArray(subjects) || subjects.length === 0) {
-    return NextResponse.json({ error: "희망 과목을 한 개 이상 선택해 주세요." }, { status: 400 });
-  }
-
-  const subjectStrings = subjects.filter(isNonEmptyString);
-  if (subjectStrings.length !== subjects.length) {
-    return NextResponse.json({ error: "희망 과목을 한 개 이상 선택해 주세요." }, { status: 400 });
-  }
-
+  // 학년·성별·과목·지역은 가입 후 "추가 정보" 단계에서 선택 입력
+  const gender = parseProfileGender(body.gender) ?? undefined;
+  const subjectStrings = Array.isArray(subjects) ? subjects.filter(isNonEmptyString) : [];
   const subjectsCsv = subjectStrings.join(",");
+  const gradeValue = isNonEmptyString(grade) ? grade.trim() : "";
   const guardianPhone = isNonEmptyString(rawGuardianPhone)
     ? normalizePhoneDigits(rawGuardianPhone)
     : undefined;
@@ -120,7 +107,7 @@ export async function POST(request: Request) {
           student: {
             create: {
               name: name.trim(),
-              grade,
+              grade: gradeValue,
               subjects: subjectsCsv,
               phone: phoneDigits,
               guardianPhone,

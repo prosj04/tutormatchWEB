@@ -237,16 +237,16 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       "subtext",
       "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
     ),
-    management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n아실 수 있습니다"),
+    management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n알게 되실 겁니다"),
     process: getCmsValue("features", "section_title", "Concord는 이렇게 진행됩니다"),
     processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다."),
-    teachers: getCmsMultiline("tutors_featured", "home_title", "선생님을 고르지 마세요,\n추천받으세요"),
+    teachers: getCmsMultiline("tutors_featured", "home_title", "아무 선생님이나\n소개하지 않습니다"),
     teachersSubtext: getCmsValue(
       "tutors_featured",
       "home_subtext",
       "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 편하게 신청해 보세요 — 매칭은 매니저가 도와드려요.",
     ),
-    reviews: getCmsValue("home_labels", "section_title_reviews", "학부모님들의 생생한 이야기를 공개합니다"),
+    reviews: getCmsValue("home_labels", "section_title_reviews", "왜 학부모님들은 Concord를 선택했을까요?"),
     plans: getCmsMultiline("home_page", "plans_title", "가격까지 숨김없이 공개합니다"),
     plansSubtext: getCmsValue(
       "home_page",
@@ -412,7 +412,7 @@ export function LandingPageV2({
                   {getCmsMultiline(
                     "hero",
                     "subtext",
-                    "2학기를 뒤집는 여름방학, 잘 맞는 선생님에서 시작됩니다.",
+                    "잘 맞는 선생님을 만나면, 아이는 스스로 공부하게 될 겁니다.",
                   )}
                 </CmsEdit>
               </p>
@@ -701,6 +701,10 @@ export function LandingPageV2({
                   <div className="lp2-bubble teacher">
                     <span className="who">선생님 · 아침 7:40</span>
                     <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
+                  </div>
+                  <div className="lp2-bubble student">
+                    <span className="who">학생 · 아침 8:05</span>
+                    <p>풀이 보니까 바로 이해됐어요! 목요일에 봬요.</p>
                   </div>
                 </div>
               </div>

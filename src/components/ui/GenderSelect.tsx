@@ -7,13 +7,14 @@ type GenderSelectProps = {
   onChange: (value: ProfileGender) => void;
   error?: string;
   className?: string;
+  size?: "sm" | "md";
 };
 
-export function GenderSelect({ value, onChange, error, className = "" }: GenderSelectProps) {
+export function GenderSelect({ value, onChange, error, className = "", size = "md" }: GenderSelectProps) {
   return (
     <div className={`field${className ? ` ${className}` : ""}`}>
       <label>성별</label>
-      <div className="seg-tabs" style={{ marginTop: 8 }}>
+      <div className={size === "sm" ? "seg-tabs sm" : "seg-tabs"} style={{ marginTop: 8 }}>
         {(
           [
             { id: "MALE" as const, label: "남" },

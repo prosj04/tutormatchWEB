@@ -110,7 +110,7 @@ const heroFields: TextFieldConfig[] = [
     label: "설명 문구",
     section: "hero",
     keyName: "subtext",
-    defaultValue: "전문 매니저가 직접 상담하고, 우리 아이에게 꼭 맞는 선생님을 찾아드립니다.",
+    defaultValue: "잘 맞는 선생님을 만나면, 아이는 스스로 공부하게 될 겁니다.",
     kind: "textarea",
     rows: 2,
   },

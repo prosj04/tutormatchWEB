@@ -477,21 +477,27 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 }
 .region-tab.on { border-color: var(--acc); color: var(--acc-text); background: rgba(var(--acc-rgb), .08); }
 .region-picker-body { display: flex; flex-direction: column; gap: 8px; }
-.region-acc-head {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px;
-  background: var(--panel); cursor: pointer; font-size: 14.5px; color: var(--mut);
-  transition: border-color .15s;
+.region-combo { position: relative; }
+.region-combo-label {
+  display: block; margin-bottom: 5px; font-size: 12.5px; font-weight: 700; color: var(--mut);
 }
-.region-acc-head strong { color: var(--fg); font-weight: 700; }
-.region-acc-head.open { border-color: var(--acc); }
-.region-acc-head.open span { color: var(--acc-text); }
-.region-acc-body { display: flex; flex-direction: column; gap: 6px; }
-.region-none-btn {
-  align-self: flex-start; padding: 7px 12px; border: 1px dashed var(--line); border-radius: 999px;
-  background: none; font-size: 13.5px; color: var(--mut); cursor: pointer;
+.region-combo.open .region-combo-label { color: var(--acc-text); }
+.region-combo-caret {
+  position: absolute; right: 14px; bottom: 13px; font-size: 12px; color: var(--mut);
+  pointer-events: none; transition: transform .15s;
 }
-.region-none-btn:hover { border-color: var(--acc); color: var(--acc-text); }
+.region-combo.open .region-combo-caret { transform: rotate(180deg); color: var(--acc-text); }
+.region-combo.open input { border-color: var(--acc); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.region-combo .region-options {
+  margin-top: -1px; border-color: var(--acc);
+  border-top-left-radius: 0; border-top-right-radius: 0;
+}
+.region-option-none {
+  color: var(--mut) !important; font-weight: 600;
+  border-bottom: 1px dashed var(--line); border-radius: 0 !important;
+}
+.seg-tabs.sm { max-width: 132px; padding: 3px; }
+.seg-tabs.sm button { padding: 6px 8px; font-size: 13px; }
 .region-picker-body input {
   width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px;
   background: var(--panel); color: var(--fg); font-size: 15px;

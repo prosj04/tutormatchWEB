@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   SERVICE_REGION_GROUPS,
@@ -10,8 +10,91 @@ import {
   matchesRegionQuery,
 } from "@/lib/service-regions";
 
+const NONE_STATION = "없음";
+
+function ComboField({
+  label,
+  placeholder,
+  selected,
+  options,
+  onSelect,
+  pinnedOption,
+  autoOpen,
+}: {
+  label: string;
+  placeholder: string;
+  selected: string;
+  options: readonly string[];
+  onSelect: (value: string) => void;
+  pinnedOption?: string;
+  autoOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(autoOpen ?? false);
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filtered = useMemo(
+    () => options.filter((u) => matchesRegionQuery(u, query)).slice(0, 40),
+    [options, query],
+  );
+
+  const pick = (value: string) => {
+    onSelect(value);
+    setQuery("");
+    setOpen(false);
+    inputRef.current?.blur();
+  };
+
+  return (
+    <div className={`region-combo${open ? " open" : ""}`}>
+      <span className="region-combo-label">{label}</span>
+      <input
+        ref={inputRef}
+        type="text"
+        value={open ? query : selected}
+        placeholder={selected || placeholder}
+        onFocus={() => {
+          setQuery("");
+          setOpen(true);
+        }}
+        onClick={() => setOpen(true)}
+        onChange={(e) => setQuery(e.target.value)}
+        role="combobox"
+        aria-label={label}
+        aria-expanded={open}
+        aria-controls=""
+        aria-autocomplete="list"
+      />
+      <span className="region-combo-caret" aria-hidden="true">▾</span>
+      {open ? (
+        <ul className="region-options" role="listbox">
+          {pinnedOption ? (
+            <li key="__none__">
+              <button type="button" className="region-option-none" onClick={() => pick(pinnedOption)}>
+                {pinnedOption}
+              </button>
+            </li>
+          ) : null}
+          {filtered.length === 0 ? (
+            <li className="region-empty">검색 결과가 없습니다</li>
+          ) : (
+            filtered.map((u) => (
+              <li key={u}>
+                <button type="button" onClick={() => pick(u)}>
+                  {u}
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 /**
- * 지역 선택: 서울|동탄 탭 → 아코디언(서울: 구 → 인접 지하철역(없음 가능), 동탄: 법정동).
+ * 지역 선택: 서울|동탄 탭 → 콤보박스(누르면 목록이 아래로 펼쳐지고 입력하면 실시간 필터).
+ * 서울: 구 → 인접 지하철역(없음 선택 가능), 동탄: 법정동.
  * value 형식: "서울 강남구 · 역삼역" / "서울 강남구" / "동탄 반송동"
  */
 export function RegionPicker({
@@ -24,56 +107,32 @@ export function RegionPicker({
   const [groupId, setGroupId] = useState<string>("");
   const [district, setDistrict] = useState("");
   const [station, setStation] = useState("");
-  const [openStep, setOpenStep] = useState<"district" | "station" | null>(null);
-  const [query, setQuery] = useState("");
 
   const group = SERVICE_REGION_GROUPS.find((g) => g.id === groupId);
   const isSeoul = groupId === "seoul";
-
-  const options = useMemo(() => {
-    if (openStep === "district" && group) {
-      return group.units.filter((u) => matchesRegionQuery(u, query)).slice(0, 40);
-    }
-    if (openStep === "station") {
-      return SEOUL_STATION_OPTIONS.filter((u) => matchesRegionQuery(u, query)).slice(0, 40);
-    }
-    return [];
-  }, [group, openStep, query]);
 
   const selectTab = (id: string) => {
     setGroupId(id);
     setDistrict("");
     setStation("");
-    setQuery("");
-    setOpenStep("district");
     onChange("");
-  };
-
-  const openAccordion = (step: "district" | "station") => {
-    setQuery("");
-    setOpenStep((prev) => (prev === step ? null : step));
   };
 
   const selectDistrict = (unit: string) => {
     if (!group) return;
     setDistrict(unit);
-    setStation("");
-    setQuery("");
-    if (isSeoul) {
-      setOpenStep("station");
-      onChange("");
-    } else {
-      setOpenStep(null);
-      onChange(formatRegion(group.label, unit));
-    }
+    setStation(NONE_STATION);
+    onChange(formatRegion(group.label, unit));
   };
 
-  const selectStation = (name: string | null) => {
+  const selectStation = (name: string) => {
     if (!group || !district) return;
-    setStation(name ?? "없음");
-    setQuery("");
-    setOpenStep(null);
-    onChange(formatRegion(group.label, district, name ?? undefined));
+    setStation(name);
+    onChange(
+      name === NONE_STATION
+        ? formatRegion(group.label, district)
+        : formatRegion(group.label, district, name),
+    );
   };
 
   return (
@@ -93,85 +152,26 @@ export function RegionPicker({
 
       {group ? (
         <div className="region-picker-body">
-          <button
-            type="button"
-            className={`region-acc-head${openStep === "district" ? " open" : ""}`}
-            onClick={() => openAccordion("district")}
-            aria-expanded={openStep === "district"}
-          >
-            <span>{group.unitLabel} 선택</span>
-            <strong>{district || "—"}</strong>
-          </button>
-          {openStep === "district" && (
-            <div className="region-acc-body">
-              <input
-                type="text"
-                value={query}
-                placeholder={group.placeholder}
-                onChange={(e) => setQuery(e.target.value)}
-                aria-label={`${group.label} ${group.unitLabel} 검색`}
-              />
-              <ul className="region-options" role="listbox">
-                {options.length === 0 ? (
-                  <li className="region-empty">검색 결과가 없습니다</li>
-                ) : (
-                  options.map((u) => (
-                    <li key={u}>
-                      <button type="button" onClick={() => selectDistrict(u)}>
-                        {u}
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
-          )}
-
+          <ComboField
+            key={`${groupId}-district`}
+            label={`${group.unitLabel} 선택`}
+            placeholder={group.placeholder}
+            selected={district}
+            options={group.units}
+            onSelect={selectDistrict}
+            autoOpen
+          />
           {isSeoul && district ? (
-            <>
-              <button
-                type="button"
-                className={`region-acc-head${openStep === "station" ? " open" : ""}`}
-                onClick={() => openAccordion("station")}
-                aria-expanded={openStep === "station"}
-              >
-                <span>인접 지하철역</span>
-                <strong>{station || "—"}</strong>
-              </button>
-              {openStep === "station" && (
-                <div className="region-acc-body">
-                  <input
-                    type="text"
-                    value={query}
-                    placeholder={STATION_PLACEHOLDER}
-                    onChange={(e) => setQuery(e.target.value)}
-                    aria-label="인접 지하철역 검색"
-                  />
-                  <button
-                    type="button"
-                    className="region-none-btn"
-                    onClick={() => selectStation(null)}
-                  >
-                    인접 지하철역 없음
-                  </button>
-                  <ul className="region-options" role="listbox">
-                    {options.length === 0 ? (
-                      <li className="region-empty">검색 결과가 없습니다</li>
-                    ) : (
-                      options.map((u) => (
-                        <li key={u}>
-                          <button type="button" onClick={() => selectStation(u)}>
-                            {u}
-                          </button>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
-              )}
-            </>
+            <ComboField
+              key={`${district}-station`}
+              label="인접 지하철역"
+              placeholder={STATION_PLACEHOLDER}
+              selected={station}
+              options={SEOUL_STATION_OPTIONS}
+              onSelect={selectStation}
+              pinnedOption={NONE_STATION}
+            />
           ) : null}
-
           {value ? <p className="region-selected">선택됨: {value}</p> : null}
         </div>
       ) : null}

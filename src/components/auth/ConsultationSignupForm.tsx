@@ -20,10 +20,6 @@ type FieldKey =
   | "phone"
   | "password"
   | "passwordConfirm"
-  | "grade"
-  | "subjects"
-  | "gender"
-  | "region"
   | "terms"
   | "guardianConsent";
 
@@ -40,6 +36,7 @@ export function ConsultationSignupForm({
   instantEnroll = false,
 }: ConsultationSignupFormProps) {
   const router = useRouter();
+  const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -72,14 +69,16 @@ export function ConsultationSignupForm({
     else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
     if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
     else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
-    if (!grade) next.grade = "학년을 선택해 주세요.";
-    if (!gender) next.gender = "성별을 선택해 주세요.";
-    if (!region) next.region = "거주 지역을 선택해 주세요.";
-    if (selectedSubjects.length === 0) next.subjects = "희망 과목을 한 개 이상 선택해 주세요.";
     if (!termsAgreed) next.terms = "이용약관과 개인정보처리방침에 동의해 주세요.";
     if (!guardianConsent) next.guardianConsent = "보호자 동의가 필요합니다.";
     setFieldErrors(next);
     return Object.keys(next).length === 0;
+  }
+
+  function goNext() {
+    const visitQuery = instantEnroll ? "?visit=1" : "";
+    onSuccess?.();
+    router.push(`/dashboard/consultation${visitQuery}`);
   }
 
   async function handleSubmit() {
@@ -93,11 +92,7 @@ export function ConsultationSignupForm({
         body: JSON.stringify({
           name: name.trim(),
           password,
-          grade,
-          gender,
-          subjects: selectedSubjects,
           phone: phone.trim(),
-          region,
           instantEnroll,
           guardianConsent: true,
         }),
@@ -128,12 +123,105 @@ export function ConsultationSignupForm({
         router.push("/login");
         return;
       }
-      onSuccess?.();
-      const visitQuery = instantEnroll ? "?visit=1" : "";
-      router.push(`/dashboard/consultation${visitQuery}`);
+      setStep(2);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleExtraSave() {
+    setLoading(true);
+    try {
+      await fetch("/api/student/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          grade: grade || undefined,
+          gender: gender || undefined,
+          region: region || undefined,
+          subjects: selectedSubjects.length > 0 ? selectedSubjects : undefined,
+        }),
+      });
+    } catch {
+      // 선택 정보라 저장 실패해도 흐름을 막지 않는다
+    } finally {
+      setLoading(false);
+      goNext();
+    }
+  }
+
+  if (step === 2) {
+    return (
+      <div>
+        <div className="mb-6" style={{ paddingRight: 36 }}>
+          <p className="eyebrow">Consultation</p>
+          <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
+            상담 신청 완료
+          </h2>
+          <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
+            추가 정보를 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요. (선택사항)
+          </p>
+        </div>
+        <div className="space-y-5">
+          <div className="flex items-end gap-4">
+            <GenderSelect value={gender} onChange={setGender} size="sm" className="shrink-0" />
+            <div className="field" style={{ flex: 1 }}>
+              <label htmlFor="reg-grade">학년</label>
+              <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
+                <option value="">학년 선택</option>
+                {STUDENT_GRADES.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="field">
+            <span>거주 지역</span>
+            <div style={{ marginTop: 8 }}>
+              <RegionPicker value={region} onChange={setRegion} />
+            </div>
+          </div>
+          <div className="field">
+            <span>희망 과목</span>
+            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {SUBJECTS.map((s) => {
+                const on = selectedSubjects.includes(s);
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => toggleSubject(s)}
+                    className={on ? "chip-f on" : "chip-f"}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => void handleExtraSave()}
+          className="btn btn-acc btn-block"
+          style={{ marginTop: 28 }}
+        >
+          {loading ? "저장 중…" : "저장하고 계속"}
+        </button>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={goNext}
+          className="btn btn-ghost btn-block"
+          style={{ marginTop: 10 }}
+        >
+          건너뛰기
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -146,7 +234,7 @@ export function ConsultationSignupForm({
         <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
           {instantEnroll
             ? "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다."
-            : "학년과 희망 과목을 입력하시면 매니저가 연락드립니다."}
+            : "이름과 연락처만 남기면 매니저가 연락드립니다."}
         </p>
       </div>
       <div className="space-y-5">
@@ -198,44 +286,6 @@ export function ConsultationSignupForm({
           {fieldErrors.passwordConfirm ? (
             <p className="field-error">{fieldErrors.passwordConfirm}</p>
           ) : null}
-        </div>
-        <GenderSelect value={gender} onChange={setGender} error={fieldErrors.gender} />
-        <div className="field">
-          <label htmlFor="reg-grade">학년</label>
-          <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
-            {STUDENT_GRADES.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
-          {fieldErrors.grade ? <p className="field-error">{fieldErrors.grade}</p> : null}
-        </div>
-        <div className="field">
-          <span>거주 지역</span>
-          <div style={{ marginTop: 8 }}>
-            <RegionPicker value={region} onChange={setRegion} />
-          </div>
-          {fieldErrors.region ? <p className="field-error">{fieldErrors.region}</p> : null}
-        </div>
-        <div className="field">
-          <span>희망 과목</span>
-          <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {SUBJECTS.map((s) => {
-              const on = selectedSubjects.includes(s);
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => toggleSubject(s)}
-                  className={on ? "chip-f on" : "chip-f"}
-                >
-                  {s}
-                </button>
-              );
-            })}
-          </div>
-          {fieldErrors.subjects ? <p className="field-error">{fieldErrors.subjects}</p> : null}
         </div>
         <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
           <input
