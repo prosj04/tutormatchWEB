@@ -8,9 +8,9 @@
 
 /* ── 다크 히어로 (--fg 반전, 홈 환불 밴드와 동일 방식) ── */
 .tp-hero { position: relative; overflow: hidden; background: var(--fg); color: var(--bg); }
-.tp-hero-media { position: absolute; inset: 0; opacity: .34; }
-.tp-hero-media img { filter: saturate(.85); }
-.tp-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.45)); pointer-events: none; }
+.tp-hero-media { position: absolute; inset: 0; opacity: .56; }
+.tp-hero-media img { filter: saturate(.92); }
+.tp-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.28) 45%, rgba(0,0,0,.55)); pointer-events: none; }
 .tp-hero-inner { position: relative; z-index: 1; text-align: center; padding-top: clamp(72px, 9vw, 140px); padding-bottom: clamp(72px, 9vw, 140px); }
 .tp-hero-inner h1 { font-size: clamp(30px, 4.4vw, 56px); font-weight: 900; letter-spacing: -.035em; line-height: 1.16; color: var(--bg); }
 .tp-hero-sub { margin-top: 16px; font-size: clamp(15px, 1.4vw, 18px); color: var(--bg); opacity: .78; }
