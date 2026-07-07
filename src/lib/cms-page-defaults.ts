@@ -699,16 +699,6 @@ export const tutorsBenchmarkDefaults = [
   { section: "tutors_featured", key: "stat3_number", value: "47%", type: "text", order: 114 },
   { section: "tutors_featured", key: "stat3_label", value: "선발 통과율", type: "text", order: 115 },
   { section: "tutors_featured", key: "stats_footnote", value: "* Concord 운영 데이터 기준", type: "text", order: 116 },
-  { section: "tutors_featured", key: "iv_title", value: "잘 맞는 선생님을 만나면\n공부 전략이 달라집니다", type: "text", order: 120 },
-  { section: "tutors_featured", key: "iv_student_label", value: "이런 수업 원해요", type: "text", order: 121 },
-  { section: "tutors_featured", key: "iv_student_quote", value: "“강압적인 학원 수업에 지쳤어요.\n제 속도에 맞춰 다시 시작하고 싶어요”", type: "text", order: 122 },
-  { section: "tutors_featured", key: "iv_student_tags", value: "#기초부터\n#공부법조언\n#차분한설명", type: "text", order: 123 },
-  { section: "tutors_featured", key: "iv_student_image", value: "/images/placeholders/student-interview.png", type: "image", order: 124 },
-  { section: "tutors_featured", key: "iv_teacher_label", value: "이런 수업 잘해요", type: "text", order: 125 },
-  { section: "tutors_featured", key: "iv_teacher_quote", value: "“칭찬으로 학생이 스스로\n공부하게 만듭니다”", type: "text", order: 126 },
-  { section: "tutors_featured", key: "iv_teacher_tags", value: "#기초부터\n#동기부여\n#공부법전수", type: "text", order: 127 },
-  { section: "tutors_featured", key: "iv_teacher_image", value: "/images/placeholders/teacher-interview.png", type: "image", order: 128 },
-  { section: "tutors_featured", key: "iv_footnote", value: "*실제 인터뷰를 바탕으로 재구성했습니다", type: "text", order: 129 },
   { section: "tutors_featured", key: "why_title", value: "Concord 선생님이\n특별한 이유 3가지", type: "text", order: 130 },
   { section: "tutors_featured", key: "why1_q", value: "다 같은 명문대 출신 아닌가요?", type: "text", order: 131 },
   { section: "tutors_featured", key: "why1_a", value: "같은 학벌이어도 다릅니다", type: "text", order: 132 },
@@ -722,10 +712,9 @@ export const tutorsBenchmarkDefaults = [
   { section: "tutors_featured", key: "rematch_title", value: "선생님이 마음에 안 들면 어떡하죠?", type: "text", order: 140 },
   { section: "tutors_featured", key: "rematch_subtext", value: "마음에 들 때까지 선생님을 만나보세요. 변경 비용은 0원입니다.", type: "text", order: 141 },
   { section: "tutors_featured", key: "rematch_cta", value: "맞춤 선생님 제안 받기", type: "text", order: 142 },
-  { section: "tutors_featured", key: "price_title", value: "맞춤수업부터 관리까지 이 모든 게", type: "text", order: 150 },
-  { section: "tutors_featured", key: "price_value", value: "월 38만원~", type: "text", order: 151 },
-  { section: "tutors_featured", key: "price_subtext", value: "상담 신청은 30초면 충분합니다. 우리 아이의 인생 선생님을 찾아드립니다.", type: "text", order: 152 },
-  { section: "tutors_featured", key: "price_cta", value: "무료 상담 신청", type: "text", order: 153 },
+  { section: "tutors_featured", key: "price_kicker", value: "PLANS", type: "text", order: 149 },
+  { section: "tutors_featured", key: "price_title", value: "맞춤수업부터 관리까지, 한 번에", type: "text", order: 150 },
+  { section: "tutors_featured", key: "price_subtext", value: "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 상담 신청은 30초면 충분합니다.", type: "text", order: 152 },
   { section: "tutors_proof", key: "section_title", value: "학원에서는 성적이 안 올랐다면?\nConcord 학생들은 지금도 오르고 있습니다", type: "text", order: 1 },
   { section: "tutors_proof", key: "section_footnote", value: "* 학부모·학생 동의를 받아 게재한 사례입니다", type: "text", order: 2 },
   ...[
@@ -952,7 +941,6 @@ export const homeBenchmarkSectionsDefaults = [
   { section: "stats", key: "footnote", value: "* 서비스 운영 데이터 기준", type: "text", order: 11 },
   { section: "tutors_featured", key: "home_title", value: "이달의 검증 선생님", type: "text", order: 90 },
   { section: "tutors_featured", key: "home_subtext", value: "지원자 절반이 탈락하는 선발을 통과한 선생님만 소개합니다. 마음에 드는 선생님으로 상담을 신청하시면 매니저가 매칭을 도와드립니다.", type: "text", order: 91 },
-  { section: "home_page", key: "pricing_anchor_title", value: "맞춤수업부터 관리까지, 이 모든 게", type: "text", order: 6 },
 ] as const;
 
 const COMPARE_SEED_ROWS = [
@@ -990,16 +978,14 @@ export const compareDefaults = [
 export const homePageVisibilityDefaults = [
   { section: "home_page", key: "show_faq_section", value: "0", type: "text", order: 0 },
   { section: "home_page", key: "show_reviews_section", value: "1", type: "text", order: 1 },
-  { section: "home_page", key: "pricing_kicker", value: "PRICE", type: "text", order: 2 },
-  { section: "home_page", key: "pricing_title", value: "1:1 맞춤 과외,\n월 38만원부터", type: "text", order: 3 },
+  { section: "home_page", key: "plans_title", value: "포함된 걸 먼저 보고 결정하세요", type: "text", order: 3 },
   {
     section: "home_page",
-    key: "pricing_subtext",
-    value: "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 첫 배정 선생님이 맞지 않으면 추가 비용 없이 재매칭합니다.",
+    key: "plans_subtext",
+    value: "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
     type: "text",
     order: 4,
   },
-  { section: "home_page", key: "pricing_cta", value: "요금제 더보기", type: "text", order: 5 },
 ] as const;
 
 /** FAQ·후기·로그인·결제 등 공개 페이지 고정 영역 (항목 본문은 DB 테이블) */

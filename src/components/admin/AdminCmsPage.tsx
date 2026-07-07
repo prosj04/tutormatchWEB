@@ -246,24 +246,23 @@ const pricingHeaderFields: TextFieldConfig[] = [
 ];
 
 const homePricingFields: TextFieldConfig[] = [
-  { label: "홈 섹션 라벨", section: "home_page", keyName: "pricing_kicker", defaultValue: "PRICE" },
+  { label: "홈 섹션 라벨", section: "home_labels", keyName: "kicker_plans", defaultValue: "PLANS" },
   {
     label: "홈 섹션 제목",
     section: "home_page",
-    keyName: "pricing_title",
-    defaultValue: "1:1 맞춤 과외,\n월 38만원부터",
+    keyName: "plans_title",
+    defaultValue: "포함된 걸 먼저 보고 결정하세요",
     kind: "textarea",
     rows: 2,
   },
   {
     label: "홈 섹션 설명",
     section: "home_page",
-    keyName: "pricing_subtext",
-    defaultValue: "1과목·2과목(선생님 2명) 패키지는 요금제 페이지에서 확인하세요.",
+    keyName: "plans_subtext",
+    defaultValue: "학습 리포트·매니저 관리·강사 첨삭이 모든 플랜에 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드립니다.",
     kind: "textarea",
     rows: 3,
   },
-  { label: "홈 섹션 버튼", section: "home_page", keyName: "pricing_cta", defaultValue: "요금제 더보기" },
 ];
 
 function pricingSlotInnerFields(
