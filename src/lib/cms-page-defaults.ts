@@ -976,7 +976,7 @@ export const compareDefaults = [
 
 /** 홈 FAQ·후기·요금제 섹션 기본값 */
 export const homePageVisibilityDefaults = [
-  { section: "home_page", key: "show_faq_section", value: "0", type: "text", order: 0 },
+  { section: "home_page", key: "show_faq_section", value: "1", type: "text", order: 0 },
   { section: "home_page", key: "show_reviews_section", value: "1", type: "text", order: 1 },
   { section: "home_page", key: "plans_title", value: "포함된 걸 먼저 보고 결정하세요", type: "text", order: 3 },
   {
@@ -1594,4 +1594,14 @@ export const hallOfFameDefaults = [
     { section: "hall", key: `hall${i + 1}_title`, value: title, type: "text", order: 12 + i * 4 },
     { section: "hall", key: `hall${i + 1}_sub`, value: sub, type: "text", order: 13 + i * 4 },
   ]),
+];
+
+/** 공개 상담신청(/consult) 기본값 — 어드민 편집 가능하도록 등록 */
+export const consultPageDefaults = [
+  { section: "consult_page", key: "headline", value: "상담 신청만 해도 학습 전문가의 1:1 학습진단 제공", type: "text", order: 1 },
+  { section: "consult_page", key: "subtext", value: "정확한 상담 정보를 입력해 주세요.", type: "text", order: 2 },
+  { section: "consult_page", key: "benefit_1", value: "무료 학습진단 리포트", type: "text", order: 3 },
+  { section: "consult_page", key: "benefit_2", value: "전담 매니저 1:1 상담", type: "text", order: 4 },
+  { section: "consult_page", key: "benefit_3", value: "첫 수업 100% 환불 보장", type: "text", order: 5 },
+  { section: "consult_page", key: "phone_notice", value: "*신청 후 1영업일 내에 담당 매니저가 연락드립니다.", type: "text", order: 6 },
 ];
