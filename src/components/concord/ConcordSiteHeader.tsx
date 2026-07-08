@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import { useDesignTheme } from "@/hooks/useDesignTheme";
+import { parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { portalHomeHref } from "@/lib/portal-roles";
 
 import { ConcordMoonIcon, ConcordSunIcon } from "./ConcordMoonIcon";
@@ -53,6 +54,7 @@ export function ConcordSiteHeader({
   const { data: session, status } = useSession();
   const { color, toggleMode, setColor } = useDesignTheme();
   const [open, setOpen] = useState(false);
+  const showThemePicker = parseCmsVisibility(navCopy["show_theme_picker"], false);
 
   const logoHref = portalHomeHref(session?.user?.role);
   const role = session?.user?.role;
@@ -125,26 +127,28 @@ export function ConcordSiteHeader({
             ))}
           </nav>
           <div className="nav-right">
-            <div className="seg" role="group" aria-label="색 테마 선택">
-              <button
-                type="button"
-                className="g"
-                aria-label="그린 테마"
-                aria-pressed={color === "green"}
-                onClick={() => setColor("green")}
-              >
-                <span className="dot" />
-              </button>
-              <button
-                type="button"
-                className="b"
-                aria-label="블루 테마"
-                aria-pressed={color === "blue"}
-                onClick={() => setColor("blue")}
-              >
-                <span className="dot" />
-              </button>
-            </div>
+            {showThemePicker ? (
+              <div className="seg" role="group" aria-label="색 테마 선택">
+                <button
+                  type="button"
+                  className="g"
+                  aria-label="그린 테마"
+                  aria-pressed={color === "green"}
+                  onClick={() => setColor("green")}
+                >
+                  <span className="dot" />
+                </button>
+                <button
+                  type="button"
+                  className="b"
+                  aria-label="블루 테마"
+                  aria-pressed={color === "blue"}
+                  onClick={() => setColor("blue")}
+                >
+                  <span className="dot" />
+                </button>
+              </div>
+            ) : null}
             <button
               type="button"
               className="theme-toggle"
@@ -240,26 +244,28 @@ export function ConcordSiteHeader({
             <div className="mobile-theme">
               <span className="mobile-theme-label">테마</span>
               <div className="mobile-theme-controls">
-                <div className="seg" role="group" aria-label="색 테마 선택">
-                  <button
-                    type="button"
-                    className="g"
-                    aria-label="그린 테마"
-                    aria-pressed={color === "green"}
-                    onClick={() => setColor("green")}
-                  >
-                    <span className="dot" />
-                  </button>
-                  <button
-                    type="button"
-                    className="b"
-                    aria-label="블루 테마"
-                    aria-pressed={color === "blue"}
-                    onClick={() => setColor("blue")}
-                  >
-                    <span className="dot" />
-                  </button>
-                </div>
+                {showThemePicker ? (
+                  <div className="seg" role="group" aria-label="색 테마 선택">
+                    <button
+                      type="button"
+                      className="g"
+                      aria-label="그린 테마"
+                      aria-pressed={color === "green"}
+                      onClick={() => setColor("green")}
+                    >
+                      <span className="dot" />
+                    </button>
+                    <button
+                      type="button"
+                      className="b"
+                      aria-label="블루 테마"
+                      aria-pressed={color === "blue"}
+                      onClick={() => setColor("blue")}
+                    >
+                      <span className="dot" />
+                    </button>
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   className="theme-toggle"

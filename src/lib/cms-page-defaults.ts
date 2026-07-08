@@ -1752,6 +1752,7 @@ export const siteHeaderDefaults = [
   { section: "site_header", key: "btn_login", value: "로그인", type: "text", order: 7 },
   { section: "site_header", key: "btn_logout", value: "로그아웃", type: "text", order: 8 },
   { section: "site_header", key: "btn_consult", value: "무료 상담", type: "text", order: 9 },
+  { section: "site_header", key: "show_theme_picker", value: "0", type: "text", order: 10 },
 ];
 
 /** 상담 신청(가입) 모달 문구 기본값 */
