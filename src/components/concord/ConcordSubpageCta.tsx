@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { getCmsSectionValue, parseCmsVisibility } from "@/lib/cms-page-defaults";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -79,7 +78,6 @@ export function ConcordSubpageCta({
             <ConsultationApplyButton className="btn btn-acc btn-lg" source={source}>
               {wrap("button", resolvedButton)}
             </ConsultationApplyButton>
-            <KakaoConsultButton source={source} className="kakao-btn" />
           </div>
         </ConcordReveal>
       </div>

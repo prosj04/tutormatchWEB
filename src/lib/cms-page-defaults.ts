@@ -1692,7 +1692,7 @@ export const signupModalDefaults = [
   { section: "signup_modal", key: "subtext", value: "이름과 연락처만 남기면 매니저가 연락드립니다.", type: "text", order: 2 },
   { section: "signup_modal", key: "subtext_instant", value: "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다.", type: "text", order: 3 },
   { section: "signup_modal", key: "label_name", value: "이름", type: "text", order: 4 },
-  { section: "signup_modal", key: "label_phone", value: "전화번호", type: "text", order: 5 },
+  { section: "signup_modal", key: "label_phone", value: "학생 연락처", type: "text", order: 5 },
   { section: "signup_modal", key: "label_password", value: "비밀번호", type: "text", order: 6 },
   { section: "signup_modal", key: "label_password_confirm", value: "비밀번호 확인", type: "text", order: 7 },
   { section: "signup_modal", key: "guardian_consent_text", value: "만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.", type: "text", order: 8 },
@@ -1713,6 +1713,7 @@ export const signupModalDefaults = [
   { section: "signup_modal", key: "region_none_label", value: "없음", type: "text", order: 23 },
   { section: "signup_modal", key: "region_empty_text", value: "검색 결과가 없습니다", type: "text", order: 24 },
   { section: "signup_modal", key: "region_selected_prefix", value: "선택됨:", type: "text", order: 25 },
+  { section: "signup_modal", key: "label_guardian_phone", value: "학부모 연락처", type: "text", order: 26 },
 ];
 
 /** /reviews 섹션 보임/숨김 토글 기본값 */

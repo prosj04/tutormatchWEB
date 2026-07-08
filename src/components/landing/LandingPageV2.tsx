@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type MouseEvent as ReactMouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
@@ -281,17 +281,43 @@ export function LandingPageV2({
   useReveal();
   const goConsultation = useConsultationCta();
   const [tier, setTier] = usePricingSchoolTier();
-  const [activeStep, setActiveStep] = useState(0); // 우측 목업 + 아코디언 (호버)
+  const [activeStep, setActiveStep] = useState(0); // 우측 목업 (호버) + 아코디언
   const procListRef = useRef<HTMLDivElement | null>(null);
+  const procSecRef = useRef<HTMLElement | null>(null);
+  const procMockRef = useRef<HTMLDivElement | null>(null);
   const [mockY, setMockY] = useState(0);
+  const [mockVisible, setMockVisible] = useState(false);
 
-  useEffect(() => {
-    const list = procListRef.current;
-    if (!list) return;
-    const item = list.children[activeStep] as HTMLElement | undefined;
-    if (!item) return;
-    setMockY(item.getBoundingClientRect().top - list.getBoundingClientRect().top);
-  }, [activeStep]);
+  // 목업 박스를 커서 위치에 띄우되 Process 섹션 경계 안으로 클램프한다.
+  const positionMock = (clientY: number) => {
+    const sec = procSecRef.current;
+    const mock = procMockRef.current;
+    if (!sec || !mock) return;
+    const secRect = sec.getBoundingClientRect();
+    const h = mock.offsetHeight;
+    // 현재 transform(mockY)을 되돌린 '기준선'의 뷰포트 top. 여기에 translateY를 더한 값이 실제 top.
+    const base = mock.getBoundingClientRect().top - mockY;
+    const minY = secRect.top - base; // 박스 상단이 섹션 상단 밑
+    const maxY = secRect.bottom - base - h; // 박스 하단이 섹션 하단 위
+    let y = clientY - base - h / 2; // 커서를 박스 세로 중앙에 맞춤
+    if (maxY < minY) y = minY; // 박스가 섹션보다 크면 상단 정렬
+    else y = Math.min(Math.max(y, minY), maxY);
+    setMockY(y);
+  };
+
+  const handleProcMove = (e: ReactMouseEvent<HTMLElement>) => {
+    const sec = procSecRef.current;
+    if (!sec) return;
+    const r = sec.getBoundingClientRect();
+    const inside =
+      e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (!inside) {
+      setMockVisible(false);
+      return;
+    }
+    setMockVisible(true);
+    positionMock(e.clientY);
+  };
 
   const {
     getCmsValue,
@@ -559,7 +585,14 @@ export function LandingPageV2({
       <HomeSafetyStory data={safetyStory} />
 
       {/* ══ 4. PROCESS (Concord 방식 5단계) ════════════════ */}
-      <section id="process" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+      <section
+        id="process"
+        className="lp2-sec"
+        style={{ scrollMarginTop: "80px" }}
+        ref={procSecRef}
+        onMouseMove={handleProcMove}
+        onMouseLeave={() => setMockVisible(false)}
+      >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
             <span className="lp2-eyebrow">{kickers.process}</span>
@@ -598,10 +631,13 @@ export function LandingPageV2({
             <div
               className="lp2-proc-mock reveal lp2-desktop-only"
               aria-hidden="true"
+              ref={procMockRef}
               style={{
                 transform: `translateY(${mockY}px)`,
+                opacity: mockVisible ? 1 : 0,
+                visibility: mockVisible ? "visible" : "hidden",
                 transition:
-                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity .3s cubic-bezier(.45,.05,.25,1)",
               }}
             >
               <div className="lp2-proc-mock-view" key={activeStep}>

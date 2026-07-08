@@ -2,7 +2,6 @@ import "./consult.css";
 
 
 import { ConsultRequestForm } from "@/components/consultation/ConsultRequestForm";
-import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
@@ -64,10 +63,6 @@ export default async function ConsultPage({
           copy={siteContent["consult_page"] ?? {}}
         />
 
-        <div className="consult-kakao">
-          <p>{get("kakao_hint", "양식 작성이 번거로우시면 카카오톡으로 편하게 문의하세요.")}</p>
-          <KakaoConsultButton source="consult_page">{get("kakao_button", "카카오톡으로 상담하기")}</KakaoConsultButton>
-        </div>
       </main>
     </PublicShell>
   );

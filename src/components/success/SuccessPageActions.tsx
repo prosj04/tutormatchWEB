@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 
 type SuccessPageActionsProps = {
   homeLabel: string;
@@ -22,13 +21,6 @@ export function SuccessPageActions({ homeLabel, consultationLabel }: SuccessPage
       <ConsultationApplyButton className="inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-primary/90 sm:w-auto sm:min-w-[180px]">
         {consultationLabel}
       </ConsultationApplyButton>
-      <KakaoConsultButton
-        variant="add"
-        source="success_page"
-        className="kakao-btn w-full !rounded-2xl sm:w-auto sm:min-w-[180px]"
-      >
-        카카오톡 채널 추가하고 소식 받기
-      </KakaoConsultButton>
     </div>
   );
 }

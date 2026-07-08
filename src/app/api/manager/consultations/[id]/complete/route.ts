@@ -41,6 +41,21 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
 
+  // 플로우 개편: 선생님 배정(수락 대기 포함)이 있어야 완료 처리 가능
+  const liveMatch = await prisma.teacherStudent.findFirst({
+    where: {
+      studentId: booking.studentId,
+      matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+    },
+    select: { id: true },
+  });
+  if (!liveMatch) {
+    return NextResponse.json(
+      { error: "선생님을 먼저 배정해야 완료 처리할 수 있습니다." },
+      { status: 400 },
+    );
+  }
+
   const updated = await prisma.consultationBooking.update({
     where: { id },
     data: {

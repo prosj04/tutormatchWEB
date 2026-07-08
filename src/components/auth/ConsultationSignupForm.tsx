@@ -18,6 +18,7 @@ const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] 
 type FieldKey =
   | "name"
   | "phone"
+  | "guardianPhone"
   | "password"
   | "passwordConfirm"
   | "terms"
@@ -43,6 +44,7 @@ export function ConsultationSignupForm({
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [guardianPhone, setGuardianPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [grade, setGrade] = useState<string>("");
@@ -68,6 +70,11 @@ export function ConsultationSignupForm({
     else {
       const d = normalizePhoneDigits(phone);
       if (d.length < 10 || d.length > 11) next.phone = "올바른 휴대전화 번호를 입력해 주세요.";
+    }
+    if (guardianPhone.trim()) {
+      const gd = normalizePhoneDigits(guardianPhone);
+      if (gd.length < 10 || gd.length > 11)
+        next.guardianPhone = "올바른 학부모 휴대전화 번호를 입력해 주세요.";
     }
     if (!password) next.password = "비밀번호를 입력해 주세요.";
     else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
@@ -97,6 +104,7 @@ export function ConsultationSignupForm({
           name: name.trim(),
           password,
           phone: phone.trim(),
+          guardianPhone: guardianPhone.trim() || undefined,
           instantEnroll,
           guardianConsent: true,
         }),
@@ -257,7 +265,7 @@ export function ConsultationSignupForm({
             ) : null}
           </div>
           <div className="field">
-            <label htmlFor="reg-phone">{c("label_phone", "전화번호")}</label>
+            <label htmlFor="reg-phone">{c("label_phone", "학생 연락처")}</label>
             <input
               id="reg-phone"
               type="tel"
@@ -267,6 +275,22 @@ export function ConsultationSignupForm({
               onChange={(e) => setPhone(e.target.value)}
             />
             {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="field">
+            <label htmlFor="reg-guardian-phone">{c("label_guardian_phone", "학부모 연락처")}</label>
+            <input
+              id="reg-guardian-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="010-0000-0000"
+              value={guardianPhone}
+              onChange={(e) => setGuardianPhone(e.target.value)}
+            />
+            {fieldErrors.guardianPhone ? (
+              <p className="field-error">{fieldErrors.guardianPhone}</p>
+            ) : null}
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

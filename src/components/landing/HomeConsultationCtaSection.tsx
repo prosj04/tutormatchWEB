@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { PublicCardLine, PublicCardMultiline } from "@/components/landing/PublicCardText";
 import { buildCtaBenefitCards } from "@/lib/cta-benefits";
@@ -92,10 +91,6 @@ export function HomeConsultationCtaSection({ siteContent, isEditMode = false }: 
               {get("button", "무료 상담 신청하기")}
             </ConsultationApplyButton>
           </CmsEdit>
-          <KakaoConsultButton
-            source="home_cta_section"
-            className="kakao-btn !px-10 !py-4 !text-base !font-black shadow-lg"
-          />
         </div>
         </CmsEdit>
       </div>

@@ -25,6 +25,8 @@ export async function POST(request: Request) {
     subjects?: unknown;
     startDate?: unknown;
     matchReason?: unknown;
+    /** true면 기존 살아있는 매칭을 취소하고 새 선생님으로 재배정 */
+    reassign?: unknown;
   };
   try {
     body = await request.json();
@@ -75,36 +77,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Student not found" }, { status: 404 });
   }
 
-  // 담당 매니저(booking.managerId 일치) + 완료된 상담이 있어야 매칭 가능.
-  // 노스스타 5단계: 강사 배정은 대면 상담 이후에 이뤄진다. 치프는 담당 제약 우회.
-  // (결제 여부는 게이트하지 않음 — 신청만 한 학생도 상담 후 매칭 대상이다.)
+  // 담당 매니저(booking.managerId 일치)의 진행 중(ASSIGNED)·완료(COMPLETED) 상담이 있어야 매칭 가능.
+  // 플로우 개편: 선생님 배정이 완료 처리보다 먼저다 — 배정이 끝나야 완료 처리가 열린다.
+  // 치프는 담당 제약 우회. (결제 여부는 게이트하지 않음)
   const isChief = session.user.role === "CHIEF_MANAGER";
-  const completedBooking = await prisma.consultationBooking.findFirst({
+  const eligibleBooking = await prisma.consultationBooking.findFirst({
     where: {
       studentId,
-      status: "COMPLETED",
+      status: { in: ["ASSIGNED", "COMPLETED"] },
       ...(isChief ? {} : { managerId: teacher.id }),
     },
     select: { id: true },
   });
-  if (!completedBooking) {
+  if (!eligibleBooking) {
     return NextResponse.json(
-      { error: "담당하는 학생의 완료된 상담이 있어야 매칭할 수 있습니다." },
+      { error: "담당하는 학생의 진행 중이거나 완료된 상담이 있어야 매칭할 수 있습니다." },
       { status: 403 },
     );
   }
 
   // 수락 대기(PENDING) 또는 활성(ACTIVE) 매칭이 있으면 중복 배정 차단.
-  // CANCELLED 매칭만 남은 학생은 재매칭 가능(데드엔드 방지).
+  // reassign=true면 기존 매칭을 취소하고 새 선생님으로 교체(재배정).
+  const reassign = body.reassign === true;
   const liveMatch = await prisma.teacherStudent.findFirst({
     where: {
       studentId,
       matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
     },
   });
-  if (liveMatch) {
+  if (liveMatch && !reassign) {
     return NextResponse.json(
       { error: "이미 배정된 선생님이 있는 학생입니다." },
+      { status: 409 },
+    );
+  }
+  if (liveMatch && liveMatch.teacherId === teacherId) {
+    return NextResponse.json(
+      { error: "이미 이 선생님이 배정되어 있습니다." },
       { status: 409 },
     );
   }
@@ -112,6 +121,15 @@ export async function POST(request: Request) {
   // createNotification uses the outer prisma instance — keep it outside
   // the interactive transaction to avoid connection-pool deadlock on Vercel.
   await prisma.$transaction([
+    // 재배정: 기존 살아있는 매칭을 취소로 전환
+    ...(liveMatch
+      ? [
+          prisma.teacherStudent.update({
+            where: { id: liveMatch.id },
+            data: { matchStatus: "CANCELLED", isActive: false, respondedAt: new Date() },
+          }),
+        ]
+      : []),
     // upsert: 같은 강사와의 CANCELLED 매칭이 남아 있으면 되살려 수락 대기로 전환.
     // (teacherId_studentId 유니크 제약과 충돌 없이 재매칭 지원)
     prisma.teacherStudent.upsert({
@@ -155,8 +173,8 @@ export async function POST(request: Request) {
   await createNotification({
     userId: student.userId,
     type: "TEACHER_ASSIGNED",
-    title: "선생님이 배정되었습니다",
-    body: `${targetTeacher.name} 선생님이 배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
+    title: liveMatch ? "선생님이 다시 배정되었습니다" : "선생님이 배정되었습니다",
+    body: `${targetTeacher.name} 선생님이 ${liveMatch ? "새로 " : ""}배정되었습니다. 앱에서 선생님 정보를 확인하고 수락해 주세요.`,
     relatedId: teacherId,
   });
 

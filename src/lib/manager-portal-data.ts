@@ -31,6 +31,12 @@ export type ManagerConsultationBooking = {
     guardianPhone: string | null;
     region: string | null;
   };
+  /** 학생의 살아있는 선생님 매칭(수락 대기 또는 활성). 없으면 null */
+  match?: {
+    teacherId: string;
+    teacherName: string;
+    matchStatus: "PENDING_STUDENT_ACCEPT" | "ACTIVE";
+  } | null;
 };
 
 export type ManagerMatchingStudent = {
@@ -40,6 +46,8 @@ export type ManagerMatchingStudent = {
   subjects: string;
   consultationNote: string | null;
   bookingId: string;
+  /** 이미 배정된 선생님(재배정 대상) */
+  currentTeacherName: string | null;
 };
 
 export type ManagerMatchingTeacher = {
@@ -153,7 +161,28 @@ export async function getManagerMineConsultations(
     orderBy: [{ assignedAt: "desc" }, { createdAt: "desc" }],
   });
 
-  return bookings.map(mapConsultationBooking);
+  const liveMatches = await prisma.teacherStudent.findMany({
+    where: {
+      studentId: { in: Array.from(new Set(bookings.map((b) => b.studentId))) },
+      matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+    },
+    select: { studentId: true, teacherId: true, matchStatus: true, teacher: { select: { name: true } } },
+  });
+  const matchByStudent = new Map(
+    liveMatches.map((m) => [
+      m.studentId,
+      {
+        teacherId: m.teacherId,
+        teacherName: m.teacher.name,
+        matchStatus: m.matchStatus as "PENDING_STUDENT_ACCEPT" | "ACTIVE",
+      },
+    ]),
+  );
+
+  return bookings.map((b) => ({
+    ...mapConsultationBooking(b),
+    match: matchByStudent.get(b.studentId) ?? null,
+  }));
 }
 
 export async function getManagerMatchingData(managerId: string): Promise<{
@@ -161,7 +190,7 @@ export async function getManagerMatchingData(managerId: string): Promise<{
   teachers: ManagerMatchingTeacher[];
 }> {
   const completedBookings = await prisma.consultationBooking.findMany({
-    where: { managerId, status: "COMPLETED" },
+    where: { managerId, status: { in: ["ASSIGNED", "COMPLETED"] } },
     select: {
       id: true,
       studentId: true,
@@ -182,28 +211,27 @@ export async function getManagerMatchingData(managerId: string): Promise<{
 
   // 매칭 POST 가드와 동일 기준: 수락 대기(PENDING) 또는 활성(ACTIVE) 매칭이 있으면 이미 배정된 학생.
   // (CANCELLED은 재매칭 대상이므로 후보에 남긴다.)
-  const alreadyMatchedIds = new Set(
-    (
-      await prisma.teacherStudent.findMany({
-        where: {
-          studentId: { in: candidates.map((c) => c.studentId) },
-          matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
-        },
-        select: { studentId: true },
-      })
-    ).map((m) => m.studentId),
+  // 살아있는 매칭이 있는 학생도 목록에 남긴다(재배정 지원) — 현재 선생님을 표시만 한다.
+  const liveMatchRows = await prisma.teacherStudent.findMany({
+    where: {
+      studentId: { in: candidates.map((c) => c.studentId) },
+      matchStatus: { in: ["PENDING_STUDENT_ACCEPT", "ACTIVE"] },
+    },
+    select: { studentId: true, teacher: { select: { name: true } } },
+  });
+  const currentTeacherByStudent = new Map(
+    liveMatchRows.map((m) => [m.studentId, m.teacher.name]),
   );
 
-  const students = candidates
-    .filter((booking) => !alreadyMatchedIds.has(booking.studentId))
-    .map((booking) => ({
-      id: booking.student.id,
-      name: booking.student.name,
-      grade: booking.student.grade,
-      subjects: booking.student.subjects,
-      consultationNote: booking.managerNote ?? booking.note,
-      bookingId: booking.id,
-    }));
+  const students = candidates.map((booking) => ({
+    id: booking.student.id,
+    name: booking.student.name,
+    grade: booking.student.grade,
+    subjects: booking.student.subjects,
+    consultationNote: booking.managerNote ?? booking.note,
+    bookingId: booking.id,
+    currentTeacherName: currentTeacherByStudent.get(booking.studentId) ?? null,
+  }));
 
   const teachers = await prisma.teacher.findMany({
     where: {

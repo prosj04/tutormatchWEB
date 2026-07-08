@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
-import { KakaoConsultButton } from "@/components/consultation/KakaoConsultButton";
 
 const SHOW_AFTER_PX = 300;
 
@@ -54,13 +53,6 @@ export function StickyConsultCta({
         {c("message", "이번 주 상담 가능 시간이 열려 있어요")}
       </p>
       <div className="sticky-cta-actions">
-        <KakaoConsultButton
-          className="kakao-btn kakao-btn--sm"
-          source="sticky_bottom_cta"
-          tabIndex={visible ? 0 : -1}
-        >
-          {c("btn_kakao", "카톡 상담")}
-        </KakaoConsultButton>
         <ConsultationApplyButton
           className="sticky-cta-btn"
           source="sticky_bottom_cta"

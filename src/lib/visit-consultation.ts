@@ -70,3 +70,16 @@ export function isValidVisitTimesPayload(
   }
   return true;
 }
+
+const KO_WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
+
+/** "2026-07-11" | Date → "2026-7-11(토)". 문자열 입력은 서버 타임존과 무관하게 계산한다. */
+export function formatDateWithWeekday(input: string | Date): string {
+  if (typeof input === "string") {
+    const d = new Date(`${input.slice(0, 10)}T00:00:00Z`);
+    if (Number.isNaN(d.getTime())) return input;
+    return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}(${KO_WEEKDAYS[d.getUTCDay()]})`;
+  }
+  if (Number.isNaN(input.getTime())) return "";
+  return `${input.getFullYear()}-${input.getMonth() + 1}-${input.getDate()}(${KO_WEEKDAYS[input.getDay()]})`;
+}

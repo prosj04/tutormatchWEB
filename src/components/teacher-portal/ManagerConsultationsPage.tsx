@@ -5,8 +5,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ManagerConsultationBooking } from "@/lib/manager-portal-data";
 import type { ConsultationGoals } from "@/lib/consultation-report";
+import Link from "next/link";
+
 import {
-  getNextWeekDates,
+  formatDateWithWeekday,
   type VisitTimesByDate,
 } from "@/lib/visit-consultation";
 
@@ -554,9 +556,6 @@ export function ManagerConsultationsPage({
 }
 
 function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
-  const weekLabels = Object.fromEntries(
-    getNextWeekDates().map((d) => [d.key, `${d.label}(${d.weekday})`]),
-  );
   const entries = Object.entries(times).filter(([, slots]) => slots.length > 0);
   if (entries.length === 0) {
     return (
@@ -571,7 +570,7 @@ function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
       <ul className="mt-2 space-y-1.5 text-sm text-text-primary">
         {entries.map(([date, slots]) => (
           <li key={date}>
-            <span className="font-semibold">{weekLabels[date] ?? date}</span>
+            <span className="font-semibold">{formatDateWithWeekday(date)}</span>
             <span className="text-text-secondary"> · {slots.join(", ")}</span>
           </li>
         ))}
@@ -664,7 +663,11 @@ function MineCard({
   onCancel: () => void;
   onReport: () => void;
 }) {
-  const badge = STATUS_BADGES[booking.status] ?? STATUS_BADGES.ASSIGNED;
+  const hasMatch = Boolean(booking.match);
+  const badge =
+    booking.status === "COMPLETED" && hasMatch
+      ? { label: "선생님 배정 완료", className: "badge-status-assigned" }
+      : STATUS_BADGES[booking.status] ?? STATUS_BADGES.ASSIGNED;
 
   return (
     <li className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm">
@@ -707,7 +710,8 @@ function MineCard({
 
       {booking.visitConfirmedAt ? (
         <p className="mt-2 text-xs font-medium text-primary">
-          방문 상담 확정: {new Date(booking.visitConfirmedAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
+          방문 상담 확정: {formatDateWithWeekday(new Date(booking.visitConfirmedAt))}{" "}
+          {new Date(booking.visitConfirmedAt).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit" })}
         </p>
       ) : null}
 
@@ -728,13 +732,29 @@ function MineCard({
         </button>
       </div>
 
+      {booking.match ? (
+        <p className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm text-text-primary">
+          배정 선생님: <span className="font-semibold">{booking.match.teacherName}</span>
+          <span className="ml-2 text-xs font-medium text-text-secondary">
+            {booking.match.matchStatus === "ACTIVE" ? "학생 수락 완료" : "학생 수락 대기중"}
+          </span>
+        </p>
+      ) : null}
+
       {booking.status === "ASSIGNED" ? (
         <div className="mt-5 flex gap-2">
+          <Link
+            href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
+            className="flex-1 rounded-xl bg-primary py-2.5 text-center text-sm font-semibold text-white hover:bg-primary/90"
+          >
+            {hasMatch ? "선생님 재배정" : "선생님 배정"}
+          </Link>
           <button
             type="button"
-            disabled={loading}
+            disabled={loading || !hasMatch}
+            title={hasMatch ? undefined : "선생님 배정 후 완료 처리할 수 있습니다"}
             onClick={onComplete}
-            className="flex-1 rounded-xl bg-text-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="flex-1 rounded-xl bg-text-primary py-2.5 text-sm font-semibold text-white disabled:opacity-40"
           >
             완료 처리
           </button>
@@ -747,6 +767,14 @@ function MineCard({
             취소
           </button>
         </div>
+      ) : null}
+      {booking.status === "COMPLETED" ? (
+        <Link
+          href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
+          className="mt-4 block w-full rounded-xl border border-primary/30 py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/5"
+        >
+          선생님 재배정
+        </Link>
       ) : null}
       <button
         type="button"
