@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { startPerfTimer, timeSync } from "@/lib/perf-timer";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 
@@ -14,7 +14,7 @@ function sanitizeFilename(name: string): string {
 }
 
 export async function POST(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const formData = await request.formData();

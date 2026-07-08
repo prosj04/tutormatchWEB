@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const LEGACY_REF = "orvqtnrdxlfyyoscejqf";
@@ -17,7 +17,7 @@ function refFromSupabaseUrl(url: string): string | null {
 }
 
 export async function GET() {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const databaseUrl = process.env.DATABASE_URL ?? "";

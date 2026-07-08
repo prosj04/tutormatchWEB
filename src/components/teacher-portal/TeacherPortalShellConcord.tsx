@@ -47,7 +47,7 @@ export function TeacherPortalShellConcord({
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("cms_edit") === "1";
   const [open, setOpen] = useState(false);
-  const navItems = role === "MANAGER" ? [...BASE_NAV, ...MANAGER_NAV] : [...BASE_NAV];
+  const navItems = role !== "TEACHER" ? [...BASE_NAV, ...MANAGER_NAV] : [...BASE_NAV];
 
   const brand = usePortalCopy("teacher_portal", "brand", "Concord.");
   const titleTeacherSuffix = usePortalCopy("teacher_portal", "title_teacher_suffix", " · 선생님 포털");
@@ -79,7 +79,7 @@ export function TeacherPortalShellConcord({
     return pathname === href || pathname.startsWith(`${href}/`);
   }
 
-  const titleSuffix = role === "MANAGER" ? titleManagerSuffix : titleTeacherSuffix;
+  const titleSuffix = role !== "TEACHER" ? titleManagerSuffix : titleTeacherSuffix;
   const currentItem = navItems.find((item) => isActive(item.href, "exact" in item ? item.exact : false));
   const activeNavLabel = currentItem ? navLabelByKey[currentItem.cmsKey] : "메뉴";
 
@@ -137,7 +137,7 @@ export function TeacherPortalShellConcord({
             <CmsEdit
               active={isEditMode}
               section="teacher_portal"
-              cmsKey={role === "MANAGER" ? "title_manager_suffix" : "title_teacher_suffix"}
+              cmsKey={role !== "TEACHER" ? "title_manager_suffix" : "title_teacher_suffix"}
               type="text"
             >
               {titleSuffix}

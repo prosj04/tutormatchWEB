@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
@@ -10,7 +10,7 @@ import { startPerfTimer, timeAsync, timeSync } from "@/lib/perf-timer";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const { id } = await context.params;

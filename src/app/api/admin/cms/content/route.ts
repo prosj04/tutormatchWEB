@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { SITE_CONTENT_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 
@@ -18,7 +18,7 @@ function groupContent(
 }
 
 export async function GET() {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const rows = await prisma.siteContent.findMany({
@@ -30,7 +30,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   let body: { section?: unknown; key?: unknown; value?: unknown };

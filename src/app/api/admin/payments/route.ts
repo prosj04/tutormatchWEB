@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { PaymentStatus, type Prisma } from "@prisma/client";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const VALID_STATUSES: PaymentStatus[] = [
@@ -16,7 +16,7 @@ function isPaymentStatus(value: string): value is PaymentStatus {
 }
 
 export async function GET(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const { searchParams } = new URL(request.url);

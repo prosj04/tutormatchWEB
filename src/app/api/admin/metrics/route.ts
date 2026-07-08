@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 function toYYYYMM(date: Date): string {
@@ -60,7 +60,7 @@ function median(arr: number[]): number | null {
 // ────────────────────────────────────────────────────────────────────────────
 
 export async function GET() {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const now = new Date();

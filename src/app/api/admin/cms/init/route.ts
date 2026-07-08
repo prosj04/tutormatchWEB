@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { seedDefaultCmsContent, upsertCmsTextDefaults } from "@/lib/cms-seed";
 import { revalidatePublicCms } from "@/lib/public-cms-cache";
 
 export async function POST(req: NextRequest) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const force = req.nextUrl.searchParams.get("force") === "true";

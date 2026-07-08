@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { TESTIMONIALS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 
 export async function GET() {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const testimonials = await prisma.testimonial.findMany({
@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   let body: { title?: unknown; quote?: unknown; author?: unknown; imageUrl?: unknown };

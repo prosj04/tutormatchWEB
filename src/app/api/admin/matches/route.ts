@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const matches = await prisma.teacherStudent.findMany({
@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   let body: {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { computeMonthlySettlement } from "@/lib/settlement";
 
 /**
@@ -10,7 +10,7 @@ import { computeMonthlySettlement } from "@/lib/settlement";
  * Defaults to the previous KST month when year/month are omitted or invalid.
  */
 export async function GET(req: NextRequest) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   // Derive default = previous KST month

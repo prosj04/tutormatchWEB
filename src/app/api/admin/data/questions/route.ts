@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { parsePagination, requireAdmin } from "@/lib/admin-auth";
+import { parsePagination, requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const { searchParams } = new URL(request.url);

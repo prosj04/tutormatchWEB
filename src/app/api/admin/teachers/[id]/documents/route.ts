@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { TEACHER_DOCUMENT_BUCKET } from "@/lib/supabase-client";
@@ -80,7 +80,7 @@ async function getDocumentPayload(teacherId: string) {
 }
 
 export async function GET(_request: Request, context: RouteContext) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const { id } = await context.params;
@@ -95,7 +95,7 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
 
   const { id } = await context.params;

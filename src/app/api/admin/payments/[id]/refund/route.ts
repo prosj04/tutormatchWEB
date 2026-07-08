@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { recordAudit } from "@/lib/audit-log";
 import { stopServiceAfterRefund } from "@/lib/payment-refund";
@@ -9,7 +9,7 @@ import { cancelTossPayment } from "@/lib/toss-payments";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
-  const authResult = await requireAdmin();
+  const authResult = await requireChiefManagerOrAdmin();
   if ("error" in authResult) return authResult.error;
   const { session } = authResult;
 
