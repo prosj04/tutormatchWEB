@@ -8,6 +8,12 @@ import {
   studentSyntheticEmailFromDigits,
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
+import {
+  clearLoginFailures,
+  isLoginBlocked,
+  loginRateLimitKey,
+  recordLoginFailure,
+} from "@/lib/login-rate-limit";
 
 /** 로그인 시 relation 전체(include) 금지 — DB에 아직 없는 컬럼까지 SELECT 하면 P2022로 전원 로그인 실패 */
 const userForAuthSelect = {
@@ -66,6 +72,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const identifier = raw.replace(invisible, "").trim();
           if (!identifier || password == null || password === "") return null;
 
+          const rateKey = loginRateLimitKey(identifier);
+          if (isLoginBlocked(rateKey)) return null;
+
           const { prisma } = await import("@/lib/prisma");
 
           let user = null;
@@ -96,10 +105,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             });
           }
 
-          if (!user) return null;
+          if (!user) {
+            recordLoginFailure(rateKey);
+            return null;
+          }
 
           const valid = await bcrypt.compare(password, user.password);
-          if (!valid) return null;
+          if (!valid) {
+            recordLoginFailure(rateKey);
+            return null;
+          }
+          clearLoginFailures(rateKey);
 
           // Guard: reject deleted accounts
           const userWithDeletedAt = await prisma.user.findUnique({

@@ -112,8 +112,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
         desc: "한 달의 성장과 변화, 취약 유형 분석을 누구보다 아이를 잘 아는 선생님이 직접 작성합니다.",
       },
       3: {
-        label: "학부모 앱",
-        desc: "수업 진행, 선생님이 낸 숙제, 진도 현황을 앱에서 언제든 확인하실 수 있습니다.",
+        label: "학부모 페이지",
+        desc: "수업 진행, 선생님이 낸 숙제, 진도 현황을 언제 어디서든 확인하실 수 있습니다.",
       },
     };
     const d = defaults[n]!;
@@ -132,7 +132,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     const defaults: Record<number, { label: string; desc: string }> = {
       1: {
         label: "숙제 관리",
-        desc: "선생님이 앱에서 숙제를 내면, 학생이 매일 체크합니다. 한 주 분량을 한 번에 내도 요일별로 나뉘어 관리됩니다.",
+        desc: "선생님이 숙제를 등록하면, 학생이 매일 체크합니다. 한 주 분량을 한 번에 내도 요일별로 나뉘어 관리됩니다.",
       },
       2: {
         label: "질문 관리",
@@ -608,7 +608,7 @@ export function LandingPageV2({
     <div className="lp2-report-card">
       <div className="lp2-report-head">
         <span className="lp2-proof-dot" />
-        <strong>Concord 학부모 앱</strong>
+        <strong>Concord 학부모 페이지</strong>
         <span className="t">실시간</span>
       </div>
       <div className="lp2-report-body">
@@ -625,7 +625,7 @@ export function LandingPageV2({
           <span className="v">이차함수 그래프 활용</span>
         </div>
       </div>
-      <div className="lp2-report-foot">수업·숙제·진도를 앱에서 바로 확인하실 수 있습니다</div>
+      <div className="lp2-report-foot">수업·숙제·진도를 한 화면에서 바로 확인하실 수 있습니다</div>
     </div>
   );
 
@@ -1000,7 +1000,7 @@ export function LandingPageV2({
         )}
       </section>
 
-      {/* ══ 7. REPORTS (수업·월간 리포트 + 학부모 앱) ══════ */}
+      {/* ══ 7. REPORTS (수업·월간 리포트 + 학부모 페이지) ══ */}
       <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-care-cols">
@@ -1012,7 +1012,7 @@ export function LandingPageV2({
                   {getCmsValue(
                     "management",
                     "subtext",
-                    "모든 수업은 기록으로 남습니다. 수업 리포트, 월간 리포트, 학부모 앱으로 아이의 공부를 그대로 보실 수 있습니다.",
+                    "모든 수업은 기록으로 남습니다. 수업 리포트, 월간 리포트, 학부모 페이지로 아이의 공부를 그대로 보실 수 있습니다.",
                   )}
                 </p>
               </div>
