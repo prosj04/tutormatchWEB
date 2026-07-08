@@ -40,7 +40,7 @@ export default async function ConsultPage({
   );
 
   return (
-    <PublicShell>
+    <PublicShell hideStickyCta>
       <main className="consult-main">
         <div className="consult-benefit">
           <div className="consult-benefit-items">

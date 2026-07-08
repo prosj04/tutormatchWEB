@@ -9,10 +9,16 @@ export async function PublicShell({
   children,
   showFooter = true,
   showCompareLink = false,
+  hideStickyCta = false,
 }: {
   children: React.ReactNode;
   showFooter?: boolean;
   showCompareLink?: boolean;
+  /**
+   * true면 하단 고정 CTA 바(StickyConsultCta)를 렌더하지 않는다(예: /consult).
+   * 상단 안내 배너(TopUrgencyBanner)는 현재 shell에서 렌더하지 않으므로 자동으로 함께 숨겨진다.
+   */
+  hideStickyCta?: boolean;
 }) {
   const siteContent = await getGroupedSiteContentBySections([
     "faq_page",
@@ -36,10 +42,12 @@ export async function PublicShell({
       />
       {children}
       {showFooter ? <ConcordSiteFooter siteContent={siteContent} /> : null}
-      <StickyConsultCta
-        copy={siteContent["sticky_cta"] ?? {}}
-        enabled={isPublicSectionVisible(siteContent, "sticky_cta", "bar_visible", true)}
-      />
+      {hideStickyCta ? null : (
+        <StickyConsultCta
+          copy={siteContent["sticky_cta"] ?? {}}
+          enabled={isPublicSectionVisible(siteContent, "sticky_cta", "bar_visible", true)}
+        />
+      )}
     </PublicAppProviders>
   );
 }

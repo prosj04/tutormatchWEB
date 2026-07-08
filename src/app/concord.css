@@ -601,3 +601,8 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .region-options li button:hover { background: rgba(var(--acc-rgb), .1); color: var(--acc-text); }
 .region-empty { padding: 12px; font-size: 13.5px; color: var(--mut); text-align: center; }
 .region-selected { margin: 6px 0 0; font-size: 13.5px; font-weight: 700; color: var(--acc-text); }
+
+/* ── M-4: 스티키 CTA — 세이프에어리어 + 모바일 컴팩트 (전 페이지) ── */
+.sticky-cta {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}

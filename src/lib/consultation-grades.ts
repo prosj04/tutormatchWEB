@@ -14,3 +14,6 @@ export const STUDENT_GRADES = [
   "고등학교 3학년",
   "N수/성인",
 ] as const;
+
+/** 학생 희망 과목 선택지 (가입 2단계·프로필 공용) */
+export const STUDENT_SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;

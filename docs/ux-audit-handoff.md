@@ -34,7 +34,7 @@
 - 개선: duration **2s → 0.55s**, translateY **56px → 20px**. `ConcordReveal` 컴포넌트가 delay를 주고 있다면 계단 delay는 요소당 60~80ms로 제한.
 - 검증: 홈 로드 → `window.scrollTo(0, document.body.scrollHeight*0.45)` → 700ms 후 스크린샷에서 헤드라인 opacity가 1인지 `getComputedStyle` 확인.
 
-**[M-2] /tutors 센터포커스 캐러셀 자동 순환 3초 — 카드를 읽기 전에 넘어감**
+**[M-2] /tutors 캐러셀 자동 순환 3초 — 의도된 설계로 유지 결정(2026-07-08). 작업 제외.**
 - 위치: `src/components/tutors/FeaturedTutors.tsx:94` `window.setInterval(() => go(1), 3000)`
 - 카드에는 대학·이름·3줄 소개·과목·경력이 있어 정독에 6~8초 필요. 3초 자동 순환은 읽기를 강제로 끊는다.
 - 개선: **interval 3000 → 6000ms**. 추가로 ① 마우스가 캐러셀 위에 있으면 일시정지 ② 사용자가 화살표/드래그 조작 후 10초간 자동 순환 중지 ③ `document.hidden`일 때 정지.

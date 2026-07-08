@@ -8,11 +8,9 @@ import { useState } from "react";
 import { RegionPicker } from "@/components/common/RegionPicker";
 
 import { GenderSelect } from "@/components/ui/GenderSelect";
-import { STUDENT_GRADES } from "@/lib/consultation-grades";
+import { STUDENT_GRADES, STUDENT_SUBJECTS as SUBJECTS } from "@/lib/consultation-grades";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { ProfileGender } from "@/lib/profile-gender";
-
-const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
 
 type FieldKey =

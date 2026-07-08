@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { STUDENT_GRADES, STUDENT_SUBJECTS } from "@/lib/consultation-grades";
 import { requireStudent } from "@/lib/student-auth";
 import { parseProfileGender } from "@/lib/profile-gender";
 import { prisma } from "@/lib/prisma";
@@ -37,15 +38,24 @@ export async function PATCH(request: Request) {
   if (isNonEmptyString(body.guardianPhone)) {
     const digits = body.guardianPhone.replace(/\D/g, "");
     if (digits.length >= 10 && digits.length <= 11) {
-      data.guardianPhone = body.guardianPhone.trim().slice(0, 20);
+      // register 경로(normalizePhoneDigits)와 동일하게 숫자만 저장
+      data.guardianPhone = digits;
     }
   }
-  if (isNonEmptyString(body.grade)) data.grade = body.grade.trim().slice(0, 20);
+  if (
+    isNonEmptyString(body.grade) &&
+    (STUDENT_GRADES as readonly string[]).includes(body.grade.trim())
+  ) {
+    data.grade = body.grade.trim();
+  }
   const gender = parseProfileGender(body.gender);
   if (gender) data.gender = gender;
   if (isNonEmptyString(body.region)) data.region = body.region.trim().slice(0, 40);
   if (Array.isArray(body.subjects)) {
-    const subjects = body.subjects.filter(isNonEmptyString);
+    const subjects = body.subjects.filter(
+      (s): s is string =>
+        isNonEmptyString(s) && (STUDENT_SUBJECTS as readonly string[]).includes(s),
+    );
     if (subjects.length > 0) data.subjects = subjects.join(",");
   }
 

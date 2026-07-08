@@ -148,3 +148,27 @@
 ### 8.3 검증 결과
 
 - `tsc --noEmit` 0, `next lint` 0, `prisma validate` 통과. `distributeTasks` 불변식 브루트포스 전수 통과. 5라운드 교차검증에서 신규 P0/P1 미발생, 3라운드 수정 전부 유지.
+
+## 9. 5라운드 재검증 (2026-07-08, opus 5팀 교차 검증 + 회귀 1팀)
+
+4라운드(07-05) 이후 이틀간의 대규모 변경 — **스키마 String→네이티브 enum 승격**(UserRole/ConsultationStatus/LessonStatus/SubscriptionStatus/MatchStatus/PaymentStatus), 상담 리드 API(`/api/consultation-leads`) 신설, 가입 2단계 분리(guardianPhone→profile PATCH 이동), Testimonial.title 컬럼+API, `requireChiefManagerOrAdmin` 신설, 홈 랜딩 대개편(트러스트바·통계 밴드 삭제, 요금 카드 재작성) — 을 기준으로 opus 5팀(인증·계정, 상담·매칭, 결제·환불, 매니저·승인, 숙제·수업·모바일)이 읽기 전용 정적 분석으로 재검증.
+
+**신규 P0/P1: 0건.** 4라운드까지의 수정 전부 유지·회귀 없음 — 특히 enum 승격에도 결제 상태머신(8.1 조건부 updateMany 포함)·매칭 검증(P0-B/C)·크론 인증(P0-A)·`distributeTasks` 불변식·teacher-approval softDelete 모두 무사. 4라운드 P2-1(guardianConsent 서버 미강제)은 이후 작업에서 `register/student:72`의 400 강제로 **해소 확인**.
+
+### 9.1 신규 수정 항목 (전부 P2)
+
+- **guardianPhone 저장 형식 불일치**: profile PATCH가 하이픈 포함 원문을 저장(register는 digits-only) → 동일 필드 이질 포맷. digits-only 저장으로 통일. (`student/profile/route.ts`)
+- **profile PATCH grade/subjects 화이트리스트 부재**: 임의 문자열 저장 가능 → `STUDENT_GRADES` 검증 + 신설 공용 상수 `STUDENT_SUBJECTS`(폼과 단일 소스, `consultation-grades.ts`)로 필터. 가입 폼의 로컬 SUBJECTS 상수도 공용 import로 교체해 드리프트 차단. (`student/profile/route.ts`, `ConsultationSignupForm.tsx`)
+
+### 9.2 확인 후 미수정 (설계상 정상/비이슈)
+
+- **Testimonial title 길이 상한 부재**: 공개 렌더가 전부 JSX 텍스트 노드라 저장형 XSS 불가, 작성 주체가 CHIEF/ADMIN 신뢰 영역, 이웃 필드(quote)도 상한이 없어 단독 추가는 비일관 → 미적용.
+- **`buildCheckoutHref`/`buildCheckoutHrefV2` dead export**: '바로 결제하기' 제거로 호출처 0건. 기능 결함 아님(최소 변경 원칙, 정리 대상으로만 기록). `/checkout` 진입은 Footer·payments·fail 리다이렉트로 여전히 유효.
+- **ConsultationLead phone 유니크 부재**: 마케팅 캡처 테이블로 booking 불변식과 무관, IP 레이트리밋(5/10분)으로 스팸 완화, GET/PATCH는 ADMIN 전용 → 비이슈.
+- **모바일 grade write 화이트리스트 미적용**(mobile/consultation·register): 사전 존재 비일관(INFO). 이번 수정은 read를 막지 않아 기존 값과 충돌 없음. 후속 정리 후보.
+- **admin/matches PATCH의 수동 ACTIVE 전환**: chief/admin 전용 오버라이드, §8.2에서 인지된 기존 동작.
+
+### 9.3 검증 결과
+
+- `tsc --noEmit` 0, `next lint` 0, `prisma validate` 통과. 수정 3파일 한정 opus 회귀 확인 — 폼→API 값 왕복 100% 통과, guardianPhone 소비처(매니저 화면 원문 렌더 1곳) 호환, 모바일 계약 무영향, **회귀 없음**.
+- **수렴 판정: 신규 P0/P1 0건, 신규 P2는 당회 수정 완료, 회귀 0건 → 수렴.** 커밋·마이그레이션 없음(제약 준수), 프로덕션 DB 무접촉.
