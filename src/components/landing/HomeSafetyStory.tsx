@@ -27,7 +27,6 @@ const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
-  const stepsPinRef = useRef<HTMLDivElement | null>(null);
   const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
   const [stepsOn, setStepsOn] = useState(0);
   const [reduced, setReduced] = useState(false);
@@ -67,8 +66,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          // 클로저·피벗(큰 카피 2장)은 가중치 1.7 — 스크롤을 더 오래 머물게 해 강조
-          const weights = [1, ...Array<number>(matchCount).fill(1), 1.7, 1.7];
+          // 클로저·피벗(큰 카피 2장)은 가중치 2.5 — 스크롤을 더 오래 머물게 해 강조
+          const weights = [1, ...Array<number>(matchCount).fill(1), 2.5, 2.5];
           const totalWeight = weights.reduce((a, b) => a + b, 0);
           const pr = progress * totalWeight;
           let su = totalUnits - 1;
@@ -100,7 +99,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
               lastManualAdvanceRef.current = now;
             } else if (dy > 4 && next >= DARK_START && next <= darkLast) {
               // 큰 카피(클로저·피벗)로 넘어가는 스텝은 더 길게 잡아 강조
-              const gate = next + 1 >= darkLast ? 1200 : 700;
+              const gate = next + 1 >= darkLast ? 1800 : 700;
               if (now - lastManualAdvanceRef.current > gate) {
                 lastManualAdvanceRef.current = now;
                 next = Math.min(next + 1, darkLast + 1);
@@ -142,49 +141,17 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     };
   }, [unit, reduced, darkLast]);
 
-  // 절차 5단계 등장 — 데스크톱: 섹션 진입 시 순차 재생 / 모바일: 각 단계가 뷰포트에 들어올 때 등장
-  useEffect(() => {
-    if (reduced) return;
-    const sp = stepsPinRef.current;
-    if (!sp) return;
-
-    if (window.matchMedia("(max-width: 960px)").matches) {
-      const items = Array.from(sp.querySelectorAll<HTMLElement>(".lp2-story-step"));
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            const idx = items.indexOf(e.target as HTMLElement);
-            setStepsOn((prev) => Math.max(prev, idx + 1));
-            io.unobserve(e.target);
-          });
-        },
-        { threshold: 0.25 },
-      );
-      items.forEach((el) => io.observe(el));
-      return () => io.disconnect();
-    }
-
-    let timers: ReturnType<typeof setTimeout>[] = [];
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        timers = data.steps.map((_, i) =>
-          setTimeout(() => setStepsOn(i + 1), 350 + i * 550),
-        );
-      },
-      { threshold: 0.3 },
-    );
-    io.observe(sp);
-    return () => {
-      io.disconnect();
-      timers.forEach(clearTimeout);
-    };
-  }, [reduced, data.steps]);
-
   const phase: "intro" | "match" | "closer" | "pivot" =
     unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
+
+  // 절차 1·2 — 피벗 카피 등장 직후 같은 화면에서 자동 순차 등장
+  useEffect(() => {
+    if (reduced || phase !== "pivot") return;
+    const timers = data.steps.slice(0, 2).map((_, i) =>
+      setTimeout(() => setStepsOn((prev) => Math.max(prev, i + 1)), 500 + i * 550),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [phase, reduced, data.steps]);
   const matchShown = phase === "match" ? unit : phase === "intro" ? 0 : matchCount;
   const isDark = phase === "match" || phase === "closer";
 
@@ -205,7 +172,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         </div>
         <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
         <div className="lp2-story-sblock"><h2>{pivotText}</h2></div>
-        <ol className="lp2-story-steps">
+        <ol className="lp2-story-steps lp2-story-pivot-steps">
           {data.steps.map((s, i) => (
             <li key={s.title} className="lp2-story-step on">
               <span className="num">0{i + 1}</span>
@@ -222,8 +189,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
-      {/* 클로저·피벗 가중치(+0.7×2)만큼 스크롤 길이 확장 */}
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 1.4) * UNIT_VH + 100}vh` }}>
+      {/* 클로저·피벗 가중치(+1.5×2)만큼 스크롤 길이 확장 */}
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 3) * UNIT_VH + 100}vh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
           <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
@@ -246,18 +213,10 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             <h2>{data.closer}</h2>
           </div>
 
-          {/* 전환 — 나오고 멈춤 */}
+          {/* 전환 — 피벗 카피 + 절차 1·2 좌우 배치, 자동 순차 등장 */}
           <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
             <h2>{pivotText}</h2>
-          </div>
-        </div>
-      </div>
-
-      {/* 절차 단계 — 섹션 진입 시 자동 순차 등장. 3개 이상이면 좌(사전 검증)/우(사후 관리) 2단 배치 */}
-      <div ref={stepsPinRef} className="lp2-story-steps-pin">
-        <div className="lp2-story-steps-vp">
-          <div className={`lp2-story-steps-cols${data.steps.length <= 2 ? " single" : ""}`}>
-            <ol className="lp2-story-steps pre">
+            <ol className="lp2-story-pivot-steps">
               {data.steps.slice(0, 2).map((s, i) => (
                 <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
                   <span className="num">0{i + 1}</span>
@@ -268,19 +227,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
                 </li>
               ))}
             </ol>
-            {data.steps.length > 2 && (
-              <ol className="lp2-story-steps post">
-                {data.steps.slice(2).map((s, i) => (
-                  <li key={s.title} className={`lp2-story-step${i + 2 < stepsOn ? " on" : ""}`}>
-                    <span className="num">0{i + 3}</span>
-                    <div>
-                      <h3>{s.title}</h3>
-                      <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            )}
           </div>
         </div>
       </div>

@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type MouseEvent as ReactMouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { LandingCmsContent } from "@/lib/cms";
 import { ConsultationApplyButton } from "@/components/consultation/ConsultationApplyButton";
 import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
-import { buildHallItem } from "@/lib/hall-items";
+import { buildHallItem, HALL_DEFAULT_CARDS } from "@/lib/hall-items";
 import { HomeSafetyStory, type SafetyStoryData } from "@/components/landing/HomeSafetyStory";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
@@ -248,11 +248,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     ),
     reviews: getCmsValue("home_labels", "section_title_reviews", "왜 학부모님들은 Concord를 선택했을까요?"),
     plans: getCmsMultiline("home_page", "plans_title", "가격까지 숨김없이 공개합니다"),
-    plansSubtext: getCmsValue(
-      "home_page",
-      "plans_subtext",
-      "모든 플랜에 같은 관리가 포함됩니다. 정확한 요금은 상담에서 아이에 맞춰 안내드려요.",
-    ),
   };
 
   return {
@@ -274,6 +269,74 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     verifySteps,
     uiLabels,
   };
+}
+
+/* ─── 목업 정렬·활성화 공용 훅 (process·reports·lesson-care 동일 구조) ─── */
+
+/** PC: 목업을 활성 항목 바로 옆(같은 높이)에 정렬 — 목업 자신의 기준선으로 자가 보정 */
+function useAlignedMockY(
+  listRef: React.RefObject<HTMLDivElement | null>,
+  mockRef: React.RefObject<HTMLDivElement | null>,
+  active: number,
+) {
+  const [y, setY] = useState(0);
+  useEffect(() => {
+    const list = listRef.current;
+    const mock = mockRef.current;
+    if (!list || !mock) return;
+    const item = list.children[active] as HTMLElement | undefined;
+    if (!item) return;
+    // transform(등장 애니메이션 등)과 무관한 layout 좌표로 계산 — 전환 중에도 항상 정확
+    const layoutTop = (el: HTMLElement) => {
+      let t = 0;
+      let n: HTMLElement | null = el;
+      while (n) {
+        t += n.offsetTop;
+        n = n.offsetParent as HTMLElement | null;
+      }
+      return t;
+    };
+    setY(layoutTop(item) - layoutTop(mock));
+  }, [active, listRef, mockRef]);
+  return y;
+}
+
+/** 모바일: 스크롤 시 화면 중앙에 가장 가까운 항목을 자동 활성화 */
+function useMobileCenterActive(
+  listRef: React.RefObject<HTMLDivElement | null>,
+  setActive: React.Dispatch<React.SetStateAction<number>>,
+) {
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 960px)").matches) return;
+    const list = listRef.current;
+    if (!list) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const mid = window.innerHeight / 2;
+        let best = -1;
+        let bestDist = Infinity;
+        Array.from(list.children).forEach((el, i) => {
+          const r = (el as HTMLElement).getBoundingClientRect();
+          if (r.bottom < 0 || r.top > window.innerHeight) return;
+          const d = Math.abs(r.top + r.height / 2 - mid);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        if (best >= 0) setActive((prev) => (prev === best ? prev : best));
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [listRef, setActive]);
 }
 
 /* ─── scroll-reveal hook ─── */
@@ -315,74 +378,22 @@ export function LandingPageV2({
   const [tier, setTier] = usePricingSchoolTier();
   const [activeStep, setActiveStep] = useState(0); // 우측 목업 (호버) + 아코디언
   const procListRef = useRef<HTMLDivElement | null>(null);
-  const procSecRef = useRef<HTMLElement | null>(null);
   const procMockRef = useRef<HTMLDivElement | null>(null);
-  const [mockY, setMockY] = useState(0);
-  const [mockVisible, setMockVisible] = useState(false);
+  const mockY = useAlignedMockY(procListRef, procMockRef, activeStep);
+  useMobileCenterActive(procListRef, setActiveStep);
 
-  // 목업 박스를 커서 위치에 띄우되 Process 섹션 경계 안으로 클램프한다.
-  const positionMock = (clientY: number) => {
-    const sec = procSecRef.current;
-    const mock = procMockRef.current;
-    if (!sec || !mock) return;
-    const secRect = sec.getBoundingClientRect();
-    const h = mock.offsetHeight;
-    // 현재 transform(mockY)을 되돌린 '기준선'의 뷰포트 top. 여기에 translateY를 더한 값이 실제 top.
-    const base = mock.getBoundingClientRect().top - mockY;
-    const minY = secRect.top - base; // 박스 상단이 섹션 상단 밑
-    const maxY = secRect.bottom - base - h; // 박스 하단이 섹션 하단 위
-    let y = clientY - base - h / 2; // 커서를 박스 세로 중앙에 맞춤
-    if (maxY < minY) y = minY; // 박스가 섹션보다 크면 상단 정렬
-    else y = Math.min(Math.max(y, minY), maxY);
-    setMockY(y);
-  };
+  // 리포트·수업 관리 섹션 — 프로세스와 동일 구조 (호버 정렬 + 모바일 중앙 활성화)
+  const [activeCare, setActiveCare] = useState(0);
+  const careListRef = useRef<HTMLDivElement | null>(null);
+  const careMockRef = useRef<HTMLDivElement | null>(null);
+  const careMockY = useAlignedMockY(careListRef, careMockRef, activeCare);
+  useMobileCenterActive(careListRef, setActiveCare);
 
-  const handleProcMove = (e: ReactMouseEvent<HTMLElement>) => {
-    const sec = procSecRef.current;
-    if (!sec) return;
-    const r = sec.getBoundingClientRect();
-    const inside =
-      e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-    if (!inside) {
-      setMockVisible(false);
-      return;
-    }
-    setMockVisible(true);
-    positionMock(e.clientY);
-  };
-
-  // 모바일: 스크롤 시 화면 중앙에 가장 가까운 단계를 자동 활성화 (탭 없이 목업 노출)
-  useEffect(() => {
-    if (!window.matchMedia("(max-width: 960px)").matches) return;
-    const list = procListRef.current;
-    if (!list) return;
-    let raf = 0;
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const mid = window.innerHeight / 2;
-        let best = -1;
-        let bestDist = Infinity;
-        Array.from(list.children).forEach((el, i) => {
-          const r = (el as HTMLElement).getBoundingClientRect();
-          if (r.bottom < 0 || r.top > window.innerHeight) return;
-          const d = Math.abs(r.top + r.height / 2 - mid);
-          if (d < bestDist) {
-            bestDist = d;
-            best = i;
-          }
-        });
-        if (best >= 0) setActiveStep((prev) => (prev === best ? prev : best));
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+  const [activeLessonCare, setActiveLessonCare] = useState(0);
+  const lessonCareListRef = useRef<HTMLDivElement | null>(null);
+  const lessonCareMockRef = useRef<HTMLDivElement | null>(null);
+  const lessonCareMockY = useAlignedMockY(lessonCareListRef, lessonCareMockRef, activeLessonCare);
+  useMobileCenterActive(lessonCareListRef, setActiveLessonCare);
 
   const {
     getCmsValue,
@@ -416,7 +427,7 @@ export function LandingPageV2({
   }, [cms?.siteContent, tier]);
 
   const hallItems: HallItem[] = useMemo(() => {
-    return Array.from({ length: 10 }, (_, i) => i + 1)
+    return Array.from({ length: HALL_DEFAULT_CARDS.length }, (_, i) => i + 1)
       .filter((n) => parseCmsVisibility(getCmsValue("hall", `hall${n}_visible`, "1"), true))
       .map((n) => buildHallItem(n, (key, fallback) => getCmsValue("hall", key, fallback)))
       .filter((it) => it.title);
@@ -717,14 +728,7 @@ export function LandingPageV2({
       <HomeSafetyStory data={safetyStory} />
 
       {/* ══ 4. PROCESS (Concord 방식 5단계) ════════════════ */}
-      <section
-        id="process"
-        className="lp2-sec"
-        style={{ scrollMarginTop: "80px" }}
-        ref={procSecRef}
-        onMouseMove={handleProcMove}
-        onMouseLeave={() => setMockVisible(false)}
-      >
+      <section id="process" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
             <span className="lp2-eyebrow">{kickers.process}</span>
@@ -753,11 +757,15 @@ export function LandingPageV2({
                     <span className="lp2-faq-ind" aria-hidden="true">+</span>
                   </summary>
                   <p className="lp2-proc-p" style={{ whiteSpace: "pre-line" }}>{step.desc}</p>
-                  <div className="lp2-proc-inline lp2-mobile-only" aria-hidden="true">
-                    {procMocks[index]}
-                  </div>
                 </details>
               ))}
+            </div>
+
+            {/* 모바일: 화면 중앙 번호의 목업이 뷰포트 하단에 고정 (섹션 밖으로 나가지 않음) */}
+            <div className="lp2-proc-mobile-mock lp2-mobile-only" aria-hidden="true">
+              <div className="lp2-proc-mock-view" key={`m-${activeStep}`}>
+                {procMocks[activeStep]}
+              </div>
             </div>
 
             <div
@@ -766,10 +774,8 @@ export function LandingPageV2({
               ref={procMockRef}
               style={{
                 transform: `translateY(${mockY}px)`,
-                opacity: mockVisible ? 1 : 0,
-                visibility: mockVisible ? "visible" : "hidden",
                 transition:
-                  "transform .45s cubic-bezier(.22,1,.36,1), opacity .3s cubic-bezier(.45,.05,.25,1)",
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
               }}
             >
               <div className="lp2-proc-mock-view" key={activeStep}>
@@ -992,38 +998,47 @@ export function LandingPageV2({
                 </p>
               </div>
 
-              <div className="lp2-care-list">
-                {managementItems.map((item) => (
-                  <div key={item.n} className="lp2-care-row reveal">
+              <div className="lp2-care-list" ref={careListRef}>
+                {managementItems.map((item, index) => (
+                  <div
+                    key={item.n}
+                    className="lp2-care-row reveal"
+                    onMouseEnter={() => setActiveCare(index)}
+                  >
                     <div className="num">0{item.n}</div>
                     <div>
                       <h3>{item.label}</h3>
                       <p>{item.desc}</p>
-                      {item.n === 1 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {lessonReportMock}
-                        </div>
-                      ) : null}
-                      {item.n === 2 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {monthlyReportMock}
-                        </div>
-                      ) : null}
-                      {item.n === 3 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {parentAppMock}
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
-              {lessonReportMock}
-              {monthlyReportMock}
-              {parentAppMock}
+            {/* 모바일: 화면 중앙 항목의 목업이 뷰포트 하단에 고정 */}
+            <div className="lp2-care-mobile-mock lp2-mobile-only" aria-hidden="true">
+              <div key={`m-care-${activeCare}`}>
+                {[lessonReportMock, monthlyReportMock, parentAppMock][
+                  (managementItems[activeCare]?.n ?? 1) - 1
+                ]}
+              </div>
+            </div>
+
+            <div
+              className="lp2-care-mock reveal lp2-desktop-only"
+              aria-hidden="true"
+              ref={careMockRef}
+              style={{
+                transform: `translateY(${careMockY}px)`,
+                transition:
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
+              }}
+            >
+              <div key={`care-${activeCare}`}>
+                {[lessonReportMock, monthlyReportMock, parentAppMock][
+                  (managementItems[activeCare]?.n ?? 1) - 1
+                ]}
+              </div>
             </div>
           </div>
         </div>
@@ -1040,52 +1055,44 @@ export function LandingPageV2({
                 <p>{sectionTitles.lessonCareSubtext}</p>
               </div>
 
-              <div className="lp2-care-list">
-                {lessonCareItems.map((item) => (
-                  <div key={item.n} className="lp2-care-row reveal">
+              <div className="lp2-care-list" ref={lessonCareListRef}>
+                {lessonCareItems.map((item, index) => (
+                  <div
+                    key={item.n}
+                    className="lp2-care-row reveal"
+                    onMouseEnter={() => setActiveLessonCare(index)}
+                  >
                     <div className="num">0{item.n}</div>
                     <div>
                       <h3>{item.label}</h3>
                       <p>{item.desc}</p>
-                      {item.n === 1 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {homeworkMock}
-                        </div>
-                      ) : null}
-                      {item.n === 2 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {careQnaMock}
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
-              {homeworkMock}
-              {careQnaMock}
+            {/* 모바일: 화면 중앙 항목의 목업이 뷰포트 하단에 고정 */}
+            <div className="lp2-care-mobile-mock lp2-mobile-only" aria-hidden="true">
+              <div key={`m-lc-${activeLessonCare}`}>
+                {[homeworkMock, careQnaMock][(lessonCareItems[activeLessonCare]?.n ?? 1) - 1]}
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ══ 7.5 GUARANTEE STRIP ═══════════════════════════ */}
-      <section className="lp2-guar-sec" aria-label="보장 안내">
-        <div className="lp2-wrap">
-          <div className="lp2-guar-strip reveal">
-            <span className="lp2-guar-item">
-              <span className="lp2-ok" aria-hidden="true">✓</span>
-              {getCmsValue("guarantee", "item1", "첫 수업이 맞지 않으면 100% 환불")}
-            </span>
-            <span className="lp2-guar-item">
-              <span className="lp2-ok" aria-hidden="true">✓</span>
-              {getCmsValue("guarantee", "item2", "선생님 교체 비용 0원")}
-            </span>
-            <Link href="/refund" className="lp2-guar-note">
-              *환불정책 참고
-            </Link>
+            <div
+              className="lp2-care-mock reveal lp2-desktop-only"
+              aria-hidden="true"
+              ref={lessonCareMockRef}
+              style={{
+                transform: `translateY(${lessonCareMockY}px)`,
+                transition:
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
+              }}
+            >
+              <div key={`lc-${activeLessonCare}`}>
+                {[homeworkMock, careQnaMock][(lessonCareItems[activeLessonCare]?.n ?? 1) - 1]}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1097,7 +1104,19 @@ export function LandingPageV2({
             <div className="lp2-price-left">
               <span className="lp2-eyebrow">{kickers.plans}</span>
               <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.plans}</h2>
-              <p>{sectionTitles.plansSubtext}</p>
+              <div className="lp2-price-guar">
+                <p>
+                  <span className="lp2-ok" aria-hidden="true">✓</span>
+                  {getCmsValue("guarantee", "item1", "첫 수업이 맞지 않으면 100% 환불")}
+                </p>
+                <p>
+                  <span className="lp2-ok" aria-hidden="true">✓</span>
+                  {getCmsValue("guarantee", "item2", "선생님 교체 비용 0원")}
+                </p>
+                <Link href="/refund" className="lp2-guar-note">
+                  *환불정책 참고
+                </Link>
+              </div>
               <Link href="/pricing" className="lp2-btn lp2-btn-ghost lp2-btn-sm" style={{ marginTop: 28 }}>
                 {uiLabels.viewAllPricing}
               </Link>

@@ -335,7 +335,7 @@ body:has(.lp2-root) footer.site .logo span {
 /* ── care section (split layout + report mock) ── */
 .lp2-care-cols {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
-  gap: clamp(40px, 5vw, 88px); align-items: center;
+  gap: clamp(40px, 5vw, 88px); align-items: start; /* 목업이 활성 항목 옆에 정렬되도록 상단 기준 */
 }
 .lp2-care-left .lp2-sec-head { max-width: none; margin-bottom: clamp(32px, 3vw, 48px); }
 .lp2-care-list { display: flex; flex-direction: column; }
@@ -568,22 +568,14 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-ok { color: var(--acc-text); font-weight: 800; margin-right: 8px; }
 .lp2-no { color: var(--mut-2); font-weight: 800; margin-right: 8px; }
 
-/* ── guarantee strip (가격 직전 보장 안내) ── */
-.lp2-guar-sec { padding: 0 0 clamp(20px, 2.5vw, 32px); }
-.lp2-guar-strip {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 36px;
-  padding: 22px 30px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
-  box-shadow: var(--shadow-sm);
+/* ── 요금제 좌측 보장 안내 (부제 자리) ── */
+.lp2-price-guar { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.lp2-price-left .lp2-price-guar p {
+  margin: 0; max-width: none;
+  font-size: clamp(16px, 1.2vw, 19px); font-weight: 600; color: var(--mut);
 }
-.lp2-guar-item { display: inline-flex; align-items: center; font-size: 16px; font-weight: 700; color: var(--fg); }
-.lp2-guar-note { margin-left: auto; font-size: 13px; color: var(--mut-2); text-decoration: underline; text-underline-offset: 3px; }
+.lp2-guar-note { margin-top: 6px; font-size: 13px; color: var(--mut-2); text-decoration: underline; text-underline-offset: 3px; }
 .lp2-guar-note:hover { color: var(--fg); }
-@media (max-width: 720px) {
-  .lp2-guar-strip { padding: 20px 22px; gap: 10px 24px; }
-  .lp2-guar-item { font-size: 15px; }
-  .lp2-guar-note { margin-left: 0; }
-}
 
 /* ── reviews (학부모 후기 가로 캐러셀) ── */
 .lp2-rev-scroll {
@@ -885,9 +877,18 @@ body:has(.lp2-root) footer.site .logo span {
 @media (max-width:960px) {
   .lp2-mobile-only { display: block !important; }
   .lp2-desktop-only { display: none !important; }
-  /* 번호별 인라인 목업 (모바일) */
-  .lp2-proc-inline { margin: -4px 0 26px; display: flex; flex-direction: column; gap: 12px; }
-  .lp2-care-inline { margin: 18px 0 6px; }
+  /* 화면 중앙 번호의 목업 — 뷰포트 하단 고정, 컬럼(.lp2-proc-cols) 밖으로 못 나감 */
+  .lp2-proc-mobile-mock,
+  .lp2-care-mobile-mock {
+    position: sticky; bottom: 96px; z-index: 5;
+    margin-top: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .lp2-proc-mobile-mock .lp2-notif-card { box-shadow: var(--shadow-md); }
+  .lp2-proc-mobile-mock .lp2-proc-mock-note {
+    background: rgba(var(--panel-rgb), .9); border-radius: 999px; padding: 5px 12px;
+    align-self: center; backdrop-filter: blur(6px);
+  }
   .lp2-grid-4 { grid-template-columns: repeat(2,1fr); }
   .lp2-hero-cols { grid-template-columns: 1fr; }
   .lp2-hero-visual { width: 100%; margin-top: 36px; margin-right: 0; }
@@ -897,8 +898,6 @@ body:has(.lp2-root) footer.site .logo span {
   .lp2-proc-cols { grid-template-columns: 1fr; }
   /* 모바일: 목업은 아코디언 설명이 대신함 — 위치 추적 transform도 무효 */
   .lp2-proc-mock { display: none; transform: none !important; }
-  /* 스토리 1·2번: 좁은 화면에선 가로 등장 대신 위로 떠오르기 */
-  .lp2-story-steps.pre .lp2-story-step { transform: translateY(24px); }
   .lp2-nav-links { display: none; }
   .lp2-ghost-link { display: none; }
   .lp2-hamburger { display: flex; }
@@ -937,7 +936,7 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-stagevp {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100svh; /* 모바일 주소창 리사이즈 떨림 방지 */
   overflow: hidden;
   background: var(--bg);
   transition: background-color 0.6s ease;
@@ -1022,18 +1021,7 @@ body.story-dark .sticky-cta {
   pointer-events: none;
 }
 
-/* 절차 5단계 — 누적 등장 */
-.lp2-story-steps-pin { position: relative; }
-.lp2-story-steps-vp {
-  position: sticky;
-  top: 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  padding: 48px 24px;
-}
+/* 절차 1·2 — 누적 등장 */
 .lp2-story-steps {
   list-style: none;
   width: min(860px, 100%);
@@ -1105,24 +1093,19 @@ body.story-dark .sticky-cta {
 }
 @media (prefers-reduced-motion: reduce) { .lp2-proc-mock-view > * { animation: none; } }
 
-/* ── 절차 5단계: 좌(사전 검증 1·2) / 우(사후 관리 3~5) 위계 배치 ── */
-.lp2-story-steps-cols {
+/* ── 피벗 화면: 절차 1·2 좌우 배치, 카피 직후 자동 등장 ── */
+.lp2-story-pivot { width: min(1080px, calc(100% - 48px)); }
+.lp2-story-pivot-steps {
+  list-style: none;
+  margin: clamp(36px, 6vh, 64px) 0 0;
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(32px, 4vw, 72px);
-  width: min(1080px, 100%);
+  gap: clamp(28px, 4vw, 64px);
   align-items: start;
+  text-align: left;
 }
-.lp2-story-steps-cols .lp2-story-steps { width: 100%; }
-.lp2-story-steps-cols.single { grid-template-columns: 1fr; width: min(760px, 100%); }
-.lp2-story-steps-cols.single .lp2-story-step { transform: translateY(30px); }
-.lp2-story-steps-cols.single .lp2-story-step.on { transform: none; }
-/* 1·2번: 화면 가운데서 등장해 왼쪽 정위치로 이동 */
-.lp2-story-steps.pre .lp2-story-step { transform: translateX(min(30vw, 340px)) translateY(16px); }
-.lp2-story-steps.pre .lp2-story-step.on { transform: none; }
-.lp2-story-steps.post .lp2-story-step .num { color: var(--mut-2); }
-.lp2-story-steps.post .lp2-story-step h3 { font-weight: 700; }
-@media (max-width: 860px) {
-  .lp2-story-steps-cols { grid-template-columns: 1fr; gap: 0; }
-  .lp2-story-steps.post .lp2-story-step:first-child { border-top: 1px solid var(--line); }
+.lp2-story-pivot-steps .lp2-story-step { border-top: none; padding: 0; }
+@media (max-width: 680px) {
+  .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
 }
