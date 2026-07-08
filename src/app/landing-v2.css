@@ -583,6 +583,11 @@ body:has(.lp2-root) footer.site .logo span {
 
 .lp2-result-note { margin-top: 12px; font-size: 13px; font-weight: 500; color: var(--mut-2); }
 
+.lp2-cta-band-note {
+  display: inline-block; margin-top: 10px;
+  font-size: 12px; font-weight: 500; opacity: .6; text-decoration: underline;
+}
+
 /* ── CTA band ── */
 .lp2-cta-band {
   background: var(--acc); color: var(--on-acc); border-radius: 28px;

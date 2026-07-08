@@ -983,6 +983,9 @@ export function LandingPageV2({
                   "결정은 천천히 하셔도 돼요. 첫 수업이 맞지 않으면 100% 환불해 드립니다. 신청은 30초면 충분해요.",
                 )}
               </p>
+              <Link href="/refund" className="lp2-cta-band-note">
+                *환불정책 참고
+              </Link>
             </div>
             <ConsultationApplyButton className="lp2-btn" source="home_cta_band">
               {getCmsValue("cta", "button", "지금 무료 상담 신청하기")}
