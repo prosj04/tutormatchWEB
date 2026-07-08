@@ -301,10 +301,18 @@ function useAlignedMockY(
   return y;
 }
 
-/** 모바일: 스크롤 시 화면 중앙에 가장 가까운 항목을 자동 활성화 */
+/** 탭 우선 잠금: 최근 탭 이후 이 시간(ms)동안 중앙 자동 활성화를 억제 */
+const TAP_LOCK_MS = 1600;
+
+/**
+ * 모바일/태블릿: 스크롤 시 화면 중앙에 가장 가까운 항목을 자동 활성화.
+ * hover가 없는 터치 기기에서는 사용자의 탭 선택이 곧바로 스크롤에 덮이지 않도록,
+ * manualLockRef(최근 탭 시각)가 유효한 동안 중앙 감지를 건너뛴다(탭 우선).
+ */
 function useMobileCenterActive(
   listRef: React.RefObject<HTMLDivElement | null>,
   setActive: React.Dispatch<React.SetStateAction<number>>,
+  manualLockRef?: React.MutableRefObject<number>,
 ) {
   useEffect(() => {
     if (!window.matchMedia("(max-width: 960px)").matches) return;
@@ -315,6 +323,8 @@ function useMobileCenterActive(
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
+        // 최근 탭이 있었다면 그 선택을 유지(탭 우선)
+        if (manualLockRef && Date.now() - manualLockRef.current < TAP_LOCK_MS) return;
         const mid = window.innerHeight / 2;
         let best = -1;
         let bestDist = Infinity;
@@ -336,7 +346,7 @@ function useMobileCenterActive(
       window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [listRef, setActive]);
+  }, [listRef, setActive, manualLockRef]);
 }
 
 /* ─── scroll-reveal hook ─── */
@@ -379,8 +389,9 @@ export function LandingPageV2({
   const [activeStep, setActiveStep] = useState(0); // 우측 목업 (호버) + 아코디언
   const procListRef = useRef<HTMLDivElement | null>(null);
   const procMockRef = useRef<HTMLDivElement | null>(null);
+  const procTapLockRef = useRef(0); // 터치 기기 탭 우선 잠금(중앙 감지 억제)
   const mockY = useAlignedMockY(procListRef, procMockRef, activeStep);
-  useMobileCenterActive(procListRef, setActiveStep);
+  useMobileCenterActive(procListRef, setActiveStep, procTapLockRef);
 
   // 리포트·수업 관리 섹션 — 프로세스와 동일 구조 (호버 정렬 + 모바일 중앙 활성화)
   const [activeCare, setActiveCare] = useState(0);
@@ -394,6 +405,14 @@ export function LandingPageV2({
   const lessonCareMockRef = useRef<HTMLDivElement | null>(null);
   const lessonCareMockY = useAlignedMockY(lessonCareListRef, lessonCareMockRef, activeLessonCare);
   useMobileCenterActive(lessonCareListRef, setActiveLessonCare);
+
+  // hover 없는 터치 기기: 스텝 탭이 곧바로 중앙 감지에 덮이지 않도록 탭을 우선시
+  const activateStepByTap = (index: number) => {
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) {
+      procTapLockRef.current = Date.now();
+    }
+    setActiveStep(index);
+  };
 
   const {
     getCmsValue,
@@ -748,7 +767,7 @@ export function LandingPageV2({
                   <summary
                     onClick={(e) => {
                       e.preventDefault();
-                      setActiveStep(index); // 터치 기기에서는 탭으로 열기
+                      activateStepByTap(index); // 터치 기기: 탭으로 열고 중앙 감지보다 우선
                     }}
                     onFocus={() => setActiveStep(index)}
                   >
