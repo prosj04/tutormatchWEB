@@ -1114,3 +1114,9 @@ body.story-dark .sticky-cta {
 @media (max-width: 680px) {
   .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
 }
+
+/* M-9: 모바일 터치 타깃 보정 — 시각 크기 유지, 히트영역만 40px+ */
+@media (max-width: 640px) {
+  .lp2-guar-note,
+  .lp2-cta-band-note { display: inline-flex; align-items: center; min-height: 40px; }
+}

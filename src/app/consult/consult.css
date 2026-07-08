@@ -313,3 +313,8 @@
   font-weight: 600;
   color: var(--mut, var(--fg));
 }
+
+/* M-9: 모바일 터치 타깃 보정 */
+@media (max-width: 640px) {
+  .consult-agree-link { display: inline-flex; align-items: center; min-height: 40px; }
+}

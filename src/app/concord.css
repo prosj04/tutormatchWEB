@@ -106,6 +106,25 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 .foot-meta{ color:var(--mut-2); font-size:13px; line-height:1.8; margin-top:28px; }
 .foot-meta .legal{ margin-top:12px; display:flex; gap:16px; flex-wrap:wrap; }
 
+/* ── M-9: 모바일 터치 타깃 보정 (≤640px) — 시각 크기 유지, 히트영역만 40px+ 확보 ──
+   데스크톱 시각 디자인은 건드리지 않는다(모바일 미디어쿼리 한정). */
+@media (max-width:640px){
+  /* 로고(헤더·푸터 공용): 텍스트 크기 유지, 세로 히트영역 40px */
+  .logo{ display:inline-flex; align-items:center; min-height:40px; }
+  /* 푸터 서비스 링크 */
+  .foot-col a,
+  .foot-col button.foot-consult-link{
+    min-height:40px; display:flex; align-items:center; margin-bottom:2px;
+  }
+  /* 푸터 이메일/전화 (인라인) — ::after 없이 padding으로 세로 확장 */
+  .foot-meta a{ display:inline-flex; align-items:center; min-height:40px; }
+  /* 약관 등 법적 링크 줄 */
+  .foot-meta .legal{ gap:8px 16px; }
+  .foot-meta .legal a{ display:inline-flex; align-items:center; min-height:40px; }
+  /* "선생님이신가요?" 링크 (인라인 스타일 Link, .foot-meta 하위 마지막 행) */
+  .foot-meta .legal ~ div a{ display:inline-flex; align-items:center; min-height:40px; }
+}
+
 /* ---- reveal ---- */
 .reveal{ opacity:0; transform:translateY(20px); transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1); }
 .reveal.in{ opacity:1; transform:none; }
@@ -502,6 +521,10 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   overflow: hidden;
   background: #fff;
   border: 1px solid var(--line);
+}
+/* M-15: 다크모드에서 흰 배경 합격 카드가 어두운 배경과 뭉개지지 않도록 subtle ring */
+[data-theme="dark"] .hall-card {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
 }
 .hall-logo { position: absolute; inset: 20% 16% 34%; opacity: 0.7; }
 .hall-card figcaption {
