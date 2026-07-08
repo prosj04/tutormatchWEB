@@ -8,7 +8,6 @@ import { PLAN_INCLUDES, type PricingSchoolTier } from "@/lib/pricing-plans";
 
 export function PricingPlanCards({
   items,
-  tier,
   sourcePrefix,
   variant = "full",
   labels = {},
@@ -21,7 +20,6 @@ export function PricingPlanCards({
   labels?: Record<string, string>;
 }) {
   const c = (key: string, fallback: string) => labels[key] ?? fallback;
-  const tierLabel = tier === "middle" ? c("tier_middle_label", "중등") : c("tier_high_label", "고등");
 
   const cards = items.map((item) => {
     const plan = item.plan;
@@ -32,10 +30,7 @@ export function PricingPlanCards({
     return (
       <ConcordReveal key={plan.id} as="article" className={`lp2-pcard${isRec ? " rec" : ""}`}>
         {isRec ? <span className="lp2-pcard-badge">{c("card_badge_recommend", "추천")}</span> : null}
-        <div className="lp2-pcard-name">
-          {displayTitle}
-          <span className="lp2-pcard-tier">{tierLabel}</span>
-        </div>
+        <div className="lp2-pcard-name">{displayTitle}</div>
         {item.subtitle ? <div className="lp2-pcard-sub">{item.subtitle}</div> : null}
         <div className="lp2-pcard-price">
           {priceFormatted}

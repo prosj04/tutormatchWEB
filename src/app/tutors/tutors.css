@@ -118,30 +118,31 @@
 .tp-newsintro-stack {
   display: flex;
   flex-direction: column;
-  gap: clamp(30px, 4.5vh, 52px);
+  gap: clamp(14px, 2vh, 22px);
   max-width: 880px;
   margin: 0 auto;
 }
 .tp-newsintro-line {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
   text-align: center;
-  text-decoration: none;
-  color: inherit;
 }
 .tp-newsintro-line .q {
-  display: block;
   font-size: clamp(18px, 2.4vw, 28px);
   font-weight: 800;
   letter-spacing: -0.01em;
-  line-height: 1.5;
+  line-height: 1.35;
   color: var(--fg);
 }
 .tp-newsintro-line .s {
-  display: block;
-  margin-top: 10px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--mut);
+  opacity: 0.55;
+  white-space: nowrap;
 }
 .tp-newsintro-note {
   margin: clamp(28px, 4vh, 44px) 0 0;

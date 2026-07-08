@@ -8,7 +8,6 @@ import { CountUpStat } from "@/components/common/CountUpStat";
 import { TutorProfileCard } from "@/components/tutors/TutorProfileCard";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
-import { PricingPlanCards } from "@/components/pricing/PricingPlanCards";
 import { useConsultationCta } from "@/hooks/useConsultationCta";
 import {
   formatCmsMultiline,
@@ -17,7 +16,6 @@ import {
   parseCmsVisibility,
   type FeaturedTutorCard,
 } from "@/lib/cms-page-defaults";
-import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 const SECTION = "tutors_featured";
@@ -192,7 +190,6 @@ export function FeaturedTutors({
     .filter((p) => p.subject && p.before && p.after);
 
 
-  const pricingItems = buildVisiblePricingPlanItems(siteContent, "high");
 
   return (
     <main>
@@ -225,63 +222,29 @@ export function FeaturedTutors({
         </ConcordReveal>
       </section>
 
-      {/* ── 뉴스 근거: 대형 타이포 스택 (흰 배경) ── */}
-      {secVisible("news_section_visible") && (
-      <section className="sec tp-newsintro-sec">
-        <div className="wrap">
-          <ConcordReveal className="tp-newsintro-head" as="div">
-            <h2>{getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}</h2>
-          </ConcordReveal>
-          <div className="tp-newsintro-stack">
-            {NEWS_REF_FALLBACK.map(([fq, fp, fy, fu], idx) => {
-              const n = idx + 1;
-              const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
-              const url = getCmsSectionValue(siteContent, "safety_story", `news${n}_url`, fu);
-              const press = getCmsSectionValue(siteContent, "safety_story", `news${n}_press`, fp);
-              const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
-              if (!quote || !url) return null;
-              return (
-                <ConcordReveal key={n} as="div">
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="tp-newsintro-line">
-                    <span className="q">{quote}</span>
-                    <span className="s">{year} · {press}</span>
-                  </a>
-                </ConcordReveal>
-              );
-            })}
-          </div>
-          <ConcordReveal as="div">
-            <p className="tp-newsintro-note">
-              {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다")}
-            </p>
-          </ConcordReveal>
-          <ConcordReveal as="div">
-            <p className="tp-newsintro-empathy">
-              {getCmsSectionValue(
-                siteContent,
-                "safety_story",
-                "news_empathy",
-                "그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.",
-              )}
-            </p>
-          </ConcordReveal>
-        </div>
-      </section>
-      )}
-
-      {/* ── 통계 카운터 ── */}
-      {stats.length > 0 && secVisible("stats_section_visible") ? (
-        <section className="sec-sm tp-stats-sec">
+      
+      
+      
+      
+      {/* ── 특별한 이유 3가지 (Q&A) ── */}
+      {whys.length > 0 && secVisible("why_section_visible") ? (
+        <section className="sec tp-why-sec">
           <div className="wrap">
-            <ConcordReveal className="tp-stats" as="div">
-              {stats.map((s) => (
-                <div key={s.label} className="tp-stat">
-                  <CountUpStat value={s.number} className="tp-stat-n" />
-                  <span className="tp-stat-l">{s.label}</span>
-                </div>
-              ))}
+            <ConcordReveal className="tp-sec-head" as="div">
+              <h2 style={{ whiteSpace: "pre-line" }}>
+                {edit("why_title", formatCmsMultiline(get("why_title", "Concord 선생님이\n특별한 이유 3가지")))}
+              </h2>
             </ConcordReveal>
-            <p className="tp-footnote">{get("stats_footnote", "* Concord 운영 데이터 기준")}</p>
+            <div className="tp-why-grid">
+              {whys.map((w, i) => (
+                <ConcordReveal key={w.q} className="card tp-why-card" as="article">
+                  <span className="tp-why-q">{w.q}</span>
+                  <h3>{w.a}</h3>
+                  <p>{w.desc}</p>
+                  <span className="tp-why-n">0{i + 1}</span>
+                </ConcordReveal>
+              ))}
+            </div>
           </div>
         </section>
       ) : null}
@@ -323,28 +286,65 @@ export function FeaturedTutors({
       </section>
       )}
 
-      {/* ── 특별한 이유 3가지 (Q&A) ── */}
-      {whys.length > 0 && secVisible("why_section_visible") ? (
-        <section className="sec tp-why-sec">
+      {/* ── 통계 카운터 ── */}
+      {stats.length > 0 && secVisible("stats_section_visible") ? (
+        <section className="sec-sm tp-stats-sec">
           <div className="wrap">
-            <ConcordReveal className="tp-sec-head" as="div">
-              <h2 style={{ whiteSpace: "pre-line" }}>
-                {edit("why_title", formatCmsMultiline(get("why_title", "Concord 선생님이\n특별한 이유 3가지")))}
-              </h2>
-            </ConcordReveal>
-            <div className="tp-why-grid">
-              {whys.map((w, i) => (
-                <ConcordReveal key={w.q} className="card tp-why-card" as="article">
-                  <span className="tp-why-q">{w.q}</span>
-                  <h3>{w.a}</h3>
-                  <p>{w.desc}</p>
-                  <span className="tp-why-n">0{i + 1}</span>
-                </ConcordReveal>
+            <ConcordReveal className="tp-stats" as="div">
+              {stats.map((s) => (
+                <div key={s.label} className="tp-stat">
+                  <CountUpStat value={s.number} className="tp-stat-n" />
+                  <span className="tp-stat-l">{s.label}</span>
+                </div>
               ))}
-            </div>
+            </ConcordReveal>
+            <p className="tp-footnote">{get("stats_footnote", "* Concord 운영 데이터 기준")}</p>
           </div>
         </section>
       ) : null}
+
+      {/* ── 뉴스 근거: 대형 타이포 스택 (흰 배경) ── */}
+      {secVisible("news_section_visible") && (
+      <section className="sec tp-newsintro-sec">
+        <div className="wrap">
+          <ConcordReveal className="tp-newsintro-head" as="div">
+            <h2>{getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}</h2>
+          </ConcordReveal>
+          <div className="tp-newsintro-stack">
+            {NEWS_REF_FALLBACK.map(([fq, fp, fy], idx) => {
+              const n = idx + 1;
+              const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
+              const press = getCmsSectionValue(siteContent, "safety_story", `news${n}_press`, fp);
+              const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
+              if (!quote) return null;
+              return (
+                <ConcordReveal key={n} as="div">
+                  <div className="tp-newsintro-line">
+                    <span className="q">{quote}</span>
+                    <span className="s">{year} · {press}</span>
+                  </div>
+                </ConcordReveal>
+              );
+            })}
+          </div>
+          <ConcordReveal as="div">
+            <p className="tp-newsintro-note">
+              {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다")}
+            </p>
+          </ConcordReveal>
+          <ConcordReveal as="div">
+            <p className="tp-newsintro-empathy">
+              {getCmsSectionValue(
+                siteContent,
+                "safety_story",
+                "news_empathy",
+                "그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.",
+              )}
+            </p>
+          </ConcordReveal>
+        </div>
+      </section>
+      )}
 
       {/* ── 성적 인증 그리드 ── */}
       {proofs.length > 0 && secVisible("proof_section_visible") ? (
@@ -418,27 +418,7 @@ export function FeaturedTutors({
       </section>
       )}
 
-      {/* ── 요금제 카드 ── */}
-      {secVisible("price_section_visible") && (
-      <section className="sec tp-price-sec">
-        <div className="wrap">
-          <ConcordReveal className="tp-sec-head" as="div">
-            <span className="eyebrow">{edit("price_kicker", get("price_kicker", "PLANS"))}</span>
-            <h2>{edit("price_title", get("price_title", "맞춤수업부터 관리까지, 한 번에"))}</h2>
-            <p>
-              {edit(
-                "price_subtext",
-                get("price_subtext", "모든 플랜에 학습 리포트·매니저 관리·강사 첨삭이 포함됩니다. 상담 신청은 30초면 충분합니다."),
-              )}
-            </p>
-          </ConcordReveal>
-          <div style={{ maxWidth: 1180, margin: "0 auto" }}>
-            <PricingPlanCards items={pricingItems} tier="high" sourcePrefix="tutors_pricing_plan" />
-          </div>
-        </div>
-      </section>
-      )}
-
+      
       <ConcordSubpageCta
         title="원하는 선생님, 무료 상담으로 배정받으세요"
         description="학년·과목·목표에 맞춰 매니저가 최적의 강사진을 추천해 드립니다."
