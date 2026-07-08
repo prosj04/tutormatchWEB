@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const hashed = await bcrypt.hash(password, 10);
+  const hashed = await bcrypt.hash(password, 12);
   const guardianConsentAt = new Date();
 
   const user = await prisma.user.create({

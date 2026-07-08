@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 /** GET /api/mobile/tutors?subject=&q= — 승인 강사 목록 (검색·과목 필터) */
 export async function GET(request: Request) {
   // 로그인 없이도 둘러볼 수 있게: 토큰 있으면 검증, 없어도 공개 목록 허용
-  getMobileUser(request);
+  await getMobileUser(request);
 
   const { searchParams } = new URL(request.url);
   const subject = searchParams.get("subject")?.trim();

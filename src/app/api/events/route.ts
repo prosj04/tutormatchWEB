@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
   let userId: string | null = null;
   if (platform === "mobile") {
-    const mobileUser = getMobileUser(request);
+    const mobileUser = await getMobileUser(request);
     userId = mobileUser?.sub ?? null;
   } else {
     const session = await auth();

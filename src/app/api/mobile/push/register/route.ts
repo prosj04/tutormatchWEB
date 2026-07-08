@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 /** POST /api/mobile/push/register — Expo 푸시 토큰 등록 */
 export async function POST(request: Request) {
-  const payload = getMobileUser(request);
+  const payload = await getMobileUser(request);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

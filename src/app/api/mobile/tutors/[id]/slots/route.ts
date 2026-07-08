@@ -10,7 +10,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
-  getMobileUser(request);
+  await getMobileUser(request);
 
   // 승인된(데모 아닌) 강사의 슬롯만 노출 — 임의 teacherId로 가용시간 조회 차단.
   const tutor = await prisma.teacher.findFirst({
@@ -18,7 +18,7 @@ export async function GET(
     select: { id: true },
   });
   if (!tutor) {
-    return NextResponse.json({ slots: [] });
+    return NextResponse.json({ error: "Tutor not found" }, { status: 404 });
   }
 
   const slots = await prisma.tutorAvailability.findMany({

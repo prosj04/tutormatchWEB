@@ -63,6 +63,15 @@ export async function softDeleteUser(userId: string): Promise<void> {
         where: { studentId: user.student.id, status: "SCHEDULED" },
         data: { status: "CANCELLED", cancelledBy: "STUDENT" },
       });
+
+      // 대기/배정 상담 booking도 취소 — 매니저 인박스에 유령 상담이 남지 않도록.
+      await tx.consultationBooking.updateMany({
+        where: {
+          studentId: user.student.id,
+          status: { in: ["WAITING", "ASSIGNED"] },
+        },
+        data: { status: "CANCELLED" },
+      });
     }
 
     // If teacher record exists, anonymize it

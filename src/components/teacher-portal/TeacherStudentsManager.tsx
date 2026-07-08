@@ -110,7 +110,18 @@ export function TeacherStudentsManager({
         setCancelMessage(data.error ?? "취소에 실패했습니다.");
         return;
       }
-      setCancelMessage("수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다.");
+      const data = (await res.json()) as {
+        makeupCreated?: boolean;
+        makeupSkippedReason?: string | null;
+      };
+      // P2-21: 보충이 실제로 생성됐을 때만 자동 생성 안내를 보이고, 미생성 시 사유를 노출한다.
+      setCancelMessage(
+        data.makeupCreated
+          ? "수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다."
+          : `수업이 취소되었습니다. ${
+              data.makeupSkippedReason ?? "보충 수업은 자동 생성되지 않았습니다."
+            }`,
+      );
       setUpcomingLessons((prev) => prev.filter((l) => l.id !== lessonId));
     } finally {
       setCancelling(false);

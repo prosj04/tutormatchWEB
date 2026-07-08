@@ -20,11 +20,17 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month");
+  if (month !== null && !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+    return NextResponse.json(
+      { error: "month 형식이 올바르지 않습니다 (YYYY-MM)" },
+      { status: 400 },
+    );
+  }
 
   const report = await prisma.monthlyReport.findFirst({
     where: {
       studentId: student.id,
-      ...(month && /^\d{4}-\d{2}$/.test(month) ? { month } : {}),
+      ...(month ? { month } : {}),
     },
     orderBy: { month: "desc" },
   });

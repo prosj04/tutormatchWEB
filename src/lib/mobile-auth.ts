@@ -104,18 +104,35 @@ function bearerFrom(request: Request): string | null {
   return value.trim();
 }
 
-/** access 토큰 검증 + 사용자 id 반환 */
-export function getMobileUser(request: Request): MobileTokenPayload | null {
+/**
+ * access 토큰 검증 + 사용자 id 반환.
+ *
+ * P2-8: 서명·만료만으로는 소프트삭제/역할변경을 반영하지 못해 토큰이 최대 7일간
+ * 유효했다. 웹 auth.ts의 deletedAt 가드와 동일하게, 서명 통과 후 user를 재조회해
+ * deletedAt≠null 또는 role 불일치 시 무효(null) 처리한다.
+ */
+export async function getMobileUser(
+  request: Request,
+): Promise<MobileTokenPayload | null> {
   const token = bearerFrom(request);
   if (!token) return null;
   const payload = verifyMobileToken(token);
   if (!payload || payload.typ !== "access") return null;
+
+  // 소프트삭제·역할변경 즉시 반영을 위해 user 재조회
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    select: { id: true, role: true, deletedAt: true },
+  });
+  if (!user || user.deletedAt !== null || user.role !== payload.role) {
+    return null;
+  }
   return payload;
 }
 
 /** 학생 권한 필수 — 라우트 핸들러에서 `if ("error" in r) return r.error` 패턴 */
 export async function requireMobileStudent(request: Request) {
-  const payload = getMobileUser(request);
+  const payload = await getMobileUser(request);
   if (!payload) {
     return {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),

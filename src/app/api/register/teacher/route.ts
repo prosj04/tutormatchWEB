@@ -38,10 +38,7 @@ export async function POST(request: Request) {
 
   if (
     !isNonEmptyString(name) ||
-    !isNonEmptyString(phone) ||
-    !isNonEmptyString(bio) ||
-    !isNonEmptyString(education) ||
-    !isNonEmptyString(experience)
+    !isNonEmptyString(phone)
   ) {
     return NextResponse.json({ error: "필수 항목을 모두 입력해 주세요." }, { status: 400 });
   }
@@ -64,6 +61,9 @@ export async function POST(request: Request) {
   }
 
   const subjectsCsv = subjectStrings.join(",");
+  const bioValue = isNonEmptyString(bio) ? bio.trim() : "";
+  const educationValue = isNonEmptyString(education) ? education.trim() : "";
+  const experienceValue = isNonEmptyString(experience) ? experience.trim() : "";
   const email = teacherSyntheticEmailFromDigits(phoneDigits);
   const gender = parseProfileGender(body.gender);
   if (!gender) {
@@ -97,17 +97,17 @@ export async function POST(request: Request) {
               name,
               phone: phoneDigits,
               subjects: subjectsCsv,
-              bio,
-              education,
-              experience,
+              bio: bioValue,
+              education: educationValue,
+              experience: experienceValue,
               gender,
               approved: false,
               profile: {
                 create: {
-                  intro: bio,
+                  intro: bioValue,
                   education: JSON.stringify([
                     {
-                      school: education,
+                      school: educationValue,
                       major: "",
                       year: "",
                     },
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
                       ? body.careerEntries
                       : [
                           {
-                            org: experience,
+                            org: experienceValue,
                             role: "",
                             period: "",
                           },

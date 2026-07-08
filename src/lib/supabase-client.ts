@@ -27,3 +27,4 @@ export async function uploadQuestionImage(
 
 export const TEACHER_PHOTO_BUCKET = "teacher-photos";
 export const TEACHER_DOCUMENT_BUCKET = "teacher-documents";
+export const QUESTION_IMAGE_BUCKET = "question-images";

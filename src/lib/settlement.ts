@@ -62,8 +62,10 @@ export async function computeMonthlySettlement(
       },
     },
     select: {
+      studentId: true,
       teacherId: true,
       durationMin: true,
+      startAt: true,
     },
   });
 
@@ -71,9 +73,50 @@ export async function computeMonthlySettlement(
     return { year, month, teachers: [], totals: { lessonCount: 0, totalHours: 0, payoutKrw: 0 }, needsReview: 0 };
   }
 
+  // P2-2: Exclude lessons tied to REFUNDED payments so we never over-pay teachers
+  // for service the student was refunded for.
+  //
+  // Data model has no direct Payment↔Lesson link. Payments reference subscriptions
+  // (PaymentCompletion.subscriptionId), and subscriptions carry the paid period
+  // (periodStart..periodEnd). So we treat a lesson as refunded-excluded when it
+  // belongs to a student whose REFUNDED payment points at a subscription whose
+  // active period covers the lesson's startAt. periodEnd null = open-ended.
+  const refundedPayments = await prisma.paymentCompletion.findMany({
+    where: {
+      status: "REFUNDED",
+      subscriptionId: { not: null },
+      studentId: { in: Array.from(new Set(lessons.map((l) => l.studentId))) },
+    },
+    select: { subscriptionId: true },
+  });
+  const refundedSubscriptionIds = refundedPayments
+    .map((p) => p.subscriptionId)
+    .filter((id): id is string => id !== null);
+
+  const refundedPeriods: { studentId: string; start: Date; end: Date | null }[] = [];
+  if (refundedSubscriptionIds.length > 0) {
+    const subs = await prisma.subscription.findMany({
+      where: { id: { in: refundedSubscriptionIds } },
+      select: { studentId: true, periodStart: true, periodEnd: true },
+    });
+    for (const s of subs) {
+      refundedPeriods.push({ studentId: s.studentId, start: s.periodStart, end: s.periodEnd });
+    }
+  }
+
+  const isRefunded = (studentId: string, startAt: Date): boolean =>
+    refundedPeriods.some(
+      (p) =>
+        p.studentId === studentId &&
+        startAt >= p.start &&
+        (p.end === null || startAt < p.end),
+    );
+
   // Group by teacherId
   const grouped: Record<string, { totalMinutes: number; lessonCount: number; needsReview: number }> = {};
   for (const lesson of lessons) {
+    // Skip lessons covered by a REFUNDED payment — they must not count toward payout.
+    if (isRefunded(lesson.studentId, lesson.startAt)) continue;
     if (!grouped[lesson.teacherId]) {
       grouped[lesson.teacherId] = { totalMinutes: 0, lessonCount: 0, needsReview: 0 };
     }

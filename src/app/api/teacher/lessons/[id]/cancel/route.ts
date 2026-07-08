@@ -62,6 +62,8 @@ export async function PATCH(_request: Request, context: RouteContext) {
   // Auto-create makeup lesson 7 days later if in the future
   const makeupAt = new Date(lesson.startAt.getTime() + 7 * 24 * 60 * 60 * 1000);
   let makeup: { id: string; startAt: Date } | null = null;
+  // P2-21: 보충 미생성 사유를 응답에 실어 무음 실패를 없앤다.
+  let makeupSkippedReason: string | null = null;
 
   if (makeupAt > new Date()) {
     // Guard against duplicate makeup (e.g. if this endpoint is called twice)
@@ -85,7 +87,13 @@ export async function PATCH(_request: Request, context: RouteContext) {
         },
         select: { id: true, startAt: true },
       });
+    } else {
+      makeupSkippedReason =
+        "7일 뒤 같은 시간에 이미 수업이 있어 보충 수업이 생성되지 않았습니다. 다른 시간으로 직접 예약해 주세요.";
     }
+  } else {
+    makeupSkippedReason =
+      "보충 예정 시각(7일 뒤)이 이미 지나 보충 수업이 생성되지 않았습니다. 다른 시간으로 직접 예약해 주세요.";
   }
 
   // Format makeup date for notification
@@ -157,5 +165,10 @@ export async function PATCH(_request: Request, context: RouteContext) {
     ),
   );
 
-  return NextResponse.json({ lesson: cancelled, makeup });
+  return NextResponse.json({
+    lesson: cancelled,
+    makeup,
+    makeupCreated: makeup !== null,
+    makeupSkippedReason,
+  });
 }

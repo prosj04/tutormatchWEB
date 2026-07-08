@@ -54,6 +54,7 @@ export async function POST(request: Request) {
 
   const teacher = await prisma.teacher.findFirst({
     where: { id: teacherId, approved: true, user: { deletedAt: null } },
+    select: { id: true, name: true, userId: true },
   });
   const student = await prisma.student.findFirst({
     where: { id: studentId, deletedAt: null },
@@ -107,6 +108,14 @@ export async function POST(request: Request) {
         relatedId: teacherId,
       });
     }
+    // 강사에게 학생 배정 알림 (재활성 포함).
+    await createNotification({
+      userId: teacher.userId,
+      type: "NEW_STUDENT_ASSIGNED",
+      title: "새로운 학생이 배정되었습니다",
+      body: `${student.name} 학생이 배정되었습니다. 첫 수업 일정을 잡아 주세요.`,
+      relatedId: studentId,
+    });
     return NextResponse.json({ match });
   }
 
@@ -132,6 +141,15 @@ export async function POST(request: Request) {
     title: "선생님이 배정되었습니다",
     body: `${teacher.name} 선생님이 배정되었습니다. 선생님 정보를 확인하고 수락해 주세요.`,
     relatedId: teacherId,
+  });
+
+  // 강사에게도 신규 학생 배정 알림.
+  await createNotification({
+    userId: teacher.userId,
+    type: "NEW_STUDENT_ASSIGNED",
+    title: "새로운 학생이 배정되었습니다",
+    body: `${student.name} 학생이 배정되었습니다. 첫 수업 일정을 잡아 주세요.`,
+    relatedId: studentId,
   });
 
   return NextResponse.json({ match }, { status: 201 });

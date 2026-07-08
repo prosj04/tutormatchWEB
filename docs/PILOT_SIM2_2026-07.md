@@ -172,3 +172,45 @@
 
 - `tsc --noEmit` 0, `next lint` 0, `prisma validate` 통과. 수정 3파일 한정 opus 회귀 확인 — 폼→API 값 왕복 100% 통과, guardianPhone 소비처(매니저 화면 원문 렌더 1곳) 호환, 모바일 계약 무영향, **회귀 없음**.
 - **수렴 판정: 신규 P0/P1 0건, 신규 P2는 당회 수정 완료, 회귀 0건 → 수렴.** 커밋·마이그레이션 없음(제약 준수), 프로덕션 DB 무접촉.
+
+## 10. P2 일괄 해소 + 인프라 실행 라운드 (2026-07-09, 사용자 지시)
+
+> 방식: opus 2팀 + codex(gpt-5.5) 2배치 병렬 위임, 본체는 스펙 작성·diff 검수·인프라 직접 실행. 사용자 승인 하에 프로덕션 DB 정리 포함.
+
+### 10.1 P1 잔여 — 전부 해소 확인
+- **P1-C 환불 Toss 실취소**: 이미 구현돼 있음을 확인 — `admin/payments/[id]/refund`가 DB 전이 **이전에** `cancelTossPayment` 호출(실패 시 502, DB 무변경). 웹훅 CANCELED 동기화가 외부취소를 수렴.
+- **P1-H 웹훅 서명**: Toss v1은 HMAC 서명 미제공. 현 구현은 모든 상태 전이를 `fetchTossPayment` 서버 재조회로 검증(본문 불신) — 위조 웹훅으로 상태 변경 불가. **재조회 검증이 곧 권장 방식이므로 해소로 판정.**
+
+### 10.2 P2 일괄 수정 (16건)
+- **P2-2** 정산-환불 차감: REFUNDED 결제→구독 기간 내 수업을 payout 집계에서 제외 (`settlement.ts`)
+- **P2-3** 취소된 상담 report/visit-confirmed 409 가드
+- **P2-4** 첫 수업 과거 날짜 400 (KST 기준)
+- **P2-6** register grade 화이트리스트 + 이름 30자 상한
+- **P2-7** 학생 소프트삭제 시 WAITING/ASSIGNED booking → CANCELLED (`account-deletion.ts`)
+- **P2-8** `getMobileUser` async화 — user 재조회로 deletedAt/role 즉시 반영, 호출부 5곳 await (`mobile-auth.ts`)
+- **P2-9** 업로드 크기 상한(문서 10MB/이미지 5MB) + 매직바이트 검증
+- **P2-10** high-w1h2 역할인 제거 — `listPriceKrw` optional화, list>price일 때만 노출·취소선
+- **P2-11** `requireManager`에 ADMIN 허용
+- **P2-13** 업로드 500 응답 error.message 원문 노출 제거(3곳, generic 한국어 + console.error)
+- **P2-14** 모바일 bcrypt 10→12
+- **P2-15** slots 404 일치, reports month 400, 모바일 로그인 STUDENT 한정(보호 라우트 전수 확인)
+- **P2-16** 만족도 미응답 3일 리마인더 — 알림 테이블 `relatedId` 조회로 중복 방지(스키마 무변경)
+- **P2-17** 구독 auto-resume 크론은 기존 존재 확인, 재개 시 학생 알림 보강
+- **P2-18** 신규 WAITING 알림은 기존 존재(매니저+치프 전원), 강사 배정 알림 신설(manager/admin matches 생성·재활성 경로)
+- **P2-20** 강사 가입 bio/education/experience 선택화
+- **P2-21** 수업취소 보충 무음 실패 제거 — `makeupCreated`/사유 응답 + 클라이언트 표시
+
+### 10.3 확인 후 미수정
+- **P2-5** days=7 주말 포함: 선생님이 4일/7일을 명시 선택하는 UX이므로 7일=한 주 전체가 의도로 판단 — 유지.
+- **P2-12** Alimtalk 템플릿 데드코드: 기능 무해, 카카오 계약 시 활용 예정 — 정리 보류.
+- **P2-19** 알림 body 이스케이프: 렌더 전수 React 텍스트 노드 확인(dangerouslySetInnerHTML은 테마 스크립트·아이콘뿐) — 비이슈 확정.
+
+### 10.4 인프라 실행 (사용자 위임)
+- **SatisfactionCheckin 유니크**: 프로덕션에 이미 적용돼 있음 확인(enum 승격 시 반영). §7.5 잔여 해소.
+- **connection_limit 1→5**: Vercel prod `DATABASE_URL`·로컬 `.env` 모두 상향. 다음 배포부터 적용.
+- **CRON_SECRET**: Vercel prod 설정 확인(자동 Bearer 첨부), vercel.json 크론 2종 등록 확인.
+- **파일럿 계정 정리**: §6의 pilot-/pilot2- 계정 12개를 `softDeleteUser` 경로로 소프트삭제 완료. 오전환 수업 1건은 [sample] 데모 계정 건으로 확인 — 실사용자 무영향, 복구 불요. "규규"(010-0000-0000, 07-07 가입)는 오너 테스트로 추정, 보존.
+- **미해결(사용자 액션 필요)**: `ANTHROPIC_API_KEY` Vercel prod 미설정 — AI 질답 작동 불가. Toss 라이브 키는 계약 후 교체.
+
+### 10.5 검증
+- `tsc --noEmit` 0, `next lint` 0. diff 전량 본체 검수(정산·모바일 인증·크론 등 금전·보안 경로 직접 확인).

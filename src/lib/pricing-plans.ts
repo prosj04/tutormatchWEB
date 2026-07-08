@@ -32,7 +32,7 @@ export type PricingPlanV2 = {
   /** 월정액 (원) */
   priceKrw: number;
   /** 정가 월액 = monthlyHours × 시간당 정가 */
-  listPriceKrw: number;
+  listPriceKrw?: number;
   /** 정가 대비 할인율(정수 %). 정가 이상(할인 없음)이면 null. */
   discountRate: number | null;
   title: string;
@@ -64,7 +64,7 @@ function makeV2Plan(
     hoursPerLesson,
     monthlyHours,
     priceKrw,
-    listPriceKrw,
+    ...(listPriceKrw > priceKrw ? { listPriceKrw } : {}),
     discountRate,
     title: `${tierLabel} · 주 ${weekly}회 · 회당 ${hoursPerLesson}시간`,
     subtitle: `주 ${weekly}회 · 회당 ${hoursPerLesson}시간`,

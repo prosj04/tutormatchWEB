@@ -85,6 +85,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (user.role !== "STUDENT") {
+    return NextResponse.json(
+      { error: "모바일 앱을 지원하지 않는 계정입니다" },
+      { status: 403 },
+    );
+  }
+
   const name =
     user.student?.name ?? user.teacher?.name ?? user.email.split("@")[0];
   const tokens = issueMobileTokens(user.id, user.role);

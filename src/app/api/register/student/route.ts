@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { assignChiefManagerToStudent, createConsultationRequest } from "@/lib/student-enrollment";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { logAnalyticsEvent } from "@/lib/analytics";
+import { STUDENT_GRADES } from "@/lib/consultation-grades";
 import { prisma } from "@/lib/prisma";
 import {
   normalizePhoneDigits,
@@ -44,6 +45,10 @@ export async function POST(request: Request) {
   if (!isNonEmptyString(name)) {
     return NextResponse.json({ error: "이름을 입력해 주세요." }, { status: 400 });
   }
+  const trimmedName = name.trim();
+  if (trimmedName.length > 30) {
+    return NextResponse.json({ error: "이름은 30자 이내여야 합니다" }, { status: 400 });
+  }
   if (!isNonEmptyString(phone)) {
     return NextResponse.json({ error: "전화번호를 입력해 주세요." }, { status: 400 });
   }
@@ -61,6 +66,9 @@ export async function POST(request: Request) {
   const subjectStrings = Array.isArray(subjects) ? subjects.filter(isNonEmptyString) : [];
   const subjectsCsv = subjectStrings.join(",");
   const gradeValue = isNonEmptyString(grade) ? grade.trim() : "";
+  if (gradeValue && !STUDENT_GRADES.includes(gradeValue as (typeof STUDENT_GRADES)[number])) {
+    return NextResponse.json({ error: "올바른 학년을 선택해 주세요." }, { status: 400 });
+  }
   const guardianPhone = isNonEmptyString(rawGuardianPhone)
     ? normalizePhoneDigits(rawGuardianPhone)
     : undefined;
@@ -106,7 +114,7 @@ export async function POST(request: Request) {
           role: "STUDENT",
           student: {
             create: {
-              name: name.trim(),
+              name: trimmedName,
               grade: gradeValue,
               subjects: subjectsCsv,
               phone: phoneDigits,

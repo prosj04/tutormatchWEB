@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -154,13 +153,12 @@ export function QuestionsPageClient({ studentName, initialItems, initialFilter }
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-2 text-sm text-text-primary">{q.content}</p>
                       {q.imageUrl && (
-                        <div className="relative mt-2 h-20 w-24 overflow-hidden rounded-lg">
-                          <Image
+                        <div className="mt-2 h-20 w-24 overflow-hidden rounded-lg">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
                             src={q.imageUrl}
                             alt="첨부 이미지"
-                            fill
-                            className="object-cover"
-                            sizes="96px"
+                            className="h-full w-full object-cover"
                           />
                         </div>
                       )}

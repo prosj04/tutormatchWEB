@@ -1447,6 +1447,52 @@ export async function runAlertChecks() {
     satisfactionCheckinsCreated++;
   }
 
+  // ── NEW-D2. Satisfaction check-in non-response reminder (D+3) ─────────────
+  //
+  // SatisfactionCheckin requested 3+ days ago with no response yet → send the
+  // student ONE reminder. Schema change is forbidden, so dedup is done by
+  // querying the Notification table: a SATISFACTION_CHECKIN_REMINDER row whose
+  // relatedId == checkin.id means we already reminded → skip. This keeps the
+  // reminder to exactly once even across repeated cron runs.
+
+  const reminderCutoff = new Date(Date.now() - 3 * DAY_MS);
+
+  const unansweredCheckins = await prisma.satisfactionCheckin.findMany({
+    where: {
+      respondedAt: null,
+      requestedAt: { lt: reminderCutoff },
+    },
+    select: {
+      id: true,
+      student: { select: { userId: true } },
+    },
+  });
+
+  if (unansweredCheckins.length > 0) {
+    const checkinIds = unansweredCheckins.map((c) => c.id);
+    const alreadyReminded = await prisma.notification.findMany({
+      where: {
+        type: "SATISFACTION_CHECKIN_REMINDER",
+        relatedId: { in: checkinIds },
+      },
+      select: { relatedId: true },
+    });
+    const remindedIds = new Set(alreadyReminded.map((n) => n.relatedId));
+
+    for (const checkin of unansweredCheckins) {
+      if (remindedIds.has(checkin.id)) continue;
+
+      await createNotification({
+        userId: checkin.student.userId,
+        type: "SATISFACTION_CHECKIN_REMINDER",
+        title: "첫 수업 소감을 아직 못 받았어요",
+        body: "잠깐이면 됩니다. 첫 수업은 어떠셨는지 대시보드에서 알려주세요.",
+        relatedId: checkin.id,
+      });
+      notificationsCreated++;
+    }
+  }
+
   // ── AUTO-RESUME. Paused subscriptions past pausedUntil ────────────────────
   //
   // Subscription status "PAUSED" with pausedUntil < now → resume:
@@ -1464,6 +1510,7 @@ export async function runAlertChecks() {
       periodEnd: true,
       student: {
         select: {
+          userId: true,
           name: true,
           managerLinks: { select: { manager: { select: { userId: true } } } },
         },
@@ -1487,6 +1534,17 @@ export async function runAlertChecks() {
           pausedUntil: null,
         },
       });
+
+      // Notify the student their lessons resume today.
+      await createNotification({
+        userId: sub.student.userId,
+        type: "SUBSCRIPTION_RENEWED",
+        title: "수업이 다시 시작됩니다",
+        body: "일시정지했던 수업이 오늘부터 다시 시작됩니다. 대시보드에서 일정을 확인해 주세요.",
+        relatedId: sub.id,
+      });
+      notificationsCreated++;
+
       subscriptionsAutoResumed++;
     }
   }

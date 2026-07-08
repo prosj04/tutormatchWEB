@@ -258,14 +258,16 @@ export function CheckoutContent({
                     </CmsText>
                     <dd>{tutorName}</dd>
                   </div>
-                  <div className="kv-row">
-                    <CmsText active={isEditMode} cmsKey="dt_list_price">
-                      <dt>{c("dt_list_price", "정가 (시간당 5만원)")}</dt>
-                    </CmsText>
-                    <dd style={{ textDecoration: plan.discountRate ? "line-through" : "none", opacity: plan.discountRate ? 0.7 : 1 }}>
-                      {formatKRW(plan.listPriceKrw)}
-                    </dd>
-                  </div>
+                  {plan.listPriceKrw && plan.listPriceKrw > plan.priceKrw ? (
+                    <div className="kv-row">
+                      <CmsText active={isEditMode} cmsKey="dt_list_price">
+                        <dt>{c("dt_list_price", "정가 (시간당 5만원)")}</dt>
+                      </CmsText>
+                      <dd style={{ textDecoration: "line-through", opacity: 0.7 }}>
+                        {formatKRW(plan.listPriceKrw)}
+                      </dd>
+                    </div>
+                  ) : null}
                   {plan.discountRate ? (
                     <div className="kv-row">
                       <CmsText active={isEditMode} cmsKey="dt_discount">

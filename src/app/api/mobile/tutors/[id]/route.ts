@@ -8,7 +8,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } },
 ) {
-  getMobileUser(request);
+  await getMobileUser(request);
 
   const t = await prisma.teacher.findFirst({
     // 상세는 매니저 딥링크 호환을 위해 role 제약은 두지 않되, 데모용 [sample]은 제외.

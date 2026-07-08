@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 import { requireStudent } from "@/lib/student-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { QUESTION_IMAGE_BUCKET } from "@/lib/supabase-client";
 
-const QUESTION_IMAGE_BUCKET = "question-images";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
@@ -15,7 +15,7 @@ const ALLOWED_MIME_TYPES = new Set([
 /** POST /api/student/question-images
  *  Accepts multipart/form-data with a "file" field.
  *  Validates and uploads the image to Supabase Storage via the admin (service-role) client.
- *  Returns { url } — the public URL of the uploaded image.
+ *  Returns { url } — an authenticated app URL for the uploaded image.
  */
 export async function POST(request: Request) {
   const authResult = await requireStudent();
@@ -61,12 +61,9 @@ export async function POST(request: Request) {
     });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Question image upload failed", error);
+    return NextResponse.json({ error: "업로드에 실패했습니다" }, { status: 500 });
   }
 
-  const { data: publicData } = supabase.storage
-    .from(QUESTION_IMAGE_BUCKET)
-    .getPublicUrl(data.path);
-
-  return NextResponse.json({ url: publicData.publicUrl });
+  return NextResponse.json({ url: `/api/question-images/${data.path}` });
 }

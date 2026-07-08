@@ -34,6 +34,11 @@ function parseLocalDateTime(date: string, time: string) {
   return new Date(year, month - 1, day, hour, minute, 0, 0);
 }
 
+function todayKstDateString() {
+  const now = new Date();
+  return new Date(now.getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
 function firstSubject(subjects: string) {
   return subjects.split(/[,\s]+/).filter(Boolean)[0] ?? subjects;
 }
@@ -59,6 +64,9 @@ export async function PATCH(request: Request, context: RouteContext) {
   const time = typeof body.time === "string" ? body.time.trim() : "";
   if (!isValidDateString(date)) {
     return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+  }
+  if (date < todayKstDateString()) {
+    return NextResponse.json({ error: "첫 수업 날짜는 오늘 이후여야 합니다" }, { status: 400 });
   }
   if (!isValidTimeString(time)) {
     return NextResponse.json({ error: "Invalid time" }, { status: 400 });

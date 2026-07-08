@@ -178,5 +178,14 @@ export async function POST(request: Request) {
     relatedId: teacherId,
   });
 
+  // 강사에게도 신규 학생 배정 알림.
+  await createNotification({
+    userId: targetTeacher.userId,
+    type: "NEW_STUDENT_ASSIGNED",
+    title: "새로운 학생이 배정되었습니다",
+    body: `${student.name} 학생이 배정되었습니다. 첫 수업 일정을 잡아 주세요.`,
+    relatedId: studentId,
+  });
+
   return NextResponse.json({ ok: true }, { status: 201 });
 }
