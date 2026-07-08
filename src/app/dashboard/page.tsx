@@ -47,7 +47,8 @@ export default async function DashboardPage({
   }
 
   const journeyStage = await resolveStudentJourneyStage(student.id);
-  if (journeyStage !== "ACTIVE") {
+  // 선생님 수락 후(첫 수업 전 포함)에는 상담 현황이 아니라 수업 대시보드를 보여준다.
+  if (journeyStage !== "ACTIVE" && journeyStage !== "FIRST_LESSON_PENDING") {
     redirect("/dashboard/consultation");
   }
 

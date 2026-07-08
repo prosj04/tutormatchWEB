@@ -37,7 +37,7 @@ export default async function ConsultationPage({
   }
 
   const journeyStage = await resolveStudentJourneyStage(student.id);
-  if (journeyStage === "ACTIVE") {
+  if (journeyStage === "ACTIVE" || journeyStage === "FIRST_LESSON_PENDING") {
     redirect("/dashboard");
   }
 

@@ -21,17 +21,22 @@ function parseSubjects(raw: string): string[] {
 type ManagerMatchingPageProps = {
   initialStudents: MatchStudent[];
   initialTeachers: MatchTeacher[];
+  /** 상담 관리에서 "선생님 배정"으로 진입 시 프리셀렉트할 학생 id */
+  initialSelectedId?: string | null;
 };
 
 export function ManagerMatchingPage({
   initialStudents,
   initialTeachers,
+  initialSelectedId = null,
 }: ManagerMatchingPageProps) {
   const [students, setStudents] = useState<MatchStudent[]>(initialStudents);
   const [teachers, setTeachers] = useState<MatchTeacher[]>(initialTeachers);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(
-    initialStudents[0]?.id ?? null,
+    (initialSelectedId && initialStudents.some((s) => s.id === initialSelectedId)
+      ? initialSelectedId
+      : initialStudents[0]?.id) ?? null,
   );
   const [teacherId, setTeacherId] = useState<string | null>(null);
   const [matchSubjects, setMatchSubjects] = useState<string[]>([]);
@@ -105,6 +110,7 @@ export function ManagerMatchingPage({
         body: JSON.stringify({
           studentId: selected.id,
           teacherId,
+          reassign: Boolean(selected.currentTeacherName),
           subjects: matchSubjects.join(", "),
           startDate: todayDateKey(),
           matchReason: matchReason.trim() || undefined,
@@ -127,7 +133,7 @@ export function ManagerMatchingPage({
     <div>
       <h1 className="text-2xl font-black text-text-primary sm:text-3xl">매칭 관리</h1>
       <p className="mt-2 text-sm text-text-secondary">
-        상담 완료 학생을 담당 선생님에게 배정합니다.
+        상담 진행·완료 학생을 담당 선생님에게 배정하거나 재배정합니다.
       </p>
 
       <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -154,7 +160,14 @@ export function ManagerMatchingPage({
                         : "border-gray-200 bg-surface hover:border-primary/40"
                     }`}
                   >
-                    <p className="font-semibold text-text-primary">{s.name}</p>
+                    <p className="font-semibold text-text-primary">
+                      {s.name}
+                      {s.currentTeacherName ? (
+                        <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                          재배정
+                        </span>
+                      ) : null}
+                    </p>
                     <p className="mt-0.5 text-xs text-text-secondary">{s.grade}</p>
                     <p className="mt-1 text-xs text-primary">{s.subjects}</p>
                   </button>
@@ -176,6 +189,12 @@ export function ManagerMatchingPage({
               {selected.consultationNote ? (
                 <p className="mt-3 rounded-lg bg-background px-3 py-2 text-sm text-text-secondary">
                   상담 메모: {selected.consultationNote}
+                </p>
+              ) : null}
+              {selected.currentTeacherName ? (
+                <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  현재 배정: <span className="font-semibold">{selected.currentTeacherName}</span> 선생님 —
+                  새 선생님을 선택하면 기존 배정이 취소되고 재배정됩니다.
                 </p>
               ) : null}
 
