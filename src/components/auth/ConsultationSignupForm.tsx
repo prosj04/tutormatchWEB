@@ -63,25 +63,46 @@ export function ConsultationSignupForm({
     );
   }
 
+  function fieldError(key: FieldKey): string | undefined {
+    switch (key) {
+      case "name":
+        return name.trim() ? undefined : "이름을 입력해 주세요.";
+      case "phone": {
+        if (!phone.trim()) return "전화번호를 입력해 주세요.";
+        const d = normalizePhoneDigits(phone);
+        return d.length < 10 || d.length > 11 ? "올바른 휴대전화 번호를 입력해 주세요." : undefined;
+      }
+      case "password":
+        if (!password) return "비밀번호를 입력해 주세요.";
+        return password.length < 8 ? "비밀번호는 8자 이상이어야 합니다." : undefined;
+      case "passwordConfirm":
+        if (!passwordConfirm) return "비밀번호 확인을 입력해 주세요.";
+        return password !== passwordConfirm ? "비밀번호가 일치하지 않습니다." : undefined;
+      case "terms":
+        return termsAgreed ? undefined : "이용약관과 개인정보처리방침에 동의해 주세요.";
+      case "guardianConsent":
+        return guardianConsent ? undefined : "보호자 동의가 필요합니다.";
+      default:
+        return undefined;
+    }
+  }
+
+  /** 필드를 벗어날 때(blur) 해당 필드만 검사해 즉시 표시 */
+  function validateOnBlur(key: FieldKey) {
+    setFieldErrors((prev) => ({ ...prev, [key]: fieldError(key) }));
+  }
+
+  function clearError(key: FieldKey) {
+    setFieldErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+  }
+
   function validate(): boolean {
+    const keys: FieldKey[] = ["name", "phone", "password", "passwordConfirm", "terms", "guardianConsent"];
     const next: Partial<Record<FieldKey, string>> = {};
-    if (!name.trim()) next.name = "이름을 입력해 주세요.";
-    if (!phone.trim()) next.phone = "전화번호를 입력해 주세요.";
-    else {
-      const d = normalizePhoneDigits(phone);
-      if (d.length < 10 || d.length > 11) next.phone = "올바른 휴대전화 번호를 입력해 주세요.";
-    }
-    if (guardianPhone.trim()) {
-      const gd = normalizePhoneDigits(guardianPhone);
-      if (gd.length < 10 || gd.length > 11)
-        next.guardianPhone = "올바른 학부모 휴대전화 번호를 입력해 주세요.";
-    }
-    if (!password) next.password = "비밀번호를 입력해 주세요.";
-    else if (password.length < 8) next.password = "비밀번호는 8자 이상이어야 합니다.";
-    if (!passwordConfirm) next.passwordConfirm = "비밀번호 확인을 입력해 주세요.";
-    else if (password !== passwordConfirm) next.passwordConfirm = "비밀번호가 일치하지 않습니다.";
-    if (!termsAgreed) next.terms = "이용약관과 개인정보처리방침에 동의해 주세요.";
-    if (!guardianConsent) next.guardianConsent = "보호자 동의가 필요합니다.";
+    keys.forEach((k) => {
+      const err = fieldError(k);
+      if (err) next[k] = err;
+    });
     setFieldErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -104,7 +125,6 @@ export function ConsultationSignupForm({
           name: name.trim(),
           password,
           phone: phone.trim(),
-          guardianPhone: guardianPhone.trim() || undefined,
           instantEnroll,
           guardianConsent: true,
         }),
@@ -152,6 +172,7 @@ export function ConsultationSignupForm({
           gender: gender || undefined,
           region: region || undefined,
           subjects: selectedSubjects.length > 0 ? selectedSubjects : undefined,
+          guardianPhone: guardianPhone.trim() || undefined,
         }),
       });
     } catch {
@@ -175,6 +196,17 @@ export function ConsultationSignupForm({
           </p>
         </div>
         <div className="space-y-5">
+          <div className="field">
+            <label htmlFor="reg-guardian-phone">{c("label_guardian_phone", "학부모 연락처")}</label>
+            <input
+              id="reg-guardian-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="010-0000-0000"
+              value={guardianPhone}
+              onChange={(e) => setGuardianPhone(e.target.value)}
+            />
+          </div>
           <div className="flex items-end gap-4">
             <GenderSelect value={gender} onChange={setGender} size="sm" className="shrink-0" />
             <div className="field" style={{ flex: 1 }}>
@@ -250,80 +282,77 @@ export function ConsultationSignupForm({
         </p>
       </div>
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="field">
-            <label htmlFor="reg-name">{c("label_name", "이름")}</label>
-            <input
-              id="reg-name"
-              type="text"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            {fieldErrors.name ? (
-              <p className="field-error">{fieldErrors.name}</p>
-            ) : null}
-          </div>
-          <div className="field">
-            <label htmlFor="reg-phone">{c("label_phone", "학생 연락처")}</label>
-            <input
-              id="reg-phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="010-0000-0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
-          </div>
+        <div className="field">
+          <label htmlFor="reg-name">{c("label_name", "이름")}</label>
+          <input
+            id="reg-name"
+            type="text"
+            autoComplete="name"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              clearError("name");
+            }}
+            onBlur={() => validateOnBlur("name")}
+          />
+          {fieldErrors.name ? <p className="field-error">{fieldErrors.name}</p> : null}
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="field">
-            <label htmlFor="reg-guardian-phone">{c("label_guardian_phone", "학부모 연락처")}</label>
-            <input
-              id="reg-guardian-phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="010-0000-0000"
-              value={guardianPhone}
-              onChange={(e) => setGuardianPhone(e.target.value)}
-            />
-            {fieldErrors.guardianPhone ? (
-              <p className="field-error">{fieldErrors.guardianPhone}</p>
-            ) : null}
-          </div>
+        <div className="field">
+          <label htmlFor="reg-phone">{c("label_phone", "학생 전화번호 (ID)")}</label>
+          <input
+            id="reg-phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="010-0000-0000"
+            value={phone}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              clearError("phone");
+            }}
+            onBlur={() => validateOnBlur("phone")}
+          />
+          {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="field">
-            <label htmlFor="reg-password">{c("label_password", "비밀번호")}</label>
-            <input
-              id="reg-password"
-              type="password"
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
-          </div>
-          <div className="field">
-            <label htmlFor="reg-password2">{c("label_password_confirm", "비밀번호 확인")}</label>
-            <input
-              id="reg-password2"
-              type="password"
-              autoComplete="new-password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-            />
-            {fieldErrors.passwordConfirm ? (
-              <p className="field-error">{fieldErrors.passwordConfirm}</p>
-            ) : null}
-          </div>
+        <div className="field">
+          <label htmlFor="reg-password">{c("label_password", "비밀번호")}</label>
+          <input
+            id="reg-password"
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              clearError("password");
+            }}
+            onBlur={() => validateOnBlur("password")}
+          />
+          {fieldErrors.password ? <p className="field-error">{fieldErrors.password}</p> : null}
+        </div>
+        <div className="field">
+          <label htmlFor="reg-password2">{c("label_password_confirm", "비밀번호 확인")}</label>
+          <input
+            id="reg-password2"
+            type="password"
+            autoComplete="new-password"
+            value={passwordConfirm}
+            onChange={(e) => {
+              setPasswordConfirm(e.target.value);
+              clearError("passwordConfirm");
+            }}
+            onBlur={() => validateOnBlur("passwordConfirm")}
+          />
+          {fieldErrors.passwordConfirm ? (
+            <p className="field-error">{fieldErrors.passwordConfirm}</p>
+          ) : null}
         </div>
         <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
           <input
             type="checkbox"
             checked={termsAgreed}
-            onChange={(e) => setTermsAgreed(e.target.checked)}
+            onChange={(e) => {
+              setTermsAgreed(e.target.checked);
+              if (e.target.checked) clearError("terms");
+            }}
             className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
           />
           <span>
@@ -343,7 +372,10 @@ export function ConsultationSignupForm({
           <input
             type="checkbox"
             checked={guardianConsent}
-            onChange={(e) => setGuardianConsent(e.target.checked)}
+            onChange={(e) => {
+              setGuardianConsent(e.target.checked);
+              if (e.target.checked) clearError("guardianConsent");
+            }}
             className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
           />
           <span>

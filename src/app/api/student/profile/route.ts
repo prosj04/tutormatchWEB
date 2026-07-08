@@ -14,14 +14,32 @@ export async function PATCH(request: Request) {
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;
 
-  let body: { grade?: unknown; gender?: unknown; region?: unknown; subjects?: unknown };
+  let body: {
+    grade?: unknown;
+    gender?: unknown;
+    region?: unknown;
+    subjects?: unknown;
+    guardianPhone?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const data: { grade?: string; gender?: string; region?: string; subjects?: string } = {};
+  const data: {
+    grade?: string;
+    gender?: string;
+    region?: string;
+    subjects?: string;
+    guardianPhone?: string;
+  } = {};
+  if (isNonEmptyString(body.guardianPhone)) {
+    const digits = body.guardianPhone.replace(/\D/g, "");
+    if (digits.length >= 10 && digits.length <= 11) {
+      data.guardianPhone = body.guardianPhone.trim().slice(0, 20);
+    }
+  }
   if (isNonEmptyString(body.grade)) data.grade = body.grade.trim().slice(0, 20);
   const gender = parseProfileGender(body.gender);
   if (gender) data.gender = gender;
