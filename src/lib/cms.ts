@@ -49,9 +49,7 @@ function mapTestimonialRows(
     ...(item.title ? { title: item.title } : {}),
     quote: item.quote,
     info: item.author,
-    img:
-      item.imageUrl ||
-      "/images/photos/selfies/selfie-2.jpg",
+    img: item.imageUrl || "",
     ...(item.gradeFrom ? { gradeFrom: item.gradeFrom } : {}),
     ...(item.gradeTo ? { gradeTo: item.gradeTo } : {}),
     ...(item.category ? { category: item.category } : {}),
