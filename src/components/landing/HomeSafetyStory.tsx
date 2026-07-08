@@ -10,7 +10,7 @@ export type SafetyStoryData = {
   steps: { title: string; desc: string }[];
 };
 
-const UNIT_VH = 55;
+const UNIT_VH = 40;
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
@@ -22,7 +22,8 @@ function clamp01(v: number) {
  * 단계: intro → 매칭 4쌍 누적 → 클로저 → 전환(멈춤).
  */
 // 다크 구간 자동 진행: 검정 전환(첫 매칭) 시작~다크 마지막 단계(클로저) 도달까지 스스로 넘긴다.
-const AUTO_STEP_MS = 1000; // 자동 전진 간격
+const AUTO_STEP_MS = 1000; // 자동 전진 간격(데스크톱 기본)
+const AUTO_STEP_MS_TOUCH = 1400; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 읽을 시간 확보
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
@@ -30,6 +31,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
   const [stepsOn, setStepsOn] = useState(0);
   const [reduced, setReduced] = useState(false);
+  const [autoStepMs, setAutoStepMs] = useState(AUTO_STEP_MS);
 
   const matchCount = data.matches.length;
   const totalUnits = 1 + matchCount + 1 + 1; // intro + matches + closer + pivot
@@ -123,6 +125,15 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     };
   }, [totalUnits, darkLast, matchCount]);
 
+  // 자동 전진 간격을 뷰포트 기준 차등: hover 없는 기기 또는 화면폭 ≤640px이면 느리게(1400ms).
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none), (max-width: 640px)");
+    const apply = () => setAutoStepMs(mq.matches ? AUTO_STEP_MS_TOUCH : AUTO_STEP_MS);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   // 다크 구간 자동 진행: 다크 구간에 들어오면 타이머로 다음 단계로 — 흰 화면(darkLast+1)까지 전진 후 정지.
   useEffect(() => {
     if (reduced) return;
@@ -134,14 +145,14 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     autoTimerRef.current = setTimeout(() => {
       autoTimerRef.current = null;
       setUnit((prev) => (prev >= DARK_START && prev <= darkLast ? prev + 1 : prev));
-    }, AUTO_STEP_MS);
+    }, autoStepMs);
     return () => {
       if (autoTimerRef.current) {
         clearTimeout(autoTimerRef.current);
         autoTimerRef.current = null;
       }
     };
-  }, [unit, reduced, darkLast]);
+  }, [unit, reduced, darkLast, autoStepMs]);
 
   const phase: "intro" | "match" | "closer" | "pivot" =
     unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
