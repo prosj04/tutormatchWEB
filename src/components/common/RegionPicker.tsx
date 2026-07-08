@@ -72,6 +72,9 @@ function ComboField({
         onFocus={() => {
           setQuery("");
           setOpen(true);
+          requestAnimationFrame(() => {
+            rootRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+          });
         }}
         onClick={() => setOpen(true)}
         onChange={(e) => setQuery(e.target.value)}

@@ -183,8 +183,8 @@ export function ConsultationSignupForm({
 
   if (step === 2) {
     return (
-      <div>
-        <div className="mb-6" style={{ paddingRight: 36 }}>
+      <div className="signup-form">
+        <div className="signup-form-head mb-6" style={{ paddingRight: 36 }}>
           <p className="eyebrow">Consultation</p>
           <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
             {c("step2_title", "상담 신청 완료")}
@@ -244,31 +244,32 @@ export function ConsultationSignupForm({
             </div>
           </div>
         </div>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void handleExtraSave()}
-          className="btn btn-acc btn-block"
-          style={{ marginTop: 28 }}
-        >
-          {loading ? c("btn_submitting", "저장 중…") : c("step2_btn_save", "저장하고 계속")}
-        </button>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={goNext}
-          className="btn btn-ghost btn-block"
-          style={{ marginTop: 10 }}
-        >
-          {c("step2_btn_skip", "건너뛰기")}
-        </button>
+        <div className="signup-form-actions">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleExtraSave()}
+            className="btn btn-acc btn-block"
+          >
+            {loading ? c("btn_submitting", "저장 중…") : c("step2_btn_save", "저장하고 계속")}
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={goNext}
+            className="btn btn-ghost btn-block"
+            style={{ marginTop: 10 }}
+          >
+            {c("step2_btn_skip", "건너뛰기")}
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-5" style={{ paddingRight: 36 }}>
+    <div className="signup-form">
+      <div className="signup-form-head mb-5" style={{ paddingRight: 36 }}>
         <p className="eyebrow">Consultation</p>
         <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
           {c("title", "상담 신청")}
@@ -384,36 +385,37 @@ export function ConsultationSignupForm({
           </span>
         </label>
       </div>
-      <button
-        type="button"
-        disabled={loading}
-        onClick={() => void handleSubmit()}
-        className="btn btn-acc btn-block"
-        style={{ marginTop: 20 }}
-      >
-        {loading ? (
-          <>
-            <span
-              className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
-              aria-hidden
-            />
-            <span>{c("btn_submitting", "처리 중…")}</span>
-          </>
-        ) : (
-          instantEnroll ? c("btn_submit_instant", "등록하고 시작하기") : c("btn_submit", "상담 신청")
-        )}
-      </button>
-      {conflictError ? (
-        <p className="field-error mt-4 text-center text-sm" role="alert">
-          {conflictError}
-        </p>
-      ) : null}
-      {showLoginLink ? (
-        <p className="auth-alt">
-          {c("login_hint", "이미 계정이 있으신가요?")}{" "}
-          <Link href="/login">{c("login_link", "로그인")}</Link>
-        </p>
-      ) : null}
+      <div className="signup-form-actions">
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => void handleSubmit()}
+          className="btn btn-acc btn-block"
+        >
+          {loading ? (
+            <>
+              <span
+                className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                aria-hidden
+              />
+              <span>{c("btn_submitting", "처리 중…")}</span>
+            </>
+          ) : (
+            instantEnroll ? c("btn_submit_instant", "등록하고 시작하기") : c("btn_submit", "상담 신청")
+          )}
+        </button>
+        {conflictError ? (
+          <p className="field-error mt-4 text-center text-sm" role="alert">
+            {conflictError}
+          </p>
+        ) : null}
+        {showLoginLink ? (
+          <p className="auth-alt">
+            {c("login_hint", "이미 계정이 있으신가요?")}{" "}
+            <Link href="/login">{c("login_link", "로그인")}</Link>
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

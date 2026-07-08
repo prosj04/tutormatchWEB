@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 
@@ -22,14 +22,7 @@ function FaqAccordionItem({
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  const answerRef = useRef<HTMLDivElement>(null);
   const panelId = `faq-panel-${useId()}`;
-
-  useEffect(() => {
-    const a = answerRef.current;
-    if (!a) return;
-    a.style.maxHeight = open ? `${a.scrollHeight}px` : "0px";
-  }, [open]);
 
   return (
     <ConcordReveal className={`faq-item${open ? " open" : ""}`}>
@@ -45,7 +38,7 @@ function FaqAccordionItem({
           <FaqIcon />
         </span>
       </button>
-      <div className="faq-a" ref={answerRef} id={panelId} role="region">
+      <div className="faq-a" id={panelId} role="region">
         <div className="a-inner faq-a-inner">{item.a}</div>
       </div>
     </ConcordReveal>
