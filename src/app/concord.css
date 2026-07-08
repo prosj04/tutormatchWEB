@@ -129,7 +129,7 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .lp2-pcard-grid{
   display:flex; gap:18px; align-items:flex-start; justify-content:center;
   max-width:1180px; margin:0 auto;
-  overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
   padding-bottom:8px; scrollbar-width:thin;
 }
 .lp2-pcard{
@@ -169,7 +169,7 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
   .lp2-price-duo, .lp2-pcard-grid{
     justify-content:flex-start;
     margin:0 -20px; padding:4px 20px 16px;
-    overflow-x:auto; scroll-snap-type:x mandatory;
+    overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory;
   }
   .lp2-pcard{ flex:0 0 min(84vw, 336px); }
 }
@@ -476,7 +476,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .hall-card figcaption span { font-size: 12.5px; opacity: 0.85; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   .hall-track { animation: none; }
-  .hall-marquee { overflow-x: auto; }
+  .hall-marquee { overflow-x: auto; overflow-y: hidden; }
 }
 
 /* ── 선생님 프로필 카드 (tpx — /tutors 캐러셀·홈 미리보기 공용) ── */
@@ -519,7 +519,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 /* 모바일: 세로 나열 대신 좌우 스와이프 캐러셀 — 후보를 나란히 비교하는 의도 유지 */
 @media (max-width: 960px) {
   .lp2-tpx-grid {
-    display: flex; overflow-x: auto; gap: 14px;
+    display: flex; overflow-x: auto; overflow-y: hidden; gap: 14px;
     margin: 0 -20px; padding: 4px 20px 16px;
     scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;

@@ -261,7 +261,7 @@ export function FeaturedTutors({
                 siteContent,
                 "safety_story",
                 "news_empathy",
-                "이런 일들이 실제로 있었습니다.\n그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.",
+                "그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.",
               )}
             </p>
           </ConcordReveal>
