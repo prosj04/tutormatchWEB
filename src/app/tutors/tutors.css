@@ -150,6 +150,15 @@
   color: var(--mut);
   opacity: 0.75;
 }
+.tp-newsintro-empathy {
+  margin: clamp(32px, 4.5vh, 52px) 0 0;
+  text-align: center;
+  font-size: clamp(17px, 1.4vw, 21px);
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.65;
+  white-space: pre-line;
+}
 
 /* ── 카드 최상단 과목 뱃지 + 프로필 사진 칸 보정 ── */
 .tp-card-subject { padding: 16px 16px 0; }

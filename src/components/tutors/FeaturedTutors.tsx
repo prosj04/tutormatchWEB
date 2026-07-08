@@ -93,7 +93,7 @@ function TutorCarousel({
   // 1.5초 자동 오른쪽 순환 (호버·조작 시 일시정지/리셋)
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(() => go(1), 1500);
+    const id = window.setInterval(() => go(1), 3000);
     return () => window.clearInterval(id);
   }, [paused, go, pos]);
 
@@ -253,6 +253,16 @@ export function FeaturedTutors({
           <ConcordReveal as="div">
             <p className="tp-newsintro-note">
               {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다")}
+            </p>
+          </ConcordReveal>
+          <ConcordReveal as="div">
+            <p className="tp-newsintro-empathy">
+              {getCmsSectionValue(
+                siteContent,
+                "safety_story",
+                "news_empathy",
+                "이런 일들이 실제로 있었습니다.\n그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.",
+              )}
             </p>
           </ConcordReveal>
         </div>

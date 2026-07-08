@@ -938,16 +938,12 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-matchline.on { opacity: 1; transform: none; }
 .is-dark .lp2-story-matchline { color: #f4f1ea; }
 
-/* 다크 구간: 네비게이션·배너까지 검게, 하단 상담 CTA 숨김 */
+/* 다크 구간: 네비게이션은 숨기고, 배너는 검게, 하단 상담 CTA 숨김 */
 body.story-dark header.site {
-  background: #0a0a0a;
-  border-bottom-color: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  transition: background 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
 }
-body.story-dark header.site :is(a, button, .logo, .nav-links a) { color: #f4f1ea; }
-body.story-dark header.site .logo span { color: var(--acc); }
 body.story-dark .site-banner {
   background: #0a0a0a;
   color: rgba(244, 241, 234, 0.85);

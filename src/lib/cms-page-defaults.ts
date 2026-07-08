@@ -1586,6 +1586,7 @@ export const homeSafetyStoryDefaults = [
   { section: "safety_story", key: "news3_url", value: "https://www.kyeongin.com/article/1523526", type: "text", order: 21 },
   { section: "safety_story", key: "news_note", value: "실제 보도된 사건입니다 · 각 항목은 원문 기사로 연결됩니다", type: "text", order: 29 },
   { section: "safety_story", key: "tutors_lead", value: "대표가 모든 선생님을 직접 만나는 이유", type: "text", order: 26 },
+  { section: "safety_story", key: "news_empathy", value: "이런 일들이 실제로 있었습니다.\n그 불안을 알기에, 모든 선생님을 직접 만나 확인합니다.", type: "text", order: 30 },
   { section: "safety_story", key: "match1", value: "활발한 아이에게는 — 끌려가지 않게 잡아주는 선생님", type: "text", order: 31 },
   { section: "safety_story", key: "match2", value: "여린 아이에게는 — 틀려도 기다려주는 선생님", type: "text", order: 32 },
   { section: "safety_story", key: "match3", value: "게으른 아이에게는 — 옆에서 본보기가 되는 선생님", type: "text", order: 33 },

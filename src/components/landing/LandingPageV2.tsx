@@ -185,7 +185,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 
   const uiLabels = {
     faqTitle: getCmsValue("home_labels", "section_title_faq", "자주 묻는 질문"),
-    viewAllTeachers: getCmsValue("home_labels", "cta_view_all_teachers", "선생님 전체 보기 →"),
+    viewAllTeachers: getCmsValue("home_labels", "cta_view_all_teachers", "선생님 전체 보기"),
     viewAllReviews: getCmsValue("home_labels", "cta_view_all_reviews", "후기 전체 보기 →"),
     viewAllPricing: getCmsValue("home_labels", "cta_view_all_pricing", "요금 자세히 보기 →"),
     viewAllFaq: getCmsValue("home_labels", "cta_view_all_faq", "FAQ 전체 보기 →"),
@@ -318,6 +318,39 @@ export function LandingPageV2({
     setMockVisible(true);
     positionMock(e.clientY);
   };
+
+  // 모바일: 스크롤 시 화면 중앙에 가장 가까운 단계를 자동 활성화 (탭 없이 목업 노출)
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 960px)").matches) return;
+    const list = procListRef.current;
+    if (!list) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const mid = window.innerHeight / 2;
+        let best = -1;
+        let bestDist = Infinity;
+        Array.from(list.children).forEach((el, i) => {
+          const r = (el as HTMLElement).getBoundingClientRect();
+          if (r.bottom < 0 || r.top > window.innerHeight) return;
+          const d = Math.abs(r.top + r.height / 2 - mid);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        if (best >= 0) setActiveStep((prev) => (prev === best ? prev : best));
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const {
     getCmsValue,
@@ -684,8 +717,11 @@ export function LandingPageV2({
             ))}
           </div>
 
-          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
+          <div className="lp2-cta-row" style={{ marginTop: 40, justifyContent: "center" }}>
             <Link href="/tutors" className="lp2-btn lp2-btn-ghost">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
               {uiLabels.viewAllTeachers}
             </Link>
           </div>
