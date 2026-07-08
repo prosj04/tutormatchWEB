@@ -1,7 +1,6 @@
 import { ConcordSiteFooter } from "@/components/concord/ConcordSiteFooter";
 import { ConcordSiteHeader } from "@/components/concord/ConcordSiteHeader";
 import { StickyConsultCta } from "@/components/layout/StickyConsultCta";
-import { TopUrgencyBanner } from "@/components/layout/TopUrgencyBanner";
 import { PublicAppProviders } from "@/components/providers/PublicAppProviders";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
@@ -29,7 +28,6 @@ export async function PublicShell({
 
   return (
     <PublicAppProviders signupCopy={siteContent["signup_modal"] ?? {}}>
-      <TopUrgencyBanner siteContent={siteContent} />
       <ConcordSiteHeader
         showFaqLink={showFaqLink}
         showReviewsLink={showReviewsLink}
