@@ -10,6 +10,7 @@ const BRANDS: (UnivBrand & { tokens: string[] })[] = [
   { logo: "/images/logos/univ/sogang.png", color: "#B01C2E", tokens: ["서강대"] },
   { logo: "/images/logos/univ/skku.png", color: "#0B6E4F", tokens: ["성균관대"] },
   { logo: "/images/logos/univ/hanyang.png", color: "#0E4A84", tokens: ["한양대"] },
+  { logo: "/images/logos/univ/ewha.png", color: "#00584A", tokens: ["이화여대", "이화여자대"] },
   { logo: "/images/logos/univ/cau.png", color: "#143C8C", tokens: ["중앙대"] },
   { logo: "/images/logos/univ/khu.png", color: "#A0132F", tokens: ["경희대"] },
   { logo: "/images/logos/univ/hufs.png", color: "#003087", tokens: ["한국외대", "한국외국어대", "외국어대"] },

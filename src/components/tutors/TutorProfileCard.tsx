@@ -18,7 +18,8 @@ export function TutorProfileCard({
   isCenter: boolean;
 }) {
   const pitch = [card.blurb, ...card.highlights].filter(Boolean).join("\n");
-  const brand = matchUnivBrand(card.university);
+  const university = card.university.replace(/\s*\((수시|정시)[^)]*\)/g, "");
+  const brand = matchUnivBrand(university);
   return (
     <article className={`tpx-card${isCenter ? " is-center" : ""}`}>
       <div className="tpx-head">
@@ -47,7 +48,7 @@ export function TutorProfileCard({
             <Image src={brand.logo} alt="" fill className="object-contain" sizes="20px" />
           </span>
         ) : null}
-        {card.university}
+        {university}
       </p>
       <h3 className="tpx-name">{card.name} 선생님</h3>
       <p className="tpx-pitch" style={{ whiteSpace: "pre-line" }}>{pitch}</p>
