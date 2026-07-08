@@ -60,9 +60,11 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
-        const vh = window.innerHeight;
         const pin = pinRef.current;
         if (pin) {
+          // 주소창 수축과 무관한 안정 기준: 100svh로 고정된 스테이지 높이 사용
+          const stage = pin.querySelector<HTMLElement>(".lp2-story-stagevp");
+          const vh = stage?.offsetHeight ?? window.innerHeight;
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
@@ -190,7 +192,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
       {/* 클로저·피벗 가중치(+1.5×2)만큼 스크롤 길이 확장 */}
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 3) * UNIT_VH + 100}vh` }}>
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 3) * UNIT_VH + 100}svh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
           <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
@@ -202,7 +204,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             className={`lp2-story-item lp2-story-newsstack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
           >
             {data.matches.map((m, i) => (
-              <p key={m} className={`lp2-story-matchline${i < matchShown ? " on" : ""}`}>{m}</p>
+              <p key={m} className={`lp2-story-matchline${i === matchShown - 1 ? " on" : ""}`}>{m}</p>
             ))}
           </div>
 

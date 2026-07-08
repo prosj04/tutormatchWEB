@@ -976,7 +976,9 @@ body:has(.lp2-root) footer.site .logo span {
 .is-dark .lp2-story-item h2 { color: #f4f1ea; }
 
 /* 매칭 스택 — 자동 재생으로 하나씩 아래로 붙음 */
-.lp2-story-newsstack { display: flex; flex-direction: column; gap: clamp(20px, 3vh, 34px); }
+/* 사례는 한 화면에 한 장씩 교체 — 같은 자리에 겹쳐 놓고 현재 것만 표시 */
+.lp2-story-newsstack { display: grid; place-items: center; }
+.lp2-story-newsstack .lp2-story-matchline { grid-area: 1 / 1; text-align: center; }
 .lp2-story-matchline {
   margin: 0;
   font-size: clamp(19px, 2.5vw, 30px);
