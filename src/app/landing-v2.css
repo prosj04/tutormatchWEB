@@ -546,6 +546,23 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-ok { color: var(--acc-text); font-weight: 800; margin-right: 8px; }
 .lp2-no { color: var(--mut-2); font-weight: 800; margin-right: 8px; }
 
+/* ── guarantee strip (가격 직전 보장 안내) ── */
+.lp2-guar-sec { padding: 0 0 clamp(20px, 2.5vw, 32px); }
+.lp2-guar-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 36px;
+  padding: 22px 30px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.lp2-guar-item { display: inline-flex; align-items: center; font-size: 16px; font-weight: 700; color: var(--fg); }
+.lp2-guar-note { margin-left: auto; font-size: 13px; color: var(--mut-2); text-decoration: underline; text-underline-offset: 3px; }
+.lp2-guar-note:hover { color: var(--fg); }
+@media (max-width: 720px) {
+  .lp2-guar-strip { padding: 20px 22px; gap: 10px 24px; }
+  .lp2-guar-item { font-size: 15px; }
+  .lp2-guar-note { margin-left: 0; }
+}
+
 /* ── reviews (학부모 후기 가로 캐러셀) ── */
 .lp2-rev-scroll {
   display: flex; gap: 20px; overflow-x: auto; overflow-y: hidden; padding: 4px 4px 18px;

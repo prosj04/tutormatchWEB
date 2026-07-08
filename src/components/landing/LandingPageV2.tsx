@@ -134,21 +134,21 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
           {
             title: "시간만 보내던 아이가,\n계획을 세우는 아이로",
             quote:
-              "공부하러 가서도 시간만 보내던 아이가 처음으로 공부 계획을 직접 잡고 실행했어요. 정말 아이에 맞는 선생님을 찾아주셔서 안심됐습니다.",
+              "공부하러 가서 시간만 보내던 아이가 처음으로 계획을 직접 잡고 실행했습니다. 아이에 맞는 선생님이란 게 이런 거구나 싶었습니다.",
             info: "고2 수학 · 학부모",
             img: "",
           },
           {
             title: "방황하던 아이 입에서\n선생님처럼 되고 싶다는 말이",
             quote:
-              "방황하는 아들의 방향을 잡아 줄 선생님이 필요했는데, 정확히 맞는 분을 찾아줬어요. 아이가 선생님처럼 되고 싶다며 열심히 합니다.",
+              "방황하는 아들 방향 잡아줄 분이 필요했는데 정확히 맞는 분을 찾아줬어요. 요즘은 선생님처럼 되고 싶다면서 알아서 공부해요!",
             info: "고3 수학 · 학부모",
             img: "",
           },
           {
             title: "성적보다 먼저,\n습관이 바뀌었어요",
             quote:
-              "숙제와 공부 계획을 등록하고 선생님이랑 같이 점검하니 자연스럽게 매일 공부하게 됐어요. 성적보다 습관이 먼저 바뀌었어요.",
+              "숙제랑 계획을 등록하고 쌤이랑 같이 점검하니까 그냥 매일 하게 돼요. 성적보다 습관이 먼저 바뀐 게 더 신기해요.",
             info: "중3 영어 · 학생",
             img: "",
           },
@@ -728,55 +728,7 @@ export function LandingPageV2({
         </div>
       </section>
 
-      {/* ══ 6. LEARNING CARE ══════════════════════════════ */}
-      <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
-        <div className="lp2-wrap">
-          <div className="lp2-care-cols">
-            <div className="lp2-care-left">
-              <div className="lp2-sec-head reveal">
-                <span className="lp2-eyebrow">{kickers.management}</span>
-                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
-                <p>
-                  {getCmsValue(
-                    "management",
-                    "subtext",
-                    "Concord는 학부모님과 정기적으로 소통합니다. 진도, 숙제, 질문, 리포트를 한 흐름으로 연결합니다.",
-                  )}
-                </p>
-              </div>
-
-              <div className="lp2-care-list">
-                {managementItems.map((item) => (
-                  <div key={item.n} className="lp2-care-row reveal">
-                    <div className="num">0{item.n}</div>
-                    <div>
-                      <h3>{item.label}</h3>
-                      <p>{item.desc}</p>
-                      {item.n === 2 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {careReportMock}
-                        </div>
-                      ) : null}
-                      {item.n === 3 ? (
-                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {careQnaMock}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
-              {careReportMock}
-              {careQnaMock}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 7. RESULTS + REVIEWS ══════════════════════════ */}
+      {/* ══ 6. RESULTS + REVIEWS ══════════════════════════ */}
       <section id="results" className="lp2-sec lp2-rev-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
@@ -909,6 +861,73 @@ export function LandingPageV2({
         )}
       </section>
 
+      {/* ══ 7. LEARNING CARE ══════════════════════════════ */}
+      <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+        <div className="lp2-wrap">
+          <div className="lp2-care-cols">
+            <div className="lp2-care-left">
+              <div className="lp2-sec-head reveal">
+                <span className="lp2-eyebrow">{kickers.management}</span>
+                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
+                <p>
+                  {getCmsValue(
+                    "management",
+                    "subtext",
+                    "Concord는 학부모님과 정기적으로 소통합니다. 진도, 숙제, 질문, 리포트를 한 흐름으로 연결합니다.",
+                  )}
+                </p>
+              </div>
+
+              <div className="lp2-care-list">
+                {managementItems.map((item) => (
+                  <div key={item.n} className="lp2-care-row reveal">
+                    <div className="num">0{item.n}</div>
+                    <div>
+                      <h3>{item.label}</h3>
+                      <p>{item.desc}</p>
+                      {item.n === 2 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {careReportMock}
+                        </div>
+                      ) : null}
+                      {item.n === 3 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {careQnaMock}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
+              {careReportMock}
+              {careQnaMock}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 7.5 GUARANTEE STRIP ═══════════════════════════ */}
+      <section className="lp2-guar-sec" aria-label="보장 안내">
+        <div className="lp2-wrap">
+          <div className="lp2-guar-strip reveal">
+            <span className="lp2-guar-item">
+              <span className="lp2-ok" aria-hidden="true">✓</span>
+              {getCmsValue("guarantee", "item1", "첫 수업이 맞지 않으면 100% 환불")}
+            </span>
+            <span className="lp2-guar-item">
+              <span className="lp2-ok" aria-hidden="true">✓</span>
+              {getCmsValue("guarantee", "item2", "선생님 교체 비용 0원")}
+            </span>
+            <Link href="/refund" className="lp2-guar-note">
+              *환불정책 참고
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ══ 8. PRICING ════════════════════════════════════ */}
       <section id="pricing" className="lp2-sec lp2-price-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
@@ -1032,7 +1051,10 @@ export function LandingPageV2({
               ))}
             </div>
 
-            <div style={{ marginTop: 32 }}>
+            <div className="lp2-cta-row" style={{ marginTop: 32 }}>
+              <ConsultationApplyButton className="lp2-btn lp2-btn-acc lp2-btn-sm" source="home_faq">
+                {getCmsValue("faq", "consult_cta", "남은 궁금증은 상담으로 물어보세요")}
+              </ConsultationApplyButton>
               <Link href="/faq" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
                 {uiLabels.viewAllFaq}
               </Link>
