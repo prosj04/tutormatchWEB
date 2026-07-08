@@ -93,6 +93,7 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-cta-row { display: flex; gap: 14px; margin-top: 42px; flex-wrap: wrap; }
 .lp2-hero .lp2-cta-row .lp2-btn { min-width: 172px; }
+.lp2-hero-note { margin-top: 14px; font-size: 13px; color: var(--mut); letter-spacing: 0.01em; }
 .lp2-hero-pills {
   display: flex;
   gap: 10px;

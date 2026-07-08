@@ -743,6 +743,11 @@ export function LandingPageV2({
                   </CmsEdit>
                 </a>
               </div>
+              <p className="lp2-hero-note">
+                <CmsEdit active={isEditMode} section="hero" cmsKey="region_note" type="text">
+                  {getCmsValue("hero", "region_note", "서울 · 동탄 방문 수업")}
+                </CmsEdit>
+              </p>
             </div>
 
             <div className="lp2-hero-visual" aria-hidden="true">
