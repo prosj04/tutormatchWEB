@@ -387,6 +387,9 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-bubble.teacher { align-self: flex-end; text-align: left; }
 .lp2-bubble.teacher .who { text-align: right; }
 .lp2-bubble.teacher p { background: rgba(var(--acc-rgb),.1); border: 1px solid rgba(var(--acc-rgb),.18); border-top-right-radius: 4px; }
+.lp2-bubble.ai { align-self: flex-end; text-align: left; }
+.lp2-bubble.ai .who { text-align: right; color: var(--acc-text); }
+.lp2-bubble.ai p { background: rgba(var(--acc-rgb),.04); border: 1px dashed rgba(var(--acc-rgb),.35); border-top-right-radius: 4px; }
 
 /* ── QnA 채팅 루프 (말풍선 순차 팝인 → 유지 → 비움 → 반복) ── */
 .lp2-care-mock.in .lp2-qna-body .lp2-bubble {
@@ -397,7 +400,26 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-care-mock.in .lp2-qna-body .lp2-bubble:nth-child(1) { animation-name: lp2-chat-a; transform-origin: bottom left; }
 .lp2-care-mock.in .lp2-qna-body .lp2-bubble:nth-child(2) { animation-name: lp2-chat-b; transform-origin: bottom right; }
-.lp2-care-mock.in .lp2-qna-body .lp2-bubble:nth-child(3) { animation-name: lp2-chat-c; transform-origin: bottom left; }
+.lp2-care-mock.in .lp2-qna-body .lp2-bubble:nth-child(3) { animation-name: lp2-chat-c; transform-origin: bottom right; }
+
+/* ── 숙제 체크리스트 목업 ── */
+.lp2-hw-list { display: flex; flex-direction: column; margin-top: 12px; }
+.lp2-hw-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 0; border-top: 1px solid var(--line);
+  font-size: 13.5px; line-height: 1.5;
+}
+.lp2-hw-row:first-child { border-top: none; }
+.lp2-hw-row .d {
+  flex: none; width: 26px; height: 26px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--mut); background: var(--panel-2);
+}
+.lp2-hw-row .v { flex: 1; color: var(--fg); }
+.lp2-hw-row .c { flex: none; font-size: 12px; font-weight: 800; color: var(--acc-text); }
+.lp2-hw-row.done .v { color: var(--mut); text-decoration: line-through; text-decoration-color: var(--mut-2); }
+.lp2-hw-row.today .d { background: var(--acc); color: var(--on-acc); }
+.lp2-hw-row.today .c { border: 1px solid rgba(var(--acc-rgb),.3); border-radius: 999px; padding: 2px 8px; }
 @keyframes lp2-chat-a {
   0% { opacity: 0; transform: translateY(10px) scale(.9); }
   4%, 90% { opacity: 1; transform: none; }
@@ -597,6 +619,21 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-rev-card .qt { font-size: 16px; line-height: 1.65; margin-top: 14px; color: var(--fg); flex: 1; text-wrap: pretty; }
 .lp2-rev-card .by { margin-top: 22px; font-size: 14px; color: var(--mut); font-weight: 600; }
+
+/* 후기 카드 헤더 — 원형 사진 + 헤드라인/작성자 (사진은 CMS로 채움) */
+.lp2-rev-head { display: flex; align-items: center; gap: 16px; }
+.lp2-rev-avatar {
+  position: relative; flex: none; width: 72px; height: 72px; border-radius: 50%;
+  overflow: hidden; background: var(--panel-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; color: var(--mut-2);
+}
+.lp2-rev-avatar svg { width: 38px; height: 38px; opacity: .5; }
+.lp2-rev-headtxt { min-width: 0; }
+.lp2-rev-headtxt .lp2-rev-title { margin-top: 0; font-size: 17.5px; }
+.lp2-rev-headtxt .by { margin-top: 7px; }
+.lp2-rev-headtxt .lp2-rev-grade { margin-top: 9px; font-size: 13.5px; padding: 4px 10px; }
+.lp2-rev-card .lp2-rev-head + .qt { margin-top: 18px; }
+.lp2-rev-imgnote { margin-top: 10px; font-size: 12.5px; color: var(--mut-2); text-align: center; }
 
 .lp2-result-note { margin-top: 12px; font-size: 13px; font-weight: 500; color: var(--mut-2); }
 
@@ -1059,7 +1096,7 @@ body.story-dark .sticky-cta {
 }
 .lp2-notif-rows { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
 .lp2-notif-rows > div { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.5; }
-.lp2-notif-rows .k { flex: none; width: 40px; color: var(--mut-2); font-weight: 700; }
+.lp2-notif-rows .k { flex: none; width: 52px; color: var(--mut-2); font-weight: 700; }
 .lp2-notif-rows .v { color: var(--fg); }
 .lp2-notif-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
 .lp2-notif-tags span {
@@ -1077,6 +1114,9 @@ body.story-dark .sticky-cta {
   align-items: start;
 }
 .lp2-story-steps-cols .lp2-story-steps { width: 100%; }
+.lp2-story-steps-cols.single { grid-template-columns: 1fr; width: min(760px, 100%); }
+.lp2-story-steps-cols.single .lp2-story-step { transform: translateY(30px); }
+.lp2-story-steps-cols.single .lp2-story-step.on { transform: none; }
 /* 1·2번: 화면 가운데서 등장해 왼쪽 정위치로 이동 */
 .lp2-story-steps.pre .lp2-story-step { transform: translateX(min(30vw, 340px)) translateY(16px); }
 .lp2-story-steps.pre .lp2-story-step.on { transform: none; }

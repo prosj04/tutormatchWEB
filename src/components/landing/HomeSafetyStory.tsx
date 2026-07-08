@@ -67,29 +67,44 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          const su = Math.min(totalUnits - 1, Math.floor(progress * totalUnits));
+          // 클로저·피벗(큰 카피 2장)은 가중치 1.7 — 스크롤을 더 오래 머물게 해 강조
+          const weights = [1, ...Array<number>(matchCount).fill(1), 1.7, 1.7];
+          const totalWeight = weights.reduce((a, b) => a + b, 0);
+          const pr = progress * totalWeight;
+          let su = totalUnits - 1;
+          let acc = 0;
+          for (let i = 0; i < weights.length; i++) {
+            acc += weights[i];
+            if (pr < acc) {
+              su = i;
+              break;
+            }
+          }
           scrollUnitRef.current = su;
           const y = window.scrollY;
           const dy = y - lastScrollYRef.current;
           lastScrollYRef.current = y;
-          // 다크 구간: 자동 진행이 앞서면 유지(되감기 방지), 아래로 스크롤하면 즉시 다음 문구로 전진.
-          // 다크 구간 밖(인트로/흰 화면을 스크롤로 벗어난 경우)은 스크롤 상태로 동기화.
+          // 다크 구간: 사례는 반드시 1번부터, 한 번에 한 단계씩만 (스크롤 점프·자동재생 중복 방지).
+          // 다크 구간 밖은 스크롤 상태로 동기화.
           setUnit((prev) => {
             const inDark = su >= DARK_START && su <= darkLast;
             if (!inDark) {
               clearAuto();
               return su;
             }
-            let next = prev >= DARK_START ? Math.max(prev, su) : su;
+            // 위에서 진입: 스크롤이 얼마나 깊든 항상 첫 사례부터 시작 (진입 틱에는 전진 금지)
+            const justEntered = !(prev >= DARK_START && prev <= darkLast + 1);
+            let next = justEntered ? DARK_START : prev;
             const now = Date.now();
-            if (
-              dy > 4 &&
-              prev >= DARK_START &&
-              prev <= darkLast &&
-              now - lastManualAdvanceRef.current > 350
-            ) {
+            if (justEntered) {
               lastManualAdvanceRef.current = now;
-              next = Math.max(next, Math.min(prev + 1, darkLast + 1));
+            } else if (dy > 4 && next >= DARK_START && next <= darkLast) {
+              // 큰 카피(클로저·피벗)로 넘어가는 스텝은 더 길게 잡아 강조
+              const gate = next + 1 >= darkLast ? 1200 : 700;
+              if (now - lastManualAdvanceRef.current > gate) {
+                lastManualAdvanceRef.current = now;
+                next = Math.min(next + 1, darkLast + 1);
+              }
             }
             return next;
           });
@@ -105,7 +120,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       if (raf) cancelAnimationFrame(raf);
       clearAuto();
     };
-  }, [totalUnits, darkLast]);
+  }, [totalUnits, darkLast, matchCount]);
 
   // 다크 구간 자동 진행: 다크 구간에 들어오면 타이머로 다음 단계로 — 흰 화면(darkLast+1)까지 전진 후 정지.
   useEffect(() => {
@@ -207,7 +222,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${totalUnits * UNIT_VH + 100}vh` }}>
+      {/* 클로저·피벗 가중치(+0.7×2)만큼 스크롤 길이 확장 */}
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 1.4) * UNIT_VH + 100}vh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
           <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
@@ -237,11 +253,10 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         </div>
       </div>
 
-      {/* 절차 5단계 — 섹션 진입 시 자동 순차 등장 */}
+      {/* 절차 단계 — 섹션 진입 시 자동 순차 등장. 3개 이상이면 좌(사전 검증)/우(사후 관리) 2단 배치 */}
       <div ref={stepsPinRef} className="lp2-story-steps-pin">
         <div className="lp2-story-steps-vp">
-          {/* 좌: 사전 검증(1·2, 강조) / 우: 사후 관리(3·4·5, 회색 번호) */}
-          <div className="lp2-story-steps-cols">
+          <div className={`lp2-story-steps-cols${data.steps.length <= 2 ? " single" : ""}`}>
             <ol className="lp2-story-steps pre">
               {data.steps.slice(0, 2).map((s, i) => (
                 <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
@@ -253,17 +268,19 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
                 </li>
               ))}
             </ol>
-            <ol className="lp2-story-steps post">
-              {data.steps.slice(2).map((s, i) => (
-                <li key={s.title} className={`lp2-story-step${i + 2 < stepsOn ? " on" : ""}`}>
-                  <span className="num">0{i + 3}</span>
-                  <div>
-                    <h3>{s.title}</h3>
-                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            {data.steps.length > 2 && (
+              <ol className="lp2-story-steps post">
+                {data.steps.slice(2).map((s, i) => (
+                  <li key={s.title} className={`lp2-story-step${i + 2 < stepsOn ? " on" : ""}`}>
+                    <span className="num">0{i + 3}</span>
+                    <div>
+                      <h3>{s.title}</h3>
+                      <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         </div>
       </div>

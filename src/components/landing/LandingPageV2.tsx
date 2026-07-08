@@ -34,10 +34,10 @@ const results: [string, string, string, string][] = [
 
 const steps = [
   { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분해요." },
-  { number: "02", title: "매니저 배정·진단 상담", desc: "매니저가 방문 상담하며 학생 성향을 파악하고 학습 진단을 제공합니다." },
-  { number: "03", title: "선생님 배정", desc: "학습 진단을 바탕으로 함께 고민하여 적합한 선생님을 배정합니다" },
-  { number: "04", title: "방문 수업 시작", desc: "첫 수업 날짜를 확정하고 선생님이 방문하여 수업이 시작됩니다." },
-  { number: "05", title: "수업 관리", desc: "Concord 앱에서 학습에 관한 모든 현황을 확인할 수 있습니다.\n매니저가 항상 수업의 진행 정도를 감독하며, 언제나 매니저에게 문의하실 수 있습니다." },
+  { number: "02", title: "매니저 학습 상담", desc: "매니저가 방문 상담하며 학생의 공부 성향과 원하는 수업 방향을 파악하고, 학습 진단을 제공합니다." },
+  { number: "03", title: "선생님 배정", desc: "학습 진단을 바탕으로 함께 고민하여 가장 적합한 선생님을 배정합니다.\n첫 수업 날짜를 확정하면 선생님이 방문해 수업을 시작합니다." },
+  { number: "04", title: "수업 관리", desc: "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다." },
+  { number: "05", title: "사후 관리", desc: "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성해 학부모님과 숨김없이 공유합니다.\n배정 이후에도 매니저가 상시 관리하며, 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있습니다." },
 ];
 
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
@@ -104,16 +104,16 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
     const defaults: Record<number, { label: string; desc: string }> = {
       1: {
-        label: "학부모 안심리뷰",
-        desc: "매 수업이 끝날 때마다 진도, 피드백, 숙제, 다음 일정을 정리해 보내드립니다.",
+        label: "수업 리포트",
+        desc: "매 수업이 끝날 때마다 진도, 피드백, 숙제, 다음 일정을 정리해 바로 보내드립니다.",
       },
       2: {
-        label: "맞춤형 월간 리포트",
-        desc: "우리 아이의 성장과 변화, 취약 유형 분석을 한 달 단위 리포트로 확인하실 수 있습니다.",
+        label: "월간 상세 리포트",
+        desc: "한 달의 성장과 변화, 취약 유형 분석을 누구보다 아이를 잘 아는 선생님이 직접 작성합니다.",
       },
       3: {
-        label: "매니저 상담",
-        desc: "선생님께 직접 말하기 어려운 요청은 매니저에게 전하세요. 수업에 반영되도록 조율합니다.",
+        label: "학부모 앱",
+        desc: "수업 진행, 선생님이 낸 숙제, 진도 현황을 앱에서 언제든 확인하실 수 있습니다.",
       },
     };
     const d = defaults[n]!;
@@ -122,6 +122,29 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
         n,
         label: getCmsValue("management", `item${n}_title`, d.label),
         desc: getCmsMultiline("management", `item${n}_desc`, d.desc),
+      },
+    ];
+  });
+
+  const lessonCareItems = [1, 2].flatMap((n) => {
+    const vis = getCmsValue("lesson_care", `item${n}_visible`, "1");
+    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
+    const defaults: Record<number, { label: string; desc: string }> = {
+      1: {
+        label: "숙제 관리",
+        desc: "선생님이 앱에서 숙제를 내면, 학생이 매일 체크합니다. 한 주 분량을 한 번에 내도 요일별로 나뉘어 관리됩니다.",
+      },
+      2: {
+        label: "질문 관리",
+        desc: "질문을 남기면 질의응답 전용 AI가 즉시 답하고, 이어서 선생님의 답변까지 받아볼 수 있습니다.",
+      },
+    };
+    const d = defaults[n]!;
+    return [
+      {
+        n,
+        label: getCmsValue("lesson_care", `item${n}_title`, d.label),
+        desc: getCmsMultiline("lesson_care", `item${n}_desc`, d.desc),
       },
     ];
   });
@@ -157,7 +180,8 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 
   const kickers = {
     teachers: getCmsValue("home_labels", "kicker_teachers", "TEACHERS"),
-    management: getCmsValue("home_labels", "kicker_management", "LEARNING CARE"),
+    management: getCmsValue("home_labels", "kicker_management", "REPORTS"),
+    lessonCare: getCmsValue("home_labels", "kicker_lesson_care", "LESSON CARE"),
     process: getCmsValue("home_labels", "kicker_process", "PROCESS"),
     plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
@@ -208,8 +232,14 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
     ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n알게 되실 겁니다"),
+    lessonCare: getCmsMultiline("lesson_care", "headline", "수업이 없는 날에도,\n공부는 계속됩니다"),
+    lessonCareSubtext: getCmsValue(
+      "lesson_care",
+      "subtext",
+      "성적은 수업 사이의 매일이 만듭니다. 숙제와 질문을 시스템으로 관리합니다.",
+    ),
     process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
-    processSubtext: getCmsValue("features", "section_subtext", "상담부터 매칭, 방문 수업까지 전담 매니저가 처음부터 끝까지 책임집니다."),
+    processSubtext: getCmsValue("features", "section_subtext", "상담과 배정부터 수업 관리, 사후 관리까지 전담 매니저가 처음부터 끝까지 책임집니다."),
     teachers: getCmsMultiline("tutors_featured", "home_title", "아무 선생님이나\n소개하지 않습니다"),
     teachersSubtext: getCmsValue(
       "tutors_featured",
@@ -234,6 +264,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     doubledResults,
     cmsSteps,
     managementItems,
+    lessonCareItems,
     cmsTestimonials,
     featuredTutors: getFeaturedTutorCards(cms?.siteContent)
       .filter((c) => c.home)
@@ -362,6 +393,7 @@ export function LandingPageV2({
     doubledResults,
     cmsSteps,
     managementItems,
+    lessonCareItems,
     cmsTestimonials,
     featuredTutors,
     kickers,
@@ -400,9 +432,6 @@ export function LandingPageV2({
     const stepDefaults = [
       ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
       ["매니저 직접 매칭", "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다."],
-      ["공부 계획·질문 관리", "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다."],
-      ["매월 수업 리포트 제공", "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다."],
-      ["매니저의 사후 관리", "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다."],
     ] as const;
     return {
       intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
@@ -448,54 +477,81 @@ export function LandingPageV2({
       <div className="lp2-notif-card">
         <div className="lp2-notif-head">
           <span className="lp2-proof-dot" />
-          선생님 후보 도착
+          선생님 배정 완료
           <span className="t">상담 후 1~3일</span>
         </div>
-        <p>김서연 선생님 · 서울대 수리과학부 · 수학</p>
+        <div className="lp2-notif-rows">
+          <div><span className="k">선생님</span><span className="v">김서연 · 서울대 수리과학부 · 수학</span></div>
+          <div><span className="k">첫 수업</span><span className="v">목요일 19:00 · 자택 방문</span></div>
+        </div>
         <div className="lp2-notif-tags">
           <span>기다려주는 수업</span>
           <span>화·목 가능</span>
         </div>
       </div>
-      <div className="lp2-proc-mock-note">성향과 일정까지 맞는 후보만 제안합니다</div>
+      <div className="lp2-proc-mock-note">성향과 일정까지 맞는 선생님이 방문합니다</div>
     </>,
     <>
       <div className="lp2-notif-card">
         <div className="lp2-notif-head">
           <span className="lp2-proof-dot" />
-          첫 수업 확정
-          <span className="t">배정 직후</span>
+          이번 주 공부 계획 등록
+          <span className="t">수업 직후</span>
         </div>
         <div className="lp2-notif-rows">
-          <div><span className="k">일시</span><span className="v">목요일 19:00 · 자택 방문</span></div>
-          <div><span className="k">준비</span><span className="v">교재는 선생님이 안내드립니다</span></div>
-        </div>
-      </div>
-      <div className="lp2-proc-mock-note">날짜를 확정하면 선생님이 방문합니다</div>
-    </>,
-    <>
-      <div className="lp2-notif-card">
-        <div className="lp2-notif-head">
-          <span className="lp2-proof-dot" />
-          오늘 수업 리포트
-          <span className="t">수업 직후 발송</span>
-        </div>
-        <div className="lp2-notif-rows">
-          <div><span className="k">진도</span><span className="v">이차함수 그래프 활용</span></div>
           <div><span className="k">숙제</span><span className="v">유형 연습 12문항 · 요일별 배분</span></div>
-          <div><span className="k">다음</span><span className="v">목요일 19:00 방문</span></div>
+          <div><span className="k">체크</span><span className="v">학생이 매일 완료 표시</span></div>
+          <div><span className="k">질문</span><span className="v">AI 즉시 답변 + 선생님 답변</span></div>
         </div>
       </div>
-      <div className="lp2-proc-mock-note">매 수업이 기록으로 남고, 학부모님께 공유됩니다</div>
+      <div className="lp2-proc-mock-note">수업 사이의 매일이 시스템에 남습니다</div>
+    </>,
+    <>
+      <div className="lp2-notif-card">
+        <div className="lp2-notif-head">
+          <span className="lp2-proof-dot" />
+          6월 학습 리포트 도착
+          <span className="t">매월 발송</span>
+        </div>
+        <div className="lp2-notif-rows">
+          <div><span className="k">리포트</span><span className="v">한 달의 성장 변화 · 취약 유형 분석</span></div>
+          <div><span className="k">매니저</span><span className="v">상시 관리 · 교체 비용 0원</span></div>
+        </div>
+      </div>
+      <div className="lp2-proc-mock-note">배정 이후에도 매니저가 끝까지 함께합니다</div>
     </>,
   ];
 
-  /* 케어 목업 — 데스크톱은 우측 칼럼, 모바일은 해당 번호 아래 인라인 */
-  const careReportMock = (
+  /* 리포트 목업 — 데스크톱은 우측 칼럼, 모바일은 해당 번호 아래 인라인 */
+  const lessonReportMock = (
     <div className="lp2-report-card">
       <div className="lp2-report-head">
         <span className="lp2-proof-dot" />
-        <strong>Concord 학습 리포트</strong>
+        <strong>수업 리포트</strong>
+        <span className="t">매 수업 직후</span>
+      </div>
+      <div className="lp2-report-body">
+        <div className="lp2-report-row">
+          <span className="k">진도</span>
+          <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">숙제</span>
+          <span className="v">유형 연습 12문항 · 요일별 배분</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">다음 수업</span>
+          <span className="v">목요일 19:00 방문</span>
+        </div>
+      </div>
+      <div className="lp2-report-foot">수업이 끝날 때마다 바로 보내드립니다</div>
+    </div>
+  );
+  const monthlyReportMock = (
+    <div className="lp2-report-card">
+      <div className="lp2-report-head">
+        <span className="lp2-proof-dot" />
+        <strong>월간 상세 리포트</strong>
         <span className="t">6월 리포트</span>
       </div>
       <div className="lp2-report-body">
@@ -504,8 +560,8 @@ export function LandingPageV2({
           <span className="v">이차함수 그래프 활용 (교재 p.84~91)</span>
         </div>
         <div className="lp2-report-row">
-          <span className="k">숙제</span>
-          <span className="v">유형 연습 12문항 · 오답노트 3개</span>
+          <span className="k">취약 유형</span>
+          <span className="v">범위 조건 누락 · 계산 실수</span>
         </div>
         <div className="lp2-report-row">
           <span className="k">선생님 코멘트</span>
@@ -515,7 +571,65 @@ export function LandingPageV2({
           </span>
         </div>
       </div>
-      <div className="lp2-report-foot">매월 학습 리포트로 정리해 학부모님께 전달됩니다</div>
+      <div className="lp2-report-foot">매월 선생님이 직접 작성해 학부모님께 전달됩니다</div>
+    </div>
+  );
+  const parentAppMock = (
+    <div className="lp2-report-card">
+      <div className="lp2-report-head">
+        <span className="lp2-proof-dot" />
+        <strong>Concord 학부모 앱</strong>
+        <span className="t">실시간</span>
+      </div>
+      <div className="lp2-report-body">
+        <div className="lp2-report-row">
+          <span className="k">이번 주 수업</span>
+          <span className="v">화 완료 · 목 예정</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">숙제 진행</span>
+          <span className="v">12문항 중 8문항 완료</span>
+        </div>
+        <div className="lp2-report-row">
+          <span className="k">진도</span>
+          <span className="v">이차함수 그래프 활용</span>
+        </div>
+      </div>
+      <div className="lp2-report-foot">수업·숙제·진도를 앱에서 바로 확인하실 수 있습니다</div>
+    </div>
+  );
+
+  /* 수업 관리 목업 — 숙제 매일 체크 + AI 질의응답 */
+  const homeworkMock = (
+    <div className="lp2-report-card">
+      <div className="lp2-report-head">
+        <span className="lp2-proof-dot" />
+        <strong>이번 주 숙제</strong>
+        <span className="t">선생님이 등록</span>
+      </div>
+      <div className="lp2-hw-list">
+        <div className="lp2-hw-row done">
+          <span className="d">월</span>
+          <span className="v">유형 연습 4문항</span>
+          <span className="c">✓</span>
+        </div>
+        <div className="lp2-hw-row done">
+          <span className="d">화</span>
+          <span className="v">오답노트 2개</span>
+          <span className="c">✓</span>
+        </div>
+        <div className="lp2-hw-row today">
+          <span className="d">수</span>
+          <span className="v">유형 연습 4문항</span>
+          <span className="c">오늘</span>
+        </div>
+        <div className="lp2-hw-row">
+          <span className="d">목</span>
+          <span className="v">수업 전 복습</span>
+          <span className="c" />
+        </div>
+      </div>
+      <div className="lp2-report-foot">학생이 매일 체크하고, 선생님이 확인합니다</div>
     </div>
   );
   const careQnaMock = (
@@ -530,13 +644,13 @@ export function LandingPageV2({
           <span className="who">학생 · 밤 11:24</span>
           <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
         </div>
+        <div className="lp2-bubble ai">
+          <span className="who">AI 답변 · 밤 11:24 · 즉시</span>
+          <p>범위 조건 x&gt;0이 빠졌어요. 조건을 반영하면 근이 하나로 정해집니다. 풀이 단계를 정리해 드릴게요.</p>
+        </div>
         <div className="lp2-bubble teacher">
           <span className="who">선생님 · 아침 7:40</span>
-          <p>범위 조건을 빼먹었어요. 풀이 써서 보낼게요 — 다음 수업 때 같은 유형 한 번 더 봐요.</p>
-        </div>
-        <div className="lp2-bubble student">
-          <span className="who">학생 · 아침 8:05</span>
-          <p>풀이 보니까 바로 이해됐어요! 목요일에 봬요.</p>
+          <p>AI 풀이 그대로예요. 범위 조건은 자주 놓치는 유형이라 다음 수업 때 한 번 더 봐요.</p>
         </div>
       </div>
     </div>
@@ -814,28 +928,43 @@ export function LandingPageV2({
           <div className="lp2-rev-scroll reveal" role="list">
             {cmsTestimonials.map((t, i) => (
               <div key={i} className="lp2-rev-card" role="listitem">
-                {t.gradeFrom && t.gradeTo ? (
-                  <div
-                    className="lp2-rev-grade"
-                    aria-label={`${t.gradeFrom}에서 ${t.gradeTo}로 향상`}
-                  >
-                    <span className="from">{t.gradeFrom}</span>
-                    <span className="arrow" aria-hidden="true">→</span>
-                    <span className="to">{t.gradeTo}</span>
+                <div className="lp2-rev-head">
+                  <div className="lp2-rev-avatar">
+                    {t.img ? (
+                      <Image src={t.img} alt={`${t.info} 사진`} fill sizes="72px" className="object-cover" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="8.2" r="3.6" fill="currentColor" />
+                        <path d="M4.5 20.2c1.4-3.6 4.2-5.4 7.5-5.4s6.1 1.8 7.5 5.4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+                      </svg>
+                    )}
                   </div>
-                ) : (
-                  <div className="quote">&ldquo;</div>
-                )}
-                {t.title ? (
-                  <h3 className="lp2-rev-title" style={{ whiteSpace: "pre-line" }}>
-                    {t.title}
-                  </h3>
-                ) : null}
+                  <div className="lp2-rev-headtxt">
+                    {t.title ? (
+                      <h3 className="lp2-rev-title" style={{ whiteSpace: "pre-line" }}>
+                        &ldquo;{t.title}&rdquo;
+                      </h3>
+                    ) : null}
+                    <div className="by">{t.info}</div>
+                    {t.gradeFrom && t.gradeTo ? (
+                      <div
+                        className="lp2-rev-grade"
+                        aria-label={`${t.gradeFrom}에서 ${t.gradeTo}로 향상`}
+                      >
+                        <span className="from">{t.gradeFrom}</span>
+                        <span className="arrow" aria-hidden="true">→</span>
+                        <span className="to">{t.gradeTo}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
                 <p className="qt">{t.quote}</p>
-                <div className="by">{t.info}</div>
               </div>
             ))}
           </div>
+          {cmsTestimonials.some((t) => t.img) ? (
+            <p className="lp2-rev-imgnote">*사진은 실제 후기 작성자와 다를 수 있습니다</p>
+          ) : null}
 
           <div className="lp2-cta-row" style={{ marginTop: 40 }}>
             <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
@@ -846,7 +975,7 @@ export function LandingPageV2({
         )}
       </section>
 
-      {/* ══ 7. LEARNING CARE ══════════════════════════════ */}
+      {/* ══ 7. REPORTS (수업·월간 리포트 + 학부모 앱) ══════ */}
       <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-care-cols">
@@ -858,7 +987,7 @@ export function LandingPageV2({
                   {getCmsValue(
                     "management",
                     "subtext",
-                    "Concord는 학부모님과 정기적으로 소통합니다. 진도, 숙제, 질문, 리포트를 한 흐름으로 연결합니다.",
+                    "모든 수업은 기록으로 남습니다. 수업 리포트, 월간 리포트, 학부모 앱으로 아이의 공부를 그대로 보실 수 있습니다.",
                   )}
                 </p>
               </div>
@@ -870,12 +999,60 @@ export function LandingPageV2({
                     <div>
                       <h3>{item.label}</h3>
                       <p>{item.desc}</p>
+                      {item.n === 1 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {lessonReportMock}
+                        </div>
+                      ) : null}
                       {item.n === 2 ? (
                         <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
-                          {careReportMock}
+                          {monthlyReportMock}
                         </div>
                       ) : null}
                       {item.n === 3 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {parentAppMock}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
+              {lessonReportMock}
+              {monthlyReportMock}
+              {parentAppMock}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 7.2 LESSON CARE (숙제·질문 관리) ═══════════════ */}
+      <section id="lesson-care" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+        <div className="lp2-wrap">
+          <div className="lp2-care-cols">
+            <div className="lp2-care-left">
+              <div className="lp2-sec-head reveal">
+                <span className="lp2-eyebrow">{kickers.lessonCare}</span>
+                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.lessonCare}</h2>
+                <p>{sectionTitles.lessonCareSubtext}</p>
+              </div>
+
+              <div className="lp2-care-list">
+                {lessonCareItems.map((item) => (
+                  <div key={item.n} className="lp2-care-row reveal">
+                    <div className="num">0{item.n}</div>
+                    <div>
+                      <h3>{item.label}</h3>
+                      <p>{item.desc}</p>
+                      {item.n === 1 ? (
+                        <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
+                          {homeworkMock}
+                        </div>
+                      ) : null}
+                      {item.n === 2 ? (
                         <div className="lp2-care-inline lp2-mobile-only" aria-hidden="true">
                           {careQnaMock}
                         </div>
@@ -887,7 +1064,7 @@ export function LandingPageV2({
             </div>
 
             <div className="lp2-care-mock reveal lp2-desktop-only" aria-hidden="true">
-              {careReportMock}
+              {homeworkMock}
               {careQnaMock}
             </div>
           </div>
