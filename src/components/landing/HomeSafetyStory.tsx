@@ -22,7 +22,7 @@ function clamp01(v: number) {
  * 단계: intro → 매칭 4쌍 누적 → 클로저 → 전환(멈춤).
  */
 // 다크 구간 자동 진행: 검정 전환(첫 매칭) 시작~다크 마지막 단계(클로저) 도달까지 스스로 넘긴다.
-const AUTO_STEP_MS = 2500; // 문구를 읽을 수 있는 간격
+const AUTO_STEP_MS = 1000; // 자동 전진 간격
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
@@ -42,6 +42,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   // 스크롤이 다크 구간 안에 있는지(자동 진행 트리거 조건)와, 스크롤 기반 unit을 참조로 유지
   const scrollUnitRef = useRef(0);
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastScrollYRef = useRef(0);
+  const lastManualAdvanceRef = useRef(0);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -67,16 +69,29 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
           const su = Math.min(totalUnits - 1, Math.floor(progress * totalUnits));
           scrollUnitRef.current = su;
-          // 자동 진행 중 스크롤로 다크 구간을 벗어나면 타이머 정리 후 스크롤 상태로 동기화.
-          // 다크 구간 내에서는 스크롤이 unit을 되돌리지 않게 하고(자동 진행 우선), 진입 시에만 자동을 킨다.
+          const y = window.scrollY;
+          const dy = y - lastScrollYRef.current;
+          lastScrollYRef.current = y;
+          // 다크 구간: 자동 진행이 앞서면 유지(되감기 방지), 아래로 스크롤하면 즉시 다음 문구로 전진.
+          // 다크 구간 밖(인트로/흰 화면을 스크롤로 벗어난 경우)은 스크롤 상태로 동기화.
           setUnit((prev) => {
             const inDark = su >= DARK_START && su <= darkLast;
             if (!inDark) {
               clearAuto();
               return su;
             }
-            // 다크 구간 진입: 자동 진행이 아직 없으면 현재 스크롤 unit부터 시작
-            return prev >= DARK_START && prev <= darkLast ? prev : su;
+            let next = prev >= DARK_START ? Math.max(prev, su) : su;
+            const now = Date.now();
+            if (
+              dy > 4 &&
+              prev >= DARK_START &&
+              prev <= darkLast &&
+              now - lastManualAdvanceRef.current > 350
+            ) {
+              lastManualAdvanceRef.current = now;
+              next = Math.max(next, Math.min(prev + 1, darkLast + 1));
+            }
+            return next;
           });
         }
       });
@@ -92,17 +107,17 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     };
   }, [totalUnits, darkLast]);
 
-  // 다크 구간 자동 진행: 현재 unit이 다크 구간 안이고 마지막(darkLast) 전이면 타이머로 다음 단계로.
+  // 다크 구간 자동 진행: 다크 구간에 들어오면 타이머로 다음 단계로 — 흰 화면(darkLast+1)까지 전진 후 정지.
   useEffect(() => {
     if (reduced) return;
-    const inDark = unit >= DARK_START && unit < darkLast;
+    const inDark = unit >= DARK_START && unit <= darkLast;
     if (!inDark) return;
-    // 스크롤이 이미 다크 구간을 벗어났다면 자동 진행하지 않음(상태 불일치 방지)
+    // 스크롤이 섹션 앞(인트로 이전)으로 돌아갔으면 자동 진행하지 않음
     const su = scrollUnitRef.current;
-    if (su < DARK_START || su > darkLast) return;
+    if (su < DARK_START) return;
     autoTimerRef.current = setTimeout(() => {
       autoTimerRef.current = null;
-      setUnit((prev) => (prev >= DARK_START && prev < darkLast ? prev + 1 : prev));
+      setUnit((prev) => (prev >= DARK_START && prev <= darkLast ? prev + 1 : prev));
     }, AUTO_STEP_MS);
     return () => {
       if (autoTimerRef.current) {
