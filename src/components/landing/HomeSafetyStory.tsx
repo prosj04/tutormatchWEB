@@ -26,12 +26,17 @@ const AUTO_STEP_MS = 1000; // 자동 전진 간격(데스크톱 기본)
 const AUTO_STEP_MS_TOUCH = 1400; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 읽을 시간 확보
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
+const STEP_VH = 50; // 사후 관리(03~05) 별도 블록의 스크롤 길이 단위
+
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
+  const postPinRef = useRef<HTMLDivElement | null>(null);
   const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
-  const [stepsOn, setStepsOn] = useState(0);
+  const [stepsOn, setStepsOn] = useState(0); // 피벗 화면 01·02 순차 등장
+  const [postOn, setPostOn] = useState(0); // 사후 관리 03~05 스크롤 누적 등장
   const [reduced, setReduced] = useState(false);
   const [autoStepMs, setAutoStepMs] = useState(AUTO_STEP_MS);
+  const postSteps = data.steps.slice(2); // 03~05 (사후 관리)
 
   const matchCount = data.matches.length;
   const totalUnits = 1 + matchCount + 1 + 1; // intro + matches + closer + pivot
@@ -112,6 +117,17 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             return next;
           });
         }
+        // 사후 관리(03~05) 별도 블록: 스크롤 진행에 따라 하나씩 누적 등장
+        const post = postPinRef.current;
+        if (post) {
+          const stage = post.querySelector<HTMLElement>(".lp2-story-post-vp");
+          const vh = stage?.offsetHeight ?? window.innerHeight;
+          const rect = post.getBoundingClientRect();
+          const total = post.offsetHeight - vh;
+          const progress = total > 0 ? clamp01(-rect.top / total) : 0;
+          const n = postSteps.length;
+          setPostOn(Math.min(n, Math.floor(progress * (n + 0.6) + 0.45)));
+        }
       });
     };
     onScroll();
@@ -123,7 +139,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       if (raf) cancelAnimationFrame(raf);
       clearAuto();
     };
-  }, [totalUnits, darkLast, matchCount]);
+  }, [totalUnits, darkLast, matchCount, postSteps.length]);
 
   // 자동 전진 간격을 뷰포트 기준 차등: hover 없는 기기 또는 화면폭 ≤640px이면 느리게(1400ms).
   useEffect(() => {
@@ -186,7 +202,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
         <div className="lp2-story-sblock"><h2>{pivotText}</h2></div>
         <ol className="lp2-story-steps lp2-story-pivot-steps">
-          {data.steps.map((s, i) => (
+          {data.steps.slice(0, 2).map((s, i) => (
             <li key={s.title} className="lp2-story-step on">
               <span className="num">0{i + 1}</span>
               <div>
@@ -196,6 +212,19 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             </li>
           ))}
         </ol>
+        {postSteps.length > 0 && (
+          <ol className="lp2-story-steps lp2-story-post-steps post">
+            {postSteps.map((s, i) => (
+              <li key={s.title} className="lp2-story-step on">
+                <span className="num">0{i + 3}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
     );
   }
@@ -210,12 +239,12 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             <h2>{data.intro}</h2>
           </div>
 
-          {/* 매칭 4쌍 — 스크롤에 따라 하나씩 아래로 붙음 */}
+          {/* 매칭 3쌍 — 스크롤/자동전진에 따라 하나씩 아래로 누적(쌓임) */}
           <div
             className={`lp2-story-item lp2-story-newsstack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
           >
             {data.matches.map((m, i) => (
-              <p key={m} className={`lp2-story-matchline${i === matchShown - 1 ? " on" : ""}`}>{m}</p>
+              <p key={m} className={`lp2-story-matchline${i < matchShown ? " on" : ""}`}>{m}</p>
             ))}
           </div>
 
@@ -243,6 +272,29 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           </div>
         </div>
       </div>
+
+      {/* 사후 관리(03~05) — 피벗(01·02) 다음, 이어서 스크롤하면 별도 화면에서 하나씩 누적 */}
+      {postSteps.length > 0 && (
+        <div
+          ref={postPinRef}
+          className="lp2-story-post-pin"
+          style={{ height: `${postSteps.length * STEP_VH + 130}svh` }}
+        >
+          <div className="lp2-story-post-vp">
+            <ol className="lp2-story-steps lp2-story-post-steps post">
+              {postSteps.map((s, i) => (
+                <li key={s.title} className={`lp2-story-step${i < postOn ? " on" : ""}`}>
+                  <span className="num">0{i + 3}</span>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

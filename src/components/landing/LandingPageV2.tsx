@@ -273,7 +273,11 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 
 /* ─── 목업 정렬·활성화 공용 훅 (process·reports·lesson-care 동일 구조) ─── */
 
-/** PC: 목업을 활성 항목 바로 옆(같은 높이)에 정렬 — 목업 자신의 기준선으로 자가 보정 */
+/**
+ * PC: 목업을 활성 항목 옆에 정렬 — 목업의 수직 "중앙"이 활성 항목의 수직 중앙과 일치하도록 보정.
+ * (targetY = 항목중앙 − 목업높이/2, 목업 자신의 layout 기준선으로 자가 보정)
+ * 섹션(리스트) 경계로 클램프해 목업이 리스트 범위를 벗어나지 않게 한다.
+ */
 function useAlignedMockY(
   listRef: React.RefObject<HTMLDivElement | null>,
   mockRef: React.RefObject<HTMLDivElement | null>,
@@ -296,7 +300,20 @@ function useAlignedMockY(
       }
       return t;
     };
-    setY(layoutTop(item) - layoutTop(mock));
+    const mockTop = layoutTop(mock);
+    const mockH = mock.offsetHeight;
+    const itemCenter = layoutTop(item) + item.offsetHeight / 2;
+    // 목업 수직 "중앙"을 항목 수직 중앙에 맞춤
+    let target = itemCenter - mockH / 2 - mockTop;
+    // 섹션 경계 클램프: 목업이 섹션(가장 가까운 <section>) 밖으로 나가지 않도록.
+    // 리스트만 기준으로 잡으면 목업이 리스트보다 클 때 마지막 항목 중앙에 맞출 여유가 없어지므로,
+    // 섹션 상·하 여백까지 포함한 섹션 콘텐츠 박스를 기준으로 삼아 중앙 정렬 여유를 확보한다.
+    const section = (mock.closest("section") as HTMLElement | null) ?? mock.parentElement ?? list;
+    const boundsTop = layoutTop(section);
+    const minY = boundsTop - mockTop; // 목업 상단이 섹션 상단
+    const maxY = boundsTop + section.offsetHeight - mockH - mockTop; // 목업 하단이 섹션 하단
+    if (maxY > minY) target = Math.min(Math.max(target, minY), maxY);
+    setY(target);
   }, [active, listRef, mockRef]);
   return y;
 }
@@ -390,7 +407,7 @@ export function LandingPageV2({
   const procListRef = useRef<HTMLDivElement | null>(null);
   const procMockRef = useRef<HTMLDivElement | null>(null);
   const procTapLockRef = useRef(0); // 터치 기기 탭 우선 잠금(중앙 감지 억제)
-  const mockY = useAlignedMockY(procListRef, procMockRef, activeStep);
+  // 데스크톱 목업은 섹션 내 고정 y(스텝 목록 수직 중앙, CSS sticky)에서 등장 — 추적 이동 없음
   useMobileCenterActive(procListRef, setActiveStep, procTapLockRef);
 
   // 리포트·수업 관리 섹션 — 프로세스와 동일 구조 (호버 정렬 + 모바일 중앙 활성화)
@@ -462,6 +479,9 @@ export function LandingPageV2({
     const stepDefaults = [
       ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
       ["매니저 직접 매칭", "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다."],
+      ["공부 계획·질문 관리", "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다."],
+      ["매월 수업 리포트 제공", "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다."],
+      ["매니저의 사후 관리", "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다."],
     ] as const;
     return {
       intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
@@ -787,15 +807,11 @@ export function LandingPageV2({
               </div>
             </div>
 
+            {/* 목업은 섹션 내 고정 y(스텝 목록 수직 중앙)에서 등장 — 호버 시 위치 고정, 콘텐츠만 크로스페이드 */}
             <div
-              className="lp2-proc-mock reveal lp2-desktop-only"
+              className="lp2-proc-mock lp2-desktop-only"
               aria-hidden="true"
               ref={procMockRef}
-              style={{
-                transform: `translateY(${mockY}px)`,
-                transition:
-                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
-              }}
             >
               <div className="lp2-proc-mock-view" key={activeStep}>
                 {procMocks[activeStep]}

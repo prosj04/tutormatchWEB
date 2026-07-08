@@ -459,7 +459,10 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-proc-mock {
   display: flex; flex-direction: column; gap: 14px;
-  position: sticky; top: 110px;
+  /* 섹션 내 고정 y — 스텝 목록의 수직 중앙 부근에 붙어 등장(추적 이동 없음). sticky로 스크롤 중 시야 유지.
+     top 고정값이라 목업 상단 좌표가 활성 스텝과 무관하게 항상 동일(콘텐츠만 크로스페이드) */
+  position: sticky; top: 200px;
+  align-self: start;
   user-select: none;
 }
 .lp2-notif-card {
@@ -975,10 +978,8 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-story-closer h2 { font-weight: 900; }
 .is-dark .lp2-story-item h2 { color: #f4f1ea; }
 
-/* 매칭 스택 — 자동 재생으로 하나씩 아래로 붙음 */
-/* 사례는 한 화면에 한 장씩 교체 — 같은 자리에 겹쳐 놓고 현재 것만 표시 */
-.lp2-story-newsstack { display: grid; place-items: center; }
-.lp2-story-newsstack .lp2-story-matchline { grid-area: 1 / 1; text-align: center; }
+/* 매칭 스택 — 자동 재생으로 하나씩 아래로 누적(쌓임) */
+.lp2-story-newsstack { display: flex; flex-direction: column; gap: clamp(20px, 3vh, 34px); }
 .lp2-story-matchline {
   margin: 0;
   font-size: clamp(19px, 2.5vw, 30px);
@@ -1087,6 +1088,13 @@ body.story-dark .sticky-cta {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
 }
+/* 데스크톱 고정 목업: 위치는 그대로, 콘텐츠만 크로스페이드(위치 이동 없음) */
+.lp2-proc-mock .lp2-proc-mock-view { animation: lp2-mockfade 0.25s ease both; }
+.lp2-proc-mock .lp2-proc-mock-view > * { animation: none; }
+@keyframes lp2-mockfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .lp2-notif-rows { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
 .lp2-notif-rows > div { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.5; }
 .lp2-notif-rows .k { flex: none; width: 52px; color: var(--mut-2); font-weight: 700; }
@@ -1114,6 +1122,29 @@ body.story-dark .sticky-cta {
 @media (max-width: 680px) {
   .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
 }
+
+/* ── 사후 관리(03~05) 별도 블록: 피벗(01·02) 다음 화면, 스크롤 누적 등장 ── */
+.lp2-story-post-vp {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+}
+.lp2-story-post-steps {
+  list-style: none;
+  width: min(860px, 100%);
+  margin: 0;
+  padding: 0;
+}
+.lp2-story-post-steps .lp2-story-step:first-child { border-top: none; }
+/* 사후 관리: 회색 번호로 위계 낮춤(01·02 그린 강조와 대비) */
+.lp2-story-post-steps.post .lp2-story-step .num { color: var(--mut-2); }
+.lp2-story-post-steps.post .lp2-story-step h3 { font-weight: 700; }
+/* 정적 폴백에서는 스크롤 애니메이션 없이 바로 노출 */
+.lp2-story-static .lp2-story-post-steps { width: min(860px, 100%); margin: 0 auto 90px; padding: 0 24px; }
 
 /* M-9: 모바일 터치 타깃 보정 — 시각 크기 유지, 히트영역만 40px+ */
 @media (max-width: 640px) {
