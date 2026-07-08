@@ -606,3 +606,36 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .sticky-cta {
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
+/* M-4: 모바일(≤640px) 컴팩트 변형 — 배지+축약 메시지 한 줄, 고스트 숨김, 바 높이 ≤56px */
+@media (max-width: 640px) {
+  .sticky-cta {
+    padding: 7px 14px calc(7px + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+  /* concord.css 모바일 규칙이 메시지를 숨기므로 컴팩트 변형에서 다시 노출(ellipsis 유지) */
+  .sticky-cta-msg {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  .sticky-cta-ghost {
+    display: none;
+  }
+  .sticky-cta-badge {
+    padding: 4px 9px;
+    font-size: 11.5px;
+  }
+  .sticky-cta-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+  .sticky-cta-btn {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 13.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}
