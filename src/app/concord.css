@@ -503,7 +503,8 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   border: 1px solid rgba(var(--acc-rgb), .45); color: var(--acc-text);
   font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px; white-space: nowrap;
 }
-.tpx-univ { font-size: 14px; color: var(--mut); font-weight: 600; }
+.tpx-univ { font-size: 14px; color: var(--mut); font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.tpx-univ-logo { position: relative; width: 20px; height: 20px; flex: none; display: inline-block; }
 .tpx-name { font-size: clamp(20px, 1.9vw, 24px); font-weight: 800; letter-spacing: -.02em; margin: 6px 0 12px; color: var(--fg); }
 .tpx-pitch {
   font-size: 14px; line-height: 1.6; color: var(--mut); min-height: 66px;

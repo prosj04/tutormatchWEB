@@ -14,7 +14,7 @@ import {
   ReviewByLine,
   type ReviewCardItem,
 } from "@/lib/reviews-html-fallback";
-import { buildHallItem } from "@/lib/hall-items";
+import { buildHallItem, HALL_DEFAULT_CARDS } from "@/lib/hall-items";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
 function multilineNodes(text: string) {
@@ -100,7 +100,7 @@ export function ReviewsPageContent({
   const hallItems: HallItem[] = useMemo(() => {
     const getHall = (key: string, fallback: string) =>
       getCmsSectionValue(siteContent, "hall", key, fallback);
-    return Array.from({ length: 10 }, (_, i) => i + 1)
+    return Array.from({ length: HALL_DEFAULT_CARDS.length }, (_, i) => i + 1)
       .filter((n) => parseCmsVisibility(getHall(`hall${n}_visible`, "1"), true))
       .map((n) => buildHallItem(n, getHall))
       .filter((it) => it.title);

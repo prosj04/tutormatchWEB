@@ -3,8 +3,9 @@
 import Image from "next/image";
 
 import type { FeaturedTutorCard } from "@/lib/cms-page-defaults";
+import { matchUnivBrand } from "@/lib/univ-brand";
 
-/** 레퍼런스 배치 카드: 원형 사진+태그 스택 → 대학(전형) → 이름(나이) → 소개 → 과목 칩 → 경력+매칭 */
+/** 레퍼런스 배치 카드: 원형 사진+태그 스택 → 로고+대학(전형, 학교색) → 이름 → 소개 → 과목 칩 → 경력+매칭 */
 export function TutorProfileCard({
   card,
   ctaLabel,
@@ -17,6 +18,7 @@ export function TutorProfileCard({
   isCenter: boolean;
 }) {
   const pitch = [card.blurb, ...card.highlights].filter(Boolean).join("\n");
+  const brand = matchUnivBrand(card.university);
   return (
     <article className={`tpx-card${isCenter ? " is-center" : ""}`}>
       <div className="tpx-head">
@@ -39,10 +41,15 @@ export function TutorProfileCard({
           </div>
         ) : null}
       </div>
-      <p className="tpx-univ">{card.university}</p>
-      <h3 className="tpx-name">
-        {card.name} 선생님{card.age ? ` (${card.age}세)` : ""}
-      </h3>
+      <p className="tpx-univ" style={brand ? { color: brand.color } : undefined}>
+        {brand ? (
+          <span className="tpx-univ-logo" aria-hidden="true">
+            <Image src={brand.logo} alt="" fill className="object-contain" sizes="20px" />
+          </span>
+        ) : null}
+        {card.university}
+      </p>
+      <h3 className="tpx-name">{card.name} 선생님</h3>
       <p className="tpx-pitch" style={{ whiteSpace: "pre-line" }}>{pitch}</p>
       {card.subjects.length > 0 ? (
         <div className="tpx-subjects">
