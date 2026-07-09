@@ -50,6 +50,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const autoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastScrollYRef = useRef(0);
   const lastManualAdvanceRef = useRef(0);
+  // 절차 화면 진입 자동 등장이 세운 하한(스크롤 핸들러가 이 값 아래로 되돌리지 못하게)
+  const stepsAutoFloorRef = useRef(0);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -126,7 +128,9 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const total = stepsPin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
           const n = pivotSteps.length;
-          setStepsOn(Math.min(n, Math.floor(progress * (n + 0.6) + 0.45)));
+          const scrolled = Math.min(n, Math.floor(progress * (n + 0.6) + 0.45));
+          // 진입 자동 등장 하한을 존중 — 스크롤로 뒤로 줄어들지 않게
+          setStepsOn(Math.max(scrolled, stepsAutoFloorRef.current));
         }
       });
     };
@@ -140,6 +144,42 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       clearAuto();
     };
   }, [totalUnits, darkLast, matchCount, pivotSteps.length]);
+
+  // 절차 화면(01·02) 진입 시 자동 등장: 화면이 뷰포트에 들어오면 01이 뜨고, 스크롤 없이도 0.7초 뒤 02가 자동 등장.
+  // 스크롤을 빨리 내려 이미 지나친 경우에도 둘 다 표시. reduced-motion은 위 정적 렌더에서 이미 둘 다 노출.
+  useEffect(() => {
+    if (reduced) return;
+    const n = pivotSteps.length;
+    if (n <= 0) return;
+    const stepsPin = stepsPinRef.current;
+    if (!stepsPin) return;
+    // 핀은 매우 길어(수 화면 높이) 큰 임계값이 안 잡히므로, 실제 뷰포트 높이의 내부 스테이지를 관찰한다.
+    const target = stepsPin.querySelector<HTMLElement>(".lp2-story-steps-vp") ?? stepsPin;
+    let autoT: ReturnType<typeof setTimeout> | null = null;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          // 진입: 01 즉시, 0.7초 뒤 02(모든 스텝) 자동 등장
+          stepsAutoFloorRef.current = Math.max(stepsAutoFloorRef.current, 1);
+          setStepsOn((prev) => (prev < 1 ? 1 : prev));
+          if (!autoT) {
+            autoT = setTimeout(() => {
+              autoT = null;
+              stepsAutoFloorRef.current = n;
+              setStepsOn((prev) => (prev < n ? n : prev));
+            }, 700);
+          }
+        });
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(target);
+    return () => {
+      io.disconnect();
+      if (autoT) clearTimeout(autoT);
+    };
+  }, [reduced, pivotSteps.length]);
 
   // 자동 전진 간격을 뷰포트 기준 차등: hover 없는 기기 또는 화면폭 ≤640px이면 느리게(1400ms).
   useEffect(() => {

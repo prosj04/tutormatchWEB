@@ -347,6 +347,31 @@ function useMobileCenterActive(
   }, [listRef, setActive, manualLockRef]);
 }
 
+/**
+ * 목업 리스트 히트박스 좌우 확장: 컨테이너 위 세로 위치(clientY)로 어느 자식 행에 있는지 계산해 활성화.
+ * 가로 위치와 무관하게 같은 높이(행)면 인식된다. hover 가능한 기기에서만 동작(터치 탭 우선 보존).
+ * manualLockRef(최근 탭 시각)가 유효한 동안은 건너뛴다.
+ */
+function makeRowHoverMove(
+  setActive: React.Dispatch<React.SetStateAction<number>>,
+  manualLockRef?: React.MutableRefObject<number>,
+) {
+  return (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined" && !window.matchMedia("(hover: hover)").matches) return;
+    if (manualLockRef && Date.now() - manualLockRef.current < TAP_LOCK_MS) return;
+    const list = e.currentTarget;
+    const y = e.clientY;
+    const rows = list.children;
+    for (let i = 0; i < rows.length; i++) {
+      const r = (rows[i] as HTMLElement).getBoundingClientRect();
+      if (y >= r.top && y <= r.bottom) {
+        setActive((prev) => (prev === i ? prev : i));
+        return;
+      }
+    }
+  };
+}
+
 /* ─── scroll-reveal hook ─── */
 function useReveal() {
   useEffect(() => {
@@ -799,7 +824,11 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-proc-cols">
-            <div className="lp2-proc-list" ref={procListRef}>
+            <div
+              className="lp2-proc-list"
+              ref={procListRef}
+              onMouseMove={makeRowHoverMove(setActiveStep, procTapLockRef)}
+            >
               {cmsSteps.map((step, index) => (
                 <details
                   key={step.number}
@@ -1045,7 +1074,11 @@ export function LandingPageV2({
                 </p>
               </div>
 
-              <div className="lp2-care-list" ref={careListRef}>
+              <div
+                className="lp2-care-list"
+                ref={careListRef}
+                onMouseMove={makeRowHoverMove(setActiveCare)}
+              >
                 {managementItems.map((item, index) => (
                   <div
                     key={item.n}
@@ -1102,7 +1135,11 @@ export function LandingPageV2({
                 <p>{sectionTitles.lessonCareSubtext}</p>
               </div>
 
-              <div className="lp2-care-list" ref={lessonCareListRef}>
+              <div
+                className="lp2-care-list"
+                ref={lessonCareListRef}
+                onMouseMove={makeRowHoverMove(setActiveLessonCare)}
+              >
                 {lessonCareItems.map((item, index) => (
                   <div
                     key={item.n}
