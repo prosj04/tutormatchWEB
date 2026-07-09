@@ -190,24 +190,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     faq: getCmsValue("home_labels", "kicker_faq", "FAQ"),
   };
 
-  const verifyDefaults: [string, string][] = [
-    ["01", "서류·학력 인증"],
-    ["02", "수업 시연"],
-    ["03", "대면 인터뷰"],
-  ];
-  const verifySteps = verifyDefaults.flatMap(([num, label], index) => {
-    const n = index + 1;
-    const vis = getCmsValue("tutors_featured", `verify${n}_visible`, "1");
-    if (!parseCmsVisibility(vis.trim() === "" ? undefined : vis, true)) return [];
-    return [
-      {
-        n,
-        num: getCmsValue("tutors_featured", `verify${n}_num`, num),
-        label: getCmsValue("tutors_featured", `verify${n}_label`, label),
-      },
-    ];
-  });
-
   const uiLabels = {
     faqTitle: getCmsValue("home_labels", "section_title_faq", "자주 묻는 질문"),
     viewAllTeachers: getCmsValue("home_labels", "cta_view_all_teachers", "선생님 전체 보기"),
@@ -266,7 +248,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       .slice(0, 3),
     kickers,
     sectionTitles,
-    verifySteps,
     uiLabels,
   };
 }
@@ -446,7 +427,6 @@ export function LandingPageV2({
     featuredTutors,
     kickers,
     sectionTitles,
-    verifySteps,
     uiLabels,
   } = useMemo(() => buildLandingCmsView(cms), [cms]);
 
@@ -876,21 +856,6 @@ export function LandingPageV2({
             <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.teachers}</h2>
             <p>{sectionTitles.teachersSubtext}</p>
           </div>
-
-          {verifySteps.length > 0 && (
-            <div className="lp2-verify-row reveal" aria-label="선발 절차">
-              {verifySteps.map((v, index) => (
-                <span key={v.n} style={{ display: "contents" }}>
-                  {index > 0 && (
-                    <span className="lp2-verify-sep" aria-hidden="true">→</span>
-                  )}
-                  <span className="lp2-verify-pill">
-                    <em>{v.num}</em> {v.label}
-                  </span>
-                </span>
-              ))}
-            </div>
-          )}
 
           <div className="lp2-tpx-grid reveal">
             {featuredTutors.map((card) => (

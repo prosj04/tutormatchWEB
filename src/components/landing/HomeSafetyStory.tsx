@@ -23,8 +23,8 @@ function clamp01(v: number) {
  * 핀이 끝난 뒤 별도 화면에서 절차 01·02가 스크롤로 순차 등장.
  */
 // 다크 구간 자동 진행: 검정 전환(첫 매칭) 시작~다크 마지막 단계(클로저) 도달까지 스스로 넘긴다.
-const AUTO_STEP_MS = 1000; // 자동 전진 간격(데스크톱 기본)
-const AUTO_STEP_MS_TOUCH = 1400; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 읽을 시간 확보
+const AUTO_STEP_MS = 1800; // 자동 전진 간격(데스크톱 기본) — 읽을 시간 확보
+const AUTO_STEP_MS_TOUCH = 2200; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 더 여유 있게
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
 const STEP_VH = 55; // 절차 01·02 별도 화면의 스크롤 길이 단위

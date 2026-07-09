@@ -60,7 +60,11 @@ export function TutorProfileCard({
         </div>
       ) : null}
       <div className="tpx-foot">
-        <span className="tpx-career">{card.careerBadge}</span>
+        <span className="tpx-career">
+          {card.careerBadge.startsWith("경력")
+            ? card.careerBadge
+            : `경력 ${card.careerBadge}`}
+        </span>
         <button
           type="button"
           className="tpx-cta"

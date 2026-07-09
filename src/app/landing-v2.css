@@ -394,7 +394,7 @@ body:has(.lp2-root) footer.site .logo span {
 
 /* ── QnA 채팅 루프 (말풍선 순차 팝인 → 유지 → 비움 → 반복) ── */
 .lp2-care-mock.in .lp2-qna-body .lp2-bubble {
-  animation-duration: 12s;
+  animation-duration: 8s; /* 12s ÷ 1.5 — 채팅 애니메이션 1.5배 빠르게 */
   animation-iteration-count: infinite;
   animation-timing-function: cubic-bezier(.22, 1, .36, 1);
   animation-fill-mode: both;
@@ -527,7 +527,11 @@ body:has(.lp2-root) footer.site .logo span {
   /* reports와 동일: 활성 스텝 항목 중앙에 translateY로 정렬(스크롤 추적 없음) */
   align-self: start;
   user-select: none;
+  /* 호버가 없어도 현재 activeStep(기본 1단계) 목업이 항상 보이도록 게이트 없음 보장 */
+  opacity: 1; visibility: visible;
 }
+/* 페이드 인 애니메이션이 어떤 상태여도 최종적으로 항상 보이게(호버 이탈·초기 로드 포함) */
+.lp2-proc-mock .lp2-proc-mock-view { opacity: 1; }
 .lp2-notif-card {
   background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
   padding: 16px 20px 18px; box-shadow: var(--shadow-sm);
@@ -751,57 +755,6 @@ body:has(.lp2-root) footer.site .logo span {
   padding: 0; border-radius: 8px; flex: none; font-size: inherit;
 }
 .lp2-mobile-footer .lp2-theme-btn { flex: none; font-size: inherit; }
-
-/* ── teacher verify pills (선발 절차) ── */
-.lp2-verify-lead {
-  margin-top: 40px;
-  text-align: center;
-  color: var(--mut);
-  font-size: 14px;
-  font-weight: 500;
-}
-.lp2-verify-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin-top: 14px;
-}
-@media (max-width: 960px) {
-  /* 선발 절차 3단계는 줄바꿈 없이 한 줄 유지 (필요 시 가로 스크롤) */
-  .lp2-verify-row {
-    flex-wrap: nowrap; justify-content: flex-start;
-    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
-    margin-left: -20px; margin-right: -20px; padding: 2px 20px 8px;
-    scrollbar-width: none;
-  }
-  .lp2-verify-row::-webkit-scrollbar { display: none; }
-  .lp2-verify-pill { white-space: nowrap; flex-shrink: 0; }
-}
-.lp2-verify-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  color: var(--mut);
-  font-size: 14px;
-  font-weight: 600;
-}
-.lp2-verify-pill em {
-  font-style: normal;
-  color: var(--acc-text);
-  font-weight: 800;
-  letter-spacing: .04em;
-}
-.lp2-verify-sep {
-  color: var(--mut-2);
-  font-weight: 700;
-  font-size: 14px;
-}
 
 /* ── FAQ (native details/summary accordion) ── */
 .lp2-faq-list {
