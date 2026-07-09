@@ -1596,12 +1596,7 @@ export const homeSafetyStoryDefaults = [
   { section: "safety_story", key: "step1_desc", value: "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다.", type: "text", order: 51 },
   { section: "safety_story", key: "step2_title", value: "매니저 직접 매칭", type: "text", order: 52 },
   { section: "safety_story", key: "step2_desc", value: "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다.", type: "text", order: 53 },
-  { section: "safety_story", key: "step3_title", value: "공부 계획·질문 관리", type: "text", order: 54 },
-  { section: "safety_story", key: "step3_desc", value: "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다.", type: "text", order: 55 },
-  { section: "safety_story", key: "step4_title", value: "매월 수업 리포트 제공", type: "text", order: 56 },
-  { section: "safety_story", key: "step4_desc", value: "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다.", type: "text", order: 57 },
-  { section: "safety_story", key: "step5_title", value: "매니저의 사후 관리", type: "text", order: 58 },
-  { section: "safety_story", key: "step5_desc", value: "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다.", type: "text", order: 59 },
+  // step3~5는 Process 섹션으로 이관되어 스크롤텔링에서 미사용(피벗 다음 화면은 01·02만 노출).
 ];
 
 /** 합격 카드 캐러셀 기본값 — 학교 로고(투명도 70%) + 브랜드 컬러 텍스트 */

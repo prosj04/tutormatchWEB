@@ -33,11 +33,11 @@ const results: [string, string, string, string][] = [
 ];
 
 const steps = [
-  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 충분해요." },
-  { number: "02", title: "매니저 학습 상담", desc: "매니저가 방문 상담하며 학생의 공부 성향과 원하는 수업 방향을 파악하고, 학습 진단을 제공합니다." },
-  { number: "03", title: "선생님 배정", desc: "학습 진단을 바탕으로 함께 고민하여 가장 적합한 선생님을 배정합니다.\n첫 수업 날짜를 확정하면 선생님이 방문해 수업을 시작합니다." },
-  { number: "04", title: "수업 관리", desc: "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다." },
-  { number: "05", title: "사후 관리", desc: "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성해 학부모님과 숨김없이 공유합니다.\n배정 이후에도 매니저가 상시 관리하며, 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있습니다." },
+  { number: "01", title: "무료 상담 신청", desc: "학생의 현재 성적, 목표, 성향을 간단히 남겨주세요. 30초면 매니저가 연락드립니다." },
+  { number: "02", title: "매니저 학습 상담 및 선생님 배정", desc: "매니저가 직접 방문해 학습 상태를 진단하고, 상담에서 파악한 성향에 꼭 맞는 선생님을 배정합니다.\n학생이 수락하면 첫 수업 날짜를 확정하고 수업을 시작합니다." },
+  { number: "03", title: "수업 관리 (숙제·질문)", desc: "선생님이 앱에서 숙제를 내면 학생이 매일매일 체크합니다.\n질문을 남기면 최고 성능의 질의응답 전용 AI가 즉시 답하고, 이어서 선생님 답변까지 받아볼 수 있습니다." },
+  { number: "04", title: "리포트 & 학부모 앱", desc: "매 수업 후 수업 리포트, 매월 상세한 월간 리포트를 제공합니다.\n학부모 앱에서 수업·숙제·진도를 언제든 확인하실 수 있습니다." },
+  { number: "05", title: "매니저 사후 관리", desc: "배정 이후에도 매니저가 상시 관리합니다.\n선생님이 맞지 않는다면 언제든 비용 없이 재매칭하고, 언제든 매니저 상담을 요청하실 수 있습니다." },
 ];
 
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
@@ -407,7 +407,8 @@ export function LandingPageV2({
   const procListRef = useRef<HTMLDivElement | null>(null);
   const procMockRef = useRef<HTMLDivElement | null>(null);
   const procTapLockRef = useRef(0); // 터치 기기 탭 우선 잠금(중앙 감지 억제)
-  // 데스크톱 목업은 섹션 내 고정 y(스텝 목록 수직 중앙, CSS sticky)에서 등장 — 추적 이동 없음
+  // 데스크톱 목업은 reports와 동일 방식: 활성 스텝 항목 옆에 목업 수직 중앙 정렬(스크롤 추적 없음)
+  const procMockY = useAlignedMockY(procListRef, procMockRef, activeStep);
   useMobileCenterActive(procListRef, setActiveStep, procTapLockRef);
 
   // 리포트·수업 관리 섹션 — 프로세스와 동일 구조 (호버 정렬 + 모바일 중앙 활성화)
@@ -476,12 +477,10 @@ export function LandingPageV2({
       "여린 아이에게는 — 틀려도 기다려주는 선생님",
       "게으른 아이에게는 — 옆에서 본보기가 되는 선생님",
     ];
+    // 스크롤텔링 피벗 다음 별도 화면에서 절차 01·02만 노출 (03~05는 Process 섹션으로 이관)
     const stepDefaults = [
       ["대표 직접 면접", "인품, 학력, 신원, 수업 실력.\n4가지 분야를 대표가 직접 전원 면접하고 교육하며, 엄격하게 검증된 선생님만 함께하고 있습니다."],
       ["매니저 직접 매칭", "학생의 공부 성향과 원하는 수업 방향을 상담을 통해 파악하고, 가장 적합한 선생님을 배정합니다."],
-      ["공부 계획·질문 관리", "수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.\n매 수업마다 숙제와 공부 계획을 시스템에 등록하고, 선생님은 상시 질의응답과 숙제 피드백을 제공합니다."],
-      ["매월 수업 리포트 제공", "누구보다 학생의 공부를 잘 아는 선생님이 매월 직접 리포트를 작성합니다.\n선생님의 생각과 계획을 학생, 학부모와 숨김없이 공유하여 같은 목표로 나아갑니다."],
-      ["매니저의 사후 관리", "배정 이후에도 매니저가 상시 관리합니다. 선생님이 맞지 않는다면 언제든 비용 없이 교체할 수 있고,\n언제든 매니저 상담을 요청하실 수 있습니다."],
     ] as const;
     return {
       intro: getCmsMultiline(S, "intro", "과외는 많은 학생에게 최고의 해결책이지만.."),
@@ -512,60 +511,99 @@ export function LandingPageV2({
       <div className="lp2-notif-card">
         <div className="lp2-notif-head">
           <span className="lp2-proof-dot" />
-          매니저 진단 메모
-          <span className="t">상담 직후</span>
-        </div>
-        <div className="lp2-notif-rows">
-          <div><span className="k">성향</span><span className="v">조용하고 신중한 편 · 질문형 수업 선호</span></div>
-          <div><span className="k">목표</span><span className="v">내신 수학 2등급, 기초 개념 재정리</span></div>
-          <div><span className="k">일정</span><span className="v">화·목 저녁 / 동탄 자택 방문</span></div>
-        </div>
-      </div>
-      <div className="lp2-proc-mock-note">성적표보다 먼저, 아이가 어떤 학생인지 듣습니다</div>
-    </>,
-    <>
-      <div className="lp2-notif-card">
-        <div className="lp2-notif-head">
-          <span className="lp2-proof-dot" />
           선생님 배정 완료
-          <span className="t">상담 후 1~3일</span>
+          <span className="t">방문 상담 후</span>
         </div>
         <div className="lp2-notif-rows">
-          <div><span className="k">선생님</span><span className="v">김서연 · 서울대 수리과학부 · 수학</span></div>
+          <div><span className="k">진단</span><span className="v">조용·신중형 · 내신 수학 2등급 목표</span></div>
+          <div><span className="k">선생님</span><span className="v">김서연 · 서울대 수리과학부 · 기다려주는 수업</span></div>
           <div><span className="k">첫 수업</span><span className="v">목요일 19:00 · 자택 방문</span></div>
         </div>
-        <div className="lp2-notif-tags">
-          <span>기다려주는 수업</span>
-          <span>화·목 가능</span>
+        <div className="lp2-match-accept">
+          <button type="button" className="lp2-accept-btn" tabIndex={-1}>이 선생님으로 수락하기</button>
+          <span className="lp2-accept-note">수락해야 수업이 시작됩니다</span>
         </div>
       </div>
-      <div className="lp2-proc-mock-note">성향과 일정까지 맞는 선생님이 방문합니다</div>
+      <div className="lp2-proc-mock-note">방문 진단으로 성향까지 맞춘 선생님을 배정합니다</div>
+    </>,
+    <>
+      <div className="lp2-report-card lp2-mock-hw">
+        <div className="lp2-report-head">
+          <span className="lp2-proof-dot" />
+          <strong>오늘의 숙제</strong>
+          <span className="t">매일 체크</span>
+        </div>
+        <div className="lp2-hw-list">
+          <div className="lp2-hw-row done">
+            <span className="c">✓</span>
+            <span className="v">유형 연습 4문항</span>
+          </div>
+          <div className="lp2-hw-row done">
+            <span className="c">✓</span>
+            <span className="v">오답노트 정리 2개</span>
+          </div>
+          <div className="lp2-hw-row todo">
+            <span className="c" />
+            <span className="v">개념 복습 p.84~87</span>
+          </div>
+        </div>
+      </div>
+      <div className="lp2-qna-card lp2-mock-qna">
+        <div className="lp2-qna-body">
+          <div className="lp2-qmsg q">
+            <span className="who">학생</span>
+            <p>12번, 판별식으로 풀었는데 답이 왜 다르죠?</p>
+          </div>
+          <div className="lp2-qmsg a">
+            <span className="chip ai">AI 즉시 답변</span>
+            <p>범위 조건 x&gt;0이 빠졌어요. 반영하면 근이 하나로 정해집니다.</p>
+          </div>
+          <div className="lp2-qmsg a">
+            <span className="chip tc">선생님 답변</span>
+            <p>맞아요. 자주 놓치는 유형이라 다음 수업에 한 번 더 봐요.</p>
+          </div>
+        </div>
+      </div>
+      <div className="lp2-proc-mock-note">매일 체크하는 숙제 + AI·선생님 2단 답변</div>
+    </>,
+    <>
+      <div className="lp2-report-card lp2-mock-parent">
+        <div className="lp2-report-head">
+          <span className="lp2-proof-dot" />
+          <strong>Concord 학부모 앱</strong>
+          <span className="t">실시간</span>
+        </div>
+        <div className="lp2-parent-gauge">
+          <div className="lp2-gauge-top">
+            <span className="lbl">이번 주 진도</span>
+            <span className="pct">82%</span>
+          </div>
+          <div className="lp2-gauge-bar"><span style={{ width: "82%" }} /></div>
+        </div>
+        <div className="lp2-parent-list">
+          <div className="lp2-parent-row">
+            <span className="ic">📄</span>
+            <span className="v">수업 리포트 · 3/15</span>
+          </div>
+          <div className="lp2-parent-row">
+            <span className="ic">✅</span>
+            <span className="v">숙제 완료 5/6</span>
+          </div>
+        </div>
+        <button type="button" className="lp2-parent-btn" tabIndex={-1}>월간 리포트 보기 →</button>
+      </div>
+      <div className="lp2-proc-mock-note">수업·월간 리포트를 학부모 앱에서 언제든 확인</div>
     </>,
     <>
       <div className="lp2-notif-card">
         <div className="lp2-notif-head">
           <span className="lp2-proof-dot" />
-          이번 주 공부 계획 등록
-          <span className="t">수업 직후</span>
+          매니저 사후 관리
+          <span className="t">배정 이후 상시</span>
         </div>
         <div className="lp2-notif-rows">
-          <div><span className="k">숙제</span><span className="v">유형 연습 12문항 · 요일별 배분</span></div>
-          <div><span className="k">체크</span><span className="v">학생이 매일 완료 표시</span></div>
-          <div><span className="k">질문</span><span className="v">AI 즉시 답변 + 선생님 답변</span></div>
-        </div>
-      </div>
-      <div className="lp2-proc-mock-note">수업 사이의 매일이 시스템에 남습니다</div>
-    </>,
-    <>
-      <div className="lp2-notif-card">
-        <div className="lp2-notif-head">
-          <span className="lp2-proof-dot" />
-          6월 학습 리포트 도착
-          <span className="t">매월 발송</span>
-        </div>
-        <div className="lp2-notif-rows">
-          <div><span className="k">리포트</span><span className="v">한 달의 성장 변화 · 취약 유형 분석</span></div>
-          <div><span className="k">매니저</span><span className="v">상시 관리 · 교체 비용 0원</span></div>
+          <div><span className="k">관리</span><span className="v">매니저 상시 점검 · 언제든 상담 요청</span></div>
+          <div><span className="k">재매칭</span><span className="v">맞지 않으면 비용 0원 교체</span></div>
         </div>
       </div>
       <div className="lp2-proc-mock-note">배정 이후에도 매니저가 끝까지 함께합니다</div>
@@ -812,11 +850,15 @@ export function LandingPageV2({
               </div>
             </div>
 
-            {/* 목업은 섹션 내 고정 y(스텝 목록 수직 중앙)에서 등장 — 호버 시 위치 고정, 콘텐츠만 크로스페이드 */}
+            {/* reports 방식: 활성 스텝 옆에 목업 중앙 정렬, 이동은 부드럽게·콘텐츠는 크로스페이드 */}
             <div
               className="lp2-proc-mock lp2-desktop-only"
               aria-hidden="true"
               ref={procMockRef}
+              style={{
+                transform: `translateY(${procMockY}px)`,
+                transition: "transform .45s cubic-bezier(.22,1,.36,1)",
+              }}
             >
               <div className="lp2-proc-mock-view" key={activeStep}>
                 {procMocks[activeStep]}

@@ -19,24 +19,24 @@ function clamp01(v: number) {
 /**
  * 스크롤 연동 스토리텔링: 핀 고정 화면에서 스크롤이 단계를 넘기고,
  * 모션 자체는 CSS 이징(스르륵)이 담당. 잠금·자동재생 없음.
- * 단계: intro → 매칭 4쌍 누적 → 클로저 → 전환(멈춤).
+ * 단계: intro → 매칭 3쌍 누적 → 클로저 → 전환(멈춤, 피벗 카피만).
+ * 핀이 끝난 뒤 별도 화면에서 절차 01·02가 스크롤로 순차 등장.
  */
 // 다크 구간 자동 진행: 검정 전환(첫 매칭) 시작~다크 마지막 단계(클로저) 도달까지 스스로 넘긴다.
 const AUTO_STEP_MS = 1000; // 자동 전진 간격(데스크톱 기본)
 const AUTO_STEP_MS_TOUCH = 1400; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 읽을 시간 확보
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
-const STEP_VH = 50; // 사후 관리(03~05) 별도 블록의 스크롤 길이 단위
+const STEP_VH = 55; // 절차 01·02 별도 화면의 스크롤 길이 단위
 
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
-  const postPinRef = useRef<HTMLDivElement | null>(null);
+  const stepsPinRef = useRef<HTMLDivElement | null>(null);
   const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
-  const [stepsOn, setStepsOn] = useState(0); // 피벗 화면 01·02 순차 등장
-  const [postOn, setPostOn] = useState(0); // 사후 관리 03~05 스크롤 누적 등장
+  const [stepsOn, setStepsOn] = useState(0); // 절차 01·02 스크롤 누적 등장
   const [reduced, setReduced] = useState(false);
   const [autoStepMs, setAutoStepMs] = useState(AUTO_STEP_MS);
-  const postSteps = data.steps.slice(2); // 03~05 (사후 관리)
+  const pivotSteps = data.steps.slice(0, 2); // 01·02 (절차)
 
   const matchCount = data.matches.length;
   const totalUnits = 1 + matchCount + 1 + 1; // intro + matches + closer + pivot
@@ -117,16 +117,16 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             return next;
           });
         }
-        // 사후 관리(03~05) 별도 블록: 스크롤 진행에 따라 하나씩 누적 등장
-        const post = postPinRef.current;
-        if (post) {
-          const stage = post.querySelector<HTMLElement>(".lp2-story-post-vp");
+        // 절차 01·02 별도 화면: 핀이 끝난 뒤 스크롤 진행에 따라 하나씩 누적 등장
+        const stepsPin = stepsPinRef.current;
+        if (stepsPin) {
+          const stage = stepsPin.querySelector<HTMLElement>(".lp2-story-steps-vp");
           const vh = stage?.offsetHeight ?? window.innerHeight;
-          const rect = post.getBoundingClientRect();
-          const total = post.offsetHeight - vh;
+          const rect = stepsPin.getBoundingClientRect();
+          const total = stepsPin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          const n = postSteps.length;
-          setPostOn(Math.min(n, Math.floor(progress * (n + 0.6) + 0.45)));
+          const n = pivotSteps.length;
+          setStepsOn(Math.min(n, Math.floor(progress * (n + 0.6) + 0.45)));
         }
       });
     };
@@ -139,7 +139,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       if (raf) cancelAnimationFrame(raf);
       clearAuto();
     };
-  }, [totalUnits, darkLast, matchCount, postSteps.length]);
+  }, [totalUnits, darkLast, matchCount, pivotSteps.length]);
 
   // 자동 전진 간격을 뷰포트 기준 차등: hover 없는 기기 또는 화면폭 ≤640px이면 느리게(1400ms).
   useEffect(() => {
@@ -173,14 +173,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const phase: "intro" | "match" | "closer" | "pivot" =
     unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
 
-  // 절차 1·2 — 피벗 카피 등장 직후 같은 화면에서 자동 순차 등장
-  useEffect(() => {
-    if (reduced || phase !== "pivot") return;
-    const timers = data.steps.slice(0, 2).map((_, i) =>
-      setTimeout(() => setStepsOn((prev) => Math.max(prev, i + 1)), 500 + i * 550),
-    );
-    return () => timers.forEach(clearTimeout);
-  }, [phase, reduced, data.steps]);
   const matchShown = phase === "match" ? unit : phase === "intro" ? 0 : matchCount;
   const isDark = phase === "match" || phase === "closer";
 
@@ -202,7 +194,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
         <div className="lp2-story-sblock"><h2>{pivotText}</h2></div>
         <ol className="lp2-story-steps lp2-story-pivot-steps">
-          {data.steps.slice(0, 2).map((s, i) => (
+          {pivotSteps.map((s, i) => (
             <li key={s.title} className="lp2-story-step on">
               <span className="num">0{i + 1}</span>
               <div>
@@ -212,19 +204,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             </li>
           ))}
         </ol>
-        {postSteps.length > 0 && (
-          <ol className="lp2-story-steps lp2-story-post-steps post">
-            {postSteps.map((s, i) => (
-              <li key={s.title} className="lp2-story-step on">
-                <span className="num">0{i + 3}</span>
-                <div>
-                  <h3>{s.title}</h3>
-                  <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        )}
       </section>
     );
   }
@@ -255,36 +234,25 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
             <h2>{data.closer}</h2>
           </div>
 
-          {/* 전환 — 피벗 카피 + 절차 1·2 좌우 배치, 자동 순차 등장 */}
+          {/* 전환 — 피벗 카피만 (절차 01·02는 핀 다음 별도 화면) */}
           <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
             <h2>{pivotText}</h2>
-            <ol className="lp2-story-pivot-steps">
-              {data.steps.slice(0, 2).map((s, i) => (
-                <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
-                  <span className="num">0{i + 1}</span>
-                  <div>
-                    <h3>{s.title}</h3>
-                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
           </div>
         </div>
       </div>
 
-      {/* 사후 관리(03~05) — 피벗(01·02) 다음, 이어서 스크롤하면 별도 화면에서 하나씩 누적 */}
-      {postSteps.length > 0 && (
+      {/* 절차 01·02 — 핀(피벗)이 끝난 뒤 한 화면 넘겨야 나오는 별도 화면, 스크롤로 순차 등장 */}
+      {pivotSteps.length > 0 && (
         <div
-          ref={postPinRef}
-          className="lp2-story-post-pin"
-          style={{ height: `${postSteps.length * STEP_VH + 130}svh` }}
+          ref={stepsPinRef}
+          className="lp2-story-steps-pin"
+          style={{ height: `${pivotSteps.length * STEP_VH + 130}svh` }}
         >
-          <div className="lp2-story-post-vp">
-            <ol className="lp2-story-steps lp2-story-post-steps post">
-              {postSteps.map((s, i) => (
-                <li key={s.title} className={`lp2-story-step${i < postOn ? " on" : ""}`}>
-                  <span className="num">0{i + 3}</span>
+          <div className="lp2-story-steps-vp">
+            <ol className="lp2-story-steps lp2-story-pivot-steps">
+              {pivotSteps.map((s, i) => (
+                <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
+                  <span className="num">0{i + 1}</span>
                   <div>
                     <h3>{s.title}</h3>
                     <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>

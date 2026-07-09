@@ -421,6 +421,70 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-hw-row.done .v { color: var(--mut); text-decoration: line-through; text-decoration-color: var(--mut-2); }
 .lp2-hw-row.today .d { background: var(--acc); color: var(--on-acc); }
 .lp2-hw-row.today .c { border: 1px solid rgba(var(--acc-rgb),.3); border-radius: 999px; padding: 2px 8px; }
+
+/* ── Process 스텝 2: 선생님 배정 + 수락 버튼 ── */
+.lp2-match-accept {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+}
+.lp2-accept-btn {
+  border: none; border-radius: 10px; padding: 11px 14px;
+  background: var(--acc); color: var(--on-acc);
+  font-size: 13.5px; font-weight: 700; cursor: default;
+}
+.lp2-accept-note { text-align: center; font-size: 11.5px; font-weight: 600; color: var(--mut-2); }
+
+/* ── Process 스텝 3: 오늘의 숙제 체크리스트 + AI·선생님 질의응답 ── */
+.lp2-mock-hw { overflow: hidden; }
+.lp2-mock-hw .lp2-hw-row .c {
+  flex: none; width: 20px; height: 20px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--line); color: transparent; font-size: 12px;
+}
+.lp2-mock-hw .lp2-hw-row.done .c { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
+.lp2-mock-hw .lp2-hw-row.todo .c { background: var(--panel-2); }
+.lp2-mock-qna {
+  border: 1px solid var(--line); border-radius: 14px;
+  background: var(--panel); box-shadow: var(--shadow-sm);
+  overflow: hidden; margin-top: 2px;
+}
+.lp2-mock-qna .lp2-qna-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.lp2-qmsg { display: flex; flex-direction: column; gap: 5px; max-width: 90%; }
+.lp2-qmsg.q { align-self: flex-start; }
+.lp2-qmsg.a { align-self: flex-end; align-items: flex-end; }
+.lp2-qmsg .who { font-size: 11px; font-weight: 700; color: var(--mut-2); }
+.lp2-qmsg .chip {
+  align-self: flex-end; font-size: 10.5px; font-weight: 800; letter-spacing: .02em;
+  border-radius: 999px; padding: 2px 9px;
+}
+.lp2-qmsg .chip.ai { background: rgba(var(--acc-rgb),.14); color: var(--acc-text); }
+.lp2-qmsg .chip.tc { background: var(--panel-2); color: var(--fg); }
+.lp2-qmsg p {
+  margin: 0; font-size: 13px; line-height: 1.55; color: var(--fg);
+  background: var(--panel-2); border-radius: 12px; padding: 9px 12px;
+}
+.lp2-qmsg.a p { background: rgba(var(--acc-rgb),.08); }
+
+/* ── Process 스텝 4: 학부모 앱 (진도 게이지 + 리스트 + 월간 버튼) ── */
+.lp2-mock-parent .lp2-parent-gauge { margin-top: 16px; }
+.lp2-gauge-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.lp2-gauge-top .lbl { font-size: 12.5px; font-weight: 700; color: var(--mut); }
+.lp2-gauge-top .pct { font-size: 22px; font-weight: 800; color: var(--acc-text); letter-spacing: -.02em; }
+.lp2-gauge-bar { height: 8px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
+.lp2-gauge-bar > span { display: block; height: 100%; border-radius: 999px; background: var(--acc); }
+.lp2-parent-list { margin-top: 16px; display: flex; flex-direction: column; }
+.lp2-parent-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-top: 1px solid var(--line);
+  font-size: 13.5px; color: var(--fg);
+}
+.lp2-parent-row:first-child { border-top: none; }
+.lp2-parent-row .ic { flex: none; font-size: 14px; }
+.lp2-parent-btn {
+  width: 100%; margin-top: 14px; border: 1px solid rgba(var(--acc-rgb),.3);
+  border-radius: 10px; padding: 10px 14px; background: rgba(var(--acc-rgb),.06);
+  color: var(--acc-text); font-size: 13px; font-weight: 700; cursor: default;
+}
 @keyframes lp2-chat-a {
   0% { opacity: 0; transform: translateY(10px) scale(.9); }
   4%, 90% { opacity: 1; transform: none; }
@@ -460,9 +524,7 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-proc-mock {
   display: flex; flex-direction: column; gap: 14px;
-  /* 섹션 내 고정 y — 스텝 목록의 수직 중앙 부근에 붙어 등장(추적 이동 없음). sticky로 스크롤 중 시야 유지.
-     top 고정값이라 목업 상단 좌표가 활성 스텝과 무관하게 항상 동일(콘텐츠만 크로스페이드) */
-  position: sticky; top: 200px;
+  /* reports와 동일: 활성 스텝 항목 중앙에 translateY로 정렬(스크롤 추적 없음) */
   align-self: start;
   user-select: none;
 }
@@ -1107,25 +1169,11 @@ body.story-dark .sticky-cta {
 }
 @media (prefers-reduced-motion: reduce) { .lp2-proc-mock-view > * { animation: none; } }
 
-/* ── 피벗 화면: 절차 1·2 좌우 배치, 카피 직후 자동 등장 ── */
+/* ── 피벗 화면: 카피만 노출(절차 01·02는 핀 다음 별도 화면) ── */
 .lp2-story-pivot { width: min(1080px, calc(100% - 48px)); }
-.lp2-story-pivot-steps {
-  list-style: none;
-  margin: clamp(36px, 6vh, 64px) 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(28px, 4vw, 64px);
-  align-items: start;
-  text-align: left;
-}
-.lp2-story-pivot-steps .lp2-story-step { border-top: none; padding: 0; }
-@media (max-width: 680px) {
-  .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
-}
 
-/* ── 사후 관리(03~05) 별도 블록: 피벗(01·02) 다음 화면, 스크롤 누적 등장 ── */
-.lp2-story-post-vp {
+/* ── 절차 01·02 별도 화면: 피벗(핀) 다음, 스크롤로 순차 등장 ── */
+.lp2-story-steps-vp {
   position: sticky;
   top: 0;
   height: 100svh;
@@ -1134,18 +1182,25 @@ body.story-dark .sticky-cta {
   justify-content: center;
   padding: 0 24px;
 }
-.lp2-story-post-steps {
+.lp2-story-pivot-steps {
   list-style: none;
-  width: min(860px, 100%);
+  width: min(1080px, 100%);
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+  text-align: left;
 }
-.lp2-story-post-steps .lp2-story-step:first-child { border-top: none; }
-/* 사후 관리: 회색 번호로 위계 낮춤(01·02 그린 강조와 대비) */
-.lp2-story-post-steps.post .lp2-story-step .num { color: var(--mut-2); }
-.lp2-story-post-steps.post .lp2-story-step h3 { font-weight: 700; }
+.lp2-story-pivot-steps .lp2-story-step { border-top: none; padding: 0; }
+/* 절차 01·02: 그린 강조 번호 유지 */
+.lp2-story-pivot-steps .lp2-story-step .num { color: var(--acc-text); }
+@media (max-width: 680px) {
+  .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; }
+}
 /* 정적 폴백에서는 스크롤 애니메이션 없이 바로 노출 */
-.lp2-story-static .lp2-story-post-steps { width: min(860px, 100%); margin: 0 auto 90px; padding: 0 24px; }
+.lp2-story-static .lp2-story-pivot-steps { width: min(1080px, 100%); margin: 40px auto 90px; padding: 0 24px; }
 
 /* M-9: 모바일 터치 타깃 보정 — 시각 크기 유지, 히트영역만 40px+ */
 @media (max-width: 640px) {
