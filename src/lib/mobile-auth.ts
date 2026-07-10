@@ -255,7 +255,7 @@ export async function requireMobileManager(request: Request) {
       error: NextResponse.json({ error: "Manager not found" }, { status: 404 }),
     } as const;
   }
-  return { teacher, userId: payload.sub } as const;
+  return { teacher, userId: payload.sub, role: payload.role } as const;
 }
 
 /**

@@ -44,7 +44,9 @@
 ### 0.4 크로스커팅 신규 요구사항 (모든 역할에 걸침)
 
 1. **역할 기반 앱 진입 게이트 (모바일):** 로그인/토큰 로드 후 `role`을 읽어 **학생 / 학부모 / 선생님 / 매니저 4개 탭 세트**로 분기. `GET /api/mobile/me`의 `role` 사용. CHIEF_MANAGER·ADMIN으로 모바일 로그인 시 "웹 관리자 페이지를 이용하세요" 안내 화면. **백엔드 변경 필요:** `src/app/api/mobile/auth/login/route.ts`의 역할 게이트가 현재 STUDENT·PARENT만 허용 → TEACHER·MANAGER 추가 허용, CHIEF_MANAGER·ADMIN만 차단.
-2. **비밀번호 재설정 (신규):** 현재 일반 사용자용 비밀번호 재설정 플로우가 없음(어드민 전용 `/api/admin/recover`만 존재). 학생·학부모용 비밀번호 재설정 UI + 백엔드 필요. → 백엔드 신규 엔드포인트 필요(부록 A 참조).
+2. **비밀번호 변경·재설정 (구현됨):** 문자·이메일 발송 인프라가 없어 미인증 "비밀번호 찾기" 플로우는 제공하지 않는다. 대신 두 경로:
+   - **본인 변경(로그인 상태):** 현재 비밀번호 확인 후 변경. 모든 역할·양 플랫폼. 웹 `POST /api/account/password`, 모바일 `POST /api/mobile/me/password`. 바디 `{ currentPassword, newPassword(≥8) }`. 계정 설정 화면에 배치.
+   - **매니저 재설정(분실 시):** 매니저가 대면으로 학생·학부모 비밀번호를 재설정. 웹 `POST /api/manager/password-reset`, 모바일 `POST /api/mobile/manager/password-reset`. 바디 `{ identifier(전화/이메일), newPassword(≥8) }`. 대상은 STUDENT·PARENT만. 감사 로그(PASSWORD_RESET) 기록.
 3. **자녀 연결 (학부모 신규):**
    - 학생 화면에서 **연결 코드 발급** 및 **QR 코드 표시**.
    - 학부모 화면에서 **코드 입력** 또는 **QR 스캔**으로 연결.
@@ -334,7 +336,8 @@
 | `/api/parent/profile` | GET/PATCH | 학부모 프로필 |
 | `/api/student/parent-link-code` | GET/POST | 학생 측 연결 코드/QR 발급 |
 | `/api/manager/parent-link` | POST | 매니저 수동 학부모↔학생 연결 |
-| `/api/auth/password-reset/request` + `/confirm` (또는 mobile 대응) | POST | 학생·학부모 비밀번호 재설정 |
+| `/api/account/password` (+ mobile `/api/mobile/me/password`) | POST | 본인 비밀번호 변경(현재 비밀번호 확인, 전 역할) |
+| `/api/manager/password-reset` (+ mobile) | POST | 매니저의 학생·학부모 비밀번호 재설정(분실 대응) |
 | `/api/mobile/teacher/*` (home, students, students/[id], first-lesson, lessons, lessons/[id]/cancel, plans, homework-distribution, plans/[planId]/comment, homework-templates, questions, questions/[id]/answer, profile) | 다양 | 선생님 모바일 앱(웹 `/api/teacher/*` 로직 재사용, 모바일 토큰 인증) |
 | `/api/mobile/manager/*` (consultations/waiting, consultations/mine, consultations/[id]/*, matches, monitoring, monitoring/stats, care-logs, subscriptions/[id]/pause, parent-link, teacher-approval) | 다양 | 매니저 모바일 앱(웹 `/api/manager/*` 로직 재사용, 모바일 토큰 인증) |
 
