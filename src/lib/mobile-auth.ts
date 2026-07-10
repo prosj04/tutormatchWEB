@@ -179,10 +179,10 @@ export async function requireMobileParent(request: Request) {
 }
 
 /**
- * 강사 권한 필수(모바일). 웹 requireTeacher와 동일 정책:
- * TEACHER/MANAGER/CHIEF_MANAGER 통과, 단 TEACHER는 승인(approved)된 경우만.
+ * 강사 신원만 확인(모바일, 승인 여부 무관). 웹 requireTeacherAllowPending 대응.
+ * 승인 대기 강사도 접근하는 온보딩 라우트(프로필/사진/서류)용.
  */
-export async function requireMobileTeacher(request: Request) {
+export async function requireMobileTeacherAllowPending(request: Request) {
   const payload = await getMobileUser(request);
   if (!payload) {
     return {
@@ -206,7 +206,17 @@ export async function requireMobileTeacher(request: Request) {
       error: NextResponse.json({ error: "Teacher not found" }, { status: 404 }),
     } as const;
   }
-  if (payload.role === "TEACHER" && !teacher.approved) {
+  return { teacher, userId: payload.sub, role: payload.role } as const;
+}
+
+/**
+ * 강사 권한 필수(모바일). 웹 requireTeacher와 동일 정책:
+ * TEACHER/MANAGER/CHIEF_MANAGER 통과, 단 TEACHER는 승인(approved)된 경우만.
+ */
+export async function requireMobileTeacher(request: Request) {
+  const result = await requireMobileTeacherAllowPending(request);
+  if ("error" in result) return result;
+  if (result.role === "TEACHER" && !result.teacher.approved) {
     return {
       error: NextResponse.json(
         { error: "승인 대기 중입니다. 관리자 승인 후 이용할 수 있습니다." },
@@ -214,7 +224,7 @@ export async function requireMobileTeacher(request: Request) {
       ),
     } as const;
   }
-  return { teacher, userId: payload.sub } as const;
+  return result;
 }
 
 /**
