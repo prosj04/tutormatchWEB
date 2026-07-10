@@ -338,7 +338,7 @@
 | `/api/manager/parent-link` | POST | 매니저 수동 학부모↔학생 연결 |
 | `/api/account/password` (+ mobile `/api/mobile/me/password`) | POST | 본인 비밀번호 변경(현재 비밀번호 확인, 전 역할) |
 | `/api/manager/password-reset` (+ mobile) | POST | 매니저의 학생·학부모 비밀번호 재설정(분실 대응) |
-| `/api/mobile/teacher/*` (home, students, students/[id], first-lesson, lessons, lessons/[id]/cancel, plans, homework-distribution, plans/[planId]/comment, homework-templates, questions, questions/[id]/answer, profile) | 다양 | 선생님 모바일 앱(웹 `/api/teacher/*` 로직 재사용, 모바일 토큰 인증) |
+| `/api/mobile/teacher/*` (home, students, students/[id], first-lesson, lessons, lessons/[id]/cancel, plans, homework-distribution, plans/[planId]/comment, homework-templates, questions, questions/[id]/answer, profile, profile/photo, profile/documents) | 다양 | 선생님 모바일 앱(웹 `/api/teacher/*` 로직 재사용, 모바일 토큰 인증) |
 | `/api/mobile/manager/*` (consultations/waiting, consultations/mine, consultations/[id]/*, matches, monitoring, monitoring/stats, care-logs, subscriptions/[id]/pause, parent-link, teacher-approval) | 다양 | 매니저 모바일 앱(웹 `/api/manager/*` 로직 재사용, 모바일 토큰 인증) |
 
 **모바일 인증 게이트 변경(신규):** `src/app/api/mobile/auth/login/route.ts`의 역할 차단을 STUDENT·PARENT → STUDENT·PARENT·TEACHER·MANAGER 허용으로 확대. `src/lib/mobile-auth.ts`에 `requireMobileTeacher` / `requireMobileManager` 가드 추가(기존 `requireMobileStudent`·`requireMobileParent` 패턴 동일).
