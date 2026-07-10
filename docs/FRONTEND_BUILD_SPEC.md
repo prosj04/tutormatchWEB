@@ -1,10 +1,16 @@
 # Concord 프론트엔드 재구축 명세 (FRONTEND BUILD SPEC)
 
-작성일: 2026-07-10 · 대상: 프론트엔드 개발자
+작성일: 2026-07-10 · 갱신: 2026-07-10 · 대상: 프론트엔드 개발자
 
 이 문서는 **홈(랜딩) 화면을 제외한 모든 화면과 기능**을 재구축하기 위한 범위 명세다.
 디자인은 별도로 숙지하고 있다는 전제이므로 **디자인/스타일/레이아웃은 기술하지 않는다.**
 각 화면에 대해 목적 · 기능 · 데이터 소스(API) · 사용자 액션 · 상태 · 권한만 기술한다.
+
+> **백엔드 상태(2026-07-10): 이 문서에 나오는 모든 API가 구현·배포 완료.**
+> 학부모(가입·코드/QR 연결·리포트·결제·상담·프로필), 선생님/매니저 모바일 API 전체,
+> 비밀번호 변경/재설정, 모바일 로그인 4역할 게이트 개방까지 모두 반영됨. **프론트엔드는 UI만 구축**하면 되며,
+> 아래 "신규/변경 필요" 표기는 이력용 — 실제로는 이미 존재하는 엔드포인트다.
+> 웹 `/parent` 하위에는 최소 기능 스켈레톤(§3.7)도 이미 배포돼 있어 참고/교체 가능.
 
 ---
 
@@ -43,7 +49,7 @@
 
 ### 0.4 크로스커팅 신규 요구사항 (모든 역할에 걸침)
 
-1. **역할 기반 앱 진입 게이트 (모바일):** 로그인/토큰 로드 후 `role`을 읽어 **학생 / 학부모 / 선생님 / 매니저 4개 탭 세트**로 분기. `GET /api/mobile/me`의 `role` 사용. CHIEF_MANAGER·ADMIN으로 모바일 로그인 시 "웹 관리자 페이지를 이용하세요" 안내 화면. **백엔드 변경 필요:** `src/app/api/mobile/auth/login/route.ts`의 역할 게이트가 현재 STUDENT·PARENT만 허용 → TEACHER·MANAGER 추가 허용, CHIEF_MANAGER·ADMIN만 차단.
+1. **역할 기반 앱 진입 게이트 (모바일):** 로그인/토큰 로드 후 `role`을 읽어 **학생 / 학부모 / 선생님 / 매니저 4개 탭 세트**로 분기. `GET /api/mobile/me`의 `role` 사용. CHIEF_MANAGER·ADMIN으로 모바일 로그인 시 "웹 관리자 페이지를 이용하세요" 안내 화면. **백엔드 구현 완료:** `src/app/api/mobile/auth/login/route.ts`가 STUDENT·PARENT·TEACHER·MANAGER 허용, CHIEF_MANAGER·ADMIN만 차단.
 2. **비밀번호 변경·재설정 (구현됨):** 문자·이메일 발송 인프라가 없어 미인증 "비밀번호 찾기" 플로우는 제공하지 않는다. 대신 두 경로:
    - **본인 변경(로그인 상태):** 현재 비밀번호 확인 후 변경. 모든 역할·양 플랫폼. 웹 `POST /api/account/password`, 모바일 `POST /api/mobile/me/password`. 바디 `{ currentPassword, newPassword(≥8) }`. 계정 설정 화면에 배치.
    - **매니저 재설정(분실 시):** 매니저가 대면으로 학생·학부모 비밀번호를 재설정. 웹 `POST /api/manager/password-reset`, 모바일 `POST /api/mobile/manager/password-reset`. 바디 `{ identifier(전화/이메일), newPassword(≥8) }`. 대상은 STUDENT·PARENT만. 감사 로그(PASSWORD_RESET) 기록.
@@ -160,7 +166,7 @@
 | 화면 | 목적 | 데이터 · 액션 |
 |---|---|---|
 | 로그인 | 학부모 인증 | 모바일 `POST /api/mobile/auth/login` (role=PARENT 허용됨). 웹 통합 `/login`. |
-| 회원가입 (신규) | 학부모 셀프 가입 | **신규 엔드포인트 필요** `POST /api/parent/register` 또는 모바일 `POST /api/mobile/parent/register`(부록 A). 필드: 이름·전화·이메일·비밀번호. |
+| 회원가입 (신규) | 학부모 셀프 가입 | **구현 완료** `POST /api/parent/register` 또는 모바일 `POST /api/mobile/parent/register`(부록 A). 필드: 이름·전화·이메일·비밀번호. |
 | 자녀 연결 (신규) | 코드/QR로 자녀 연결 | **신규**: 코드 입력 `POST /api/parent/link` (code) / QR 스캔 후 동일 엔드포인트. 상태: 코드 만료·중복 연결·성공. |
 
 ### 3.2 학부모 홈 탭 (모바일)
@@ -322,9 +328,9 @@
 선생님: `/api/teacher/*`, `/api/register/teacher*`
 매니저: `/api/manager/*`, `/api/chief-manager/*`, `/api/manager/subscriptions/[id]/pause`(UI 미연결)
 
-**참고:** 선생님/매니저 모바일 엔드포인트(`/api/mobile/teacher/*`, `/api/mobile/manager/*`)는 아직 없음 → A.2 신규. 기존 웹 `/api/teacher/*`·`/api/manager/*`의 서비스 로직은 재사용하되, 인증만 모바일 토큰(Bearer)으로 감싸는 얇은 래퍼로 구현 권장.
+**참고:** 선생님/매니저 모바일 엔드포인트(`/api/mobile/teacher/*`, `/api/mobile/manager/*`)는 **구현 완료**(A.2 참조). 웹 `/api/teacher/*`·`/api/manager/*` 서비스 로직을 재사용하고 모바일 토큰(Bearer) 인증으로 감싼 형태.
 
-### A.2 신규 필요 엔드포인트
+### A.2 신규 엔드포인트 (전부 구현·배포 완료)
 
 | 엔드포인트 | 메서드 | 목적 |
 |---|---|---|
@@ -343,7 +349,7 @@
 | `/api/mobile/teacher/*` (home, students, students/[id], first-lesson, lessons, lessons/[id]/cancel, plans, homework-distribution, plans/[planId]/comment, homework-templates, questions, questions/[id]/answer, profile, profile/photo, profile/documents) | 다양 | 선생님 모바일 앱(웹 `/api/teacher/*` 로직 재사용, 모바일 토큰 인증) |
 | `/api/mobile/manager/*` (consultations/waiting, consultations/mine, consultations/[id]/*, matches, monitoring, monitoring/stats, care-logs, subscriptions/[id]/pause, parent-link, teacher-approval) | 다양 | 매니저 모바일 앱(웹 `/api/manager/*` 로직 재사용, 모바일 토큰 인증) |
 
-**모바일 인증 게이트 변경(신규):** `src/app/api/mobile/auth/login/route.ts`의 역할 차단을 STUDENT·PARENT → STUDENT·PARENT·TEACHER·MANAGER 허용으로 확대. `src/lib/mobile-auth.ts`에 `requireMobileTeacher` / `requireMobileManager` 가드 추가(기존 `requireMobileStudent`·`requireMobileParent` 패턴 동일).
+**모바일 인증 게이트(구현 완료):** `src/app/api/mobile/auth/login/route.ts`가 STUDENT·PARENT·TEACHER·MANAGER 허용(CHIEF/ADMIN 차단). `src/lib/mobile-auth.ts`에 `requireMobileTeacher`·`requireMobileTeacherAllowPending`·`requireMobileManager` 가드 존재(기존 `requireMobileStudent`·`requireMobileParent` 패턴 동일).
 
 권한 가드: 모든 학부모 자녀 접근은 `ParentStudent` 링크 검증(`parentChildOrNull` / `parentOwnsStudent`)을 통과해야 함.
 데이터 모델(이미 스키마 반영): `Parent`, `ParentStudent`(linkedVia: CODE|QR|MANAGER), `ParentLinkCode`(code, expiresAt, usedAt).
