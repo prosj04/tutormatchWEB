@@ -25,6 +25,20 @@ export default auth((req) => {
     }
   }
 
+  if (session && role === "PARENT") {
+    const allowed =
+      isMarketingPublicPath(pathname) ||
+      pathname.startsWith("/parent") ||
+      pathname.startsWith("/checkout") ||
+      pathname.startsWith("/success") ||
+      pathname.startsWith("/pricing") ||
+      pathname.startsWith("/consult") ||
+      pathname.startsWith("/api");
+    if (!allowed) {
+      return NextResponse.redirect(new URL("/parent", req.url));
+    }
+  }
+
   if (session && (role === "TEACHER" || role === "MANAGER")) {
     const allowed =
       isMarketingPublicPath(pathname) ||

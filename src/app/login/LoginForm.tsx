@@ -290,7 +290,9 @@ export function LoginForm({
           ? "/admin"
           : userRole === "TEACHER" || userRole === "MANAGER" || userRole === "CHIEF_MANAGER"
             ? "/teacher-portal/dashboard"
-            : "/dashboard";
+            : userRole === "PARENT"
+              ? "/parent"
+              : "/dashboard";
       window.location.assign(destination);
     } finally {
       setLoading(false);

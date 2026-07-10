@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { issueMobileTokens } from "@/lib/mobile-auth";
 import {
   normalizePhoneDigits,
+  parentSyntheticEmailFromDigits,
   studentSyntheticEmailFromDigits,
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
@@ -18,6 +19,7 @@ const userForAuthSelect = {
   deletedAt: true,
   student: { select: { name: true } },
   teacher: { select: { name: true } },
+  parent: { select: { name: true } },
 } satisfies Prisma.UserSelect;
 
 export async function POST(request: Request) {
@@ -55,13 +57,16 @@ export async function POST(request: Request) {
     const orConditions: Prisma.UserWhereInput[] = [
       { student: { phone: identifier } },
       { teacher: { phone: identifier } },
+      { parent: { phone: identifier } },
     ];
     if (digits.length >= 10) {
       orConditions.push(
         { email: studentSyntheticEmailFromDigits(digits) },
         { email: teacherSyntheticEmailFromDigits(digits) },
+        { email: parentSyntheticEmailFromDigits(digits) },
         { student: { phone: digits } },
         { teacher: { phone: digits } },
+        { parent: { phone: digits } },
       );
     }
     user = await prisma.user.findFirst({
@@ -85,15 +90,21 @@ export async function POST(request: Request) {
     );
   }
 
-  if (user.role !== "STUDENT") {
+  // 통합 앱: 학생·학부모·선생님·매니저 모두 모바일 로그인 허용.
+  // CHIEF_MANAGER·ADMIN은 웹 관리자 전용이므로 차단.
+  const MOBILE_ALLOWED_ROLES = ["STUDENT", "PARENT", "TEACHER", "MANAGER"];
+  if (!MOBILE_ALLOWED_ROLES.includes(user.role)) {
     return NextResponse.json(
-      { error: "모바일 앱을 지원하지 않는 계정입니다" },
+      { error: "모바일 앱을 지원하지 않는 계정입니다. 웹 관리자 페이지를 이용해 주세요." },
       { status: 403 },
     );
   }
 
   const name =
-    user.student?.name ?? user.teacher?.name ?? user.email.split("@")[0];
+    user.student?.name ??
+    user.parent?.name ??
+    user.teacher?.name ??
+    user.email.split("@")[0];
   const tokens = issueMobileTokens(user.id, user.role);
 
   return NextResponse.json({

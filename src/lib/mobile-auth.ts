@@ -153,3 +153,109 @@ export async function requireMobileStudent(request: Request) {
   }
   return { student, userId: payload.sub } as const;
 }
+
+/** 학부모 권한 필수. */
+export async function requireMobileParent(request: Request) {
+  const payload = await getMobileUser(request);
+  if (!payload) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
+  if (payload.role !== "PARENT") {
+    return {
+      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    } as const;
+  }
+  const parent = await prisma.parent.findUnique({
+    where: { userId: payload.sub },
+  });
+  if (!parent) {
+    return {
+      error: NextResponse.json({ error: "Parent not found" }, { status: 404 }),
+    } as const;
+  }
+  return { parent, userId: payload.sub } as const;
+}
+
+/**
+ * 강사 권한 필수(모바일). 웹 requireTeacher와 동일 정책:
+ * TEACHER/MANAGER/CHIEF_MANAGER 통과, 단 TEACHER는 승인(approved)된 경우만.
+ */
+export async function requireMobileTeacher(request: Request) {
+  const payload = await getMobileUser(request);
+  if (!payload) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
+  if (
+    payload.role !== "TEACHER" &&
+    payload.role !== "MANAGER" &&
+    payload.role !== "CHIEF_MANAGER"
+  ) {
+    return {
+      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    } as const;
+  }
+  const teacher = await prisma.teacher.findUnique({
+    where: { userId: payload.sub },
+  });
+  if (!teacher) {
+    return {
+      error: NextResponse.json({ error: "Teacher not found" }, { status: 404 }),
+    } as const;
+  }
+  if (payload.role === "TEACHER" && !teacher.approved) {
+    return {
+      error: NextResponse.json(
+        { error: "승인 대기 중입니다. 관리자 승인 후 이용할 수 있습니다." },
+        { status: 403 },
+      ),
+    } as const;
+  }
+  return { teacher, userId: payload.sub } as const;
+}
+
+/**
+ * 매니저 권한 필수(모바일). 웹 requireManager와 동일 정책:
+ * MANAGER/CHIEF_MANAGER/ADMIN이 Teacher 레코드를 가진 경우 통과.
+ */
+export async function requireMobileManager(request: Request) {
+  const payload = await getMobileUser(request);
+  if (!payload) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
+  if (
+    payload.role !== "MANAGER" &&
+    payload.role !== "CHIEF_MANAGER" &&
+    payload.role !== "ADMIN"
+  ) {
+    return {
+      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    } as const;
+  }
+  const teacher = await prisma.teacher.findUnique({
+    where: { userId: payload.sub },
+  });
+  if (!teacher) {
+    return {
+      error: NextResponse.json({ error: "Manager not found" }, { status: 404 }),
+    } as const;
+  }
+  return { teacher, userId: payload.sub } as const;
+}
+
+/**
+ * 학부모가 특정 자녀(studentId)에 접근할 권한이 있는지 확인.
+ * ParentStudent 링크가 없으면 null 반환(호출부에서 403/404 처리).
+ */
+export async function parentChildOrNull(parentId: string, studentId: string) {
+  const link = await prisma.parentStudent.findUnique({
+    where: { parentId_studentId: { parentId, studentId } },
+    select: { studentId: true },
+  });
+  return link ? studentId : null;
+}

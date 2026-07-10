@@ -12,3 +12,8 @@ export function studentSyntheticEmailFromDigits(digits: string): string {
 export function teacherSyntheticEmailFromDigits(digits: string): string {
   return `teacher+${digits}@concord.local`;
 }
+
+/** Stable unique pseudo-email for Prisma User.email (parents log in with phone). */
+export function parentSyntheticEmailFromDigits(digits: string): string {
+  return `parent+${digits}@concord.local`;
+}

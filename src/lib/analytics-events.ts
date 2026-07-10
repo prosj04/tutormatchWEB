@@ -18,6 +18,8 @@ export const ANALYTICS_EVENTS = {
   consultationSubmitted: "consultation_submitted",
   consultationPostSignupClicked: "consultation_post_signup_clicked",
   studentRegistered: "student_registered",
+  parentRegistered: "parent_registered",
+  parentChildLinked: "parent_child_linked",
   journeyActiveReached: "journey_active_reached",
   landingConsultationCtaClicked: "landing_consultation_cta_clicked",
   consultationStatusViewClicked: "consultation_status_view_clicked",

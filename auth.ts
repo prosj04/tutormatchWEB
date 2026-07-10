@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 
 import {
   normalizePhoneDigits,
+  parentSyntheticEmailFromDigits,
   studentSyntheticEmailFromDigits,
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
@@ -23,6 +24,7 @@ const userForAuthSelect = {
   role: true,
   student: { select: { name: true } },
   teacher: { select: { name: true } },
+  parent: { select: { name: true } },
 } satisfies Prisma.UserSelect;
 
 const authSecret =
@@ -90,13 +92,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const orConditions: Prisma.UserWhereInput[] = [
               { student: { phone: identifier } },
               { teacher: { phone: identifier } },
+              { parent: { phone: identifier } },
             ];
             if (digits.length >= 10) {
               orConditions.push(
                 { email: studentSyntheticEmailFromDigits(digits) },
                 { email: teacherSyntheticEmailFromDigits(digits) },
+                { email: parentSyntheticEmailFromDigits(digits) },
                 { student: { phone: digits } },
                 { teacher: { phone: digits } },
+                { parent: { phone: digits } },
               );
             }
             user = await prisma.user.findFirst({
@@ -127,6 +132,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const name =
             user.student?.name ??
             user.teacher?.name ??
+            user.parent?.name ??
             user.email.split("@")[0];
 
           return { id: user.id, email: user.email, role: user.role, name };

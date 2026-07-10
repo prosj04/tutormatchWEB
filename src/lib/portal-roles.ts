@@ -11,5 +11,6 @@ export function portalHomeHref(role: string | undefined | null): string {
   if (role === "ADMIN" || role === "CHIEF_MANAGER") return "/admin";
   if (isPortalTeacherRole(role ?? undefined)) return "/teacher-portal/dashboard";
   if (role === "STUDENT") return "/dashboard";
+  if (role === "PARENT") return "/parent";
   return "/";
 }
