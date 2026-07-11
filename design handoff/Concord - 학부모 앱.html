@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 학부모 앱 (스펙 준수)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="app/concord-app.css" />
+<style>
+  .kid-switch{ display:flex; gap:8px; margin:2px 0 14px; }
+  .kid{ display:flex; align-items:center; gap:8px; padding:8px 14px 8px 9px; border-radius:999px; border:1px solid var(--line-2);
+    background:var(--panel); color:var(--mut); font-size:13px; font-weight:700; cursor:pointer; }
+  .kid .kv{ width:24px; height:24px; border-radius:50%; background:var(--panel-2); color:var(--acc-text); display:grid; place-items:center; font-size:11px; font-weight:800; }
+  .kid[aria-pressed="true"]{ background:var(--acc); color:var(--on-acc); border-color:transparent; }
+  .kid[aria-pressed="true"] .kv{ background:rgba(255,255,255,.25); color:var(--on-acc); }
+  .add-child{ width:100%; margin-top:11px; padding:15px; border-radius:16px; border:1.5px dashed var(--line-2);
+    background:transparent; color:var(--mut); font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; }
+  .add-child svg{ width:17px; height:17px; }
+  .add-child:hover{ border-color:var(--acc); color:var(--acc-text); }
+  .empty-mid{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:14px; padding:0 30px; }
+  .empty-mid .ic{ width:72px; height:72px; border-radius:22px; background:rgba(var(--acc-rgb),.1); color:var(--acc-text); display:grid; place-items:center; }
+  .empty-mid .ic svg{ width:34px; height:34px; }
+  .empty-mid h3{ font-size:19px; font-weight:800; letter-spacing:-.025em; }
+  .empty-mid p{ font-size:13px; color:var(--mut); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="lab">Concord · Parent App</span>
+  <div class="right">
+    <div class="seg" role="group" aria-label="색 테마 선택">
+      <button class="g" data-set-color="green" aria-label="그린 테마"><span class="dot"></span></button>
+      <button class="b" data-set-color="blue" aria-label="블루 테마"><span class="dot"></span></button>
+    </div>
+    <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</div>
+
+<header class="head">
+  <span class="eyebrow">Parent App · iOS · 스펙 v2026-07-10</span>
+  <h1>Concord<span class="dotw" style="font-size:.8em"><span class="d"></span></span> 학부모 앱</h1>
+  <p>학부모는 <b>리포트 · 결제 · 상담 · 자녀 연결</b>만 봅니다 — 진도·숙제·질문은 어떤 경로로도 노출하지 않습니다. 탭: 홈 / 리포트 / 결제 / 상담 / MY. 로그인·알림·리포트 상세는 학생 앱과 공유합니다.</p>
+</header>
+
+<div class="wall">
+
+  <!-- PR1. REGISTER -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="학부모 회원가입">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="sub-head"><button class="pf-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>학부모 가입</b></div>
+        <p style="font-size:13.5px;color:var(--mut);margin:0 2px 18px;line-height:1.6">가입 후 <b style="color:var(--fg)">자녀 연결 코드</b>를 입력하면 리포트·결제·상담을 이용할 수 있어요.</p>
+        <div class="field"><label>이름</label><div class="inp filled">김서연</div></div>
+        <div class="field"><label>전화번호</label><div class="inp filled">010-1234-5678</div></div>
+        <div class="field"><label>이메일</label><div class="inp filled">seoyeon.kim@email.com</div></div>
+        <div class="field"><label>비밀번호 <span style="color:var(--mut-2);font-weight:500">· 8자 이상</span></label><div class="inp filled">••••••••••</div></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="cta-bar"><button>가입하고 자녀 연결하기</button></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>학부모 회원가입</b><span>POST /api/parent/register · 이름·전화·이메일·비밀번호. 로그인은 학생과 통합.</span></div>
+  </div>
+
+  <!-- PR2. CHILD LINK -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="자녀 연결">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="sub-head"><button class="pf-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>자녀 연결</b></div>
+        <p style="font-size:13.5px;color:var(--mut);margin:0 2px 16px;line-height:1.6">자녀의 앱 <b style="color:var(--fg)">MY → 학부모 연결</b>에 표시된 코드를 입력하거나 QR을 스캔하세요.</p>
+        <div class="field"><label>연결 코드</label><div class="inp filled" style="text-align:center;font-size:22px;font-weight:800;letter-spacing:.3em;color:var(--fg)">7 3 4 9 2 6</div></div>
+        <button class="jbtn" style="width:100%;padding:14px;border:0;border-radius:13px;background:var(--acc);color:var(--on-acc);font-weight:800;font-size:14.5px;box-shadow:0 8px 18px rgba(var(--acc-rgb),.26)">코드로 연결</button>
+        <div class="daysep" style="margin:16px 0">또는</div>
+        <button style="width:100%;padding:14px;border-radius:13px;background:var(--panel);color:var(--fg);border:1px solid var(--line-2);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-7"/></svg>QR 코드 스캔
+        </button>
+        <div class="banner warn" style="margin-top:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>코드가 만료되었어요. 자녀 앱에서 <b>재발급</b> 후 다시 시도해 주세요.</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>자녀 연결</b><span>POST /api/parent/link · 코드/QR. 만료·중복·성공 상태. 매니저 수동 연결도 가능.</span></div>
+  </div>
+
+  <!-- PR3. HOME EMPTY -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="홈 (자녀 미연결)">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body" style="display:flex;flex-direction:column">
+        <div class="appbar" style="padding:8px 18px 0"><div style="flex:1"><div class="hi">안녕하세요 👋</div><div class="nm">서연 님</div></div></div>
+        <div class="empty-mid">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+          <h3>아직 연결된 자녀가 없어요</h3>
+          <p>자녀 계정과 연결하면 학습 리포트,<br>결제, 상담을 한 곳에서 관리할 수 있어요.</p>
+          <button style="margin-top:4px;padding:14px 26px;border:0;border-radius:13px;background:var(--acc);color:var(--on-acc);font-weight:800;font-size:14.5px;box-shadow:0 8px 18px rgba(var(--acc-rgb),.26)">자녀 연결하기</button>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg><span>리포트</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>결제</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>상담</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>홈 — 자녀 0명</b><span>연결 유도 빈 상태. GET /api/mobile/parent/children.</span></div>
+  </div>
+
+  <!-- PR4. HOME -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="학부모 홈">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar">
+          <div style="flex:1"><div class="hi">안녕하세요 👋</div><div class="nm">서연 님</div></div>
+          <button class="iconbtn"><span class="badge"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+        </div>
+
+        <div class="card" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="av" style="width:44px;height:44px;border-radius:13px;background:var(--panel-2);display:grid;place-items:center;font-weight:700;color:var(--acc-text)">지</div>
+            <div style="flex:1"><b style="font-size:15px;font-weight:800">김지우 · 중3</b><p style="font-size:12px;color:var(--mut);margin-top:2px">수학·영어 · 주 3회 수업 중</p></div>
+            <span class="bst acc">수업 중</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);font-weight:700;font-size:12.5px">9월 리포트</button>
+            <button style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);font-weight:700;font-size:12.5px">결제 현황</button>
+            <button style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);color:var(--fg);font-weight:700;font-size:12.5px">상담 신청</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px;margin-top:11px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="av" style="width:44px;height:44px;border-radius:13px;background:var(--panel-2);display:grid;place-items:center;font-weight:700;color:var(--acc-text)">민</div>
+            <div style="flex:1"><b style="font-size:15px;font-weight:800">김민준 · 중1</b><p style="font-size:12px;color:var(--mut);margin-top:2px">상담 완료 · 선생님 매칭 중</p></div>
+            <span class="bst mut">매칭 중</span>
+          </div>
+        </div>
+
+        <button class="add-child"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>자녀 추가 연결</button>
+
+        <div class="sect-t">새 소식</div>
+        <div class="card" style="overflow:hidden">
+          <div class="nrow unread"><div class="ic acc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="g"><b>지우 9월 학습 리포트 도착</b><p>종합 82점 · 지난달보다 8점 상승</p><div class="tm">2시간 전</div></div><span class="ud"></span></div>
+          <div class="nrow"><div class="ic mut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><div class="g"><b>10월 결제 예정</b><p>지우 · 주 2회 플랜 · 10월 1일 자동 결제</p><div class="tm">어제</div></div></div>
+        </div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg><span>리포트</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>결제</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>상담</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>학부모 홈</b><span>자녀별 요약(상태·리포트·결제)과 새 소식. 진도·숙제 데이터 없음.</span></div>
+  </div>
+
+  <!-- PR5. REPORTS -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="리포트 탭">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="nm" style="font-size:22px">리포트</div></div></div>
+        <div class="kid-switch">
+          <button class="kid" aria-pressed="true"><span class="kv">지</span>지우 · 중3</button>
+          <button class="kid"><span class="kv">민</span>민준 · 중1</button>
+        </div>
+
+        <div class="card ring-card">
+          <div class="ring" style="--p:82%"><i>82점</i></div>
+          <div class="t"><b>9월 종합 82점</b><p>지난달 74점 → 8점 상승</p></div>
+        </div>
+
+        <div class="sect-t">월간 리포트</div>
+        <div class="card">
+          <div class="lrow"><div class="av" style="border-radius:10px">9월</div><div class="g"><b>9월 학습 리포트</b><p>종합 82 · 수학 78→89 · 매니저 코멘트 포함</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="lrow"><div class="av" style="border-radius:10px">8월</div><div class="g"><b>8월 학습 리포트</b><p>종합 74 · 수학 71→78</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="lrow"><div class="av" style="border-radius:10px">7월</div><div class="g"><b>7월 학습 리포트</b><p>종합 70 · 첫 리포트</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+        </div>
+        <div class="banner info" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>리포트는 선생님·매니저가 요약한 결과입니다. 상세 진도·숙제는 자녀 앱에서 관리돼요.</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg><span>리포트</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>결제</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>상담</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>리포트 탭</b><span>자녀 전환 + 월간 리포트 목록. 상세는 학생 앱 리포트 상세와 공유.</span></div>
+  </div>
+
+  <!-- PR6. PAYMENTS -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="결제 탭">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="nm" style="font-size:22px">결제</div></div></div>
+        <div class="kid-switch">
+          <button class="kid" aria-pressed="true"><span class="kv">지</span>지우</button>
+          <button class="kid"><span class="kv">민</span>민준</button>
+        </div>
+
+        <div class="plan-now">
+          <div class="k">지우 · 현재 플랜</div>
+          <div class="nm">주 2회 플랜</div>
+          <div class="pr">740,000원 / 월 · 수학·영어</div>
+          <div class="nx"><span>다음 결제일</span><b>2026. 10. 1.</b></div>
+        </div>
+
+        <div class="card tok" style="margin-top:11px">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2v6M14 5h6M21 12v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></div>
+          <div style="flex:1"><b>자동 갱신</b><p>매월 1일 · 신한카드 ****1234</p></div>
+          <span class="switch on"><i></i></span>
+        </div>
+
+        <div class="sect-t">결제 이력 <a href="#">영수증</a></div>
+        <div class="card">
+          <div class="lrow"><div class="g"><b>9월 수업료 · 지우</b><p>2026. 9. 1. · 결제자: 서연 님(학부모)</p></div><div class="r" style="font-weight:700;color:var(--fg)">740,000원</div></div>
+          <div class="lrow"><div class="g"><b>8월 수업료 · 지우</b><p>2026. 8. 1. · 결제자: 지우(학생)</p></div><div class="r" style="font-weight:700;color:var(--fg)">740,000원</div></div>
+        </div>
+        <div class="banner info" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>결제는 학생·학부모 계정 모두 가능해요. 중복 결제는 구독 상태로 자동 방지됩니다.</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="cta-bar"><button>민준 플랜 결제하기</button></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>결제 탭</b><span>자녀별 플랜·자동갱신·이력(결제 주체 표시)·Toss 결제 진입.</span></div>
+  </div>
+
+  <!-- PR7. CONSULTATION -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="상담 탭">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="nm" style="font-size:22px">상담</div></div></div>
+
+        <div class="card" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:10px"><span class="bst acc">예약 확정</span><b style="font-size:14px;font-weight:700">지우 · 방문 상담</b></div>
+          <div style="margin-top:12px;padding:13px 15px;border-radius:13px;background:var(--panel-2);display:flex;align-items:center;gap:12px">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--acc-text)"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <div><b style="font-size:14px;font-weight:800">10월 2일 (금) 14:00</b><p style="font-size:12px;color:var(--mut);margin-top:2px">담당 매니저 김지현 · 센터 방문</p></div>
+          </div>
+          <div class="acts-sm"><button class="sec">일정 변경</button><button class="warn">취소</button></div>
+        </div>
+
+        <div class="sect-t">새 상담 신청</div>
+        <div class="field"><label>어느 자녀에 대한 상담인가요?</label>
+          <div class="opts"><button class="opt" aria-pressed="true">지우 · 중3</button><button class="opt">민준 · 중1</button></div>
+        </div>
+        <div class="field"><label>방문 희망 시간</label>
+          <div class="slot-grid">
+            <button class="slot">금 10/2 11:00</button>
+            <button class="slot" aria-pressed="true">금 10/2 14:00</button>
+            <button class="slot">토 10/3 10:00</button>
+            <button class="slot" disabled>토 10/3 14:00</button>
+            <button class="slot">일 10/4 11:00</button>
+            <button class="slot">일 10/4 15:00</button>
+          </div>
+        </div>
+        <div class="field"><label>상담하고 싶은 내용</label><div class="inp area filled">지우 수학 진도 방향과 겨울방학 계획을 상의하고 싶어요.</div></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="cta-bar"><button>상담 신청하기</button></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>상담 탭</b><span>기존 예약 상태 + 새 신청(자녀 선택·방문 시간·내용). studentId 스코프.</span></div>
+  </div>
+
+  <!-- PR8. MY -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="학부모 MY">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="my-top">
+          <div class="my-av">서</div>
+          <div style="flex:1"><div class="nm">김서연 님</div><div class="sub">seoyeon.kim@email.com · 학부모 계정</div></div>
+          <button class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        </div>
+
+        <div class="sect-t">연결된 자녀</div>
+        <div class="card">
+          <div class="lrow"><div class="av">지</div><div class="g"><b>김지우 · 중3</b><p>코드로 연결 · 2026. 7. 2.</p></div><span style="font-size:12px;font-weight:700;color:var(--mut-2)">해제</span></div>
+          <div class="lrow"><div class="av">민</div><div class="g"><b>김민준 · 중1</b><p>매니저 연결 · 2026. 9. 12.</p></div><span style="font-size:12px;font-weight:700;color:var(--mut-2)">해제</span></div>
+        </div>
+        <button class="add-child"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>자녀 추가 연결 (코드/QR)</button>
+
+        <div class="sect-t">계정</div>
+        <div class="card" style="overflow:hidden">
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="g"><b>비밀번호 변경</b><p>현재 비밀번호 확인 후 변경</p></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+          <div class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span class="g"><b>알림 설정</b><p>리포트·결제·상담 알림</p></span><span class="switch on"><i></i></span></div>
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 4 2.8c-.8.4-1.1 1-1.1 2M12 17h.01"/></svg></span><span class="g"><b>고객센터</b></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span><span class="g"><b>약관·정책 · 회원 탈퇴</b></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+        </div>
+        <div style="text-align:center;padding:18px 0 4px"><span style="font-size:13px;color:var(--mut-2);font-weight:600">로그아웃</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg><span>리포트</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>결제</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>상담</span></button>
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>학부모 MY</b><span>자녀 연결 관리(해제·linkedVia 표시), 비밀번호 변경, 알림, 탈퇴.</span></div>
+  </div>
+
+</div>
+
+<div class="note">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+  스펙 §3 준수: 학부모는 리포트·결제·상담·자녀 연결만. 진도·숙제·질문은 어떤 경로로도 노출하지 않습니다. 로그인·알림 센터·리포트 상세는 학생 앱과 공유. 비밀번호 분실 시 매니저 재설정(§0.4-2).
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+  })();
+</script>
+</body>
+</html>

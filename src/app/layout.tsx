@@ -4,6 +4,8 @@ import Script from "next/script";
 
 import "./globals.css";
 import "./concord.css";
+import "./concord-site.css";
+import "./concord-bridge.css";
 import "./dark-mode-bridge.css";
 import "./responsive.css";
 

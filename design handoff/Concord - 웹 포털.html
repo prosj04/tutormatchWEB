@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 웹 포털 (선생님·매니저)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="web/portal.css" />
+<style>
+  /* manager-only: nav buttons show as flex, page sections stay governed by .page/.on */
+  .side .mgr-only{ display:none; }
+  [data-role="manager"] .side .mgr-only{ display:flex; }
+  body:not([data-role="manager"]) section.mgr-only{ display:none !important; }
+  .role-seg{ display:flex; padding:3px; gap:2px; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; margin-right:auto; }
+  .role-seg button{ padding:7px 14px; border:0; border-radius:999px; background:transparent; color:var(--mut); font-size:12.5px; font-weight:700; }
+  .role-seg button[aria-pressed="true"]{ background:var(--panel); color:var(--fg); box-shadow:var(--shadow-sm); }
+  .wkbars{ display:flex; align-items:flex-end; gap:10px; height:90px; padding:16px 20px 0; }
+  .wkbars .b{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .wkbars .b i{ width:100%; border-radius:5px 5px 2px 2px; background:rgba(var(--acc-rgb),.25); display:block; }
+  .wkbars .b.on i{ background:var(--acc); }
+  .wkbars .b span{ font-size:10.5px; color:var(--mut); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <span class="dotw logo">Concord<span class="d"></span></span>
+    <span class="role" id="role-badge">Teacher · /teacher-portal</span>
+    <button class="nav-i" data-page="dash" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg>대시보드</button>
+    <button class="nav-i" data-page="students"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 10v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>학생<span class="cnt">3</span></button>
+    <button class="nav-i" data-page="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>진도·숙제</button>
+    <button class="nav-i" data-page="questions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>질문<span class="cnt">3</span></button>
+    <button class="nav-i mgr-only" data-page="consult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>상담 관리<span class="cnt">4</span></button>
+    <button class="nav-i mgr-only" data-page="matching"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/></svg>매칭</button>
+    <button class="nav-i mgr-only" data-page="monitor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 5-6"/></svg>모니터링</button>
+    <button class="nav-i mgr-only" data-page="approval"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>선생님 승인</button>
+    <button class="nav-i" data-page="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>프로필</button>
+    <div class="foot"><div class="user"><span class="av">노</span><span><b>노아 선생님</b><p>승인됨 · 수학</p></span></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="role-seg" role="group" aria-label="역할 미리보기"><button data-role-btn="teacher" aria-pressed="true">선생님 보기</button><button data-role-btn="manager" aria-pressed="false">매니저 보기</button></div>
+      <div class="seg" role="group" aria-label="색 테마"><button class="g" data-set-color="green" aria-label="그린"><span class="dot"></span></button><button class="b" data-set-color="blue" aria-label="블루"><span class="dot"></span></button></div>
+      <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <!-- DASH -->
+    <section class="page on" id="pg-dash" data-screen-label="포털 대시보드">
+      <div class="crumb">/teacher-portal/dashboard</div>
+      <h1>대시보드</h1>
+      <p class="sub">오늘 수업과 이번 주 할 일을 확인하세요.</p>
+      <div class="sec grid3">
+        <div class="card kpi"><b>2</b><span>오늘 수업</span></div>
+        <div class="card kpi"><b>3<em>답변 대기</em></b><span>학생 질문</span></div>
+        <div class="card kpi"><b>1</b><span>첫 수업일 미정</span></div>
+      </div>
+      <div class="sec">
+        <h2>오늘 수업 · 9월 24일 (수)</h2>
+        <div class="card">
+          <div class="row"><span class="av">지</span><div class="g"><b>김지우 · 중3</b><p>수학 · 미적분 심화 · 90분</p></div><span class="r num" style="font-weight:800;color:var(--fg)">19:00</span></div>
+          <div class="row"><span class="av">현</span><div class="g"><b>박현우 · 고1</b><p>수학 · 함수 기초 · 90분</p></div><span class="r num" style="font-weight:800;color:var(--fg)">21:00</span></div>
+        </div>
+      </div>
+      <div class="sec banner warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span><b>이서준 학생의 첫 수업일이 미정입니다.</b> 학생 페이지에서 지정해 주세요. 미승인 계정은 이 대시보드에서 승인 대기 안내를 봅니다.</span></div>
+    </section>
+
+    <!-- STUDENTS -->
+    <section class="page" id="pg-students" data-screen-label="담당 학생">
+      <div class="crumb">/teacher-portal/dashboard/students</div>
+      <h1>담당 학생</h1>
+      <p class="sub">매칭된 학생만 표시됩니다. 행을 누르면 상세(수업·플랜·질문)로 이동합니다.</p>
+      <div class="sec card">
+        <table class="tbl">
+          <thead><tr><th>학생</th><th>과목·횟수</th><th>다음 수업</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>김지우 · 중3</b></td><td>수학 · 주 2회</td><td class="num">오늘 19:00</td><td><span class="bst acc">수업 중</span></td><td><button class="btn sec sm">상세</button></td></tr>
+            <tr><td><b>박현우 · 고1</b></td><td>수학 · 주 1회</td><td class="num">오늘 21:00</td><td><span class="bst acc">수업 중</span></td><td><button class="btn sec sm">상세</button></td></tr>
+            <tr><td><b>이서준 · 중2</b></td><td>수학 · 주 2회</td><td>—</td><td><span class="bst warn">첫 수업일 미정</span></td><td><button class="btn pri sm">첫 수업일 설정</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">이서준 · 첫 수업일 설정</h2>
+          <div class="opts"><button class="opt">월 9/29 19:00</button><button class="opt" aria-pressed="true">수 10/1 19:00</button><button class="opt">금 10/3 19:00</button></div>
+          <button class="btn pri" style="margin-top:14px">수 10/1 19:00 확정</button>
+        </div>
+        <div class="card">
+          <div class="row"><span class="av" style="border-radius:10px">수</span><div class="g"><b>지우 · 미적분 심화</b><p>10월 1일 (수) 19:00 · 90분</p></div><button class="btn ghost sm">취소</button></div>
+          <div class="row"><span class="av" style="border-radius:10px">금</span><div class="g"><b>지우 · 주간 점검</b><p>10월 3일 (금) 19:00 · 90분</p></div><button class="btn ghost sm">취소</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="page" id="pg-plan" data-screen-label="진도·숙제">
+      <div class="crumb">/teacher-portal/dashboard/students/[id] · 플랜 탭</div>
+      <h1>진도·숙제 — 김지우</h1>
+      <p class="sub">주간 숙제를 한 번에 입력하면 요일별로 자동 분배됩니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <div class="field"><label>숙제 총량</label><div class="inp filled">미적분 5단원 문제 1–40 · 오답노트 8문항</div></div>
+          <div class="field"><label>분배 기간</label><div class="opts"><button class="opt" aria-pressed="true">1주 (월–금)</button><button class="opt">4일</button></div></div>
+          <div class="field"><label>반복</label><div class="opts"><button class="opt" aria-pressed="true">반복 없음</button><button class="opt">2주</button><button class="opt">4주</button></div></div>
+          <div style="display:flex;gap:8px"><button class="btn pri">숙제 분배 확정</button><button class="btn sec">템플릿 저장</button><button class="btn ghost">템플릿 불러오기</button></div>
+        </div>
+        <div class="card">
+          <div class="wkbars">
+            <div class="b on"><i style="height:100%"></i><span>월 10</span></div>
+            <div class="b on"><i style="height:100%"></i><span>화 10</span></div>
+            <div class="b on"><i style="height:90%"></i><span>수 10</span></div>
+            <div class="b on"><i style="height:80%"></i><span>목 9</span></div>
+            <div class="b on"><i style="height:80%"></i><span>금 9</span></div>
+          </div>
+          <p style="padding:12px 20px 16px;font-size:12.5px;color:var(--mut);border-top:1px solid var(--line)">총 48개 → 앞쪽 요일 우선 · 단조 감소 · 하루 최소 1개</p>
+        </div>
+      </div>
+      <div class="sec">
+        <h2>주간 코멘트</h2>
+        <div class="card" style="padding:20px">
+          <div class="inp area filled" style="margin-bottom:12px">적분 활용 파트 이해가 눈에 띄게 좋아졌어요. 오답 두 개만 마무리하면 목표 달성.</div>
+          <button class="btn sec">코멘트 저장 (리포트에 반영)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUESTIONS -->
+    <section class="page" id="pg-questions" data-screen-label="질문 답변">
+      <div class="crumb">/teacher-portal/dashboard/students/[id] · 질문 탭</div>
+      <h1>질문</h1>
+      <p class="sub">담당 학생 질문에 답변합니다. 사진 첨부를 함께 확인하세요.</p>
+      <div class="sec grid2">
+        <div class="card">
+          <div class="row"><span class="av">지</span><div class="g"><b>적분 구간 설정</b><p>김지우 · 사진 1장 · 40분 전 · AI 미해결</p></div><span class="bst warn">대기</span></div>
+          <div class="row" style="background:rgba(var(--acc-rgb),.05)"><span class="av">현</span><div class="g"><b>이차함수 최댓값</b><p>박현우 · 2시간 전 · 선택됨</p></div><span class="bst warn">대기</span></div>
+          <div class="row"><span class="av">지</span><div class="g"><b>삼각함수 그래프</b><p>김지우 · 어제</p></div><span class="bst acc">완료</span></div>
+        </div>
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">답변 작성 — 박현우</h2>
+          <p style="font-size:13px;color:var(--mut);padding:12px 14px;border-radius:11px;background:var(--panel-2);margin-bottom:12px">"꼭짓점 공식이랑 판별식 중 뭘 먼저 써야 하는지 헷갈려요"</p>
+          <div class="field"><div class="inp area filled">최댓값·최솟값 문제는 꼭짓점 공식 먼저! 판별식은 근의 존재를 물을 때 씁니다. 예제 두 개 첨부할게요.</div></div>
+          <div style="display:flex;gap:8px"><button class="btn pri">답변 보내기</button><button class="btn sec">사진 첨부</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER: CONSULT -->
+    <section class="page mgr-only" id="pg-consult" data-screen-label="상담 관리 (매니저)">
+      <div class="crumb">/teacher-portal/dashboard/consultations</div>
+      <h1>상담 관리</h1>
+      <p class="sub">대기 중 상담을 배정받고, 담당 상담을 진행·완료합니다.</p>
+      <div class="sec card">
+        <table class="tbl">
+          <thead><tr><th>학생</th><th>요청</th><th>상태</th><th>액션</th></tr></thead>
+          <tbody>
+            <tr><td><b>김민준 · 중1</b></td><td>수학 3~4등급 · 습관 형성 · 20분 전</td><td><span class="bst warn">대기</span></td><td><button class="btn pri sm">내가 배정</button></td></tr>
+            <tr><td><b>이하은 · 고2</b></td><td>영어 · 10/2 (금) 14:00 방문</td><td><span class="bst acc">방문 확정</span></td><td><button class="btn sec sm">완료 처리</button> <button class="btn ghost sm">리포트</button></td></tr>
+            <tr><td><b>정다인 · 중3</b></td><td>국어 · 전화 상담 예정</td><td><span class="bst mut">내 담당</span></td><td><button class="btn sec sm">방문 확정</button> <button class="btn ghost sm">취소</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec">
+        <h2>미배정 질문 2건</h2>
+        <div class="card">
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 4 2.8c-.8.4-1.1 1-1.1 2M12 17h.01"/></svg></span><div class="g"><b>매칭 전 학생 질문</b><p>담당 선생님 미지정 — 확인·배정 필요</p></div><button class="btn sec sm">열람</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER: MATCHING -->
+    <section class="page mgr-only" id="pg-matching" data-screen-label="매칭 (매니저)">
+      <div class="crumb">/teacher-portal/dashboard/matching</div>
+      <h1>매칭</h1>
+      <p class="sub">학생↔선생님 매칭을 생성합니다. 매칭 사유는 학생·학부모에게 전달됩니다.</p>
+      <div class="sec grid2">
+        <div>
+          <div class="card" style="padding:18px 20px;border-color:var(--acc)">
+            <div style="display:flex;align-items:center;gap:10px"><b style="font-size:14px;font-weight:800">김민준 · 중1 · 수학</b><span class="bst mut">미매칭</span></div>
+            <p style="font-size:12.5px;color:var(--mut);margin-top:6px">3~4등급 · 습관 형성 목표 · 화·목 저녁 가능</p>
+          </div>
+          <div class="card" style="padding:18px 20px;margin-top:12px">
+            <div style="display:flex;align-items:center;gap:10px"><b style="font-size:14px;font-weight:800">이하은 · 고2 · 영어</b><span class="bst warn">재매칭</span></div>
+            <p style="font-size:12.5px;color:var(--mut);margin-top:6px">기존 매칭 종료 예정 · reassign 플래그로 이력 유지</p>
+          </div>
+        </div>
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">김민준 → 선생님 선택</h2>
+          <div class="opts" style="margin-bottom:14px"><button class="opt" aria-pressed="true">Noah · 서울대 · 습관 지도 강점</button><button class="opt">Peter · KAIST · 심화 강점</button></div>
+          <div class="field"><label>매칭 사유 (matchReason)</label><div class="inp area filled">기초 개념부터 습관을 잡아야 하는 학생으로, 유사 케이스 지도 경험이 많은 노아 선생님을 추천합니다.</div></div>
+          <button class="btn pri" style="width:100%">매칭 제안 보내기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER: MONITORING -->
+    <section class="page mgr-only" id="pg-monitor" data-screen-label="모니터링 (매니저)">
+      <div class="crumb">/teacher-portal/dashboard/monitoring</div>
+      <h1>모니터링</h1>
+      <p class="sub">담당 학생의 진행 현황을 드릴다운하고 케어로그를 남깁니다.</p>
+      <div class="sec grid3">
+        <div class="card kpi"><b>12</b><span>담당 학생</span></div>
+        <div class="card kpi"><b>91<em>%</em></b><span>이번 주 수업 진행률</span></div>
+        <div class="card kpi" style="border-color:rgba(217,119,6,.4)"><b style="color:#c2483b">2</b><span>숙제 이행 저조 (3일+)</span></div>
+      </div>
+      <div class="sec card">
+        <table class="tbl">
+          <thead><tr><th>학생</th><th>신호</th><th>구독</th><th>액션</th></tr></thead>
+          <tbody>
+            <tr><td><b>박현우 · 고1</b></td><td>숙제 3일 미이행 · 만족도 4→2</td><td><span class="bst acc">활성</span></td><td><button class="btn pri sm">케어로그</button> <button class="btn sec sm">상세</button></td></tr>
+            <tr><td><b>최유나 · 중2</b></td><td>가족 여행 (10/5까지)</td><td><span class="bst mut">일시정지</span></td><td><button class="btn sec sm">지금 재개</button> <button class="btn ghost sm">정지 연장</button></td></tr>
+            <tr><td><b>김지우 · 중3</b></td><td>순항 · 리포트 82점</td><td><span class="bst acc">활성</span></td><td><button class="btn ghost sm">상세</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">케어로그 작성 — 박현우</h2>
+          <div class="field"><label>유형</label><div class="opts"><button class="opt" aria-pressed="true">전화</button><button class="opt">면담</button><button class="opt">메모</button></div></div>
+          <div class="field"><div class="inp area filled">학부모 통화 — 최근 시험 스트레스로 리듬 붕괴. 이번 주 숙제량 30% 감량을 선생님과 합의.</div></div>
+          <button class="btn pri">저장</button>
+        </div>
+        <div class="card">
+          <div class="row"><span class="av" style="border-radius:10px">콜</span><div class="g"><b>박현우 학부모 통화</b><p>어제 · 학습 리듬 회복 방안 안내</p></div></div>
+          <div class="row"><span class="av" style="border-radius:10px">면</span><div class="g"><b>이하은 방문 상담</b><p>9/20 · 목표 재설정</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER: APPROVAL -->
+    <section class="page mgr-only" id="pg-approval" data-screen-label="선생님 승인 (매니저)">
+      <div class="crumb">/manager/teacher-approval</div>
+      <h1>선생님 승인</h1>
+      <p class="sub">지원 서류를 검토하고 승인·반려합니다. 치프 승인 라인은 별도(/chief-manager).</p>
+      <div class="sec card">
+        <table class="tbl">
+          <thead><tr><th>지원자</th><th>과목</th><th>서류</th><th>상태</th><th>액션</th></tr></thead>
+          <tbody>
+            <tr><td><b>한지민</b></td><td>영어</td><td>증명서 · 신분증 · 경력 (3/3)</td><td><span class="bst warn">검토 대기</span></td><td><button class="btn pri sm">승인</button> <button class="btn ghost sm">반려</button></td></tr>
+            <tr><td><b>오세훈</b></td><td>과학</td><td>3/3</td><td><span class="bst acc">승인됨</span></td><td class="num">어제</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">학부모↔학생 수동 연결</h2>
+          <div class="field"><label>학부모</label><div class="inp filled">010-1234-5678 · 김서연</div></div>
+          <div class="field"><label>학생</label><div class="inp filled">김민준 · 중1</div></div>
+          <button class="btn pri">연결 (linkedVia: MANAGER)</button>
+        </div>
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">비밀번호 재설정 (학생·학부모)</h2>
+          <div class="field"><label>대상</label><div class="inp filled">jiwoo.kim@email.com</div></div>
+          <div class="field"><label>새 비밀번호 (8자+)</label><div class="inp filled">••••••••••</div></div>
+          <button class="btn sec">재설정 (감사 로그 기록)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="page" id="pg-profile" data-screen-label="선생님 프로필">
+      <div class="crumb">/teacher-portal/dashboard/profile</div>
+      <h1>프로필</h1>
+      <p class="sub">학생·학부모에게 보여질 프로필과 제출 서류를 관리합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <div class="field"><label>소개 한 줄</label><div class="inp filled">전교 꼴등에서 서울대까지 — 막힌 데를 정확히 풀어줍니다.</div></div>
+          <div class="field"><label>학력</label><div class="inp filled">서울대학교 수리과학부</div></div>
+          <div class="field"><label>지도 과목</label><div class="opts"><button class="opt" aria-pressed="true">수학</button><button class="opt">물리</button></div></div>
+          <div style="display:flex;gap:8px"><button class="btn pri">저장</button><button class="btn sec">사진 변경</button></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><div class="g"><b>재학/졸업 증명서</b><p>2026. 6. 20. 업로드 · 승인됨</p></div><span class="bst acc">확인</span></div>
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.6-1.5 1.7-2.3 3-2.3s2.4.8 3 2.3M14.5 9.5H19M14.5 13h3"/></svg></span><div class="g"><b>신분증</b><p>2026. 6. 20. 업로드 · 승인됨</p></div><span class="bst acc">확인</span></div>
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span><div class="g"><b>경력 증빙</b><p>업로드 대기</p></div><button class="btn sec sm">업로드</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+
+    function goPage(id){
+      document.querySelectorAll('.nav-i[data-page]').forEach(function(x){ x.setAttribute('aria-current', String(x.getAttribute('data-page')===id)); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+      var pg=document.getElementById('pg-'+id); if(pg) pg.classList.add('on');
+      window.scrollTo(0,0);
+    }
+    document.querySelectorAll('.nav-i[data-page]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-page')); }); });
+
+    // role preview toggle
+    document.querySelectorAll('[data-role-btn]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var role=b.getAttribute('data-role-btn');
+        document.body.setAttribute('data-role', role);
+        document.querySelectorAll('[data-role-btn]').forEach(function(x){ x.setAttribute('aria-pressed', String(x===b)); });
+        document.getElementById('role-badge').textContent = role==='manager' ? 'Manager · /teacher-portal' : 'Teacher · /teacher-portal';
+        var cur=document.querySelector('.page.on');
+        if(role==='teacher' && cur && cur.classList.contains('mgr-only')) goPage('dash');
+        if(role==='manager') goPage('consult');
+      });
+    });
+  })();
+</script>
+</body>
+</html>

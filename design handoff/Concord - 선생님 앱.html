@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 선생님 앱</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="app/concord-app.css" />
+</head>
+<body>
+
+<div class="top">
+  <span class="lab">Concord · Teacher App</span>
+  <div class="right">
+    <div class="seg" role="group" aria-label="색 테마 선택">
+      <button class="g" data-set-color="green" aria-label="그린 테마"><span class="dot"></span></button>
+      <button class="b" data-set-color="blue" aria-label="블루 테마"><span class="dot"></span></button>
+    </div>
+    <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</div>
+
+<header class="head">
+  <span class="eyebrow">Teacher App · iOS · 스펙 §5.1</span>
+  <h1>Concord<span class="dotw" style="font-size:.8em"><span class="d"></span></span> 선생님 앱</h1>
+  <p>선생님 역할 로그인 시 노출되는 탭 세트입니다: 홈 / 학생 / 질문 / MY. 웹 포털(/teacher-portal)과 병행 사용하며, 담당(매칭된) 학생만 접근합니다. 미승인 상태는 기능이 잠깁니다.</p>
+</header>
+
+<div class="wall">
+
+  <!-- T1. HOME PENDING -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="홈 (승인 대기)">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="hi">Teacher</div><div class="nm">노아 선생님</div></div></div>
+        <div class="banner warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span><b>승인 검토 중이에요.</b> 서류 확인 후 보통 2~3일 내 승인됩니다. 승인 전에는 학생·질문 기능이 잠깁니다.</span></div>
+        <div class="jcard">
+          <div class="jk">지원 현황</div>
+          <h3>서류 접수 완료 · 매니저 검토 중</h3>
+          <p>제출: 재학/졸업 증명 · 신분증 · 프로필. 추가 서류가 필요하면 알림으로 안내드려요.</p>
+          <button class="jbtn ghost">제출 서류 확인</button>
+        </div>
+        <div class="sect-t">준비하면 좋아요</div>
+        <div class="card">
+          <div class="lrow"><div class="av" style="border-radius:10px">1</div><div class="g"><b>프로필 소개 다듬기</b><p>학생·학부모에게 보여질 첫인상이에요</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="lrow"><div class="av" style="border-radius:10px">2</div><div class="g"><b>수업 가능 시간 등록</b><p>매칭 속도가 빨라져요</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+        </div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab" style="opacity:.45"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>학생</span></button>
+        <button class="tab" style="opacity:.45"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>질문</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>홈 — 승인 대기</b><span>미승인 상태. 학생·질문 탭 잠금, 프로필 준비 유도.</span></div>
+  </div>
+
+  <!-- T2. HOME APPROVED -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="홈 (승인됨)">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar">
+          <div style="flex:1"><div class="hi">Teacher</div><div class="nm">노아 선생님</div></div>
+          <button class="iconbtn"><span class="badge"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+        </div>
+
+        <div class="now">
+          <div class="k">오늘 수업 · 9월 24일 (수)</div>
+          <div class="row"><div class="av">지</div><div><div class="nm">김지우 · 중3</div><div class="meta">수학 · 미적분 심화 · 90분</div></div><div class="when">19:00</div></div>
+          <div class="row" style="margin-top:10px"><div class="av">현</div><div><div class="nm">박현우 · 고1</div><div class="meta">수학 · 함수 기초 · 90분</div></div><div class="when">21:00</div></div>
+        </div>
+
+        <div class="sect-t">이번 주</div>
+        <div class="tiles">
+          <div class="tile-s"><b>8</b><span>예정 수업</span></div>
+          <div class="tile-s"><b>3<em>답변 대기</em></b><span>학생 질문</span></div>
+          <div class="tile-s"><b>2</b><span>숙제 미입력 학생</span></div>
+          <div class="tile-s"><b>1</b><span>첫 수업일 미정</span></div>
+        </div>
+
+        <div class="sect-t">할 일</div>
+        <div class="card">
+          <div class="lrow"><div class="av" style="background:rgba(var(--acc-rgb),.14)">!</div><div class="g"><b>이서준 첫 수업일 설정</b><p>어제 매칭됨 · 첫 수업일을 지정해 주세요</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+          <div class="lrow"><div class="av">지</div><div class="g"><b>지우 다음 주 숙제 입력</b><p>이번 주 플랜이 금요일에 끝나요</p></div><div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></div>
+        </div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>학생</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>질문</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>홈 — 승인됨</b><span>오늘·이번 주 수업 요약 + 할 일(첫 수업일·숙제 입력). GET /api/mobile/teacher/home.</span></div>
+  </div>
+
+  <!-- T3. STUDENTS -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="학생 탭">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="nm" style="font-size:22px">담당 학생</div></div></div>
+        <div class="card">
+          <div class="lrow"><div class="av">지</div><div class="g"><b>김지우 · 중3</b><p>수학 · 주 2회 · 다음 수업 오늘 19:00</p></div><span class="bst acc">수업 중</span></div>
+          <div class="lrow"><div class="av">현</div><div class="g"><b>박현우 · 고1</b><p>수학 · 주 1회 · 다음 수업 오늘 21:00</p></div><span class="bst acc">수업 중</span></div>
+          <div class="lrow"><div class="av">서</div><div class="g"><b>이서준 · 중2</b><p>수학 · 어제 매칭 · 첫 수업일 미정</p></div><span class="bst warn">첫 수업일</span></div>
+        </div>
+        <div class="banner info" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>매칭된 학생만 표시됩니다. 새 매칭은 매니저가 배정해요.</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>학생</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>질문</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>학생 탭</b><span>담당 학생 목록 + 상태(수업 중/첫 수업일 미정). GET /api/mobile/teacher/students.</span></div>
+  </div>
+
+  <!-- T4. STUDENT DETAIL -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="학생 상세">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="sub-head"><button class="pf-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>이서준 · 중2</b><span class="act">플랜</span></div>
+
+        <div class="banner warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span><b>첫 수업일이 아직 없어요.</b> 학생·학부모와 조율한 날짜를 지정해 주세요.</span></div>
+
+        <div class="field"><label>첫 수업일 설정</label>
+          <div class="slot-grid">
+            <button class="slot">월 9/29 19:00</button>
+            <button class="slot" aria-pressed="true">수 10/1 19:00</button>
+            <button class="slot">금 10/3 19:00</button>
+          </div>
+        </div>
+        <button class="jbtn" style="width:100%;padding:14px;border:0;border-radius:13px;background:var(--acc);color:var(--on-acc);font-weight:800;font-size:14.5px;box-shadow:0 8px 18px rgba(var(--acc-rgb),.26)">수 10/1 19:00 확정</button>
+
+        <div class="sect-t">수업 관리</div>
+        <div class="card">
+          <div class="lrow"><div class="av" style="border-radius:10px">수</div><div class="g"><b>미적분 심화</b><p>10월 1일 (수) 19:00 · 90분</p></div><span style="font-size:12px;font-weight:700;color:var(--mut-2)">취소</span></div>
+          <div class="lrow"><div class="av" style="border-radius:10px">금</div><div class="g"><b>주간 점검 + 오답</b><p>10월 3일 (금) 19:00 · 90분</p></div><span style="font-size:12px;font-weight:700;color:var(--mut-2)">취소</span></div>
+        </div>
+        <div class="banner info" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>취소는 수업 24시간 전까지. 이후엔 매니저에게 요청돼요.</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>학생 상세</b><span>첫 수업일 설정(PATCH first-lesson) + 수업 목록·취소.</span></div>
+  </div>
+
+  <!-- T5. PLAN / HOMEWORK -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="진도·숙제">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="sub-head"><button class="pf-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><b>지우 · 진도·숙제</b><span class="act">템플릿</span></div>
+
+        <div class="subtabs"><button aria-pressed="true">숙제 입력</button><button>이번 주 플랜</button><button>코멘트</button></div>
+
+        <div class="field"><label>숙제 총량 <span style="color:var(--mut-2);font-weight:500">· 한 번에 입력하면 자동 분배돼요</span></label><div class="inp filled">미적분 5단원 문제 1–40 · 오답노트 8문항</div></div>
+        <div class="field"><label>분배 기간</label>
+          <div class="opts"><button class="opt" aria-pressed="true">1주 (월–금)</button><button class="opt">4일</button></div>
+        </div>
+        <div class="field"><label>반복</label>
+          <div class="opts"><button class="opt" aria-pressed="true">반복 없음</button><button class="opt">2주</button><button class="opt">4주</button></div>
+        </div>
+
+        <div class="sect-t">자동 분배 미리보기</div>
+        <div class="card">
+          <div class="bars" style="height:76px">
+            <div class="b on"><i style="height:100%"></i><span>월 10</span></div>
+            <div class="b on"><i style="height:100%"></i><span>화 10</span></div>
+            <div class="b on"><i style="height:90%"></i><span>수 10</span></div>
+            <div class="b on"><i style="height:80%"></i><span>목 9</span></div>
+            <div class="b on"><i style="height:80%"></i><span>금 9</span></div>
+          </div>
+          <div style="padding:12px 16px 14px;font-size:12.5px;color:var(--mut);border-top:1px solid var(--line)">총 48개 → 앞쪽 요일 우선·단조 감소로 분배 (하루 최소 1개)</div>
+        </div>
+
+        <button style="width:100%;margin-top:12px;padding:13px;border-radius:13px;background:var(--panel);color:var(--fg);border:1px solid var(--line-2);font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;gap:7px">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>템플릿에서 불러오기 · "중3 수학 주간 루틴"
+        </button>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="cta-bar"><button>숙제 분배 확정</button></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>진도·숙제</b><span>총량 입력 → 자동분배 미리보기 → 확정. 템플릿 재사용·주간 코멘트 탭.</span></div>
+  </div>
+
+  <!-- T6. QUESTIONS -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="질문 답변">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="appbar"><div style="flex:1"><div class="nm" style="font-size:22px">질문</div></div></div>
+        <div class="subtabs"><button aria-pressed="true">답변 대기 3</button><button>답변 완료</button></div>
+        <div class="card">
+          <div class="lrow"><div class="av">지</div><div class="g"><b>김지우 · 적분 구간 설정</b><p>사진 1장 · 40분 전 · AI 답변으로 미해결</p></div><span class="bst warn">대기</span></div>
+          <div class="lrow"><div class="av">현</div><div class="g"><b>박현우 · 이차함수 최댓값</b><p>2시간 전</p></div><span class="bst warn">대기</span></div>
+          <div class="lrow"><div class="av">지</div><div class="g"><b>김지우 · 삼각함수 그래프</b><p>어제</p></div><span class="bst warn">대기</span></div>
+        </div>
+
+        <div class="sect-t">답변 작성 · 지우</div>
+        <div class="card" style="padding:14px 15px">
+          <div style="font-size:12px;color:var(--mut);display:flex;gap:7px;align-items:center;margin-bottom:9px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>첨부 사진 · 문제 12번</div>
+          <div style="font-size:13.5px;line-height:1.55">적분 구간을 그래프 교점에서 잡아야 하는데 x축 기준으로 잡아서 부호가 뒤집혔어요...</div>
+        </div>
+        <div class="field" style="margin-top:12px"><label>답변</label><div class="inp area filled">교점 x=1, x=3을 먼저 구하고 그 사이 구간으로 적분해요. 풀이 사진 첨부할게요 — 내일 수업에서 한 번 더 정리합시다.</div></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <div class="cta-bar"><button>답변 보내기</button></div>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>질문 답변</b><span>답변 대기/완료 서브탭 + 사진 포함 답변 작성. PATCH questions/[id]/answer.</span></div>
+  </div>
+
+  <!-- T7. MY -->
+  <div class="device">
+    <div class="phone"><div class="screen" data-screen-label="선생님 MY">
+      <div class="island"></div>
+      <div class="sb"><span>9:41</span><span class="icons">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 12h3v8H7zM12 8h3v12h-3zM17 4h3v16h-3z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l3-3a4.2 4.2 0 0 0-6 0zM6 12a8.5 8.5 0 0 1 12 0l-2 2a5.7 5.7 0 0 0-8 0zM3 9a13 13 0 0 1 18 0l-2 2a10 10 0 0 0-14 0z"/></svg>
+        <svg viewBox="0 0 26 24" fill="none"><rect x="1.5" y="7" width="19" height="10" rx="3" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="9" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10.5" width="2" height="3" rx="1" fill="currentColor"/></svg>
+      </span></div>
+      <div class="body"><div class="scroll">
+        <div class="my-top">
+          <div class="my-av">노</div>
+          <div style="flex:1"><div class="nm">노아 선생님</div><div class="sub">서울대 수리과학부 · 수학 · 승인됨</div></div>
+          <button class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        </div>
+        <div class="sect-t">프로필</div>
+        <div class="card" style="overflow:hidden">
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><span class="g"><b>프로필 사진</b><p>학생·학부모에게 보여요</p></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="g"><b>서류 관리</b><p>증명서 · 신분증 · 경력</p></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span><span class="g"><b>숙제 템플릿</b><p>반복 주간 숙제 관리</p></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+        </div>
+        <div class="sect-t">계정</div>
+        <div class="card" style="overflow:hidden">
+          <button class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="g"><b>비밀번호 변경</b></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span></button>
+          <div class="mrow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span class="g"><b>알림 설정</b></span><span class="switch on"><i></i></span></div>
+        </div>
+        <div style="text-align:center;padding:18px 0 4px"><span style="font-size:13px;color:var(--mut-2);font-weight:600">로그아웃</span></div>
+        <div style="height:6px"></div>
+      </div></div>
+      <nav class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg><span>홈</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>학생</span></button>
+        <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>질문</span></button>
+        <button class="tab" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>MY</span></button>
+      </nav>
+      <div class="home-ind"></div>
+    </div></div>
+    <div class="cap"><b>선생님 MY</b><span>프로필·사진·서류·숙제 템플릿·비밀번호·알림.</span></div>
+  </div>
+
+</div>
+
+<div class="note">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+  스펙 §5.1: 선생님 모바일은 웹 포털(/teacher-portal)과 병행. 숙제 자동분배는 웹과 동일 로직(homework-distribution) — 총량 입력, 앞쪽 요일 우선, 단조 감소, 하루 최소 1개, 1–12주 반복.
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+  })();
+</script>
+</body>
+</html>

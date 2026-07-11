@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 웹 학부모 (/parent)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="web/portal.css" />
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <span class="dotw logo">Concord<span class="d"></span></span>
+    <span class="role">Parent · /parent</span>
+    <button class="nav-i" data-page="dash" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg>대시보드</button>
+    <button class="nav-i" data-page="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>리포트</button>
+    <button class="nav-i" data-page="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>결제<span class="cnt">10/1</span></button>
+    <button class="nav-i" data-page="consult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>상담</button>
+    <button class="nav-i" data-page="link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>자녀 연결</button>
+    <button class="nav-i" data-page="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>계정</button>
+    <div class="foot">
+      <div class="user"><span class="av">서</span><span><b>김서연 님</b><p>학부모 계정</p></span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="seg" role="group" aria-label="색 테마"><button class="g" data-set-color="green" aria-label="그린"><span class="dot"></span></button><button class="b" data-set-color="blue" aria-label="블루"><span class="dot"></span></button></div>
+      <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <!-- DASH -->
+    <section class="page on" id="pg-dash" data-screen-label="학부모 대시보드">
+      <div class="crumb">/parent</div>
+      <h1>대시보드</h1>
+      <p class="sub">연결된 자녀의 현재 상태·최근 리포트·결제를 한눈에 봅니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:13px;background:var(--panel-2);display:grid;place-items:center;font-weight:700;color:var(--acc-text);font-size:15px;flex:0 0 auto">지</span><div style="flex:1"><b style="font-size:15px;font-weight:800">김지우 · 중3</b><p style="font-size:12.5px;color:var(--mut)">수학·영어 · 주 3회 수업 중</p></div><span class="bst acc">수업 중</span></div>
+          <div style="display:flex;gap:8px;margin-top:16px"><button class="btn sec sm">9월 리포트</button><button class="btn sec sm">결제 현황</button><button class="btn sec sm">상담 신청</button></div>
+        </div>
+        <div class="card" style="padding:20px">
+          <div style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:13px;background:var(--panel-2);display:grid;place-items:center;font-weight:700;color:var(--acc-text);font-size:15px;flex:0 0 auto">민</span><div style="flex:1"><b style="font-size:15px;font-weight:800">김민준 · 중1</b><p style="font-size:12.5px;color:var(--mut)">상담 완료 · 선생님 매칭 중</p></div><span class="bst mut">매칭 중</span></div>
+          <div style="display:flex;gap:8px;margin-top:16px"><button class="btn sec sm">상담 내역</button><button class="btn pri sm">플랜 결제</button></div>
+        </div>
+      </div>
+      <div class="sec">
+        <h2>새 소식</h2>
+        <div class="card">
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span><div class="g"><b>지우 9월 학습 리포트 도착</b><p>종합 82점 · 지난달보다 8점 상승</p></div><span class="r">2시간 전</span></div>
+          <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div class="g"><b>10월 결제 예정</b><p>지우 · 주 2회 플랜 · 10월 1일 자동 결제</p></div><span class="r">어제</span></div>
+        </div>
+      </div>
+      <div class="sec banner info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>학부모 페이지는 리포트·결제·상담·자녀 연결만 제공합니다. 진도·숙제·질문은 자녀 계정에서 관리돼요.</span></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="page" id="pg-reports" data-screen-label="학부모 리포트">
+      <div class="crumb">/parent/reports</div>
+      <h1>리포트</h1>
+      <p class="sub">자녀별 월간 학습 리포트 — 선생님·매니저가 요약한 결과입니다.</p>
+      <div class="sec">
+        <div class="opts" style="margin-bottom:16px"><button class="opt" aria-pressed="true">지우 · 중3</button><button class="opt">민준 · 중1</button></div>
+        <div class="card">
+          <table class="tbl">
+            <thead><tr><th>월</th><th>종합</th><th>과목 변화</th><th>코멘트</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="num">2026. 9.</td><td class="num">82 <span style="color:var(--acc-text);font-size:12px">▲8</span></td><td>수학 78→89 · 영어 71→78</td><td>매니저·선생님 코멘트 2건</td><td><button class="btn sec sm">열람</button></td></tr>
+              <tr><td class="num">2026. 8.</td><td class="num">74 <span style="color:var(--acc-text);font-size:12px">▲4</span></td><td>수학 71→78 · 영어 68→71</td><td>1건</td><td><button class="btn sec sm">열람</button></td></tr>
+              <tr><td class="num">2026. 7.</td><td class="num">70</td><td>첫 리포트</td><td>1건</td><td><button class="btn sec sm">열람</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section class="page" id="pg-pay" data-screen-label="학부모 결제">
+      <div class="crumb">/parent/payments</div>
+      <h1>결제</h1>
+      <p class="sub">자녀별 플랜·자동갱신·청구 이력. 결제는 학생·학부모 모두 가능합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px;background:linear-gradient(150deg,var(--acc),var(--acc-press));color:var(--on-acc);border:0">
+          <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85">지우 · 현재 플랜</p>
+          <b style="font-size:22px;font-weight:800;display:block;margin-top:6px">주 2회 플랜</b>
+          <p style="font-size:13px;opacity:.92;margin-top:3px">740,000원 / 월 · 수학·영어</p>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);display:flex;font-size:13px"><span style="opacity:.85">다음 결제일</span><b style="margin-left:auto">2026. 10. 1.</b></div>
+        </div>
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px"><div style="flex:1"><b style="font-size:14px;font-weight:700">자동 갱신</b><p style="font-size:12.5px;color:var(--mut)">매월 1일 · 신한카드 ****1234</p></div><button class="switch on" aria-label="자동 갱신"><i></i></button></div>
+          <div style="display:flex;align-items:center;gap:12px"><div style="flex:1"><b style="font-size:14px;font-weight:700">민준 플랜</b><p style="font-size:12.5px;color:var(--mut)">매칭 완료 후 결제 가능</p></div><button class="btn pri sm">플랜 보기</button></div>
+        </div>
+      </div>
+      <div class="sec">
+        <h2>청구 이력 <a href="#">전체 영수증</a></h2>
+        <div class="card">
+          <table class="tbl">
+            <thead><tr><th>일자</th><th>내역</th><th>결제자</th><th>금액</th><th>영수증</th></tr></thead>
+            <tbody>
+              <tr><td class="num">2026. 9. 1.</td><td>지우 · 9월 수업료</td><td>서연 님 (학부모)</td><td class="num">740,000원</td><td><button class="btn ghost sm">PDF</button></td></tr>
+              <tr><td class="num">2026. 8. 1.</td><td>지우 · 8월 수업료</td><td>지우 (학생)</td><td class="num">740,000원</td><td><button class="btn ghost sm">PDF</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSULT -->
+    <section class="page" id="pg-consult" data-screen-label="학부모 상담">
+      <div class="crumb">/parent/consultation</div>
+      <h1>상담</h1>
+      <p class="sub">자녀 관련 방문 상담을 신청하고 예약을 관리합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <div style="display:flex;align-items:center;gap:10px"><span class="bst acc">예약 확정</span><b style="font-size:14px;font-weight:700">지우 · 방문 상담</b></div>
+          <div style="margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--panel-2)"><b style="font-size:15px;font-weight:800">10월 2일 (금) 14:00</b><p style="font-size:12.5px;color:var(--mut);margin-top:3px">담당 매니저 김지현 · 센터 방문</p></div>
+          <div style="display:flex;gap:8px;margin-top:14px"><button class="btn sec sm">일정 변경</button><button class="btn ghost sm">취소</button></div>
+        </div>
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:14px">새 상담 신청</h2>
+          <div class="field"><label>자녀</label><div class="opts"><button class="opt" aria-pressed="true">지우</button><button class="opt">민준</button></div></div>
+          <div class="field"><label>방문 희망 시간</label><div class="opts"><button class="opt">10/2 11:00</button><button class="opt" aria-pressed="true">10/2 14:00</button><button class="opt">10/3 10:00</button></div></div>
+          <div class="field"><label>상담 내용</label><div class="inp area filled">지우 수학 진도 방향과 겨울방학 계획을 상의하고 싶어요.</div></div>
+          <button class="btn pri" style="width:100%">상담 신청</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINK -->
+    <section class="page" id="pg-link" data-screen-label="자녀 연결">
+      <div class="crumb">/parent/link</div>
+      <h1>자녀 연결</h1>
+      <p class="sub">자녀 앱의 MY → 학부모 연결에 표시된 코드를 입력하세요.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <div class="field"><label>연결 코드</label><div class="inp filled" style="text-align:center;font-size:20px;font-weight:800;letter-spacing:.3em;color:var(--fg)">7 3 4 9 2 6</div></div>
+          <button class="btn pri" style="width:100%">코드로 연결</button>
+          <div class="banner warn" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>코드가 만료되면 자녀 앱에서 재발급 후 다시 시도하세요. 방문 시 매니저가 직접 연결해 드릴 수도 있어요.</span></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="av">지</span><div class="g"><b>김지우 · 중3</b><p>코드로 연결 · 2026. 7. 2.</p></div><button class="btn ghost sm">해제</button></div>
+          <div class="row"><span class="av">민</span><div class="g"><b>김민준 · 중1</b><p>매니저 연결 · 2026. 9. 12.</p></div><button class="btn ghost sm">해제</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section class="page" id="pg-account" data-screen-label="학부모 계정">
+      <div class="crumb">/parent/account</div>
+      <h1>계정</h1>
+      <p class="sub">프로필과 보안을 관리합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:14px">프로필</h2>
+          <div class="field"><label>이름</label><div class="inp filled">김서연</div></div>
+          <div class="field"><label>전화번호</label><div class="inp filled">010-1234-5678</div></div>
+          <div class="field"><label>이메일</label><div class="inp filled">seoyeon.kim@email.com</div></div>
+          <button class="btn sec">저장</button>
+        </div>
+        <div class="card" style="padding:20px">
+          <h2 style="font-size:14px;font-weight:700;margin-bottom:14px">비밀번호 변경</h2>
+          <div class="field"><label>현재 비밀번호</label><div class="inp">현재 비밀번호</div></div>
+          <div class="field"><label>새 비밀번호 (8자 이상)</label><div class="inp">새 비밀번호</div></div>
+          <button class="btn pri">변경하기</button>
+          <div class="banner info" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>비밀번호를 잊으셨다면 담당 매니저가 대면 확인 후 재설정해 드립니다.</span></div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)"><a href="#" style="font-size:12.5px;color:var(--mut-2)">회원 탈퇴</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+    // page switcher
+    document.querySelectorAll('.nav-i[data-page]').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('.nav-i[data-page]').forEach(function(x){ x.setAttribute('aria-current','false'); });
+        b.setAttribute('aria-current','true');
+        document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+        var pg = document.getElementById('pg-'+b.getAttribute('data-page'));
+        if (pg) pg.classList.add('on');
+        window.scrollTo(0,0);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
