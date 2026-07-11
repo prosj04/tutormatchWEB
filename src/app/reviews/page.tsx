@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 
-import "./reviews.css";
-
 import { ReviewsPageContent } from "@/components/reviews/ReviewsPageContent";
 import { getReviewsPageTestimonials } from "@/lib/cms";
 import { isPublicSectionVisible } from "@/lib/cms-page-defaults";
@@ -25,7 +23,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams?: Sea
   const timer = startPerfTimer("page.reviews.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const [siteContent, testimonials] = await Promise.all([
-    getGroupedSiteContentBySections(["reviews_page", "reviews_success", "reviews_proof", "hall", "spacing"]),
+    getGroupedSiteContentBySections(["reviews_page", "spacing"]),
     getReviewsPageTestimonials(),
   ]);
   if (!isPublicSectionVisible(siteContent, "reviews_page", "show_page", true)) {
@@ -35,14 +33,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams?: Sea
 
   const items: ReviewCardItem[] =
     testimonials.length > 0
-      ? testimonials.map((t) => ({
-          quote: t.quote,
-          info: t.info,
-          ...(t.gradeFrom ? { gradeFrom: t.gradeFrom } : {}),
-          ...(t.gradeTo ? { gradeTo: t.gradeTo } : {}),
-          ...(t.category ? { category: t.category } : {}),
-          ...(t.tags && t.tags.length > 0 ? { tags: t.tags } : {}),
-        }))
+      ? testimonials.map((t) => ({ quote: t.quote, info: t.info }))
       : [...REVIEWS_HTML_FALLBACK];
 
   const page = (

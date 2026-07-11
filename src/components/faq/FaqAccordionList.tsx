@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 
@@ -23,6 +23,15 @@ function FaqAccordionItem({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = `faq-panel-${useId()}`;
+  const answerRef = useRef<HTMLDivElement>(null);
+
+  // Mirror concord.js: set inline max-height to the panel's scrollHeight when
+  // open, 0 when closed, so the CSS `transition:max-height` animates identically.
+  useEffect(() => {
+    const el = answerRef.current;
+    if (!el) return;
+    el.style.maxHeight = open ? `${el.scrollHeight}px` : "0px";
+  }, [open, item.a]);
 
   return (
     <ConcordReveal className={`faq-item${open ? " open" : ""}`}>
@@ -38,7 +47,13 @@ function FaqAccordionItem({
           <FaqIcon />
         </span>
       </button>
-      <div className="faq-a" id={panelId} role="region">
+      <div
+        ref={answerRef}
+        className="faq-a"
+        id={panelId}
+        role="region"
+        style={{ maxHeight: defaultOpen ? undefined : 0 }}
+      >
         <div className="a-inner faq-a-inner">{item.a}</div>
       </div>
     </ConcordReveal>

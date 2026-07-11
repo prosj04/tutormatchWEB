@@ -242,6 +242,7 @@ export function LoginForm({
   const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
 
+  const [role, setRole] = useState<"student" | "teacher">("student");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -318,6 +319,25 @@ export function LoginForm({
               {defaultSubtext}
             </CmsEdit>
           </p>
+
+          <div className="seg-tabs" data-group aria-label="로그인 역할">
+            <button
+              type="button"
+              data-val="student"
+              className={role === "student" ? "on" : undefined}
+              onClick={() => setRole("student")}
+            >
+              학생
+            </button>
+            <button
+              type="button"
+              data-val="teacher"
+              className={role === "teacher" ? "on" : undefined}
+              onClick={() => setRole("teacher")}
+            >
+              선생님
+            </button>
+          </div>
 
           <div className="field">
             <label htmlFor="id">전화번호 또는 이메일</label>
