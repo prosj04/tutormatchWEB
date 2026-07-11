@@ -43,12 +43,11 @@ export default async function TeacherProfilePage() {
   const initialForm = profileToFormData(teacher.profile);
 
   const page = (
-    <div>
-      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">프로필 관리</h1>
-      <p className="mt-2 text-sm text-text-secondary">
-        강사 목록 페이지에 표시될 프로필을 편집합니다. 변경 사항은 저장 즉시 반영됩니다.
-      </p>
-      <div className="mt-8">
+    <section className="page on" id="pg-profile">
+      <div className="crumb">/teacher-portal/dashboard/profile</div>
+      <h1>프로필</h1>
+      <p className="sub">학생·학부모에게 보여질 프로필과 제출 서류를 관리합니다.</p>
+      <div className="sec">
         <TeacherProfileEditor
           teacherId={teacher.id}
           teacherName={teacher.name}
@@ -57,8 +56,10 @@ export default async function TeacherProfilePage() {
           initialForm={initialForm}
         />
       </div>
-      <AccountDeleteSection />
-    </div>
+      <div className="sec">
+        <AccountDeleteSection />
+      </div>
+    </section>
   );
   timer.end({ teacherId: teacher.id });
   return page;
