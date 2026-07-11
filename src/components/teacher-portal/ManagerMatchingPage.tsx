@@ -130,170 +130,139 @@ export function ManagerMatchingPage({
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">매칭 관리</h1>
-      <p className="mt-2 text-sm text-text-secondary">
-        상담 진행·완료 학생을 담당 선생님에게 배정하거나 재배정합니다.
+    <section className="page on" id="pg-matching">
+      <div className="crumb">/teacher-portal/dashboard/matching</div>
+      <h1>매칭</h1>
+      <p className="sub">
+        학생↔선생님 매칭을 생성합니다. 매칭 사유는 학생·학부모에게 전달됩니다.
       </p>
 
-      <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
-        <aside className="w-full shrink-0 lg:w-80">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
-            상담 완료 학생
-          </h2>
+      <div className="sec grid2">
+        <div>
           {loading ? (
-            <p className="text-sm text-text-secondary">불러오는 중…</p>
+            <div className="card" style={{ padding: "18px 20px" }}>
+              <p>불러오는 중…</p>
+            </div>
           ) : students.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-6 text-center text-sm text-text-secondary">
-              매칭 대기 학생이 없습니다.
-            </p>
+            <div className="card" style={{ padding: "18px 20px" }}>
+              <p>매칭 대기 학생이 없습니다.</p>
+            </div>
           ) : (
-            <ul className="space-y-2">
-              {students.map((s) => (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedId(s.id)}
-                    className={`w-full rounded-xl border p-4 text-left transition ${
-                      selectedId === s.id
-                        ? "border-primary bg-primary/10 shadow-sm"
-                        : "border-gray-200 bg-surface hover:border-primary/40"
-                    }`}
-                  >
-                    <p className="font-semibold text-text-primary">
-                      {s.name}
-                      {s.currentTeacherName ? (
-                        <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
-                          재배정
-                        </span>
-                      ) : null}
+            students.map((s, i) => {
+              const isSelected = selectedId === s.id;
+              return (
+                <div
+                  key={s.id}
+                  className="card"
+                  style={{
+                    padding: "18px 20px",
+                    cursor: "pointer",
+                    marginTop: i === 0 ? undefined : "12px",
+                    ...(isSelected ? { borderColor: "var(--acc)" } : {}),
+                  }}
+                  onClick={() => setSelectedId(s.id)}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <b style={{ fontSize: "14px", fontWeight: 800 }}>
+                      {s.name} · {s.grade} · {s.subjects}
+                    </b>
+                    {s.currentTeacherName ? (
+                      <span className="bst warn">재매칭</span>
+                    ) : (
+                      <span className="bst mut">미매칭</span>
+                    )}
+                  </div>
+                  {s.currentTeacherName ? (
+                    <p style={{ fontSize: "12.5px", color: "var(--mut)", marginTop: "6px" }}>
+                      현재 배정: {s.currentTeacherName} · 재배정 시 이력 유지
                     </p>
-                    <p className="mt-0.5 text-xs text-text-secondary">{s.grade}</p>
-                    <p className="mt-1 text-xs text-primary">{s.subjects}</p>
-                  </button>
-                </li>
-              ))}
-            </ul>
+                  ) : s.consultationNote ? (
+                    <p style={{ fontSize: "12.5px", color: "var(--mut)", marginTop: "6px" }}>
+                      {s.consultationNote}
+                    </p>
+                  ) : null}
+                </div>
+              );
+            })
           )}
-        </aside>
+        </div>
 
-        <section className="min-w-0 flex-1 rounded-2xl border border-gray-200 bg-surface p-6">
+        <div className="card" style={{ padding: "20px" }}>
           {!selected ? (
-            <p className="text-sm text-text-secondary">학생을 선택해주세요.</p>
+            <p>학생을 선택해주세요.</p>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-text-primary">{selected.name}</h2>
-              <p className="mt-1 text-sm text-text-secondary">
-                {selected.grade} · 희망과목: {selected.subjects}
-              </p>
-              {selected.consultationNote ? (
-                <p className="mt-3 rounded-lg bg-background px-3 py-2 text-sm text-text-secondary">
-                  상담 메모: {selected.consultationNote}
-                </p>
-              ) : null}
-              {selected.currentTeacherName ? (
-                <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                  현재 배정: <span className="font-semibold">{selected.currentTeacherName}</span> 선생님 —
-                  새 선생님을 선택하면 기존 배정이 취소되고 재배정됩니다.
-                </p>
-              ) : null}
-
-              <h3 className="mt-8 text-sm font-semibold text-text-primary">
-                선생님 선택
-              </h3>
+              <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>
+                {selected.name} → 선생님 선택
+              </h2>
               {filteredTeachers.length === 0 ? (
-                <p className="mt-2 text-sm text-text-secondary">
+                <p style={{ fontSize: "13px", color: "var(--mut)", marginBottom: "14px" }}>
                   조건에 맞는 선생님이 없습니다.
                 </p>
               ) : (
-                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                <div className="opts" style={{ marginBottom: "14px" }}>
                   {filteredTeachers.map((t) => (
-                    <li key={t.id}>
-                      <button
-                        type="button"
-                        onClick={() => setTeacherId(t.id)}
-                        className={`w-full rounded-xl border p-4 text-left ${
-                          teacherId === t.id
-                            ? "border-primary bg-primary/10"
-                            : "border-gray-100 hover:border-primary/30"
-                        }`}
-                      >
-                        <span className="flex items-start gap-3">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={t.photoUrl ?? "/images/teachers/default-male.png"}
-                            alt={`${t.name} 프로필`}
-                            className="h-10 w-10 rounded-full object-cover"
-                          />
-                          <span>
-                            <span className="block font-medium text-text-primary">{t.name}</span>
-                            <span className="mt-0.5 block text-xs text-text-secondary">{t.subjects}</span>
-                            <span className="mt-1 block text-xs text-text-muted">
-                              담당 학생 {t.activeStudentCount}명
-                            </span>
-                          </span>
-                        </span>
-                      </button>
-                    </li>
+                    <button
+                      key={t.id}
+                      type="button"
+                      className="opt"
+                      aria-pressed={teacherId === t.id}
+                      onClick={() => setTeacherId(t.id)}
+                    >
+                      {t.name} · {t.subjects} · 담당 {t.activeStudentCount}명
+                    </button>
                   ))}
-                </ul>
+                </div>
               )}
 
-              <h3 className="mt-8 text-sm font-semibold text-text-primary">
-                담당 과목
-              </h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {studentSubjectList.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => toggleSubject(s)}
-                    className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-                      matchSubjects.includes(s)
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-text-secondary"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
+              <div className="field">
+                <label>담당 과목</label>
+                <div className="opts">
+                  {studentSubjectList.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="opt"
+                      aria-pressed={matchSubjects.includes(s)}
+                      onClick={() => toggleSubject(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-8">
-                <label htmlFor="matchReason" className="block text-sm font-semibold text-text-primary">
-                  매칭 이유 (학생에게 표시됩니다)
-                </label>
+              <div className="field">
+                <label>매칭 사유 (matchReason)</label>
                 <textarea
-                  id="matchReason"
+                  className="inp area filled"
                   value={matchReason}
                   onChange={(e) => setMatchReason(e.target.value)}
-                  placeholder="이 선생님을 배정한 이유를 간단히 설명해 주세요. (선택사항)"
-                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-relaxed placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  placeholder="이 선생님을 배정한 이유를 간단히 설명해 주세요. (선택사항, 최대 500자)"
                   rows={3}
                 />
-                <p className="mt-1 text-xs text-text-muted">
-                  최대 500자까지 입력 가능합니다.
-                </p>
               </div>
 
               {error ? (
-                <p className="mt-4 text-sm text-accent" role="alert">
-                  {error}
-                </p>
+                <div className="banner warn" style={{ marginBottom: "12px" }} role="alert">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+                  <span>{error}</span>
+                </div>
               ) : null}
 
               <button
                 type="button"
+                className="btn pri"
+                style={{ width: "100%" }}
                 disabled={!teacherId || matchSubjects.length === 0 || submitting}
                 onClick={() => void handleMatch()}
-                className="mt-8 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 sm:w-auto sm:px-10"
               >
-                {submitting ? "등록 중…" : "매칭 등록"}
+                {submitting ? "등록 중…" : "매칭 제안 보내기"}
               </button>
             </>
           )}
-        </section>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

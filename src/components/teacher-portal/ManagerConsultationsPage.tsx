@@ -16,23 +16,19 @@ type ConsultationBooking = ManagerConsultationBooking;
 
 type Tab = "waiting" | "mine";
 
-const STATUS_BADGES = {
-  ASSIGNED: { label: "배정 완료", className: "badge-status-assigned" },
-  COMPLETED: { label: "상담 완료", className: "badge-status-completed" },
-  CANCELLED: { label: "취소됨", className: "badge-status-cancelled" },
-  WAITING: { label: "대기중", className: "badge-status-waiting" },
-} as const;
-
 type ManagerConsultationsPageProps = {
   initialWaiting: ConsultationBooking[];
   initialMine: ConsultationBooking[];
   initialMineLoaded?: boolean;
+  /** 페이지 하단에 렌더할 미배정 질문 섹션 등 */
+  children?: React.ReactNode;
 };
 
 export function ManagerConsultationsPage({
   initialWaiting,
   initialMine,
   initialMineLoaded = true,
+  children,
 }: ManagerConsultationsPageProps) {
   const [tab, setTab] = useState<Tab>("waiting");
   const [waiting, setWaiting] = useState<ConsultationBooking[]>(initialWaiting);
@@ -316,8 +312,10 @@ export function ManagerConsultationsPage({
     setReportGoals((prev) => ({ ...prev, [field]: items }));
   }
 
+  const rows = tab === "waiting" ? waiting : mine;
+
   return (
-    <div>
+    <section className="page on" id="pg-consult">
       <AnimatePresence>
         {toast ? (
           <motion.div
@@ -331,83 +329,93 @@ export function ManagerConsultationsPage({
         ) : null}
       </AnimatePresence>
 
-      <h1 className="text-2xl font-black text-text-primary sm:text-3xl">
-        상담 관리
-      </h1>
-      <p className="mt-2 text-sm text-text-secondary">
-        상담 신청 학생을 선착순으로 담당하고 상담 완료 처리합니다.
-      </p>
+      <div className="crumb">/teacher-portal/dashboard/consultations</div>
+      <h1>상담 관리</h1>
+      <p className="sub">대기 중 상담을 배정받고, 담당 상담을 진행·완료합니다.</p>
 
-      <div className="mt-6 flex gap-2 overflow-x-auto border-b border-gray-200">
-        {(["waiting", "mine"] as const).map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setTab(key)}
-            className={`border-b-2 px-4 py-2 text-sm font-medium ${
-              tab === key
-                ? "border-primary text-text-primary"
-                : "border-transparent text-text-secondary"
-            }`}
-          >
-            {key === "waiting" ? "대기 중" : "내 담당"}
-          </button>
-        ))}
+      <div className="sec">
+        <div className="opts">
+          {(["waiting", "mine"] as const).map((key) => (
+            <button
+              key={key}
+              type="button"
+              className="opt"
+              aria-pressed={tab === key}
+              onClick={() => setTab(key)}
+            >
+              {key === "waiting" ? "대기 중" : "내 담당"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <section className="mt-6">
+      <div className="sec card">
         {loading ? (
-          <p className="text-sm text-text-secondary">불러오는 중...</p>
-        ) : tab === "waiting" ? (
-          waiting.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center text-sm text-text-secondary">
-              현재 대기 중인 학생이 없습니다.
-            </p>
-          ) : (
-            <ul className="grid gap-4 lg:grid-cols-2">
-              {waiting.map((booking) => (
-                <WaitingCard
-                  key={booking.id}
-                  booking={booking}
-                  loading={actionLoading === booking.id}
-                  onAssign={() => void assignBooking(booking)}
-                />
-              ))}
-            </ul>
-          )
-        ) : mine.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center text-sm text-text-secondary">
-            담당 중인 상담이 없습니다.
-          </p>
+          <div className="row">
+            <div className="g">
+              <p>불러오는 중…</p>
+            </div>
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="row">
+            <div className="g">
+              <p>
+                {tab === "waiting"
+                  ? "현재 대기 중인 학생이 없습니다."
+                  : "담당 중인 상담이 없습니다."}
+              </p>
+            </div>
+          </div>
         ) : (
-          <ul className="grid gap-4 lg:grid-cols-2">
-            {mine.map((booking) => (
-              <MineCard
-                key={booking.id}
-                booking={booking}
-                loading={actionLoading === booking.id}
-                visitConfirmedValue={getVisitConfirmedValue(booking)}
-                visitConfirmedSaving={visitConfirmedSaving === booking.id}
-                onVisitConfirmedChange={(v) =>
-                  setVisitConfirmedInputs((prev) => ({ ...prev, [booking.id]: v }))
-                }
-                onVisitConfirmedSave={() =>
-                  void saveVisitConfirmed(
-                    booking.id,
-                    visitConfirmedInputs[booking.id] ?? getVisitConfirmedValue(booking),
-                  )
-                }
-                onComplete={() => {
-                  setCompleteTarget(booking);
-                  setManagerNote("");
-                }}
-                onCancel={() => void cancelBooking(booking)}
-                onReport={() => void openReportModal(booking)}
-              />
-            ))}
-          </ul>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>학생</th>
+                <th>요청</th>
+                <th>상태</th>
+                <th>액션</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tab === "waiting"
+                ? waiting.map((booking) => (
+                    <WaitingRow
+                      key={booking.id}
+                      booking={booking}
+                      loading={actionLoading === booking.id}
+                      onAssign={() => void assignBooking(booking)}
+                    />
+                  ))
+                : mine.map((booking) => (
+                    <MineRow
+                      key={booking.id}
+                      booking={booking}
+                      loading={actionLoading === booking.id}
+                      visitConfirmedValue={getVisitConfirmedValue(booking)}
+                      visitConfirmedSaving={visitConfirmedSaving === booking.id}
+                      onVisitConfirmedChange={(v) =>
+                        setVisitConfirmedInputs((prev) => ({ ...prev, [booking.id]: v }))
+                      }
+                      onVisitConfirmedSave={() =>
+                        void saveVisitConfirmed(
+                          booking.id,
+                          visitConfirmedInputs[booking.id] ?? getVisitConfirmedValue(booking),
+                        )
+                      }
+                      onComplete={() => {
+                        setCompleteTarget(booking);
+                        setManagerNote("");
+                      }}
+                      onCancel={() => void cancelBooking(booking)}
+                      onReport={() => void openReportModal(booking)}
+                    />
+                  ))}
+            </tbody>
+          </table>
         )}
-      </section>
+      </div>
+
+      {children}
 
       {completeTarget ? (
         <div
@@ -551,7 +559,7 @@ export function ManagerConsultationsPage({
           </div>
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }
 
@@ -559,41 +567,31 @@ function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
   const entries = Object.entries(times).filter(([, slots]) => slots.length > 0);
   if (entries.length === 0) {
     return (
-      <p className="mt-3 text-xs text-amber-700">
-        방문 상담 희망 시간 미입력 — 학생에게 입력을 요청해 주세요.
-      </p>
+      <span className="bst warn" style={{ display: "inline-block", marginTop: "6px" }}>
+        방문 희망 시간 미입력
+      </span>
     );
   }
   return (
-    <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-      <p className="text-xs font-semibold text-primary">방문 상담 희망 시간</p>
-      <ul className="mt-2 space-y-1.5 text-sm text-text-primary">
-        {entries.map(([date, slots]) => (
-          <li key={date}>
-            <span className="font-semibold">{formatDateWithWeekday(date)}</span>
-            <span className="text-text-secondary"> · {slots.join(", ")}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+      방문 희망:{" "}
+      {entries
+        .map(([date, slots]) => `${formatDateWithWeekday(date)} ${slots.join(", ")}`)
+        .join(" / ")}
+    </span>
   );
 }
 
-function ParentContactBlock({ booking }: { booking: ConsultationBooking }) {
+function ContactLine({ booking }: { booking: ConsultationBooking }) {
   return (
-    <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-950">
-      <p className="text-xs font-semibold text-blue-700">연락처</p>
-      <p className="mt-1">학생: {booking.student.phone}</p>
-      {booking.student.guardianPhone ? (
-        <p className="mt-1">부모님: {booking.student.guardianPhone}</p>
-      ) : (
-        <p className="mt-1 text-blue-700">부모님 연락처 미입력</p>
-      )}
-    </div>
+    <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+      연락처: {booking.student.phone}
+      {booking.student.guardianPhone ? ` · 부모 ${booking.student.guardianPhone}` : ""}
+    </span>
   );
 }
 
-function WaitingCard({
+function WaitingRow({
   booking,
   loading,
   onAssign,
@@ -603,46 +601,42 @@ function WaitingCard({
   onAssign: () => void;
 }) {
   return (
-    <li className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-semibold text-text-primary">
-            {booking.student.name}
-            <span className="ml-2 text-sm font-normal text-text-secondary">
-              {booking.student.grade}
-            </span>
-            {booking.student.region ? (
-              <span className="ml-2 text-sm font-normal text-text-secondary">
-                · {booking.student.region}
-              </span>
-            ) : null}
-          </p>
-          <p className="mt-1 text-sm text-primary">{booking.student.subjects}</p>
-        </div>
-        <span className="shrink-0 text-xs text-text-muted">
-          {booking.timeAgo}
-        </span>
-      </div>
-      <ParentContactBlock booking={booking} />
-      <VisitPreferredBlock times={booking.visitPreferredTimes} />
-      {booking.note ? (
-        <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
-          {booking.note}
-        </p>
-      ) : null}
-      <button
-        type="button"
-        disabled={loading}
-        onClick={onAssign}
-        className="mt-5 w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
-      >
-        {loading ? "처리 중..." : "담당하기"}
-      </button>
-    </li>
+    <tr>
+      <td>
+        <b>
+          {booking.student.name} · {booking.student.grade}
+          {booking.student.region ? ` · ${booking.student.region}` : ""}
+        </b>
+        <ContactLine booking={booking} />
+      </td>
+      <td>
+        {booking.student.subjects}
+        {booking.timeAgo ? ` · ${booking.timeAgo}` : ""}
+        <VisitPreferredBlock times={booking.visitPreferredTimes} />
+        {booking.note ? (
+          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+            메모: {booking.note}
+          </span>
+        ) : null}
+      </td>
+      <td>
+        <span className="bst warn">대기</span>
+      </td>
+      <td>
+        <button
+          type="button"
+          className="btn pri sm"
+          disabled={loading}
+          onClick={onAssign}
+        >
+          {loading ? "처리 중…" : "내가 배정"}
+        </button>
+      </td>
+    </tr>
   );
 }
 
-function MineCard({
+function MineRow({
   booking,
   loading,
   visitConfirmedValue,
@@ -664,125 +658,109 @@ function MineCard({
   onReport: () => void;
 }) {
   const hasMatch = Boolean(booking.match);
-  const badge =
-    booking.status === "COMPLETED" && hasMatch
-      ? { label: "선생님 배정 완료", className: "badge-status-assigned" }
-      : STATUS_BADGES[booking.status] ?? STATUS_BADGES.ASSIGNED;
+  const badge = booking.visitConfirmedAt
+    ? { className: "bst acc", label: "방문 확정" }
+    : booking.status === "COMPLETED"
+      ? { className: "bst acc", label: "상담 완료" }
+      : { className: "bst mut", label: "내 담당" };
 
   return (
-    <li className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-semibold text-text-primary">
-            {booking.student.name}
-            <span className="ml-2 text-sm font-normal text-text-secondary">
-              {booking.student.grade}
-            </span>
-            {booking.student.region ? (
-              <span className="ml-2 text-sm font-normal text-text-secondary">
-                · {booking.student.region}
-              </span>
-            ) : null}
-          </p>
-          <p className="mt-1 text-sm text-primary">{booking.student.subjects}</p>
-        </div>
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}
-        >
-          {badge.label}
-        </span>
-      </div>
-      <ParentContactBlock booking={booking} />
-      <VisitPreferredBlock times={booking.visitPreferredTimes} />
-      {booking.note ? (
-        <p className="mt-4 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
-          학생 메모: {booking.note}
-        </p>
-      ) : null}
-      {booking.managerNote ? (
-        <p className="mt-3 rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-900">
-          상담 메모: {booking.managerNote}
-        </p>
-      ) : null}
-      <p className="mt-4 text-xs text-text-muted">
-        배정 시각: {booking.assignedAgo ?? "-"}
-      </p>
-
-      {booking.visitConfirmedAt ? (
-        <p className="mt-2 text-xs font-medium text-primary">
-          방문 상담 확정: {formatDateWithWeekday(new Date(booking.visitConfirmedAt))}{" "}
-          {new Date(booking.visitConfirmedAt).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit" })}
-        </p>
-      ) : null}
-
-      <div className="mt-3 flex gap-2 items-center">
-        <input
-          type="datetime-local"
-          value={visitConfirmedValue}
-          onChange={(e) => onVisitConfirmedChange(e.target.value)}
-          className="flex-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-primary"
-        />
-        <button
-          type="button"
-          disabled={visitConfirmedSaving}
-          onClick={onVisitConfirmedSave}
-          className="shrink-0 rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 disabled:opacity-50"
-        >
-          {visitConfirmedSaving ? "저장 중…" : "일시 저장"}
-        </button>
-      </div>
-
-      {booking.match ? (
-        <p className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm text-text-primary">
-          배정 선생님: <span className="font-semibold">{booking.match.teacherName}</span>
-          <span className="ml-2 text-xs font-medium text-text-secondary">
-            {booking.match.matchStatus === "ACTIVE" ? "학생 수락 완료" : "학생 수락 대기중"}
+    <tr>
+      <td>
+        <b>
+          {booking.student.name} · {booking.student.grade}
+          {booking.student.region ? ` · ${booking.student.region}` : ""}
+        </b>
+        <ContactLine booking={booking} />
+        {booking.match ? (
+          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--acc-text)" }}>
+            배정 선생님: {booking.match.teacherName}
           </span>
-        </p>
-      ) : null}
-
-      {booking.status === "ASSIGNED" ? (
-        <div className="mt-5 flex gap-2">
-          <Link
-            href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
-            className="flex-1 rounded-xl bg-primary py-2.5 text-center text-sm font-semibold text-white hover:bg-primary/90"
-          >
-            {hasMatch ? "선생님 재배정" : "선생님 배정"}
-          </Link>
-          <button
-            type="button"
-            disabled={loading || !hasMatch}
-            title={hasMatch ? undefined : "선생님 배정 후 완료 처리할 수 있습니다"}
-            onClick={onComplete}
-            className="flex-1 rounded-xl bg-text-primary py-2.5 text-sm font-semibold text-white disabled:opacity-40"
-          >
-            완료 처리
-          </button>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={onCancel}
-            className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-text-secondary disabled:opacity-50"
-          >
-            취소
-          </button>
-        </div>
-      ) : null}
-      {booking.status === "COMPLETED" ? (
-        <Link
-          href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
-          className="mt-4 block w-full rounded-xl border border-primary/30 py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/5"
-        >
-          선생님 재배정
-        </Link>
-      ) : null}
-      <button
-        type="button"
-        onClick={onReport}
-        className="mt-3 w-full rounded-xl border border-primary/30 bg-primary/5 py-2 text-sm font-medium text-primary hover:bg-primary/10"
-      >
-        상담 리포트
-      </button>
-    </li>
+        ) : null}
+      </td>
+      <td>
+        {booking.student.subjects}
+        {booking.visitConfirmedAt ? (
+          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--acc-text)" }}>
+            방문 확정: {formatDateWithWeekday(new Date(booking.visitConfirmedAt))}{" "}
+            {new Date(booking.visitConfirmedAt).toLocaleTimeString("ko-KR", {
+              timeZone: "Asia/Seoul",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+        ) : (
+          <VisitPreferredBlock times={booking.visitPreferredTimes} />
+        )}
+        {booking.managerNote ? (
+          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+            상담 메모: {booking.managerNote}
+          </span>
+        ) : null}
+        {booking.status === "ASSIGNED" ? (
+          <span style={{ display: "flex", gap: "6px", alignItems: "center", marginTop: "8px" }}>
+            <input
+              type="datetime-local"
+              className="inp filled"
+              style={{ width: "auto", padding: "8px 10px", fontSize: "12.5px" }}
+              value={visitConfirmedValue}
+              onChange={(e) => onVisitConfirmedChange(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn sec sm"
+              disabled={visitConfirmedSaving}
+              onClick={onVisitConfirmedSave}
+            >
+              {visitConfirmedSaving ? "저장 중…" : "일시 저장"}
+            </button>
+          </span>
+        ) : null}
+      </td>
+      <td>
+        <span className={badge.className}>{badge.label}</span>
+      </td>
+      <td>
+        {booking.status === "ASSIGNED" ? (
+          <>
+            <Link
+              className="btn pri sm"
+              href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
+            >
+              {hasMatch ? "선생님 재배정" : "선생님 배정"}
+            </Link>{" "}
+            <button
+              type="button"
+              className="btn sec sm"
+              disabled={loading || !hasMatch}
+              title={hasMatch ? undefined : "선생님 배정 후 완료 처리할 수 있습니다"}
+              onClick={onComplete}
+            >
+              완료 처리
+            </button>{" "}
+            <button
+              type="button"
+              className="btn ghost sm"
+              disabled={loading}
+              onClick={onCancel}
+            >
+              취소
+            </button>{" "}
+          </>
+        ) : booking.status === "COMPLETED" ? (
+          <>
+            <Link
+              className="btn sec sm"
+              href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
+            >
+              선생님 재배정
+            </Link>{" "}
+          </>
+        ) : null}
+        <button type="button" className="btn ghost sm" onClick={onReport}>
+          리포트
+        </button>
+      </td>
+    </tr>
   );
 }

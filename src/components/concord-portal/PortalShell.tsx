@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import type { ReactNode } from "react";
 
 import { useDesignTheme } from "@/hooks/useDesignTheme";
@@ -73,6 +74,14 @@ export function PortalShell({
               <p>{userMeta}</p>
             </span>
           </div>
+          {/* 시안에 없는 프로덕션 필수 기능 — 포털 어휘(.btn ghost sm)로만 표현 */}
+          <button
+            type="button"
+            className="btn ghost sm"
+            onClick={() => void signOut({ redirectTo: "/" })}
+          >
+            로그아웃
+          </button>
         </div>
       </aside>
 

@@ -62,64 +62,49 @@ export function ManagerUnassignedQuestions() {
   if (loaded && questions.length === 0) return null;
 
   return (
-    <section className="mt-10">
-      <h2 className="text-lg font-bold text-text-primary">
-        미배정 학생 질문
-        {loaded ? (
-          <span className="ml-2 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-            {questions.length}
-          </span>
-        ) : null}
-      </h2>
-      <p className="mt-1 text-sm text-text-secondary">
-        담당 선생님이 아직 없는 학생이 남긴 질문입니다. 답변하거나 전화로 연락해 주세요.
-      </p>
+    <div className="sec">
+      <h2>미배정 질문{loaded ? ` ${questions.length}건` : ""}</h2>
       {error ? (
-        <p className="mt-3 text-sm text-red-600" role="alert">
-          {error}
-        </p>
+        <div className="banner warn" style={{ marginBottom: "12px" }} role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+          <span>{error}</span>
+        </div>
       ) : null}
-      <ul className="mt-4 space-y-4">
+      <div className="card">
         {questions.map((q) => (
-          <li key={q.id} className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <p className="font-semibold text-text-primary">
-                {q.student.name}
-                <span className="ml-2 text-sm font-normal text-text-secondary">
-                  {q.student.grade}
-                  {q.student.region ? ` · ${q.student.region}` : ""}
-                </span>
-              </p>
-              <span className="shrink-0 text-xs text-text-muted">
-                {new Date(q.createdAt).toLocaleString("ko-KR")}
-              </span>
+          <div className="row" key={q.id}>
+            <span className="av">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.1 9a3 3 0 1 1 4 2.8c-.8.4-1.1 1-1.1 2M12 17h.01" /></svg>
+            </span>
+            <div className="g">
+              <b>
+                {q.student.name} · {q.student.grade}
+                {q.student.region ? ` · ${q.student.region}` : ""}
+              </b>
+              <p>{q.body}</p>
+              <div className="field" style={{ marginTop: "10px", marginBottom: 0 }}>
+                <input
+                  type="text"
+                  className="inp filled"
+                  value={answerDrafts[q.id] ?? ""}
+                  onChange={(e) =>
+                    setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))
+                  }
+                  placeholder="답변을 입력하면 학생에게 알림이 갑니다"
+                />
+              </div>
             </div>
-            <p className="mt-1 text-xs text-text-muted">학생 연락처: {q.student.phone}</p>
-            <p className="mt-3 whitespace-pre-wrap rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
-              {q.body}
-            </p>
-            <div className="mt-3 flex gap-2">
-              <input
-                type="text"
-                value={answerDrafts[q.id] ?? ""}
-                onChange={(e) =>
-                  setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))
-                }
-                placeholder="답변을 입력하면 학생에게 알림이 갑니다"
-                className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm"
-              />
-              <button
-                type="button"
-                disabled={submitting === q.id || !(answerDrafts[q.id] ?? "").trim()}
-                onClick={() => void handleAnswer(q.id)}
-                className="shrink-0 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
-              >
-                {submitting === q.id ? "등록 중…" : "답변"}
-              </button>
-            </div>
-          </li>
+            <button
+              type="button"
+              className="btn sec sm"
+              disabled={submitting === q.id || !(answerDrafts[q.id] ?? "").trim()}
+              onClick={() => void handleAnswer(q.id)}
+            >
+              {submitting === q.id ? "등록 중…" : "답변"}
+            </button>
+          </div>
         ))}
-      </ul>
-    </section>
+      </div>
+    </div>
   );
 }

@@ -10,13 +10,12 @@ export default async function ConsultationsPage() {
   const initialWaiting = await getManagerWaitingConsultations();
 
   return (
-    <>
-      <ManagerConsultationsPage
-        initialWaiting={initialWaiting}
-        initialMine={[]}
-        initialMineLoaded={false}
-      />
+    <ManagerConsultationsPage
+      initialWaiting={initialWaiting}
+      initialMine={[]}
+      initialMineLoaded={false}
+    >
       <ManagerUnassignedQuestions />
-    </>
+    </ManagerConsultationsPage>
   );
 }
