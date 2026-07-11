@@ -71,152 +71,96 @@ export function AdminSettlementsPage() {
   const monthLabel = `${year}년 ${month}월`;
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-2xl font-black text-text-primary">정산</h2>
+    <section className="page on" data-screen-label="정산">
+      <div className="crumb">/admin/settlements</div>
+      <h1>정산</h1>
+      <p className="sub">선생님별 {monthLabel} 정산 집계입니다.</p>
 
-        {/* Month picker */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handlePrev}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-text-primary shadow-sm transition hover:bg-gray-50"
-            aria-label="이전 달"
-          >
-            ‹
-          </button>
-          <span className="min-w-[8rem] text-center text-sm font-semibold text-text-primary">
-            {monthLabel}
-          </span>
-          <button
-            type="button"
-            onClick={handleNext}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-text-primary shadow-sm transition hover:bg-gray-50"
-            aria-label="다음 달"
-          >
-            ›
-          </button>
-        </div>
+      <div className="sec filters">
+        <button type="button" className="btn ghost sm" onClick={handlePrev} aria-label="이전 달">‹ 이전 달</button>
+        <span className="opt" aria-pressed="true">{monthLabel}</span>
+        <button type="button" className="btn ghost sm" onClick={handleNext} aria-label="다음 달">다음 달 ›</button>
       </div>
 
-      {/* Info note */}
-      <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        지급은 PG 지급대행 연동 전까지 수동 이체로 처리합니다. 시급 기준: 30,000원.
-      </p>
+      <div className="sec banner warn" style={{ marginTop: 0 }}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+        <span>지급은 PG 지급대행 연동 전까지 수동 이체로 처리합니다. 시급 기준: 30,000원.</span>
+      </div>
 
-      {loading && (
-        <div className="py-12 text-center text-text-muted">불러오는 중…</div>
-      )}
-
-      {!loading && error && (
-        <div className="py-12 text-center text-accent">{error}</div>
-      )}
-
-      {!loading && !error && data && (
+      {loading ? (
+        <p className="sub">불러오는 중…</p>
+      ) : error ? (
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>{error}</span>
+        </div>
+      ) : data ? (
         <>
-          {/* Summary cards */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs text-text-muted">완료 수업 수</p>
-              <p className="mt-2 text-3xl font-black text-text-primary">
-                {data.totals.lessonCount}
-              </p>
-              <p className="mt-1 text-xs text-text-muted">건</p>
+          <div className="sec grid3">
+            <div className="card kpi">
+              <b>{data.totals.lessonCount}</b>
+              <span>완료 수업 수 (건)</span>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs text-text-muted">총 수업 시간</p>
-              <p className="mt-2 text-3xl font-black text-text-primary">
-                {data.totals.totalHours}
-              </p>
-              <p className="mt-1 text-xs text-text-muted">시간</p>
+            <div className="card kpi">
+              <b>{data.totals.totalHours}</b>
+              <span>총 수업 시간</span>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs text-text-muted">총 정산액</p>
-              <p className="mt-2 text-3xl font-black text-text-primary">
-                {fmtKrw(data.totals.payoutKrw)}
-              </p>
-              {data.needsReview > 0 && (
-                <p className="mt-1 text-xs text-amber-600">
-                  검토 필요 {data.needsReview}건 포함
-                </p>
-              )}
+            <div className="card kpi">
+              <b>{fmtKrw(data.totals.payoutKrw)}</b>
+              <span>총 정산액{data.needsReview > 0 ? ` · 검토 필요 ${data.needsReview}건 포함` : ""}</span>
             </div>
           </div>
 
-          {/* Teacher table */}
-          <section>
-            <h3 className="mb-4 text-lg font-bold text-text-primary">선생님별 정산 내역</h3>
+          <div className="sec card" style={{ overflow: "hidden" }}>
+            <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>선생님별 정산 내역</h2>
             {data.teachers.length === 0 ? (
-              <p className="text-sm text-text-muted">
-                {monthLabel} 완료된 수업이 없습니다.
-              </p>
-            ) : (
-              <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-                <table className="w-full min-w-[600px] text-left text-sm">
-                  <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
-                    <tr>
-                      <th className="px-4 py-3">선생님</th>
-                      <th className="px-4 py-3 text-right">완료 수업 수</th>
-                      <th className="px-4 py-3 text-right">총 시간</th>
-                      <th className="px-4 py-3 text-right">정산액</th>
-                      <th className="px-4 py-3 text-right">비고</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.teachers.map((t) => (
-                      <tr key={t.teacherId} className="border-b border-gray-50 last:border-0">
-                        <td className="px-4 py-3">
-                          <p className="font-medium text-text-primary">{t.name}</p>
-                          <p className="text-xs text-text-muted">{t.phone}</p>
-                        </td>
-                        <td className="px-4 py-3 text-right text-text-secondary">
-                          {t.lessonCount}건
-                        </td>
-                        <td className="px-4 py-3 text-right text-text-secondary">
-                          {t.totalHours}시간
-                        </td>
-                        <td className="px-4 py-3 text-right font-semibold text-text-primary">
-                          {fmtKrw(t.payoutKrw)}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          {t.needsReview > 0 ? (
-                            <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                              검토 필요 {t.needsReview}건
-                            </span>
-                          ) : (
-                            <span className="text-text-muted">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-
-                    {/* Totals row */}
-                    <tr className="border-t-2 border-gray-200 bg-gray-50 font-semibold">
-                      <td className="px-4 py-3 text-text-primary">합계</td>
-                      <td className="px-4 py-3 text-right text-text-primary">
-                        {data.totals.lessonCount}건
-                      </td>
-                      <td className="px-4 py-3 text-right text-text-primary">
-                        {data.totals.totalHours}시간
-                      </td>
-                      <td className="px-4 py-3 text-right text-text-primary">
-                        {fmtKrw(data.totals.payoutKrw)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        {data.needsReview > 0 ? (
-                          <span className="text-xs text-amber-600">
-                            검토 {data.needsReview}건
-                          </span>
-                        ) : null}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 6H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6" /></svg>
+                <b>{monthLabel} 완료된 수업이 없습니다.</b>
               </div>
+            ) : (
+              <table className="tbl">
+                <thead>
+                  <tr>
+                    <th>선생님</th>
+                    <th>완료 수업 수</th>
+                    <th>총 시간</th>
+                    <th>정산액</th>
+                    <th>비고</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.teachers.map((t) => (
+                    <tr key={t.teacherId}>
+                      <td>
+                        <b>{t.name}</b>
+                        <span className="mini">{t.phone}</span>
+                      </td>
+                      <td className="num">{t.lessonCount}건</td>
+                      <td className="num">{t.totalHours}시간</td>
+                      <td className="num">{fmtKrw(t.payoutKrw)}</td>
+                      <td>
+                        {t.needsReview > 0 ? (
+                          <span className="bst warn">검토 필요 {t.needsReview}건</span>
+                        ) : (
+                          <span className="bst mut">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td><b>합계</b></td>
+                    <td className="num">{data.totals.lessonCount}건</td>
+                    <td className="num">{data.totals.totalHours}시간</td>
+                    <td className="num">{fmtKrw(data.totals.payoutKrw)}</td>
+                    <td>{data.needsReview > 0 ? <span className="bst warn">검토 {data.needsReview}건</span> : null}</td>
+                  </tr>
+                </tbody>
+              </table>
             )}
-          </section>
+          </div>
         </>
-      )}
-    </div>
+      ) : null}
+    </section>
   );
 }

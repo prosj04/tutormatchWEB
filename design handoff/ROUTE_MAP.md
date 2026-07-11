@@ -16,12 +16,15 @@
 - 헤더 우측 컨트롤: **색 세그먼트(그린/블루)** + **라이트/다크 토글**. 기존 테마 훅(`useTheme`)에 연결, localStorage 키 `concord-color`·`concord-mode` 재사용.
 
 ## 웹 포털 (데스크톱 앱 화면 — 이번 패키지에 포함)
-`web/portal.css` + 아래 시안 기준. 사이드바 셸(`div.shell > aside.side + main.main`)과 `section.page` 단위 화면 전환 구조.
+`web/portal.css` + 아래 시안 기준. 사이드바 셸(`div.shell > aside.side + main.main`)과 `section.page` 단위 화면 전환 구조. 공통 컴포넌트: 모달(`.scrim>.modal`), 드로어(`.drawer`), 토스트(`.toast`), 진행 플로우(`.flow`), 상태(`.empty`/`.skel`/`.banner`), 사이드바 로그아웃(`.side .foot .logout`), <900px 반응형(아이콘 레일).
 
 | 시안 HTML | 라우트 | 비고 |
 |---|---|---|
-| `Concord - 웹 포털.html` | `/teacher-portal/**`, `/admin/**` | 선생님·매니저 역할 전환(`body[data-role]`). 대시보드·학생관리·질문답변·리포트·정산·프로필 + 매니저 전용(모니터링·승인) |
-| `Concord - 웹 학부모.html` | `/dashboard/parent/**` | 학부모: 홈(새 소식)·숙제 확인·선생님 메시지·결제 관리 |
+| `Concord - 웹 학생.html` | `/dashboard`, `/dashboard/account`, `/dashboard/consultation`, `/questions`, `/notifications`, `/payments`, `/checkout`, `/success` | 학생 웹 8페이지. 진행 플로우·숙제 체크·연결 코드/QR·탈퇴 모달·결제 오류 상태 포함 |
+| `Concord - 웹 어드민.html` | `/admin/**` 12개 + `/chief-manager/teacher-approval` | 어드민 13페이지. 지표·퍼널·리드·학생·선생님·매칭·결제·정산·CMS·데이터·감사로그·치프 승인 큐. 학생/선생님 상세 드로어, 환불·매칭해제·리드메모 모달 |
+| `Concord - 웹 포털.html` | `/teacher-portal/**`, `/manager/**` | 선생님·매니저 역할 전환(`body[data-role]`). 상담 완료·상담 리포트·수업 취소(보강 제안) 모달, 모니터링 드릴다운 드로어, 승인 실입력 폼(오류 상태) |
+| `Concord - 웹 학부모.html` | `/parent/**` | 학부모: 홈·리포트(월 선택→상세: 점수 변화·취약 유형 칩·코멘트)·결제·상담·연결·계정 |
+| `Concord - 헤더 로그인 상태.html` | 공개 헤더 (마케팅 전 페이지) | 로그인 후: 세션 칩+역할별 포털 버튼+로그아웃, 모바일 드로어 |
 
 - 매니저 전용 화면은 `.mgr-only` 클래스 — `body[data-role="manager"]`일 때만 노출.
 - 테이블(`.tbl`)·사이드 내비(`.nav-i`)·상태 배지(`.bst`)는 portal.css의 클래스 그대로 사용.
@@ -35,6 +38,7 @@
 | `Concord - 학부모 앱.html` | 학부모 | 홈(자녀 요약) → 숙제 체크 → 선생님 메시지 → 결제/플랜 관리. 학생 기능의 부분집합 |
 | `Concord - 선생님 앱.html` | 선생님 | 담당 학생 → 숙제 검사 → 질문 답변 → 코멘트 |
 | `Concord - 매니저 앱.html` | 매니저 | 모니터링·승인 — 특별한 문제가 없으면 개입하지 않는 구조 |
+| `Concord - 모바일 보강.html` | 공용 | 스플래시(index 게이트) · 상담 접수 상태 타임라인(consult/status) · 비밀번호 변경 · 선생님 사진/서류 업로드(진행률·취소) · 매니저 승인 · 역할별 알림 · 공통 상태(풀투리프레시·오류·스켈레톤·빈) · 푸시 권한 프리프롬프트. **teacher/[id]는 폐기(홈 내 선생님 카드가 대체), subscription 고아 화면은 삭제** |
 
 ## 결제·기타
 - `/checkout`, `/success` — 학생 앱 시안의 구독·결제 화면(플랜 카드 `.jcard`)과 동일 토큰·컴포넌트로 구성.

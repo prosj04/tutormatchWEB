@@ -1033,9 +1033,13 @@ export function AdminCmsPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-col">
+    <section className="page on" data-screen-label="CMS">
+      <div className="crumb">/admin/cms</div>
+      <h1>CMS</h1>
+      <p className="sub">사이트 문구·후기·FAQ·요금 카드를 섹션별로 편집합니다.</p>
+
+      <div className="flex min-h-0 flex-col">
       <div className="shrink-0">
-        <h2 className="text-2xl font-black text-text-primary">사이트 콘텐츠 관리</h2>
 
         <div className="mt-6 flex items-end justify-between gap-2 border-b border-gray-200 pb-1">
           <div className="flex flex-wrap gap-2">
@@ -1920,7 +1924,8 @@ export function AdminCmsPage() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </section>
   );
 }
 

@@ -39,6 +39,7 @@ export function AdminMatchesPage() {
   const [startDate, setStartDate] = useState(
     new Date().toISOString().slice(0, 10),
   );
+  const [unmatchId, setUnmatchId] = useState<string | null>(null);
 
   const loadTeachers = useCallback(async () => {
     const res = await fetch("/api/admin/teachers?status=approved&limit=100");
@@ -109,168 +110,147 @@ export function AdminMatchesPage() {
   }
 
   async function deactivateMatch(id: string) {
-    if (!confirm("매칭을 해제하시겠습니까?")) return;
     await fetch(`/api/admin/matches/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: false }),
     });
+    setUnmatchId(null);
     loadMatches();
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-black text-text-primary">매칭 관리</h2>
+    <section className="page on" data-screen-label="매칭 관리">
+      <div className="crumb">/admin/matches</div>
+      <h1>매칭 관리</h1>
+      <p className="sub">진행 중인 매칭 현황입니다.</p>
 
-      <div className="mt-6 flex flex-col gap-6 lg:flex-row">
-        <aside className="w-full shrink-0 lg:w-64">
-          <h3 className="text-xs font-semibold uppercase text-text-muted">선생님 (승인됨)</h3>
-          <ul className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible lg:pb-0">
-            {teachers.map((t) => {
-              const count = matches.filter(
-                (m) => m.teacherId === t.id && m.isActive,
-              ).length;
-              return (
-                <li key={t.id} className="shrink-0 lg:shrink">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedTeacherId(t.id)}
-                    className={`w-48 rounded-xl border px-4 py-3 text-left text-sm transition lg:w-full ${
-                      selectedTeacherId === t.id
-                        ? "border-primary bg-primary/10 font-semibold"
-                        : "border-gray-100 bg-white hover:border-gray-200"
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getEffectivePhotoUrl(t.photoUrl, t.gender)}
-                        alt={`${t.name} 프로필`}
-                        className="h-9 w-9 rounded-full object-cover"
-                      />
-                      <span>
-                        <span className="block">{t.name}</span>
-                        <span className="mt-0.5 block text-xs text-text-muted">
-                          매칭 {count}명
-                        </span>
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-
-        <section className="min-w-0 flex-1 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-          {selectedTeacher ? (
-            <>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-lg font-bold">{selectedTeacher.name} · 매칭 현황</h3>
-                <button
-                  type="button"
-                  onClick={() => openAddModal()}
-                  className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
-                >
-                  학생 추가
-                </button>
-              </div>
-
-              <ul className="mt-6 space-y-3">
-                {teacherMatches.length === 0 ? (
-                  <li className="text-sm text-text-secondary">활성 매칭이 없습니다.</li>
-                ) : (
-                  teacherMatches.map((m) => (
-                    <li
-                      key={m.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 bg-background px-4 py-3"
-                    >
-                      <div>
-                        <p className="font-medium text-text-primary">
-                          {m.student.name}{" "}
-                          <span className="text-text-secondary">({m.student.grade})</span>
-                        </p>
-                        <p className="text-xs text-text-muted">
-                          {m.subjects} · 시작 {m.startDate}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => deactivateMatch(m.id)}
-                        className="text-sm text-accent hover:underline"
-                      >
-                        매칭 해제
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </>
-          ) : (
-            <p className="text-sm text-text-secondary">선생님을 선택해 주세요.</p>
-          )}
-        </section>
+      <div className="sec filters">
+        <div className="opts">
+          {teachers.map((t) => {
+            const count = matches.filter((m) => m.teacherId === t.id && m.isActive).length;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className="opt"
+                aria-pressed={selectedTeacherId === t.id}
+                onClick={() => setSelectedTeacherId(t.id)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getEffectivePhotoUrl(t.photoUrl, t.gender)}
+                  alt={`${t.name} 프로필`}
+                  style={{ width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover", marginRight: "6px", verticalAlign: "middle" }}
+                />
+                {t.name} · {count}명
+              </button>
+            );
+          })}
+        </div>
+        {selectedTeacher ? (
+          <button type="button" className="btn sec sm" style={{ marginLeft: "auto" }} onClick={() => openAddModal()}>
+            학생 추가
+          </button>
+        ) : null}
       </div>
 
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-bold">학생 매칭 등록</h3>
-            <label className="mt-4 block text-xs font-semibold text-text-muted">학생</label>
-            <select
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-            >
-              {studentOptions.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} ({s.grade})
-                </option>
-              ))}
-            </select>
-            <p className="mt-4 text-xs font-semibold text-text-muted">담당 과목</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {SUBJECT_PILLS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => toggleSubject(s)}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    selectedSubjects.includes(s)
-                      ? "bg-primary text-white"
-                      : "border border-gray-200 text-text-secondary"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>학생</th>
+              <th>선생님</th>
+              <th>과목</th>
+              <th>시작일</th>
+              <th>상태</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {!selectedTeacher ? (
+              <tr><td colSpan={6}>선생님을 선택해 주세요.</td></tr>
+            ) : teacherMatches.length === 0 ? (
+              <tr><td colSpan={6}>활성 매칭이 없습니다.</td></tr>
+            ) : (
+              teacherMatches.map((m) => (
+                <tr key={m.id}>
+                  <td><b>{m.student.name} · {m.student.grade}</b></td>
+                  <td>{m.teacher.name}</td>
+                  <td>{m.subjects}</td>
+                  <td>{m.startDate}</td>
+                  <td><span className="bst acc">수업중</span></td>
+                  <td>
+                    <button type="button" className="btn ghost sm" onClick={() => setUnmatchId(m.id)}>해제</button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className={`scrim${modalOpen ? " on" : ""}`}>
+        <div className="modal" role="dialog" aria-modal="true" aria-label="학생 매칭 등록">
+          <div className="m-b">
+            <h3>학생 매칭 등록</h3>
+            <p className="m-p">{selectedTeacher?.name ?? "선생님"} 에게 학생을 배정합니다.</p>
+            <div className="field" style={{ marginTop: "14px" }}>
+              <label>학생</label>
+              <select className="inp filled" value={studentId} onChange={(e) => setStudentId(e.target.value)}>
+                {studentOptions.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name} ({s.grade})</option>
+                ))}
+              </select>
             </div>
-            <label className="mt-4 block text-xs font-semibold text-text-muted">시작일</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 w-full rounded-xl border px-3 py-2 text-sm"
-            />
-            <div className="mt-6 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="flex-1 rounded-xl border py-2 text-sm"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void createMatch()}
-                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
-              >
-                매칭 등록
-              </button>
+            <div className="field">
+              <label>담당 과목</label>
+              <div className="opts">
+                {SUBJECT_PILLS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="opt"
+                    aria-pressed={selectedSubjects.includes(s)}
+                    onClick={() => toggleSubject(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="field">
+              <label>시작일</label>
+              <input type="date" className="inp filled" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </div>
           </div>
+          <div className="m-f">
+            <button type="button" className="btn sec" onClick={() => setModalOpen(false)}>취소</button>
+            <button type="button" className="btn pri" onClick={() => void createMatch()}>매칭 등록</button>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <div className={`scrim${unmatchId ? " on" : ""}`}>
+        <div className="modal" role="dialog" aria-modal="true" aria-label="매칭 해제 확인">
+          <div className="m-b">
+            <h3>매칭을 해제하시겠어요?</h3>
+            <p className="m-p">진행 중인 수업 일정이 모두 취소되고 학생·선생님에게 알림이 발송됩니다.</p>
+          </div>
+          <div className="m-f">
+            <button type="button" className="btn sec" onClick={() => setUnmatchId(null)}>취소</button>
+            <button
+              type="button"
+              className="btn danger solid"
+              onClick={() => {
+                if (unmatchId) void deactivateMatch(unmatchId);
+              }}
+            >
+              해제
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

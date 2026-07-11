@@ -10,7 +10,7 @@ import { useDesignTheme } from "@/hooks/useDesignTheme";
 import { parseCmsVisibility } from "@/lib/cms-page-defaults";
 import { portalHomeHref } from "@/lib/portal-roles";
 
-import { ConcordMoonIcon, ConcordSunIcon } from "./ConcordMoonIcon";
+import { ConcordLogoutIcon, ConcordMoonIcon, ConcordSunIcon } from "./ConcordMoonIcon";
 
 type NavItem = { href: string; label: string; id: string };
 
@@ -67,14 +67,26 @@ export function ConcordSiteHeader({
         : role === "PARENT"
           ? "/parent"
           : "/dashboard";
+  const isStaff = role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER";
   const portalLabel =
     role === "ADMIN"
       ? "관리자"
-      : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER"
+      : isStaff
         ? "선생님 포털"
         : role === "PARENT"
           ? "학부모 페이지"
           : "내 학습";
+  const roleLabel =
+    role === "ADMIN"
+      ? "관리자"
+      : isStaff
+        ? "선생님"
+        : role === "PARENT"
+          ? "학부모"
+          : "학생";
+  // 시안: 학생·학부모·관리자 포털은 primary(acc), 선생님 포털은 secondary(ghost)
+  const portalBtnClass = isStaff ? "btn btn-ghost btn-sm" : "btn btn-acc btn-sm";
+  const avatarInitial = name ? Array.from(name)[0] ?? "회" : "회";
 
   const links = [
     ...BASE_NAV.filter((l) => {
@@ -173,17 +185,23 @@ export function ConcordSiteHeader({
                 <span style={{ width: 72, height: 36, borderRadius: 999, background: "var(--panel-2)", display: "inline-block" }} />
               ) : status === "authenticated" && session?.user ? (
                 <>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--mut)" }}>{name}님</span>
-                  <Link href={portalHref} className="btn btn-ghost btn-sm">
+                  <span className="sess">
+                    <span className="av">{avatarInitial}</span>
+                    <span>
+                      <b>{name}</b> <span>{roleLabel}</span>
+                    </span>
+                  </span>
+                  <Link href={portalHref} className={portalBtnClass}>
                     {portalLabel}
                   </Link>
                   <button
                     type="button"
-                    className="btn btn-sm"
-                    style={{ background: "var(--fg)", color: "var(--bg)" }}
+                    className="lo-btn"
+                    aria-label={c("btn_logout", "로그아웃")}
+                    title={c("btn_logout", "로그아웃")}
                     onClick={() => void signOut({ redirectTo: "/" })}
                   >
-                    {c("btn_logout", "로그아웃")}
+                    <ConcordLogoutIcon />
                   </button>
                 </>
               ) : (
@@ -287,24 +305,29 @@ export function ConcordSiteHeader({
             </div>
 
             {status === "authenticated" && session?.user ? (
-              <p className="mobile-user">{name}님</p>
+              <span className="sess mobile-user">
+                <span className="av">{avatarInitial}</span>
+                <span>
+                  <b>{name}</b> <span>{roleLabel}</span>
+                </span>
+              </span>
             ) : null}
 
             <div className="mobile-actions">
               {status === "authenticated" && session?.user ? (
                 <>
-                  <Link href={portalHref} className="btn btn-ghost btn-block" onClick={() => setOpen(false)}>
+                  <Link href={portalHref} className={`${portalBtnClass.replace("btn-sm", "btn-block")}`} onClick={() => setOpen(false)}>
                     {portalLabel}
                   </Link>
                   <button
                     type="button"
-                    className="btn btn-block"
-                    style={{ background: "var(--fg)", color: "var(--bg)" }}
+                    className="btn btn-ghost btn-block"
                     onClick={() => {
                       setOpen(false);
                       void signOut({ redirectTo: "/" });
                     }}
                   >
+                    <ConcordLogoutIcon />
                     {c("btn_logout", "로그아웃")}
                   </button>
                 </>

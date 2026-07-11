@@ -1,13 +1,19 @@
-import Link from "next/link";
+import "@/app/concord-portal.css";
+import "@/app/concord-bridge.css";
+
 import { redirect } from "next/navigation";
 
-import { AccountDeleteSection } from "@/components/account/AccountDeleteSection";
+import { StudentPortalShell } from "@/components/concord-portal/StudentPortalShell";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+
+import { AccountClient } from "./AccountClient";
 
 export const metadata = {
   title: "계정 관리",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const session = await auth();
@@ -27,25 +33,17 @@ export default async function AccountPage() {
   }
 
   return (
-    <main className="portal-main" style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px" }}>
-      <Link href="/dashboard" className="text-sm" style={{ color: "var(--mut, #6b6b64)" }}>
-        ← 대시보드로 돌아가기
-      </Link>
-      <h1 className="mt-4 text-2xl font-black" style={{ color: "var(--fg, #1a1a18)" }}>
-        계정 관리
-      </h1>
-      <dl className="mt-6 text-sm" style={{ display: "grid", gridTemplateColumns: "100px 1fr", rowGap: 10 }}>
-        <dt style={{ color: "var(--mut, #6b6b64)" }}>이름</dt>
-        <dd>{student.name}</dd>
-        <dt style={{ color: "var(--mut, #6b6b64)" }}>학년</dt>
-        <dd>{student.grade}</dd>
-        <dt style={{ color: "var(--mut, #6b6b64)" }}>전화번호</dt>
-        <dd>{student.phone}</dd>
-      </dl>
-      <p className="mt-4 text-sm" style={{ color: "var(--mut, #6b6b64)" }}>
-        정보 수정이 필요하면 담당 매니저 또는 help@concordedu.kr 로 문의해 주세요.
-      </p>
-      <AccountDeleteSection />
-    </main>
+    <StudentPortalShell>
+      <section className="page on" id="pg-account" data-screen-label="계정">
+        <div className="crumb">/dashboard/account</div>
+        <h1>계정</h1>
+        <p className="sub">프로필과 보안, 학부모 연결을 관리하세요.</p>
+        <AccountClient
+          name={student.name}
+          grade={student.grade ?? "-"}
+          phone={student.phone ?? "-"}
+        />
+      </section>
+    </StudentPortalShell>
   );
 }

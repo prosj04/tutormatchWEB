@@ -35,7 +35,10 @@
     <button class="nav-i mgr-only" data-page="monitor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 5-6"/></svg>모니터링</button>
     <button class="nav-i mgr-only" data-page="approval"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>선생님 승인</button>
     <button class="nav-i" data-page="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>프로필</button>
-    <div class="foot"><div class="user"><span class="av">노</span><span><b>노아 선생님</b><p>승인됨 · 수학</p></span></div></div>
+    <div class="foot">
+      <div class="user"><span class="av">노</span><span><b>노아 선생님</b><p>승인됨 · 수학</p></span></div>
+      <button class="logout" data-toast="로그아웃되었습니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
+    </div>
   </aside>
 
   <main class="main">
@@ -87,11 +90,11 @@
         <div class="card" style="padding:20px">
           <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">이서준 · 첫 수업일 설정</h2>
           <div class="opts"><button class="opt">월 9/29 19:00</button><button class="opt" aria-pressed="true">수 10/1 19:00</button><button class="opt">금 10/3 19:00</button></div>
-          <button class="btn pri" style="margin-top:14px">수 10/1 19:00 확정</button>
+          <button class="btn pri" style="margin-top:14px" data-toast="첫 수업일이 확정되었습니다 — 학생·학부모에게 알림 발송">수 10/1 19:00 확정</button>
         </div>
         <div class="card">
-          <div class="row"><span class="av" style="border-radius:10px">수</span><div class="g"><b>지우 · 미적분 심화</b><p>10월 1일 (수) 19:00 · 90분</p></div><button class="btn ghost sm">취소</button></div>
-          <div class="row"><span class="av" style="border-radius:10px">금</span><div class="g"><b>지우 · 주간 점검</b><p>10월 3일 (금) 19:00 · 90분</p></div><button class="btn ghost sm">취소</button></div>
+          <div class="row"><span class="av" style="border-radius:10px">수</span><div class="g"><b>지우 · 미적분 심화</b><p>10월 1일 (수) 19:00 · 90분</p></div><button class="btn ghost sm" data-open="m-cancel">취소</button></div>
+          <div class="row"><span class="av" style="border-radius:10px">금</span><div class="g"><b>지우 · 주간 점검</b><p>10월 3일 (금) 19:00 · 90분</p></div><button class="btn ghost sm" data-open="m-cancel">취소</button></div>
         </div>
       </div>
     </section>
@@ -143,7 +146,7 @@
           <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">답변 작성 — 박현우</h2>
           <p style="font-size:13px;color:var(--mut);padding:12px 14px;border-radius:11px;background:var(--panel-2);margin-bottom:12px">"꼭짓점 공식이랑 판별식 중 뭘 먼저 써야 하는지 헷갈려요"</p>
           <div class="field"><div class="inp area filled">최댓값·최솟값 문제는 꼭짓점 공식 먼저! 판별식은 근의 존재를 물을 때 씁니다. 예제 두 개 첨부할게요.</div></div>
-          <div style="display:flex;gap:8px"><button class="btn pri">답변 보내기</button><button class="btn sec">사진 첨부</button></div>
+          <div style="display:flex;gap:8px"><button class="btn pri" data-toast="답변을 보냈습니다">답변 보내기</button><button class="btn sec">사진 첨부</button></div>
         </div>
       </div>
     </section>
@@ -158,8 +161,8 @@
           <thead><tr><th>학생</th><th>요청</th><th>상태</th><th>액션</th></tr></thead>
           <tbody>
             <tr><td><b>김민준 · 중1</b></td><td>수학 3~4등급 · 습관 형성 · 20분 전</td><td><span class="bst warn">대기</span></td><td><button class="btn pri sm">내가 배정</button></td></tr>
-            <tr><td><b>이하은 · 고2</b></td><td>영어 · 10/2 (금) 14:00 방문</td><td><span class="bst acc">방문 확정</span></td><td><button class="btn sec sm">완료 처리</button> <button class="btn ghost sm">리포트</button></td></tr>
-            <tr><td><b>정다인 · 중3</b></td><td>국어 · 전화 상담 예정</td><td><span class="bst mut">내 담당</span></td><td><button class="btn sec sm">방문 확정</button> <button class="btn ghost sm">취소</button></td></tr>
+            <tr><td><b>이하은 · 고2</b></td><td>영어 · 10/2 (금) 14:00 방문</td><td><span class="bst acc">방문 확정</span></td><td><button class="btn sec sm" data-open="m-done">완료 처리</button> <button class="btn ghost sm" data-open="m-report">리포트</button></td></tr>
+            <tr><td><b>정다인 · 중3</b></td><td>국어 · 전화 상담 예정</td><td><span class="bst mut">내 담당</span></td><td><button class="btn sec sm" data-toast="방문이 확정되었습니다 — 학부모에게 안내 발송">방문 확정</button> <button class="btn ghost sm" data-toast="상담을 취소했습니다">취소</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -210,9 +213,9 @@
         <table class="tbl">
           <thead><tr><th>학생</th><th>신호</th><th>구독</th><th>액션</th></tr></thead>
           <tbody>
-            <tr><td><b>박현우 · 고1</b></td><td>숙제 3일 미이행 · 만족도 4→2</td><td><span class="bst acc">활성</span></td><td><button class="btn pri sm">케어로그</button> <button class="btn sec sm">상세</button></td></tr>
+            <tr><td><b>박현우 · 고1</b></td><td>숙제 3일 미이행 · 만족도 4→2</td><td><span class="bst acc">활성</span></td><td><button class="btn pri sm" data-drawer="d-mon">케어로그</button> <button class="btn sec sm" data-drawer="d-mon">상세</button></td></tr>
             <tr><td><b>최유나 · 중2</b></td><td>가족 여행 (10/5까지)</td><td><span class="bst mut">일시정지</span></td><td><button class="btn sec sm">지금 재개</button> <button class="btn ghost sm">정지 연장</button></td></tr>
-            <tr><td><b>김지우 · 중3</b></td><td>순항 · 리포트 82점</td><td><span class="bst acc">활성</span></td><td><button class="btn ghost sm">상세</button></td></tr>
+            <tr><td><b>김지우 · 중3</b></td><td>순항 · 리포트 82점</td><td><span class="bst acc">활성</span></td><td><button class="btn ghost sm" data-drawer="d-mon">상세</button></td></tr>
           </tbody>
         </table>
       </div>
@@ -247,15 +250,15 @@
       <div class="sec grid2">
         <div class="card" style="padding:20px">
           <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">학부모↔학생 수동 연결</h2>
-          <div class="field"><label>학부모</label><div class="inp filled">010-1234-5678 · 김서연</div></div>
-          <div class="field"><label>학생</label><div class="inp filled">김민준 · 중1</div></div>
-          <button class="btn pri">연결 (linkedVia: MANAGER)</button>
+          <div class="field"><label>학부모</label><select class="inp" style="color:var(--fg);font-weight:500"><option>010-1234-5678 · 김서연</option><option>010-8821-3345 · 박민정</option></select></div>
+          <div class="field"><label>학생</label><select class="inp" style="color:var(--fg);font-weight:500"><option>김민준 · 중1</option><option>이하은 · 고2</option></select></div>
+          <button class="btn pri" data-toast="연결되었습니다 (linkedVia: MANAGER)">연결 (linkedVia: MANAGER)</button>
         </div>
         <div class="card" style="padding:20px">
           <h2 style="font-size:14px;font-weight:700;margin-bottom:12px">비밀번호 재설정 (학생·학부모)</h2>
-          <div class="field"><label>대상</label><div class="inp filled">jiwoo.kim@email.com</div></div>
-          <div class="field"><label>새 비밀번호 (8자+)</label><div class="inp filled">••••••••••</div></div>
-          <button class="btn sec">재설정 (감사 로그 기록)</button>
+          <div class="field"><label>대상</label><input class="inp filled" value="jiwoo.kim@email.com" /></div>
+          <div class="field"><label>새 비밀번호 (8자+)</label><input type="password" class="inp err" value="1234" /><span class="f-err">비밀번호는 8자 이상이어야 합니다.</span></div>
+          <button class="btn sec" data-toast="재설정되었습니다 — 감사 로그에 기록됨">재설정 (감사 로그 기록)</button>
         </div>
       </div>
     </section>
@@ -282,6 +285,76 @@
   </main>
 </div>
 
+<!-- C-2: 상담 완료 모달 -->
+<div class="scrim" id="m-done">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="상담 완료 처리">
+    <div class="m-b">
+      <h3>상담 완료 처리</h3>
+      <p class="m-p">이하은 · 고2 · 영어 · 10/2 (금) 14:00 방문</p>
+      <div class="field" style="margin-top:14px"><label>상담 노트 (필수)</label><textarea class="inp area filled">내신 대비 위주 희망 · 주 1회 시작 권장 · 목표: 다음 중간고사 2등급.</textarea></div>
+      <div class="field"><label>다음 단계</label><div class="opts"><button class="opt" aria-pressed="true">매칭 진행</button><button class="opt">보류</button><button class="opt">종결</button></div></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>취소</button><button class="btn pri" data-close data-toast="상담을 완료 처리했습니다 — 매칭 단계로 이동">완료 처리</button></div>
+  </div>
+</div>
+
+<!-- C-2: 상담 리포트 모달 -->
+<div class="scrim" id="m-report">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="상담 리포트">
+    <div class="m-b">
+      <h3>상담 리포트</h3>
+      <p class="m-p">이하은 · 고2 · 영어 · 한서윤 매니저</p>
+      <div class="kv" style="padding:14px 0 0">
+        <div><span>현재 수준</span><b>모의고사 3등급</b></div>
+        <div><span>목표</span><b>수능 1등급 · 내신 병행</b></div>
+        <div><span>권장 플랜</span><b>주 1회 · 회당 2시간</b></div>
+        <div><span>추천 선생님</span><b>도현 (고려대 영문)</b></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>종합 의견</label><textarea class="inp area filled">독해 속도는 좋으나 구문 정확도가 약함. 구문 집중 커리큼럼 4주 후 재평가 권장.</textarea></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>닫기</button><button class="btn pri" data-close data-toast="리포트를 저장하고 학부모에게 발송했습니다">저장 및 발송</button></div>
+  </div>
+</div>
+
+<!-- C-5: 수업 취소 모달 (보강 안내) -->
+<div class="scrim" id="m-cancel">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="수업 취소">
+    <div class="m-b">
+      <h3>수업을 취소하시겠어요?</h3>
+      <p class="m-p">김지우 · 10월 1일 (수) 19:00 · 90분. 취소 시 학생·학부모에게 알림이 발송되며, 보강 일정을 함께 제안해야 합니다.</p>
+      <div class="field" style="margin-top:14px"><label>보강 제안</label><div class="opts"><button class="opt" aria-pressed="true">목 10/2 19:00</button><button class="opt">토 10/4 10:00</button><button class="opt">추후 협의</button></div></div>
+      <div class="field"><label>취소 사유</label><input class="inp" placeholder="예: 개인 사정" /></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>돌아가기</button><button class="btn danger solid" data-close data-toast="수업을 취소하고 보강을 제안했습니다">취소 + 보강 제안</button></div>
+  </div>
+</div>
+
+<!-- C-3: 모니터링 드릴다운 드로어 -->
+<div class="drawer" id="d-mon" aria-label="학생 드릴다운">
+  <div class="d-h"><h3>박현우 · 고1</h3><button class="x" data-dclose>✕</button></div>
+  <div class="d-b">
+    <div class="kv" style="padding:0 0 14px">
+      <div><span>구독</span><b>수학 · 주 1회 · 활성</b></div>
+      <div><span>담당 선생님</span><b>노아</b></div>
+      <div><span>이번 주 진도</span><b>함수 기초 2/3회</b></div>
+      <div><span>숙제 이행률</span><b style="color:#c2483b">38% (3일 미이행)</b></div>
+      <div><span>미답변 질문</span><b>1건 (2시간 경과)</b></div>
+      <div><span>최근 만족도</span><b>4 → 2</b></div>
+    </div>
+    <h4 style="font-size:13.5px;font-weight:700;margin:10px 0 8px">케어로그 작성</h4>
+    <div class="field"><label>유형</label><div class="opts"><button class="opt" aria-pressed="true">전화</button><button class="opt">면담</button><button class="opt">메모</button></div></div>
+    <div class="field"><textarea class="inp area" placeholder="조치 내용을 기록하세요"></textarea></div>
+    <h4 style="font-size:13.5px;font-weight:700;margin:14px 0 8px">최근 케어로그</h4>
+    <div class="card">
+      <div class="row"><div class="g"><b>학부모 통화</b><p>어제 · 시험 스트레스로 리듬 붕괴 · 숙제 30% 감량 합의</p></div></div>
+      <div class="row"><div class="g"><b>선생님 메모</b><p>9/26 · 수업 태도 양호, 자습 누락이 문제</p></div></div>
+    </div>
+  </div>
+  <div class="d-f"><button class="btn sec" style="flex:1" data-dclose>닫기</button><button class="btn pri" style="flex:1" data-toast="케어로그를 저장했습니다">케어로그 저장</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
   (function(){
     var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
@@ -303,6 +376,21 @@
       window.scrollTo(0,0);
     }
     document.querySelectorAll('.nav-i[data-page]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-page')); }); });
+
+    // overlays & states (C-2/3/5/7)
+    document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click', function(){
+      document.getElementById(b.getAttribute('data-open')).classList.add('on'); }); });
+    document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', function(){
+      b.closest('.scrim').classList.remove('on'); }); });
+    document.querySelectorAll('.scrim').forEach(function(s){ s.addEventListener('click', function(e){ if(e.target===s) s.classList.remove('on'); }); });
+    document.querySelectorAll('[data-drawer]').forEach(function(b){ b.addEventListener('click', function(){
+      document.getElementById(b.getAttribute('data-drawer')).classList.add('on'); }); });
+    document.querySelectorAll('[data-dclose]').forEach(function(b){ b.addEventListener('click', function(){
+      b.closest('.drawer').classList.remove('on'); }); });
+    var toastT;
+    document.querySelectorAll('[data-toast]').forEach(function(b){ b.addEventListener('click', function(){
+      var t=document.getElementById('toast'); t.textContent=b.getAttribute('data-toast'); t.classList.add('on');
+      clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); }, 2200); }); });
 
     // role preview toggle
     document.querySelectorAll('[data-role-btn]').forEach(function(b){

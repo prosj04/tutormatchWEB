@@ -66,77 +66,56 @@ export function AdminAuditLogsPage() {
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-black text-text-primary">감사 로그</h2>
-      <p className="mt-1 text-sm text-text-muted">BR-15: 개인정보 접근·변경 기록 (1년 보관)</p>
+    <section className="page on" data-screen-label="감사 로그">
+      <div className="crumb">/admin/audit-logs</div>
+      <h1>감사 로그</h1>
+      <p className="sub">BR-15: 개인정보 접근·변경 기록 (1년 보관) · 총 {total.toLocaleString()}건</p>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {TARGET_TYPE_FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => handleFilterChange(f.value)}
-            className={`rounded-xl border px-4 py-2 text-sm font-medium ${
-              targetType === f.value
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-gray-200 text-text-secondary"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="sec filters">
+        <div className="opts">
+          {TARGET_TYPE_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              className="opt"
+              aria-pressed={targetType === f.value}
+              onClick={() => handleFilterChange(f.value)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-4 text-xs text-text-muted">총 {total.toLocaleString()}건</div>
-
-      <div className="mt-3 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <table className="w-full min-w-[900px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
             <tr>
-              <th className="px-4 py-3">시각</th>
-              <th className="px-4 py-3">액션</th>
-              <th className="px-4 py-3">행위자 ID</th>
-              <th className="px-4 py-3">역할</th>
-              <th className="px-4 py-3">대상 유형</th>
-              <th className="px-4 py-3">대상 ID</th>
-              <th className="px-4 py-3">상세</th>
+              <th>시각</th>
+              <th>관리자</th>
+              <th>액션</th>
+              <th>대상 유형</th>
+              <th>대상</th>
+              <th>상세</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-text-muted">
-                  불러오는 중…
-                </td>
-              </tr>
+              <tr><td colSpan={6}>불러오는 중…</td></tr>
             ) : rows.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-text-muted">
-                  결과 없음
-                </td>
-              </tr>
+              <tr><td colSpan={6}>결과 없음</td></tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-50 align-top">
-                  <td className="px-4 py-3 text-xs text-text-secondary">
-                    {new Date(row.createdAt).toLocaleString("ko-KR")}
+                <tr key={row.id}>
+                  <td>{new Date(row.createdAt).toLocaleString("ko-KR")}</td>
+                  <td>
+                    <b>{row.actorUserId.slice(0, 8)}…</b>
+                    <span className="mini">{row.actorRole}</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-800">
-                      {row.action}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-secondary">
-                    {row.actorUserId.slice(0, 8)}…
-                  </td>
-                  <td className="px-4 py-3 text-xs text-text-secondary">{row.actorRole}</td>
-                  <td className="px-4 py-3 text-xs text-text-secondary">{row.targetType}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-secondary">
-                    {row.targetId.slice(0, 8)}…
-                  </td>
-                  <td className="max-w-[220px] truncate px-4 py-3 text-xs text-text-muted">
-                    {row.detail ?? "—"}
-                  </td>
+                  <td><span className="bst acc">{row.action}</span></td>
+                  <td>{row.targetType}</td>
+                  <td>{row.targetId.slice(0, 8)}…</td>
+                  <td>{row.detail ?? "—"}</td>
                 </tr>
               ))
             )}
@@ -145,28 +124,12 @@ export function AdminAuditLogsPage() {
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-text-secondary disabled:opacity-40"
-          >
-            이전
-          </button>
-          <span className="text-sm text-text-muted">
-            {page} / {totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-text-secondary disabled:opacity-40"
-          >
-            다음
-          </button>
+        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
+          <span className="sub" style={{ margin: 0 }}>{page} / {totalPages}</span>
+          <button type="button" className="btn ghost sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -24,19 +24,6 @@ type TeacherRow = {
   createdAt: string;
 };
 
-function roleBadge(role: string) {
-  if (role === "MANAGER") {
-    return {
-      label: "매니저",
-      className: "bg-surface/10 text-text-primary",
-    };
-  }
-  return {
-    label: "선생님",
-    className: "bg-gray-100 text-text-secondary",
-  };
-}
-
 type Pagination = { page: number; limit: number; total: number; totalPages: number };
 
 type DocumentType = "resume" | "document";
@@ -153,7 +140,10 @@ export function AdminTeachersPage() {
   async function deleteRow(id: string, name: string) {
     if (!confirm(`${name} 선생님을 삭제하시겠습니까?`)) return;
     const res = await fetch(`/api/admin/teachers/${id}`, { method: "DELETE" });
-    if (res.ok) fetchList();
+    if (res.ok) {
+      setEditRow(null);
+      fetchList();
+    }
   }
 
   async function updateRole(id: string, role: "TEACHER" | "MANAGER") {
@@ -226,480 +216,243 @@ export function AdminTeachersPage() {
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-black text-text-primary">선생님 관리</h2>
+    <section className="page on" data-screen-label="선생님 관리">
+      <div className="crumb">/admin/teachers</div>
+      <h1>선생님 관리</h1>
+      <p className="sub">서류 확인과 승인 상태를 관리합니다.</p>
 
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="sec filters">
         <input
+          className="inp filled"
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
             setPage(1);
           }}
-          placeholder="이름/이메일 검색"
-          className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm sm:w-auto sm:min-w-[220px]"
+          placeholder="이름·이메일 검색"
         />
         <select
+          className="inp filled"
+          style={{ width: "auto" }}
           value={status}
           onChange={(e) => {
             setStatus(e.target.value);
             setPage(1);
           }}
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="all">전체</option>
           <option value="approved">승인됨</option>
           <option value="pending">대기중</option>
         </select>
-        <button
-          type="button"
-          onClick={() => fetchList()}
-          className="w-full rounded-xl bg-text-primary px-4 py-2 text-sm font-medium text-white sm:w-auto"
-        >
-          검색
-        </button>
+        <button type="button" className="btn sec sm" onClick={() => fetchList()}>검색</button>
       </div>
 
-      <div className="mt-6 space-y-4 md:hidden">
-        {loading ? (
-          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
-            불러오는 중…
-          </div>
-        ) : rows.length === 0 ? (
-          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
-            결과 없음
-          </div>
-        ) : (
-          rows.map((row) => {
-            const badge = roleBadge(row.role);
-            return (
-              <article key={row.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-gray-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getEffectivePhotoUrl(row.photoUrl, row.gender)}
-                      alt={`${row.name} 프로필`}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold text-text-primary">{row.name}</h3>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}>
-                        {badge.label}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          row.approved
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-900"
-                        }`}
-                      >
-                        {row.approved ? "승인됨" : "대기중"}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-text-secondary">{row.subjects || "담당 과목 없음"}</p>
-                    <p className="mt-1 break-all text-xs text-text-muted">{row.email}</p>
-                  </div>
-                </div>
-                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-xl bg-background px-3 py-2">
-                    <dt className="text-xs text-text-muted">전화번호</dt>
-                    <dd className="mt-1 text-text-primary">{row.phone}</dd>
-                  </div>
-                  <div className="rounded-xl bg-background px-3 py-2">
-                    <dt className="text-xs text-text-muted">담당 학생수</dt>
-                    <dd className="mt-1 text-text-primary">{row.studentCount}</dd>
-                  </div>
-                </dl>
-                <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-                  <button
-                    type="button"
-                    onClick={() => toggleApprove(row)}
-                    className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
-                  >
-                    {row.approved ? "승인취소" : "승인"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(row)}
-                    className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
-                  >
-                    수정
-                  </button>
-                  {row.role === "TEACHER" ? (
-                    <button
-                      type="button"
-                      onClick={() => grantManager(row)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
-                    >
-                      매니저 부여
-                    </button>
-                  ) : row.role === "MANAGER" ? (
-                    <button
-                      type="button"
-                      onClick={() => revokeManager(row)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 font-medium text-text-primary"
-                    >
-                      매니저 해제
-                    </button>
-                  ) : (
-                    <span />
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => deleteRow(row.id, row.name)}
-                    className="rounded-xl border border-pink-200 px-3 py-2 font-medium text-accent"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </article>
-            );
-          })
-        )}
-      </div>
-
-      <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm md:block">
-        <table className="w-full min-w-[1000px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
             <tr>
-              <th className="w-20 max-w-20 px-2 py-3">이름</th>
-              <th className="w-20 max-w-20 px-2 py-3">담당과목</th>
-              <th className="px-4 py-3">이메일</th>
-              <th className="px-4 py-3">전화번호</th>
-              <th className="px-4 py-3">역할</th>
-              <th className="px-4 py-3">승인상태</th>
-              <th className="px-4 py-3">담당학생수</th>
-              <th className="px-4 py-3">가입일</th>
-              <th className="w-24 max-w-24 px-2 py-3">액션</th>
+              <th>선생님</th>
+              <th>과목</th>
+              <th>역할</th>
+              <th>담당 학생</th>
+              <th>승인 상태</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-text-muted">
-                  불러오는 중…
-                </td>
-              </tr>
+              <tr><td colSpan={6}>불러오는 중…</td></tr>
+            ) : rows.length === 0 ? (
+              <tr><td colSpan={6}>결과 없음</td></tr>
             ) : (
-              rows.map((row) => {
-                const badge = roleBadge(row.role);
-                return (
-                <tr key={row.id} className="border-b border-gray-50">
-                  <td className="w-20 max-w-20 px-2 py-3 font-medium">
-                    <div className="flex max-w-full flex-col items-start gap-1.5">
-                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-gray-100">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={getEffectivePhotoUrl(row.photoUrl, row.gender)}
-                          alt={`${row.name} 프로필`}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <span className="whitespace-normal break-words text-xs leading-snug">
-                        {row.name}
-                      </span>
-                    </div>
+              rows.map((row) => (
+                <tr key={row.id}>
+                  <td>
+                    <b>{row.name}</b>
+                    <span className="mini">{row.email}</span>
                   </td>
-                  <td className="w-20 max-w-20 whitespace-normal break-words px-2 py-3 text-xs leading-snug">
-                    {row.subjects}
-                  </td>
-                  <td className="px-4 py-3">{row.email}</td>
-                  <td className="px-4 py-3">{row.phone}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}
-                    >
-                      {badge.label}
+                  <td>{row.subjects || "—"}</td>
+                  <td>
+                    <span className={`bst ${row.role === "MANAGER" ? "acc" : "mut"}`}>
+                      {row.role === "MANAGER" ? "매니저" : "선생님"}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        row.approved
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-amber-100 text-amber-900"
-                      }`}
-                    >
-                      {row.approved ? "승인됨" : "대기중"}
+                  <td className="num">{row.studentCount}</td>
+                  <td>
+                    <span className={`bst ${row.approved ? "acc" : "warn"}`}>
+                      {row.approved ? "승인됨" : "대기"}
                     </span>
                   </td>
-                  <td className="px-4 py-3">{row.studentCount}</td>
-                  <td className="px-4 py-3">
-                    {new Date(row.createdAt).toLocaleDateString("ko-KR")}
-                  </td>
-                  <td className="w-24 max-w-24 px-2 py-3">
-                    <div className="flex max-w-full flex-col gap-1 text-xs leading-snug">
+                  <td>
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                       <label
-                        className={`inline-flex cursor-pointer items-center gap-0.5 text-text-secondary hover:text-primary ${
-                          uploadingId === row.id ? "pointer-events-none opacity-50" : ""
-                        }`}
+                        className={`btn ghost sm${uploadingId === row.id ? " pointer-events-none" : ""}`}
                         title="프로필 사진 업로드"
+                        style={uploadingId === row.id ? { opacity: 0.5 } : undefined}
                       >
-                        <span aria-hidden="true">📷</span>
-                        <span className="sr-only">사진 업로드</span>
+                        사진
                         <input
                           type="file"
                           accept="image/*"
-                          className="hidden"
+                          style={{ display: "none" }}
                           onChange={(e) => {
                             void uploadPhoto(row, e.target.files?.[0]);
                             e.currentTarget.value = "";
                           }}
                         />
                       </label>
-                      <button
-                        type="button"
-                        onClick={() => toggleApprove(row)}
-                        className="text-left text-primary hover:underline"
-                      >
+                      <button type="button" className="btn sec sm" onClick={() => toggleApprove(row)}>
                         {row.approved ? "승인취소" : "승인"}
                       </button>
-                      {row.role === "TEACHER" ? (
-                        <button
-                          type="button"
-                          onClick={() => grantManager(row)}
-                          className="text-left text-text-primary hover:underline"
-                        >
-                          매니저 부여
-                        </button>
-                      ) : row.role === "MANAGER" ? (
-                        <button
-                          type="button"
-                          onClick={() => revokeManager(row)}
-                          className="text-left text-text-secondary hover:underline"
-                        >
-                          매니저 해제
-                        </button>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => openEdit(row)}
-                        className="text-left text-primary hover:underline"
-                      >
-                        수정
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteRow(row.id, row.name)}
-                        className="text-left text-accent hover:underline"
-                      >
-                        삭제
-                      </button>
+                      <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>프로필</button>
                     </div>
                   </td>
                 </tr>
-              );
-              })
+              ))
             )}
           </tbody>
         </table>
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-40"
-          >
-            이전
-          </button>
-          <span className="px-3 py-1 text-sm">
-            {page} / {pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page >= pagination.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-40"
-          >
-            다음
-          </button>
+        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
+          <span className="sub" style={{ margin: 0 }}>{page} / {pagination.totalPages}</span>
+          <button type="button" className="btn ghost sm" disabled={page >= pagination.totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}
 
-      {editRow && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-bold">선생님 수정</h3>
-
-            <div className="mt-4 flex gap-2 border-b border-gray-100">
-              {[
-                { id: "card" as const, label: "강사 카드 내용" },
-                { id: "documents" as const, label: "서류 확인" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setEditTab(tab.id)}
-                  className={`border-b-2 px-3 py-2 text-sm font-semibold ${
-                    editTab === tab.id
-                      ? "border-primary text-primary"
-                      : "border-transparent text-text-muted"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+      <div className={`drawer${editRow ? " on" : ""}`} aria-label="선생님 서류">
+        {editRow ? (
+          <>
+            <div className="d-h">
+              <h3>{editRow.name} · {editRow.subjects || "선생님"}</h3>
+              <button type="button" className="x" onClick={() => setEditRow(null)}>✕</button>
             </div>
+            <div className="d-b">
+              <div className="opts" style={{ marginBottom: "14px" }}>
+                {[
+                  { id: "card" as const, label: "강사 카드 내용" },
+                  { id: "documents" as const, label: "서류 확인" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className="opt"
+                    aria-pressed={editTab === tab.id}
+                    onClick={() => setEditTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-            {editTab === "card" ? (
-              <div className="mt-4 space-y-3">
-                <div className="rounded-2xl border border-gray-100 bg-background p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
-                    카드 미리보기
-                  </p>
-                  <div className="mt-3 flex gap-4 rounded-2xl bg-white p-4">
-                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getEffectivePhotoUrl(editRow.photoUrl, form.gender || editRow.gender)}
-                        alt={`${form.name} 프로필`}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-black text-text-primary">
-                        {form.name || "선생님 이름"} 선생님
-                      </h4>
-                      <p className="mt-1 text-xs font-semibold text-primary">
-                        {form.subjects || "담당 과목"}
-                      </p>
-                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">
-                        {form.bio || form.experience || "강사 카드 소개 문구"}
-                      </p>
+              {editTab === "card" ? (
+                <>
+                  <div className="card" style={{ padding: "16px", marginBottom: "14px" }}>
+                    <div className="row" style={{ padding: 0 }}>
+                      <span className="av" style={{ overflow: "hidden", background: "var(--panel-2)" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={getEffectivePhotoUrl(editRow.photoUrl, form.gender || editRow.gender)}
+                          alt={`${form.name} 프로필`}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      </span>
+                      <div className="g">
+                        <b>{form.name || "선생님 이름"} 선생님</b>
+                        <p>{form.subjects || "담당 과목"} · {form.bio || form.experience || "강사 카드 소개 문구"}</p>
+                      </div>
                     </div>
                   </div>
-                  <p className="mt-3 text-xs leading-relaxed text-text-muted">
-                    이 탭의 이름, 담당 과목, 자기소개, 학력, 경력은 사이트 콘텐츠「강사진」의 공개 카드·상세 페이지에 반영됩니다. 동일 필드는 강사진 CMS에서도 수정할 수 있습니다.
-                    공개 강사진 사진은 성별에 따라 사이트 콘텐츠 → 강사진 탭의 기본 이미지를 씁니다. 내부용 프로필
-                    사진은 목록의 카메라 버튼으로 업로드할 수 있습니다.
-                  </p>
-                </div>
-                <input
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  className="w-full rounded-xl border px-3 py-2 text-sm"
-                  placeholder="이름"
-                />
-                <input
-                  value={form.subjects}
-                  onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
-                  className="w-full rounded-xl border px-3 py-2 text-sm"
-                  placeholder="담당 과목"
-                />
-                <input
-                  value={form.education}
-                  onChange={(e) => setForm((f) => ({ ...f, education: e.target.value }))}
-                  className="w-full rounded-xl border px-3 py-2 text-sm"
-                  placeholder="학력"
-                />
-                <input
-                  value={form.experience}
-                  onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))}
-                  className="w-full rounded-xl border px-3 py-2 text-sm"
-                  placeholder="경력"
-                />
-                <textarea
-                  value={form.bio}
-                  onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-                  rows={3}
-                  className="w-full rounded-xl border px-3 py-2 text-sm"
-                  placeholder="자기소개"
-                />
-                <GenderSelect
-                  value={form.gender}
-                  onChange={(g) => setForm((f) => ({ ...f, gender: g }))}
-                />
-                <p className="text-xs text-text-muted">
-                  업로드 사진이 없으면 CMS 강사진 탭의 남·여 기본 이미지가 표시됩니다.
-                </p>
-              </div>
-            ) : (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                {[
-                  {
-                    type: "resume" as const,
-                    title: "이력서",
-                    files: documents.resumeFiles,
-                    empty: "등록된 이력서가 없습니다.",
-                  },
-                  {
-                    type: "document" as const,
-                    title: "인증서류",
-                    files: documents.documentFiles,
-                    empty: "등록된 인증서류가 없습니다.",
-                  },
-                ].map((group) => (
-                  <section
-                    key={group.type}
-                    className="rounded-xl border border-gray-100 bg-background p-4"
-                  >
-                    <h4 className="text-sm font-bold text-text-primary">{group.title}</h4>
-                    <ul className="mt-3 space-y-2">
-                      {documentsLoading ? (
-                        <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
-                      ) : group.files.length === 0 ? (
-                        <li className="text-xs text-text-muted">{group.empty}</li>
-                      ) : (
-                        group.files.map((file) => (
-                          <li
-                            key={file.url}
-                            className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
-                          >
-                            <span className="min-w-0 truncate text-text-secondary">
-                              {file.name}
-                            </span>
-                            <span className="flex shrink-0 gap-2">
-                              <a
-                                href={file.signedUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="font-semibold text-primary hover:underline"
-                              >
-                                열기
-                              </a>
+                  <div className="field">
+                    <label>이름</label>
+                    <input className="inp filled" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="이름" />
+                  </div>
+                  <div className="field">
+                    <label>담당 과목</label>
+                    <input className="inp filled" value={form.subjects} onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))} placeholder="담당 과목" />
+                  </div>
+                  <div className="field">
+                    <label>학력</label>
+                    <input className="inp filled" value={form.education} onChange={(e) => setForm((f) => ({ ...f, education: e.target.value }))} placeholder="학력" />
+                  </div>
+                  <div className="field">
+                    <label>경력</label>
+                    <input className="inp filled" value={form.experience} onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))} placeholder="경력" />
+                  </div>
+                  <div className="field">
+                    <label>자기소개</label>
+                    <textarea className="inp area filled" value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} placeholder="자기소개" />
+                  </div>
+                  <div className="field">
+                    <label>성별</label>
+                    <GenderSelect value={form.gender} onChange={(g) => setForm((f) => ({ ...f, gender: g }))} />
+                  </div>
+                  <p className="f-hint">업로드 사진이 없으면 CMS 강사진 탭의 남·여 기본 이미지가 표시됩니다.</p>
+                </>
+              ) : (
+                <>
+                  {[
+                    {
+                      type: "resume" as const,
+                      title: "이력서",
+                      files: documents.resumeFiles,
+                      empty: "등록된 이력서가 없습니다.",
+                    },
+                    {
+                      type: "document" as const,
+                      title: "인증서류",
+                      files: documents.documentFiles,
+                      empty: "등록된 인증서류가 없습니다.",
+                    },
+                  ].map((group) => (
+                    <div key={group.type} style={{ marginBottom: "14px" }}>
+                      <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "0 0 8px" }}>{group.title}</h4>
+                      <div className="card">
+                        {documentsLoading ? (
+                          <div className="row"><div className="g"><p>서류를 불러오는 중…</p></div></div>
+                        ) : group.files.length === 0 ? (
+                          <div className="row"><div className="g"><p>{group.empty}</p></div></div>
+                        ) : (
+                          group.files.map((file) => (
+                            <div key={file.url} className="row">
+                              <div className="g"><b>{file.name}</b></div>
+                              <a href={file.signedUrl} target="_blank" rel="noreferrer">열기</a>
                               <button
                                 type="button"
+                                className="btn ghost sm"
                                 disabled={documentDeleting === file.url}
                                 onClick={() => void deleteDocument(file.url, group.type)}
-                                className="font-semibold text-accent hover:underline disabled:opacity-50"
                               >
                                 삭제
                               </button>
-                            </span>
-                          </li>
-                        ))
-                      )}
-                    </ul>
-                  </section>
-                ))}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "16px 0 8px" }}>권한 · 관리</h4>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {editRow.role === "TEACHER" ? (
+                  <button type="button" className="btn sec sm" onClick={() => grantManager(editRow)}>매니저 부여</button>
+                ) : editRow.role === "MANAGER" ? (
+                  <button type="button" className="btn sec sm" onClick={() => revokeManager(editRow)}>매니저 해제</button>
+                ) : null}
+                <button type="button" className="btn danger sm" onClick={() => void deleteRow(editRow.id, editRow.name)}>삭제</button>
               </div>
-            )}
-            <div className="mt-6 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setEditRow(null)}
-                className="flex-1 rounded-xl border py-2 text-sm"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void saveEdit()}
-                disabled={editTab !== "card"}
-                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
-              >
-                저장
-              </button>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+            <div className="d-f">
+              <button type="button" className="btn sec" style={{ flex: 1 }} onClick={() => setEditRow(null)}>닫기</button>
+              <button type="button" className="btn pri" style={{ flex: 1 }} disabled={editTab !== "card"} onClick={() => void saveEdit()}>저장</button>
+            </div>
+          </>
+        ) : null}
+      </div>
+    </section>
   );
 }

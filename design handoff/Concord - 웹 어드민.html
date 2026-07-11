@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 웹 어드민</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="web/portal.css" />
+<style>
+  /* admin-specific: charts & funnel (CSS-only, data-dense) */
+  .bars{ display:flex; align-items:flex-end; gap:8px; height:120px; padding:18px 22px 0; }
+  .bars .b{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+  .bars .b i{ width:100%; border-radius:5px 5px 2px 2px; background:rgba(var(--acc-rgb),.25); display:block; }
+  .bars .b.on i{ background:var(--acc); }
+  .bars .b span{ font-size:10.5px; color:var(--mut); font-variant-numeric:tabular-nums; }
+  .funnel{ padding:20px 22px; display:flex; flex-direction:column; gap:10px; }
+  .funnel .f{ display:grid; grid-template-columns:92px 1fr 120px; align-items:center; gap:14px; font-size:13px; }
+  .funnel .f b{ font-weight:700; }
+  .funnel .f .tr{ height:26px; border-radius:7px; background:rgba(var(--acc-rgb),.14); position:relative; overflow:hidden; }
+  .funnel .f .tr i{ position:absolute; inset:0; width:var(--w); background:var(--acc); border-radius:7px; display:block; }
+  .funnel .f .n{ text-align:right; color:var(--mut); font-variant-numeric:tabular-nums; }
+  .funnel .f .n b{ color:var(--fg); }
+  .filters{ display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+  .filters .inp{ width:220px; }
+  .tbl .mini{ font-size:12px; color:var(--mut-2); display:block; }
+  .kv{ padding:18px 20px; display:flex; flex-direction:column; gap:9px; }
+  .kv div{ display:flex; justify-content:space-between; font-size:13px; }
+  .kv span{ color:var(--mut); } .kv b{ font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <span class="dotw logo">Concord<span class="d"></span></span>
+    <span class="role">Admin · /admin</span>
+    <button class="nav-i" data-page="dash" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg>대시보드</button>
+    <button class="nav-i" data-page="metrics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 5-6"/></svg>지표</button>
+    <button class="nav-i" data-page="funnel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>퍼널</button>
+    <button class="nav-i" data-page="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>상담 리드<span class="cnt">6</span></button>
+    <button class="nav-i" data-page="students"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7l10-4 10 4-10 4z"/><path d="M6 10v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>학생</button>
+    <button class="nav-i" data-page="teachers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>선생님</button>
+    <button class="nav-i" data-page="matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/></svg>매칭</button>
+    <button class="nav-i" data-page="payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>결제</button>
+    <button class="nav-i" data-page="settle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/></svg>정산</button>
+    <button class="nav-i" data-page="cms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>CMS</button>
+    <button class="nav-i" data-page="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>데이터</button>
+    <button class="nav-i" data-page="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>감사 로그</button>
+    <button class="nav-i" data-page="chief"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>치프 승인<span class="cnt">2</span></button>
+    <div class="foot">
+      <button class="logout" data-toast="로그아웃되었습니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
+      <div class="user"><span class="av">강</span><span><b>강도윤</b><p>CHIEF_MANAGER</p></span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="seg" role="group" aria-label="색 테마"><button class="g" data-set-color="green" aria-label="그린"><span class="dot"></span></button><button class="b" data-set-color="blue" aria-label="블루"><span class="dot"></span></button></div>
+      <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <!-- /admin -->
+    <section class="page on" id="pg-dash" data-screen-label="어드민 대시보드">
+      <div class="crumb">/admin</div>
+      <h1>어드민 대시보드</h1>
+      <p class="sub">이번 달 핵심 지표와 미처리 항목입니다.</p>
+      <div class="sec grid3">
+        <div class="card kpi"><b>128<em>+12</em></b><span>신규 가입 (10월)</span></div>
+        <div class="card kpi"><b>342</b><span>활성 구독</span></div>
+        <div class="card kpi"><b>2.4억<em>+8%</em></b><span>월 매출</span></div>
+      </div>
+      <div class="sec grid2">
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 4px">미처리 항목</h2>
+          <div class="row"><div class="g"><b>선생님 승인 대기</b><p>서류 확인 필요 4건</p></div><button class="btn sec sm" data-goto="teachers">처리</button></div>
+          <div class="row"><div class="g"><b>환불 요청</b><p>8월 보강 취소 외 1건</p></div><button class="btn sec sm" data-goto="payments">처리</button></div>
+          <div class="row"><div class="g"><b>미배정 상담 리드</b><p>신규 6건 · 최장 대기 2일</p></div><button class="btn sec sm" data-goto="leads">처리</button></div>
+        </div>
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 0">주간 신규 가입</h2>
+          <div class="bars">
+            <div class="b"><i style="height:38%"></i><span>월</span></div>
+            <div class="b"><i style="height:52%"></i><span>화</span></div>
+            <div class="b"><i style="height:44%"></i><span>수</span></div>
+            <div class="b"><i style="height:70%"></i><span>목</span></div>
+            <div class="b on"><i style="height:92%"></i><span>금</span></div>
+            <div class="b"><i style="height:60%"></i><span>토</span></div>
+            <div class="b"><i style="height:34%"></i><span>일</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /admin/metrics -->
+    <section class="page" id="pg-metrics" data-screen-label="지표">
+      <div class="crumb">/admin/metrics</div>
+      <h1>지표</h1>
+      <p class="sub">기간별 핵심 지표 추이입니다.</p>
+      <div class="sec filters">
+        <div class="opts"><button class="opt" aria-pressed="true">최근 4주</button><button class="opt">분기</button><button class="opt">연간</button></div>
+        <button class="btn ghost sm" style="margin-left:auto" data-toast="CSV로 내보냈습니다">내보내기</button>
+      </div>
+      <div class="sec grid2" style="margin-top:0">
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 0">주간 매출 (백만원)</h2>
+          <div class="bars">
+            <div class="b"><i style="height:55%"></i><span>1주</span></div>
+            <div class="b"><i style="height:62%"></i><span>2주</span></div>
+            <div class="b"><i style="height:58%"></i><span>3주</span></div>
+            <div class="b on"><i style="height:78%"></i><span>4주</span></div>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th>지표</th><th>이번 달</th><th>지난 달</th><th>증감</th></tr></thead>
+            <tbody>
+              <tr><td><b>신규 가입</b></td><td class="num">128</td><td class="num">116</td><td><span class="bst acc">+10%</span></td></tr>
+              <tr><td><b>활성 구독</b></td><td class="num">342</td><td class="num">330</td><td><span class="bst acc">+4%</span></td></tr>
+              <tr><td><b>이탈</b></td><td class="num">9</td><td class="num">14</td><td><span class="bst acc">-36%</span></td></tr>
+              <tr><td><b>평균 수업 만족도</b></td><td class="num">4.8</td><td class="num">4.7</td><td><span class="bst mut">+0.1</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- /admin/funnel -->
+    <section class="page" id="pg-funnel" data-screen-label="퍼널">
+      <div class="crumb">/admin/funnel</div>
+      <h1>전환 퍼널</h1>
+      <p class="sub">방문 → 상담 → 결제 단계별 전환입니다. (10월)</p>
+      <div class="sec card funnel">
+        <div class="f"><b>사이트 방문</b><span class="tr"><i style="--w:100%"></i></span><span class="n"><b>12,480</b></span></div>
+        <div class="f"><b>상담 신청</b><span class="tr"><i style="--w:38%"></i></span><span class="n"><b>4,742</b> · 38%</span></div>
+        <div class="f"><b>상담 완료</b><span class="tr"><i style="--w:21%"></i></span><span class="n"><b>2,620</b> · 55%</span></div>
+        <div class="f"><b>매칭 확정</b><span class="tr"><i style="--w:9%"></i></span><span class="n"><b>1,123</b> · 43%</span></div>
+        <div class="f"><b>첫 결제</b><span class="tr"><i style="--w:6%"></i></span><span class="n"><b>748</b> · 67%</span></div>
+      </div>
+      <div class="sec banner ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 14 4-4 4 3 5-6"/></svg><span>상담 완료→매칭 확정 전환이 지난달 대비 6%p 개선되었습니다.</span></div>
+    </section>
+
+    <!-- /admin/leads -->
+    <section class="page" id="pg-leads" data-screen-label="상담 리드">
+      <div class="crumb">/admin/leads</div>
+      <h1>상담 리드</h1>
+      <p class="sub">신규 상담 신청과 처리 상태입니다.</p>
+      <div class="sec filters">
+        <input class="inp" placeholder="이름·연락처 검색" />
+        <div class="opts"><button class="opt" aria-pressed="true">전체</button><button class="opt">신규</button><button class="opt">배정됨</button><button class="opt">완료</button></div>
+      </div>
+      <div class="sec card" style="overflow:hidden;margin-top:0">
+        <table class="tbl">
+          <thead><tr><th>신청자</th><th>희망 과목</th><th>접수</th><th>담당</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>이서아 학부모</b><span class="mini">010-9821-****</span></td><td>수학 · 중2</td><td>오늘 10:24</td><td>—</td><td><span class="bst warn">신규</span></td><td><button class="btn sec sm" data-toast="한서윤 매니저에게 배정했습니다">배정</button></td></tr>
+            <tr><td><b>박준혁 학부모</b><span class="mini">010-3345-****</span></td><td>수학·과학 · 고1</td><td>오늘 09:02</td><td>—</td><td><span class="bst warn">신규</span></td><td><button class="btn sec sm" data-toast="한서윤 매니저에게 배정했습니다">배정</button></td></tr>
+            <tr><td><b>김하린 학부모</b><span class="mini">010-5210-****</span></td><td>영어 · 중3</td><td>어제</td><td>한서윤</td><td><span class="bst acc">배정됨</span></td><td><button class="btn ghost sm" data-open="m-lead">메모</button></td></tr>
+            <tr><td><b>정시우 학부모</b><span class="mini">010-7788-****</span></td><td>수학 · 중1</td><td>9월 29일</td><td>한서윤</td><td><span class="bst mut">완료</span></td><td><button class="btn ghost sm" data-open="m-lead">메모</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/students -->
+    <section class="page" id="pg-students" data-screen-label="학생 관리">
+      <div class="crumb">/admin/students</div>
+      <h1>학생 관리</h1>
+      <p class="sub">학생 계정과 구독·수업 이력입니다.</p>
+      <div class="sec filters">
+        <input class="inp" placeholder="이름·학교·연락처 검색" />
+        <div class="opts"><button class="opt" aria-pressed="true">전체 342</button><button class="opt">구독중</button><button class="opt">휴면</button></div>
+      </div>
+      <div class="sec card" style="overflow:hidden;margin-top:0">
+        <table class="tbl">
+          <thead><tr><th>학생</th><th>구독</th><th>담당 선생님</th><th>가입일</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>김지우 · 중3</b><span class="mini">수학</span></td><td>주 2회</td><td>노아</td><td>2026. 3. 12.</td><td><span class="bst acc">구독중</span></td><td><button class="btn ghost sm" data-drawer="d-student">상세</button></td></tr>
+            <tr><td><b>김민준 · 중1</b><span class="mini">수학·과학</span></td><td>주 1회</td><td>노아</td><td>2026. 5. 2.</td><td><span class="bst acc">구독중</span></td><td><button class="btn ghost sm" data-drawer="d-student">상세</button></td></tr>
+            <tr><td><b>이하은 · 고1</b><span class="mini">영어</span></td><td>—</td><td>—</td><td>2026. 1. 20.</td><td><span class="bst mut">휴면</span></td><td><button class="btn ghost sm" data-drawer="d-student">상세</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/teachers -->
+    <section class="page" id="pg-teachers" data-screen-label="선생님 관리">
+      <div class="crumb">/admin/teachers</div>
+      <h1>선생님 관리</h1>
+      <p class="sub">서류 확인과 승인 상태를 관리합니다.</p>
+      <div class="sec card" style="overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>선생님</th><th>과목</th><th>서류</th><th>담당 학생</th><th>승인 상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>노아</b><span class="mini">서울대 수학교육</span></td><td>수학</td><td><span class="bst acc">3/3 확인</span></td><td class="num">3</td><td><span class="bst acc">승인됨</span></td><td><button class="btn ghost sm" data-drawer="d-teacher">프로필</button></td></tr>
+            <tr><td><b>서연</b><span class="mini">연세대 화학</span></td><td>과학</td><td><span class="bst warn">2/3 확인</span></td><td class="num">0</td><td><span class="bst warn">대기</span></td><td><button class="btn sec sm" data-toast="승인했습니다 — 치프 최종 승인 대기로 이동">승인</button></td></tr>
+            <tr><td><b>도현</b><span class="mini">고려대 영문</span></td><td>영어</td><td><span class="bst warn">1/3 확인</span></td><td class="num">0</td><td><span class="bst warn">대기</span></td><td><button class="btn ghost sm" data-drawer="d-teacher">서류 확인</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/matches -->
+    <section class="page" id="pg-matches" data-screen-label="매칭 관리">
+      <div class="crumb">/admin/matches</div>
+      <h1>매칭 관리</h1>
+      <p class="sub">진행 중인 매칭 현황입니다.</p>
+      <div class="sec card" style="overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>학생</th><th>선생님</th><th>과목</th><th>시작일</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>김지우 · 중3</b></td><td>노아</td><td>수학</td><td>2026. 3. 15.</td><td><span class="bst acc">수업중</span></td><td><button class="btn ghost sm" data-open="m-unmatch">해제</button></td></tr>
+            <tr><td><b>김민준 · 중1</b></td><td>노아</td><td>수학·과학</td><td>2026. 5. 8.</td><td><span class="bst acc">수업중</span></td><td><button class="btn ghost sm" data-open="m-unmatch">해제</button></td></tr>
+            <tr><td><b>박준혁 · 고1</b></td><td>—</td><td>수학</td><td>—</td><td><span class="bst warn">배정 필요</span></td><td><button class="btn sec sm" data-toast="추천 선생님 목록을 생성했습니다">재배정</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/payments -->
+    <section class="page" id="pg-payments" data-screen-label="결제 관리">
+      <div class="crumb">/admin/payments</div>
+      <h1>결제 관리</h1>
+      <p class="sub">결제 이력과 환불 처리를 관리합니다.</p>
+      <div class="sec filters">
+        <input class="inp" placeholder="주문번호·이름 검색" />
+        <div class="opts"><button class="opt" aria-pressed="true">전체</button><button class="opt">완료</button><button class="opt">환불 요청</button><button class="opt">환불됨</button></div>
+      </div>
+      <div class="sec card" style="overflow:hidden;margin-top:0">
+        <table class="tbl">
+          <thead><tr><th>일자</th><th>주문</th><th>학생</th><th>금액</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>10월 1일</td><td><b>주 2회 · 10월</b><span class="mini">ORD-26100-2841</span></td><td>김지우</td><td class="num">740,000</td><td><span class="bst acc">완료</span></td><td><button class="btn ghost sm" data-open="m-refund">환불</button></td></tr>
+            <tr><td>10월 1일</td><td><b>주 1회 · 10월</b><span class="mini">ORD-26100-2836</span></td><td>김민준</td><td class="num">390,000</td><td><span class="bst acc">완료</span></td><td><button class="btn ghost sm" data-open="m-refund">환불</button></td></tr>
+            <tr><td>9월 30일</td><td><b>보강 취소</b><span class="mini">ORD-26093-1120</span></td><td>이하은</td><td class="num">-92,500</td><td><span class="bst warn">환불 요청</span></td><td><button class="btn sec sm" data-open="m-refund">처리</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/settlements -->
+    <section class="page" id="pg-settle" data-screen-label="정산">
+      <div class="crumb">/admin/settlements</div>
+      <h1>정산</h1>
+      <p class="sub">선생님별 10월 정산 집계입니다.</p>
+      <div class="sec grid3">
+        <div class="card kpi"><b>84,200,000</b><span>정산 예정 총액 (원)</span></div>
+        <div class="card kpi"><b>37</b><span>정산 대상 선생님</span></div>
+        <div class="card kpi"><b>31<em>/37</em></b><span>지급 완료</span></div>
+      </div>
+      <div class="sec card" style="overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>선생님</th><th>수업 횟수</th><th>정산액</th><th>지급 상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>노아</b></td><td class="num">24</td><td class="num">2,960,000</td><td><span class="bst acc">지급 완료</span></td><td><a href="#" onclick="return false">명세서</a></td></tr>
+            <tr><td><b>서연</b></td><td class="num">16</td><td class="num">1,840,000</td><td><span class="bst warn">지급 대기</span></td><td><button class="btn sec sm" data-toast="지급 처리했습니다">지급</button></td></tr>
+            <tr><td><b>도현</b></td><td class="num">12</td><td class="num">1,380,000</td><td><span class="bst warn">지급 대기</span></td><td><button class="btn sec sm" data-toast="지급 처리했습니다">지급</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /admin/cms -->
+    <section class="page" id="pg-cms" data-screen-label="CMS">
+      <div class="crumb">/admin/cms</div>
+      <h1>CMS</h1>
+      <p class="sub">사이트 문구·후기·FAQ·요금 카드를 섹션별로 편집합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:22px">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">히어로 문구</h2>
+          <div class="field"><label>메인 헤드라인</label><input class="inp filled" value="성적이 오르는 이유는 관리에 있습니다" /></div>
+          <div class="field"><label>서브 카피</label><textarea class="inp area filled">검증된 선생님과 담당 매니저가 학습의 처음부터 끝까지 함께합니다.</textarea></div>
+          <button class="btn pri" data-toast="히어로 문구를 저장했습니다">저장</button>
+        </div>
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 4px">섹션 관리</h2>
+          <div class="row"><div class="g"><b>요금 카드</b><p>주1회 390,000 · 주2회 740,000</p></div><button class="btn sec sm" data-toast="요금 카드 편집기를 엽니다">편집</button></div>
+          <div class="row"><div class="g"><b>후기</b><p>노출 12건 · 대기 3건</p></div><button class="btn sec sm" data-toast="후기 편집기를 엽니다">편집</button></div>
+          <div class="row"><div class="g"><b>FAQ</b><p>18문항 · 4카테고리</p></div><button class="btn sec sm" data-toast="FAQ 편집기를 엽니다">편집</button></div>
+          <div class="row"><div class="g"><b>선생님 소개</b><p>노출 8명</p></div><button class="btn sec sm" data-toast="선생님 소개 편집기를 엽니다">편집</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /admin/data -->
+    <section class="page" id="pg-data" data-screen-label="데이터">
+      <div class="crumb">/admin/data</div>
+      <h1>데이터</h1>
+      <p class="sub">원본 데이터 조회와 내보내기입니다.</p>
+      <div class="sec grid2">
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 4px">데이터셋</h2>
+          <div class="row"><div class="g"><b>students</b><p>342행 · 최근 갱신 오늘 04:00</p></div><button class="btn ghost sm" data-toast="CSV로 내보냈습니다">CSV</button></div>
+          <div class="row"><div class="g"><b>lessons</b><p>12,840행 · 최근 갱신 오늘 04:00</p></div><button class="btn ghost sm" data-toast="CSV로 내보냈습니다">CSV</button></div>
+          <div class="row"><div class="g"><b>payments</b><p>4,218행 · 최근 갱신 오늘 04:00</p></div><button class="btn ghost sm" data-toast="CSV로 내보냈습니다">CSV</button></div>
+          <div class="row"><div class="g"><b>questions</b><p>9,132행 · 최근 갱신 오늘 04:00</p></div><button class="btn ghost sm" data-toast="CSV로 내보냈습니다">CSV</button></div>
+        </div>
+        <div class="card kv" style="align-self:start">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:4px">저장소 현황</h2>
+          <div><span>전체 레코드</span><b>26,532</b></div>
+          <div><span>이번 주 증가</span><b>+1,204</b></div>
+          <div><span>마지막 백업</span><b>오늘 04:12</b></div>
+          <div><span>보존 기간</span><b>5년</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /admin/audit-logs -->
+    <section class="page" id="pg-audit" data-screen-label="감사 로그">
+      <div class="crumb">/admin/audit-logs</div>
+      <h1>감사 로그</h1>
+      <p class="sub">관리자 액션 기록을 검색·필터링합니다.</p>
+      <div class="sec filters">
+        <input class="inp" placeholder="액션·대상·관리자 검색" />
+        <div class="opts"><button class="opt" aria-pressed="true">전체</button><button class="opt">승인</button><button class="opt">환불</button><button class="opt">삭제</button></div>
+      </div>
+      <div class="sec card" style="overflow:hidden;margin-top:0">
+        <table class="tbl">
+          <thead><tr><th>시각</th><th>관리자</th><th>액션</th><th>대상</th></tr></thead>
+          <tbody>
+            <tr><td>오늘 14:02</td><td><b>강도윤</b></td><td>선생님 최종 승인</td><td>서연 (T-1042)</td></tr>
+            <tr><td>오늘 11:38</td><td><b>한서윤</b></td><td>환불 처리</td><td>ORD-26093-1120 · -92,500원</td></tr>
+            <tr><td>어제 17:20</td><td><b>한서윤</b></td><td>매칭 해제</td><td>이하은 ↔ 도현</td></tr>
+            <tr><td>어제 10:05</td><td><b>강도윤</b></td><td>CMS 요금 카드 수정</td><td>주2회 720,000 → 740,000</td></tr>
+            <tr><td>9월 30일</td><td><b>시스템</b></td><td>학생 소프트삭제</td><td>S-0921 (탈퇴 요청)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /chief-manager/teacher-approval -->
+    <section class="page" id="pg-chief" data-screen-label="치프 승인">
+      <div class="crumb">/chief-manager/teacher-approval</div>
+      <h1>치프 최종 승인</h1>
+      <p class="sub">매니저 승인을 거친 선생님의 최종 승인 큐입니다.</p>
+      <div class="sec card">
+        <div class="row"><span class="av">서</span><div class="g"><b>서연 · 과학</b><p>연세대 화학 · 매니저 승인 오늘 14:02 (한서윤)</p></div><span class="bst warn">최종 대기</span><button class="btn sec sm" data-drawer="d-teacher">서류</button><button class="btn pri sm" data-toast="최종 승인했습니다 — 매칭 풀에 공개됩니다">최종 승인</button></div>
+        <div class="row"><span class="av">도</span><div class="g"><b>도현 · 영어</b><p>고려대 영문 · 매니저 승인 어제 (한서윤)</p></div><span class="bst warn">최종 대기</span><button class="btn sec sm" data-drawer="d-teacher">서류</button><button class="btn pri sm" data-toast="최종 승인했습니다 — 매칭 풀에 공개됩니다">최종 승인</button></div>
+      </div>
+      <div class="sec banner ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>최종 승인 시 선생님에게 알림이 발송되고 매칭 풀에 공개됩니다. 반려는 서류 드로어에서 사유와 함께 처리하세요.</span></div>
+    </section>
+  </main>
+</div>
+
+<!-- 리드 메모 모달 -->
+<div class="scrim" id="m-lead">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="리드 메모">
+    <div class="m-b">
+      <h3>리드 메모</h3>
+      <p class="m-p">김하린 학부모 · 영어 · 중3</p>
+      <div class="field" style="margin-top:14px"><label>메모</label><textarea class="inp area filled">10/12 통화 — 주 1회 희망, 내신 대비 위주. 토요일 오전 방문 상담 예정.</textarea></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>닫기</button><button class="btn pri" data-close data-toast="메모를 저장했습니다">저장</button></div>
+  </div>
+</div>
+
+<!-- 매칭 해제 모달 -->
+<div class="scrim" id="m-unmatch">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="매칭 해제 확인">
+    <div class="m-b">
+      <h3>매칭을 해제하시겠어요?</h3>
+      <p class="m-p">진행 중인 수업 일정이 모두 취소되고 학생·선생님에게 알림이 발송됩니다. 해제 사유는 감사 로그에 기록됩니다.</p>
+      <div class="field" style="margin-top:14px"><label>해제 사유</label><textarea class="inp area" placeholder="사유를 입력하세요"></textarea></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>취소</button><button class="btn danger solid" data-close data-toast="매칭을 해제했습니다">해제</button></div>
+  </div>
+</div>
+
+<!-- 환불 처리 모달 -->
+<div class="scrim" id="m-refund">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="환불 처리">
+    <div class="m-b">
+      <h3>환불 처리</h3>
+      <p class="m-p">ORD-26093-1120 · 이하은 · 8월 보강 취소</p>
+      <div class="field" style="margin-top:14px"><label>환불 금액</label><input class="inp filled" value="92,500원" /></div>
+      <div class="field"><label>사유</label><input class="inp filled" value="보강 수업 미진행" /></div>
+    </div>
+    <div class="m-f"><button class="btn sec" data-close>취소</button><button class="btn pri" data-close data-toast="환불을 처리했습니다">환불 확정</button></div>
+  </div>
+</div>
+
+<!-- 학생 상세 드로어 -->
+<div class="drawer" id="d-student" aria-label="학생 상세">
+  <div class="d-h"><h3>김지우 · 중3</h3><button class="x" data-dclose>✕</button></div>
+  <div class="d-b">
+    <div class="kv" style="padding:0 0 14px">
+      <div><span>구독</span><b>주 2회 · 740,000원/월</b></div>
+      <div><span>담당 선생님</span><b>노아 (수학)</b></div>
+      <div><span>가입일</span><b>2026. 3. 12.</b></div>
+      <div><span>학부모 연결</span><b>연결됨</b></div>
+    </div>
+    <h4 style="font-size:13.5px;font-weight:700;margin:10px 0 8px">최근 수업</h4>
+    <div class="card">
+      <div class="row"><div class="g"><b>10월 1일 (화)</b><p>이차함수 활용 · 숙제 완료 4/4</p></div><span class="bst acc">완료</span></div>
+      <div class="row"><div class="g"><b>9월 27일 (금)</b><p>완전제곱식 · 숙제 완료 3/4</p></div><span class="bst acc">완료</span></div>
+    </div>
+    <h4 style="font-size:13.5px;font-weight:700;margin:16px 0 8px">관리</h4>
+    <button class="btn danger" style="width:100%" data-toast="소프트삭제 처리했습니다 — 30일 내 복구 가능">소프트삭제 (30일 보관)</button>
+  </div>
+  <div class="d-f"><button class="btn sec" style="flex:1" data-dclose>닫기</button><button class="btn pri" style="flex:1" data-toast="변경사항을 저장했습니다">저장</button></div>
+</div>
+
+<!-- 선생님 서류 드로어 -->
+<div class="drawer" id="d-teacher" aria-label="선생님 서류">
+  <div class="d-h"><h3>서연 · 과학</h3><button class="x" data-dclose>✕</button></div>
+  <div class="d-b">
+    <div class="kv" style="padding:0 0 14px">
+      <div><span>학력</span><b>연세대 화학 (재학 증명 확인)</b></div>
+      <div><span>지원일</span><b>2026. 9. 24.</b></div>
+      <div><span>매니저 승인</span><b>한서윤 · 오늘 14:02</b></div>
+    </div>
+    <h4 style="font-size:13.5px;font-weight:700;margin:10px 0 8px">제출 서류</h4>
+    <div class="card">
+      <div class="row"><div class="g"><b>재학/졸업 증명서</b><p>PDF · 9월 24일</p></div><span class="bst acc">확인</span></div>
+      <div class="row"><div class="g"><b>신분증</b><p>이미지 · 9월 24일</p></div><span class="bst acc">확인</span></div>
+      <div class="row"><div class="g"><b>경력 증빙</b><p>업로드 대기</p></div><span class="bst warn">대기</span></div>
+    </div>
+    <div class="field" style="margin-top:16px"><label>반려 사유 (반려 시)</label><textarea class="inp area" placeholder="예: 경력 증빙 누락"></textarea></div>
+  </div>
+  <div class="d-f"><button class="btn danger" style="flex:1" data-toast="반려했습니다 — 지원자에게 사유가 전달됩니다">반려</button><button class="btn pri" style="flex:1" data-toast="승인했습니다">승인</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+
+    function goPage(id){
+      document.querySelectorAll('.nav-i[data-page]').forEach(function(x){ x.setAttribute('aria-current', String(x.getAttribute('data-page')===id)); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+      var pg=document.getElementById('pg-'+id); if(pg) pg.classList.add('on');
+      window.scrollTo(0,0);
+    }
+    document.querySelectorAll('.nav-i[data-page]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-page')); }); });
+    document.querySelectorAll('[data-goto]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-goto')); }); });
+
+    document.querySelectorAll('.opts').forEach(function(g){ g.querySelectorAll('.opt').forEach(function(o){
+      o.addEventListener('click', function(){ g.querySelectorAll('.opt').forEach(function(x){ x.setAttribute('aria-pressed', String(x===o)); }); }); }); });
+
+    document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click', function(){
+      document.getElementById(b.getAttribute('data-open')).classList.add('on'); }); });
+    document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', function(){
+      b.closest('.scrim').classList.remove('on'); }); });
+    document.querySelectorAll('.scrim').forEach(function(s){ s.addEventListener('click', function(e){ if(e.target===s) s.classList.remove('on'); }); });
+
+    document.querySelectorAll('[data-drawer]').forEach(function(b){ b.addEventListener('click', function(){
+      document.getElementById(b.getAttribute('data-drawer')).classList.add('on'); }); });
+    document.querySelectorAll('[data-dclose]').forEach(function(b){ b.addEventListener('click', function(){
+      b.closest('.drawer').classList.remove('on'); }); });
+
+    var toastT;
+    document.querySelectorAll('[data-toast]').forEach(function(b){ b.addEventListener('click', function(){
+      var t=document.getElementById('toast'); t.textContent=b.getAttribute('data-toast'); t.classList.add('on');
+      clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); }, 2200); }); });
+  })();
+</script>
+</body>
+</html>

@@ -54,25 +54,20 @@ export function AdminFunnelPage() {
   const maxTotal = funnel ? Math.max(...funnel.steps.map((s) => s.total), 1) : 1;
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-text-primary">전환 퍼널</h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            상담 CTA → 상담 신청 → 가입 → 수업 시작(ACTIVE) 단계별 이벤트 집계
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <section className="page on" data-screen-label="퍼널">
+      <div className="crumb">/admin/funnel</div>
+      <h1>전환 퍼널</h1>
+      <p className="sub">상담 CTA → 상담 신청 → 가입 → 수업 시작(ACTIVE) 단계별 이벤트 집계</p>
+
+      <div className="sec filters">
+        <div className="opts">
           {DAY_OPTIONS.map((d) => (
             <button
               key={d}
               type="button"
+              className="opt"
+              aria-pressed={days === d}
               onClick={() => setDays(d)}
-              className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-                days === d
-                  ? "bg-primary text-white"
-                  : "border border-gray-200 bg-white text-text-secondary hover:border-primary/30"
-              }`}
             >
               최근 {d}일
             </button>
@@ -81,78 +76,54 @@ export function AdminFunnelPage() {
       </div>
 
       {error ? (
-        <div className="mt-6 rounded-2xl border border-accent/30 bg-accent/5 p-6 text-sm text-accent">
-          {error}
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>{error}</span>
         </div>
       ) : null}
 
       {loading || !funnel ? (
-        <p className="mt-6 text-sm text-text-secondary">불러오는 중…</p>
+        <p className="sub">불러오는 중…</p>
       ) : (
         <>
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-text-secondary">상담 신청 / CTA</p>
-              <p className="mt-2 text-2xl font-black text-text-primary">
-                {formatRate(funnel.rates.consultationFromCta)}
-              </p>
+          <div className="sec grid3" style={{ marginTop: 0 }}>
+            <div className="card kpi">
+              <b>{formatRate(funnel.rates.consultationFromCta)}</b>
+              <span>상담 신청 / CTA</span>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-text-secondary">가입 / 상담 신청</p>
-              <p className="mt-2 text-2xl font-black text-text-primary">
-                {formatRate(funnel.rates.signupFromConsultation)}
-              </p>
+            <div className="card kpi">
+              <b>{formatRate(funnel.rates.signupFromConsultation)}</b>
+              <span>가입 / 상담 신청</span>
             </div>
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-text-secondary">ACTIVE / 가입</p>
-              <p className="mt-2 text-2xl font-black text-text-primary">
-                {formatRate(funnel.rates.activeFromSignup)}
-              </p>
+            <div className="card kpi">
+              <b>{formatRate(funnel.rates.activeFromSignup)}</b>
+              <span>ACTIVE / 가입</span>
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <p className="text-xs font-bold text-text-secondary">
-              집계 시작: {new Date(funnel.since).toLocaleDateString("ko-KR")}
-            </p>
-            <div className="mt-5 space-y-5">
-              {funnel.steps.map((step, index) => (
-                <div key={step.key}>
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-black text-text-primary">
-                        {index + 1}. {step.label}
-                      </p>
-                      {step.eventName ? (
-                        <p className="text-xs text-text-secondary">{step.eventName}</p>
-                      ) : null}
-                    </div>
-                    <div className="text-right text-sm">
-                      <p className="font-black text-text-primary">{step.total.toLocaleString()}건</p>
-                      <p className="text-xs text-text-secondary">
-                        고유 사용자 {step.uniqueUsers.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${Math.max(4, (step.total / maxTotal) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="sec card funnel">
+            {funnel.steps.map((step, index) => (
+              <div key={step.key} className="f">
+                <b>{index + 1}. {step.label}</b>
+                <span className="tr">
+                  <i style={{ "--w": `${Math.max(4, (step.total / maxTotal) * 100)}%` } as React.CSSProperties}></i>
+                </span>
+                <span className="n">
+                  <b>{step.total.toLocaleString()}</b> · 고유 {step.uniqueUsers.toLocaleString()}
+                </span>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-4 rounded-2xl border border-dashed border-gray-200 bg-gray-50/80 p-4 text-sm text-text-secondary">
-            현재 활성 매칭(수업 중 스냅샷):{" "}
-            <span className="font-black text-text-primary">
+          <div className="sec banner ok">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 14 4-4 4 3 5-6" /></svg>
+            <span>
+              집계 시작 {new Date(funnel.since).toLocaleDateString("ko-KR")} · 현재 활성 매칭(수업 중 스냅샷){" "}
               {funnel.activeMatchesNow.toLocaleString()}건
             </span>
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }

@@ -8,7 +8,7 @@ import { PortalShell, type PortalNavItem } from "@/components/concord-portal/Por
 import { auth } from "@/auth";
 
 export const metadata = {
-  title: "관리자 패널",
+  title: "치프 매니저",
 };
 
 const stroke = {
@@ -125,7 +125,7 @@ const NAV: PortalNavItem[] = [
   },
 ];
 
-export default async function AdminLayout({
+export default async function ChiefManagerLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -82,28 +82,23 @@ export function AdminLeadsPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-text-primary">상담 신청 리드</h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            공개 상담신청 폼(/consult)으로 접수된 리드 목록입니다.
-          </p>
-        </div>
-        <div className="flex gap-2">
+    <section className="page on" data-screen-label="상담 리드">
+      <div className="crumb">/admin/leads</div>
+      <h1>상담 리드</h1>
+      <p className="sub">공개 상담신청 폼(/consult)으로 접수된 리드 목록입니다.</p>
+
+      <div className="sec filters">
+        <div className="opts">
           {FILTERS.map((f) => (
             <button
               key={f}
               type="button"
+              className="opt"
+              aria-pressed={filter === f}
               onClick={() => {
                 setFilter(f);
                 setPage(1);
               }}
-              className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-                filter === f
-                  ? "bg-primary text-white"
-                  : "border border-gray-200 bg-white text-text-secondary hover:border-primary/30"
-              }`}
             >
               {f === "ALL" ? "전체" : LEAD_STATUS_LABELS[f]}
             </button>
@@ -111,123 +106,109 @@ export function AdminLeadsPage() {
         </div>
       </div>
 
-      {error ? <p className="mt-6 text-sm text-red-600">{error}</p> : null}
-      {loading ? <p className="mt-6 text-sm text-text-secondary">불러오는 중…</p> : null}
-
-      {!loading && !error ? (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full min-w-[860px] text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-left text-xs text-text-secondary">
-                <th className="px-4 py-3">신청일</th>
-                <th className="px-4 py-3">연락처</th>
-                <th className="px-4 py-3">학년</th>
-                <th className="px-4 py-3">지역</th>
-                <th className="px-4 py-3">과목</th>
-                <th className="px-4 py-3">희망 시간</th>
-                <th className="px-4 py-3">유입 경로</th>
-                <th className="px-4 py-3">마케팅</th>
-                <th className="px-4 py-3">상태</th>
-                <th className="px-4 py-3">메모</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-text-secondary">
-                    접수된 상담 신청이 없습니다.
-                  </td>
-                </tr>
-              ) : (
-                leads.map((lead) => (
-                  <tr key={lead.id} className="border-b border-gray-100 align-top">
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(lead.createdAt).toLocaleString("ko-KR", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </td>
-                    <td className="px-4 py-3 font-bold whitespace-nowrap">
-                      {formatPhone(lead.phone)}
-                      {lead.name || lead.gender ? (
-                        <span className="ml-1 font-normal text-text-secondary">
-                          ({[lead.name, lead.gender].filter(Boolean).join(" · ")})
-                        </span>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">{lead.grade}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{lead.region ?? "—"}</td>
-                    <td className="px-4 py-3">{lead.subjects.join(", ")}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{lead.preferredTime ?? "—"}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{lead.source ?? "—"}</td>
-                    <td className="px-4 py-3">{lead.marketingOptIn ? "동의" : "—"}</td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={lead.status}
-                        onChange={(e) => void patchLead(lead.id, { status: e.target.value })}
-                        className="rounded-lg border border-gray-200 px-2 py-1 text-sm"
-                      >
-                        {LEAD_STATUSES.map((s) => (
-                          <option key={s} value={s}>
-                            {LEAD_STATUS_LABELS[s]}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <input
-                          value={noteDraft[lead.id] ?? lead.note ?? ""}
-                          onChange={(e) =>
-                            setNoteDraft((prev) => ({ ...prev, [lead.id]: e.target.value }))
-                          }
-                          placeholder="메모"
-                          className="w-40 rounded-lg border border-gray-200 px-2 py-1 text-sm"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            void patchLead(lead.id, { note: noteDraft[lead.id] ?? lead.note ?? "" })
-                          }
-                          className="rounded-lg border border-gray-200 px-2 py-1 text-xs font-bold text-text-secondary hover:border-primary/30"
-                        >
-                          저장
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {error ? (
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>{error}</span>
         </div>
       ) : null}
 
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
+            <tr>
+              <th>신청일</th>
+              <th>연락처</th>
+              <th>학년</th>
+              <th>지역</th>
+              <th>과목</th>
+              <th>희망 시간</th>
+              <th>유입</th>
+              <th>마케팅</th>
+              <th>상태</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={10}>불러오는 중…</td></tr>
+            ) : leads.length === 0 ? (
+              <tr><td colSpan={10}>접수된 상담 신청이 없습니다.</td></tr>
+            ) : (
+              leads.map((lead) => (
+                <tr key={lead.id}>
+                  <td>
+                    {new Date(lead.createdAt).toLocaleString("ko-KR", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                  <td>
+                    <b>{formatPhone(lead.phone)}</b>
+                    {lead.name || lead.gender ? (
+                      <span className="mini">{[lead.name, lead.gender].filter(Boolean).join(" · ")}</span>
+                    ) : null}
+                  </td>
+                  <td>{lead.grade}</td>
+                  <td>{lead.region ?? "—"}</td>
+                  <td>{lead.subjects.join(", ")}</td>
+                  <td>{lead.preferredTime ?? "—"}</td>
+                  <td>{lead.source ?? "—"}</td>
+                  <td>{lead.marketingOptIn ? "동의" : "—"}</td>
+                  <td>
+                    <select
+                      className="inp filled"
+                      value={lead.status}
+                      onChange={(e) => void patchLead(lead.id, { status: e.target.value })}
+                    >
+                      {LEAD_STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {LEAD_STATUS_LABELS[s]}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <input
+                        className="inp filled"
+                        value={noteDraft[lead.id] ?? lead.note ?? ""}
+                        onChange={(e) =>
+                          setNoteDraft((prev) => ({ ...prev, [lead.id]: e.target.value }))
+                        }
+                        placeholder="메모"
+                      />
+                      <button
+                        type="button"
+                        className="btn ghost sm"
+                        onClick={() =>
+                          void patchLead(lead.id, { note: noteDraft[lead.id] ?? lead.note ?? "" })
+                        }
+                      >
+                        저장
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {!loading && totalPages > 1 ? (
-        <div className="mt-4 flex items-center justify-center gap-3 text-sm">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border border-gray-200 px-3 py-1 disabled:opacity-40"
-          >
+        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
             이전
           </button>
-          <span>
-            {page} / {totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border border-gray-200 px-3 py-1 disabled:opacity-40"
-          >
+          <span className="sub" style={{ margin: 0 }}>{page} / {totalPages}</span>
+          <button type="button" className="btn ghost sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
             다음
           </button>
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }

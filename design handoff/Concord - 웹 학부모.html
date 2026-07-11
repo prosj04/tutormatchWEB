@@ -20,6 +20,7 @@
     <button class="nav-i" data-page="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>계정</button>
     <div class="foot">
       <div class="user"><span class="av">서</span><span><b>김서연 님</b><p>학부모 계정</p></span></div>
+      <button class="logout" data-toast="로그아웃되었습니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
     </div>
   </aside>
 
@@ -54,7 +55,6 @@
           <div class="row"><span class="av"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div class="g"><b>10월 결제 예정</b><p>지우 · 주 2회 플랜 · 10월 1일 자동 결제</p></div><span class="r">어제</span></div>
         </div>
       </div>
-      <div class="sec banner info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>학부모 페이지는 리포트·결제·상담·자녀 연결만 제공합니다. 진도·숙제·질문은 자녀 계정에서 관리돼요.</span></div>
     </section>
 
     <!-- REPORTS -->
@@ -68,11 +68,32 @@
           <table class="tbl">
             <thead><tr><th>월</th><th>종합</th><th>과목 변화</th><th>코멘트</th><th></th></tr></thead>
             <tbody>
-              <tr><td class="num">2026. 9.</td><td class="num">82 <span style="color:var(--acc-text);font-size:12px">▲8</span></td><td>수학 78→89 · 영어 71→78</td><td>매니저·선생님 코멘트 2건</td><td><button class="btn sec sm">열람</button></td></tr>
-              <tr><td class="num">2026. 8.</td><td class="num">74 <span style="color:var(--acc-text);font-size:12px">▲4</span></td><td>수학 71→78 · 영어 68→71</td><td>1건</td><td><button class="btn sec sm">열람</button></td></tr>
-              <tr><td class="num">2026. 7.</td><td class="num">70</td><td>첫 리포트</td><td>1건</td><td><button class="btn sec sm">열람</button></td></tr>
+              <tr><td class="num">2026. 9.</td><td class="num">82 <span style="color:var(--acc-text);font-size:12px">▲8</span></td><td>수학 78→89 · 영어 71→78</td><td>매니저·선생님 코멘트 2건</td><td><button class="btn sec sm" data-month="9" aria-pressed="true">열람</button></td></tr>
+              <tr><td class="num">2026. 8.</td><td class="num">74 <span style="color:var(--acc-text);font-size:12px">▲4</span></td><td>수학 71→78 · 영어 68→71</td><td>1건</td><td><button class="btn sec sm" data-month="8">열람</button></td></tr>
+              <tr><td class="num">2026. 7.</td><td class="num">70</td><td>첫 리포트</td><td>1건</td><td><button class="btn sec sm" data-month="7">열람</button></td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+      <!-- C-1: 리포트 상세 -->
+      <div class="sec" id="report-detail">
+        <h2>2026년 9월 리포트 · 지우</h2>
+        <div class="grid2">
+          <div class="card" style="padding:20px">
+            <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut-2)">점수 변화</p>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-top:8px"><b style="font-size:36px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">82</b><span style="color:var(--acc-text);font-weight:700;font-size:14px">▲8 지난달 대비</span></div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:grid;grid-template-columns:56px 1fr 74px;align-items:center;gap:12px;font-size:13px"><b>수학</b><span style="height:8px;border-radius:5px;background:var(--panel-2);overflow:hidden;display:block"><i style="display:block;height:100%;width:89%;background:var(--acc);border-radius:5px"></i></span><span class="num" style="text-align:right;color:var(--mut)">78→89</span></div>
+              <div style="display:grid;grid-template-columns:56px 1fr 74px;align-items:center;gap:12px;font-size:13px"><b>영어</b><span style="height:8px;border-radius:5px;background:var(--panel-2);overflow:hidden;display:block"><i style="display:block;height:100%;width:78%;background:rgba(var(--acc-rgb),.45);border-radius:5px"></i></span><span class="num" style="text-align:right;color:var(--mut)">71→78</span></div>
+            </div>
+            <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut-2);margin-top:18px">취약 유형</p>
+            <div class="opts" style="margin-top:10px"><span class="opt" style="cursor:default">도형 방정식</span><span class="opt" style="cursor:default">이차함수 활용</span><span class="opt" style="cursor:default">영어 빈칸 추론</span></div>
+          </div>
+          <div class="card">
+            <div class="row"><span class="av">노</span><div class="g"><b>노아 선생님 코멘트</b><p>적분 활용 파트 이해가 눈에 띄게 좋아졌어요. 도형 방정식 오답만 마무리하면 목표 달성입니다.</p></div></div>
+            <div class="row"><span class="av">한</span><div class="g"><b>한서윤 매니저 코멘트</b><p>학습 리듬이 안정적입니다. 10월은 중간고사 대비로 숙제량을 조정할 예정이에요.</p></div></div>
+            <div class="row"><div class="g"><b>10월 학습 계획</b><p>이차함수 심화 → 도형 방정식 복습 → 중간고사 모의평가 2회</p></div><button class="btn ghost sm" data-toast="PDF로 저장했습니다">PDF</button></div>
+          </div>
         </div>
       </div>
     </section>
@@ -173,6 +194,7 @@
   </main>
 </div>
 
+<div class="toast" id="toast"></div>
 <script>
   (function(){
     var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
@@ -197,6 +219,18 @@
         window.scrollTo(0,0);
       });
     });
+    // C-1: 월 선택 → 상세 갱신
+    var months={ '9':{t:'2026년 9월 리포트 · 지우'}, '8':{t:'2026년 8월 리포트 · 지우'}, '7':{t:'2026년 7월 리포트 · 지우'} };
+    document.querySelectorAll('[data-month]').forEach(function(b){ b.addEventListener('click', function(){
+      document.querySelectorAll('[data-month]').forEach(function(x){ x.setAttribute('aria-pressed', String(x===b)); });
+      var h=document.querySelector('#report-detail > h2'); if(h) h.textContent=months[b.getAttribute('data-month')].t;
+      window.scrollTo({top:document.getElementById('report-detail').offsetTop-20,behavior:'smooth'});
+    }); });
+    // toast
+    var toastT;
+    document.querySelectorAll('[data-toast]').forEach(function(b){ b.addEventListener('click', function(){
+      var t=document.getElementById('toast'); t.textContent=b.getAttribute('data-toast'); t.classList.add('on');
+      clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); }, 2200); }); });
   })();
 </script>
 </body>

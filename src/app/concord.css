@@ -402,6 +402,15 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(var(--acc-rgb),.1); }
 .nav-session-desktop{ display:flex; align-items:center; gap:10px; }
 
+/* ---- session chip + logout (design handoff: Concord - 헤더 로그인 상태) ---- */
+.sess{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:999px; border:1px solid var(--line-2); background:var(--panel); }
+.sess .av{ width:28px; height:28px; border-radius:50%; background:var(--acc); color:var(--on-acc); display:grid; place-items:center; font-size:11.5px; font-weight:800; }
+.sess b{ font-size:13px; font-weight:700; }
+.sess span{ font-size:11px; color:var(--mut-2); font-weight:600; }
+.lo-btn{ width:36px; height:36px; border-radius:10px; border:1px solid var(--line-2); background:var(--panel); color:var(--mut); display:grid; place-items:center; cursor:pointer; }
+.lo-btn svg{ width:15px; height:15px; }
+.lo-btn:hover{ color:var(--fg); border-color:var(--fg); }
+
 .mobile-backdrop{
   position:fixed; inset:0; z-index:45; border:0; padding:0; margin:0;
   background:rgba(15,18,30,.42); cursor:pointer;
@@ -440,7 +449,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .mobile-theme{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 .mobile-theme-label{ font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--mut-2); }
 .mobile-theme-controls{ display:flex; align-items:center; gap:8px; }
-.mobile-user{ font-size:14px; font-weight:600; color:var(--mut); margin:0; }
+.mobile-user{ width:100%; justify-content:flex-start; }
 .mobile-actions{ display:flex; flex-direction:column; gap:10px; }
 
 /* ---- content panels (checkout, success, forms) ---- */

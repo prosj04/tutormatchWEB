@@ -50,7 +50,8 @@ export function TeacherStudentsManager({
 
   const [upcomingLessons, setUpcomingLessons] = useState<UpcomingLesson[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(false);
-  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<UpcomingLesson | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
 
@@ -116,7 +117,8 @@ export function TeacherStudentsManager({
       setUpcomingLessons((prev) => prev.filter((l) => l.id !== lessonId));
     } finally {
       setCancelling(false);
-      setCancelConfirmId(null);
+      setCancelTarget(null);
+      setCancelReason("");
     }
   }, []);
 
@@ -315,34 +317,16 @@ export function TeacherStudentsManager({
                         {String(d.getMinutes()).padStart(2, "0")} · {lesson.durationMin}분
                       </p>
                     </div>
-                    {cancelConfirmId === lesson.id ? (
-                      <span style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                        <button
-                          type="button"
-                          className="btn pri sm"
-                          disabled={cancelling}
-                          onClick={() => void handleCancelLesson(lesson.id)}
-                        >
-                          {cancelling ? "취소 중…" : "확인"}
-                        </button>
-                        <button
-                          type="button"
-                          className="btn ghost sm"
-                          disabled={cancelling}
-                          onClick={() => setCancelConfirmId(null)}
-                        >
-                          닫기
-                        </button>
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        className="btn ghost sm"
-                        onClick={() => setCancelConfirmId(lesson.id)}
-                      >
-                        취소
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="btn ghost sm"
+                      onClick={() => {
+                        setCancelTarget(lesson);
+                        setCancelReason("");
+                      }}
+                    >
+                      취소
+                    </button>
                   </div>
                 );
               })
@@ -357,6 +341,57 @@ export function TeacherStudentsManager({
                 <span>{cancelMessage}</span>
               </div>
             ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      {cancelTarget ? (
+        <div
+          className="scrim on"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !cancelling) setCancelTarget(null);
+          }}
+          role="presentation"
+        >
+          <div className="modal" role="dialog" aria-modal="true" aria-label="수업 취소">
+            <div className="m-b">
+              <h3>수업을 취소하시겠어요?</h3>
+              <p className="m-p">
+                {selected?.name} ·{" "}
+                {(() => {
+                  const d = new Date(cancelTarget.startAt);
+                  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${["일", "월", "화", "수", "목", "금", "토"][d.getDay()]}) ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} · ${cancelTarget.durationMin}분`;
+                })()}
+                . 취소 시 학생·학부모에게 알림이 발송되며, 보강 수업이 자동 생성됩니다.
+              </p>
+              <div className="field" style={{ marginTop: "14px", marginBottom: 0 }}>
+                <label>취소 사유</label>
+                <input
+                  className="inp"
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="예: 개인 사정"
+                />
+              </div>
+            </div>
+            <div className="m-f">
+              <button
+                type="button"
+                className="btn sec"
+                disabled={cancelling}
+                onClick={() => setCancelTarget(null)}
+              >
+                돌아가기
+              </button>
+              <button
+                type="button"
+                className="btn danger solid"
+                disabled={cancelling}
+                onClick={() => void handleCancelLesson(cancelTarget.id)}
+              >
+                {cancelling ? "취소 중…" : "취소 + 보강 제안"}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

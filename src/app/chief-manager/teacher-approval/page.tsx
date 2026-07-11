@@ -67,69 +67,60 @@ export default function ChiefManagerTeacherApprovalPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <div className="mb-8">
-        <p className="text-sm font-semibold text-primary">Chief Manager</p>
-        <h1 className="mt-2 text-2xl font-black text-text-primary sm:text-3xl">
-          선생님 승인 관리
-        </h1>
-        <p className="mt-2 text-sm text-text-secondary">
-          가입한 선생님을 검토한 뒤 승인하거나 반려합니다.
-        </p>
-      </div>
+    <section className="page on" data-screen-label="치프 승인">
+      <div className="crumb">/chief-manager/teacher-approval</div>
+      <h1>치프 최종 승인</h1>
+      <p className="sub">매니저 승인을 거친 선생님의 최종 승인 큐입니다.</p>
 
       {error ? (
-        <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
-          {error}
-        </p>
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>{error}</span>
+        </div>
       ) : null}
 
-      {loading ? (
-        <p className="rounded-2xl border border-gray-200 bg-surface p-6 text-sm text-text-secondary">
-          불러오는 중…
-        </p>
-      ) : pendingTeachers.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center text-sm text-text-secondary">
-          승인 대기 중인 선생님이 없습니다.
-        </p>
-      ) : (
-        <ul className="space-y-3">
-          {pendingTeachers.map((teacher) => (
-            <li
-              key={teacher.id}
-              className="rounded-2xl border border-gray-200 bg-surface p-5 shadow-sm"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-text-primary">{teacher.name}</h2>
-                  <p className="mt-1 text-sm text-text-secondary">{teacher.email}</p>
-                  <p className="mt-1 text-xs text-text-muted">
-                    {teacher.subjects} · {teacher.phone}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    disabled={submittingId === teacher.id}
-                    onClick={() => void handleApproval(teacher.id, true)}
-                    className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                  >
-                    승인
-                  </button>
-                  <button
-                    type="button"
-                    disabled={submittingId === teacher.id}
-                    onClick={() => void handleApproval(teacher.id, false)}
-                    className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-secondary disabled:opacity-50"
-                  >
-                    반려
-                  </button>
-                </div>
+      <div className="sec card">
+        {loading ? (
+          <div className="row"><div className="g"><p>불러오는 중…</p></div></div>
+        ) : pendingTeachers.length === 0 ? (
+          <div className="empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+            <b>승인 대기 중인 선생님이 없습니다.</b>
+          </div>
+        ) : (
+          pendingTeachers.map((teacher) => (
+            <div key={teacher.id} className="row">
+              <span className="av">{teacher.name.slice(0, 1)}</span>
+              <div className="g">
+                <b>{teacher.name} · {teacher.subjects}</b>
+                <p>{teacher.email} · {teacher.phone}</p>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+              <span className="bst warn">최종 대기</span>
+              <button
+                type="button"
+                className="btn sec sm"
+                disabled={submittingId === teacher.id}
+                onClick={() => void handleApproval(teacher.id, false)}
+              >
+                반려
+              </button>
+              <button
+                type="button"
+                className="btn pri sm"
+                disabled={submittingId === teacher.id}
+                onClick={() => void handleApproval(teacher.id, true)}
+              >
+                최종 승인
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="sec banner ok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+        <span>최종 승인 시 선생님에게 알림이 발송되고 매칭 풀에 공개됩니다.</span>
+      </div>
+    </section>
   );
 }

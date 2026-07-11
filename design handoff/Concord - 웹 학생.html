@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko" data-color="green">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concord — 웹 학생 대시보드</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="web/portal.css" />
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <span class="dotw logo">Concord<span class="d"></span></span>
+    <span class="role">Student · /dashboard</span>
+    <button class="nav-i" data-page="dash" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/></svg>홈</button>
+    <button class="nav-i" data-page="consult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>상담 예약</button>
+    <button class="nav-i" data-page="questions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>질문<span class="cnt">1</span></button>
+    <button class="nav-i" data-page="notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>알림<span class="cnt">2</span></button>
+    <button class="nav-i" data-page="payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>결제 내역</button>
+    <button class="nav-i" data-page="account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>계정</button>
+    <div class="foot">
+      <button class="logout" data-toast="로그아웃되었습니다"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>로그아웃</button>
+      <div class="user"><span class="av">지</span><span><b>김지우</b><p>중3 · 수업중</p></span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="seg" role="group" aria-label="색 테마"><button class="g" data-set-color="green" aria-label="그린"><span class="dot"></span></button><button class="b" data-set-color="blue" aria-label="블루"><span class="dot"></span></button></div>
+      <button class="tog" data-toggle-theme aria-label="다크 모드 전환">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <!-- /dashboard -->
+    <section class="page on" id="pg-dash" data-screen-label="학생 홈">
+      <div class="crumb">/dashboard</div>
+      <h1>안녕하세요, 지우님</h1>
+      <p class="sub">오늘 수업과 이번 주 숙제를 확인하세요.</p>
+      <div class="sec card flow" aria-label="학습 진행 단계">
+        <div class="st done"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><span>상담</span></div><div class="bar done"></div>
+        <div class="st done"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><span>매칭</span></div><div class="bar done"></div>
+        <div class="st done"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><span>첫 수업</span></div><div class="bar done"></div>
+        <div class="st now"><i>4</i><span>수업중</span></div>
+      </div>
+      <div class="sec grid2">
+        <div class="card">
+          <div class="row"><span class="av">노</span><div class="g"><b>오늘 수업 · 수학</b><p>노아 선생님 · 오후 7:00 – 9:00</p></div><span class="bst acc">오늘</span></div>
+          <div class="row"><span class="av" style="background:var(--panel-2);color:var(--acc-text)">금</span><div class="g"><b>다음 수업 · 수학</b><p>10월 4일 (금) · 오후 7:00</p></div><span class="r">D-2</span></div>
+        </div>
+        <div class="card">
+          <div class="row"><div class="g"><b>9월 학습 리포트</b><p>종합 82점 · 지난달보다 8점 상승</p></div><button class="btn sec sm" data-toast="리포트로 이동합니다">리포트 보기</button></div>
+          <div class="row"><div class="g"><b>질문 답변 도착</b><p>이차함수 최댓값 질문 · 노아 선생님</p></div><button class="btn sec sm" data-goto="questions">확인</button></div>
+        </div>
+      </div>
+      <div class="sec card">
+        <h2 style="font-size:15px;font-weight:700;padding:16px 20px 4px">이번 주 숙제 <span style="color:var(--acc-text);margin-left:4px">2/4</span></h2>
+        <button class="chk on" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">쎈 수학 상 · 유형 12–15</span><span class="d">월</span></button>
+        <button class="chk on" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">오답노트 정리 (지난 시험 3문항)</span><span class="d">화</span></button>
+        <button class="chk" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">이차함수 활용 문제 10제</span><span class="d">목</span></button>
+        <button class="chk" data-chk><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">개념 복습 · 근과 계수의 관계</span><span class="d">토</span></button>
+      </div>
+    </section>
+
+    <!-- /dashboard/consultation -->
+    <section class="page" id="pg-consult" data-screen-label="상담 예약">
+      <div class="crumb">/dashboard/consultation</div>
+      <h1>상담 예약</h1>
+      <p class="sub">방문 상담을 신청하고 진행 상태를 확인하세요.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:22px">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">방문 상담 신청</h2>
+          <div class="field"><label>희망 시간대 1</label><input class="inp filled" value="10월 5일 (토) 오후 2:00" readonly /></div>
+          <div class="field"><label>희망 시간대 2</label><input class="inp filled" value="10월 6일 (일) 오전 11:00" readonly /></div>
+          <div class="field"><label>희망 시간대 3</label><input class="inp" placeholder="날짜와 시간을 선택하세요" readonly /></div>
+          <div class="field"><label>요청 사항</label><textarea class="inp area" placeholder="상담에서 나누고 싶은 내용을 적어주세요"></textarea></div>
+          <button class="btn pri" data-toast="상담 신청이 접수되었습니다" style="width:100%">상담 신청</button>
+        </div>
+        <div>
+          <div class="card">
+            <h2 style="font-size:15px;font-weight:700;padding:18px 20px 0">접수 상태</h2>
+            <div class="flow">
+              <div class="st done"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><span>접수 대기</span></div><div class="bar done"></div>
+              <div class="st now"><i>2</i><span>매니저 배정</span></div><div class="bar"></div>
+              <div class="st"><i>3</i><span>방문 확정</span></div><div class="bar"></div>
+              <div class="st"><i>4</i><span>완료</span></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:16px">
+            <div class="row"><span class="av">한</span><div class="g"><b>한서윤 매니저</b><p>담당 매니저 · 배정 완료</p></div><span class="bst acc">배정</span></div>
+            <div class="row"><div class="g"><b>접수 번호 C-20261011-042</b><p>10월 11일 접수 · 영업일 1일 내 연락드립니다</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /questions -->
+    <section class="page" id="pg-questions" data-screen-label="질문">
+      <div class="crumb">/questions</div>
+      <h1>질문</h1>
+      <p class="sub">사진과 함께 질문하면 AI가 먼저 풀이를 안내하고, 필요하면 선생님이 답변합니다.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:22px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h2 style="font-size:15px;font-weight:700">새 질문</h2>
+            <span class="bst acc">AI 토큰 7개 남음</span>
+          </div>
+          <div class="field"><label>질문 내용</label><textarea class="inp area filled" readonly>이차함수 y=-2x²+4x+1의 최댓값을 구하는 과정에서 완전제곱식으로 바꾸는 부분이 이해가 안 돼요.</textarea></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn pri" data-toast="질문이 등록되었습니다 — AI가 먼저 답변합니다" style="flex:1">질문하기</button>
+            <button class="btn sec"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>사진 첨부</button>
+          </div>
+          <span class="f-hint">AI 답변 후 ‘해결됐어요’ 또는 ‘선생님께 질문’을 선택할 수 있어요. 토큰이 없으면 선생님 답변만 대기합니다.</span>
+        </div>
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 4px">내 질문</h2>
+          <div class="row"><div class="g"><b>이차함수 최댓값 풀이</b><p>AI 답변 완료 · 선생님 답변 대기</p></div><span class="bst warn">대기</span></div>
+          <div class="row"><div class="g"><b>근과 계수의 관계 응용</b><p>노아 선생님 답변 · 어제</p></div><span class="bst acc">해결</span></div>
+          <div class="row"><div class="g"><b>연립방정식 활용 (속력)</b><p>AI 답변으로 해결 · 9월 28일</p></div><span class="bst acc">해결</span></div>
+          <div class="row"><div class="g"><b>인수분해 공식 정리</b><p>노아 선생님 답변 · 9월 25일</p></div><span class="bst acc">해결</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- /notifications -->
+    <section class="page" id="pg-notif" data-screen-label="알림 센터">
+      <div class="crumb">/notifications</div>
+      <h1>알림</h1>
+      <p class="sub">수업·리포트·결제·질문 소식을 한곳에서 확인하세요.</p>
+      <div class="sec card">
+        <div class="row unread"><span class="nd"></span><span class="av" style="background:var(--panel-2);color:var(--acc-text)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><div class="g"><b>오늘 수업 리마인드</b><p>수학 · 노아 선생님 · 오후 7:00</p></div><span class="r">1시간 전</span></div>
+        <div class="row unread"><span class="nd"></span><span class="av" style="background:var(--panel-2);color:var(--acc-text)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div class="g"><b>질문 답변 도착</b><p>이차함수 최댓값 · 노아 선생님</p></div><span class="r">2시간 전</span></div>
+        <div class="row"><span class="nd" style="visibility:hidden"></span><span class="av" style="background:var(--panel-2);color:var(--acc-text)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span><div class="g"><b>9월 학습 리포트 도착</b><p>종합 82점 · 코멘트 포함</p></div><span class="r">어제</span></div>
+        <div class="row"><span class="nd" style="visibility:hidden"></span><span class="av" style="background:var(--panel-2);color:var(--acc-text)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div class="g"><b>10월 정기 결제 예정</b><p>주 2회 플랜 · 10월 1일 자동 결제</p></div><span class="r">2일 전</span></div>
+      </div>
+    </section>
+
+    <!-- /payments -->
+    <section class="page" id="pg-payments" data-screen-label="결제 내역">
+      <div class="crumb">/payments</div>
+      <h1>결제 내역</h1>
+      <p class="sub">결제·환불 이력과 구독 상태를 확인하세요.</p>
+      <div class="sec card">
+        <div class="row"><div class="g"><b>주 2회 플랜 구독중</b><p>740,000원/월 · 다음 결제 11월 1일</p></div><span class="bst acc">구독중</span><button class="btn ghost sm" data-goto="checkout">플랜 변경</button></div>
+      </div>
+      <div class="sec card" style="overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>일자</th><th>내역</th><th>금액</th><th>상태</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>10월 1일</td><td><b>주 2회 플랜 · 10월</b></td><td class="num">740,000원</td><td><span class="bst acc">완료</span></td><td><a href="#" onclick="return false">현금영수증</a></td></tr>
+            <tr><td>9월 1일</td><td><b>주 2회 플랜 · 9월</b></td><td class="num">740,000원</td><td><span class="bst acc">완료</span></td><td><a href="#" onclick="return false">현금영수증</a></td></tr>
+            <tr><td>8월 12일</td><td><b>8월 보강 1회 취소</b></td><td class="num">-92,500원</td><td><span class="bst mut">환불</span></td><td><a href="#" onclick="return false">상세</a></td></tr>
+            <tr><td>8월 1일</td><td><b>주 2회 플랜 · 8월</b></td><td class="num">740,000원</td><td><span class="bst acc">완료</span></td><td><a href="#" onclick="return false">현금영수증</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- /checkout -->
+    <section class="page" id="pg-checkout" data-screen-label="결제">
+      <div class="crumb">/checkout</div>
+      <h1>결제</h1>
+      <p class="sub">플랜을 확인하고 결제를 완료하세요.</p>
+      <div class="sec banner err" style="display:none" id="pay-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>결제에 실패했습니다. 카드 정보를 확인하거나 다른 결제 수단을 선택해 주세요.</span></div>
+      <div class="sec grid2">
+        <div>
+          <div class="card" style="padding:22px">
+            <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">주문자 정보</h2>
+            <div class="field"><label>이름</label><input class="inp filled" value="김지우" /></div>
+            <div class="field"><label>연락처</label><input class="inp filled" value="010-1234-5678" /></div>
+            <div class="field"><label>이메일 (영수증 수신)</label><input class="inp" placeholder="you@example.com" /></div>
+          </div>
+          <div class="card" style="padding:22px;margin-top:16px">
+            <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">결제 수단</h2>
+            <div class="pm">
+              <button class="p" aria-pressed="true" data-pm>카드</button>
+              <button class="p" aria-pressed="false" data-pm>계좌이체</button>
+              <button class="p" aria-pressed="false" data-pm>간편결제</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:22px;align-self:start">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">플랜 요약</h2>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px"><span style="color:var(--mut)">플랜</span><b>주 2회 · 회당 2시간</b></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px"><span style="color:var(--mut)">수업</span><b>수학 · 노아 선생님</b></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px"><span style="color:var(--mut)">첫 결제일</span><b>10월 1일</b></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px"><span style="font-size:13.5px;color:var(--mut)">월 결제 금액</span><b style="font-size:24px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">740,000원</b></div>
+          <div style="margin:14px 0;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px">
+            <label style="display:flex;gap:9px;font-size:12.5px;color:var(--mut);align-items:center"><input type="checkbox" checked style="accent-color:var(--acc);width:15px;height:15px" />(필수) 이용약관 및 결제 규정 동의</label>
+            <label style="display:flex;gap:9px;font-size:12.5px;color:var(--mut);align-items:center"><input type="checkbox" checked style="accent-color:var(--acc);width:15px;height:15px" />(필수) 개인정보 수집·이용 동의</label>
+            <label style="display:flex;gap:9px;font-size:12.5px;color:var(--mut);align-items:center"><input type="checkbox" style="accent-color:var(--acc);width:15px;height:15px" />(선택) 학습 소식 수신 동의</label>
+          </div>
+          <button class="btn pri" style="width:100%" data-goto="success">740,000원 결제하기</button>
+          <span class="f-hint" style="text-align:center">매월 1일 자동 결제 · 언제든 해지 가능</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- /success -->
+    <section class="page" id="pg-success" data-screen-label="결제 완료">
+      <div class="crumb">/success</div>
+      <div class="sec card" style="max-width:520px;margin:40px auto 0;padding:40px 36px;text-align:center">
+        <span style="width:56px;height:56px;border-radius:50%;background:rgba(var(--acc-rgb),.12);color:var(--acc-text);display:grid;place-items:center;margin:0 auto"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <h1 style="font-size:23px;margin-top:18px">결제가 완료되었습니다</h1>
+        <p class="sub" style="margin-top:8px">주 2회 플랜 구독이 시작되었어요.</p>
+        <div style="text-align:left;margin-top:24px;border:1px solid var(--line);border-radius:13px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--line)"><span style="color:var(--mut)">구독</span><b>주 2회 · 740,000원/월</b></div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--line)"><span style="color:var(--mut)">다음 결제</span><b>11월 1일</b></div>
+          <div style="display:flex;justify-content:space-between;padding:12px 16px;font-size:13.5px"><span style="color:var(--mut)">첫 수업</span><b>10월 4일 (금) 오후 7:00</b></div>
+        </div>
+        <button class="btn pri" style="width:100%;margin-top:20px" data-goto="dash">홈으로 가기</button>
+        <span class="f-hint">첫 수업 전에 담당 선생님이 학습 계획을 안내드려요.</span>
+      </div>
+    </section>
+
+    <!-- /dashboard/account -->
+    <section class="page" id="pg-account" data-screen-label="계정">
+      <div class="crumb">/dashboard/account</div>
+      <h1>계정</h1>
+      <p class="sub">프로필과 보안, 학부모 연결을 관리하세요.</p>
+      <div class="sec grid2">
+        <div class="card" style="padding:22px">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">프로필</h2>
+          <div class="field"><label>이름</label><input class="inp filled" value="김지우" /></div>
+          <div class="field"><label>학년</label><input class="inp filled" value="중학교 3학년" /></div>
+          <div class="field"><label>연락처</label><input class="inp filled" value="010-1234-5678" /></div>
+          <button class="btn pri" data-toast="프로필이 저장되었습니다">저장</button>
+        </div>
+        <div class="card" style="padding:22px">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:14px">비밀번호 변경</h2>
+          <div class="field"><label>현재 비밀번호</label><input type="password" class="inp" placeholder="현재 비밀번호" /></div>
+          <div class="field"><label>새 비밀번호</label><input type="password" class="inp err" placeholder="8자 이상, 영문+숫자" /><span class="f-err">비밀번호는 8자 이상이어야 합니다.</span></div>
+          <div class="field"><label>새 비밀번호 확인</label><input type="password" class="inp" placeholder="한 번 더 입력" /></div>
+          <button class="btn sec" data-toast="비밀번호가 변경되었습니다">비밀번호 변경</button>
+        </div>
+      </div>
+      <div class="sec grid2">
+        <div class="card">
+          <h2 style="font-size:15px;font-weight:700;padding:18px 20px 0">학부모 연결</h2>
+          <div class="codebox">
+            <span class="qr" aria-label="연결 QR 코드"><svg viewBox="0 0 64 64" fill="currentColor"><path d="M4 4h20v20H4zM9 9v10h10V9zM40 4h20v20H40zM45 9v10h10V9zM4 40h20v20H4zM9 45v10h10V45zM40 40h6v6h-6zM52 40h8v6h-8zM40 52h6v8h-6zM52 52h8v8h-8zM28 4h6v10h-6zM28 22h6v12h-6zM28 40h6v6h-6zM28 52h6v8h-6zM4 28h10v6H4zM22 28h12v6H22zM40 28h10v6h-10zM56 28h4v6h-4z"/></svg></span>
+            <div>
+              <b class="code">4B7-Q2M</b>
+              <p>학부모 앱에서 이 코드를 입력하면 자녀 계정과 연결됩니다. 유효기간 24시간.</p>
+              <button class="btn ghost sm" style="margin-top:10px" data-toast="새 연결 코드가 발급되었습니다">코드 재발급</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:22px">
+          <h2 style="font-size:15px;font-weight:700;margin-bottom:6px">계정 관리</h2>
+          <p style="font-size:13px;color:var(--mut);margin-bottom:14px">탈퇴 시 학습 기록과 리포트가 모두 삭제되며 복구할 수 없습니다.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn sec" data-toast="로그아웃되었습니다">로그아웃</button>
+            <button class="btn danger" data-open="m-quit">회원 탈퇴</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 탈퇴 확인 모달 -->
+<div class="scrim" id="m-quit">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="회원 탈퇴 확인">
+    <div class="m-b">
+      <h3>정말 탈퇴하시겠어요?</h3>
+      <p class="m-p">학습 기록·리포트·질문 내역이 모두 삭제되며 복구할 수 없습니다. 진행 중인 구독은 말일까지 유지 후 종료됩니다.</p>
+      <div class="field" style="margin-top:14px"><label>확인을 위해 ‘탈퇴합니다’를 입력하세요</label><input class="inp" placeholder="탈퇴합니다" /></div>
+    </div>
+    <div class="m-f">
+      <button class="btn sec" data-close>취소</button>
+      <button class="btn danger solid" data-close data-toast="탈퇴 처리되었습니다">탈퇴하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  (function(){
+    var root=document.documentElement, CKEY='concord-color', TKEY='concord-mode';
+    try{ var c=localStorage.getItem(CKEY); root.setAttribute('data-color', c==='blue'?'blue':'green');
+      if(localStorage.getItem(TKEY)==='dark') root.setAttribute('data-theme','dark'); }catch(e){ root.setAttribute('data-color','green'); }
+    function sync(){ var col=root.getAttribute('data-color')||'green';
+      document.querySelectorAll('[data-set-color]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-set-color')===col)); }); }
+    document.querySelectorAll('[data-set-color]').forEach(function(b){ b.addEventListener('click', function(){
+      root.setAttribute('data-color', b.getAttribute('data-set-color')); try{ localStorage.setItem(CKEY,b.getAttribute('data-set-color')); }catch(e){} sync(); }); });
+    document.querySelectorAll('[data-toggle-theme]').forEach(function(b){ b.addEventListener('click', function(){
+      var dark=root.getAttribute('data-theme')==='dark'; if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(TKEY, dark?'light':'dark'); }catch(e){} }); });
+    sync();
+
+    function goPage(id){
+      document.querySelectorAll('.nav-i[data-page]').forEach(function(x){ x.setAttribute('aria-current', String(x.getAttribute('data-page')===id)); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+      var pg=document.getElementById('pg-'+id); if(pg) pg.classList.add('on');
+      window.scrollTo(0,0);
+    }
+    document.querySelectorAll('.nav-i[data-page]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-page')); }); });
+    document.querySelectorAll('[data-goto]').forEach(function(b){ b.addEventListener('click', function(){ goPage(b.getAttribute('data-goto')); }); });
+
+    // homework check
+    document.querySelectorAll('[data-chk]').forEach(function(b){ b.addEventListener('click', function(){ b.classList.toggle('on'); }); });
+
+    // payment method
+    document.querySelectorAll('[data-pm]').forEach(function(b){ b.addEventListener('click', function(){
+      document.querySelectorAll('[data-pm]').forEach(function(x){ x.setAttribute('aria-pressed', String(x===b)); }); }); });
+
+    // modal open/close
+    document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click', function(){
+      document.getElementById(b.getAttribute('data-open')).classList.add('on'); }); });
+    document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', function(){
+      b.closest('.scrim').classList.remove('on'); }); });
+    document.querySelectorAll('.scrim').forEach(function(s){ s.addEventListener('click', function(e){ if(e.target===s) s.classList.remove('on'); }); });
+
+    // toast
+    var toastT;
+    document.querySelectorAll('[data-toast]').forEach(function(b){ b.addEventListener('click', function(){
+      var t=document.getElementById('toast'); t.textContent=b.getAttribute('data-toast'); t.classList.add('on');
+      clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); }, 2200); }); });
+  })();
+</script>
+</body>
+</html>

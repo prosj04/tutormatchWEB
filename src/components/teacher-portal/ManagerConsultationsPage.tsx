@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ManagerConsultationBooking } from "@/lib/manager-portal-data";
@@ -316,18 +315,7 @@ export function ManagerConsultationsPage({
 
   return (
     <section className="page on" id="pg-consult">
-      <AnimatePresence>
-        {toast ? (
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            className="fixed left-1/2 top-24 z-50 -translate-x-1/2 rounded-xl bg-text-primary px-5 py-3 text-sm font-medium text-white shadow-lg"
-          >
-            {toast}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <div className={toast ? "toast on" : "toast"}>{toast}</div>
 
       <div className="crumb">/teacher-portal/dashboard/consultations</div>
       <h1>상담 관리</h1>
@@ -419,34 +407,42 @@ export function ManagerConsultationsPage({
 
       {completeTarget ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
+          className="scrim on"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setCompleteTarget(null);
+          }}
+          role="presentation"
         >
-          <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl">
-            <h2 className="text-lg font-bold text-text-primary">상담 완료</h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              {completeTarget.student.name} 학생 상담을 완료 처리합니다.
-            </p>
-            <textarea
-              value={managerNote}
-              onChange={(e) => setManagerNote(e.target.value)}
-              rows={5}
-              placeholder="상담 메모 (내부용, 매칭 시 참고)"
-              className="mt-4 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-            />
-            <div className="mt-4 flex gap-2">
+          <div className="modal" role="dialog" aria-modal="true" aria-label="상담 완료 처리">
+            <div className="m-b">
+              <h3>상담 완료 처리</h3>
+              <p className="m-p">
+                {completeTarget.student.name} · {completeTarget.student.grade}
+                {completeTarget.student.subjects ? ` · ${completeTarget.student.subjects}` : ""}
+              </p>
+              <div className="field" style={{ marginTop: "14px" }}>
+                <label>상담 노트 (필수)</label>
+                <textarea
+                  className="inp area filled"
+                  value={managerNote}
+                  onChange={(e) => setManagerNote(e.target.value)}
+                  placeholder="상담 메모 (내부용, 매칭 시 참고)"
+                />
+              </div>
+            </div>
+            <div className="m-f">
               <button
                 type="button"
+                className="btn sec"
                 onClick={() => setCompleteTarget(null)}
-                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm"
               >
                 취소
               </button>
               <button
                 type="button"
+                className="btn pri"
                 disabled={!managerNote.trim() || actionLoading === completeTarget.id}
                 onClick={() => void completeBooking()}
-                className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
               >
                 완료 처리
               </button>
@@ -457,102 +453,92 @@ export function ManagerConsultationsPage({
 
       {reportTarget ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
+          className="scrim on"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setReportTarget(null);
+          }}
+          role="presentation"
         >
-          <div className="w-full max-w-lg overflow-y-auto rounded-2xl bg-surface p-6 shadow-xl max-h-[90vh]">
-            <h2 className="text-lg font-bold text-text-primary">상담 리포트</h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              {reportTarget.student.name} 학생 — 목표 및 수준 기록
-            </p>
+          <div className="modal" role="dialog" aria-modal="true" aria-label="상담 리포트">
+            <div className="m-b">
+              <h3>상담 리포트</h3>
+              <p className="m-p">
+                {reportTarget.student.name} · {reportTarget.student.grade}
+                {reportTarget.student.subjects ? ` · ${reportTarget.student.subjects}` : ""}
+              </p>
 
-            {reportLoading ? (
-              <p className="mt-6 text-center text-sm text-text-muted">불러오는 중...</p>
-            ) : (
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-text-secondary">
-                    정량 목표 (한 줄에 하나, 최대 10개)
-                  </label>
-                  <textarea
-                    value={reportGoals.quantitative.join("\n")}
-                    onChange={(e) =>
-                      handleGoalListChange("quantitative", e.target.value)
-                    }
-                    rows={4}
-                    placeholder={"예) 수학 3등급 달성\n예) 영어 모의고사 85점 이상"}
-                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-text-secondary">
-                    정성 목표 (한 줄에 하나, 최대 10개)
-                  </label>
-                  <textarea
-                    value={reportGoals.qualitative.join("\n")}
-                    onChange={(e) =>
-                      handleGoalListChange("qualitative", e.target.value)
-                    }
-                    rows={4}
-                    placeholder={"예) 자기주도 학습 습관 형성\n예) 개념 이해 중심 공부 전환"}
-                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-text-secondary">
-                    과목별 현재 수준 (형식: &quot;과목: 수준&quot;, 한 줄에 하나)
-                  </label>
-                  <textarea
-                    value={reportSubjectLevels}
-                    onChange={(e) => setReportSubjectLevels(e.target.value)}
-                    rows={3}
-                    placeholder={"예) 수학: 중학교 3학년 수준\n예) 영어: 기초 문법 숙지"}
-                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-text-secondary">
-                    추천 플랜
-                  </label>
-                  <textarea
-                    value={reportRecommendedPlan}
-                    onChange={(e) => setReportRecommendedPlan(e.target.value)}
-                    rows={3}
-                    placeholder="주 2회 수학 집중, 월 1회 영어 점검 등"
-                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-text-secondary">
-                    메모 (내부용)
-                  </label>
-                  <textarea
-                    value={reportNote}
-                    onChange={(e) => setReportNote(e.target.value)}
-                    rows={3}
-                    placeholder="특이사항, 학부모 요청사항 등"
-                    className="mt-1 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="mt-5 flex gap-2">
+              {reportLoading ? (
+                <p className="m-p" style={{ marginTop: "14px" }}>불러오는 중…</p>
+              ) : (
+                <>
+                  <div className="field" style={{ marginTop: "14px" }}>
+                    <label>정량 목표 (한 줄에 하나, 최대 10개)</label>
+                    <textarea
+                      className="inp area filled"
+                      value={reportGoals.quantitative.join("\n")}
+                      onChange={(e) =>
+                        handleGoalListChange("quantitative", e.target.value)
+                      }
+                      placeholder={"예) 수학 3등급 달성\n예) 영어 모의고사 85점 이상"}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>정성 목표 (한 줄에 하나, 최대 10개)</label>
+                    <textarea
+                      className="inp area filled"
+                      value={reportGoals.qualitative.join("\n")}
+                      onChange={(e) =>
+                        handleGoalListChange("qualitative", e.target.value)
+                      }
+                      placeholder={"예) 자기주도 학습 습관 형성\n예) 개념 이해 중심 공부 전환"}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>과목별 현재 수준 (형식: &quot;과목: 수준&quot;, 한 줄에 하나)</label>
+                    <textarea
+                      className="inp area filled"
+                      value={reportSubjectLevels}
+                      onChange={(e) => setReportSubjectLevels(e.target.value)}
+                      placeholder={"예) 수학: 중학교 3학년 수준\n예) 영어: 기초 문법 숙지"}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>추천 플랜</label>
+                    <textarea
+                      className="inp area filled"
+                      value={reportRecommendedPlan}
+                      onChange={(e) => setReportRecommendedPlan(e.target.value)}
+                      placeholder="주 2회 수학 집중, 월 1회 영어 점검 등"
+                    />
+                  </div>
+                  <div className="field" style={{ marginBottom: 0 }}>
+                    <label>종합 의견 (내부용)</label>
+                    <textarea
+                      className="inp area filled"
+                      value={reportNote}
+                      onChange={(e) => setReportNote(e.target.value)}
+                      placeholder="특이사항, 학부모 요청사항 등"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="m-f">
               <button
                 type="button"
+                className="btn sec"
                 onClick={() => setReportTarget(null)}
-                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm"
               >
                 닫기
               </button>
               {!reportLoading && (
                 <button
                   type="button"
+                  className="btn pri"
                   disabled={reportSaving}
                   onClick={() => void saveReport()}
-                  className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                 >
-                  {reportSaving ? "저장 중..." : "저장"}
+                  {reportSaving ? "저장 중…" : "저장"}
                 </button>
               )}
             </div>

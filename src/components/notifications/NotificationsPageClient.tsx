@@ -1,11 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
-
-import { ConcordPortalThemeControls } from "@/components/concord/ConcordPortalThemeControls";
 
 type NotificationItem = {
   id: string;
@@ -26,18 +22,39 @@ type Props = {
   initialUnreadCount: number;
 };
 
-function groupByDate(items: NotificationItem[]): [string, NotificationItem[]][] {
-  const groups: Map<string, NotificationItem[]> = new Map();
-  for (const item of items) {
-    const d = new Date(item.createdAt);
-    const label = d.toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
-    if (!groups.has(label)) groups.set(label, []);
-    groups.get(label)!.push(item);
+/** 알림 유형 → 시안 아바타 아이콘. */
+function NotifIcon({ type }: { type: string }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    width: 17,
+    height: 17,
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  if (type.includes("LESSON") || type.includes("CONSULT") || type.includes("SCHEDULE")) {
+    return (
+      <svg {...common}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+    );
   }
-  return Array.from(groups.entries());
+  if (type.includes("QUESTION") || type.includes("ANSWER")) {
+    return (
+      <svg {...common}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+    );
+  }
+  if (type.includes("PAY") || type.includes("BILL") || type.includes("SUBSCRIPTION")) {
+    return (
+      <svg {...common}><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>
+    );
+  }
+  return (
+    <svg {...common}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M9 13h6M9 17h4" /></svg>
+  );
 }
 
-export function NotificationsPageClient({ studentName, initialItems, initialUnreadCount }: Props) {
+export function NotificationsPageClient({ initialItems, initialUnreadCount }: Props) {
   const router = useRouter();
   const [items, setItems] = useState(initialItems);
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
@@ -57,97 +74,57 @@ export function NotificationsPageClient({ studentName, initialItems, initialUnre
     if (item.href) router.push(item.href);
   }
 
-  const groups = groupByDate(items);
-
   return (
-    <div className="min-h-screen bg-background" data-portal-content>
-      <header className="portal-topbar">
-        <div className="portal-topbar-inner">
-          <Link href="/dashboard" className="portal-topbar-brand">
-            Concord<span>.</span>
-          </Link>
-          <p className="portal-topbar-title">{studentName}님의 알림</p>
-          <div className="portal-topbar-actions">
-            <ConcordPortalThemeControls />
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => signOut({ redirectTo: "/" })}
-            >
-              <span className="md:hidden">나가기</span>
-              <span className="hidden md:inline">로그아웃</span>
-            </button>
-          </div>
-        </div>
-      </header>
+    <section className="page on" id="pg-notif" data-screen-label="알림 센터">
+      <div className="crumb">/notifications</div>
+      <h1>알림</h1>
+      <p className="sub">수업·리포트·결제·질문 소식을 한곳에서 확인하세요.</p>
 
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h1 className="text-xl font-bold text-text-primary">
-            알림
-            {unreadCount > 0 && (
-              <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-sm font-semibold text-white">
-                {unreadCount}
-              </span>
-            )}
-          </h1>
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              onClick={() => void markAllRead()}
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              전체 읽음 표시
-            </button>
-          )}
+      {unreadCount > 0 ? (
+        <div className="sec" style={{ display: "flex", justifyContent: "flex-end" }}>
+          <button type="button" className="btn ghost sm" onClick={() => void markAllRead()}>
+            전체 읽음 표시
+          </button>
         </div>
+      ) : null}
 
+      <div className="sec card">
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-surface px-6 py-16 text-center">
-            <p className="text-sm text-text-secondary">아직 알림이 없습니다.</p>
-            <Link href="/dashboard" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
-              학습 플래너로 돌아가기
-            </Link>
+          <div className="row">
+            <div className="g">
+              <b>아직 알림이 없습니다</b>
+              <p>수업·리포트·결제 소식이 도착하면 여기에 표시됩니다.</p>
+            </div>
           </div>
         ) : (
-          <div className="space-y-8">
-            {groups.map(([date, groupItems]) => (
-              <section key={date}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">{date}</p>
-                <ul className="space-y-2">
-                  {groupItems.map((item) => (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        onClick={() => void handleItemClick(item)}
-                        className={`w-full rounded-2xl border px-4 py-4 text-left transition hover:bg-background ${
-                          item.isRead
-                            ? "border-gray-100 bg-surface"
-                            : "border-primary/20 bg-primary/5"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="mt-0.5 text-xl leading-none">{item.icon}</span>
-                          <div className="min-w-0 flex-1">
-                            <p className={`text-sm font-semibold ${item.isRead ? "text-text-primary" : "text-primary"}`}>
-                              {item.title}
-                              {!item.isRead && (
-                                <span className="ml-2 inline-block h-2 w-2 rounded-full bg-primary align-middle" />
-                              )}
-                            </p>
-                            <p className="mt-1 text-sm leading-relaxed text-text-secondary">{item.body}</p>
-                            <p className="mt-2 text-xs text-text-muted">{item.timeAgo}</p>
-                          </div>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
+          items.map((item) => (
+            <div
+              key={item.id}
+              className={item.isRead ? "row" : "row unread"}
+              role="button"
+              tabIndex={0}
+              onClick={() => void handleItemClick(item)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  void handleItemClick(item);
+                }
+              }}
+              style={{ cursor: item.href ? "pointer" : "default" }}
+            >
+              <span className="nd" style={item.isRead ? { visibility: "hidden" } : undefined}></span>
+              <span className="av" style={{ background: "var(--panel-2)", color: "var(--acc-text)" }}>
+                <NotifIcon type={item.type} />
+              </span>
+              <div className="g">
+                <b>{item.title}</b>
+                <p>{item.body}</p>
+              </div>
+              <span className="r">{item.timeAgo}</span>
+            </div>
+          ))
         )}
-      </main>
-    </div>
+      </div>
+    </section>
   );
 }

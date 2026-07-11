@@ -25,10 +25,9 @@ const FILTERS = [
 ];
 
 function statusBadgeClass(status: string) {
-  if (status === "FAILED") return "bg-pink-100 text-accent";
-  if (status === "PROCESSING") return "bg-amber-100 text-amber-900";
-  if (status === "REFUNDED") return "bg-orange-100 text-orange-800";
-  return "bg-emerald-100 text-emerald-800";
+  if (status === "COMPLETED") return "acc";
+  if (status === "PROCESSING" || status === "REFUNDED") return "warn";
+  return "mut";
 }
 
 function statusLabel(status: string) {
@@ -91,88 +90,66 @@ export function AdminPaymentsPage() {
     }
   }
 
-  return (
-    <div>
-      <h2 className="text-2xl font-black text-text-primary">결제 기록</h2>
+  const refundingRow = rows.find((r) => r.id === refundingId) ?? null;
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setStatus(f.value)}
-            className={`rounded-xl border px-4 py-2 text-sm font-medium ${
-              status === f.value
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-gray-200 text-text-secondary"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+  return (
+    <section className="page on" data-screen-label="결제 관리">
+      <div className="crumb">/admin/payments</div>
+      <h1>결제 관리</h1>
+      <p className="sub">결제 이력과 환불 처리를 관리합니다.</p>
+
+      <div className="sec filters">
+        <div className="opts">
+          {FILTERS.map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              className="opt"
+              aria-pressed={status === f.value}
+              onClick={() => setStatus(f.value)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <table className="w-full min-w-[900px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
             <tr>
-              <th className="px-4 py-3">상태</th>
-              <th className="px-4 py-3">주문번호</th>
-              <th className="px-4 py-3">학생</th>
-              <th className="px-4 py-3">플랜</th>
-              <th className="px-4 py-3">금액</th>
-              <th className="px-4 py-3">생성일</th>
-              <th className="px-4 py-3">수정일</th>
-              <th className="px-4 py-3">액션</th>
+              <th>상태</th>
+              <th>주문</th>
+              <th>학생</th>
+              <th>플랜</th>
+              <th>금액</th>
+              <th>생성일</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
-                  불러오는 중…
-                </td>
-              </tr>
+              <tr><td colSpan={7}>불러오는 중…</td></tr>
             ) : rows.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
-                  결과 없음
-                </td>
-              </tr>
+              <tr><td colSpan={7}>결과 없음</td></tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-50 align-top">
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadgeClass(row.status)}`}
-                    >
-                      {statusLabel(row.status)}
-                    </span>
+                <tr key={row.id}>
+                  <td><span className={`bst ${statusBadgeClass(row.status)}`}>{statusLabel(row.status)}</span></td>
+                  <td>
+                    <b>{row.planId}</b>
+                    <span className="mini">{row.orderId}</span>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-text-secondary">{row.orderId}</td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-text-primary">{row.studentName ?? "—"}</div>
-                    <div className="text-xs text-text-muted">{row.studentPhone ?? ""}</div>
+                  <td>
+                    {row.studentName ?? "—"}
+                    {row.studentPhone ? <span className="mini">{row.studentPhone}</span> : null}
                   </td>
-                  <td className="px-4 py-3 text-text-secondary">{row.planId}</td>
-                  <td className="px-4 py-3 text-text-secondary">
-                    {row.amount != null ? `${row.amount.toLocaleString()}원` : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-text-secondary">
-                    {new Date(row.createdAt).toLocaleString("ko-KR")}
-                  </td>
-                  <td className="px-4 py-3 text-text-secondary">
-                    {new Date(row.updatedAt).toLocaleString("ko-KR")}
-                  </td>
-                  <td className="px-4 py-3">
+                  <td>{row.planId}</td>
+                  <td className="num">{row.amount != null ? `${row.amount.toLocaleString()}원` : "—"}</td>
+                  <td>{new Date(row.createdAt).toLocaleDateString("ko-KR")}</td>
+                  <td>
                     {row.status === "COMPLETED" && (
-                      <button
-                        type="button"
-                        onClick={() => openRefundDialog(row.id)}
-                        className="rounded-lg border border-orange-200 px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-50"
-                      >
-                        환불 처리
-                      </button>
+                      <button type="button" className="btn ghost sm" onClick={() => openRefundDialog(row.id)}>환불</button>
                     )}
                   </td>
                 </tr>
@@ -182,43 +159,33 @@ export function AdminPaymentsPage() {
         </table>
       </div>
 
-      {refundingId && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-bold text-text-primary">환불 처리</h3>
-            <p className="mt-2 text-sm text-text-secondary">
-              해당 결제를 환불 처리합니다. 이 작업은 되돌릴 수 없습니다.
+      <div className={`scrim${refundingId ? " on" : ""}`}>
+        <div className="modal" role="dialog" aria-modal="true" aria-label="환불 처리">
+          <div className="m-b">
+            <h3>환불 처리</h3>
+            <p className="m-p">
+              {refundingRow
+                ? `${refundingRow.orderId} · ${refundingRow.studentName ?? "학생"}${refundingRow.amount != null ? ` · ${refundingRow.amount.toLocaleString()}원` : ""}`
+                : "해당 결제를 환불 처리합니다. 이 작업은 되돌릴 수 없습니다."}
             </p>
-            <div className="mt-4">
-              <label className="block text-xs font-medium text-text-muted">환불 사유 (선택)</label>
+            <div className="field" style={{ marginTop: "14px" }}>
+              <label>환불 사유 (선택)</label>
               <input
+                className="inp filled"
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
                 placeholder="환불 사유를 입력하세요"
               />
             </div>
-            <div className="mt-6 flex gap-2">
-              <button
-                type="button"
-                onClick={closeRefundDialog}
-                className="flex-1 rounded-xl border py-2 text-sm"
-                disabled={refundPending}
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void submitRefund()}
-                className="flex-1 rounded-xl bg-orange-600 py-2 text-sm font-semibold text-white disabled:opacity-60"
-                disabled={refundPending}
-              >
-                {refundPending ? "처리 중…" : "환불 확인"}
-              </button>
-            </div>
+          </div>
+          <div className="m-f">
+            <button type="button" className="btn sec" onClick={closeRefundDialog} disabled={refundPending}>취소</button>
+            <button type="button" className="btn pri" onClick={() => void submitRefund()} disabled={refundPending}>
+              {refundPending ? "처리 중…" : "환불 확정"}
+            </button>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }

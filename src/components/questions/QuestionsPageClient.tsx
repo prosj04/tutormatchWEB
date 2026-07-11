@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
-
-import { ConcordPortalThemeControls } from "@/components/concord/ConcordPortalThemeControls";
 
 type QuestionItem = {
   id: string;
@@ -37,29 +34,20 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
 }
 
-function AnswerBadge({ hasTeacher, hasAi }: { hasTeacher: boolean; hasAi: boolean }) {
-  if (hasTeacher) {
-    return (
-      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-        선생님 답변
-      </span>
-    );
-  }
-  if (hasAi) {
-    return (
-      <span className="rounded-full bg-primary/5 px-2 py-0.5 text-xs font-semibold text-text-secondary">
-        AI 답변
-      </span>
-    );
-  }
-  return (
-    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
-      답변 대기
-    </span>
-  );
+/** 답변 상태 → 시안 상태 배지(.bst). */
+function statusBadge(q: QuestionItem): { label: string; cls: string } {
+  if (q.isResolved) return { label: "해결", cls: "bst acc" };
+  if (q.hasTeacherAnswer || q.hasAiAnswer) return { label: "답변", cls: "bst acc" };
+  return { label: "대기", cls: "bst warn" };
 }
 
-export function QuestionsPageClient({ studentName, initialItems, initialFilter }: Props) {
+function statusText(q: QuestionItem): string {
+  if (q.hasTeacherAnswer) return `선생님 답변 · ${formatDate(q.date)}`;
+  if (q.hasAiAnswer) return q.isResolved ? `AI 답변으로 해결 · ${formatDate(q.date)}` : "AI 답변 완료 · 선생님 답변 대기";
+  return "답변 대기";
+}
+
+export function QuestionsPageClient({ initialItems, initialFilter }: Props) {
   const router = useRouter();
   const [filter, setFilter] = useState<FilterKey>(
     (["all", "true", "false"] as FilterKey[]).includes(initialFilter as FilterKey)
@@ -80,107 +68,70 @@ export function QuestionsPageClient({ studentName, initialItems, initialFilter }
   }
 
   return (
-    <div className="min-h-screen bg-background" data-portal-content>
-      <header className="portal-topbar">
-        <div className="portal-topbar-inner">
-          <Link href="/dashboard" className="portal-topbar-brand">
-            Concord<span>.</span>
-          </Link>
-          <p className="portal-topbar-title">{studentName}님의 질문</p>
-          <div className="portal-topbar-actions">
-            <ConcordPortalThemeControls />
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => signOut({ redirectTo: "/" })}
-            >
-              <span className="md:hidden">나가기</span>
-              <span className="hidden md:inline">로그아웃</span>
-            </button>
+    <section className="page on" id="pg-questions" data-screen-label="질문">
+      <div className="crumb">/questions</div>
+      <h1>질문</h1>
+      <p className="sub">
+        사진과 함께 질문하면 AI가 먼저 풀이를 안내하고, 필요하면 선생님이 답변합니다.
+      </p>
+      <div className="sec grid2">
+        <div className="card" style={{ padding: "22px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
+            <h2 style={{ fontSize: "15px", fontWeight: 700 }}>새 질문</h2>
           </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h1 className="text-xl font-bold text-text-primary">내 질문 목록</h1>
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            학습 플래너로 이동 →
-          </Link>
-        </div>
-
-        {/* 필터 탭 */}
-        <div className="mb-6 flex gap-1 rounded-xl bg-background p-1 ring-1 ring-gray-200">
-          {(["all", "false", "true"] as FilterKey[]).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => changeFilter(f)}
-              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition ${
-                filter === f
-                  ? "bg-surface text-text-primary shadow-sm"
-                  : "text-text-secondary hover:text-text-primary"
-              }`}
-            >
-              {FILTER_LABELS[f]}
-            </button>
-          ))}
-        </div>
-
-        {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-surface px-6 py-16 text-center">
-            <p className="text-sm text-text-secondary">
-              {filter === "all" ? "아직 등록된 질문이 없습니다." : `${FILTER_LABELS[filter]} 질문이 없습니다.`}
-            </p>
-            <Link href="/dashboard" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
-              대시보드에서 질문 등록하기
+          <p style={{ fontSize: "13.5px", color: "var(--mut)" }}>
+            질문 등록은 학습 플래너의 날짜별 화면에서 사진과 함께 진행할 수 있어요.
+          </p>
+          <div style={{ display: "flex", gap: "8px", marginTop: "14px" }}>
+            <Link className="btn pri" href="/dashboard" style={{ flex: 1, textAlign: "center" }}>
+              질문하러 가기
             </Link>
           </div>
-        ) : (
-          <ul className="space-y-3">
-            {filtered.map((q) => (
-              <li key={q.id}>
-                <Link
-                  href={`/dashboard?date=${q.date}`}
-                  className={`block rounded-2xl border px-4 py-4 transition hover:bg-background ${
-                    q.isResolved ? "border-gray-100 bg-surface" : "border-gray-200 bg-surface"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm text-text-primary">{q.content}</p>
-                      {q.imageUrl && (
-                        <div className="mt-2 h-20 w-24 overflow-hidden rounded-lg">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={q.imageUrl}
-                            alt="첨부 이미지"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
-                        <AnswerBadge hasTeacher={q.hasTeacherAnswer} hasAi={q.hasAiAnswer} />
-                        {q.isResolved && (
-                          <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-semibold text-green-700">
-                            해결됨
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-xs text-text-muted">{formatDate(q.date)}</p>
-                    </div>
-                  </div>
-                </Link>
-              </li>
+          <span className="f-hint">
+            AI 답변 후 ‘해결됐어요’ 또는 ‘선생님께 질문’을 선택할 수 있어요. 토큰이 없으면 선생님 답변만 대기합니다.
+          </span>
+          <div className="pm" style={{ marginTop: "16px" }}>
+            {(["all", "false", "true"] as FilterKey[]).map((f) => (
+              <button
+                key={f}
+                type="button"
+                className="p"
+                aria-pressed={filter === f}
+                onClick={() => changeFilter(f)}
+              >
+                {FILTER_LABELS[f]}
+              </button>
             ))}
-          </ul>
-        )}
-      </main>
-    </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>내 질문</h2>
+          {filtered.length === 0 ? (
+            <div className="row">
+              <div className="g">
+                <b>
+                  {filter === "all" ? "아직 등록된 질문이 없습니다" : `${FILTER_LABELS[filter]} 질문이 없습니다`}
+                </b>
+                <p>학습 플래너에서 질문을 등록해 보세요.</p>
+              </div>
+            </div>
+          ) : (
+            filtered.map((q) => {
+              const badge = statusBadge(q);
+              return (
+                <Link key={q.id} href={`/dashboard?date=${q.date}`} className="row" style={{ textDecoration: "none" }}>
+                  <div className="g">
+                    <b>{q.content}</b>
+                    <p>{statusText(q)}</p>
+                  </div>
+                  <span className={badge.cls}>{badge.label}</span>
+                </Link>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

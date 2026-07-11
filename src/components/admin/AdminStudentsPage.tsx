@@ -84,176 +84,89 @@ export function AdminStudentsPage() {
   async function deleteRow(id: string, name: string) {
     if (!confirm(`${name} 학생을 삭제하시겠습니까?`)) return;
     const res = await fetch(`/api/admin/students/${id}`, { method: "DELETE" });
-    if (res.ok) fetchList();
+    if (res.ok) {
+      setEditRow(null);
+      fetchList();
+    }
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-black text-text-primary">학생 관리</h2>
+    <section className="page on" data-screen-label="학생 관리">
+      <div className="crumb">/admin/students</div>
+      <h1>학생 관리</h1>
+      <p className="sub">학생 계정과 구독·수업 이력입니다.</p>
 
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="sec filters">
         <input
+          className="inp filled"
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
             setPage(1);
           }}
-          placeholder="이름/전화번호 검색"
-          className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm sm:w-auto sm:min-w-[220px]"
+          placeholder="이름·전화번호 검색"
         />
         <select
+          className="inp filled"
+          style={{ width: "auto" }}
           value={grade}
           onChange={(e) => {
             setGrade(e.target.value);
             setPage(1);
           }}
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="">전체 학년</option>
           {GRADES.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
+            <option key={g} value={g}>{g}</option>
           ))}
         </select>
         <select
+          className="inp filled"
+          style={{ width: "auto" }}
           value={subject}
           onChange={(e) => {
             setSubject(e.target.value);
             setPage(1);
           }}
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm sm:w-auto"
         >
           <option value="">전체 과목</option>
           {SUBJECTS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={() => fetchList()}
-          className="w-full rounded-xl bg-text-primary px-4 py-2 text-sm font-medium text-white sm:w-auto"
-        >
-          검색
-        </button>
+        <button type="button" className="btn sec sm" onClick={() => fetchList()}>검색</button>
       </div>
 
-      <div className="mt-6 space-y-4 md:hidden">
-        {loading ? (
-          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
-            불러오는 중…
-          </div>
-        ) : rows.length === 0 ? (
-          <div className="rounded-2xl border border-gray-100 bg-white px-4 py-8 text-center text-text-muted shadow-sm">
-            결과 없음
-          </div>
-        ) : (
-          rows.map((row) => (
-            <article key={row.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-semibold text-text-primary">{row.name}</h3>
-                  <p className="mt-1 text-sm text-text-secondary">{row.grade}</p>
-                </div>
-                <p className="text-xs text-text-muted">
-                  {new Date(row.createdAt).toLocaleDateString("ko-KR")}
-                </p>
-              </div>
-              <dl className="mt-4 space-y-2 text-sm">
-                <div>
-                  <dt className="text-xs text-text-muted">희망과목</dt>
-                  <dd className="mt-1 text-text-primary">{row.subjects || "—"}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-text-muted">전화번호</dt>
-                  <dd className="mt-1 text-text-primary">{row.phone}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-text-muted">담당 매니저</dt>
-                  <dd className="mt-1 text-text-secondary">{row.managerName ?? "—"}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-text-muted">담당선생님</dt>
-                  <dd className="mt-1 text-text-secondary">{row.assignedTeachers || "—"}</dd>
-                </div>
-              </dl>
-              <div className="mt-4 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => openEdit(row)}
-                  className="flex-1 rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-text-primary"
-                >
-                  수정
-                </button>
-                <button
-                  type="button"
-                  onClick={() => deleteRow(row.id, row.name)}
-                  className="flex-1 rounded-xl border border-pink-200 px-4 py-2 text-sm font-medium text-accent"
-                >
-                  삭제
-                </button>
-              </div>
-            </article>
-          ))
-        )}
-      </div>
-
-      <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm md:block">
-        <table className="w-full min-w-[800px] text-left text-sm">
-          <thead className="border-b border-gray-100 bg-gray-50 text-xs uppercase text-text-muted">
+      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+        <table className="tbl">
+          <thead>
             <tr>
-              <th className="px-4 py-3">이름</th>
-              <th className="px-4 py-3">학년</th>
-              <th className="px-4 py-3">희망과목</th>
-              <th className="px-4 py-3">전화번호</th>
-              <th className="px-4 py-3">가입일</th>
-              <th className="px-4 py-3">담당 매니저</th>
-              <th className="px-4 py-3">담당선생님</th>
-              <th className="px-4 py-3">액션</th>
+              <th>학생</th>
+              <th>희망과목</th>
+              <th>담당 선생님</th>
+              <th>담당 매니저</th>
+              <th>가입일</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
-                  불러오는 중…
-                </td>
-              </tr>
+              <tr><td colSpan={6}>불러오는 중…</td></tr>
             ) : rows.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-text-muted">
-                  결과 없음
-                </td>
-              </tr>
+              <tr><td colSpan={6}>결과 없음</td></tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-50">
-                  <td className="px-4 py-3 font-medium">{row.name}</td>
-                  <td className="px-4 py-3">{row.grade}</td>
-                  <td className="px-4 py-3">{row.subjects}</td>
-                  <td className="px-4 py-3">{row.phone}</td>
-                  <td className="px-4 py-3">
-                    {new Date(row.createdAt).toLocaleDateString("ko-KR")}
+                <tr key={row.id}>
+                  <td>
+                    <b>{row.name} · {row.grade}</b>
+                    <span className="mini">{row.phone}</span>
                   </td>
-                  <td className="px-4 py-3 text-text-secondary">{row.managerName ?? "—"}</td>
-                  <td className="px-4 py-3 text-text-secondary">{row.assignedTeachers || "—"}</td>
-                  <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(row)}
-                      className="mr-2 text-primary hover:underline"
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteRow(row.id, row.name)}
-                      className="text-accent hover:underline"
-                    >
-                      삭제
-                    </button>
+                  <td>{row.subjects || "—"}</td>
+                  <td>{row.assignedTeachers || "—"}</td>
+                  <td>{row.managerName ?? "—"}</td>
+                  <td>{new Date(row.createdAt).toLocaleDateString("ko-KR")}</td>
+                  <td>
+                    <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>상세</button>
                   </td>
                 </tr>
               ))
@@ -263,83 +176,83 @@ export function AdminStudentsPage() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-40"
-          >
-            이전
-          </button>
-          <span className="px-3 py-1 text-sm text-text-secondary">
-            {page} / {pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            disabled={page >= pagination.totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-40"
-          >
-            다음
-          </button>
+        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+          <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
+          <span className="sub" style={{ margin: 0 }}>{page} / {pagination.totalPages}</span>
+          <button type="button" className="btn ghost sm" disabled={page >= pagination.totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}
 
-      {editRow && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="font-bold text-text-primary">학생 수정</h3>
-            <div className="mt-4 space-y-3">
-              <input
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="이름"
-              />
-              <select
-                value={form.grade}
-                onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-              >
-                {GRADES.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-              <input
-                value={form.subjects}
-                onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="과목 (쉼표 구분)"
-              />
-              <input
-                value={form.phone}
-                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                className="w-full rounded-xl border px-3 py-2 text-sm"
-                placeholder="전화번호"
-              />
+      <div className={`drawer${editRow ? " on" : ""}`} aria-label="학생 상세">
+        {editRow ? (
+          <>
+            <div className="d-h">
+              <h3>{editRow.name} · {editRow.grade}</h3>
+              <button type="button" className="x" onClick={() => setEditRow(null)}>✕</button>
             </div>
-            <div className="mt-6 flex gap-2">
+            <div className="d-b">
+              <div className="kv" style={{ padding: "0 0 14px" }}>
+                <div><span>담당 선생님</span><b>{editRow.assignedTeachers || "—"}</b></div>
+                <div><span>담당 매니저</span><b>{editRow.managerName ?? "—"}</b></div>
+                <div><span>가입일</span><b>{new Date(editRow.createdAt).toLocaleDateString("ko-KR")}</b></div>
+              </div>
+              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "10px 0 8px" }}>정보 수정</h4>
+              <div className="field">
+                <label>이름</label>
+                <input
+                  className="inp filled"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="이름"
+                />
+              </div>
+              <div className="field">
+                <label>학년</label>
+                <select
+                  className="inp filled"
+                  value={form.grade}
+                  onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
+                >
+                  {GRADES.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>과목 (쉼표 구분)</label>
+                <input
+                  className="inp filled"
+                  value={form.subjects}
+                  onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
+                  placeholder="과목"
+                />
+              </div>
+              <div className="field">
+                <label>전화번호</label>
+                <input
+                  className="inp filled"
+                  value={form.phone}
+                  onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                  placeholder="전화번호"
+                />
+              </div>
+              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "16px 0 8px" }}>관리</h4>
               <button
                 type="button"
-                onClick={() => setEditRow(null)}
-                className="flex-1 rounded-xl border py-2 text-sm"
+                className="btn danger"
+                style={{ width: "100%" }}
+                onClick={() => void deleteRow(editRow.id, editRow.name)}
               >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void saveEdit()}
-                className="flex-1 rounded-xl bg-primary py-2 text-sm font-semibold text-white"
-              >
-                저장
+                학생 삭제
               </button>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+            <div className="d-f">
+              <button type="button" className="btn sec" style={{ flex: 1 }} onClick={() => setEditRow(null)}>닫기</button>
+              <button type="button" className="btn pri" style={{ flex: 1 }} onClick={() => void saveEdit()}>저장</button>
+            </div>
+          </>
+        ) : null}
+      </div>
+    </section>
   );
 }

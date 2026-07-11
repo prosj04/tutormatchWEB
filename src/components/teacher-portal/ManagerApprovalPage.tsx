@@ -160,11 +160,13 @@ function ManagerAdminTools() {
   const [studentId, setStudentId] = useState("");
   const [linkBusy, setLinkBusy] = useState(false);
   const [linkMsg, setLinkMsg] = useState<string | null>(null);
+  const [linkOk, setLinkOk] = useState(false);
 
   const [resetId, setResetId] = useState("");
   const [resetPw, setResetPw] = useState("");
   const [resetBusy, setResetBusy] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [resetOk, setResetOk] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -191,9 +193,15 @@ function ManagerAdminTools() {
         body: JSON.stringify({ studentId, parentPhone }),
       });
       const data = (await res.json()) as { error?: string; alreadyLinked?: boolean };
-      if (!res.ok) setLinkMsg(data.error ?? "연결에 실패했습니다.");
-      else setLinkMsg(data.alreadyLinked ? "이미 연결돼 있습니다." : "연결했습니다.");
+      if (!res.ok) {
+        setLinkOk(false);
+        setLinkMsg(data.error ?? "연결에 실패했습니다.");
+      } else {
+        setLinkOk(true);
+        setLinkMsg(data.alreadyLinked ? "이미 연결돼 있습니다." : "연결했습니다.");
+      }
     } catch {
+      setLinkOk(false);
       setLinkMsg("네트워크 오류가 발생했습니다.");
     } finally {
       setLinkBusy(false);
@@ -215,12 +223,16 @@ function ManagerAdminTools() {
         error?: string;
         target?: { role: string; name: string };
       };
-      if (!res.ok) setResetMsg(data.error ?? "재설정에 실패했습니다.");
-      else {
+      if (!res.ok) {
+        setResetOk(false);
+        setResetMsg(data.error ?? "재설정에 실패했습니다.");
+      } else {
         setResetPw("");
+        setResetOk(true);
         setResetMsg(`재설정 완료${data.target?.name ? ` — ${data.target.name}` : ""} (감사 로그 기록됨)`);
       }
     } catch {
+      setResetOk(false);
       setResetMsg("네트워크 오류가 발생했습니다.");
     } finally {
       setResetBusy(false);
@@ -255,7 +267,16 @@ function ManagerAdminTools() {
         <button type="submit" className="btn pri" disabled={linkBusy || !studentId || !parentPhone.trim()}>
           {linkBusy ? "연결 중…" : "연결 (linkedVia: MANAGER)"}
         </button>
-        {linkMsg ? <p className="sub" style={{ marginTop: "10px" }}>{linkMsg}</p> : null}
+        {linkMsg ? (
+          <div className={linkOk ? "banner ok" : "banner err"} role="status" style={{ marginTop: "12px" }}>
+            {linkOk ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+            )}
+            <span>{linkMsg}</span>
+          </div>
+        ) : null}
       </form>
 
       <form className="card" style={{ padding: "20px" }} onSubmit={submitReset}>
@@ -274,7 +295,7 @@ function ManagerAdminTools() {
         <div className="field">
           <label>새 비밀번호 (8자+)</label>
           <input
-            className="inp"
+            className={resetPw.length > 0 && resetPw.length < 8 ? "inp err" : "inp"}
             type="password"
             value={resetPw}
             onChange={(e) => setResetPw(e.target.value)}
@@ -282,11 +303,23 @@ function ManagerAdminTools() {
             autoComplete="new-password"
             name="reset-new-password"
           />
+          {resetPw.length > 0 && resetPw.length < 8 ? (
+            <span className="f-err">비밀번호는 8자 이상이어야 합니다.</span>
+          ) : null}
         </div>
         <button type="submit" className="btn sec" disabled={resetBusy || !resetId.trim() || resetPw.length < 8}>
           {resetBusy ? "재설정 중…" : "재설정 (감사 로그 기록)"}
         </button>
-        {resetMsg ? <p className="sub" style={{ marginTop: "10px" }}>{resetMsg}</p> : null}
+        {resetMsg ? (
+          <div className={resetOk ? "banner ok" : "banner err"} role="status" style={{ marginTop: "12px" }}>
+            {resetOk ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+            )}
+            <span>{resetMsg}</span>
+          </div>
+        ) : null}
       </form>
     </div>
   );

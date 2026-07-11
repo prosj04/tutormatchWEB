@@ -5,15 +5,15 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getV2PlanById, PRICING_PLANS } from "@/lib/pricing-plans";
 import { formatKRW } from "@/lib/format-won";
-import { PaymentsPageHeader } from "@/components/payments/PaymentsPageHeader";
 import { BillingManageSection } from "@/components/payments/BillingManageSection";
 
 export const metadata = { title: "결제·구독 내역" };
 
-const STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  ACTIVE: { label: "구독 중", className: "badge-status-assigned" },
-  PAST_DUE: { label: "미납", className: "badge-status-waiting" },
-  CANCELLED: { label: "해지됨", className: "badge-status-cancelled" },
+const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
+  ACTIVE: { label: "구독중", cls: "bst acc" },
+  PAST_DUE: { label: "미납", cls: "bst warn" },
+  PAUSED: { label: "일시정지", cls: "bst mut" },
+  CANCELLED: { label: "해지됨", cls: "bst mut" },
 };
 
 function getPlanInfo(planId: string): { title: string; price: number | null } {
@@ -31,6 +31,11 @@ function getPlanInfo(planId: string): { title: string; price: number | null } {
 function formatDate(date: Date | null) {
   if (!date) return "-";
   return date.toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function formatShortDate(date: Date | null) {
+  if (!date) return "-";
+  return date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
 }
 
 export default async function PaymentsPage({
@@ -83,187 +88,142 @@ export default async function PaymentsPage({
 
   const activeSubscription = subscriptions.find((s) => s.status === "ACTIVE") ?? null;
   const pausedSubscription = subscriptions.find((s) => s.status === "PAUSED") ?? null;
+  const currentSubscription = activeSubscription ?? pausedSubscription;
 
   return (
-    <div className="min-h-screen bg-background" data-portal-content>
-      <PaymentsPageHeader studentName={student.name} />
+    <section className="page on" id="pg-payments" data-screen-label="결제 내역">
+      <div className="crumb">/payments</div>
+      <h1>결제 내역</h1>
+      <p className="sub">결제·환불 이력과 구독 상태를 확인하세요.</p>
 
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8 space-y-8">
-        {/* 현재 구독 */}
-        <section>
-          <h2 className="mb-4 text-lg font-bold text-text-primary">현재 구독</h2>
-          {activeSubscription ? (
-            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6">
-              {(() => {
-                const info = getPlanInfo(activeSubscription.plan);
-                const statusInfo = STATUS_LABEL[activeSubscription.status] ?? { label: activeSubscription.status, className: "" };
-                return (
-                  <>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="font-bold text-text-primary">{info.title}</p>
-                        {info.price && (
-                          <p className="mt-1 text-2xl font-black tabular-nums text-primary">
-                            {formatKRW(info.price)}
-                            <span className="text-sm font-normal text-text-secondary"> / 월</span>
-                          </p>
-                        )}
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusInfo.className}`}>
-                        {statusInfo.label}
-                      </span>
-                    </div>
-                    <div className="mt-5 space-y-1 text-sm text-text-secondary">
-                      <p>시작일: <span className="font-medium text-text-primary">{formatDate(activeSubscription.periodStart)}</span></p>
-                      {activeSubscription.periodEnd && (
-                        <p>만료일: <span className="font-medium text-text-primary">{formatDate(activeSubscription.periodEnd)}</span></p>
-                      )}
-                    </div>
-                    {wallet && (
-                      <div className="mt-5 rounded-xl bg-surface px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">AI 질답 토큰 ({wallet.month})</p>
-                        <p className="mt-1 text-xl font-black tabular-nums text-primary">
-                          {wallet.quota - wallet.used}
-                          <span className="text-sm font-normal text-text-secondary"> / {wallet.quota} 잔여</span>
-                        </p>
-                      </div>
-                    )}
-                    <p className="mt-4 text-sm text-text-secondary">
-                      구독 일시정지가 필요하시면 담당 매니저에게 문의해 주세요.
+      {/* 현재 구독 */}
+      <div className="sec card">
+        {currentSubscription ? (
+          (() => {
+            const info = getPlanInfo(currentSubscription.plan);
+            const badge = STATUS_LABEL[currentSubscription.status] ?? {
+              label: currentSubscription.status,
+              cls: "bst mut",
+            };
+            const priceMeta = info.price ? `${formatKRW(info.price)}/월 · ` : "";
+            const dateMeta = currentSubscription.periodEnd
+              ? `다음 결제 ${formatDate(currentSubscription.periodEnd)}`
+              : `시작 ${formatDate(currentSubscription.periodStart)}`;
+            return (
+              <div className="row">
+                <div className="g">
+                  <b>{info.title}</b>
+                  <p>
+                    {priceMeta}
+                    {dateMeta}
+                  </p>
+                  {wallet ? (
+                    <p>
+                      AI 질답 토큰 {wallet.quota - wallet.used} / {wallet.quota} 잔여 ({wallet.month})
                     </p>
-                  </>
-                );
-              })()}
+                  ) : null}
+                </div>
+                <span className={badge.cls}>{badge.label}</span>
+                <Link className="btn ghost sm" href="/checkout">
+                  플랜 변경
+                </Link>
+              </div>
+            );
+          })()
+        ) : (
+          <div className="row">
+            <div className="g">
+              <b>현재 활성 구독이 없습니다</b>
+              <p>수업을 신청하면 여기에 구독 상태가 표시됩니다.</p>
             </div>
-          ) : pausedSubscription ? (
-            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6">
-              {(() => {
-                const info = getPlanInfo(pausedSubscription.plan);
-                return (
-                  <>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="font-bold text-text-primary">{info.title}</p>
-                      </div>
-                      <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-                        일시정지 중
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm text-orange-700">
-                      일시정지 중 — 재개는 매니저에게 문의해 주세요.
-                      {pausedSubscription.pausedUntil && (
-                        <> 일시정지 예정 종료: <span className="font-semibold">{formatDate(pausedSubscription.pausedUntil)}</span></>
-                      )}
-                    </p>
-                  </>
-                );
-              })()}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-surface px-6 py-12 text-center">
-              <p className="text-sm text-text-secondary">현재 활성 구독이 없습니다.</p>
-              <Link
-                href="/checkout"
-                className="mt-4 inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
-              >
-                수업 신청하기
-              </Link>
-            </div>
-          )}
-        </section>
+            <Link className="btn sec sm" href="/checkout">
+              수업 신청
+            </Link>
+          </div>
+        )}
+      </div>
 
-        {/* 자동결제 관리 */}
+      {/* 자동결제 관리 (Toss 위젯 — 기존 로직 유지) */}
+      <div className="sec" data-portal-content>
         <BillingManageSection
           customerKey={`student-${student.id}`}
           profile={billingProfile}
           billingParam={billingParam}
         />
+      </div>
 
-        {/* 구독 이력 */}
-        {subscriptions.length > 0 && (
-          <section>
-            <h2 className="mb-4 text-lg font-bold text-text-primary">구독 이력</h2>
-            <ul className="space-y-3">
-              {subscriptions.map((s) => {
-                const info = getPlanInfo(s.plan);
-                const statusInfo = STATUS_LABEL[s.status] ?? { label: s.status, className: "" };
-                return (
-                  <li
-                    key={s.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-surface px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">{info.title}</p>
-                      <p className="mt-0.5 text-xs text-text-muted">{formatDate(s.periodStart)}</p>
-                    </div>
-                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusInfo.className}`}>
-                      {statusInfo.label}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
-        {/* 결제 내역 */}
-        {paymentCompletions.length > 0 && (
-          <section>
-            <h2 className="mb-4 text-lg font-bold text-text-primary">결제 내역</h2>
-            <ul className="space-y-3">
+      {/* 결제·환불 내역 */}
+      {paymentCompletions.length > 0 ? (
+        <div className="sec card" style={{ overflow: "hidden" }}>
+          <table className="tbl">
+            <thead>
+              <tr>
+                <th>일자</th>
+                <th>내역</th>
+                <th>금액</th>
+                <th>상태</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
               {paymentCompletions.map((payment) => {
                 const info = getPlanInfo(payment.plan);
                 const isRefunded = payment.status === "REFUNDED";
+                const amount = payment.amount ?? null;
+                const displayAmount =
+                  amount == null
+                    ? "-"
+                    : isRefunded
+                      ? `-${formatKRW(Math.abs(amount))}`
+                      : formatKRW(amount);
                 return (
-                  <li
-                    key={payment.id}
-                    className="rounded-xl border border-gray-100 bg-surface px-4 py-4"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">{info.title}</p>
-                        <p className="mt-0.5 text-xs text-text-muted">
-                          {formatDate(payment.createdAt)}
-                        </p>
-                        {payment.amount != null && (
-                          <p className="mt-1 text-base font-bold tabular-nums text-text-primary">
-                            {formatKRW(payment.amount)}
-                          </p>
-                        )}
-                      </div>
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                          isRefunded
-                            ? "bg-red-100 text-red-700"
-                            : "bg-green-100 text-green-700"
-                        }`}
-                      >
-                        {isRefunded ? "환불" : "결제완료"}
+                  <tr key={payment.id}>
+                    <td>{formatShortDate(payment.createdAt)}</td>
+                    <td>
+                      <b>{info.title}</b>
+                    </td>
+                    <td className="num">{displayAmount}</td>
+                    <td>
+                      <span className={isRefunded ? "bst mut" : "bst acc"}>
+                        {isRefunded ? "환불" : "완료"}
                       </span>
-                    </div>
-                    {payment.cashReceiptUrl && (
-                      <a
-                        href={payment.cashReceiptUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
-                      >
-                        현금영수증 보기 →
-                      </a>
-                    )}
-                  </li>
+                    </td>
+                    <td>
+                      {payment.cashReceiptUrl ? (
+                        <a href={payment.cashReceiptUrl} target="_blank" rel="noopener noreferrer">
+                          현금영수증
+                        </a>
+                      ) : (
+                        <span style={{ color: "var(--mut-2)" }}>-</span>
+                      )}
+                    </td>
+                  </tr>
                 );
               })}
-            </ul>
-          </section>
-        )}
-
-        <div className="text-center">
-          <Link href="/dashboard" className="text-sm font-medium text-primary hover:underline">
-            ← 학습 플래너로 돌아가기
-          </Link>
+            </tbody>
+          </table>
         </div>
-      </main>
-    </div>
+      ) : null}
+
+      {/* 구독 이력 */}
+      {subscriptions.length > 0 ? (
+        <div className="sec card">
+          <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>구독 이력</h2>
+          {subscriptions.map((s) => {
+            const info = getPlanInfo(s.plan);
+            const badge = STATUS_LABEL[s.status] ?? { label: s.status, cls: "bst mut" };
+            return (
+              <div key={s.id} className="row">
+                <div className="g">
+                  <b>{info.title}</b>
+                  <p>{formatDate(s.periodStart)}</p>
+                </div>
+                <span className={badge.cls}>{badge.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </section>
   );
 }

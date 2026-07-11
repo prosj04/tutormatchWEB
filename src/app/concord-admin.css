@@ -1,0 +1,23 @@
+/* Concord 웹 어드민 — admin 전용 데이터 밀도 스타일.
+   출처: design handoff/Concord - 웹 어드민.html 의 <style> 블록을 그대로 옮긴 것.
+   (핸드오프 portal.css 는 무수정 원칙 — 어드민 전용 chart/funnel/filter 는 우리 소유 파일에 둔다.) */
+
+/* admin-specific: charts & funnel (CSS-only, data-dense) */
+.bars{ display:flex; align-items:flex-end; gap:8px; height:120px; padding:18px 22px 0; }
+.bars .b{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+.bars .b i{ width:100%; border-radius:5px 5px 2px 2px; background:rgba(var(--acc-rgb),.25); display:block; }
+.bars .b.on i{ background:var(--acc); }
+.bars .b span{ font-size:10.5px; color:var(--mut); font-variant-numeric:tabular-nums; }
+.funnel{ padding:20px 22px; display:flex; flex-direction:column; gap:10px; }
+.funnel .f{ display:grid; grid-template-columns:92px 1fr 120px; align-items:center; gap:14px; font-size:13px; }
+.funnel .f b{ font-weight:700; }
+.funnel .f .tr{ height:26px; border-radius:7px; background:rgba(var(--acc-rgb),.14); position:relative; overflow:hidden; }
+.funnel .f .tr i{ position:absolute; inset:0; width:var(--w); background:var(--acc); border-radius:7px; display:block; }
+.funnel .f .n{ text-align:right; color:var(--mut); font-variant-numeric:tabular-nums; }
+.funnel .f .n b{ color:var(--fg); }
+.filters{ display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+.filters .inp{ width:220px; }
+.tbl .mini{ font-size:12px; color:var(--mut-2); display:block; }
+.kv{ padding:18px 20px; display:flex; flex-direction:column; gap:9px; }
+.kv div{ display:flex; justify-content:space-between; font-size:13px; }
+.kv span{ color:var(--mut); } .kv b{ font-variant-numeric:tabular-nums; }
