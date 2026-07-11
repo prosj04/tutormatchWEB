@@ -209,10 +209,16 @@ export default function MyScreen() {
             <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
             <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
               <MRow
+                icon={<LockIcon color={t.accText} size={18} />}
+                label="비밀번호 변경"
+                onPress={() => router.push("/change-password" as Parameters<typeof router.push>[0])}
+              />
+              <MRow
                 icon={<QuestionIcon color={t.accText} size={18} />}
                 label="고객센터"
                 sub="이메일로 문의하기"
                 onPress={() => void Linking.openURL(SUPPORT_EMAIL)}
+                divider
               />
               <MRow
                 icon={<FileIcon color={t.accText} size={18} />}

@@ -1,16 +1,24 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 
-import { ChatIcon, HomeIcon, LearningIcon, MyIcon } from "../../components/ui/Icons";
-import { PushPrimer } from "../../components/ui/PushPrimer";
+import {
+  CardIcon,
+  ChatIcon,
+  DocumentIcon,
+  HomeIcon,
+  MyIcon,
+} from "../../components/ui/Icons";
+import { registerPushToken } from "../../lib/push";
 import { useTheme } from "../../theme/ThemeProvider";
 
-export default function TabsLayout() {
+export default function ParentTabsLayout() {
   const { t } = useTheme();
 
+  useEffect(() => {
+    void registerPushToken().catch(() => {});
+  }, []);
+
   return (
-    <>
-    <PushPrimer />
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -38,16 +46,23 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="learning"
+        name="reports"
         options={{
-          title: "학습",
-          tabBarIcon: ({ color, size }) => <LearningIcon color={color as string} size={size - 2} />,
+          title: "리포트",
+          tabBarIcon: ({ color, size }) => <DocumentIcon color={color as string} size={size - 2} />,
         }}
       />
       <Tabs.Screen
-        name="qna"
+        name="payments"
         options={{
-          title: "질문",
+          title: "결제",
+          tabBarIcon: ({ color, size }) => <CardIcon color={color as string} size={size - 2} />,
+        }}
+      />
+      <Tabs.Screen
+        name="consult"
+        options={{
+          title: "상담",
           tabBarIcon: ({ color, size }) => <ChatIcon color={color as string} size={size - 2} />,
         }}
       />
@@ -58,7 +73,8 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <MyIcon color={color as string} size={size - 2} />,
         }}
       />
+      {/* 탭 밖 스택 화면 (자녀 연결) — 탭바에 노출하지 않음 */}
+      <Tabs.Screen name="link" options={{ href: null }} />
     </Tabs>
-    </>
   );
 }

@@ -6,7 +6,8 @@ import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
 interface EmptyStateProps {
-  icon?: string;
+  /** 이모지 문자열 또는 아이콘 세트 노드(예: <ChatIcon />) */
+  icon?: string | React.ReactNode;
   title: string;
   description?: string;
   ctaLabel?: string;
@@ -21,9 +22,13 @@ export function EmptyState({ icon, title, description, ctaLabel, onCta }: EmptyS
   const { t } = useTheme();
   return (
     <View style={styles.wrap}>
-      {icon && (
+      {icon != null && (
         <View style={[styles.icon, { backgroundColor: accTint(t, 0.1) }]}>
-          <Text style={styles.iconText}>{icon}</Text>
+          {typeof icon === "string" ? (
+            <Text style={styles.iconText}>{icon}</Text>
+          ) : (
+            icon
+          )}
         </View>
       )}
       <Text style={[styles.title, { color: t.fg }]}>{title}</Text>
@@ -58,7 +63,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   iconText: { fontSize: 24 },
-  title: { fontSize: 15, fontFamily: font.bold, textAlign: "center" },
+  // 시안: b { font-size:15; font-weight:800 }
+  title: { fontSize: 15, fontFamily: font.extrabold, textAlign: "center" },
   desc: {
     fontSize: 13,
     lineHeight: 20,

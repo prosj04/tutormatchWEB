@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,11 +12,14 @@ import {
 } from "react-native";
 
 import {
+  card,
   ctaBar as ctaBarS,
   font,
+  lrow,
   scroll as scrollS,
   status as statusS,
 } from "../../styles/app-styles";
+import { CheckIcon, MyIcon } from "../../components/ui/Icons";
 import { SubHead } from "../../components/ui/SubHead";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
@@ -25,7 +29,6 @@ import { skipJourneyRedirect } from "../../lib/journey-redirect";
 import {
   type JourneySnapshot,
   type StudentJourneyStage,
-  JOURNEY_STAGE_COPY,
 } from "../../lib/student-journey";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
@@ -63,7 +66,7 @@ function StepV({
       <View style={styles.rail}>
         <View style={[statusS.stepvNub, nubBorder, { backgroundColor: nubBg }]}>
           {type === "done" ? (
-            <Text style={{ color: nubColor, fontSize: 14, fontFamily: font.bold }}>✓</Text>
+            <CheckIcon color={nubColor} size={13} />
           ) : (
             <Text style={[styles.nubText, { color: nubColor }]}>{content}</Text>
           )}
@@ -80,7 +83,7 @@ function StepV({
   );
 }
 
-function stepForStage(stage: StudentJourneyStage, step: 1 | 2 | 3): "done" | "now" | "wait" {
+function stepForStage(stage: StudentJourneyStage, step: 1 | 2 | 3 | 4): "done" | "now" | "wait" {
   if (stage === "ACTIVE" || stage === "FIRST_LESSON_PENDING") return "done";
   if (stage === "ONBOARDED") return step === 1 ? "now" : "wait";
   if (stage === "WAITING") {
@@ -90,15 +93,13 @@ function stepForStage(stage: StudentJourneyStage, step: 1 | 2 | 3): "done" | "no
   }
   if (stage === "ASSIGNED") {
     if (step <= 2) return "done";
-    return "now";
+    if (step === 3) return "now";
+    return "wait";
   }
-  if (stage === "MATCHING") {
+  if (stage === "MATCHING" || stage === "MATCH_PENDING_ACCEPT") {
     if (step <= 2) return "done";
-    return "now";
-  }
-  if (stage === "MATCH_PENDING_ACCEPT") {
-    if (step <= 2) return "done";
-    return "now";
+    if (step === 3) return "now";
+    return "wait";
   }
   return "wait";
 }
@@ -107,11 +108,13 @@ export default function ConsultStatus() {
   const { t } = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
   const [journey, setJourney] = useState<JourneySnapshot | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
     setError(false);
     try {
       const res = await apiFetch<JourneySnapshot>("/api/mobile/me/journey");
@@ -121,6 +124,7 @@ export default function ConsultStatus() {
       setError(true);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, []);
 
@@ -152,7 +156,6 @@ export default function ConsultStatus() {
     );
   }
 
-  const copy = journey.stageCopy ?? JOURNEY_STAGE_COPY[journey.stage];
   const managerName = journey.consultation?.managerName;
 
   async function goHome() {
@@ -165,57 +168,86 @@ export default function ConsultStatus() {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <View style={styles.flex}>
-        <ScrollView contentContainerStyle={[scrollS, styles.scrollContent]} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={[scrollS, styles.scrollContent]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => void load(true)} tintColor={t.mut2} colors={[t.acc]} />
+          }
+        >
           <SubHead title="상담 진행 상태" />
 
-          <View style={[styles.statusCard, { backgroundColor: t.panel, borderColor: t.line }]}>
-            <Text style={[styles.stageLabel, { color: t.accText }]}>{copy.label}</Text>
-            <Text style={[styles.stageBody, { color: t.fg }]}>{copy.body}</Text>
-            {managerName && (
-              <Text style={[styles.managerLine, { color: t.mut }]}>
-                담당 매니저: {managerName}
-              </Text>
-            )}
+          <View style={[card, styles.timelineCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+            <View style={styles.stepsV}>
+              <StepV
+                type={stepForStage(journey.stage, 1)}
+                showLine
+                lineActive={journey.stage !== "ONBOARDED"}
+                label="상담 신청 접수"
+                sub={journey.consultation ? "완료" : "신청 전"}
+              />
+              <StepV
+                type={stepForStage(journey.stage, 2)}
+                content={2}
+                showLine
+                lineActive={
+                  journey.stage === "ASSIGNED" ||
+                  journey.stage === "MATCHING" ||
+                  journey.stage === "FIRST_LESSON_PENDING" ||
+                  journey.stage === "ACTIVE"
+                }
+                label="매니저 배정·전화 상담"
+                sub={managerName ? `${managerName} 담당` : "평균 1일 내 연락"}
+              />
+              <StepV
+                type={stepForStage(journey.stage, 3)}
+                content={3}
+                showLine
+                lineActive={
+                  journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
+                }
+                label="선생님 추천·매칭"
+                sub={
+                  journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
+                    ? "매칭 완료"
+                    : "상담 후 진행"
+                }
+                muted={
+                  journey.stage !== "ACTIVE" &&
+                  journey.stage !== "MATCHING" &&
+                  journey.stage !== "FIRST_LESSON_PENDING"
+                }
+              />
+              <StepV
+                type={stepForStage(journey.stage, 4)}
+                content={4}
+                label="방문 확정"
+                sub={
+                  journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
+                    ? "확정 완료"
+                    : "확정 시 알림으로 안내"
+                }
+                muted={
+                  journey.stage !== "ACTIVE" &&
+                  journey.stage !== "FIRST_LESSON_PENDING"
+                }
+              />
+            </View>
           </View>
 
-          <Text style={[styles.timelineTitle, { color: t.fg }]}>진행 단계</Text>
-          <View style={styles.stepsV}>
-            <StepV
-              type={stepForStage(journey.stage, 1)}
-              showLine
-              lineActive={journey.stage !== "ONBOARDED"}
-              label="상담 신청 접수"
-              sub={journey.consultation ? "완료" : "신청 전"}
-            />
-            <StepV
-              type={stepForStage(journey.stage, 2)}
-              content={2}
-              showLine
-              lineActive={
-                journey.stage === "ASSIGNED" ||
-                journey.stage === "MATCHING" ||
-                journey.stage === "FIRST_LESSON_PENDING" ||
-                journey.stage === "ACTIVE"
-              }
-              label="매니저 배정·전화 상담"
-              sub={managerName ? `${managerName} 담당` : "평균 1일 내 연락"}
-            />
-            <StepV
-              type={stepForStage(journey.stage, 3)}
-              content={3}
-              label="선생님 추천·매칭"
-              sub={
-                journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
-                  ? "매칭 완료"
-                  : "상담 후 진행"
-              }
-              muted={
-                journey.stage !== "ACTIVE" &&
-                journey.stage !== "MATCHING" &&
-                journey.stage !== "FIRST_LESSON_PENDING"
-              }
-            />
-          </View>
+          {managerName && (
+            <View style={[card, styles.managerCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+              <View style={[lrow.wrap, styles.managerRow]}>
+                <View style={[styles.managerAv, { backgroundColor: t.panel2 }]}>
+                  <MyIcon color={t.accText} size={20} />
+                </View>
+                <View style={lrow.g}>
+                  <Text style={[lrow.gb, { color: t.fg }]}>{managerName} 매니저</Text>
+                  <Text style={[lrow.gp, { color: t.mut }]}>담당 매니저 · 평일 10–19시</Text>
+                </View>
+              </View>
+            </View>
+          )}
 
           {journey.stage === "ONBOARDED" && (
             <EmptyState
@@ -267,17 +299,24 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   scrollContent: { paddingBottom: 8 },
 
-  statusCard: {
-    borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 20,
+  // .card { padding:16 16 4; margin-bottom:14 }
+  timelineCard: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+    marginBottom: 14,
   },
-  stageLabel: { fontSize: 12, fontFamily: font.extrabold, letterSpacing: 0.4 },
-  stageBody: { fontSize: 14, lineHeight: 21, marginTop: 6, fontFamily: font.semibold },
-  managerLine: { fontSize: 12.5, marginTop: 8 },
-
-  timelineTitle: { fontSize: 14, fontFamily: font.bold, marginBottom: 8 },
+  // .card { padding:0 } with .up row inside
+  managerCard: { marginBottom: 14, overflow: "hidden" },
+  managerRow: { paddingVertical: 14 },
+  // .up .fi { width:38; height:38; border-radius:11 }
+  managerAv: {
+    width: 38,
+    height: 38,
+    borderRadius: 11,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
   stepsV: { width: "100%", flexDirection: "column", marginTop: 4 },
   stepv: { flexDirection: "row", gap: 13 },

@@ -29,7 +29,10 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(parent)" />
+          <Stack.Screen name="(teacher)" />
           <Stack.Screen name="notifications" options={{ presentation: "modal" }} />
+          <Stack.Screen name="change-password" />
           <Stack.Screen name="report/[id]" />
           <Stack.Screen name="consult" />
           <Stack.Screen name="consult/done" />

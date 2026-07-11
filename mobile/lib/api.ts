@@ -74,5 +74,10 @@ export async function apiLogin(identifier: string, password: string) {
     const body = await res.json() as { error?: string };
     throw new Error(body.error ?? "로그인 실패");
   }
-  return res.json() as Promise<{ accessToken: string; refreshToken: string; expiresIn: number }>;
+  return res.json() as Promise<{
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    user: { id: string; role: string; name: string };
+  }>;
 }

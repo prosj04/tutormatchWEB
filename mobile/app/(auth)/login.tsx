@@ -163,6 +163,17 @@ export default function Login() {
             </Text>
           </Text>
 
+          {/* 학부모 가입 진입 */}
+          <Text style={[authS.foot, { color: t.mut, paddingTop: 8 }]}>
+            학부모이신가요?{" "}
+            <Text
+              style={{ color: t.accText, fontFamily: font.bold }}
+              onPress={() => router.push("/(auth)/parent-signup" as never)}
+            >
+              학부모 가입
+            </Text>
+          </Text>
+
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -2,7 +2,14 @@ import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 
 import { apiLogin } from "../lib/api";
-import { clearTokens, getAccessToken, saveTokens } from "../lib/auth";
+import {
+  clearTokens,
+  getAccessToken,
+  homeRouteForRole,
+  saveRole,
+  saveTokens,
+  type UserRole,
+} from "../lib/auth";
 import { registerPushToken } from "../lib/push";
 
 export function useAuth() {
@@ -16,9 +23,10 @@ export function useAuth() {
   const login = useCallback(async (identifier: string, password: string) => {
     const data = await apiLogin(identifier, password);
     await saveTokens(data.accessToken, data.refreshToken);
+    await saveRole(data.user.role);
     setIsLoggedIn(true);
     void registerPushToken().catch(() => {});
-    router.replace("/");
+    router.replace(homeRouteForRole(data.user.role as UserRole) as never);
   }, [router]);
 
   const logout = useCallback(async () => {

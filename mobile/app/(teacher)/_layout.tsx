@@ -1,16 +1,19 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 
-import { ChatIcon, HomeIcon, LearningIcon, MyIcon } from "../../components/ui/Icons";
-import { PushPrimer } from "../../components/ui/PushPrimer";
+import { HomeIcon } from "../../components/ui/Icons";
+import { MessageIcon, UserIcon } from "../../components/teacher/TeacherIcons";
+import { registerPushToken } from "../../lib/push";
 import { useTheme } from "../../theme/ThemeProvider";
 
-export default function TabsLayout() {
+export default function TeacherTabsLayout() {
   const { t } = useTheme();
 
+  useEffect(() => {
+    void registerPushToken().catch(() => {});
+  }, []);
+
   return (
-    <>
-    <PushPrimer />
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -38,27 +41,30 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="learning"
+        name="students"
         options={{
-          title: "학습",
-          tabBarIcon: ({ color, size }) => <LearningIcon color={color as string} size={size - 2} />,
+          title: "학생",
+          tabBarIcon: ({ color, size }) => <UserIcon color={color as string} size={size - 2} />,
         }}
       />
       <Tabs.Screen
-        name="qna"
+        name="questions"
         options={{
           title: "질문",
-          tabBarIcon: ({ color, size }) => <ChatIcon color={color as string} size={size - 2} />,
+          tabBarIcon: ({ color, size }) => <MessageIcon color={color as string} size={size - 2} />,
         }}
       />
       <Tabs.Screen
         name="my"
         options={{
           title: "MY",
-          tabBarIcon: ({ color, size }) => <MyIcon color={color as string} size={size - 2} />,
+          tabBarIcon: ({ color, size }) => <UserIcon color={color as string} size={size - 2} />,
         }}
       />
+      {/* 스택 화면들 — 탭바에 노출하지 않는다 */}
+      <Tabs.Screen name="student/[id]" options={{ href: null }} />
+      <Tabs.Screen name="student/plan" options={{ href: null }} />
+      <Tabs.Screen name="templates" options={{ href: null }} />
     </Tabs>
-    </>
   );
 }

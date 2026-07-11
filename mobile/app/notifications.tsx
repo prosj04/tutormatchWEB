@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +13,8 @@ import {
   notif as notifS,
   scroll as scrollS,
 } from "../styles/app-styles";
+import { BellIcon } from "../components/ui/Icons";
+import { SkeletonListCard } from "../components/ui/Skeleton";
 import { SubHead } from "../components/ui/SubHead";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorState } from "../components/ui/ErrorState";
@@ -60,7 +62,14 @@ function NRow({
 }) {
   const { t } = useTheme();
   return (
-    <View style={[notifS.row, divider && { borderTopWidth: 1, borderTopColor: t.line }]}>
+    <View
+      style={[
+        notifS.row,
+        divider && { borderTopWidth: 1, borderTopColor: t.line },
+        // 시안: 미읽음 행 배경 accent 5%
+        unread && { backgroundColor: accTint(t, 0.05) },
+      ]}
+    >
       <View style={[notifS.ic, { backgroundColor: accent ? accTint(t, 0.12) : t.panel2 }]}>
         <Text style={{ fontSize: 16 }}>{icon}</Text>
       </View>
@@ -78,15 +87,20 @@ export default function NotificationsScreen() {
   const { t } = useTheme();
   const [data, setData] = useState<NotificationsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
 
-  const load = useCallback(() => {
-    setLoading(true);
+  const load = useCallback((isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
     setError(false);
     apiFetch<NotificationsData>("/api/mobile/notifications")
       .then(setData)
       .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -115,7 +129,13 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
-      <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={[scrollS, styles.content]}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={t.mut2} colors={[t.acc]} />
+        }
+      >
         <SubHead
           title="알림"
           actionLabel={data && data.unreadCount > 0 ? "모두 읽음" : undefined}
@@ -123,13 +143,12 @@ export default function NotificationsScreen() {
         />
 
         {loading ? (
-          <View style={styles.center}>
-            <ActivityIndicator color={t.acc} />
-          </View>
+          <SkeletonListCard rows={3} />
         ) : error ? (
-          <ErrorState onRetry={load} />
+          <ErrorState onRetry={() => load()} />
         ) : sections.length === 0 ? (
           <EmptyState
+            icon={<BellIcon color={t.accText} size={24} />}
             title="새 알림이 없어요"
             description="수업·리포트·메시지 알림이 오면 여기에 표시됩니다."
           />
@@ -163,6 +182,5 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { paddingBottom: 8 },
-  center: { paddingVertical: 40, alignItems: "center" },
   notifCard: { overflow: "hidden" },
 });
