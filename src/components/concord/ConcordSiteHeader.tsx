@@ -64,9 +64,17 @@ export function ConcordSiteHeader({
       ? "/admin"
       : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER"
         ? "/teacher-portal/dashboard"
-        : "/dashboard";
+        : role === "PARENT"
+          ? "/parent"
+          : "/dashboard";
   const portalLabel =
-    role === "ADMIN" ? "관리자" : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER" ? "선생님 포털" : "내 학습";
+    role === "ADMIN"
+      ? "관리자"
+      : role === "TEACHER" || role === "MANAGER" || role === "CHIEF_MANAGER"
+        ? "선생님 포털"
+        : role === "PARENT"
+          ? "학부모 페이지"
+          : "내 학습";
 
   const links = [
     ...BASE_NAV.filter((l) => {
