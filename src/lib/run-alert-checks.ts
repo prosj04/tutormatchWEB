@@ -77,6 +77,7 @@ export async function runAlertChecks() {
   let renewalSkippedNoBilling = 0;
   let renewalSkippedAutoRenewOff = 0;
   let renewalSkippedLegacyPlan = 0;
+  let subscriptionsExpiredClosed = 0;
   let subscriptionsAutoCancelled = 0;
 
   const now = new Date();
@@ -1770,13 +1771,49 @@ export async function runAlertChecks() {
       continue;
     }
 
+    // 만료 마감 (G-6sys): dunning 대상이 아닌 구독(빌링 없음·autoRenew off·legacy)은
+    // 만료 알림(§7b) 후에도 영원히 ACTIVE로 남는다. 수동 결제 유예 D+3 뒤 CANCELLED로
+    // 마감해 "빠져나올 수 없는 상태"를 없앤다. 재결제 시 completeStudentPayment가
+    // 새 Subscription을 생성하므로 데이터 이력도 자연스럽다.
+    const closeOutExpired = async (skippedReason: string): Promise<void> => {
+      if (sub.status !== "ACTIVE" || daysPast < 3) return;
+      await prisma.subscription.update({
+        where: { id: sub.id },
+        data: { status: "CANCELLED" },
+      });
+      subscriptionsExpiredClosed++;
+      // 학생에겐 §7b SUBSCRIPTION_EXPIRED가 이미 발송됨 — 매니저에게만 마감 사실 통지.
+      for (const link of await prisma.managerStudent.findMany({
+        where: { studentId: sub.studentId },
+        select: { manager: { select: { userId: true } } },
+      })) {
+        const relatedId = `${sub.id}:expired-closed`;
+        const existing = await prisma.notification.findFirst({
+          where: { userId: link.manager.userId, type: "SUBSCRIPTION_EXPIRED", relatedId },
+          select: { id: true },
+        });
+        if (!existing) {
+          await createNotification({
+            userId: link.manager.userId,
+            type: "SUBSCRIPTION_EXPIRED",
+            title: "구독 만료 마감",
+            body: `${sub.student.name} 학생 구독이 만료 후 갱신되지 않아 종료 처리되었습니다 (${skippedReason}). 재등록 상담을 검토해 주세요.`,
+            relatedId,
+          });
+          notificationsCreated++;
+        }
+      }
+    };
+
     const billing = sub.student.billingProfile;
     if (!billing) {
       renewalSkippedNoBilling++;
+      await closeOutExpired("자동결제 미등록");
       continue;
     }
     if (!billing.autoRenew) {
       renewalSkippedAutoRenewOff++;
+      await closeOutExpired("자동 갱신 꺼짐");
       continue;
     }
 
@@ -1784,6 +1821,7 @@ export async function runAlertChecks() {
     if (!v2Plan) {
       // Legacy plan — cannot resolve authoritative amount. Skip; expiry alerts handle it.
       renewalSkippedLegacyPlan++;
+      await closeOutExpired("구버전 플랜");
       continue;
     }
 
@@ -1989,6 +2027,7 @@ export async function runAlertChecks() {
     renewalChargesFailed,
     renewalSkippedPaused,
     renewalSkippedNoBilling,
+    subscriptionsExpiredClosed,
     renewalSkippedAutoRenewOff,
     renewalSkippedLegacyPlan,
     subscriptionsAutoCancelled,
