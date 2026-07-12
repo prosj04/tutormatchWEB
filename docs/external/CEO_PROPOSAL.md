@@ -2,6 +2,7 @@
 
 > 의사결정용 요약 · 2026-07 · IR 원페이저 양식 계승
 > 근거: `IR_ONE_PAGER.md`(시장·유닛이코노믹스) · `FINANCIAL_PLAN.md`(3시나리오) · `MARKETING_PLAN.md`(4트랙 채널) · `BM_EVOLUTION.md`(게이트·리스크). 제품 실물은 `APP_GUIDE.md`(실 구동 캡처 98장).
+> ⚠️ **내부 고지 — 정책 변경 (2026-07-08, 대외 배포 전 반영 필요)**: 매칭 표의 "학생 수락 버튼 확정" 강조는 개정 이전 서술. 현행 규범(`CLAUDE.md`)상 수락은 형식적 절차이며 대외 자료에서 강조하지 않는다. PDF(`branding/Concord-CEO-Proposal.pdf`) 재생성 시 수정 후 배포할 것.
 
 ---
 

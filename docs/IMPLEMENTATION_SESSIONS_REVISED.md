@@ -3,6 +3,8 @@
 > 작성: 2026-07-02
 > 기준 문서: `BUSINESS_REVIEW.md`, `PRODUCT_DESIGN_TRACKER.md`, `IMPLEMENTATION_PLAN_2026-07.md`
 > 중요: 기존 문서의 일부 제안은 실제 운영 방침과 다르므로, 구현은 이 문서를 우선 기준으로 한다.
+> ⚠️ **정책 변경 고지 (2026-07-08, 내용 추가만 — 구조 변경 아님)**: 본문의 "학생 화면에는 수락 버튼만 둔다" 등 수락 중심 서술은 개정 이전 방침. 현행 규범(`CLAUDE.md`): 수락 버튼은 형식적 절차이며 UI·마케팅에서 강조하지 않는다.
+> 📁 **경로 이동 고지 (2026-07-12 문서 재편)**: 본문이 참조하는 `BUSINESS_REVIEW.md` → `11-사업리뷰·취약점.md` Part A, `PRODUCT_DESIGN_TRACKER.md` → `30-제품·디자인.md` Part A로 병합됨 (원본은 `archive/`). 매핑: `docs/README.md`.
 
 ---
 

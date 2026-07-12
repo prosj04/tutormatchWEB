@@ -1,71 +1,73 @@
 # 문서 지도 (docs/)
 
-> 갱신: 2026-07-04 · 리뷰 문서 6개를 2개로 통합하고 내부/외부 문서 체계를 신설.
-> **신규 AI 세션은 루트 [`/HANDOFF.md`](../HANDOFF.md)부터 읽을 것** — 운영 하네스(Part 0)와 현재 상태·백로그가 담긴 마스터 핸드오프. `CLAUDE_HANDOFF.md`는 세션 로그·이연 스펙 원본으로 보존.
+> 갱신: 2026-07-12 · **주제별 단권화 재편** — 시간순으로 누적되던 전략·리뷰 문서 15종을 주제별 단권 6종으로 병합(전문 무손실)하고 원본은 `archive/`로 이동.
+> **사람이 읽을 때**: [`00-현재상태.md`](00-현재상태.md)부터. **AI 세션**: 루트 [`/HANDOFF.md`](../HANDOFF.md)부터 (운영 하네스 Part 0 필독).
+> ⚠️ **수락 버튼 정책 (2026-07-08 개정)**: 학생 수락은 형식적 절차 — 마케팅 카피·UI에서 강조 금지 (`CLAUDE.md`). 개정 이전 문서의 수락 강조 서술은 구버전 규범.
+
+## 주제별 단권 (2026-07-12 재편 — 여기부터 읽는다)
+
+| 문서 | 내용 | 수록 원본 |
+|---|---|---|
+| [00-현재상태.md](00-현재상태.md) | **제품·사업 현황 한눈에** — 상태·수치·블로커·다음 할 일 | (신규 작성) |
+| [10-사업전략.md](10-사업전략.md) | BM 설계 통합 — Part A: v4.1 최신판(NX-1~53·EXP-1~8) / Part B: v3 전문(F-·BM-·M-·W-·RR-) | BM_EVOLUTION_V4 + BM_EVOLUTION |
+| [11-사업리뷰·취약점.md](11-사업리뷰·취약점.md) | Part A: 사업·마케팅·리스크·성장 리뷰(BR-·MK-) / Part B: 취약점 50·개선점 50 | BUSINESS_REVIEW + VULNERABILITY_AUDIT |
+| [20-마케팅.md](20-마케팅.md) | Part A: 실행 계획 v3(4트랙·V-1~13·AD-1~14) / B: 카피 제안 / C: 설탭 티어다운 / D: 설탭 벤치마크 | MARKETING_PLAN + copy-proposals + seoltab 2종 |
+| [30-제품·디자인.md](30-제품·디자인.md) | Part A: 제품·디자인 트래커(FI-·EC-) / B: 방향 정의서 / C: CRO 리뷰 / D: UX 감사 M-1~17 / E: 홈 개선안 | PRODUCT_DESIGN_TRACKER + design 3종 + HOMEPAGE_REDESIGN |
+| [40-파일럿.md](40-파일럿.md) | 파일럿 1차 기록(종결). 2차는 아래 활성 문서 참조 | PILOT_SIM |
+
+## 활성 문서 (다른 세션·스킬이 직접 사용 — 이동·구조 변경 금지)
+
+| 문서 | 내용 | 사용처 |
+|---|---|---|
+| [PILOT_SIM2_2026-07.md](PILOT_SIM2_2026-07.md) | 파일럿 2차 — 11라운드까지 기록, 라운드 계속 append | `pilot-verify` 스킬이 `docs/PILOT_SIM2_*.md` 글롭 참조 |
+| [IMPLEMENTATION_PLAN_2026-07.md](IMPLEMENTATION_PLAN_2026-07.md) | 2026-07 구현 계획 | 타 세션 활성 |
+| [IMPLEMENTATION_SESSIONS_REVISED.md](IMPLEMENTATION_SESSIONS_REVISED.md) | 세션별 구현 기록 | 타 세션 활성 |
+| [MANAGER_GUIDELINES.md](MANAGER_GUIDELINES.md) | 매니저 운영 가이드 | 운영 |
+| [REFACTORING_PLAN.md](REFACTORING_PLAN.md) | 리팩토링 제안 R-1~16 (P0 보안~P2 파일 분할) | 기술 부채 추적 |
+| [PHOTO_SHOOT_LIST.md](PHOTO_SHOOT_LIST.md) · [PHOTO_GENERATION_PROMPT.md](PHOTO_GENERATION_PROMPT.md) | 촬영 리스트 / 이미지 생성 프롬프트(보류) | 콘텐츠 |
+| [FRONTEND_BUILD_SPEC.md](FRONTEND_BUILD_SPEC.md) | 포인터 스텁 → 원본 `design handoff/FRONTEND_BUILD_SPEC.md` | 디자인 패키지 |
+| `app-guide.html` · `ceo-proposal.html` · `proposal-ledger.html` | 덱 PDF 소스 (headless Chrome `--print-to-pdf`로 재생성) | `branding/*.pdf` |
 
 ## 외부 문서 (제출·전달용) — `docs/external/`
 
 | 문서 | 용도 | 상태 |
 |---|---|---|
-| [BUSINESS_PLAN_PSST.md](external/BUSINESS_PLAN_PSST.md) | 창업지원사업 제출용 사업계획서 (PSST 구조) | 초안 — [기재 필요] 항목 채우면 제출 가능 |
-| [FINANCIAL_PLAN.md](external/FINANCIAL_PLAN.md) | 3개년 재무계획 (실제 V2 요금제 단가 기반, 3시나리오) | 초안 — 파일럿 실측치로 갱신 예정 |
-| [IR_ONE_PAGER.md](external/IR_ONE_PAGER.md) | 투자·지원사업 1페이지 요약 (PDF: `branding/Concord-IR-OnePager.pdf`) | 완료 — 대표자 정보 [기재 필요] |
-| 앱 설명 자료 (덱) — `branding/Concord-App-Guide.pdf` (소스 `docs/app-guide.html`) | pitch-deck 양식 32슬라이드, 캡처 프레임 임베드로 문서만 봐도 앱 파악 | 완료 — 텍스트 원본 `external/APP_GUIDE.md` |
-| 경영자 제안 (덱) — `branding/Concord-CEO-Proposal.pdf` (소스 `docs/ceo-proposal.html`) | pitch-deck 양식 13슬라이드, Problem~Ask + 스크린샷 증거 | 완료 — 텍스트 원본 `external/CEO_PROPOSAL.md`, 대표자 정보 [기재 필요] |
-| [APP_GUIDE.md](external/APP_GUIDE.md) · [CEO_PROPOSAL.md](external/CEO_PROPOSAL.md) | 위 두 덱의 텍스트 원본(마크다운) | 완료 — 덱 갱신 시 함께 수정 |
-| IR 피치덱 — `branding/Concord-IR-Deck.pdf` (소스 `branding/pitch-deck.html`) | 발표·투자 미팅용 13장 덱 (PSST·재무계획 수치 기반) | 완료 — 대표자 정보 [기재 필요] |
-| 브랜드 가이드라인 — `branding/Concord-Brand-Guidelines.pdf` (소스 `branding/brand-guidelines.html`) | 로고·컬러·타이포·보이스 규정집 v1.1 (11p) | 완료 |
-| [../docs/PHOTO_GENERATION_PROMPT.md](PHOTO_GENERATION_PROMPT.md) | 이미지 생성 AI 전달용 프롬프트 (인물 사진 6종×5장) | 완료 (작업 보류 중 — 실사 확보 시 폐기) |
-| [../docs/PHOTO_SHOOT_LIST.md](PHOTO_SHOOT_LIST.md) | 실사 촬영 리스트 (A 사이트 필수 / B 마케팅 대비 / C IR — 컷별 자세·배경·조명 규격) | 완료 — 촬영 대기 |
+| [BUSINESS_PLAN_PSST.md](external/BUSINESS_PLAN_PSST.md) | 창업지원사업 제출용 사업계획서 (PSST) | 초안 — [기재 필요] 채우면 제출 가능 |
+| [FINANCIAL_PLAN.md](external/FINANCIAL_PLAN.md) | 3개년 재무계획 (V2 요금제 단가, 3시나리오) | 초안 — 파일럿 실측치로 갱신 예정 |
+| [IR_ONE_PAGER.md](external/IR_ONE_PAGER.md) | IR 원페이저 (PDF: `branding/Concord-IR-OnePager.pdf`) | 완료 — 대표자 정보 [기재 필요] · ⚠️수락 서술 수정 후 배포 |
+| [APP_GUIDE.md](external/APP_GUIDE.md) | 앱 상세 설명 (PDF: `branding/Concord-App-Guide.pdf`, 32슬라이드) | 완료 · ⚠️수락 서술 수정 후 배포 |
+| [CEO_PROPOSAL.md](external/CEO_PROPOSAL.md) | 경영자 제안 (PDF: `branding/Concord-CEO-Proposal.pdf`, 13슬라이드) | 완료 — 대표자 정보 [기재 필요] · ⚠️수락 서술 수정 후 배포 |
+| IR 피치덱 — `branding/Concord-IR-Deck.pdf` (소스 `branding/pitch-deck.html`) | 발표·투자 미팅용 13장 덱 | 완료 — 대표자 정보 [기재 필요] |
+| 브랜드 가이드라인 — `branding/Concord-Brand-Guidelines.pdf` (소스 `branding/brand-guidelines.html`) | 로고·컬러·타이포·보이스 v1.1 | 완료 |
+| 제안 원장 컴펜디움 — `branding/Concord-Proposal-Ledger.pdf` (소스 `docs/proposal-ledger.html`) | 전 제안 ID 단위 집대성 + 확장 제안 X-1~28, 76슬라이드 | 완료 |
 
-> PDF 재생성: `branding/*.html` 수정 후 headless Chrome `--print-to-pdf` (원페이저·덱·가이드라인 공통).
-
-**미작성 — 투자·지원사업 대비 권고 목록 (우선순위순)**
-
-1. **대표자 프로필·이력 상세** — PSST·덱·원페이저의 [기재 필요]를 채울 원천. 이것만 있으면 3종 문서가 즉시 제출 가능 상태가 됨
-2. **데모 시나리오 문서** — 심사 발표 시 라이브 시연 순서(상담 신청 → 매니저 배정 → 매칭 → 수락 → 플랜·AI 질답), 데모 계정·데이터 준비 체크리스트
-3. **정부 양식별 변환본** — 지원사업 공고별 HWP/워드 양식으로 PSST 내용 이식 (공고 확정 후)
-4. **트랙션 리포트 템플릿** — 파일럿 개시 후 월간 갱신용 (MAS·전환율·유지율·NPS 실측치). FINANCIAL_PLAN 가정 갱신의 근거 문서
-5. **투자용 데이터룸 체크리스트** — Pre-A 단계 대비 (법인 등기·재무제표·계약서·IP·개인정보 준수 증빙 목록). 3차년도 전 착수면 충분
+**미작성 — 투자·지원사업 대비 권고 (우선순위순)**: ① 대표자 프로필·이력 상세([기재 필요] 원천) ② 데모 시나리오 문서 ③ 정부 양식별 변환본(공고 확정 후) ④ 트랙션 리포트 템플릿(파일럿 후) ⑤ 투자용 데이터룸 체크리스트(Pre-A 전)
 
 ## 내부 문서 — `docs/internal/`
 
 | 문서 | 용도 | 상태 |
 |---|---|---|
-| [TECH_OVERVIEW.md](internal/TECH_OVERVIEW.md) | 기술 아키텍처 (스택·인증·DB·결제·배포·기술부채) | 완료 (코드 실측) |
-| [API_REFERENCE.md](internal/API_REFERENCE.md) | API 전수 레퍼런스 (110개 라우트, 권한·파라미터) | 완료 (코드 실측) |
-| [LEGAL_DOCS_STATUS.md](internal/LEGAL_DOCS_STATUS.md) | 법률 문서 현황 + 필요 문서 7종(L-1~7) + 행정 절차 | 완료 (체크리스트) |
+| [TECH_OVERVIEW.md](internal/TECH_OVERVIEW.md) | 기술 아키텍처 (스택·인증·DB·결제·배포) | 완료 (07-04 실측 — API 수 등은 `HANDOFF.md` 3.4가 최신) |
+| [API_REFERENCE.md](internal/API_REFERENCE.md) | API 전수 레퍼런스 | ⚠️ 07-04 기준 110 라우트 — **07-12 실측 166**, 재실측 필요 |
+| [LEGAL_DOCS_STATUS.md](internal/LEGAL_DOCS_STATUS.md) | 법률 문서 현황 + 필요 7종(L-1~7) | 완료 (체크리스트) |
 | [contracts/TUITION_CONTRACT_DRAFT.md](internal/contracts/TUITION_CONTRACT_DRAFT.md) | L-1 수강 계약서 | ⚠️ 초안 — 변호사 검토 필수 |
-| [contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md](internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md) | L-2 강사 위촉 계약서 (직거래 금지·시급 30,000원 정산 반영) | ⚠️ 초안 — 변호사·노무 검토 필수 |
-| [LEGAL_ADVISORY_MEMO.md](internal/LEGAL_ADVISORY_MEMO.md) | 임시 법률 자문 메모 (A-1~4: 위약금·신원조회·학원법 지위·원천징수) + 정식 자문 질문 리스트 | ⚠️ AI 임시 자문 — 정식 자문으로 대체 필요 |
+| [contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md](internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md) | L-2 강사 위촉 계약서 | ⚠️ 초안 — 변호사·노무 검토 필수 |
+| [LEGAL_ADVISORY_MEMO.md](internal/LEGAL_ADVISORY_MEMO.md) | 임시 법률 자문 메모 (A-1~4) | ⚠️ AI 임시 — 정식 자문 대체 필요 |
 
-미작성 (LEGAL_DOCS_STATUS 우선순위 따름): 개인정보 내부관리계획(L-3), 신원확인 동의서(L-4)
+미작성 (LEGAL_DOCS_STATUS 우선순위): 개인정보 내부관리계획(L-3), 신원확인 동의서(L-4)
 
-## 전략·리뷰
+## 아카이브 — `docs/archive/` (전량 보존, 참조용)
 
-| 문서 | 내용 |
+2026-07-12 재편으로 이동한 원본 15종(위 단권에 전문 수록) + 루트에서 이동한 구버전 사업계획서 산출물 4종(`concord_bizplan.*`, `Concord_사업계획서_2026.docx`). 아카이브 내 문서 간 상호 참조는 같은 폴더라 유효. `Concord_사업계획서_2026.md`(원본 소스)는 루트 유지, PSST가 계승.
+
+## 다른 위치의 문서
+
+| 위치 | 내용 |
 |---|---|
-| **제안 원장 컴펜디움 (덱)** — `branding/Concord-Proposal-Ledger.pdf` (소스 `docs/proposal-ledger.html`) | 아래 5개 원장 문서의 **전 제안을 ID 단위로 빠짐없이** 집대성하고 그 위에 신규 **확장·창의 제안(⑥)** 을 얹은 76슬라이드 컴펜디움 덱 (요약본 CEO 제안의 근거 전문). 목차 뒤 **용어 해설 2장**(재무·기술·마케팅·ID 접두어) + 원장 표 zebra 줄무늬로 가독성 보강. ① BR·MK·성장·G2 / ② F·BM·M·RR·W / ③ NX-1~53·EXP / ④ 4트랙·V-1~13·C-1~12·AD-1~14 / ⑤ R-1~16·디자인 §1~8·FI-1~10·EC-1~10·IMP-1~6 / **⑥ 확장·창의 X-1~28**(수익라인·오프라인해자·데이터AI·커뮤니티·강사사다리·운영자동화·대담한베팅 + 우선순위 매트릭스). 재생성: HTML 수정 후 headless Chrome `--print-to-pdf` |
-| [BUSINESS_REVIEW.md](BUSINESS_REVIEW.md) | 사업·마케팅·리스크·성장 통합 (Part 1: BR-1~6/MK-1~8 · Part 2: BR-7~23 법률·재무 · Part 3: 성장 제안 §1~9) |
-| [BM_EVOLUTION.md](BM_EVOLUTION.md) | 반드시 성공할 수 밖에 없는 비즈니스 설계 v3 — 실패모드 F-1~10 · 수익 제안 BM-A~Z(26건) · 민감도 테스트 · 해자 M-1~5 · Go/Fix/Kill 게이트 · 수요/공급 엔진 수학 · KPI 트리(QAS) · 워게임 W-1~4 · 리스크 레지스터 RR-1~10 · 90일+12개월 로드맵 |
-| [BM_EVOLUTION_V4_2026-07.md](BM_EVOLUTION_V4_2026-07.md) | 4차 고도화 v4.1 — "결제 이후" 플라이휠 설계. 신규 53건 NX-1~53 + 기존 확장 8건 EXP-1~8(활성화·NRR·바이럴공학·증거자동화·데이터해자·강사도구·현금공학·커뮤니티·공급다변화·애셋라이트 확장) + 미해결 기존안 통합(코드 실측) + 실행 분담(Part D-0: 전 제안 항목별 분담 총괄표 🤖/🤝/👤 + 스프린트 1~4 / Part E: 경영자 직접 수행 E1~E4) |
-| [MARKETING_PLAN.md](MARKETING_PLAN.md) | 마케팅 실행 계획 v3 — 4트랙 채널 매트릭스·예산·90일 캘린더 + 플레이북 §10~21 + **광고 상세 시나리오집 §22~28**(페르소나 4종·메시지 하우스·**영상 콘티 13편 V-1~13** 초단위 + 보완 브레인스토밍 C-1~12 트리아지·네이버 SA/메타/카카오/당근 소재 완성본·리타겟 5시나리오·월별 광고 타이밍 매트릭스) + 신규 제안 **AD-1~14** |
-| [REFACTORING_PLAN.md](REFACTORING_PLAN.md) | 리팩토링 제안 R-1~16 (P0 보안 / P1 정합성 / **P1.5 히스토리 진단 추가: R-12 돈경로 테스트·R-13 알림 레지스트리·R-14 랜딩 구버전 삭제·R-15 인증 표준화·R-16 CMS 동결** + 반결정 목록 / P2 파일 분할) — R-1 종결·R-2 승인대기·R-4 부분해소 정정 |
-| [PRODUCT_DESIGN_TRACKER.md](PRODUCT_DESIGN_TRACKER.md) | 제품·디자인 개선 트래커 (기능 FI-* · 디자인 §1~8 구현 현황 · 플로우 엣지케이스 EC-*) |
-| [HOMEPAGE_REDESIGN_2026-07.md](HOMEPAGE_REDESIGN_2026-07.md) | 설탭 티어다운 기반 홈 개선안 (불안 해소 서사 W-1~4 · 약속 섹션·케어 재설계·히어로 프루프 카드 — 2026-07-04 구현 완료) |
-| [PILOT_SIM_2026-07.md](PILOT_SIM_2026-07.md) | 파일럿 시뮬레이션 결과 (학생·학부모·매니저 페르소나 실주행 — P0 7건·P1 7건·병목 3건, pilot- 테스트 계정 정리 목록) |
-| [PILOT_SIM2_2026-07.md](PILOT_SIM2_2026-07.md) | 대규모 파일럿 2차 (opus 7팀 도메인별 — 크론 인증우회·매칭무결성 P0 3건·P1 10건·P2 21건, 소스분석 주도, pilot2- 정리 목록) |
-| [project-goals.md](project-goals.md) | 프로젝트 목표 |
+| 루트 `HANDOFF.md` | **AI 마스터 핸드오프** — 운영 하네스 Part 0 · 상태 스냅샷(3.4 최신) · 백로그 |
+| 루트 `CLAUDE_HANDOFF.md` | 과거 세션 로그·이연 스펙 원본 (역사 보존) |
+| 루트 `design handoff/` | 디자인 패키지 — HTML 시안 20종, DESIGN_SYSTEM, ROUTE_MAP, IMPLEMENTATION_CONTRACT, MOBILE_HANDOFF. **신 디자인은 로그인 후 화면만, 공개 페이지 수정 금지** |
+| `public/docs/` | 웹 자료실 배포본 (PDF·HTML — `DocsLibrary.tsx`가 참조, md 이동과 무관) |
 
-## 실행·운영 (다른 세션 활성 사용 — 이 구조 변경 금지)
-
-| 문서 | 내용 |
-|---|---|
-| [IMPLEMENTATION_PLAN_2026-07.md](IMPLEMENTATION_PLAN_2026-07.md) | 2026-07 구현 계획 |
-| [IMPLEMENTATION_SESSIONS_REVISED.md](IMPLEMENTATION_SESSIONS_REVISED.md) | 세션별 구현 기록 |
-| [MANAGER_GUIDELINES.md](MANAGER_GUIDELINES.md) | 매니저 운영 가이드 |
-| `../CLAUDE_HANDOFF.md` (루트) | 세션 간 핸드오프 — 최신 상태의 진실의 원천 |
-
-## 루트 정리 권고 (미실행 — 사용자 결정 필요)
-
-`concord_bizplan.docx`, `concord_bizplan.docx.bak`, `concord_bizplan.rtf`, `Concord_사업계획서_2026.docx`는 구버전 산출물로 보임. `Concord_사업계획서_2026.md`가 원본 소스이며 PSST 버전이 이를 계승하므로, 확인 후 삭제 또는 아카이브 폴더 이동 권장.
+> PDF 재생성: 소스 HTML 수정 후 headless Chrome `--print-to-pdf` (원페이저·덱·가이드라인 공통).
+> 문서 갱신 시 이 지도를 동반 갱신한다 (HANDOFF.md §0.8).

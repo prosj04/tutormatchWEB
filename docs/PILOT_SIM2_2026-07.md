@@ -238,3 +238,12 @@
 
 - `tsc --noEmit`(웹·모바일) 0, `eslint` 0, `prisma validate` 통과, `next build` 성공(수정 전 기준 — 수정분은 tsc/eslint로 확인).
 - **수렴 판정: 완료된 3팀 기준 신규 P0 0건, P1 1건·P2 4건 당회 수정 완료.** 미완 2팀 영역(웹 포털 권한·디자인 계약 정밀)은 후속 라운드 후보.
+
+### 11.4 후속 2팀 재검증 (2026-07-12, 웹 포털 권한 + 디자인 계약)
+
+- **[P1] NotificationBell concord 테마 미준수**: legacy 전용 Tailwind 토큰(bg-surface·text-primary·text-text-*·bg-background·ring-card)이 concord에서 고정 hex로 폴백(그린 테마에 파란 링크, 다크에 흰 패널). `portal-design.css`에 concord 스코프 remap 7종 추가로 해소(컴포넌트 무수정).
+- **[P2] StudentPortalShell 비학생 오라우팅**: PARENT가 학생 라우트 접근 시 강사 로그인 화면 착지 → `portalHomeHref(role)`로 역할별 홈 리다이렉트.
+- **[P2] 모바일 warn 배너 다크 분기 누락 4파일**: `#92610a` 고정 → `_ui.tsx` 패턴(`mode==="dark"?"#e8c56b":"#92610a"`)으로 통일. (teacher)/index는 사용 컴포넌트(PendingHome) 스코프에 정확히 배치.
+- **확인 후 미수정**: ① staff role인데 Teacher 레코드 없는 계정의 teacher-portal 상호 리다이렉트 루프 — 앱 경로로는 미도달(가입·승격 모두 Teacher 보존), DB 직접 조작 시에만. 기록만. ② `AdminShellConcord` 고정 회색 라벨 — AdminShell 체인이 admin layout에서 해제된 dead code, 수정 불요(정리 후보). 
+- **이상 없음 확인**: 전 신규 layout 가드 커버리지(page 단위 이중 가드 포함), /parent IDOR 없음, 헤더 전 역할 정상, 승인 화면 클라/서버 가드 일치, 페이지 `.page.on` 전수 준수, 클래스 오타 0, PAUSED 라벨 잔재 0, app-styles 이식값 8곳 정확.
+- **검증**: 웹·모바일 tsc/eslint 0. **수렴 판정: 5팀 전체 완료 — 신규 P0 0, P1 2(§11.1·§11.4 각 1) 및 P2 전부 당회 수정. 수렴.**

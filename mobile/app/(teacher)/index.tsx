@@ -218,14 +218,16 @@ function Tile({ value, label }: { value: string; label: string }) {
 }
 
 function PendingHome() {
-  const { t } = useTheme();
+  const { t, mode } = useTheme();
+  // .bst.warn 다크 보정 — concord-portal.css [data-theme="dark"] 값과 동일 (_ui.tsx 패턴)
+  const warnColor = mode === "dark" ? "#e8c56b" : "#92610a";
   const router = useRouter();
   return (
     <>
       {/* 경고 배너 (.banner.warn) */}
       <View style={[styles.banner, { backgroundColor: "rgba(217,119,6,0.1)", borderColor: "rgba(217,119,6,0.25)" }]}>
-        <AlertCircleIcon color="#92610a" size={17} />
-        <Text style={[styles.bannerText, { color: "#92610a" }]}>
+        <AlertCircleIcon color={warnColor} size={17} />
+        <Text style={[styles.bannerText, { color: warnColor }]}>
           <Text style={styles.bannerBold}>승인 검토 중이에요. </Text>
           서류 확인 후 보통 2~3일 내 승인됩니다. 승인 전에는 학생·질문 기능이 잠깁니다.
         </Text>

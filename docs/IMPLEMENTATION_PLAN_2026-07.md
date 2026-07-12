@@ -2,6 +2,7 @@
 
 > 작성: 2026-07-02 · 기준: `CLAUDE_HANDOFF.md` (§18–22) + `prisma/schema.prisma` 실측 교차 검증
 > 대상 독자: Claude Code (이 문서의 스키마·API 명세를 그대로 구현 가능하도록 작성)
+> 📁 **경로 이동 고지 (2026-07-12 문서 재편, 내용 추가만)**: 본문이 참조하는 `PRODUCT_DESIGN_TRACKER.md` → `30-제품·디자인.md` Part A로 병합됨 (원본은 `archive/`). 매핑: `docs/README.md`.
 
 ---
 

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { portalHomeHref } from "@/lib/portal-roles";
 import { prisma } from "@/lib/prisma";
 
 import { PortalShell, type PortalNavItem } from "./PortalShell";
@@ -76,7 +77,7 @@ export async function StudentPortalShell({
     redirect("/login");
   }
   if (session.user.role !== "STUDENT") {
-    redirect("/teacher-portal/dashboard");
+    redirect(portalHomeHref(session.user.role));
   }
 
   const student = await prisma.student.findUnique({

@@ -72,7 +72,9 @@ function formatLessonDate(iso: string): string {
 
 export default function StudentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { t } = useTheme();
+  const { t, mode } = useTheme();
+  // .bst.warn 다크 보정 — concord-portal.css [data-theme="dark"] 값과 동일 (_ui.tsx 패턴)
+  const warnColor = mode === "dark" ? "#e8c56b" : "#92610a";
   const router = useRouter();
 
   const [student, setStudent] = useState<TeacherStudent | null>(null);
@@ -165,8 +167,8 @@ export default function StudentDetailScreen() {
           <>
             {!hasFirstLesson && (
               <View style={[styles.banner, { backgroundColor: "rgba(217,119,6,0.1)", borderColor: "rgba(217,119,6,0.25)" }]}>
-                <AlertCircleIcon color="#92610a" size={17} />
-                <Text style={[styles.bannerText, { color: "#92610a" }]}>
+                <AlertCircleIcon color={warnColor} size={17} />
+                <Text style={[styles.bannerText, { color: warnColor }]}>
                   <Text style={styles.bannerBold}>첫 수업일이 아직 없어요. </Text>
                   학생·학부모와 조율한 날짜를 지정해 주세요.
                 </Text>

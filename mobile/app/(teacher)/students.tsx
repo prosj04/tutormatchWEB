@@ -48,7 +48,9 @@ function formatNext(iso: string | null): string {
 }
 
 export default function TeacherStudentsScreen() {
-  const { t } = useTheme();
+  const { t, mode } = useTheme();
+  // .bst.warn 다크 보정 — concord-portal.css [data-theme="dark"] 값과 동일 (_ui.tsx 패턴)
+  const warnColor = mode === "dark" ? "#e8c56b" : "#92610a";
   const router = useRouter();
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,7 +132,7 @@ export default function TeacherStudentsScreen() {
                     </View>
                     {pending ? (
                       <View style={[styles.bst, { backgroundColor: "rgba(217,119,6,0.12)" }]}>
-                        <Text style={[styles.bstText, { color: "#92610a" }]}>첫 수업일</Text>
+                        <Text style={[styles.bstText, { color: warnColor }]}>첫 수업일</Text>
                       </View>
                     ) : (
                       <View style={[styles.bst, { backgroundColor: accTint(t, 0.12) }]}>

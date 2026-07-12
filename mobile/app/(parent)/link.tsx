@@ -27,7 +27,9 @@ interface LinkResult {
 }
 
 export default function ChildLink() {
-  const { t } = useTheme();
+  const { t, mode } = useTheme();
+  // .bst.warn 다크 보정 — concord-portal.css [data-theme="dark"] 값과 동일 (_ui.tsx 패턴)
+  const warnColor = mode === "dark" ? "#e8c56b" : "#92610a";
   const router = useRouter();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -120,8 +122,8 @@ export default function ChildLink() {
           {/* 오류 배너 */}
           {error !== "" ? (
             <View style={[styles.banner, { backgroundColor: "rgba(217,119,6,0.1)", borderColor: "rgba(217,119,6,0.25)" }]}>
-              <AlertCircleIcon color="#92610a" size={17} />
-              <Text style={[styles.bannerText, { color: "#92610a" }]}>{error}</Text>
+              <AlertCircleIcon color={warnColor} size={17} />
+              <Text style={[styles.bannerText, { color: warnColor }]}>{error}</Text>
             </View>
           ) : null}
 

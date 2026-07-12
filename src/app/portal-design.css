@@ -310,3 +310,13 @@ html[data-portal-design="concord"] [data-portal-content] .shadow-md {
   top: 0;
   width: min(100%, 320px);
 }
+
+/* concord 컨텍스트에서 legacy 전용 유틸(--portal-* 미정의) 폴백 remap
+   — NotificationBell 등 잔존 컴포넌트의 고정 hex 폴백 방지 (파일럿 11R 후속) */
+html[data-portal-design="concord"] .bg-surface { background-color: var(--panel); }
+html[data-portal-design="concord"] .bg-background { background-color: var(--panel-2); }
+html[data-portal-design="concord"] .text-primary { color: var(--acc-text); }
+html[data-portal-design="concord"] .text-text-primary { color: var(--fg); }
+html[data-portal-design="concord"] .text-text-secondary { color: var(--mut); }
+html[data-portal-design="concord"] .text-text-muted { color: var(--mut-2); }
+html[data-portal-design="concord"] .ring-card { --tw-ring-color: var(--line); }
