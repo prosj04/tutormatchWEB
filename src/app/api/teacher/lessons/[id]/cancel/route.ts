@@ -26,7 +26,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
   const cancelReason =
     typeof body.reason === "string" && body.reason.trim()
-      ? body.reason.trim()
+      ? body.reason.trim().slice(0, 500)
       : null;
   const requestedMakeup =
     typeof body.makeupAt === "string" ? new Date(body.makeupAt) : null;

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
+import { prisma } from "@/lib/prisma";
 
 export async function requireManager() {
   const session = await auth();
@@ -25,6 +26,18 @@ export async function requireManager() {
   if (!teacher) {
     return {
       error: NextResponse.json({ error: "Manager not found" }, { status: 404 }),
+    } as const;
+  }
+
+  // 캐시(getTeacherByUserId)는 deletedAt/role을 담지 않으므로 별도 재조회로
+  // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { deletedAt: true, role: true },
+  });
+  if (!user || user.deletedAt !== null || user.role !== session.user.role) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
 

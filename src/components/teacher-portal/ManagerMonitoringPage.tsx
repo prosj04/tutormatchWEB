@@ -104,7 +104,8 @@ export function ManagerMonitoringPage({
     setDrawerId(studentId);
     setCareLogNote("");
     setCareLogType("CONSULT");
-    setCareLogVisible(true);
+    // 기본 비공개(E10) — 학생 공개는 매니저가 명시적으로 켤 때만
+    setCareLogVisible(false);
 
     const cached = detailCacheRef.current.get(studentId);
     if (cached) {

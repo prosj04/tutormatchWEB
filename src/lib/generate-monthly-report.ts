@@ -187,10 +187,12 @@ export async function generateReportForStudent(
   );
   const subjectAgg = new Map<string, { done: number; total: number }>();
   for (const l of monthLessons) {
-    const cur = subjectAgg.get(l.subject) ?? { done: 0, total: 0 };
+    const subject = l.subject.trim();
+    if (!subject) continue; // 빈 과목명은 집계에서 스킵
+    const cur = subjectAgg.get(subject) ?? { done: 0, total: 0 };
     cur.total += 1;
     if (l.status === "COMPLETED") cur.done += 1;
-    subjectAgg.set(l.subject, cur);
+    subjectAgg.set(subject, cur);
   }
   const subjectScoresArr: SubjectScore[] = Array.from(subjectAgg.entries()).map(
     ([subject, { done, total }]) => ({

@@ -22,11 +22,19 @@ export async function requireTeacherAllowPending() {
 
   const teacher = await prisma.teacher.findUnique({
     where: { userId: session.user.id },
+    include: { user: { select: { deletedAt: true, role: true } } },
   });
 
   if (!teacher) {
     return {
       error: NextResponse.json({ error: "Teacher not found" }, { status: 404 }),
+    } as const;
+  }
+
+  // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
+  if (teacher.user.deletedAt !== null || teacher.user.role !== session.user.role) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
 

@@ -34,6 +34,7 @@ export default function ReportsTab() {
   const [children, setChildren] = useState<Child[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reports, setReports] = useState<Report[] | null>(null);
+  const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -60,6 +61,7 @@ export default function ReportsTab() {
   );
 
   useEffect(() => {
+    setExpandedMonth(null);
     if (!selectedId) {
       setReports(null);
       return;
@@ -184,24 +186,85 @@ export default function ReportsTab() {
 
                 <Text style={[sectTS, { color: t.fg }]}>월간 리포트</Text>
                 <View style={[cardS, styles.listCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-                  {(reports ?? []).map((r, i) => (
-                    <Pressable
-                      key={r.month}
-                      style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
-                      onPress={() => router.push(`/report/${r.month}` as never)}
-                    >
-                      <View style={[lrowS.av, { backgroundColor: t.panel2, borderRadius: 10 }]}>
-                        <Text style={[styles.avText, { color: t.accText }]}>{r.month.replace(/[^0-9]/g, "").slice(-2) || r.month}</Text>
+                  {(reports ?? []).map((r, i) => {
+                    const expanded = expandedMonth === r.month;
+                    return (
+                      <View key={r.month}>
+                        <Pressable
+                          style={[lrowS.wrap, i > 0 && { borderTopWidth: 1, borderTopColor: t.line }]}
+                          onPress={() => setExpandedMonth(expanded ? null : r.month)}
+                        >
+                          <View style={[lrowS.av, { backgroundColor: t.panel2, borderRadius: 10 }]}>
+                            <Text style={[styles.avText, { color: t.accText }]}>{r.month.replace(/[^0-9]/g, "").slice(-2) || r.month}</Text>
+                          </View>
+                          <View style={lrowS.g}>
+                            <Text style={[lrowS.gb, { color: t.fg }]}>{`${r.month} 학습 리포트`}</Text>
+                            <Text style={[lrowS.gp, { color: t.mut }]} numberOfLines={expanded ? undefined : 1}>{r.summary}</Text>
+                          </View>
+                          <View style={[lrowS.chev, expanded && { transform: [{ rotate: "90deg" }] }]}>
+                            <ChevronRightIcon color={t.mut2} size={18} />
+                          </View>
+                        </Pressable>
+
+                        {expanded ? (
+                          <View style={[styles.detailBox, { borderTopColor: t.line }]}>
+                            {r.overallScore != null ? (
+                              <Text style={[styles.detailScore, { color: t.fg }]}>
+                                종합 {r.overallScore}
+                                {r.prevScore != null && r.overallScore - r.prevScore !== 0
+                                  ? `  (${r.overallScore - r.prevScore > 0 ? "▲" : "▼"}${Math.abs(r.overallScore - r.prevScore)} 지난달 대비)`
+                                  : ""}
+                              </Text>
+                            ) : null}
+
+                            {(r.subjectScores?.length ?? 0) > 0 ? (
+                              <View style={styles.subjectList}>
+                                {r.subjectScores.map((s) => (
+                                  <View key={s.subject} style={styles.subjectRow}>
+                                    <Text style={[styles.subjectName, { color: t.fg }]}>{s.subject}</Text>
+                                    <View style={[styles.barTrack, { backgroundColor: t.panel2 }]}>
+                                      <View
+                                        style={[
+                                          styles.barFill,
+                                          { width: `${Math.max(0, Math.min(100, s.curr))}%`, backgroundColor: t.acc },
+                                        ]}
+                                      />
+                                    </View>
+                                    <Text style={[styles.subjectVal, { color: t.mut }]}>
+                                      {s.prev != null ? `${s.prev}→${s.curr}` : `${s.curr}`}
+                                    </Text>
+                                  </View>
+                                ))}
+                              </View>
+                            ) : null}
+
+                            {r.detail ? (
+                              <Text style={[styles.detailText, { color: t.fg }]}>{r.detail}</Text>
+                            ) : null}
+
+                            {r.teacherComment ? (
+                              <View style={[styles.commentBox, { borderColor: t.line }]}>
+                                <Text style={[styles.commentLabel, { color: t.mut2 }]}>선생님 코멘트</Text>
+                                <Text style={[styles.commentText, { color: t.fg }]}>{r.teacherComment}</Text>
+                              </View>
+                            ) : null}
+                            {r.managerComment ? (
+                              <View style={[styles.commentBox, { borderColor: t.line }]}>
+                                <Text style={[styles.commentLabel, { color: t.mut2 }]}>매니저 코멘트</Text>
+                                <Text style={[styles.commentText, { color: t.fg }]}>{r.managerComment}</Text>
+                              </View>
+                            ) : null}
+
+                            {(r.weakTypes?.length ?? 0) > 0 ? (
+                              <Text style={[styles.summaryWeak, { color: t.mut }]}>
+                                보완 유형 · {r.weakTypes.join(", ")}
+                              </Text>
+                            ) : null}
+                          </View>
+                        ) : null}
                       </View>
-                      <View style={lrowS.g}>
-                        <Text style={[lrowS.gb, { color: t.fg }]}>{`${r.month} 학습 리포트`}</Text>
-                        <Text style={[lrowS.gp, { color: t.mut }]} numberOfLines={1}>{r.summary}</Text>
-                      </View>
-                      <View style={lrowS.chev}>
-                        <ChevronRightIcon color={t.mut2} size={18} />
-                      </View>
-                    </Pressable>
-                  ))}
+                    );
+                  })}
                 </View>
 
                 {/* 정보 배너 */}
@@ -249,6 +312,10 @@ const styles = StyleSheet.create({
 
   listCard: { overflow: "hidden" },
   avText: { fontSize: 13, fontFamily: font.bold },
+
+  detailBox: { paddingHorizontal: 15, paddingTop: 12, paddingBottom: 15, borderTopWidth: 1 },
+  detailScore: { fontSize: 15, fontFamily: font.bold, letterSpacing: -0.3 },
+  detailText: { fontSize: 13, lineHeight: 20, marginTop: 12 },
 
   // .banner.info
   banner: {

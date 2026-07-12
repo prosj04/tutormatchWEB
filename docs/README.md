@@ -12,7 +12,7 @@
 | [10-사업전략.md](10-사업전략.md) | BM 설계 통합 — Part A: v4.1 최신판(NX-1~53·EXP-1~8) / Part B: v3 전문(F-·BM-·M-·W-·RR-) | BM_EVOLUTION_V4 + BM_EVOLUTION |
 | [11-사업리뷰·취약점.md](11-사업리뷰·취약점.md) | Part A: 사업·마케팅·리스크·성장 리뷰(BR-·MK-) / Part B: 취약점 50·개선점 50 | BUSINESS_REVIEW + VULNERABILITY_AUDIT |
 | [20-마케팅.md](20-마케팅.md) | Part A: 실행 계획 v3(4트랙·V-1~13·AD-1~14) / B: 카피 제안 / C: 설탭 티어다운 / D: 설탭 벤치마크 | MARKETING_PLAN + copy-proposals + seoltab 2종 |
-| [30-제품·디자인.md](30-제품·디자인.md) | Part A: 제품·디자인 트래커(FI-·EC-) / B: 방향 정의서 / C: CRO 리뷰 / D: UX 감사 M-1~17 / E: 홈 개선안 / **F: 사용자 흐름 UX 감사 75건 (07-12)** | PRODUCT_DESIGN_TRACKER + design 3종 + HOMEPAGE_REDESIGN + 신규 |
+| [30-제품·디자인.md](30-제품·디자인.md) | Part A: 제품·디자인 트래커(FI-·EC-) / B: 방향 정의서 / C: CRO 리뷰 / D: UX 감사 M-1~17 / E: 홈 개선안 / **F: 사용자 흐름 UX 감사 75건 (07-12)** / **G: 전수조사 2차 108건 (07-13)** | PRODUCT_DESIGN_TRACKER + design 3종 + HOMEPAGE_REDESIGN + 신규 |
 | [40-파일럿.md](40-파일럿.md) | 파일럿 1차 기록(종결). 2차는 아래 활성 문서 참조 | PILOT_SIM |
 
 ## 활성 문서 (다른 세션·스킬이 직접 사용 — 이동·구조 변경 금지)

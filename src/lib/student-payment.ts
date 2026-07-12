@@ -149,7 +149,7 @@ export async function completeStudentPayment({
     });
 
     const existingSubscription = await prisma.subscription.findFirst({
-      where: { studentId, status: "ACTIVE" },
+      where: { studentId, status: { in: ["ACTIVE", "PAUSED"] } },
       orderBy: { createdAt: "desc" },
       select: { id: true },
     });

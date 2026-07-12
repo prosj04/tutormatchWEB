@@ -90,10 +90,19 @@ export async function StudentPortalShell({
 
   const student = await prisma.student.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, name: true, grade: true },
+    select: {
+      id: true,
+      name: true,
+      grade: true,
+      user: { select: { deletedAt: true, role: true } },
+    },
   });
   if (!student) {
     redirect("/?signup=1");
+  }
+  // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
+  if (student.user.deletedAt !== null || student.user.role !== session.user.role) {
+    redirect("/login");
   }
 
   const [unreadNotif, openQuestions] = await Promise.all([

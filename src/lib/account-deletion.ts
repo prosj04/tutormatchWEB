@@ -10,7 +10,7 @@ export async function softDeleteUser(userId: string): Promise<void> {
     // Find the user
     const user = await tx.user.findUnique({
       where: { id: userId },
-      include: { student: true, teacher: true },
+      include: { student: true, teacher: true, parent: true },
     });
 
     if (!user) {
@@ -106,6 +106,23 @@ export async function softDeleteUser(userId: string): Promise<void> {
       await tx.lesson.updateMany({
         where: { teacherId: user.teacher.id, status: "SCHEDULED" },
         data: { status: "CANCELLED", cancelledBy: "TEACHER" },
+      });
+    }
+
+    // If parent record exists, anonymize and soft-delete it
+    if (user.parent) {
+      await tx.parent.update({
+        where: { id: user.parent.id },
+        data: {
+          name: "탈퇴 학부모",
+          phone: "", // 스키마상 non-null이므로 빈 문자열로 익명화
+          deletedAt: new Date(),
+        },
+      });
+
+      // 자녀 연결 해제 — 탈퇴 학부모가 자녀 데이터에 계속 접근하지 않도록.
+      await tx.parentStudent.deleteMany({
+        where: { parentId: user.parent.id },
       });
     }
   });

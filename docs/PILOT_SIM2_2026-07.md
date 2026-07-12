@@ -247,3 +247,28 @@
 - **확인 후 미수정**: ① staff role인데 Teacher 레코드 없는 계정의 teacher-portal 상호 리다이렉트 루프 — 앱 경로로는 미도달(가입·승격 모두 Teacher 보존), DB 직접 조작 시에만. 기록만. ② `AdminShellConcord` 고정 회색 라벨 — AdminShell 체인이 admin layout에서 해제된 dead code, 수정 불요(정리 후보). 
 - **이상 없음 확인**: 전 신규 layout 가드 커버리지(page 단위 이중 가드 포함), /parent IDOR 없음, 헤더 전 역할 정상, 승인 화면 클라/서버 가드 일치, 페이지 `.page.on` 전수 준수, 클래스 오타 0, PAUSED 라벨 잔재 0, app-styles 이식값 8곳 정확.
 - **검증**: 웹·모바일 tsc/eslint 0. **수렴 판정: 5팀 전체 완료 — 신규 P0 0, P1 2(§11.1·§11.4 각 1) 및 P2 전부 당회 수정. 수렴.**
+
+## 12. 광역 재검증 라운드 (2026-07-13, opus 5팀 — 전 도메인 + 미검수 반입 코드)
+
+> 범위 확장: 세션 변경분 한정이 아닌 표준 5도메인 전체 + 커밋 06cbcd7에 리뷰 없이 반입된 신규 코드(정산·승인잠금·학부모 결제완료·분배 코어) 정밀 감사.
+
+### 12.1 신규 수정 (P1 2 + P2 7 — 전부 당회 적용)
+- **[P1] 환불 시 PAUSED/PAST_DUE 구독 미중단**: `stopServiceAfterRefund`가 ACTIVE만 대상 → 환불 후 RESUME으로 유료 구독 부활 가능. `in:[ACTIVE,PAUSED,PAST_DUE]`로 확대. (`payment-refund.ts`)
+- **[P1] 웹 세션 deletedAt·role 재검증 부재**: 웹 가드 전부가 JWT role만 신뢰 — 소프트삭제·강등이 JWT 만료(30일)까지 유효. 전 가드(student/teacher/manager/parent/admin, page+API)+StudentPortalShell에 user 재조회(deletedAt≠null·role 불일치 → 401/redirect) 추가, 모바일 getMobileUser와 동일 정책. 캐시 가드는 별도 findUnique 1회.
+- [P2] `completeStudentPayment` PAUSED 무시 중복 ACTIVE 생성 → in:[ACTIVE,PAUSED]
+- [P2] listParentChildren 구독 선택 ACTIVE 우선(모니터링 §11 규칙과 통일)
+- [P2] 모바일 학부모 리포트 행 탭이 학생 전용 API로 push→403 → 인라인 확장으로 대체
+- [P2] Parent 소프트삭제 전파 누락 → 익명화+deletedAt+ParentStudent 정리 분기 추가
+- [P2] 링크코드 브루트포스 → parentId 기준 10회/15분 레이트리밋(웹·모바일)
+- [P2] 리포트 과목 집계 빈 subject 유령 항목 스킵 / cancelReason 500자 상한(matchReason 관례 통일)
+
+### 12.2 확인 후 미수정 (기록)
+- nextStep은 저장 전용(다운스트림 미연결) — 설계 확인, 자동 매칭 이행 원하면 별도 과제
+- report PUT이 COMPLETED 상담 편집 허용 — 완료 직후 리포트 작성이 자연 흐름이라 유지(visit-confirmed와 불일치는 인지)
+- 정산 신규 라우트의 환불 차감 로직 복제(값 일치, 공용 헬퍼 추출 후보) / 시급 로딩 폴백 문자열 / completeStudentPayment 멱등 분기 studentId 미대조(기존 코드 동일, orderId 추측난)
+- prevScore 계보: 크론 월 건너뛰면 전월 대비 공백(운영 정상 시 무영향) / refresh 싱글플라이트 부재(성능만, 로그아웃 루프 없음 확인)
+- 미검수 반입 코드 감사 결과: parent 결제완료(소유권 검증이 학생 라우트보다 강함)·정산 IDOR 없음·분배 코어는 순수 이동(불변식 보존)·승인잠금 서버가드 일치 — **P0/P1 없음**
+
+### 12.3 검증
+- 웹·모바일 tsc 0 / eslint 0 / prisma validate 통과. 가드 반환 계약 유지(호출부 그대로).
+- **수렴 판정: P1 2건 당회 해소, 광역 스캔에서 P0 0. 수렴.**

@@ -16,9 +16,21 @@ export async function requireParentPage() {
 
   const parent = await prisma.parent.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, name: true, phone: true },
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      deletedAt: true,
+      user: { select: { deletedAt: true, role: true } },
+    },
   });
-  if (!parent) {
+  // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
+  if (
+    !parent ||
+    parent.deletedAt !== null ||
+    parent.user.deletedAt !== null ||
+    parent.user.role !== session.user.role
+  ) {
     redirect("/login");
   }
 
@@ -43,11 +55,27 @@ export async function requireParent() {
   }
   const parent = await prisma.parent.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, name: true, phone: true },
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      deletedAt: true,
+      user: { select: { deletedAt: true, role: true } },
+    },
   });
   if (!parent) {
     return {
       error: NextResponse.json({ error: "Parent not found" }, { status: 404 }),
+    } as const;
+  }
+  // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
+  if (
+    parent.deletedAt !== null ||
+    parent.user.deletedAt !== null ||
+    parent.user.role !== session.user.role
+  ) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
   return { session, parent, userId: session.user.id } as const;

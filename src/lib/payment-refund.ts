@@ -12,14 +12,14 @@ export async function stopServiceAfterRefund(payment: {
 }) {
   if (payment.subscriptionId) {
     await prisma.subscription.updateMany({
-      where: { id: payment.subscriptionId, status: "ACTIVE" },
+      where: { id: payment.subscriptionId, status: { in: ["ACTIVE", "PAUSED", "PAST_DUE"] } },
       data: { status: "CANCELLED" },
     });
   }
 
   if (payment.studentId) {
     await prisma.subscription.updateMany({
-      where: { studentId: payment.studentId, status: "ACTIVE" },
+      where: { studentId: payment.studentId, status: { in: ["ACTIVE", "PAUSED", "PAST_DUE"] } },
       data: { status: "CANCELLED" },
     });
     await prisma.billingProfile.updateMany({

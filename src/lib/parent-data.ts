@@ -47,7 +47,6 @@ export async function listParentChildren(parentId: string) {
             // PAUSED 포함 — 학부모에겐 구독중과 동일 표기(2026-07-11 정책, 라벨에서 마스킹)
             where: { status: { in: ["ACTIVE", "PAUSED"] } },
             orderBy: { createdAt: "desc" },
-            take: 1,
             select: { plan: true, status: true, periodEnd: true, pausedAt: true },
           },
           monthlyReports: {
@@ -66,7 +65,9 @@ export async function listParentChildren(parentId: string) {
   });
 
   return links.map((link) => {
-    const sub = link.student.subscriptions[0] ?? null;
+    // ACTIVE 우선 1건 선택 — 없으면 최신(PAUSED). 모니터링 §11과 동일 규칙.
+    const subs = link.student.subscriptions;
+    const sub = subs.find((s) => s.status === "ACTIVE") ?? subs[0] ?? null;
     return {
       id: link.student.id,
       name: link.student.name,
