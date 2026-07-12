@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { TeacherLessonConfirmCard } from "@/components/teacher-portal/TeacherLessonConfirmCard";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
 import { prisma } from "@/lib/prisma";
@@ -51,9 +52,13 @@ export default async function TeacherDashboardPage() {
         student: { select: { name: true, grade: true } },
       },
     }),
-    prisma.question.count({
+    // QnA는 QuestionMessage 단일 저장소로 이관됨 — 레거시 Question count는 死통계 (B6-2)
+    // 미답변 = 루트 질문 중 tutor 답변(replyToId=자신)이 없는 것
+    prisma.questionMessage.count({
       where: {
-        teacherAnswer: null,
+        replyToId: null,
+        sender: "me",
+        replies: { none: { sender: "tutor" } },
         student: { teachers: { some: { teacherId: teacher.id, isActive: true } } },
       },
     }),
@@ -94,6 +99,8 @@ export default async function TeacherDashboardPage() {
           </span>
         </div>
       ) : null}
+
+      {teacher.approved ? <TeacherLessonConfirmCard /> : null}
 
       <div className="sec grid3">
         <div className="card kpi">

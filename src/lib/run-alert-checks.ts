@@ -22,8 +22,6 @@ function lessonDateStr(d: Date): string {
   return formatDateKey(kst.getUTCFullYear(), kst.getUTCMonth() + 1, kst.getUTCDate());
 }
 
-const CLOSE_BUFFER_MS = 12 * 60 * 60 * 1000; // 12 h after lesson ends
-
 function getPreviousWeekRange(): { start: string; end: string } | null {
   const kst = getKstDate();
   if (kst.getDay() !== 1) return null;
@@ -61,6 +59,7 @@ export async function runAlertChecks() {
   let waitingBookingsChecked = 0;
   let pendingMatchesChecked = 0;
   let staleMatchesChecked = 0;
+  let matchesAutoConfirmed = 0;
   let firstLessonRemindersChecked = 0;
   let subscriptionExpiryChecked = 0; // kept for backward compat — total of all expiry stages
   let lessonRemindersChecked = 0;
@@ -388,85 +387,211 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── 4. Close past lessons + write StudySession ──────────────────────────────
+  // ── 4. 수업 확인 제도 — 종료 수업 확인 요청 + 리마인더 + D+7 자동 완료 ────────
   //
-  // Find SCHEDULED lessons whose end time (startAt + durationMin) passed the
-  // 12-hour buffer, mark them COMPLETED, then recalculate lesson-sourced
-  // StudySession rows for the affected (studentId, date) pairs.
-  //
-  // Idempotency: source="lesson" rows are deleted and recreated from the full
-  // sum of COMPLETED lessons on that date — running twice gives the same result.
-  // Lessons already COMPLETED before this cron shipped are only included when
-  // they share a date with a newly-closed lesson (known scope limitation).
+  // 방문 수업이라 시스템이 노쇼를 감지할 수 없다. 자동 완료(구 12h·60min 버퍼)를
+  // 폐지하고, 예정 종료 시각이 지난 SCHEDULED 수업은 선생님에게 확인 요청을 보낸다.
+  //   - 종료 경과 & 미발송 → LESSON_CONFIRM_REQUEST (중복 발송 가드)
+  //   - 확인 요청 후 D+1·D+3 & 여전히 SCHEDULED → 리마인더(각 단계 1회)
+  //   - 확인 요청 후 D+7 & 여전히 SCHEDULED → 자동 COMPLETED + 사유 기록 + 3자 알림
+  // COMPLETED 전이 시 StudySession(source="lesson") 재계산으로 학습시간 집계를 유지한다.
 
+  const nowMs = Date.now();
   const scheduledLessons = await prisma.lesson.findMany({
     where: { status: "SCHEDULED" },
-    select: { id: true, studentId: true, startAt: true, durationMin: true },
+    select: {
+      id: true,
+      studentId: true,
+      teacherId: true,
+      startAt: true,
+      durationMin: true,
+      student: { select: { userId: true, name: true } },
+      teacher: { select: { userId: true, name: true } },
+    },
   });
 
-  const toClose = scheduledLessons.filter(
-    (l) => l.startAt.getTime() + l.durationMin * 60_000 + CLOSE_BUFFER_MS < Date.now(),
+  // 예정 종료 시각이 이미 지난 수업만 확인 대상.
+  const endedLessons = scheduledLessons.filter(
+    (l) => l.startAt.getTime() + l.durationMin * 60_000 < nowMs,
   );
 
-  if (toClose.length > 0) {
-    await prisma.lesson.updateMany({
-      where: { id: { in: toClose.map((l) => l.id) } },
-      data: { status: "COMPLETED" },
-    });
-    closedLessons = toClose.length;
+  if (endedLessons.length > 0) {
+    const endedIds = endedLessons.map((l) => l.id);
 
-    // Deduplicate affected (studentId, date) pairs
-    const pairMap = new Map<string, { studentId: string; date: string }>();
-    for (const l of toClose) {
-      const date = lessonDateStr(l.startAt);
-      pairMap.set(`${l.studentId}:${date}`, { studentId: l.studentId, date });
-    }
-    const pairs = Array.from(pairMap.values());
-    const affectedStudentIds = Array.from(new Set(pairs.map((p) => p.studentId)));
-    const affectedSet = new Set(pairs.map((p) => `${p.studentId}:${p.date}`));
-    const minDate = pairs.map((p) => p.date).sort()[0];
-
-    // Re-sum from ALL completed lessons for these students from minDate onward
-    const completedLessons = await prisma.lesson.findMany({
+    // 이 수업들에 대한 기존 LESSON_CONFIRM_REQUEST 알림(발송 시각 판단용).
+    const confirmNotifs = await prisma.notification.findMany({
       where: {
-        studentId: { in: affectedStudentIds },
-        status: "COMPLETED",
-        startAt: { gte: new Date(minDate + "T00:00:00.000Z") },
+        type: "LESSON_CONFIRM_REQUEST",
+        relatedId: { in: endedIds },
       },
-      select: { studentId: true, startAt: true, durationMin: true },
+      select: { relatedId: true, createdAt: true },
     });
+    // relatedId → 최초 발송 시각
+    const firstRequestAt = new Map<string, Date>();
+    for (const n of confirmNotifs) {
+      if (!n.relatedId) continue;
+      const prev = firstRequestAt.get(n.relatedId);
+      if (!prev || n.createdAt < prev) firstRequestAt.set(n.relatedId, n.createdAt);
+    }
 
-    const minutesByKey = new Map<string, number>();
-    for (const l of completedLessons) {
-      const key = `${l.studentId}:${lessonDateStr(l.startAt)}`;
-      if (affectedSet.has(key)) {
-        minutesByKey.set(key, (minutesByKey.get(key) ?? 0) + l.durationMin);
+    // 리마인더 중복 가드 — 이미 보낸 리마인더 알림(relatedId별 최신).
+    const reminderNotifs = await prisma.notification.findMany({
+      where: {
+        type: "LESSON_CONFIRM_REQUEST",
+        relatedId: { in: endedIds },
+        createdAt: { gte: new Date(nowMs - 8 * DAY_MS) },
+      },
+      select: { relatedId: true },
+    });
+    // relatedId별 발송 횟수(최초 요청 1 + 리마인더). 3회 이상이면 D+1·D+3 모두 발송됨.
+    const requestCount = new Map<string, number>();
+    for (const n of reminderNotifs) {
+      if (!n.relatedId) continue;
+      requestCount.set(n.relatedId, (requestCount.get(n.relatedId) ?? 0) + 1);
+    }
+
+    const confirmRequestsToCreate: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      body: string;
+      relatedId: string;
+    }> = [];
+
+    const toAutoComplete: typeof endedLessons = [];
+
+    for (const l of endedLessons) {
+      const requestedAt = firstRequestAt.get(l.id);
+      const dateStr = lessonDateStr(l.startAt);
+
+      if (!requestedAt) {
+        // 최초 확인 요청.
+        confirmRequestsToCreate.push({
+          userId: l.teacher.userId,
+          type: "LESSON_CONFIRM_REQUEST",
+          title: "수업 확인 요청",
+          body: `${l.student.name} 학생의 ${dateStr} 수업을 확인해 주세요.`,
+          relatedId: l.id,
+        });
+        continue;
+      }
+
+      const ageMs = nowMs - requestedAt.getTime();
+      const sentCount = requestCount.get(l.id) ?? 1;
+
+      if (ageMs >= 7 * DAY_MS) {
+        // D+7 무응답 → 자동 완료 대상.
+        toAutoComplete.push(l);
+      } else if (ageMs >= 3 * DAY_MS && sentCount < 3) {
+        // D+3 리마인더 (최초 + D+1 이후 3번째 발송).
+        confirmRequestsToCreate.push({
+          userId: l.teacher.userId,
+          type: "LESSON_CONFIRM_REQUEST",
+          title: "수업 확인 요청 (재알림)",
+          body: `${l.student.name} 학생의 ${dateStr} 수업 확인이 아직 완료되지 않았습니다.`,
+          relatedId: l.id,
+        });
+      } else if (ageMs >= 1 * DAY_MS && sentCount < 2) {
+        // D+1 리마인더.
+        confirmRequestsToCreate.push({
+          userId: l.teacher.userId,
+          type: "LESSON_CONFIRM_REQUEST",
+          title: "수업 확인 요청 (재알림)",
+          body: `${l.student.name} 학생의 ${dateStr} 수업 확인이 아직 완료되지 않았습니다.`,
+          relatedId: l.id,
+        });
       }
     }
 
-    const sessionData = pairs
-      .map(({ studentId, date }) => ({
-        studentId,
-        date,
-        minutes: minutesByKey.get(`${studentId}:${date}`) ?? 0,
-        source: "lesson",
-      }))
-      .filter((s) => s.minutes > 0);
+    if (confirmRequestsToCreate.length > 0) {
+      await prisma.notification.createMany({ data: confirmRequestsToCreate });
+      notificationsCreated += confirmRequestsToCreate.length;
+    }
 
-    if (sessionData.length > 0) {
-      await prisma.$transaction(async (tx) => {
-        await tx.studySession.deleteMany({
-          where: {
-            OR: sessionData.map(({ studentId, date }) => ({
-              studentId,
-              date,
-              source: "lesson",
-            })),
-          },
-        });
-        await tx.studySession.createMany({ data: sessionData });
+    // ── D+7 무응답 자동 완료 ──────────────────────────────────────────────────
+    if (toAutoComplete.length > 0) {
+      await prisma.lesson.updateMany({
+        where: { id: { in: toAutoComplete.map((l) => l.id) } },
+        data: {
+          status: "COMPLETED",
+          confirmedAt: new Date(),
+          notHeldReason: "선생님 미확인 자동 처리",
+        },
       });
-      studySessionsWritten = sessionData.length;
+      closedLessons = toAutoComplete.length;
+      lessonsAutoCompleted += toAutoComplete.length;
+
+      // StudySession 재계산 (기존 §4 로직 재사용 — 학습시간 집계 유지).
+      const pairMap = new Map<string, { studentId: string; date: string }>();
+      for (const l of toAutoComplete) {
+        const date = lessonDateStr(l.startAt);
+        pairMap.set(`${l.studentId}:${date}`, { studentId: l.studentId, date });
+      }
+      const pairs = Array.from(pairMap.values());
+      const affectedStudentIds = Array.from(new Set(pairs.map((p) => p.studentId)));
+      const affectedSet = new Set(pairs.map((p) => `${p.studentId}:${p.date}`));
+      const minDate = pairs.map((p) => p.date).sort()[0];
+
+      const completedLessons = await prisma.lesson.findMany({
+        where: {
+          studentId: { in: affectedStudentIds },
+          status: "COMPLETED",
+          startAt: { gte: new Date(minDate + "T00:00:00.000Z") },
+        },
+        select: { studentId: true, startAt: true, durationMin: true },
+      });
+
+      const minutesByKey = new Map<string, number>();
+      for (const l of completedLessons) {
+        const key = `${l.studentId}:${lessonDateStr(l.startAt)}`;
+        if (affectedSet.has(key)) {
+          minutesByKey.set(key, (minutesByKey.get(key) ?? 0) + l.durationMin);
+        }
+      }
+
+      const sessionData = pairs
+        .map(({ studentId, date }) => ({
+          studentId,
+          date,
+          minutes: minutesByKey.get(`${studentId}:${date}`) ?? 0,
+          source: "lesson",
+        }))
+        .filter((s) => s.minutes > 0);
+
+      if (sessionData.length > 0) {
+        await prisma.$transaction(async (tx) => {
+          await tx.studySession.deleteMany({
+            where: {
+              OR: sessionData.map(({ studentId, date }) => ({
+                studentId,
+                date,
+                source: "lesson",
+              })),
+            },
+          });
+          await tx.studySession.createMany({ data: sessionData });
+        });
+        studySessionsWritten = sessionData.length;
+      }
+
+      // 3자 공지(학생→학부모 팬아웃 + 선생님). 사유 표기.
+      for (const l of toAutoComplete) {
+        const dateStr = lessonDateStr(l.startAt);
+        await createNotification({
+          userId: l.student.userId,
+          type: "LESSON_COMPLETED_CONFIRMED",
+          title: "수업 완료",
+          body: `${dateStr} 수업이 완료 처리되었습니다. (선생님 미확인 자동 처리)`,
+          relatedId: l.id,
+        });
+        await createNotification({
+          userId: l.teacher.userId,
+          type: "LESSON_COMPLETED_CONFIRMED",
+          title: "수업 완료",
+          body: `${l.student.name} 학생의 ${dateStr} 수업이 미확인 상태로 자동 완료 처리되었습니다.`,
+          relatedId: l.id,
+        });
+      }
     }
   }
 
@@ -677,6 +802,58 @@ export async function runAlertChecks() {
       await prisma.notification.createMany({ data: staleToCreate });
       notificationsCreated += staleToCreate.length;
     }
+  }
+
+  // ── 5d. 미수락 매칭 3일 자동 확정 ───────────────────────────────────────────
+  //
+  // 수락은 형식적 절차라는 정책에 맞춰, PENDING_STUDENT_ACCEPT 상태가 3일 이상
+  // 지속되면 자동으로 ACTIVE로 전환하고 학생·선생님에게 확정 알림을 보낸다.
+  // 톤 주의: "수락 안 해서"라는 책망 금지 — "수업이 확정되었어요" 톤.
+  // 취소된 매칭은 되살리지 않도록 respondedAt=null·상태 재확인 후 원자적 전환.
+
+  const autoConfirmCutoff = new Date(Date.now() - 3 * DAY_MS);
+
+  const matchesToConfirm = await prisma.teacherStudent.findMany({
+    where: {
+      matchStatus: "PENDING_STUDENT_ACCEPT",
+      respondedAt: null,
+      createdAt: { lt: autoConfirmCutoff },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      student: { select: { userId: true, name: true } },
+      teacher: { select: { userId: true, name: true } },
+    },
+  });
+
+  for (const match of matchesToConfirm) {
+    // 동시 취소·수락과 경합해도 PENDING일 때만 전환.
+    const claimed = await prisma.teacherStudent.updateMany({
+      where: { id: match.id, matchStatus: "PENDING_STUDENT_ACCEPT" },
+      data: { isActive: true, matchStatus: "ACTIVE", respondedAt: new Date() },
+    });
+    if (claimed.count === 0) continue;
+
+    matchesAutoConfirmed += 1;
+
+    // 학생 — 확정 톤(책망 금지).
+    await createNotification({
+      userId: match.student.userId,
+      type: "TEACHER_ASSIGNED",
+      title: "수업이 확정되었어요",
+      body: `${match.teacher.name} 선생님과의 수업이 확정되었습니다. 곧 첫 수업 일정을 안내드릴게요.`,
+      relatedId: match.id,
+    });
+    // 선생님 — 첫 수업일 설정 유도.
+    await createNotification({
+      userId: match.teacher.userId,
+      type: "NEW_STUDENT_ASSIGNED",
+      title: "수업이 확정되었습니다",
+      body: `${match.student.name} 학생과의 수업이 확정되었습니다. 첫 수업 날짜를 설정해 주세요.`,
+      relatedId: match.studentId,
+    });
+    notificationsCreated += 2;
   }
 
   // ── 5c. Consultation visit reminder (#6) ──────────────────────────────────
@@ -1782,31 +1959,10 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── NEW-C. Lesson auto-complete (60-min buffer) ────────────────────────────
+  // ── NEW-C. (폐지) 60-min 자동 완료 ─────────────────────────────────────────
   //
-  // Lessons status "SCHEDULED" with startAt + durationMin + 60min in the past
-  // → updateMany to "COMPLETED". Count only, no notifications.
-  // NOTE: Placed after section 4, which uses a 12h buffer; this catches the
-  // 60min–12h window. StudySession writes for this window remain out-of-scope
-  // (section 4 handles only its own closed set). No overlap with CANCELLED.
-
-  const lessonAutoCompleteCandidates = await prisma.lesson.findMany({
-    where: { status: "SCHEDULED" },
-    select: { id: true, startAt: true, durationMin: true },
-  });
-
-  const toAutoComplete = lessonAutoCompleteCandidates.filter(
-    (l) =>
-      l.startAt.getTime() + l.durationMin * 60_000 + 60 * 60_000 < Date.now(),
-  );
-
-  if (toAutoComplete.length > 0) {
-    await prisma.lesson.updateMany({
-      where: { id: { in: toAutoComplete.map((l) => l.id) } },
-      data: { status: "COMPLETED" },
-    });
-    lessonsAutoCompleted = toAutoComplete.length;
-  }
+  // 수업 확인 제도 도입으로 자동 완료를 폐지했다. 종료 수업 처리는 §4의 확인
+  // 요청·리마인더·D+7 무응답 자동 완료 경로가 전담한다(유령 수업 정산 집계 방지).
 
   return {
     questionsChecked,
@@ -1815,6 +1971,7 @@ export async function runAlertChecks() {
     waitingBookingsChecked,
     pendingMatchesChecked,
     staleMatchesChecked,
+    matchesAutoConfirmed,
     firstLessonRemindersChecked,
     subscriptionExpiryChecked,
     lessonRemindersChecked,

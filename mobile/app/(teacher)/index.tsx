@@ -3,10 +3,12 @@ import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -37,12 +39,30 @@ interface UpcomingLesson {
   studentName: string;
 }
 
+interface PendingConfirmLesson {
+  id: string;
+  startAt: string;
+  subject: string;
+  durationMin: number;
+  studentId: string;
+  studentName: string;
+}
+
 interface HomeData {
   approved: boolean;
   name: string;
   todayLessonCount: number;
   upcomingLessons: UpcomingLesson[];
+  pendingConfirmLessons?: PendingConfirmLesson[];
 }
+
+type Fault = "STUDENT" | "NOT_STUDENT";
+
+const STUDENT_REASONS = ["학생 당일 취소", "학생 불참(노쇼)"];
+const NOT_STUDENT_REASONS = [
+  "선생님 사정으로 진행 불가",
+  "천재지변·질병 등 불가피 사유",
+];
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -124,7 +144,7 @@ export default function TeacherHomeScreen() {
             </View>
 
             {data.approved ? (
-              <ApprovedHome data={data} todayLessons={todayLessons} />
+              <ApprovedHome data={data} todayLessons={todayLessons} onChanged={load} />
             ) : (
               <PendingHome />
             )}
@@ -139,16 +159,24 @@ export default function TeacherHomeScreen() {
 function ApprovedHome({
   data,
   todayLessons,
+  onChanged,
 }: {
   data: HomeData;
   todayLessons: UpcomingLesson[];
+  onChanged: () => void;
 }) {
   const { t } = useTheme();
   const router = useRouter();
   const firstLessonPending = data.upcomingLessons.length === 0;
+  const pendingConfirm = data.pendingConfirmLessons ?? [];
 
   return (
     <>
+      {/* 확인 대기 수업 (수업 확인 제도) */}
+      {pendingConfirm.length > 0 && (
+        <LessonConfirmCard lessons={pendingConfirm} onChanged={onChanged} />
+      )}
+
       {/* 오늘 수업 (.now) */}
       <View style={[nowS.wrap, { backgroundColor: t.acc }]}>
         <Text style={[nowS.k, { color: t.onAcc }]}>
@@ -203,6 +231,217 @@ function ApprovedHome({
           </View>
         </>
       )}
+    </>
+  );
+}
+
+function formatWhen(iso: string): string {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${d.getMonth() + 1}/${d.getDate()} ${hh}:${min}`;
+}
+
+/**
+ * 수업 확인 제도 — 종료된 수업 확인 카드 + 미완료 사유 모달.
+ * "수업 완료" → COMPLETED / "수업을 하지 못했어요" → 과실·사유 → 완료/이월.
+ */
+function LessonConfirmCard({
+  lessons,
+  onChanged,
+}: {
+  lessons: PendingConfirmLesson[];
+  onChanged: () => void;
+}) {
+  const { t } = useTheme();
+  const [target, setTarget] = useState<PendingConfirmLesson | null>(null);
+  const [fault, setFault] = useState<Fault | null>(null);
+  const [reason, setReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  function reset() {
+    setTarget(null);
+    setFault(null);
+    setReason("");
+    setCustomReason("");
+    setMessage(null);
+  }
+
+  async function submitCompleted(lesson: PendingConfirmLesson) {
+    setSubmitting(true);
+    try {
+      await apiFetch(`/api/mobile/teacher/lessons/${lesson.id}/confirm`, {
+        method: "PATCH",
+        body: JSON.stringify({ outcome: "COMPLETED" }),
+      });
+      onChanged();
+    } catch {
+      // ignore — 다음 로드 시 정합화
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitNotHeld() {
+    if (!target || !fault) return;
+    const finalReason = (reason === "기타" ? customReason : reason).trim();
+    if (!finalReason) {
+      setMessage("사유를 입력해 주세요");
+      return;
+    }
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      const res = await apiFetch<{ makeupSkippedReason?: string | null }>(
+        `/api/mobile/teacher/lessons/${target.id}/confirm`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ outcome: "NOT_HELD", fault, reason: finalReason }),
+        },
+      );
+      if (fault === "NOT_STUDENT" && res.makeupSkippedReason) {
+        setMessage(res.makeupSkippedReason);
+        onChanged();
+        return;
+      }
+      reset();
+      onChanged();
+    } catch {
+      setMessage("처리에 실패했어요");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const reasons = fault === "STUDENT" ? STUDENT_REASONS : NOT_STUDENT_REASONS;
+
+  return (
+    <>
+      <Text style={[sectTS, { color: t.fg }]}>확인 대기 수업</Text>
+      <View style={[cardS, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+        {lessons.map((l, i) => (
+          <View
+            key={l.id}
+            style={[
+              lc.item,
+              i > 0 && { borderTopWidth: 1, borderTopColor: t.line },
+            ]}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={[lrowS.gb, { color: t.fg }]}>{l.studentName}</Text>
+              <Text style={[lrowS.gp, { color: t.mut }]}>
+                {l.subject} · {formatWhen(l.startAt)}
+              </Text>
+            </View>
+            <View style={lc.btns}>
+              <Pressable
+                style={[lc.btn, { backgroundColor: t.acc }]}
+                disabled={submitting}
+                onPress={() => void submitCompleted(l)}
+              >
+                <Text style={[lc.btnTxt, { color: t.onAcc }]}>완료</Text>
+              </Pressable>
+              <Pressable
+                style={[lc.btn, lc.btnGhost, { borderColor: t.line2 }]}
+                disabled={submitting}
+                onPress={() => {
+                  reset();
+                  setTarget(l);
+                }}
+              >
+                <Text style={[lc.btnTxt, { color: t.fg }]}>못했어요</Text>
+              </Pressable>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <Modal
+        visible={target !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={reset}
+      >
+        <Pressable style={lc.backdrop} onPress={reset}>
+          <Pressable
+            style={[lc.sheet, { backgroundColor: t.panel, borderColor: t.line }]}
+            onPress={() => {}}
+          >
+            <Text style={[lc.sheetT, { color: t.fg }]}>
+              {target ? `${target.studentName} · ${formatWhen(target.startAt)}` : ""}
+            </Text>
+            <Text style={[lc.sheetSub, { color: t.mut }]}>수업을 하지 못한 사유를 알려주세요</Text>
+
+            <View style={lc.chipRow}>
+              <Pressable
+                style={[lc.chip, { borderColor: fault === "STUDENT" ? t.acc : t.line2 }]}
+                onPress={() => {
+                  setFault("STUDENT");
+                  setReason("");
+                  setMessage(null);
+                }}
+              >
+                <Text style={[lc.chipTxt, { color: fault === "STUDENT" ? t.accText : t.mut }]}>
+                  학생 과실
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[lc.chip, { borderColor: fault === "NOT_STUDENT" ? t.acc : t.line2 }]}
+                onPress={() => {
+                  setFault("NOT_STUDENT");
+                  setReason("");
+                  setMessage(null);
+                }}
+              >
+                <Text style={[lc.chipTxt, { color: fault === "NOT_STUDENT" ? t.accText : t.mut }]}>
+                  학생 과실 아님
+                </Text>
+              </Pressable>
+            </View>
+
+            {fault && (
+              <>
+                <View style={lc.reasonWrap}>
+                  {[...reasons, "기타"].map((r) => (
+                    <Pressable
+                      key={r}
+                      style={[lc.chip, { borderColor: reason === r ? t.acc : t.line2 }]}
+                      onPress={() => setReason(r)}
+                    >
+                      <Text style={[lc.chipTxt, { color: reason === r ? t.accText : t.mut }]}>
+                        {r}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+                {reason === "기타" && (
+                  <TextInput
+                    style={[lc.input, { borderColor: t.line2, color: t.fg }]}
+                    placeholder="사유를 입력해 주세요"
+                    placeholderTextColor={t.mut2}
+                    value={customReason}
+                    onChangeText={setCustomReason}
+                  />
+                )}
+
+                <Pressable
+                  style={[lc.submit, { backgroundColor: reason ? t.acc : t.panel2 }]}
+                  disabled={submitting || !reason}
+                  onPress={() => void submitNotHeld()}
+                >
+                  <Text style={[lc.submitTxt, { color: reason ? t.onAcc : t.mut2 }]}>
+                    {fault === "STUDENT" ? "완료 처리" : "마지막 수업으로 변경하기"}
+                  </Text>
+                </Pressable>
+              </>
+            )}
+
+            {message && <Text style={[lc.msg, { color: t.mut }]}>{message}</Text>}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </>
   );
 }
@@ -314,4 +553,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   jbtnGhostText: { fontFamily: font.extrabold, fontSize: 14.5 },
+});
+
+const lc = StyleSheet.create({
+  item: { flexDirection: "row", alignItems: "center", paddingVertical: 12, gap: 10 },
+  btns: { flexDirection: "row", gap: 6 },
+  btn: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 9, alignItems: "center" },
+  btnGhost: { backgroundColor: "transparent", borderWidth: 1 },
+  btnTxt: { fontSize: 12.5, fontFamily: font.bold },
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  sheet: {
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    borderWidth: 1,
+    padding: 20,
+    paddingBottom: 34,
+    gap: 12,
+  },
+  sheetT: { fontSize: 17, fontFamily: font.extrabold, letterSpacing: -0.4 },
+  sheetSub: { fontSize: 13, marginTop: -6 },
+  chipRow: { flexDirection: "row", gap: 8 },
+  reasonWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  chip: { paddingVertical: 9, paddingHorizontal: 13, borderRadius: 11, borderWidth: 1 },
+  chipTxt: { fontSize: 13, fontFamily: font.bold },
+  input: {
+    borderWidth: 1,
+    borderRadius: 11,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+    fontSize: 14,
+  },
+  submit: { paddingVertical: 14, borderRadius: 13, alignItems: "center", marginTop: 4 },
+  submitTxt: { fontSize: 14.5, fontFamily: font.extrabold },
+  msg: { fontSize: 12.5 },
 });

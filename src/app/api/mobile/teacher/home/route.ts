@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireMobileTeacherAllowPending } from "@/lib/mobile-auth";
+import { getPendingConfirmLessons } from "@/lib/lesson-confirm";
 import { prisma } from "@/lib/prisma";
 
 /** GET /api/mobile/teacher/home — 강사 대시보드 요약 (승인 대기 강사 포함) */
@@ -55,10 +56,16 @@ export async function GET(request: Request) {
     (l) => l.startAt >= startOfToday && l.startAt < startOfTomorrow,
   ).length;
 
+  // 수업 확인 제도 — 종료된(확인 대기) 수업. 승인 강사만.
+  const pendingConfirmLessons = approved
+    ? await getPendingConfirmLessons(teacher.id)
+    : [];
+
   return NextResponse.json({
     approved,
     name: teacher.name,
     todayLessonCount,
     upcomingLessons,
+    pendingConfirmLessons,
   });
 }
