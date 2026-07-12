@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import { trackEvent } from "@/lib/analytics-client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import type { GroupedSiteContent } from "@/lib/site-content";
@@ -42,6 +44,11 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
     if (!orderId?.trim() || called.current) return;
     called.current = true;
     const safeOrderId = orderId.trim();
+
+    trackEvent(ANALYTICS_EVENTS.paymentCompleted, {
+      order_id: safeOrderId,
+      amount: typeof amount === "number" && Number.isFinite(amount) ? amount : null,
+    });
 
     async function handleExistingStudent(): Promise<"ok" | "unauth" | "error"> {
       const res = await fetch("/api/payments/complete", {

@@ -26,12 +26,18 @@ function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString("ko-KR");
 }
 
-/** 자녀 상태 배지 — 구독이 있으면 '수업 중'(acc), 없으면 '매칭 중'(mut). */
-function statusBadge(child: Child): { label: string; cls: string } {
+/** 자녀 상태 배지·문구 — 구독 > 상담 완료(매칭 중) > 상담 진행 > 상담 전 순으로 실단계 표기. */
+function statusBadge(child: Child): { label: string; cls: string; meta: string } {
   if (child.subscription) {
-    return { label: "수업 중", cls: "bst acc" };
+    return { label: "수업 중", cls: "bst acc", meta: "" };
   }
-  return { label: "매칭 중", cls: "bst mut" };
+  if (child.consultationStatus === "COMPLETED") {
+    return { label: "매칭 중", cls: "bst mut", meta: "상담 완료 · 선생님 매칭 중" };
+  }
+  if (child.consultationStatus === "WAITING" || child.consultationStatus === "ASSIGNED") {
+    return { label: "상담 진행 중", cls: "bst mut", meta: "방문 상담 일정을 조율하고 있어요" };
+  }
+  return { label: "상담 전", cls: "bst mut", meta: "상담 탭에서 방문 상담을 신청해 보세요" };
 }
 
 type NewsItem = { icon: "report" | "pay"; title: string; body: string };
@@ -84,7 +90,7 @@ export default async function ParentHomePage() {
             const badge = statusBadge(child);
             const meta = child.subscription
               ? `${formatSubscriptionPlanLabel(child.subscription.plan)} · ${formatSubscriptionStatus(child.subscription.status, 1)}`
-              : "상담 완료 · 선생님 매칭 중";
+              : badge.meta;
             return (
               <div key={child.id} className="card" style={{ padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

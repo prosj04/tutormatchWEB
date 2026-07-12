@@ -5,3 +5,6 @@
   --font-sans: var(--font-pretendard), "Pretendard Variable", Pretendard,
     -apple-system, system-ui, sans-serif;
 }
+
+/* disabled 컨트롤 시각 구분 — 시안 미정의(재요청 목록 기재), 표준 관행값 */
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }

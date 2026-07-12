@@ -4,9 +4,11 @@ import type { PaymentWidgetInstance } from "@tosspayments/payment-widget-sdk";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
+import { trackEvent } from "@/lib/analytics-client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { GenderSelect } from "@/components/ui/GenderSelect";
 import { STUDENT_GRADES } from "@/lib/consultation-grades";
@@ -79,6 +81,10 @@ export function CheckoutContent({
   );
   const planLabel = plan.title;
   const total = plan.priceKrw;
+
+  useEffect(() => {
+    trackEvent(ANALYTICS_EVENTS.checkoutStarted, { plan_id: plan.id, amount: plan.priceKrw });
+  }, [plan.id, plan.priceKrw]);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

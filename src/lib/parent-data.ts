@@ -36,6 +36,11 @@ export async function listParentChildren(parentId: string) {
             take: 1,
             select: { month: true },
           },
+          consultationBookings: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { status: true },
+          },
         },
       },
     },
@@ -53,6 +58,7 @@ export async function listParentChildren(parentId: string) {
         ? { plan: sub.plan, status: sub.status, periodEnd: sub.periodEnd }
         : null,
       latestReportMonth: link.student.monthlyReports[0]?.month ?? null,
+      consultationStatus: link.student.consultationBookings[0]?.status ?? null,
     };
   });
 }

@@ -93,7 +93,11 @@ export function LinkChildForm({ linked }: { linked: LinkedChild[] }) {
             {busy ? "연결 중…" : "코드로 연결"}
           </button>
         </form>
-        <div className="banner warn" style={{ marginTop: "12px" }} role={error ? "alert" : undefined}>
+        <div
+          className={`banner ${message && !error ? "ok" : "warn"}`}
+          style={{ marginTop: "12px" }}
+          role={error ? "alert" : undefined}
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 8v4M12 16h.01" />

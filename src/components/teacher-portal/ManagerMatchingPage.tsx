@@ -164,7 +164,7 @@ export function ManagerMatchingPage({
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <b style={{ fontSize: "14px", fontWeight: 800 }}>
-                      {s.name} · {s.grade} · {s.subjects}
+                      {[s.name, s.grade, s.subjects].filter(Boolean).join(" · ")}
                     </b>
                     {s.currentTeacherName ? (
                       <span className="bst warn">재매칭</span>
@@ -217,19 +217,25 @@ export function ManagerMatchingPage({
 
               <div className="field">
                 <label>담당 과목</label>
-                <div className="opts">
-                  {studentSubjectList.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className="opt"
-                      aria-pressed={matchSubjects.includes(s)}
-                      onClick={() => toggleSubject(s)}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+                {studentSubjectList.length === 0 ? (
+                  <p className="sub">
+                    학생의 과목 정보가 없습니다. 학생 정보에 과목을 입력한 뒤 매칭할 수 있어요.
+                  </p>
+                ) : (
+                  <div className="opts">
+                    {studentSubjectList.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className="opt"
+                        aria-pressed={matchSubjects.includes(s)}
+                        onClick={() => toggleSubject(s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="field">
@@ -255,6 +261,13 @@ export function ManagerMatchingPage({
                 className="btn pri"
                 style={{ width: "100%" }}
                 disabled={!teacherId || matchSubjects.length === 0 || submitting}
+                title={
+                  !teacherId
+                    ? "선생님을 먼저 선택하세요"
+                    : matchSubjects.length === 0
+                      ? "담당 과목을 1개 이상 선택해야 보낼 수 있습니다"
+                      : undefined
+                }
                 onClick={() => void handleMatch()}
               >
                 {submitting ? "등록 중…" : "매칭 제안 보내기"}

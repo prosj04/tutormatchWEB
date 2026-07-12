@@ -25,6 +25,9 @@ export const ANALYTICS_EVENTS = {
   consultationStatusViewClicked: "consultation_status_view_clicked",
 
   journeyStatusViewed: "journey_status_viewed",
+
+  checkoutStarted: "checkout_started",
+  paymentCompleted: "payment_completed",
 } as const;
 
 export type AnalyticsEventName =
