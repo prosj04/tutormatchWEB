@@ -112,10 +112,11 @@ export function AddQuestionModal({
           </button>
         </div>
 
-        <label className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
+        <label htmlFor="add-question-content" className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
           {labelContent}
         </label>
         <textarea
+          id="add-question-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={placeholderContent}

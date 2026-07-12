@@ -197,7 +197,7 @@ export default function Signup() {
             </Pressable>
 
             {error !== "" && (
-              <Text style={styles.error}>{error}</Text>
+              <Text style={[styles.error, { color: t.danger }]}>{error}</Text>
             )}
 
             {/* .p1 shadow:0 10 22 acc/.28 */}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   p1Text: { fontFamily: font.extrabold, fontSize: 15, textAlign: "center" },
 
-  error: { fontSize: 13, color: "#E53E3E", marginBottom: 8, fontFamily: font.semibold },
+  error: { fontSize: 13, marginBottom: 8, fontFamily: font.semibold },
 
   consentRow: {
     flexDirection: "row",

@@ -120,7 +120,7 @@ export function AdminMetricsPage() {
             </div>
           )}
         </div>
-        <div className="card" style={{ overflow: "hidden" }}>
+        <div className="card" style={{ overflowX: "auto" }}>
           <table className="tbl">
             <thead>
               <tr><th>코호트 월</th><th>인원</th><th>재결제</th><th>재결제율</th></tr>
@@ -169,7 +169,7 @@ export function AdminMetricsPage() {
         </div>
       </div>
 
-      <div className="sec card" style={{ overflow: "hidden" }}>
+      <div className="sec card" style={{ overflowX: "auto" }}>
         <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>매니저별 성과</h2>
         {managers.length === 0 ? (
           <div className="empty">

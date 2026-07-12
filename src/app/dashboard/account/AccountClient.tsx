@@ -170,8 +170,9 @@ export function AccountClient({
           <form onSubmit={changePassword}>
             <h2 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "14px" }}>비밀번호 변경</h2>
             <div className="field">
-              <label>현재 비밀번호</label>
+              <label htmlFor="account-current-password">현재 비밀번호</label>
               <input
+                id="account-current-password"
                 type="password"
                 className="inp"
                 placeholder="현재 비밀번호"
@@ -181,8 +182,9 @@ export function AccountClient({
               />
             </div>
             <div className="field">
-              <label>새 비밀번호</label>
+              <label htmlFor="account-new-password">새 비밀번호</label>
               <input
+                id="account-new-password"
                 type="password"
                 className="inp"
                 placeholder="8자 이상, 영문+숫자"
@@ -193,8 +195,9 @@ export function AccountClient({
               />
             </div>
             <div className="field">
-              <label>새 비밀번호 확인</label>
+              <label htmlFor="account-confirm-password">새 비밀번호 확인</label>
               <input
+                id="account-confirm-password"
                 type="password"
                 className="inp"
                 placeholder="한 번 더 입력"
@@ -261,8 +264,9 @@ export function AccountClient({
               학습 기록·리포트·질문 내역이 모두 삭제되며 복구할 수 없습니다. 진행 중인 구독은 말일까지 유지 후 종료됩니다.
             </p>
             <div className="field" style={{ marginTop: "14px" }}>
-              <label>확인을 위해 ‘탈퇴합니다’를 입력하세요</label>
+              <label htmlFor="account-quit-confirm">확인을 위해 ‘탈퇴합니다’를 입력하세요</label>
               <input
+                id="account-quit-confirm"
                 className="inp"
                 placeholder="탈퇴합니다"
                 value={quitConfirm}

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { formatDateKst } from "@/lib/format-date";
+
 type FunnelStep = {
   key: string;
   label: string;
@@ -118,7 +120,7 @@ export function AdminFunnelPage() {
           <div className="sec banner ok">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 14 4-4 4 3 5-6" /></svg>
             <span>
-              집계 시작 {new Date(funnel.since).toLocaleDateString("ko-KR")} · 현재 활성 매칭(수업 중 스냅샷){" "}
+              집계 시작 {formatDateKst(funnel.since)} · 현재 활성 매칭(수업 중 스냅샷){" "}
               {funnel.activeMatchesNow.toLocaleString()}건
             </span>
           </div>

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { formatDateKst } from "@/lib/format-date";
+
 type PaymentRow = {
   id: string;
   orderId: string;
@@ -132,7 +134,7 @@ export function AdminPaymentsPage() {
         </div>
       )}
 
-      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
         <table className="tbl">
           <thead>
             <tr>
@@ -166,7 +168,7 @@ export function AdminPaymentsPage() {
                   </td>
                   <td>{row.planId}</td>
                   <td className="num">{row.amount != null ? `${row.amount.toLocaleString()}원` : "—"}</td>
-                  <td>{new Date(row.createdAt).toLocaleDateString("ko-KR")}</td>
+                  <td>{formatDateKst(row.createdAt)}</td>
                   <td>
                     {row.status === "COMPLETED" && (
                       <button type="button" className="btn ghost sm" onClick={() => openRefundDialog(row.id)}>환불</button>

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { formatDateKst } from "@/lib/format-date";
+
 type Stats = {
   studentCount: number;
   teacherApproved: number;
@@ -162,7 +164,7 @@ export function AdminDashboard() {
               <div className="g">
                 <b>{s.name}</b>
               </div>
-              <span className="r">{new Date(s.createdAt).toLocaleDateString("ko-KR")}</span>
+              <span className="r">{formatDateKst(s.createdAt)}</span>
             </div>
           ))
         )}

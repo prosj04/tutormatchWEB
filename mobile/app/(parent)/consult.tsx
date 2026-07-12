@@ -171,7 +171,7 @@ export default function ConsultTab() {
               </View>
 
               {submitError !== "" ? (
-                <Text style={styles.error}>{submitError}</Text>
+                <Text style={[styles.error, { color: t.danger }]}>{submitError}</Text>
               ) : null}
 
               <View style={{ height: 6 }} />
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   opts: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
   area: { minHeight: 78, paddingTop: 13 },
 
-  error: { fontSize: 13, color: "#E53E3E", marginBottom: 8, fontFamily: font.semibold },
+  error: { fontSize: 13, marginBottom: 8, fontFamily: font.semibold },
 
   banner: {
     flexDirection: "row",

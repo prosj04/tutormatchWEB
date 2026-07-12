@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { formatDateKst } from "@/lib/format-date";
+
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"];
 const GRADES = [
   "초등 4학년",
@@ -161,7 +163,7 @@ export function AdminStudentsPage() {
         </div>
       )}
 
-      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
         <table className="tbl">
           <thead>
             <tr>
@@ -190,7 +192,7 @@ export function AdminStudentsPage() {
                   <td>{row.subjects || "—"}</td>
                   <td>{row.assignedTeachers || "—"}</td>
                   <td>{row.managerName ?? "—"}</td>
-                  <td>{new Date(row.createdAt).toLocaleDateString("ko-KR")}</td>
+                  <td>{formatDateKst(row.createdAt)}</td>
                   <td>
                     <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>상세</button>
                   </td>
@@ -220,7 +222,7 @@ export function AdminStudentsPage() {
               <div className="kv" style={{ padding: "0 0 14px" }}>
                 <div><span>담당 선생님</span><b>{editRow.assignedTeachers || "—"}</b></div>
                 <div><span>담당 매니저</span><b>{editRow.managerName ?? "—"}</b></div>
-                <div><span>가입일</span><b>{new Date(editRow.createdAt).toLocaleDateString("ko-KR")}</b></div>
+                <div><span>가입일</span><b>{formatDateKst(editRow.createdAt)}</b></div>
               </div>
               <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "10px 0 8px" }}>정보 수정</h4>
               <div className="field">

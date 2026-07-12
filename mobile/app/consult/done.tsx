@@ -129,7 +129,7 @@ export default function ConsultDone() {
             <StepV
               type="wait"
               content={3}
-              label="선생님 추천·매칭"
+              label="선생님 추천·배정"
               sub="상담 후 진행"
               muted
             />
@@ -141,7 +141,7 @@ export default function ConsultDone() {
           {loggedIn === false ? (
             <>
               <Text style={[ctaBarS.sub, { color: t.mut }]}>
-                계정을 만들면 매칭 진행 상태를 알림으로 받아볼 수 있어요
+                계정을 만들면 배정 진행 상태를 알림으로 받아볼 수 있어요
               </Text>
               <Pressable
                 style={[ctaBarS.btn, styles.ctaBtnShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}

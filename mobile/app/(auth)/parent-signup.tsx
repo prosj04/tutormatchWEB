@@ -141,7 +141,7 @@ export default function ParentSignup() {
               />
             </View>
 
-            {error !== "" ? <Text style={styles.error}>{error}</Text> : null}
+            {error !== "" ? <Text style={[styles.error, { color: t.danger }]}>{error}</Text> : null}
 
             <Pressable
               style={[authS.p1, styles.p1Shadow, { backgroundColor: t.acc, shadowColor: t.acc }, (loading || !canSubmit) && styles.disabled]}
@@ -173,6 +173,6 @@ const styles = StyleSheet.create({
   lede: { fontSize: 13.5, marginHorizontal: 2, marginBottom: 18, lineHeight: 22 },
   p1Shadow: { shadowOffset: { width: 0, height: 10 }, shadowRadius: 22, shadowOpacity: 0.28, elevation: 8 },
   p1Text: { fontFamily: font.extrabold, fontSize: 15, textAlign: "center" },
-  error: { fontSize: 13, color: "#E53E3E", marginBottom: 8, fontFamily: font.semibold },
+  error: { fontSize: 13, marginBottom: 8, fontFamily: font.semibold },
   disabled: { opacity: 0.5 },
 });

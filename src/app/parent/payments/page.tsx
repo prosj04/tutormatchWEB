@@ -180,7 +180,7 @@ export default async function ParentPaymentsPage() {
             <div key={c.id} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div style={{ flex: 1 }}>
                 <b style={{ fontSize: "14px", fontWeight: 700 }}>{c.name} 플랜</b>
-                <p style={{ fontSize: "12.5px", color: "var(--mut)" }}>매칭 완료 후 결제 가능</p>
+                <p style={{ fontSize: "12.5px", color: "var(--mut)" }}>배정 완료 후 결제 가능</p>
               </div>
               <Link className="btn pri sm" href={`/checkout?studentId=${encodeURIComponent(c.id)}`}>
                 플랜 보기

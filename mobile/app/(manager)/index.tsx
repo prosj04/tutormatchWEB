@@ -123,24 +123,42 @@ export default function ConsultScreen() {
       [
         { text: "닫기", style: "cancel" },
         {
-          text: "완료",
+          text: "다음",
           onPress: (note?: string) => {
             const managerNote = (note ?? "").trim();
             if (!managerNote) {
               Alert.alert("메모 필요", "상담 메모를 입력해주세요.");
               return;
             }
-            void act(
-              `/api/mobile/manager/consultations/${b.id}/complete`,
-              "PATCH",
-              { managerNote },
-              b.id,
-              "완료 처리에 실패했어요.",
-            );
+            promptNextStep(b, managerNote);
           },
         },
       ],
       "plain-text",
+    );
+  }
+
+  // E-NEXT-1: 상담 완료 시 다음 단계(MATCHING/HOLD/CLOSED) 선택.
+  // 라벨은 웹 완료 모달과 동일 문구(매칭 진행 / 보류 / 종결).
+  function promptNextStep(b: ManagerConsultationBooking, managerNote: string) {
+    const submit = (nextStep: "MATCHING" | "HOLD" | "CLOSED") =>
+      void act(
+        `/api/mobile/manager/consultations/${b.id}/complete`,
+        "PATCH",
+        { managerNote, nextStep },
+        b.id,
+        "완료 처리에 실패했어요.",
+      );
+    Alert.alert(
+      "다음 단계 선택",
+      "상담 이후 진행 방향을 선택하세요.",
+      [
+        { text: "매칭 진행", onPress: () => submit("MATCHING") },
+        { text: "보류", onPress: () => submit("HOLD") },
+        { text: "종결", style: "destructive", onPress: () => submit("CLOSED") },
+        { text: "닫기", style: "cancel" },
+      ],
+      { cancelable: true },
     );
   }
 
@@ -156,6 +174,8 @@ export default function ConsultScreen() {
           <Pressable
             style={[iconbtnS, { backgroundColor: t.panel, borderColor: t.line }]}
             onPress={() => router.push("/notifications" as never)}
+            accessibilityRole="button"
+            accessibilityLabel="알림"
           >
             <BellIcon color={t.fg} size={19} />
           </Pressable>

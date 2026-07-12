@@ -113,7 +113,7 @@ export function AdminLeadsPage() {
         </div>
       ) : null}
 
-      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
         <table className="tbl">
           <thead>
             <tr>

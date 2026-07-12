@@ -311,6 +311,8 @@ export default function QnAScreen() {
             style={[chatS.composerSnd, { backgroundColor: text.trim() ? t.acc : t.line2 }]}
             onPress={handleSend}
             disabled={sending || !text.trim()}
+            accessibilityRole="button"
+            accessibilityLabel="메시지 전송"
           >
             <Text style={{ color: t.onAcc, fontSize: 16 }}>{sending ? "…" : "↑"}</Text>
           </Pressable>

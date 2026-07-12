@@ -275,6 +275,8 @@ export default function HomeScreen() {
           <Pressable
             style={[iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}
             onPress={() => router.push("/notifications")}
+            accessibilityRole="button"
+            accessibilityLabel={(data?.unreadCount ?? 0) > 0 ? "알림 (읽지 않은 알림 있음)" : "알림"}
           >
             <BellIcon color={t.fg} size={20} />
             {/* .iconbtn .badge top:7 right:8 width:8 height:8 border-radius:4 */}

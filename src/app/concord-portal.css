@@ -75,12 +75,12 @@ a:hover{ text-decoration:underline; }
 /* controls (top-right) */
 .topbar{ display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-bottom:20px; }
 .seg{ display:flex; padding:3px; gap:2px; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; }
-.seg button{ width:26px; height:26px; border:0; border-radius:50%; background:transparent; display:grid; place-items:center; }
+.seg button{ width:40px; height:40px; border:0; border-radius:50%; background:transparent; display:grid; place-items:center; }
 .seg .dot{ width:16px; height:16px; border-radius:50%; box-shadow:0 0 0 2px var(--panel); }
 .seg button[aria-pressed="true"] .dot{ box-shadow:0 0 0 2px var(--panel),0 0 0 4px currentColor; }
 .seg .g{ color:#10B981; } .seg .g .dot{ background:#10B981; }
 .seg .b{ color:#2563EB; } .seg .b .dot{ background:#2563EB; }
-.tog{ width:38px; height:38px; border-radius:10px; border:1px solid var(--line-2); background:var(--panel); color:var(--fg); display:grid; place-items:center; }
+.tog{ width:40px; height:40px; border-radius:10px; border:1px solid var(--line-2); background:var(--panel); color:var(--fg); display:grid; place-items:center; }
 .tog svg{ width:17px; height:17px; } .tog .i-sun{ display:none; }
 [data-theme="dark"] .tog .i-moon{ display:none; } [data-theme="dark"] .tog .i-sun{ display:block; }
 
@@ -106,7 +106,9 @@ a:hover{ text-decoration:underline; }
 [data-theme="dark"] .bst.warn{ color:#e8c56b; background:rgba(251,191,36,.1); }
 
 /* table */
-.tbl{ width:100%; border-collapse:collapse; }
+/* R-1: 좁은 화면에서 우측 열(액션) 잘림 방지 — .tbl 을 감싼 카드는 가로 스크롤 허용 */
+.card:has(> .tbl), .sec.card:has(> .tbl){ overflow-x:auto; }
+.tbl{ width:100%; border-collapse:collapse; min-width:640px; }
 .tbl th{ text-align:left; font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--mut-2); padding:12px 20px; border-bottom:1px solid var(--line-2); }
 .tbl td{ padding:14px 20px; font-size:13.5px; border-bottom:1px solid var(--line); vertical-align:middle; }
 .tbl tr:last-child td{ border-bottom:0; }
@@ -144,7 +146,7 @@ a:hover{ text-decoration:underline; }
 .page{ display:none; }
 .page.on{ display:block; }
 
-@media (max-width:900px){ .shell{ grid-template-columns:1fr; } .side{ position:static; height:auto; flex-direction:row; flex-wrap:wrap; align-items:center; } .side .foot{ display:none; } .grid2,.grid3{ grid-template-columns:1fr; } .main{ padding:24px 20px 60px; } }
+/* R-2: 900px 반응형은 하단 '/* responsive portal *\/' 블록(251행 부근)으로 일원화 — 중복 @media 제거 */
 
 
 /* ============================================================

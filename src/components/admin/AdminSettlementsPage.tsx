@@ -111,7 +111,7 @@ export function AdminSettlementsPage() {
             </div>
           </div>
 
-          <div className="sec card" style={{ overflow: "hidden" }}>
+          <div className="sec card" style={{ overflowX: "auto" }}>
             <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>선생님별 정산 내역</h2>
             {data.teachers.length === 0 ? (
               <div className="empty">

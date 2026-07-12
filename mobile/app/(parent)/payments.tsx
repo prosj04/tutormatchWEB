@@ -122,8 +122,8 @@ export default function PaymentsTab() {
 
             {/* 미납 안내 (.plan-pastdue) — 재결제 개입 유도 */}
             {pastDue && sub ? (
-              <View style={[cardS, styles.pastDueCard, { backgroundColor: t.panel, borderColor: "#E53E3E", shadowColor: t.fg }]}>
-                <Text style={[styles.pastDueK, { color: "#E53E3E" }]}>
+              <View style={[cardS, styles.pastDueCard, { backgroundColor: t.panel, borderColor: t.danger, shadowColor: t.fg }]}>
+                <Text style={[styles.pastDueK, { color: t.danger }]}>
                   {`${selectedChild?.name ?? ""} · 결제 확인 필요`}
                 </Text>
                 <Text style={[styles.pastDueNm, { color: t.fg }]}>{sub.planLabel}</Text>
@@ -216,7 +216,7 @@ export default function PaymentsTab() {
             <View style={[styles.banner, { backgroundColor: accTint(t, 0.08), borderColor: accTint(t, 0.2) }]}>
               <InfoIcon color={t.accText} size={17} />
               <Text style={[styles.bannerText, { color: t.accText }]}>
-                결제는 학생·학부모 계정 모두 가능해요. 중복 결제는 구독 상태로 자동 방지됩니다.
+                결제는 학생·학부모 계정 모두 가능해요. 중복 결제는 플랜 상태로 자동 방지됩니다.
               </Text>
             </View>
             <View style={{ height: 6 }} />

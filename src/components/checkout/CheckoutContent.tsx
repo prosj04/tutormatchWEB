@@ -395,11 +395,11 @@ export function CheckoutContent({
                     <dd>{formatKRW(total)}</dd>
                   </div>
                 </dl>
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.1)" }}>
-                  <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "rgba(0,0,0,0.7)", marginBottom: 10 }}>
+                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
+                  <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg)", marginBottom: 10 }}>
                     모든 플랜에 포함됨
                   </p>
-                  <ul style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "rgba(0,0,0,0.6)" }}>
+                  <ul style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "var(--mut)" }}>
                     {PLAN_INCLUDES.map((item) => (
                       <li key={item} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
                         <span style={{ color: "var(--acc-color, #FF6B6B)" }}>·</span>

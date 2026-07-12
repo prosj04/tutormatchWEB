@@ -128,7 +128,7 @@ export default function Login() {
             </Text>
 
             {error !== "" && (
-              <Text style={styles.error}>{error}</Text>
+              <Text style={[styles.error, { color: t.danger }]}>{error}</Text>
             )}
 
             {/* .p1 padding:15 border-radius:14 font-weight:800 font-size:15 margin-top:6 shadow:0 10 22 acc/.28 */}
@@ -202,5 +202,5 @@ const styles = StyleSheet.create({
   // p1 text: font-weight:800 font-size:15
   p1Text: { fontFamily: font.extrabold, fontSize: 15, textAlign: "center" },
 
-  error: { fontSize: 13, color: "#E53E3E", marginTop: 8, fontFamily: font.semibold },
+  error: { fontSize: 13, marginTop: 8, fontFamily: font.semibold },
 });

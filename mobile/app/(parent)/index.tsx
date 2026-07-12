@@ -95,6 +95,8 @@ export default function ParentHome() {
             <Pressable
               style={[iconbtnS, { backgroundColor: t.panel, borderColor: t.line }]}
               onPress={() => router.push("/notifications" as never)}
+              accessibilityRole="button"
+              accessibilityLabel={hasUnread ? "알림 (읽지 않은 알림 있음)" : "알림"}
             >
               {hasUnread && <View style={[iconbtnBadge, { backgroundColor: t.acc }]} />}
               <BellIcon color={t.fg} size={19} />

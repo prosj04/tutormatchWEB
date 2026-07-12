@@ -206,10 +206,10 @@ export default function ConsultStatus() {
                 lineActive={
                   journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
                 }
-                label="선생님 추천·매칭"
+                label="선생님 추천·배정"
                 sub={
                   journey.stage === "ACTIVE" || journey.stage === "FIRST_LESSON_PENDING"
-                    ? "매칭 완료"
+                    ? "배정 완료"
                     : "상담 후 진행"
                 }
                 muted={

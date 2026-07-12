@@ -28,7 +28,7 @@ function MatchBadge() {
   return (
     <View style={[recS.badge, { backgroundColor: accTint(t, 0.12) }]}>
       <Text style={{ color: t.accText, fontSize: 14, fontFamily: font.bold }}>✓</Text>
-      <Text style={[styles.badgeText, { color: t.accText }]}>매니저가 직접 매칭했어요</Text>
+      <Text style={[styles.badgeText, { color: t.accText }]}>매니저가 직접 배정했어요</Text>
     </View>
   );
 }
@@ -165,7 +165,7 @@ export default function ConsultMatch() {
           ) : !data?.teachers.length ? (
             <EmptyState
               title="아직 추천 선생님이 없어요"
-              description="매니저가 매칭을 마치면 이곳에서 선생님을 확인할 수 있어요."
+              description="매니저가 배정을 마치면 이곳에서 선생님을 확인할 수 있어요."
               ctaLabel="상담 진행 상태 보기"
               onCta={() => router.push("/consult/status")}
             />

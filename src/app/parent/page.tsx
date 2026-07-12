@@ -32,7 +32,7 @@ function statusBadge(child: Child): { label: string; cls: string; meta: string }
     return { label: "수업 중", cls: "bst acc", meta: "" };
   }
   if (child.consultationStatus === "COMPLETED") {
-    return { label: "매칭 중", cls: "bst mut", meta: "상담 완료 · 선생님 매칭 중" };
+    return { label: "배정 중", cls: "bst mut", meta: "상담 완료 · 선생님 배정 중" };
   }
   if (child.consultationStatus === "WAITING" || child.consultationStatus === "ASSIGNED") {
     return { label: "상담 진행 중", cls: "bst mut", meta: "방문 상담 일정을 조율하고 있어요" };

@@ -259,7 +259,7 @@ export function AdminTeachersPage() {
         <button type="button" className="btn sec sm" onClick={() => setDebouncedQ(q)}>검색</button>
       </div>
 
-      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
         <table className="tbl">
           <thead>
             <tr>

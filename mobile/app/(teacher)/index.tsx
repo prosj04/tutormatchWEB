@@ -136,6 +136,8 @@ export default function TeacherHomeScreen() {
                 <Pressable
                   style={[iconbtnS, styles.iconbtn, { backgroundColor: t.panel, borderColor: t.line }]}
                   onPress={() => router.push("/notifications")}
+                  accessibilityRole="button"
+                  accessibilityLabel="알림 (읽지 않은 알림 있음)"
                 >
                   <View style={[styles.badge, { backgroundColor: t.acc, borderColor: t.panel }]} />
                   <BellIcon color={t.fg} size={19} />

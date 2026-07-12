@@ -16,6 +16,7 @@ export interface ThemeTokens {
   accRgb: [number, number, number];
   onAcc: string;
   accText: string;
+  danger: string;
 }
 
 export const themes: Record<ThemeKey, ThemeTokens> = {
@@ -33,6 +34,7 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accRgb: [16, 185, 129],
     onAcc: "#FFFFFF",
     accText: "#07875A",
+    danger: "#A93636",
   },
   "blue-light": {
     bg: "#F5F8FE",
@@ -48,6 +50,7 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accRgb: [37, 99, 235],
     onAcc: "#FFFFFF",
     accText: "#1D4ED8",
+    danger: "#A93636",
   },
   "green-dark": {
     bg: "#181A1B",
@@ -63,6 +66,7 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accRgb: [46, 164, 110],
     onAcc: "#06150D",
     accText: "#64C699",
+    danger: "#E58A8A",
   },
   "blue-dark": {
     bg: "#0A1120",
@@ -78,6 +82,7 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accRgb: [59, 130, 246],
     onAcc: "#06122A",
     accText: "#85B5FF",
+    danger: "#E58A8A",
   },
 };
 

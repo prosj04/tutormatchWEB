@@ -311,7 +311,7 @@ function PasswordForm({ onDone }: { onDone: () => void }) {
           secureTextEntry
         />
       </View>
-      {err !== "" ? <Text style={styles.error}>{err}</Text> : null}
+      {err !== "" ? <Text style={[styles.error, { color: t.danger }]}>{err}</Text> : null}
       <Pressable
         style={[styles.pwSave, { backgroundColor: t.acc }, (saving || !current || !next) && styles.disabled]}
         onPress={save}
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   pwSaveText: { fontFamily: font.extrabold, fontSize: 14 },
 
-  error: { fontSize: 12.5, color: "#E53E3E", marginBottom: 10, fontFamily: font.semibold },
+  error: { fontSize: 12.5, marginBottom: 10, fontFamily: font.semibold },
   disabled: { opacity: 0.5 },
 
   logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },

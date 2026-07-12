@@ -113,7 +113,7 @@ export function AdminDataPage() {
         <button type="button" className="btn sec sm" onClick={() => fetchData()}>조회</button>
       </div>
 
-      <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
+      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
         {loading ? (
           <div className="empty"><b>불러오는 중…</b></div>
         ) : tab === "plans" ? (
