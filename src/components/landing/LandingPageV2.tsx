@@ -375,11 +375,6 @@ function makeRowHoverMove(
 /* ─── scroll-reveal hook ─── */
 function useReveal() {
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
-      return;
-    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {

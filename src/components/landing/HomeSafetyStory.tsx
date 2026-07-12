@@ -34,7 +34,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const stepsPinRef = useRef<HTMLDivElement | null>(null);
   const [unit, setUnit] = useState(0); // 0..totalUnits 연속값의 floor
   const [stepsOn, setStepsOn] = useState(0); // 절차 01·02 스크롤 누적 등장
-  const [reduced, setReduced] = useState(false);
   const [autoStepMs, setAutoStepMs] = useState(AUTO_STEP_MS);
   const pivotSteps = data.steps.slice(0, 2); // 01·02 (절차)
 
@@ -54,10 +53,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const stepsAutoFloorRef = useRef(0);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReduced(true);
-      return;
-    }
     let raf = 0;
     const clearAuto = () => {
       if (autoTimerRef.current) {
@@ -146,9 +141,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   }, [totalUnits, darkLast, matchCount, pivotSteps.length]);
 
   // 절차 화면(01·02) 진입 시 자동 등장: 화면이 뷰포트에 들어오면 01이 뜨고, 스크롤 없이도 0.7초 뒤 02가 자동 등장.
-  // 스크롤을 빨리 내려 이미 지나친 경우에도 둘 다 표시. reduced-motion은 위 정적 렌더에서 이미 둘 다 노출.
+  // 스크롤을 빨리 내려 이미 지나친 경우에도 둘 다 표시.
   useEffect(() => {
-    if (reduced) return;
     const n = pivotSteps.length;
     if (n <= 0) return;
     const stepsPin = stepsPinRef.current;
@@ -179,7 +173,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       io.disconnect();
       if (autoT) clearTimeout(autoT);
     };
-  }, [reduced, pivotSteps.length]);
+  }, [pivotSteps.length]);
 
   // 자동 전진 간격을 뷰포트 기준 차등: hover 없는 기기 또는 화면폭 ≤640px이면 느리게(1400ms).
   useEffect(() => {
@@ -192,7 +186,6 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   // 다크 구간 자동 진행: 다크 구간에 들어오면 타이머로 다음 단계로 — 흰 화면(darkLast+1)까지 전진 후 정지.
   useEffect(() => {
-    if (reduced) return;
     const inDark = unit >= DARK_START && unit <= darkLast;
     if (!inDark) return;
     // 스크롤이 섹션 앞(인트로 이전)으로 돌아갔으면 자동 진행하지 않음
@@ -208,7 +201,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         autoTimerRef.current = null;
       }
     };
-  }, [unit, reduced, darkLast, autoStepMs]);
+  }, [unit, darkLast, autoStepMs]);
 
   const phase: "intro" | "match" | "closer" | "pivot" =
     unit === 0 ? "intro" : unit <= matchCount ? "match" : unit === matchCount + 1 ? "closer" : "pivot";
@@ -218,35 +211,9 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
 
   // 다크 구간: 네비게이션·배너까지 검게, 하단 상담 버튼은 잠시 숨김
   useEffect(() => {
-    document.body.classList.toggle("story-dark", isDark && !reduced);
+    document.body.classList.toggle("story-dark", isDark);
     return () => document.body.classList.remove("story-dark");
-  }, [isDark, reduced]);
-
-  if (reduced) {
-    return (
-      <section className="lp2-story lp2-story-static" aria-label="성향 맞춤 선생님 배정">
-        <div className="lp2-story-sblock"><h2>{data.intro}</h2></div>
-        <div className="lp2-story-sblock dark">
-          {data.matches.map((m) => (
-            <p key={m} className="lp2-story-matchline">{m}</p>
-          ))}
-        </div>
-        <div className="lp2-story-sblock dark"><h2>{data.closer}</h2></div>
-        <div className="lp2-story-sblock"><h2>{pivotText}</h2></div>
-        <ol className="lp2-story-steps lp2-story-pivot-steps">
-          {pivotSteps.map((s, i) => (
-            <li key={s.title} className="lp2-story-step on">
-              <span className="num">0{i + 1}</span>
-              <div>
-                <h3>{s.title}</h3>
-                <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-    );
-  }
+  }, [isDark]);
 
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
