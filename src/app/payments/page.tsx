@@ -12,7 +12,8 @@ export const metadata = { title: "결제·구독 내역" };
 const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
   ACTIVE: { label: "구독중", cls: "bst acc" },
   PAST_DUE: { label: "미납", cls: "bst warn" },
-  PAUSED: { label: "일시정지", cls: "bst mut" },
+  // PAUSED는 학생에게 별도 노출하지 않음(매니저 전용 상태) — 구독중과 동일 표기
+  PAUSED: { label: "구독중", cls: "bst acc" },
   CANCELLED: { label: "해지됨", cls: "bst mut" },
 };
 

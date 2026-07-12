@@ -31,7 +31,6 @@ import {
   ringCard as ringCardS,
   scroll as scrollS,
   sectT as sectTS,
-  shadowSm,
 } from "../../styles/app-styles";
 import { apiFetch } from "../../lib/api";
 import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
@@ -328,7 +327,7 @@ export default function HomeScreen() {
                         {formatDay(data.todayLesson.startAt)}
                       </Text>
                       {/* .wt font-size:22 font-weight:800 letter-spacing:-.01em tabular-nums line-height:1 */}
-                      <Text style={[nowS.wt as any, { color: t.onAcc }]}>
+                      <Text style={[nowS.wt, { color: t.onAcc }]}>
                         {formatTime(data.todayLesson.startAt)}
                       </Text>
                     </View>
@@ -479,7 +478,7 @@ export default function HomeScreen() {
                       {item.note ? ` · ${item.note}` : ""}
                     </Text>
                   </View>
-                  <Text style={[lrowS.r as any, { color: t.accText }]}>
+                  <Text style={[lrowS.r, { color: t.accText }]}>
                     D-{Math.ceil((new Date(item.startAt).getTime() - Date.now()) / 86400000)}
                   </Text>
                 </View>

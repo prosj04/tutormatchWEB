@@ -102,7 +102,7 @@ export default function PaymentsTab() {
         ) : (
           <>
             <KidSwitch
-              children={children ?? []}
+              items={children ?? []}
               selectedId={selectedId}
               onSelect={setSelectedId}
               labelMode="nameOnly"

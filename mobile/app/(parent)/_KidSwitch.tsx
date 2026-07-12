@@ -11,12 +11,12 @@ import type { Child } from "./_shared";
  * .kid .kv { width:24; height:24; border-radius:12; font-size:11; font-weight:800; }
  */
 export function KidSwitch({
-  children: kids,
+  items: kids,
   selectedId,
   onSelect,
   labelMode = "gradeName",
 }: {
-  children: Child[];
+  items: Child[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   labelMode?: "gradeName" | "nameOnly";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import type {
   ManagerMonitoringDetailData,
@@ -8,6 +9,13 @@ import type {
   ManagerMonitoringStudentRow,
 } from "@/lib/manager-portal-data";
 import { formatConsultationDateLabel } from "@/lib/study-plan-dates";
+
+/** 오늘 기준 +offset일의 YYYY-MM-DD (date input value). */
+function isoDatePlusDays(offset: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().slice(0, 10);
+}
 
 type CareLogType = "CONSULT" | "INTERVENTION" | "CHECK";
 
@@ -44,9 +52,17 @@ export function ManagerMonitoringPage({
   initialOverview,
   initialStudents,
 }: ManagerMonitoringPageProps) {
+  const router = useRouter();
   const [overview] = useState<Overview | null>(initialOverview);
   const [students] = useState<StudentRow[]>(initialStudents);
   const [loading] = useState(false);
+
+  // 구독 일시정지/재개 상태
+  const [pauseUntil, setPauseUntil] = useState(isoDatePlusDays(7));
+  const [pauseReason, setPauseReason] = useState("");
+  const [subMode, setSubMode] = useState<"PAUSE" | "RESUME" | null>(null);
+  const [subBusy, setSubBusy] = useState(false);
+  const [subError, setSubError] = useState<string | null>(null);
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -143,6 +159,64 @@ export function ManagerMonitoringPage({
     }
   };
 
+  const drawerStudent = students.find((s) => s.id === drawerId) ?? null;
+  const drawerSub = drawerStudent?.subscription ?? null;
+
+  const openSubModal = (mode: "PAUSE" | "RESUME") => {
+    setSubError(null);
+    if (mode === "PAUSE") {
+      setPauseUntil(isoDatePlusDays(7));
+      setPauseReason("");
+    }
+    setSubMode(mode);
+  };
+
+  const submitSubscription = async () => {
+    if (!drawerSub || !subMode) return;
+
+    let payload: { action: string; until?: string; reason?: string };
+    if (subMode === "PAUSE") {
+      // 오늘+1 ~ 오늘+35일 검증
+      const min = isoDatePlusDays(1);
+      const max = isoDatePlusDays(35);
+      if (pauseUntil < min || pauseUntil > max) {
+        setSubError("재개 예정일은 내일부터 최대 35일 이내여야 합니다.");
+        return;
+      }
+      // 로컬 자정 → ISO (백엔드는 now+35일 상한만 검증)
+      const untilIso = new Date(`${pauseUntil}T00:00:00`).toISOString();
+      payload = { action: "PAUSE", until: untilIso };
+      if (pauseReason.trim()) payload.reason = pauseReason.trim();
+    } else {
+      payload = { action: "RESUME" };
+    }
+
+    setSubBusy(true);
+    setSubError(null);
+    try {
+      const res = await fetch(
+        `/api/manager/subscriptions/${encodeURIComponent(drawerSub.id)}/pause`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      if (res.ok) {
+        setSubMode(null);
+        setDrawerId(null);
+        router.refresh();
+      } else {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        setSubError(data?.error ?? "처리에 실패했습니다.");
+      }
+    } catch {
+      setSubError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setSubBusy(false);
+    }
+  };
+
   return (
     <section className="page on" id="pg-monitor">
       <div className="crumb">/teacher-portal/dashboard/monitoring</div>
@@ -203,6 +277,11 @@ export function ManagerMonitoringPage({
                     <span className={statusBadgeClass(s.statusLabel)} style={{ marginLeft: "8px" }}>
                       {s.statusLabel}
                     </span>
+                    {s.subscription?.status === "PAUSED" ? (
+                      <span className="bst mut" style={{ marginLeft: "6px" }}>
+                        일시정지
+                      </span>
+                    ) : null}
                   </td>
                   <td>{s.teacherName}</td>
                   <td>
@@ -254,6 +333,65 @@ export function ManagerMonitoringPage({
                   <b>{detail.recentComments.length}건</b>
                 </div>
               </div>
+
+              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "4px 0 8px" }}>
+                구독 일시정지
+              </h4>
+              {!drawerSub ? (
+                <p className="sub">활성 구독이 없습니다.</p>
+              ) : drawerSub.status === "PAUSED" ? (
+                <div className="card">
+                  <div className="row">
+                    <div className="g">
+                      <b>
+                        <span className="bst mut">일시정지 중</span>
+                        {drawerSub.pausedUntil
+                          ? ` · ~ ${formatConsultationDateLabel(drawerSub.pausedUntil.slice(0, 10))}`
+                          : ""}
+                      </b>
+                      <p>재개하면 다음 결제일이 정지 기간만큼 뒤로 밀립니다.</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn pri sm"
+                      onClick={() => openSubModal("RESUME")}
+                    >
+                      재개
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="field">
+                    <label>재개 예정일</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      value={pauseUntil}
+                      min={isoDatePlusDays(1)}
+                      max={isoDatePlusDays(35)}
+                      onChange={(e) => setPauseUntil(e.target.value)}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>사유 (선택)</label>
+                    <input
+                      type="text"
+                      className="inp"
+                      value={pauseReason}
+                      onChange={(e) => setPauseReason(e.target.value.slice(0, 500))}
+                      placeholder="일시정지 사유 (내부용)"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="btn sec sm"
+                    onClick={() => openSubModal("PAUSE")}
+                  >
+                    일시정지
+                  </button>
+                </>
+              )}
 
               {detail.plans.length > 0 ? (
                 <>
@@ -392,6 +530,66 @@ export function ManagerMonitoringPage({
           </button>
         </div>
       </div>
+
+      {subMode && drawerSub ? (
+        <div
+          className="scrim on"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !subBusy) setSubMode(null);
+          }}
+          role="presentation"
+        >
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={subMode === "PAUSE" ? "구독 일시정지" : "구독 재개"}
+          >
+            <div className="m-b">
+              <h3>{subMode === "PAUSE" ? "구독 일시정지" : "구독 재개"}</h3>
+              {subMode === "PAUSE" ? (
+                <p className="m-p">
+                  {drawerStudent?.name} 학생의 구독을 일시정지합니다. 재개 예정일:{" "}
+                  {formatConsultationDateLabel(pauseUntil)}
+                  {pauseReason.trim() ? ` · 사유: ${pauseReason.trim()}` : ""}
+                </p>
+              ) : (
+                <p className="m-p">
+                  {drawerStudent?.name} 학생의 구독을 재개합니다. 다음 결제일이 정지 기간만큼
+                  연장됩니다.
+                </p>
+              )}
+              {subError ? (
+                <div className="banner err" style={{ marginTop: "12px" }}>
+                  {subError}
+                </div>
+              ) : null}
+            </div>
+            <div className="m-f">
+              <button
+                type="button"
+                className="btn sec"
+                disabled={subBusy}
+                onClick={() => setSubMode(null)}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                className="btn pri"
+                disabled={subBusy}
+                onClick={() => void submitSubscription()}
+              >
+                {subBusy
+                  ? "처리 중…"
+                  : subMode === "PAUSE"
+                    ? "일시정지"
+                    : "재개"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

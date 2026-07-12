@@ -272,7 +272,7 @@ export default function LearningScreen() {
                 <Text style={[tokS.b, { color: t.fg }]}>AI 질답 토큰</Text>
                 <Text style={[tokS.p, { color: t.mut }]}>이번 달 남은 질문</Text>
               </View>
-              <Text style={[tokS.n as any, { color: t.accText }]}>
+              <Text style={[tokS.n, { color: t.accText }]}>
                 {tokens ? tokens.remaining : "준비 중"}
               </Text>
             </View>

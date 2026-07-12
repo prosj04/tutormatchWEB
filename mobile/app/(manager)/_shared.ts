@@ -75,6 +75,8 @@ export interface MonitoringStudentRow {
   unansweredStale: number;
   statusLabel: string;
   statusClassName: string;
+  /** 활성 또는 일시정지 구독 1건(매니저 일시정지/재개 대상). 없으면 null */
+  subscription: { id: string; status: string; pausedUntil: string | null } | null;
 }
 
 export interface MonitoringResponse {

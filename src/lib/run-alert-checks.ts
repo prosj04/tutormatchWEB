@@ -69,7 +69,6 @@ export async function runAlertChecks() {
   let lessonsAutoCompleted = 0;
   let consultationRemindersChecked = 0;
   let satisfactionCheckinsCreated = 0;
-  let subscriptionsAutoResumed = 0;
   let renewalChargesAttempted = 0;
   let renewalChargesSucceeded = 0;
   let renewalChargesFailed = 0;
@@ -1493,61 +1492,8 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── AUTO-RESUME. Paused subscriptions past pausedUntil ────────────────────
-  //
-  // Subscription status "PAUSED" with pausedUntil < now → resume:
-  // status "ACTIVE", extend periodEnd by (now - pausedAt) when periodEnd non-null,
-  // clear pausedAt/pausedUntil. Mirrors RESUME logic in the manager pause route.
-
-  const pausedSubscriptions = await prisma.subscription.findMany({
-    where: {
-      status: "PAUSED",
-      pausedUntil: { not: null, lt: now },
-    },
-    select: {
-      id: true,
-      pausedAt: true,
-      periodEnd: true,
-      student: {
-        select: {
-          userId: true,
-          name: true,
-          managerLinks: { select: { manager: { select: { userId: true } } } },
-        },
-      },
-    },
-  });
-
-  if (pausedSubscriptions.length > 0) {
-    for (const sub of pausedSubscriptions) {
-      let newPeriodEnd = sub.periodEnd;
-      if (sub.pausedAt && sub.periodEnd) {
-        const pausedDuration = now.getTime() - sub.pausedAt.getTime();
-        newPeriodEnd = new Date(sub.periodEnd.getTime() + pausedDuration);
-      }
-      await prisma.subscription.update({
-        where: { id: sub.id },
-        data: {
-          status: "ACTIVE",
-          periodEnd: newPeriodEnd,
-          pausedAt: null,
-          pausedUntil: null,
-        },
-      });
-
-      // Notify the student their lessons resume today.
-      await createNotification({
-        userId: sub.student.userId,
-        type: "SUBSCRIPTION_RENEWED",
-        title: "수업이 다시 시작됩니다",
-        body: "일시정지했던 수업이 오늘부터 다시 시작됩니다. 대시보드에서 일정을 확인해 주세요.",
-        relatedId: sub.id,
-      });
-      notificationsCreated++;
-
-      subscriptionsAutoResumed++;
-    }
-  }
+  // AUTO-RESUME 제거(2026-07-11 정책): 일시정지 재개는 매니저 수동(RESUME 액션)만.
+  // pausedUntil은 참고용 예정일로만 남는다 — 크론은 상태를 바꾸지 않는다.
 
   // ── AUTO-RENEWAL. Toss 빌링키 정기결제 + dunning ────────────────────────────
   //
@@ -1879,7 +1825,6 @@ export async function runAlertChecks() {
     lessonsAutoCompleted,
     consultationRemindersChecked,
     satisfactionCheckinsCreated,
-    subscriptionsAutoResumed,
     renewalChargesAttempted,
     renewalChargesSucceeded,
     renewalChargesFailed,

@@ -11,7 +11,6 @@ import { useTheme } from "../../theme/ThemeProvider";
 // .onb .icon .t .d { width:.17em; height:.17em; border-radius:50%; margin-left:.04em; }
 function AppIcon() {
   const { t } = useTheme();
-  const fs = 44;
   return (
     <View style={[styles.icon, { backgroundColor: t.acc, shadowColor: t.acc }]}>
       <View style={styles.iconT}>

@@ -11,14 +11,11 @@ import {
 } from "react-native";
 
 import {
-  card,
   ctaBar as ctaBarS,
   font,
   plan as planS,
   scroll as scrollS,
-  sectT as sectTS,
   shadowMd,
-  shadowSm,
 } from "../styles/app-styles";
 import { SubHead } from "../components/ui/SubHead";
 import { useTheme } from "../theme/ThemeProvider";

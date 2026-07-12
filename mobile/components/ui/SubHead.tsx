@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { font, subHead as subHeadS } from "../../styles/app-styles";
+import { subHead as subHeadS } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
 import { ChevronLeftIcon } from "./Icons";
 

@@ -39,7 +39,12 @@ export default function MonitoringScreen() {
   );
 
   function writeCareLog(s: MonitoringStudentRow) {
-    Alert.prompt?.(
+    // Alert.prompt는 iOS 전용 — Android는 미지원 안내 (전용 입력 화면은 디자인 시안 대기)
+    if (typeof Alert.prompt !== "function") {
+      Alert.alert("안내", "이 기기에서는 케어로그 입력이 지원되지 않아요.");
+      return;
+    }
+    Alert.prompt(
       "케어로그 작성",
       `${s.name} 학생에 대한 케어 메모를 입력하세요.`,
       [
@@ -57,7 +62,7 @@ export default function MonitoringScreen() {
         },
       ],
       "plain-text",
-    ) ?? Alert.alert("안내", "이 기기에서는 케어로그 입력이 지원되지 않아요.");
+    );
   }
 
   async function saveCareLog(studentId: string, note: string) {
@@ -71,6 +76,72 @@ export default function MonitoringScreen() {
       Alert.alert("저장 완료", "케어로그가 기록되었어요.");
     } catch {
       Alert.alert("저장 실패", "케어로그 저장에 실패했어요.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  // 구독 일시정지: 7/14/21/28/35일 프리셋 선택 → 재개 예정일 ISO 계산
+  function pauseSubscription(s: MonitoringStudentRow) {
+    const sub = s.subscription;
+    if (!sub) return;
+    const presets = [7, 14, 21, 28, 35];
+    Alert.alert(
+      "구독 일시정지",
+      `${s.name} 학생의 구독을 며칠간 일시정지할까요?`,
+      [
+        { text: "취소", style: "cancel" },
+        ...presets.map((days) => ({
+          text: `${days}일`,
+          onPress: () => {
+            const until = new Date();
+            until.setDate(until.getDate() + days);
+            void submitSubscription(sub.id, s.id, {
+              action: "PAUSE",
+              until: until.toISOString(),
+            });
+          },
+        })),
+      ],
+    );
+  }
+
+  function resumeSubscription(s: MonitoringStudentRow) {
+    const sub = s.subscription;
+    if (!sub) return;
+    Alert.alert(
+      "구독 재개",
+      `${s.name} 학생의 구독을 재개할까요? 다음 결제일이 정지 기간만큼 연장됩니다.`,
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "재개",
+          onPress: () =>
+            void submitSubscription(sub.id, s.id, { action: "RESUME" }),
+        },
+      ],
+    );
+  }
+
+  async function submitSubscription(
+    subscriptionId: string,
+    studentId: string,
+    payload: { action: "PAUSE"; until: string } | { action: "RESUME" },
+  ) {
+    if (busyId) return;
+    setBusyId(studentId);
+    try {
+      await apiFetch(
+        `/api/mobile/manager/subscriptions/${encodeURIComponent(subscriptionId)}/pause`,
+        { method: "POST", body: JSON.stringify(payload) },
+      );
+      Alert.alert(
+        "완료",
+        payload.action === "PAUSE" ? "구독을 일시정지했어요." : "구독을 재개했어요.",
+      );
+      await load();
+    } catch {
+      Alert.alert("실패", "구독 처리에 실패했어요.");
     } finally {
       setBusyId(null);
     }
@@ -111,6 +182,7 @@ export default function MonitoringScreen() {
                   <View style={styles.cardHead}>
                     <Text style={[styles.cardName, { color: t.fg }]}>{studentLabel(s.name, s.grade)}</Text>
                     <Bst tone={badgeToneFromClassName(s.statusClassName)} label={s.statusLabel} />
+                    {s.subscription?.status === "PAUSED" ? <Bst tone="mut" label="일시정지" /> : null}
                   </View>
                   <Text style={[styles.cardBody, { color: t.mut }]}>
                     담당 {s.teacherName} · 이번 주 진행률 {s.completionRate}%
@@ -128,6 +200,21 @@ export default function MonitoringScreen() {
                         <Text style={[styles.actPriText, { color: t.onAcc }]}>케어로그 작성</Text>
                       )}
                     </Pressable>
+                    {s.subscription ? (
+                      <Pressable
+                        style={[styles.actSec, { borderColor: t.line }]}
+                        onPress={() =>
+                          s.subscription?.status === "PAUSED"
+                            ? resumeSubscription(s)
+                            : pauseSubscription(s)
+                        }
+                        disabled={busyId === s.id}
+                      >
+                        <Text style={[styles.actSecText, { color: t.fg }]}>
+                          {s.subscription.status === "PAUSED" ? "재개" : "일시정지"}
+                        </Text>
+                      </Pressable>
+                    ) : null}
                   </View>
                 </MCard>
               ))
@@ -149,7 +236,23 @@ export default function MonitoringScreen() {
                         담당 {s.teacherName} · 진행률 {s.completionRate}%
                       </Text>
                     </View>
+                    {s.subscription?.status === "PAUSED" ? <Bst tone="mut" label="일시정지" /> : null}
                     <Bst tone={badgeToneFromClassName(s.statusClassName)} label={s.statusLabel} />
+                    {s.subscription ? (
+                      <Pressable
+                        style={[styles.lrowAct, { borderColor: t.line }]}
+                        onPress={() =>
+                          s.subscription?.status === "PAUSED"
+                            ? resumeSubscription(s)
+                            : pauseSubscription(s)
+                        }
+                        disabled={busyId === s.id}
+                      >
+                        <Text style={[styles.lrowActText, { color: t.fg }]}>
+                          {s.subscription.status === "PAUSED" ? "재개" : "정지"}
+                        </Text>
+                      </Pressable>
+                    ) : null}
                   </View>
                 ))}
               </MCard>
@@ -208,6 +311,17 @@ const styles = StyleSheet.create({
   actsSm: { flexDirection: "row", gap: 7, marginTop: 12 },
   actPri: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   actPriText: { fontSize: 12, fontFamily: font.bold },
+  actSec: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actSecText: { fontSize: 12, fontFamily: font.bold },
+  lrowAct: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1 },
+  lrowActText: { fontSize: 11.5, fontFamily: font.bold },
 
   // .lrow
   lrow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 13, paddingHorizontal: 16 },

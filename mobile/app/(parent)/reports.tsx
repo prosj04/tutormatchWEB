@@ -106,7 +106,7 @@ export default function ReportsTab() {
           />
         ) : (
           <>
-            <KidSwitch children={children ?? []} selectedId={selectedId} onSelect={setSelectedId} />
+            <KidSwitch items={children ?? []} selectedId={selectedId} onSelect={setSelectedId} />
 
             {reportsLoading ? (
               <View style={styles.center}>

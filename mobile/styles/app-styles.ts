@@ -1,3 +1,4 @@
+import type { TextStyle } from "react-native";
 /**
  * concord-app.css → React Native 1:1 이식
  * ⚠️ 이 파일의 값은 concord-app.css에서 그대로 복사한 것입니다.
@@ -199,7 +200,7 @@ export const now = {
     fontSize: 22,
     fontFamily: font.extrabold,
     letterSpacing: -0.22,  // -0.01 * 22
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
     lineHeight: 22,        // line-height:1
   },
   // .now .go { margin-top:16; width:100%; padding:13; border-radius:13; font-weight:800; font-size:15; }
@@ -335,7 +336,7 @@ export const lrow = {
   r: {
     textAlign: "right" as const,
     fontSize: 12.5,
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
   },
   // .lrow .chev { color:mut-2; }
   chev: {
@@ -622,7 +623,7 @@ export const tok = {
     marginLeft: "auto" as const,
     fontSize: 19,
     fontFamily: font.extrabold,
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
   },
 } as const;
 
@@ -1134,7 +1135,7 @@ export const plan = {
     fontSize: 14,
     opacity: 0.92,
     marginTop: 4,
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
   },
   // .plan-now .nx { margin-top:16; padding-top:14; border-top:1px rgba(255,255,255,.22); flex-row; font-size:13; }
   nowNx: {
@@ -1168,7 +1169,7 @@ export const plan = {
     fontFamily: font.extrabold,
     letterSpacing: -0.72,   // -0.03 * 24
     marginTop: 10,
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
   },
   // .plan-pick .unit { font-size:12.5; margin-top:2; }
   pickUnit: { fontSize: 12.5, marginTop: 2 },
@@ -1314,7 +1315,7 @@ export const scrow = {
     flexDirection: "row" as const,
     alignItems: "baseline" as const,
     gap: 6,
-    fontVariant: ["tabular-nums"] as const,
+    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
     fontSize: 13,
   },
   // .scrow .ch b { font-size:16; font-weight:800; }

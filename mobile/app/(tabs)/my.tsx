@@ -18,7 +18,6 @@ import {
   my as myS,
   scroll as scrollS,
   sectT as sectTS,
-  switchStyle,
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
@@ -81,15 +80,6 @@ function MRow({
     </View>
   );
   return onPress ? <Pressable onPress={onPress}>{inner}</Pressable> : inner;
-}
-
-function Switch({ on }: { on: boolean }) {
-  const { t } = useTheme();
-  return (
-    <View style={[switchStyle.track, { backgroundColor: on ? t.acc : t.line2 }]}>
-      <View style={[switchStyle.thumb, { left: on ? 19.5 : 2.5 }]} />
-    </View>
-  );
 }
 
 export default function MyScreen() {

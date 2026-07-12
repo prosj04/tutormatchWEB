@@ -115,7 +115,12 @@ export default function ConsultScreen() {
       Alert.alert("완료 불가", "선생님을 먼저 배정해야 완료 처리할 수 있어요.");
       return;
     }
-    Alert.prompt?.(
+    // Alert.prompt는 iOS 전용 — Android는 미지원 안내 (전용 입력 화면은 디자인 시안 대기)
+    if (typeof Alert.prompt !== "function") {
+      Alert.alert("안내", "이 기기에서는 메모 입력이 지원되지 않아요.");
+      return;
+    }
+    Alert.prompt(
       "상담 완료 처리",
       "상담 메모를 입력하세요.",
       [
@@ -139,7 +144,7 @@ export default function ConsultScreen() {
         },
       ],
       "plain-text",
-    ) ?? Alert.alert("안내", "이 기기에서는 메모 입력이 지원되지 않아요.");
+    );
   }
 
   const list = tab === "waiting" ? waiting : mine;

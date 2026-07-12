@@ -275,7 +275,7 @@ export default function PlanScreen() {
               >
                 <FileBlankIcon color={t.fg} size={16} />
                 <Text style={[styles.tplBtnText, { color: t.fg }]}>
-                  템플릿에서 불러오기 · "{templates[0].title}"
+                  템플릿에서 불러오기 · “{templates[0].title}”
                 </Text>
               </Pressable>
             )}

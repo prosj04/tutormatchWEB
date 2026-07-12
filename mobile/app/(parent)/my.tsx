@@ -30,7 +30,6 @@ import { PlusIcon } from "../../components/parent/ParentIcons";
 import { useAuth } from "../../hooks/useAuth";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
-import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse } from "./_shared";
 import { linkedViaLabel } from "./_shared";
 

@@ -13,15 +13,12 @@ import {
 
 import {
   card,
-  ctaBar as ctaBarS,
   font,
   scroll as scrollS,
-  sectT as sectTS,
   shadowSm,
 } from "../styles/app-styles";
 import { SubHead } from "../components/ui/SubHead";
 import { useTheme } from "../theme/ThemeProvider";
-import { accTint } from "../theme/tokens";
 import { API_BASE } from "../lib/api";
 
 type PlanV2 = {

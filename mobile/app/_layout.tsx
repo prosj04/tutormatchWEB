@@ -8,6 +8,8 @@ import { ThemeProvider } from "../theme/ThemeProvider";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // 폰트 자산은 RN 표준인 require()로만 로드 가능(Metro 번들러 제약)
+  /* eslint-disable @typescript-eslint/no-require-imports */
   const [fontsLoaded, fontError] = useFonts({
     "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
     "Pretendard-Medium": require("../assets/fonts/Pretendard-Medium.otf"),
@@ -15,6 +17,7 @@ export default function RootLayout() {
     "Pretendard-Bold": require("../assets/fonts/Pretendard-Bold.otf"),
     "Pretendard-ExtraBold": require("../assets/fonts/Pretendard-ExtraBold.otf"),
   });
+  /* eslint-enable @typescript-eslint/no-require-imports */
 
   useEffect(() => {
     if (fontsLoaded || fontError) SplashScreen.hideAsync();

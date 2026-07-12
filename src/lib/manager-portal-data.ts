@@ -74,6 +74,8 @@ export type ManagerMonitoringStudentRow = {
   unansweredStale: number;
   statusLabel: string;
   statusClassName: string;
+  /** 활성 또는 일시정지 상태의 구독 1건(매니저 일시정지/재개 대상). 없으면 null */
+  subscription: { id: string; status: string; pausedUntil: string | null } | null;
 };
 
 export type ManagerMonitoringDetailData = {
@@ -295,7 +297,7 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
     };
   }
 
-  const [plans, staleQuestions, allStaleByStudent, teacherMatches] =
+  const [plans, staleQuestions, allStaleByStudent, teacherMatches, subscriptions] =
     await Promise.all([
       prisma.studyPlan.findMany({
         where: {
@@ -334,6 +336,11 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
           teacher: { select: { name: true } },
         },
       }),
+      prisma.subscription.findMany({
+        where: { studentId: { in: studentIds }, status: { in: ["ACTIVE", "PAUSED"] } },
+        select: { id: true, studentId: true, status: true, pausedUntil: true },
+        orderBy: { createdAt: "desc" },
+      }),
     ]);
 
   const staleMap = new Map(
@@ -343,6 +350,20 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
   const teacherMap = new Map(
     teacherMatches.map((match) => [match.studentId, match.teacher.name]),
   );
+
+  // 학생당 활성/일시정지 구독 1건(최신 우선).
+  const subscriptionMap = new Map<
+    string,
+    { id: string; status: string; pausedUntil: string | null }
+  >();
+  for (const sub of subscriptions) {
+    if (subscriptionMap.has(sub.studentId)) continue;
+    subscriptionMap.set(sub.studentId, {
+      id: sub.id,
+      status: sub.status,
+      pausedUntil: sub.pausedUntil?.toISOString() ?? null,
+    });
+  }
 
   const planStats = new Map<string, { done: number; total: number }>();
   for (const plan of plans) {
@@ -369,6 +390,7 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
       unansweredStale: stale,
       statusLabel: badge.label,
       statusClassName: badge.className,
+      subscription: subscriptionMap.get(link.studentId) ?? null,
     };
   });
 
