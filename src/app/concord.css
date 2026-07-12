@@ -128,7 +128,6 @@ footer.site{ border-top:1px solid var(--line); padding:60px 0 52px; margin-top:c
 /* ---- reveal ---- */
 .reveal{ opacity:0; transform:translateY(20px); transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1); }
 .reveal.in{ opacity:1; transform:none; }
-@media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none; transition-delay:0ms!important; } html{ scroll-behavior:auto; } }
 /* fail-safe: 스크립트가 하이드레이션되지 못하면(구버전 캐시 HTML→청크 404 등) 2.5초 뒤 강제 표시.
    React 마운트 시 html.js-hydrated가 붙어 이 규칙은 비활성화되고 기존 스크롤-리빌이 동작한다. */
 @keyframes reveal-failsafe{ to{ opacity:1; transform:none; } }
@@ -568,10 +567,6 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 .hall-line3 { display: inline-flex; gap: 12px; align-items: baseline; }
 .hall-line3 b { font-weight: 800; }
 .hall-card figcaption span { font-size: 11.5px; font-weight: 600; }
-@media (prefers-reduced-motion: reduce) {
-  .hall-track { animation: none; }
-  .hall-marquee { overflow-x: auto; overflow-y: hidden; }
-}
 /* 터치 기기: CSS 마퀴 대신 가로 스크롤 + 카드 단위 스냅 */
 @media (hover: none) {
   .hall-track { animation: none; scroll-snap-align: none; }

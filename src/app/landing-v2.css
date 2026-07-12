@@ -157,7 +157,6 @@ body:has(.lp2-root) footer.site .logo span {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-7px); }
 }
-@media (prefers-reduced-motion:reduce) { .lp2-proof-card { animation: none; } }
 .lp2-proof-head {
   display: flex; align-items: center; gap: 8px;
   font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--mut);
@@ -227,7 +226,6 @@ body:has(.lp2-root) footer.site .logo span {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
-@media (prefers-reduced-motion:reduce) { .lp2-result-track { animation: none; } }
 
 .lp2-result-card {
   flex-shrink: 0;
@@ -270,7 +268,6 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-marquee:hover .lp2-marquee-track { animation-play-state: paused; }
 @keyframes lp2-scroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-@media (prefers-reduced-motion:reduce) { .lp2-marquee-track { animation: none; } }
 
 .lp2-chip {
   display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0;
@@ -511,10 +508,6 @@ body:has(.lp2-root) footer.site .logo span {
 @keyframes lp2-rise {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lp2-care-mock.in .lp2-qna-body .lp2-bubble,
-  .lp2-care-mock.in .lp2-report-row { animation: none; }
 }
 
 /* ── process notification mock ── */
@@ -1080,16 +1073,6 @@ body.story-dark .sticky-cta {
 }
 .lp2-story-step p { font-size: clamp(15px, 1.15vw, 17px); line-height: 1.7; color: var(--mut); margin: 0; }
 
-/* reduced-motion 정적 폴백 */
-.lp2-story-static .lp2-story-sblock { padding: 90px 24px; text-align: center; }
-.lp2-story-static .lp2-story-sblock.dark { background: #0a0a0a; }
-.lp2-story-static .lp2-story-sblock.dark h2,
-.lp2-story-static .lp2-story-sblock.dark .q,
-.lp2-story-static .lp2-story-sblock.dark .lp2-story-matchline { color: #f4f1ea; }
-.lp2-story-static .lp2-story-matchline { opacity: 1; transform: none; margin: 14px 0; }
-.lp2-story-static .lp2-story-sblock h2 { font-size: clamp(24px, 3.6vw, 38px); font-weight: 800; }
-.lp2-story-static .lp2-story-steps { margin: 40px auto 90px; padding: 0 24px; }
-
 @media (max-width: 680px) {
   .lp2-story-item h2 { font-size: clamp(21px, 6vw, 28px); }
   .lp2-story-newsline .q { font-size: clamp(17px, 5.4vw, 24px); }
@@ -1120,7 +1103,6 @@ body.story-dark .sticky-cta {
   font-size: 12px; font-weight: 600; color: var(--mut);
   border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px;
 }
-@media (prefers-reduced-motion: reduce) { .lp2-proc-mock-view > * { animation: none; } }
 
 /* ── 피벗 화면: 카피만 노출(절차 01·02는 핀 다음 별도 화면) ── */
 .lp2-story-pivot { width: min(1080px, calc(100% - 48px)); }
@@ -1152,9 +1134,6 @@ body.story-dark .sticky-cta {
 @media (max-width: 680px) {
   .lp2-story-pivot-steps { grid-template-columns: 1fr; gap: 22px; }
 }
-/* 정적 폴백에서는 스크롤 애니메이션 없이 바로 노출 */
-.lp2-story-static .lp2-story-pivot-steps { width: min(1080px, 100%); margin: 40px auto 90px; padding: 0 24px; }
-
 /* M-9: 모바일 터치 타깃 보정 — 시각 크기 유지, 히트영역만 40px+ */
 @media (max-width: 640px) {
   .lp2-guar-note,
