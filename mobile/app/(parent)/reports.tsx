@@ -125,7 +125,55 @@ export default function ReportsTab() {
                     <View style={[styles.summaryTag, { backgroundColor: accTint(t, 0.12) }]}>
                       <Text style={[styles.summaryTagText, { color: t.accText }]}>{latest.month}</Text>
                     </View>
+
+                    {latest.overallScore != null ? (
+                      <View style={styles.scoreRow}>
+                        <Text style={[styles.scoreBig, { color: t.fg }]}>{latest.overallScore}</Text>
+                        {latest.prevScore != null && latest.overallScore - latest.prevScore !== 0 ? (
+                          <Text style={[styles.scoreDelta, { color: t.accText }]}>
+                            {latest.overallScore - latest.prevScore > 0 ? "▲" : "▼"}
+                            {Math.abs(latest.overallScore - latest.prevScore)} 지난달 대비
+                          </Text>
+                        ) : null}
+                      </View>
+                    ) : null}
+
                     <Text style={[styles.summaryText, { color: t.fg }]}>{latest.summary}</Text>
+
+                    {(latest.subjectScores?.length ?? 0) > 0 ? (
+                      <View style={styles.subjectList}>
+                        {latest.subjectScores.map((s) => (
+                          <View key={s.subject} style={styles.subjectRow}>
+                            <Text style={[styles.subjectName, { color: t.fg }]}>{s.subject}</Text>
+                            <View style={[styles.barTrack, { backgroundColor: t.panel2 }]}>
+                              <View
+                                style={[
+                                  styles.barFill,
+                                  { width: `${Math.max(0, Math.min(100, s.curr))}%`, backgroundColor: t.acc },
+                                ]}
+                              />
+                            </View>
+                            <Text style={[styles.subjectVal, { color: t.mut }]}>
+                              {s.prev != null ? `${s.prev}→${s.curr}` : `${s.curr}`}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    ) : null}
+
+                    {latest.teacherComment ? (
+                      <View style={[styles.commentBox, { borderColor: t.line }]}>
+                        <Text style={[styles.commentLabel, { color: t.mut2 }]}>선생님 코멘트</Text>
+                        <Text style={[styles.commentText, { color: t.fg }]}>{latest.teacherComment}</Text>
+                      </View>
+                    ) : null}
+                    {latest.managerComment ? (
+                      <View style={[styles.commentBox, { borderColor: t.line }]}>
+                        <Text style={[styles.commentLabel, { color: t.mut2 }]}>매니저 코멘트</Text>
+                        <Text style={[styles.commentText, { color: t.fg }]}>{latest.managerComment}</Text>
+                      </View>
+                    ) : null}
+
                     {(latest.weakTypes?.length ?? 0) > 0 ? (
                       <Text style={[styles.summaryWeak, { color: t.mut }]}>
                         보완 유형 · {latest.weakTypes.join(", ")}
@@ -183,6 +231,21 @@ const styles = StyleSheet.create({
   summaryTagText: { fontSize: 11, fontFamily: font.bold },
   summaryText: { fontSize: 15, fontFamily: font.bold, letterSpacing: -0.3, marginTop: 10, lineHeight: 22 },
   summaryWeak: { fontSize: 12.5, marginTop: 8 },
+
+  scoreRow: { flexDirection: "row", alignItems: "baseline", gap: 10, marginTop: 10 },
+  scoreBig: { fontSize: 36, fontFamily: font.extrabold, letterSpacing: -0.72 },
+  scoreDelta: { fontSize: 13, fontFamily: font.bold },
+
+  subjectList: { marginTop: 12, gap: 10 },
+  subjectRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  subjectName: { width: 48, fontSize: 13, fontFamily: font.bold },
+  barTrack: { flex: 1, height: 8, borderRadius: 5, overflow: "hidden" },
+  barFill: { height: "100%", borderRadius: 5 },
+  subjectVal: { width: 64, textAlign: "right", fontSize: 12.5 },
+
+  commentBox: { marginTop: 12, paddingTop: 12, borderTopWidth: 1 },
+  commentLabel: { fontSize: 11, fontFamily: font.bold, letterSpacing: 0.4, marginBottom: 4 },
+  commentText: { fontSize: 13, lineHeight: 20 },
 
   listCard: { overflow: "hidden" },
   avText: { fontSize: 13, fontFamily: font.bold },

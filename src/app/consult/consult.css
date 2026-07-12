@@ -232,6 +232,12 @@
   margin-top: 12px;
 }
 
+.consult-done-note {
+  margin-top: 8px;
+  font-size: 12.5px;
+  opacity: 0.72;
+}
+
 .consult-done-actions {
   display: flex;
   gap: 10px;

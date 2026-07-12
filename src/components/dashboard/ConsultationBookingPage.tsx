@@ -72,6 +72,15 @@ export function ConsultationBookingPage({
 }: ConsultationBookingPageProps) {
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("cms_edit") === "1";
+  // A1: 가입 시 자동 접수된 상담을 1회 안내 (?applied=1)
+  const [showAppliedBanner, setShowAppliedBanner] = useState(
+    () => searchParams.get("applied") === "1",
+  );
+  const appliedBannerText = usePortalCopy(
+    "student_consultation",
+    "applied_banner",
+    "상담이 접수되었어요 — 담당 매니저 배정 후 연락드립니다.",
+  );
   const [booking, setBooking] = useState<Booking | null>(initialBooking);
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -85,6 +94,7 @@ export function ConsultationBookingPage({
   const [acceptingMatch, setAcceptingMatch] = useState(false);
   const [acceptError, setAcceptError] = useState<string | null>(null);
   const previousStatus = useRef<string | null>(initialBooking?.status ?? null);
+  const statusCardRef = useRef<HTMLDivElement | null>(null);
 
   const brand = usePortalCopy("student_consultation", "brand", "Concord.");
   const welcomeTpl = usePortalCopy("student_consultation", "welcome_template", "{name}님 환영합니다");
@@ -154,6 +164,19 @@ export function ConsultationBookingPage({
     if (openVisitFromUrl) setShowVisitPicker(true);
   }, [openVisitFromUrl]);
 
+  // A1: 접수 배너는 1회만 — URL에서 applied 파라미터를 제거해 새로고침 시 재노출 방지
+  useEffect(() => {
+    if (!showAppliedBanner) return;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("applied")) return;
+    url.searchParams.delete("applied");
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, [showAppliedBanner]);
+
   async function submitRequest() {
     setSubmitting(true);
     setError(null);
@@ -166,6 +189,16 @@ export function ConsultationBookingPage({
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {
         setError(data.error ?? errSubmitDefault);
+        // A2: 이미 자동 접수된 상담이면 현황을 드러내고 그쪽으로 스크롤
+        if (res.status === 409) {
+          await fetchBooking();
+          window.setTimeout(() => {
+            statusCardRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }, 100);
+        }
         return;
       }
       setSuccess(true);
@@ -272,6 +305,24 @@ export function ConsultationBookingPage({
           ) : null}
         </AnimatePresence>
 
+        {showAppliedBanner ? (
+          <div className="mb-5 flex items-start justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4">
+            <p className="text-sm font-semibold leading-relaxed text-text-primary">
+              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="applied_banner" type="text">
+                {appliedBannerText}
+              </CmsEdit>
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowAppliedBanner(false)}
+              aria-label="닫기"
+              className="shrink-0 rounded-lg px-2 py-1 text-text-muted transition hover:text-text-primary"
+            >
+              ×
+            </button>
+          </div>
+        ) : null}
+
         {!activeBooking ? (
           <>
             <section className="rounded-2xl border-2 border-primary bg-surface p-6 shadow-sm">
@@ -351,7 +402,9 @@ export function ConsultationBookingPage({
               </motion.section>
             ) : null}
 
-            <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} isEditMode={isEditMode} />
+            <div ref={statusCardRef}>
+              <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} isEditMode={isEditMode} />
+            </div>
 
             {pendingMatch ? (
               <section className="mt-6 rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-sm">

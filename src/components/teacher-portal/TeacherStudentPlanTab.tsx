@@ -4,6 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
 import {
+  addDays as addDaysCore,
+  distributeTasks,
+  parseTasks,
+} from "@/lib/homework-distribution-core";
+import {
   formatDateKey,
   formatDoneTime,
   formatPlanHeader,
@@ -35,6 +40,7 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
   const [homeworkDays, setHomeworkDays] = useState<4 | 7>(7);
   const [repeatWeeks, setRepeatWeeks] = useState(1);
   const [savingHomework, setSavingHomework] = useState(false);
+  const [homeworkOverlapConfirm, setHomeworkOverlapConfirm] = useState<number | null>(null);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [homeworkMessage, setHomeworkMessage] = useState<string | null>(null);
   const [homeworkTemplates, setHomeworkTemplates] = useState<HomeworkTemplate[]>([]);
@@ -115,8 +121,19 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
     }
   }
 
+  function requestDistributeHomework() {
+    if (!homeworkTasks.trim()) return;
+    // E15: 기존 숙제가 있으면 곧바로 실행하지 않고 확인 단계를 노출한다.
+    if (overlapDates.length > 0 && homeworkOverlapConfirm === null) {
+      setHomeworkOverlapConfirm(overlapDates.length);
+      return;
+    }
+    void handleDistributeHomework();
+  }
+
   async function handleDistributeHomework() {
     if (!homeworkTasks.trim()) return;
+    setHomeworkOverlapConfirm(null);
     setSavingHomework(true);
     setHomeworkMessage(null);
     try {
@@ -222,6 +239,35 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
   const rate =
     totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
+  // E5: 실시간 분배 미리보기 — 서버와 동일한 파싱·분배 함수를 재사용해
+  // 입력 순서대로 앞 날짜부터 채워지는 결과를 미리 보여준다.
+  const distributionPreview = useMemo(() => {
+    const parsedTasks = parseTasks(homeworkTasks);
+    if (parsedTasks.length === 0) return null;
+    const buckets = distributeTasks(parsedTasks, homeworkDays);
+    return buckets
+      .map((dayTasks, dayIndex) => ({
+        date: addDaysCore(selectedDate, dayIndex),
+        dayLabel: `Day${dayIndex + 1}`,
+        tasks: dayTasks,
+      }))
+      .filter((entry) => entry.tasks.length > 0);
+  }, [homeworkTasks, homeworkDays, selectedDate]);
+
+  // E15: 분배 API는 기존 플랜에 append 하므로, 대상 기간(반복 포함)에 이미
+  // 등록된 플랜이 있으면 실행 전 확인 단계를 거친다. planDates는 이번 달의
+  // 플랜 보유 날짜 집합이라 같은 달 안의 중복을 감지한다.
+  const overlapDates = useMemo(() => {
+    if (!distributionPreview || distributionPreview.length === 0) return [];
+    const dates: string[] = [];
+    for (let week = 0; week < repeatWeeks; week += 1) {
+      for (let dayIndex = 0; dayIndex < homeworkDays; dayIndex += 1) {
+        dates.push(addDaysCore(selectedDate, week * 7 + dayIndex));
+      }
+    }
+    return dates.filter((d) => planDates.has(d));
+  }, [distributionPreview, repeatWeeks, homeworkDays, selectedDate, planDates]);
+
   return (
     <div className="space-y-6">
       <DashboardCalendar
@@ -290,19 +336,74 @@ export function TeacherStudentPlanTab({ studentId }: TeacherStudentPlanTabProps)
         </div>
         <textarea
           value={homeworkTasks}
-          onChange={(e) => setHomeworkTasks(e.target.value)}
+          onChange={(e) => {
+            setHomeworkTasks(e.target.value);
+            setHomeworkOverlapConfirm(null);
+          }}
           rows={5}
           placeholder="숙제를 줄바꿈으로 입력하세요. 예)\n수학 개념 복습 20분\n오답노트 5문제\n영어 단어 30개"
           className="mt-4 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary"
         />
+
+        {/* E5: 실시간 분배 미리보기 + 규칙 안내 */}
+        {distributionPreview && distributionPreview.length > 0 ? (
+          <div className="mt-3 rounded-xl border border-primary/20 bg-white p-3">
+            <p className="text-[11px] font-semibold text-text-secondary">
+              분배 미리보기
+            </p>
+            <ul className="mt-1.5 space-y-1">
+              {distributionPreview.map((entry) => (
+                <li key={entry.date} className="text-xs text-text-primary">
+                  <span className="font-semibold text-primary">{entry.dayLabel}</span>
+                  <span className="text-text-muted"> ({entry.date}): </span>
+                  {entry.tasks.join(" · ")}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-[11px] text-text-muted">
+              입력 순서대로 앞 날짜부터 배분됩니다.
+            </p>
+          </div>
+        ) : null}
+
+        {/* E15: 기존 숙제 중복 확인 */}
+        {homeworkOverlapConfirm !== null ? (
+          <div
+            role="alert"
+            className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3"
+          >
+            <p className="text-xs font-semibold text-amber-800">
+              해당 기간에 기존 계획이 있어요 ({homeworkOverlapConfirm}일 존재). 기존
+              숙제에 추가됩니다.
+            </p>
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                disabled={savingHomework}
+                onClick={() => void handleDistributeHomework()}
+                className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+              >
+                추가로 분배
+              </button>
+              <button
+                type="button"
+                onClick={() => setHomeworkOverlapConfirm(null)}
+                className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-text-muted">
             시작일: {formatPlanHeader(selectedDate).replace(" 학습 계획", "")}
           </p>
           <button
             type="button"
-            disabled={savingHomework || !homeworkTasks.trim()}
-            onClick={() => void handleDistributeHomework()}
+            disabled={savingHomework || !homeworkTasks.trim() || homeworkOverlapConfirm !== null}
+            onClick={requestDistributeHomework}
             className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             {savingHomework ? "분배 중…" : "숙제 자동 분배"}

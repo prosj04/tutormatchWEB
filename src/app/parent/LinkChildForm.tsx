@@ -85,7 +85,7 @@ export function LinkChildForm({ linked }: { linked: LinkedChild[] }) {
               style={{ textAlign: "center", fontSize: "20px", fontWeight: 800, letterSpacing: ".3em", color: "var(--fg)" }}
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="코드 입력"
+              placeholder="A2C4E6"
               maxLength={6}
             />
           </div>
@@ -105,7 +105,7 @@ export function LinkChildForm({ linked }: { linked: LinkedChild[] }) {
           <span>
             {message
               ? message
-              : "코드가 만료되면 자녀 앱에서 재발급 후 다시 시도하세요. 방문 시 매니저가 직접 연결해 드릴 수도 있어요."}
+              : "코드는 자녀 앱 MY 탭 또는 웹 대시보드 계정 페이지에서 발급해요. 자녀가 아직 학생 가입 전이면 먼저 가입이 필요해요. 방문 시 매니저가 직접 연결해 드릴 수도 있어요."}
           </span>
         </div>
       </div>

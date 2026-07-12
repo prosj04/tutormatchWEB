@@ -32,6 +32,30 @@ function isNonEmptyString(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
 }
 
+/** 공개 리드에서 상담 booking으로 이관할 note 조합 (과목·지역·성취도·자유메모). */
+function buildLeadNote(lead: {
+  subjects: string;
+  region: string | null;
+  preferredTime: string | null;
+  note: string | null;
+}): string | null {
+  const parts: string[] = [];
+  let subjects: string[] = [];
+  try {
+    const parsed = JSON.parse(lead.subjects) as unknown;
+    if (Array.isArray(parsed)) {
+      subjects = parsed.filter((s): s is string => typeof s === "string");
+    }
+  } catch {
+    // subjects가 JSON이 아니면 무시
+  }
+  if (subjects.length > 0) parts.push(`희망 과목: ${subjects.join(", ")}`);
+  if (lead.region) parts.push(`지역: ${lead.region}`);
+  if (lead.preferredTime) parts.push(`희망 상담 시간: ${lead.preferredTime}`);
+  if (lead.note?.trim()) parts.push(lead.note.trim());
+  return parts.length > 0 ? parts.join("\n") : null;
+}
+
 export async function POST(request: Request) {
   let body: StudentBody;
   try {
@@ -147,12 +171,27 @@ export async function POST(request: Request) {
         throw e;
       }
     } else if (user.student) {
+      // 공개 리드폼(/consult)으로 먼저 신청한 뒤 가입한 경우: 동일 phone의 최근
+      // 리드를 찾아 note(과목·지역·성취도 등)를 자동 생성 booking에 이관하고
+      // 리드를 CONVERTED로 표시해 재입력·중복 접수 오해를 줄인다.
+      const lead = await prisma.consultationLead.findFirst({
+        where: { phone: phoneDigits, status: { in: ["NEW", "CONTACTED"] } },
+        orderBy: { createdAt: "desc" },
+      });
+      const leadNote = lead ? buildLeadNote(lead) : null;
       try {
         await createConsultationRequest({
           studentId: user.student.id,
           studentName: user.student.name,
           studentGrade: user.student.grade,
+          note: leadNote,
         });
+        if (lead) {
+          await prisma.consultationLead.update({
+            where: { id: lead.id },
+            data: { status: "CONVERTED" },
+          });
+        }
       } catch (e) {
         const msg = e instanceof Error ? e.message : "";
         if (

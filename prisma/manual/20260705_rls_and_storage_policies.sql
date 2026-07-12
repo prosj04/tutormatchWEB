@@ -1,7 +1,8 @@
 -- ============================================================================
 -- RLS + Storage 정책 (BR-14 / R-2) — 준비본
 --
--- ⚠️ 자동 적용 금지. 경영자 승인(E4-5) 후 Supabase 대시보드 SQL Editor에서
+-- 2026-07-12 갱신: question-images를 private 모델로 정정(07-09 보안 전환 반영).
+-- ⚠️ 경영자 승인(E4-5) — 2026-07-12 승인 완료, 적용 진행. Supabase 대시보드 SQL Editor에서
 --    프로덕션에 직접 실행한다. prisma migrate 대상 아님(storage 스키마 포함).
 --
 -- 전제 (2026-07-05 코드 실측):
@@ -14,8 +15,8 @@
 -- 버킷 접근 모델:
 --  - teacher-photos  : 공개 읽기 (getPublicUrl) → public 유지
 --  - cms-images      : 공개 읽기 (getPublicUrl) → public 유지
---  - question-images : 공개 읽기 (getPublicUrl) — 학생 질문 사진이므로
---                      추후 signed URL 전환 권장(P2), 당장은 public 유지
+--  - question-images : 비공개 — 2026-07-09 private 전환 완료(7f1949f),
+--                      서빙은 /api/question-images/[...path] 프록시 경유
 --  - teacher-documents: 비공개 (createSignedUrl 10분) → private 유지
 -- ============================================================================
 
@@ -39,7 +40,7 @@ END $$;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon, authenticated;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES IN SCHEMA public FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 2) 스토리지: 버킷 공개 설정 정합 + objects 정책
@@ -47,8 +48,8 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES IN SCHEMA publ
 -- ---------------------------------------------------------------------------
 
 -- 버킷 공개/비공개 플래그를 코드의 접근 모델과 일치시킨다.
-UPDATE storage.buckets SET public = true  WHERE id IN ('teacher-photos', 'cms-images', 'question-images');
-UPDATE storage.buckets SET public = false WHERE id = 'teacher-documents';
+UPDATE storage.buckets SET public = true  WHERE id IN ('teacher-photos', 'cms-images');
+UPDATE storage.buckets SET public = false WHERE id IN ('teacher-documents', 'question-images');
 
 -- 기존의 과도한(permissive) 정책이 있으면 제거 후 최소 정책만 재생성.
 DROP POLICY IF EXISTS "public read buckets" ON storage.objects;
@@ -60,7 +61,7 @@ DROP POLICY IF EXISTS "authenticated uploads" ON storage.objects;
 CREATE POLICY "public read buckets"
   ON storage.objects FOR SELECT
   TO anon, authenticated
-  USING (bucket_id IN ('teacher-photos', 'cms-images', 'question-images'));
+  USING (bucket_id IN ('teacher-photos', 'cms-images'));
 
 -- ---------------------------------------------------------------------------
 -- 3) 적용 후 검증 쿼리 (수동 실행)

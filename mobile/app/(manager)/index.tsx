@@ -111,10 +111,7 @@ export default function ConsultScreen() {
   }
 
   function handleComplete(b: ManagerConsultationBooking) {
-    if (!b.match) {
-      Alert.alert("완료 불가", "선생님을 먼저 배정해야 완료 처리할 수 있어요.");
-      return;
-    }
+    if (!b.match) return; // 버튼이 disabled 상태 — 방어적 가드
     // Alert.prompt는 iOS 전용 — Android는 미지원 안내 (전용 입력 화면은 디자인 시안 대기)
     if (typeof Alert.prompt !== "function") {
       Alert.alert("안내", "이 기기에서는 메모 입력이 지원되지 않아요.");
@@ -238,9 +235,13 @@ export default function ConsultScreen() {
                 ) : (
                   <>
                     <Pressable
-                      style={[styles.actPri, { backgroundColor: t.acc }]}
+                      style={[
+                        styles.actPri,
+                        { backgroundColor: t.acc },
+                        (b.status !== "COMPLETED" && !b.match) && { opacity: 0.4 },
+                      ]}
                       onPress={() => handleComplete(b)}
-                      disabled={busyId === b.id || b.status === "COMPLETED"}
+                      disabled={busyId === b.id || b.status === "COMPLETED" || !b.match}
                     >
                       <Text style={[styles.actPriText, { color: t.onAcc }]}>
                         {b.status === "COMPLETED" ? "완료됨" : "상담 완료"}
@@ -264,6 +265,11 @@ export default function ConsultScreen() {
                   </>
                 )}
               </View>
+              {tab === "mine" && b.status !== "COMPLETED" && !b.match ? (
+                <Text style={[styles.helpText, { color: t.mut2 }]}>
+                  선생님 배정 후 완료할 수 있어요
+                </Text>
+              ) : null}
             </MCard>
           ))
         )}
@@ -308,6 +314,7 @@ const styles = StyleSheet.create({
   cardName: { fontSize: 14.5, fontFamily: font.extrabold },
   timeAgo: { marginLeft: "auto", fontSize: 11.5 },
   cardBody: { fontSize: 12.5, marginTop: 8, lineHeight: 19 },
+  helpText: { fontSize: 11.5, marginTop: 8 },
 
   // .acts-sm
   actsSm: { flexDirection: "row", gap: 7, marginTop: 12 },

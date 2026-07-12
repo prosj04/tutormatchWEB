@@ -1,5 +1,6 @@
 import { listParentChildren, listParentPayments } from "@/lib/parent-data";
 import { requireParentPage } from "@/lib/parent-page-auth";
+import { getV2PlanById } from "@/lib/pricing-plans";
 import { formatSubscriptionPlanLabel } from "@/lib/subscription-label";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,25 @@ function formatAmount(amount: number | null): string {
 
 function formatDate(d: Date | null): string {
   return d ? new Date(d).toLocaleDateString("ko-KR") : "-";
+}
+
+/**
+ * 다음 결제일 계산. PAUSED 구독은 정지 경과분만큼 periodEnd를 앞으로 투영해
+ * 과거로 남은 날짜가 노출되는 오해를 방지한다(정지 사실은 노출하지 않음).
+ */
+function nextPaymentDate(sub: {
+  status: string;
+  periodEnd: Date | null;
+  pausedAt: Date | null;
+}): Date | null {
+  if (!sub.periodEnd) return null;
+  if (sub.status === "PAUSED" && sub.pausedAt) {
+    const elapsedPaused = Date.now() - new Date(sub.pausedAt).getTime();
+    if (elapsedPaused > 0) {
+      return new Date(new Date(sub.periodEnd).getTime() + elapsedPaused);
+    }
+  }
+  return new Date(sub.periodEnd);
 }
 
 function statusLabel(status: string): string {
@@ -80,10 +100,17 @@ export default async function ParentPaymentsPage() {
               fontSize: "13px",
             }}
           >
-            <span style={{ opacity: 0.85 }}>다음 결제일</span>
+            <span style={{ opacity: 0.85 }}>다음 결제</span>
             <b style={{ marginLeft: "auto" }}>
-              {activeChild?.subscription?.periodEnd
-                ? formatDate(activeChild.subscription.periodEnd)
+              {activeChild?.subscription
+                ? (() => {
+                    const next = nextPaymentDate(activeChild.subscription);
+                    const planPrice = getV2PlanById(activeChild.subscription.plan)?.priceKrw ?? null;
+                    if (!next) return "-";
+                    return planPrice
+                      ? `${formatDate(next)} · ${formatAmount(planPrice)}`
+                      : formatDate(next);
+                  })()
                 : "-"}
             </b>
           </div>

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
-import { CheckoutContent } from "@/components/checkout/CheckoutContent";
+import { CheckoutContent, type CheckoutChild } from "@/components/checkout/CheckoutContent";
 import { getCmsSectionValue } from "@/lib/cms-page-defaults";
 import {
   parseSessionsParam,
@@ -8,7 +8,9 @@ import {
   type SessionPlan,
   type SubjectCount,
 } from "@/lib/order-pricing";
+import { listParentChildren } from "@/lib/parent-data";
 import { getV2PlanById, PRICING_PLANS_V2 } from "@/lib/pricing-plans";
+import { prisma } from "@/lib/prisma";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
 type Search = Record<string, string | string[] | undefined>;
@@ -52,8 +54,32 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
     (planParam && getV2PlanById(planParam)) || getV2PlanById(legacyToV2PlanId(sessions, subjects));
   const planId = resolvedV2?.id ?? PRICING_PLANS_V2[0]!.id;
 
-  const needsSignup =
-    !session?.user?.id || session.user.role !== "STUDENT";
+  const role = session?.user?.role;
+  const isParent = Boolean(session?.user?.id) && role === "PARENT";
+
+  // 학부모 세션이면 연결된 자녀 목록을 조회해 "자녀 명의 결제"로 분기한다.
+  // 자녀가 있으면 가입 폼 없이 자녀 선택 UI를 노출한다(needsSignup=false).
+  let parentChildren: CheckoutChild[] | undefined;
+  if (isParent && session?.user?.id) {
+    const parent = await prisma.parent.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    });
+    if (parent) {
+      const children = await listParentChildren(parent.id);
+      parentChildren = children.map((c) => ({
+        id: c.id,
+        name: c.name,
+        grade: c.grade,
+        hasActiveSubscription: c.subscription != null,
+      }));
+    } else {
+      parentChildren = [];
+    }
+  }
+
+  // 비로그인·학생 외 세션은 가입 폼 필요. 단, 학부모는 자녀 명의 결제이므로 가입 폼 없음.
+  const needsSignup = !isParent && (!session?.user?.id || role !== "STUDENT");
   const isEditMode = first(searchParams.cms_edit) === "1";
   const showFailBanner = first(searchParams.error) === "1";
   const failBannerText = getCmsSectionValue(
@@ -66,20 +92,31 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   return (
     <>
       {showFailBanner ? (
-        <CmsEdit active={isEditMode} section="checkout_page" cmsKey="fail_banner" type="text">
-          <div
-            style={{
-              borderBottom: "1px solid rgba(var(--acc-rgb),.2)",
-              background: "rgba(var(--acc-rgb),.08)",
-              padding: "12px 24px",
-              textAlign: "center",
-              fontSize: 14,
-              color: "var(--fg)",
-            }}
-          >
-            {failBannerText}
-          </div>
-        </CmsEdit>
+        <div style={{ padding: "16px 24px 0" }}>
+          <CmsEdit active={isEditMode} section="checkout_page" cmsKey="fail_banner" type="text">
+            <div
+              role="alert"
+              style={{
+                maxWidth: 960,
+                margin: "0 auto",
+                border: "1px solid rgba(var(--acc-rgb),.35)",
+                borderLeft: "4px solid rgba(var(--acc-rgb),1)",
+                borderRadius: 12,
+                background: "rgba(var(--acc-rgb),.08)",
+                padding: "16px 20px",
+                fontSize: 14,
+                lineHeight: 1.6,
+                color: "var(--fg)",
+                boxShadow: "0 1px 3px rgba(0,0,0,.06)",
+              }}
+            >
+              <strong style={{ display: "block", marginBottom: 4, fontSize: 15 }}>
+                결제가 완료되지 않았습니다
+              </strong>
+              {failBannerText}
+            </div>
+          </CmsEdit>
+        </div>
       ) : null}
       <CheckoutContent
         tutorId={tutorId}
@@ -87,6 +124,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         siteContent={siteContent}
         needsSignup={needsSignup}
         isEditMode={isEditMode}
+        parentChildren={parentChildren}
       />
     </>
   );

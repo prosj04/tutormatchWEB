@@ -12,7 +12,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
 
-  let body: { managerNote?: unknown; status?: unknown };
+  let body: { managerNote?: unknown; status?: unknown; nextStep?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -21,6 +21,13 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const managerNote =
     typeof body.managerNote === "string" ? body.managerNote.trim() : "";
+
+  const NEXT_STEPS = ["MATCHING", "HOLD", "CLOSED"] as const;
+  const nextStep =
+    typeof body.nextStep === "string" &&
+    (NEXT_STEPS as readonly string[]).includes(body.nextStep)
+      ? body.nextStep
+      : null;
 
   if (!managerNote) {
     return NextResponse.json(
@@ -61,6 +68,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     data: {
       status: "COMPLETED",
       managerNote,
+      ...(nextStep ? { nextStep } : {}),
     },
   });
 

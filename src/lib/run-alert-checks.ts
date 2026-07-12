@@ -16,8 +16,10 @@ function getKstDate(): Date {
 
 // Use local-time getters — matches the /api/mobile/learning/weekly date convention
 // (server runs UTC, so local = UTC on Vercel).
+// 수업 날짜 귀속은 KST 달력 기준 — 서버 TZ(UTC)의 getDate()를 쓰면 KST 자정 전후 수업이 하루 밀린다
 function lessonDateStr(d: Date): string {
-  return formatDateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  return formatDateKey(kst.getUTCFullYear(), kst.getUTCMonth() + 1, kst.getUTCDate());
 }
 
 const CLOSE_BUFFER_MS = 12 * 60 * 60 * 1000; // 12 h after lesson ends

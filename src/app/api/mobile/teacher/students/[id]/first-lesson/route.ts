@@ -28,10 +28,11 @@ function isValidTimeString(value: string) {
   return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
 }
 
+// 입력은 KST 벽시계 시각 — 서버 TZ(UTC 배포)와 무관하게 KST로 해석해야 한다
 function parseLocalDateTime(date: string, time: string) {
   const [year, month, day] = date.split("-").map(Number);
   const [hour, minute] = time.split(":").map(Number);
-  return new Date(year, month - 1, day, hour, minute, 0, 0);
+  return new Date(Date.UTC(year, month - 1, day, hour - 9, minute, 0, 0));
 }
 
 function todayKstDateString() {

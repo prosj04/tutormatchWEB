@@ -23,11 +23,22 @@ export interface ChildrenResponse {
   children: Child[];
 }
 
+export interface SubjectScore {
+  subject: string;
+  prev: number | null;
+  curr: number;
+}
+
 export interface Report {
   month: string;
   summary: string;
   weakTypes: string[];
   detail: string;
+  overallScore: number | null;
+  prevScore: number | null;
+  subjectScores: SubjectScore[];
+  teacherComment: string | null;
+  managerComment: string | null;
 }
 
 export interface ReportsResponse {

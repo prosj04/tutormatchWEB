@@ -10,12 +10,32 @@ type RouteContext = { params: Promise<{ id: string }> };
  *  선생님이 수업을 취소한다. cancelledBy="TEACHER"로 태그하고
  *  7일 뒤 같은 시간에 보충 수업을 자동 생성한다.
  */
-export async function PATCH(_request: Request, context: RouteContext) {
+export async function PATCH(request: Request, context: RouteContext) {
   const authResult = await requireTeacher();
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
   const { id } = await context.params;
+
+  // body: { reason?, makeupAt? } — 둘 다 선택. 파싱 실패해도 취소는 진행.
+  let body: { reason?: unknown; makeupAt?: unknown } = {};
+  try {
+    body = await request.json();
+  } catch {
+    body = {};
+  }
+  const cancelReason =
+    typeof body.reason === "string" && body.reason.trim()
+      ? body.reason.trim()
+      : null;
+  const requestedMakeup =
+    typeof body.makeupAt === "string" ? new Date(body.makeupAt) : null;
+  const validMakeup =
+    requestedMakeup &&
+    !Number.isNaN(requestedMakeup.getTime()) &&
+    requestedMakeup > new Date()
+      ? requestedMakeup
+      : null;
 
   const lesson = await prisma.lesson.findUnique({
     where: { id },
@@ -56,11 +76,16 @@ export async function PATCH(_request: Request, context: RouteContext) {
   // Cancel the lesson
   const cancelled = await prisma.lesson.update({
     where: { id },
-    data: { status: "CANCELLED", cancelledBy: "TEACHER" },
+    data: {
+      status: "CANCELLED",
+      cancelledBy: "TEACHER",
+      ...(cancelReason ? { cancelReason } : {}),
+    },
   });
 
-  // Auto-create makeup lesson 7 days later if in the future
-  const makeupAt = new Date(lesson.startAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+  // 보충 시각: 제안된 유효 미래 시각이 있으면 그 시각, 없으면 기본 7일 뒤.
+  const makeupAt =
+    validMakeup ?? new Date(lesson.startAt.getTime() + 7 * 24 * 60 * 60 * 1000);
   let makeup: { id: string; startAt: Date } | null = null;
   // P2-21: 보충 미생성 사유를 응답에 실어 무음 실패를 없앤다.
   let makeupSkippedReason: string | null = null;
@@ -88,8 +113,9 @@ export async function PATCH(_request: Request, context: RouteContext) {
         select: { id: true, startAt: true },
       });
     } else {
-      makeupSkippedReason =
-        "7일 뒤 같은 시간에 이미 수업이 있어 보충 수업이 생성되지 않았습니다. 다른 시간으로 직접 예약해 주세요.";
+      makeupSkippedReason = validMakeup
+        ? "제안한 시간에 이미 수업이 있어 보충 수업이 생성되지 않았습니다. 다른 시간으로 직접 예약해 주세요."
+        : "7일 뒤 같은 시간에 이미 수업이 있어 보충 수업이 생성되지 않았습니다. 다른 시간으로 직접 예약해 주세요.";
     }
   } else {
     makeupSkippedReason =

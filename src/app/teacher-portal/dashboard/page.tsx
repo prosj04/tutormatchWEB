@@ -84,6 +84,17 @@ export default async function TeacherDashboardPage() {
       <h1>대시보드</h1>
       <p className="sub">오늘 수업과 이번 주 할 일을 확인하세요.</p>
 
+      {/* E8: 승인 대기 배너를 진행 상황(KPI)보다 상단에 우선 배치 */}
+      {!teacher.approved ? (
+        <div className="sec banner warn" style={{ marginTop: 0 }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+          <span>
+            <b>계정이 승인 대기 중입니다.</b> 관리자 검토가 완료되면 수업을 시작하실 수 있습니다.
+            매니저가 곧 개별 연락 드리겠습니다.
+          </span>
+        </div>
+      ) : null}
+
       <div className="sec grid3">
         <div className="card kpi">
           <b>{todayLessons.length}</b>
@@ -132,15 +143,7 @@ export default async function TeacherDashboardPage() {
         </div>
       </div>
 
-      {!teacher.approved ? (
-        <div className="sec banner warn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
-          <span>
-            <b>계정이 승인 대기 중입니다.</b> 관리자 검토가 완료되면 수업을 시작하실 수 있습니다.
-            매니저가 곧 개별 연락 드리겠습니다.
-          </span>
-        </div>
-      ) : noFirstLesson.length > 0 ? (
+      {teacher.approved && noFirstLesson.length > 0 ? (
         <div className="sec banner warn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
           <span>

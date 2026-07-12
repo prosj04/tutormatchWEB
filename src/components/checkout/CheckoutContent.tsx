@@ -35,7 +35,19 @@ const CheckoutTossWidget = dynamic(
 );
 
 const CHECKOUT_SIGNUP_STORAGE_KEY = "concord-checkout-signup";
+// 학부모가 자녀 명의로 결제한 경우, success에서 소진할 마커.
+const CHECKOUT_PARENT_STORAGE_KEY = "concord-checkout-parent";
+// Toss 취소 후 ?error=1 복귀 시 페이지가 리로드되어 입력이 초기화되므로,
+// 비밀번호를 제외한 연락 정보만 임시 보존한다(D4).
+const CHECKOUT_DRAFT_STORAGE_KEY = "concord-checkout-draft";
 const SUBJECT_OPTIONS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
+
+export type CheckoutChild = {
+  id: string;
+  name: string;
+  grade: string;
+  hasActiveSubscription: boolean;
+};
 
 type CheckoutContentProps = {
   tutorId: string;
@@ -44,6 +56,11 @@ type CheckoutContentProps = {
   siteContent?: GroupedSiteContent;
   needsSignup: boolean;
   isEditMode?: boolean;
+  /**
+   * 학부모 세션일 때 연결된 자녀 목록. 존재하면(빈 배열 포함) 학부모 결제 분기.
+   * undefined면 일반(학생/비회원) 결제.
+   */
+  parentChildren?: CheckoutChild[];
 };
 
 function CmsText({
@@ -68,11 +85,19 @@ export function CheckoutContent({
   siteContent,
   needsSignup,
   isEditMode: isEditModeProp,
+  parentChildren,
 }: CheckoutContentProps) {
   const searchParams = useSearchParams();
   const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
   const c = (key: string, fb: string) => getCmsSectionValue(siteContent, "checkout_page", key, fb);
   const tutorName = tutorId ? "상담 후 배정" : "강사 미지정";
+
+  // 학부모 결제 분기: parentChildren이 넘어오면 자녀 명의 결제.
+  const isParentCheckout = parentChildren !== undefined;
+  const hasChildren = (parentChildren?.length ?? 0) > 0;
+  const [selectedChildId, setSelectedChildId] = useState<string>(
+    () => parentChildren?.[0]?.id ?? "",
+  );
 
   // v2 플랜 결정. 알 수 없는 id면 안전 폴백(고등·주2·2시간).
   const plan = useMemo(
@@ -105,6 +130,34 @@ export function CheckoutContent({
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null);
   const paymentMethodsRef = useRef<PMW | null>(null);
 
+  // D4: Toss 취소 복귀(?error=1) 시 리로드로 초기화된 연락 정보를 복원한다.
+  useEffect(() => {
+    if (searchParams.get("error") !== "1") return;
+    try {
+      const raw = sessionStorage.getItem(CHECKOUT_DRAFT_STORAGE_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as { name?: string; phone?: string; email?: string };
+      if (draft.name) setName((prev) => prev || draft.name!);
+      if (draft.phone) setPhone((prev) => prev || draft.phone!);
+      if (draft.email) setEmail((prev) => prev || draft.email!);
+    } catch {
+      // ignore malformed draft
+    }
+  }, [searchParams]);
+
+  // 연락 정보를 입력하는 동안 임시 저장(비밀번호는 저장하지 않음).
+  useEffect(() => {
+    if (!name && !phone && !email) return;
+    try {
+      sessionStorage.setItem(
+        CHECKOUT_DRAFT_STORAGE_KEY,
+        JSON.stringify({ name, phone, email }),
+      );
+    } catch {
+      // ignore quota errors
+    }
+  }, [name, phone, email]);
+
   const handleWidgetError = useCallback((message: string) => {
     setError(message);
   }, []);
@@ -118,6 +171,10 @@ export function CheckoutContent({
 
   const handlePay = useCallback(async () => {
     setError(null);
+    if (isParentCheckout && !selectedChildId) {
+      setError("결제할 자녀를 선택해 주세요.");
+      return;
+    }
     if (!name.trim() || !phone.trim() || !email.trim()) {
       setError("이름, 연락처, 이메일을 모두 입력해 주세요.");
       return;
@@ -166,8 +223,10 @@ export function CheckoutContent({
     setPaying(true);
     try {
       const origin = window.location.origin;
+      // 비회원 가입정보는 localStorage에 보관해 브라우저 종료·탭 이동에도 유실 창을 줄인다(D3).
+      // success에서 소진 시 즉시 삭제한다.
       if (needsSignup) {
-        sessionStorage.setItem(
+        localStorage.setItem(
           CHECKOUT_SIGNUP_STORAGE_KEY,
           JSON.stringify({
             orderId,
@@ -183,7 +242,16 @@ export function CheckoutContent({
           }),
         );
       } else {
-        sessionStorage.removeItem(CHECKOUT_SIGNUP_STORAGE_KEY);
+        localStorage.removeItem(CHECKOUT_SIGNUP_STORAGE_KEY);
+      }
+      // 학부모 결제: success가 자녀 명의 complete 라우트로 처리하도록 마커 저장.
+      if (isParentCheckout && selectedChildId) {
+        localStorage.setItem(
+          CHECKOUT_PARENT_STORAGE_KEY,
+          JSON.stringify({ orderId, studentId: selectedChildId }),
+        );
+      } else {
+        localStorage.removeItem(CHECKOUT_PARENT_STORAGE_KEY);
       }
       await paymentWidget.requestPayment({
         orderId,
@@ -205,18 +273,51 @@ export function CheckoutContent({
     gender,
     grade,
     guardianPhone,
+    isParentCheckout,
     name,
     needsSignup,
     password,
     passwordConfirm,
     plan.id,
     planLabel,
+    selectedChildId,
     selectedSubjects,
     termsAgreed,
     tutorId,
     tutorName,
     phone,
   ]);
+
+  // 학부모인데 연결된 자녀가 없으면 결제를 진행할 수 없다 — 연결 안내로 대체.
+  if (isParentCheckout && !hasChildren) {
+    return (
+      <main>
+        <ConcordPageHead
+          eyebrow={c("header_kicker", "Checkout")}
+          title={c("header_title", "결제")}
+          description="자녀를 먼저 연결하면 자녀 명의로 결제를 진행할 수 있습니다."
+        />
+        <section className="sec" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <article
+              className="card panel-card"
+              style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}
+            >
+              <h2 className="panel-title">연결된 자녀가 없습니다</h2>
+              <p className="panel-note" style={{ marginTop: 8 }}>
+                자녀 계정을 연결한 뒤 자녀 명의로 결제를 진행할 수 있습니다.
+              </p>
+              <div className="form-actions" style={{ justifyContent: "center", marginTop: 24 }}>
+                <Link href="/parent/link" className="btn btn-acc">
+                  자녀 연결하기
+                </Link>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -324,10 +425,52 @@ export function CheckoutContent({
             </div>
 
             <div className="panel-stack">
+              {isParentCheckout && parentChildren ? (
+                <article className="card panel-card">
+                  <h2 className="panel-title">결제할 자녀</h2>
+                  <p className="panel-note" style={{ marginTop: 4, marginBottom: 12 }}>
+                    선택한 자녀 명의로 플랜이 시작됩니다.
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {parentChildren.map((child) => (
+                      <label
+                        key={child.id}
+                        className="check-row"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <input
+                          type="radio"
+                          name="checkout-child"
+                          value={child.id}
+                          checked={selectedChildId === child.id}
+                          onChange={() => setSelectedChildId(child.id)}
+                        />
+                        <span>
+                          <b>{child.name}</b>
+                          {child.grade ? ` · ${child.grade}` : ""}
+                          {child.hasActiveSubscription ? (
+                            <span style={{ color: "var(--mut)", marginLeft: 6 }}>
+                              (진행 중인 플랜 있음 · 플랜 변경으로 처리됩니다)
+                            </span>
+                          ) : null}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </article>
+              ) : null}
+
               <article className="card panel-card">
                 <CmsText active={isEditMode} cmsKey="section_customer_title">
                   <h2 className="panel-title">
-                    {c("section_customer_title", needsSignup ? "주문자 · 가입 정보" : "주문자 정보")}
+                    {c(
+                      "section_customer_title",
+                      isParentCheckout
+                        ? "결제자 정보"
+                        : needsSignup
+                          ? "주문자 · 가입 정보"
+                          : "주문자 정보",
+                    )}
                   </h2>
                 </CmsText>
                 <div>

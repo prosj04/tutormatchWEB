@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { field as fieldS, font, scroll as scrollS } from "../../styles/app-styles";
 import { SubHead } from "../../components/ui/SubHead";
-import { AlertCircleIcon, QrIcon } from "../../components/parent/ParentIcons";
+import { AlertCircleIcon } from "../../components/parent/ParentIcons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 
@@ -69,7 +69,11 @@ export default function ChildLink() {
           <SubHead title="자녀 연결" />
 
           <Text style={[styles.lede, { color: t.mut }]}>
-            자녀의 앱 <Text style={{ color: t.fg, fontFamily: font.bold }}>MY → 학부모 연결</Text>에 표시된 코드를 입력하거나 QR을 스캔하세요.
+            자녀 앱 <Text style={{ color: t.fg, fontFamily: font.bold }}>MY 탭 → 학부모 연결</Text> 또는 웹 대시보드 계정 페이지에서 발급한 코드를 입력하세요.
+          </Text>
+
+          <Text style={[styles.ledeSub, { color: t.mut2 }]}>
+            자녀가 아직 학생 가입을 하지 않았다면, 먼저 학생 가입을 해야 코드를 받을 수 있어요.
           </Text>
 
           {/* 연결 코드 입력 */}
@@ -77,12 +81,13 @@ export default function ChildLink() {
             <Text style={[fieldS.label, { color: t.fg }]}>연결 코드</Text>
             <TextInput
               style={[fieldS.inp, styles.codeInput, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg }]}
-              placeholder="0 0 0 0 0 0"
+              placeholder="A2C4E6"
               placeholderTextColor={t.mut2}
               value={code}
-              onChangeText={setCode}
+              onChangeText={(v) => setCode(v.toUpperCase())}
               autoCapitalize="characters"
               autoCorrect={false}
+              maxLength={6}
               returnKeyType="done"
               onSubmitEditing={handleLink}
             />
@@ -99,24 +104,6 @@ export default function ChildLink() {
             ) : (
               <Text style={[styles.primaryText, { color: t.onAcc }]}>코드로 연결</Text>
             )}
-          </Pressable>
-
-          {/* 또는 */}
-          <View style={styles.daysep}>
-            <View style={[styles.daysepLine, { backgroundColor: t.line }]} />
-            <Text style={[styles.daysepText, { color: t.mut2 }]}>또는</Text>
-            <View style={[styles.daysepLine, { backgroundColor: t.line }]} />
-          </View>
-
-          {/* QR 코드 스캔 */}
-          <Pressable
-            style={[styles.qrBtn, { backgroundColor: t.panel, borderColor: t.line2 }]}
-            onPress={() =>
-              Alert.alert("QR 스캔", "QR 스캔은 준비 중이에요. 지금은 연결 코드를 입력해 주세요.")
-            }
-          >
-            <QrIcon color={t.fg} size={18} />
-            <Text style={[styles.qrText, { color: t.fg }]}>QR 코드 스캔</Text>
           </Pressable>
 
           {/* 오류 배너 */}
@@ -138,7 +125,8 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   flex: { flex: 1 },
 
-  lede: { fontSize: 13.5, marginHorizontal: 2, marginBottom: 16, lineHeight: 22 },
+  lede: { fontSize: 13.5, marginHorizontal: 2, marginBottom: 8, lineHeight: 22 },
+  ledeSub: { fontSize: 12.5, marginHorizontal: 2, marginBottom: 16, lineHeight: 20 },
 
   // .inp 중앙정렬·큰 자간 (시안 인라인)
   codeInput: {
@@ -163,24 +151,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.26,
     elevation: 8,
   },
-
-  // .daysep
-  daysep: { flexDirection: "row", alignItems: "center", gap: 12, marginVertical: 16 },
-  daysepLine: { flex: 1, height: 1 },
-  daysepText: { fontSize: 11, fontFamily: font.semibold },
-
-  // QR 버튼
-  qrBtn: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 13,
-    borderWidth: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  qrText: { fontFamily: font.bold, fontSize: 14 },
 
   // .banner.warn
   banner: {

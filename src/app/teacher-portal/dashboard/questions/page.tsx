@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { TeacherApprovalLock } from "@/components/teacher-portal/TeacherApprovalLock";
 import { TeacherQuestionsClient } from "@/components/teacher-portal/TeacherQuestionsClient";
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
@@ -20,6 +21,11 @@ export default async function TeacherQuestionsPage() {
   const teacher = await getTeacherByUserId(session.user.id);
   if (!teacher) {
     redirect("/teacher-portal");
+  }
+
+  // E7: 미승인 강사에게는 잠금 안내(모바일 PendingHome과 정합).
+  if (!teacher.approved) {
+    return <TeacherApprovalLock />;
   }
 
   const matches = await prisma.teacherStudent.findMany({

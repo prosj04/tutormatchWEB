@@ -140,19 +140,26 @@ export default async function DashboardPage({
     : null;
 
   return (
-    <StudentDashboardEntry
-      studentName={student.name}
-      studentId={student.id}
-      initialDate={initialDate}
-      initialPlanDates={planDateRows.map((plan) => plan.date)}
-      initialPlan={initialPlan}
-      initialQuestions={initialQuestions}
-      aiAnswerEnabled={isAiAnswerEnabled()}
-      isEditMode={isEditMode}
-      learningGoals={learningGoals}
-      activeMatch={activeMatch}
-      careLogs={careLogs}
-      satisfactionCheckin={satisfactionCheckin}
-    />
+    <>
+      {journeyStage === "FIRST_LESSON_PENDING" && (
+        <div className="border-b border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm font-semibold text-amber-800">
+          선생님이 첫 수업 날짜를 정하는 중이에요. 곧 학습 일정이 채워질 거예요.
+        </div>
+      )}
+      <StudentDashboardEntry
+        studentName={student.name}
+        studentId={student.id}
+        initialDate={initialDate}
+        initialPlanDates={planDateRows.map((plan) => plan.date)}
+        initialPlan={initialPlan}
+        initialQuestions={initialQuestions}
+        aiAnswerEnabled={isAiAnswerEnabled()}
+        isEditMode={isEditMode}
+        learningGoals={learningGoals}
+        activeMatch={activeMatch}
+        careLogs={careLogs}
+        satisfactionCheckin={satisfactionCheckin}
+      />
+    </>
   );
 }

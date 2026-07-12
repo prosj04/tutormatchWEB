@@ -74,7 +74,8 @@ export function ManagerMonitoringPage({
   const careLogsCacheRef = useRef<Map<string, CareLog[]>>(new Map());
   const [careLogType, setCareLogType] = useState<CareLogType>("CONSULT");
   const [careLogNote, setCareLogNote] = useState("");
-  const [careLogVisible, setCareLogVisible] = useState(true);
+  // E10: 케어로그 기본값은 비공개(내부용). 매니저가 명시적으로 공개해야 학생에게 보인다.
+  const [careLogVisible, setCareLogVisible] = useState(false);
   const [careLogSaving, setCareLogSaving] = useState(false);
   const [careLogToast, setCareLogToast] = useState<string | null>(null);
 
@@ -473,13 +474,26 @@ export function ManagerMonitoringPage({
               </div>
               <div className="field">
                 <label style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 700 }}>
+                  케어로그
+                  <span className={careLogVisible ? "bst acc" : "bst mut"}>
+                    {careLogVisible ? "학생 공개" : "내부용"}
+                  </span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, fontSize: "12.5px" }}>
                   <input
                     type="checkbox"
                     checked={careLogVisible}
                     onChange={(e) => setCareLogVisible(e.target.checked)}
                   />
-                  학생 공개
+                  학생에게 공개
                 </label>
+                {careLogVisible ? (
+                  <p className="sub" style={{ color: "var(--acc-text)", fontWeight: 700 }}>
+                    이 케어로그는 학생에게 보입니다.
+                  </p>
+                ) : (
+                  <p className="sub">기본은 비공개(내부용)입니다.</p>
+                )}
                 <textarea
                   className="inp area"
                   value={careLogNote}

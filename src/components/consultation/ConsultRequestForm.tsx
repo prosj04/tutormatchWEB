@@ -102,6 +102,18 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
     }
   };
 
+  // A4: 가입 모달에서 방금 입력한 이름·연락처를 채우도록 sessionStorage에 넘긴다.
+  const savePrefill = () => {
+    try {
+      sessionStorage.setItem(
+        "consult_lead_prefill",
+        JSON.stringify({ name, phone }),
+      );
+    } catch {
+      // 저장 실패는 무시 — 프리필만 생략된다.
+    }
+  };
+
   if (done) {
     return (
       <div className="consult-done card">
@@ -117,8 +129,14 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
         <p className="consult-done-sub">
           {c("done_sub", "계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.")}
         </p>
+        <p className="consult-done-note">
+          {c(
+            "done_no_account",
+            "아직 계정은 만들어지지 않았어요 — 진행 상황 확인은 계정 생성 후 가능해요.",
+          )}
+        </p>
         <div className="consult-done-actions">
-          <Link href="/register" className="btn btn-acc">
+          <Link href="/register" className="btn btn-acc" onClick={savePrefill}>
             {c("done_btn_register", "1분 만에 계정 만들기")}
           </Link>
           <Link href="/" className="btn btn-ghost">

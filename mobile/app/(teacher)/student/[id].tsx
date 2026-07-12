@@ -118,6 +118,7 @@ export default function StudentDetailScreen() {
       });
       setSelectedSlot(null);
       await load();
+      Alert.alert("첫 수업일 설정 완료", "숙제는 학생 탭에서 분배할 수 있어요.");
     } catch (e) {
       Alert.alert("설정 실패", e instanceof Error ? e.message.replace(/^API \d+: /, "") : "다시 시도해 주세요.");
     } finally {

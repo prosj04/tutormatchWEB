@@ -1,11 +1,12 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -25,11 +26,29 @@ import { EMPTY_STATE_COPY } from "../../lib/student-journey";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
+// KST(Asia/Seoul) 기준: 오늘이면 HH:MM, 이전이면 M/D
+function formatMsgTime(iso: string): string {
+  const d = new Date(iso);
+  const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  const sameDay =
+    kst.getUTCFullYear() === now.getUTCFullYear() &&
+    kst.getUTCMonth() === now.getUTCMonth() &&
+    kst.getUTCDate() === now.getUTCDate();
+  if (sameDay) {
+    const hh = String(kst.getUTCHours()).padStart(2, "0");
+    const mm = String(kst.getUTCMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  }
+  return `${kst.getUTCMonth() + 1}/${kst.getUTCDate()}`;
+}
+
 // ─── 메시지 말풍선 ─────────────────────────────────────────────────────────────
-function MsgBubble({ type, text, aiTag }: {
+function MsgBubble({ type, text, aiTag, time }: {
   type: "me" | "them" | "ai";
   text: string;
   aiTag?: string;
+  time?: string;
 }) {
   const { t } = useTheme();
 
@@ -39,21 +58,24 @@ function MsgBubble({ type, text, aiTag }: {
     : t.panel;
 
   return (
-    <View style={[
-      chatS.msg,
-      type === "me" ? [chatS.me, { backgroundColor: bgColor }]
-      : type === "ai" ? [chatS.ai, { backgroundColor: bgColor, borderColor: t.line2 }]
-      : [chatS.them, { backgroundColor: bgColor, borderColor: t.line2 }],
-    ]}>
-      {(type === "ai" && aiTag) && (
-        <View style={chatS.aiTag}>
-          <Text style={{ color: t.accText, fontSize: 10 }}>✨</Text>
-          <Text style={[styles.aiTagText, { color: t.accText }]}>{aiTag}</Text>
-        </View>
-      )}
-      <Text style={[styles.msgText, {
-        color: type === "me" ? t.onAcc : t.fg,
-      }]}>{text}</Text>
+    <View style={type === "me" ? styles.bubbleWrapMe : styles.bubbleWrapThem}>
+      <View style={[
+        chatS.msg,
+        type === "me" ? [chatS.me, { backgroundColor: bgColor }]
+        : type === "ai" ? [chatS.ai, { backgroundColor: bgColor, borderColor: t.line2 }]
+        : [chatS.them, { backgroundColor: bgColor, borderColor: t.line2 }],
+      ]}>
+        {(type === "ai" && aiTag) && (
+          <View style={chatS.aiTag}>
+            <Text style={{ color: t.accText, fontSize: 10 }}>✨</Text>
+            <Text style={[styles.aiTagText, { color: t.accText }]}>{aiTag}</Text>
+          </View>
+        )}
+        <Text style={[styles.msgText, {
+          color: type === "me" ? t.onAcc : t.fg,
+        }]}>{text}</Text>
+      </View>
+      {time && <Text style={[styles.msgTime, { color: t.mut2 }]}>{time}</Text>}
     </View>
   );
 }
@@ -99,13 +121,15 @@ export default function QnAScreen() {
   const scrollRef = useRef<ScrollView>(null);
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
   const [data, setData] = useState<QnaData | null>(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
-  async function load() {
-    setLoading(true);
+  const load = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
     setError(false);
     try {
       const res = await apiFetch<QnaData>("/api/mobile/qna");
@@ -115,16 +139,20 @@ export default function QnAScreen() {
         trackEvent(ANALYTICS_EVENTS.qnaEmptyNoTeacherViewed);
       }
     } catch {
-      setData(null);
+      if (!isRefresh) setData(null);
       setError(true);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }
-
-  useEffect(() => {
-    void load();
   }, []);
+
+  // 화면 복귀 시 재로드 — 선생님 답변 자동 반영
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
 
   async function handleSend() {
     const trimmed = text.trim();
@@ -220,6 +248,9 @@ export default function QnAScreen() {
           contentContainerStyle={[styles.scrollContent, { paddingTop: 4 }]}
           showsVerticalScrollIndicator={false}
           onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => void load(true)} tintColor={t.mut2} colors={[t.acc]} />
+          }
         >
           {/* 헤더 */}
           <View style={[chatS.head]}>
@@ -247,6 +278,7 @@ export default function QnAScreen() {
                 key={m.id}
                 type={bubbleType(m.sender)}
                 text={m.body}
+                time={m.createdAt ? formatMsgTime(m.createdAt) : undefined}
                 aiTag={m.sender === "ai" ? `AI 즉답${m.tokenCost ? ` · 토큰 ${m.tokenCost} 사용` : ""}` : undefined}
               />
             ))
@@ -297,5 +329,8 @@ const styles = StyleSheet.create({
   headAvText: { fontFamily: font.bold, fontSize: 15 },
   aiTagText: { fontSize: 10, fontFamily: font.extrabold, letterSpacing: 0.6, textTransform: "uppercase" },
   msgText: { fontSize: 13.5, lineHeight: 20 },
+  bubbleWrapMe: { alignItems: "flex-end" },
+  bubbleWrapThem: { alignItems: "flex-start" },
+  msgTime: { fontSize: 11, marginTop: -4, marginBottom: 9, paddingHorizontal: 2 },
   tokenNote: { paddingHorizontal: 16, paddingTop: 8 },
 });

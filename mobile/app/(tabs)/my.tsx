@@ -82,6 +82,95 @@ function MRow({
   return onPress ? <Pressable onPress={onPress}>{inner}</Pressable> : inner;
 }
 
+interface ParentLinkCode {
+  code: string | null;
+  expiresAt: string | null;
+}
+
+function formatExpiry(iso: string | null): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleString("ko-KR", {
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Seoul",
+  });
+}
+
+// C4: 학생 앱에서 학부모 연결 코드 발급
+function ParentLinkSection() {
+  const { t } = useTheme();
+  const [code, setCode] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [issuing, setIssuing] = useState(false);
+
+  useEffect(() => {
+    apiFetch<ParentLinkCode>("/api/mobile/me/parent-link-code")
+      .then((d) => {
+        setCode(d.code);
+        setExpiresAt(d.expiresAt);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function issue() {
+    if (issuing) return;
+    setIssuing(true);
+    try {
+      const d = await apiFetch<ParentLinkCode>("/api/mobile/me/parent-link-code", {
+        method: "POST",
+      });
+      setCode(d.code);
+      setExpiresAt(d.expiresAt);
+    } catch {
+      Alert.alert("오류", "코드 발급에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIssuing(false);
+    }
+  }
+
+  const expiryLabel = formatExpiry(expiresAt);
+
+  return (
+    <>
+      <Text style={[sectTS, styles.sectT, { color: t.fg }]}>학부모 연결</Text>
+      <View style={[card, styles.linkCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
+        {code ? (
+          <>
+            <Text style={[styles.linkCode, { color: t.fg }]}>{code}</Text>
+            {expiryLabel ? (
+              <Text style={[styles.linkExpiry, { color: t.mut }]}>{`${expiryLabel}까지 유효`}</Text>
+            ) : null}
+            <Text style={[styles.linkHelp, { color: t.mut }]}>
+              학부모 앱의 “자녀 연결”에 이 코드를 입력하면 계정이 연결돼요.
+            </Text>
+          </>
+        ) : (
+          <Text style={[styles.linkHelp, { color: t.mut }]}>
+            코드를 발급해 학부모 앱의 “자녀 연결”에 입력하면 계정이 연결돼요.
+          </Text>
+        )}
+        <Pressable
+          style={[styles.linkBtn, { backgroundColor: accTint(t, 0.12) }, issuing && styles.linkBtnDisabled]}
+          onPress={() => void issue()}
+          disabled={issuing}
+        >
+          {issuing ? (
+            <ActivityIndicator color={t.accText} size="small" />
+          ) : (
+            <Text style={[styles.linkBtnText, { color: t.accText }]}>
+              {code ? "코드 재발급" : "코드 발급"}
+            </Text>
+          )}
+        </Pressable>
+      </View>
+    </>
+  );
+}
+
 export default function MyScreen() {
   const { t } = useTheme();
   const router = useRouter();
@@ -196,6 +285,8 @@ export default function MyScreen() {
               />
             </View>
 
+            <ParentLinkSection />
+
             <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
             <View style={[card, styles.menuCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
               <MRow
@@ -270,6 +361,21 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 11, fontFamily: font.bold },
   sectT: { fontSize: 14 },
   menuCard: { overflow: "hidden" },
+  linkCard: { padding: 18, alignItems: "center" },
+  linkCode: { fontSize: 30, fontFamily: font.extrabold, letterSpacing: 8, textAlign: "center" },
+  linkExpiry: { fontSize: 12, marginTop: 6, fontFamily: font.semibold },
+  linkHelp: { fontSize: 12.5, marginTop: 8, lineHeight: 19, textAlign: "center" },
+  linkBtn: {
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "stretch",
+  },
+  linkBtnText: { fontSize: 14, fontFamily: font.bold },
+  linkBtnDisabled: { opacity: 0.6 },
   chev: { fontSize: 20, fontFamily: font.bold },
   logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },
   logoutText: { fontSize: 13, fontFamily: font.semibold },

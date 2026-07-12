@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { TeacherApprovalLock } from "@/components/teacher-portal/TeacherApprovalLock";
 import { TeacherStudentsManager } from "@/components/teacher-portal/TeacherStudentsManager";
 import { auth } from "@/auth";
 import { isPortalTeacherRole } from "@/lib/portal-roles";
@@ -23,6 +24,11 @@ export default async function TeacherStudentsPage() {
 
   if (!teacher) {
     redirect("/teacher-portal");
+  }
+
+  // E7: 미승인 강사에게는 잠금 안내(모바일 PendingHome과 정합).
+  if (!teacher.approved) {
+    return <TeacherApprovalLock />;
   }
 
   // Students are page-specific; fetch separately using the cached teacher.id.

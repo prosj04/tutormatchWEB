@@ -20,7 +20,7 @@ export default async function ParentLinkPage() {
     <section className="page on" id="pg-link" data-screen-label="자녀 연결">
       <div className="crumb">/parent/link</div>
       <h1>자녀 연결</h1>
-      <p className="sub">자녀 앱의 MY → 학부모 연결에 표시된 코드를 입력하세요.</p>
+      <p className="sub">자녀 앱 MY 탭 → 학부모 연결 또는 웹 대시보드 계정 페이지에서 발급한 코드를 입력하세요. 자녀가 아직 학생 가입을 하지 않았다면 먼저 학생 가입이 필요해요.</p>
       <LinkChildForm linked={linked} />
     </section>
   );

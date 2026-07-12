@@ -10,6 +10,25 @@ function parseJsonArray(value: string): string[] {
   }
 }
 
+export type SubjectScore = { subject: string; prev: number | null; curr: number };
+
+function parseSubjectScores(value: string | null): SubjectScore[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((e) => e && typeof e.subject === "string")
+      .map((e) => ({
+        subject: String(e.subject),
+        prev: typeof e.prev === "number" ? e.prev : null,
+        curr: typeof e.curr === "number" ? e.curr : 0,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 /** 학부모에 연결된 자녀 목록 + 요약(구독 상태·최신 리포트). 삭제된 학생 제외. */
 export async function listParentChildren(parentId: string) {
   const links = await prisma.parentStudent.findMany({
@@ -29,7 +48,7 @@ export async function listParentChildren(parentId: string) {
             where: { status: { in: ["ACTIVE", "PAUSED"] } },
             orderBy: { createdAt: "desc" },
             take: 1,
-            select: { plan: true, status: true, periodEnd: true },
+            select: { plan: true, status: true, periodEnd: true, pausedAt: true },
           },
           monthlyReports: {
             orderBy: { month: "desc" },
@@ -55,7 +74,7 @@ export async function listParentChildren(parentId: string) {
       subjects: link.student.subjects,
       linkedVia: link.linkedVia,
       subscription: sub
-        ? { plan: sub.plan, status: sub.status, periodEnd: sub.periodEnd }
+        ? { plan: sub.plan, status: sub.status, periodEnd: sub.periodEnd, pausedAt: sub.pausedAt }
         : null,
       latestReportMonth: link.student.monthlyReports[0]?.month ?? null,
       consultationStatus: link.student.consultationBookings[0]?.status ?? null,
@@ -68,13 +87,28 @@ export async function listChildReports(studentId: string) {
   const reports = await prisma.monthlyReport.findMany({
     where: { studentId },
     orderBy: { month: "desc" },
-    select: { month: true, summary: true, weakTypes: true, detail: true },
+    select: {
+      month: true,
+      summary: true,
+      weakTypes: true,
+      detail: true,
+      overallScore: true,
+      prevScore: true,
+      subjectScores: true,
+      teacherComment: true,
+      managerComment: true,
+    },
   });
   return reports.map((r) => ({
     month: r.month,
     summary: r.summary,
     weakTypes: parseJsonArray(r.weakTypes),
     detail: r.detail,
+    overallScore: r.overallScore,
+    prevScore: r.prevScore,
+    subjectScores: parseSubjectScores(r.subjectScores),
+    teacherComment: r.teacherComment,
+    managerComment: r.managerComment,
   }));
 }
 

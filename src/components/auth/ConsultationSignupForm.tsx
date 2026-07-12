@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { RegionPicker } from "@/components/common/RegionPicker";
 
@@ -54,6 +54,20 @@ export function ConsultationSignupForm({
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // A4: 공개 리드폼(/consult)에서 넘어온 경우 방금 입력한 이름·연락처를 프리필한다.
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("consult_lead_prefill");
+      if (!raw) return;
+      sessionStorage.removeItem("consult_lead_prefill");
+      const data = JSON.parse(raw) as { name?: unknown; phone?: unknown };
+      if (typeof data.name === "string" && data.name.trim()) setName(data.name.trim());
+      if (typeof data.phone === "string" && data.phone.trim()) setPhone(data.phone.trim());
+    } catch {
+      // 프리필 실패는 무시 — 사용자가 직접 입력하면 된다.
+    }
+  }, []);
 
   function toggleSubject(s: string) {
     setSelectedSubjects((prev) =>
@@ -106,9 +120,10 @@ export function ConsultationSignupForm({
   }
 
   function goNext() {
-    const visitQuery = instantEnroll ? "?visit=1" : "";
+    // instantEnroll: 방문 시간 입력 열기 / 일반 가입: 자동 접수 안내 배너 노출(A1)
+    const query = instantEnroll ? "?visit=1" : "?applied=1";
     onSuccess?.();
-    router.push(`/dashboard/consultation${visitQuery}`);
+    router.push(`/dashboard/consultation${query}`);
   }
 
   async function handleSubmit() {
@@ -185,12 +200,21 @@ export function ConsultationSignupForm({
     return (
       <div className="signup-form">
         <div className="signup-form-head mb-6" style={{ paddingRight: 36 }}>
-          <p className="eyebrow">Consultation</p>
-          <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
-            {c("step2_title", "상담 신청 완료")}
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700"
+          >
+            <span aria-hidden>✓</span>
+            {c("step2_badge", "상담 접수 완료")}
+          </span>
+          <h2
+            id="consultation-signup-title"
+            className="mt-3 text-xl font-black"
+            style={{ color: "var(--fg)" }}
+          >
+            {c("step2_title", "더 정확한 상담을 위한 추가 정보")}
           </h2>
           <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
-            {c("step2_subtext", "추가 정보를 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요. (선택사항)")}
+            {c("step2_subtext", "아래 정보는 선택이에요. 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요.")}
           </p>
         </div>
         <div className="space-y-5">

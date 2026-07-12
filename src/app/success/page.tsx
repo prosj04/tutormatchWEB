@@ -46,7 +46,10 @@ export default async function SuccessPage({ searchParams }: PageProps) {
       <ConcordPageHead
         eyebrow={s("kicker", "Payment")}
         title={s("title", "결제가 완료되었습니다")}
-        description={s("body", "주문이 정상적으로 접수되었습니다. 담당 매니저가 곧 연락드릴 예정입니다.")}
+        description={s(
+          "body",
+          "담당 매니저가 배정되었어요. 상담 일정을 잡기 위해 곧 연락드립니다.",
+        )}
       />
 
       <section className="sec" style={{ paddingTop: 0 }}>
@@ -78,7 +81,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
                 <p className="panel-note" style={{ marginTop: 8 }}>
                   {s(
                     "missing_payment_info",
-                    "결제 확인 정보가 URL에 포함되지 않았습니다. 매니저 확인용 메일을 확인해 주세요.",
+                    "결제가 정상 접수되었는지 확인 중입니다. 잠시 후 결제 내역에서 확인해 주세요.",
                   )}
                 </p>
               </CmsEdit>

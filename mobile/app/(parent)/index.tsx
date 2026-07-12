@@ -145,10 +145,10 @@ function ChildCard({ child }: { child: Child }) {
   const initial = child.name?.[0] ?? "?";
   const subjects = (child.subjects ?? []).join("·");
   const active = child.subscription?.status === "ACTIVE";
-  const stateLabel = active ? "수업 중" : "매칭 중";
+  const stateLabel = active ? "수업 중" : "선생님 배정 중";
   const meta = active
     ? [subjects, child.subscription?.plan].filter(Boolean).join(" · ")
-    : "선생님 매칭 중";
+    : "선생님 배정 중";
 
   return (
     <View style={[cardS, styles.childCard, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>

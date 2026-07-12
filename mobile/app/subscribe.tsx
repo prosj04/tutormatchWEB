@@ -1,7 +1,9 @@
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -104,6 +106,9 @@ function PlanCard({
 
 export default function Subscribe() {
   const { t } = useTheme();
+  const params = useLocalSearchParams<{ studentId?: string; childName?: string }>();
+  const studentId = typeof params.studentId === "string" ? params.studentId : undefined;
+  const childName = typeof params.childName === "string" ? params.childName : undefined;
   const [plans, setPlans] = useState<PlanV2[]>([]);
   const [loading, setLoading] = useState(true);
   const [tier, setTier] = useState<"middle" | "high">("high");
@@ -127,7 +132,17 @@ export default function Subscribe() {
 
   function openWebCheckout() {
     if (!selectedId) return;
-    void Linking.openURL(`${API_BASE}/checkout?plan=${selectedId}`);
+    let url = `${API_BASE}/checkout?plan=${selectedId}`;
+    if (studentId) url += `&studentId=${encodeURIComponent(studentId)}`;
+    const who = childName ? `${childName}(자녀 학생)` : "자녀(학생)";
+    Alert.alert(
+      "웹에서 결제 진행",
+      `결제 페이지가 브라우저에서 열려요.\n브라우저에서 ${who} 계정으로 로그인한 뒤 결제해 주세요.`,
+      [
+        { text: "취소", style: "cancel" },
+        { text: "계속", onPress: () => void Linking.openURL(url) },
+      ],
+    );
   }
 
   return (

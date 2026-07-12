@@ -21,11 +21,10 @@ import {
   my as myS,
   scroll as scrollS,
   sectT as sectTS,
-  switchStyle,
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
-import { BellIcon, ChevronRightIcon, DocumentIcon, LockIcon, QuestionIcon } from "../../components/ui/Icons";
+import { ChevronRightIcon, DocumentIcon, LockIcon, QuestionIcon } from "../../components/ui/Icons";
 import { PlusIcon } from "../../components/parent/ParentIcons";
 import { useAuth } from "../../hooks/useAuth";
 import { apiFetch } from "../../lib/api";
@@ -50,7 +49,6 @@ export default function ParentMy() {
   const [children, setChildren] = useState<Child[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [notifyOn, setNotifyOn] = useState(true);
   const [pwOpen, setPwOpen] = useState(false);
 
   const load = useCallback(async () => {
@@ -132,7 +130,7 @@ export default function ParentMy() {
                 <View style={lrowS.wrap}>
                   <View style={lrowS.g}>
                     <Text style={[lrowS.gb, { color: t.fg }]}>아직 연결된 자녀가 없어요</Text>
-                    <Text style={[lrowS.gp, { color: t.mut }]}>아래에서 코드/QR로 연결하세요.</Text>
+                    <Text style={[lrowS.gp, { color: t.mut }]}>아래에서 연결 코드로 연결하세요.</Text>
                   </View>
                 </View>
               </View>
@@ -166,7 +164,7 @@ export default function ParentMy() {
               onPress={() => router.push("/(parent)/link" as never)}
             >
               <PlusIcon color={t.mut} size={17} />
-              <Text style={[styles.addChildText, { color: t.mut }]}>자녀 추가 연결 (코드/QR)</Text>
+              <Text style={[styles.addChildText, { color: t.mut }]}>자녀 추가 연결 (연결 코드)</Text>
             </Pressable>
 
             {/* 계정 */}
@@ -187,23 +185,6 @@ export default function ParentMy() {
               </Pressable>
 
               {pwOpen ? <PasswordForm onDone={() => setPwOpen(false)} /> : null}
-
-              {/* 알림 설정 */}
-              <Pressable
-                style={[myS.mrow, { borderTopWidth: 1, borderTopColor: t.line }]}
-                onPress={() => setNotifyOn((v) => !v)}
-              >
-                <View style={[myS.mrowIc, { backgroundColor: t.panel2 }]}>
-                  <BellIcon color={t.accText} size={18} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[myS.mrowGb, { color: t.fg }]}>알림 설정</Text>
-                  <Text style={[myS.mrowGp, { color: t.mut }]}>리포트·결제·상담 알림</Text>
-                </View>
-                <View style={[switchStyle.track, { backgroundColor: notifyOn ? t.acc : t.line2 }]}>
-                  <View style={[switchStyle.thumb, { left: notifyOn ? 19.5 : 2.5 }]} />
-                </View>
-              </Pressable>
 
               {/* 고객센터 */}
               <Pressable

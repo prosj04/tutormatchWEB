@@ -26,7 +26,8 @@ interface WeeklyData {
   bars: { date: string; label: string; minutes: number }[];
   totalMinutes: number;
   tasks: { done: number; total: number };
-  taskItems: { id: string; title: string; isDone: boolean }[];
+  // dateKey(YYYY-MM-DD)가 있으면 오늘 할 일 섹션 분리에 사용 (없으면 평면 나열)
+  taskItems: { id: string; title: string; isDone: boolean; dateKey?: string }[];
 }
 
 interface TokenData {
@@ -57,6 +58,12 @@ function formatMinutes(total: number) {
 function weekLabel(weekStart: string) {
   const d = new Date(weekStart);
   return `${d.getMonth() + 1}월 ${Math.ceil(d.getDate() / 7)}주`;
+}
+
+// 오늘(Asia/Seoul) 날짜 키 YYYY-MM-DD
+function kstTodayKey(): string {
+  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  return `${kst.getUTCFullYear()}-${String(kst.getUTCMonth() + 1).padStart(2, "0")}-${String(kst.getUTCDate()).padStart(2, "0")}`;
 }
 
 // ─── WeekBars (.bars) ────────────────────────────────────────────────────────
@@ -144,6 +151,12 @@ export default function LearningScreen() {
 
   const reportMonth = report?.report?.month;
 
+  // 오늘(KST) 할 일 분리 — taskItems에 dateKey가 있을 때만. 없으면 전부 "이번 주 과제"로.
+  const allTasks = weekly?.taskItems ?? [];
+  const todayKey = kstTodayKey();
+  const todayTasks = allTasks.filter((it) => it.dateKey === todayKey);
+  const restTasks = todayTasks.length > 0 ? allTasks.filter((it) => it.dateKey !== todayKey) : allTasks;
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <ScrollView contentContainerStyle={[scrollS, styles.content]} showsVerticalScrollIndicator={false}>
@@ -193,6 +206,23 @@ export default function LearningScreen() {
               </View>
             </View>
 
+            {/* 오늘 할 일 (dateKey 제공 시) */}
+            {todayTasks.length > 0 && (
+              <>
+                <View style={[sectTS, styles.sectTRow]}>
+                  <Text style={[styles.sectTText, { color: t.fg }]}>오늘 할 일</Text>
+                  <Text style={[styles.sectTLink, { color: t.accText }]}>
+                    {`${todayTasks.filter((it) => it.isDone).length}/${todayTasks.length}`}
+                  </Text>
+                </View>
+                <View style={[card, todoS.wrap, { backgroundColor: t.panel, borderColor: t.acc, shadowColor: t.fg }]}>
+                  {todayTasks.map((item, i) => (
+                    <TodoItem key={item.id} done={item.isDone} title={item.title} divider={i > 0} />
+                  ))}
+                </View>
+              </>
+            )}
+
             {/* 이번 주 과제 */}
             <View style={[sectTS, styles.sectTRow]}>
               <Text style={[styles.sectTText, { color: t.fg }]}>이번 주 과제</Text>
@@ -202,8 +232,8 @@ export default function LearningScreen() {
             </View>
 
             <View style={[card, todoS.wrap, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-              {(weekly?.taskItems ?? []).length > 0 ? (
-                (weekly!.taskItems).map((item, i) => (
+              {restTasks.length > 0 ? (
+                restTasks.map((item, i) => (
                   <TodoItem key={item.id} done={item.isDone} title={item.title} divider={i > 0} />
                 ))
               ) : (
@@ -246,21 +276,16 @@ export default function LearningScreen() {
                   </Text>
                 </>
               )}
-              <View style={styles.reportActions}>
-                {["선생님 코멘트", "학습 계획", "리포트 보기"].map((label) => (
+              {reportMonth && (
+                <View style={styles.reportActions}>
                   <Pressable
-                    key={label}
                     style={[styles.reportBtn, { backgroundColor: t.panel2, borderColor: t.line }]}
-                    onPress={
-                      label === "리포트 보기" && reportMonth
-                        ? () => router.push(`/report/${reportMonth}` as Parameters<typeof router.push>[0])
-                        : undefined
-                    }
+                    onPress={() => router.push(`/report/${reportMonth}` as Parameters<typeof router.push>[0])}
                   >
-                    <Text style={[styles.reportBtnText, { color: t.fg }]}>{label}</Text>
+                    <Text style={[styles.reportBtnText, { color: t.fg }]}>리포트 보기</Text>
                   </Pressable>
-                ))}
-              </View>
+                </View>
+              )}
             </View>
 
             {/* AI 질답 토큰 */}

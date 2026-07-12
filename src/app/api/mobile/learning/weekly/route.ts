@@ -57,11 +57,14 @@ export async function GET(request: Request) {
   const plans = await prisma.studyPlan.findMany({
     where: { studentId: student.id, date: { in: weekDates } },
     orderBy: { date: "asc" },
-    select: { tasks: { select: { id: true, title: true, isDone: true, order: true }, orderBy: { order: "asc" } } },
+    select: {
+      date: true,
+      tasks: { select: { id: true, title: true, isDone: true, order: true }, orderBy: { order: "asc" } },
+    },
   });
-  const allTasks = plans.flatMap((p) => p.tasks);
+  const allTasks = plans.flatMap((p) => p.tasks.map((t) => ({ ...t, dateKey: p.date })));
   const doneTasks = allTasks.filter((t) => t.isDone).length;
-  const taskItems = allTasks.map(({ id, title, isDone }) => ({ id, title, isDone }));
+  const taskItems = allTasks.map(({ id, title, isDone, dateKey }) => ({ id, title, isDone, dateKey }));
 
   return NextResponse.json({
     weekStart: weekDates[0],

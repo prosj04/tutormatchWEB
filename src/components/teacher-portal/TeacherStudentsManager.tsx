@@ -52,6 +52,7 @@ export function TeacherStudentsManager({
   const [upcomingLoading, setUpcomingLoading] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<UpcomingLesson | null>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [cancelMakeupAt, setCancelMakeupAt] = useState("");
   const [cancelling, setCancelling] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
 
@@ -93,11 +94,26 @@ export function TeacherStudentsManager({
     }
   }, []);
 
-  const handleCancelLesson = useCallback(async (lessonId: string) => {
+  const handleCancelLesson = useCallback(
+    async (lessonId: string, reason: string, makeupLocal: string) => {
     setCancelling(true);
     setCancelMessage(null);
     try {
-      const res = await fetch(`/api/teacher/lessons/${lessonId}/cancel`, { method: "PATCH" });
+      const trimmed = reason.trim();
+      // datetime-local(로컬 시각) → ISO. 유효/미래 판정은 서버가 재검증.
+      let makeupAtIso: string | null = null;
+      if (makeupLocal) {
+        const parsed = new Date(makeupLocal);
+        if (!Number.isNaN(parsed.getTime())) makeupAtIso = parsed.toISOString();
+      }
+      const res = await fetch(`/api/teacher/lessons/${lessonId}/cancel`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(trimmed ? { reason: trimmed } : {}),
+          ...(makeupAtIso ? { makeupAt: makeupAtIso } : {}),
+        }),
+      });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         setCancelMessage(data.error ?? "취소에 실패했습니다.");
@@ -109,7 +125,9 @@ export function TeacherStudentsManager({
       };
       setCancelMessage(
         data.makeupCreated
-          ? "수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다."
+          ? makeupAtIso
+            ? "수업이 취소되었습니다. 제안하신 시간에 보강 수업이 생성되었습니다."
+            : "수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다."
           : `수업이 취소되었습니다. ${
               data.makeupSkippedReason ?? "보충 수업은 자동 생성되지 않았습니다."
             }`,
@@ -119,8 +137,11 @@ export function TeacherStudentsManager({
       setCancelling(false);
       setCancelTarget(null);
       setCancelReason("");
+      setCancelMakeupAt("");
     }
-  }, []);
+  },
+  [],
+  );
 
   const selected = students.find((s) => s.id === selectedId);
 
@@ -169,7 +190,7 @@ export function TeacherStudentsManager({
             : student,
         ),
       );
-      setLessonMessage("첫 수업 일정이 저장되었습니다.");
+      setLessonMessage("첫 수업 일정이 저장되었습니다. 숙제는 학생 탭에서 분배할 수 있어요.");
       void fetchUpcomingLessons(selected.id);
     } finally {
       setSavingLesson(false);
@@ -364,13 +385,22 @@ export function TeacherStudentsManager({
                 })()}
                 . 취소 시 학생·학부모에게 알림이 발송되며, 보강 수업이 자동 생성됩니다.
               </p>
-              <div className="field" style={{ marginTop: "14px", marginBottom: 0 }}>
+              <div className="field" style={{ marginTop: "14px" }}>
                 <label>취소 사유</label>
                 <input
                   className="inp"
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   placeholder="예: 개인 사정"
+                />
+              </div>
+              <div className="field" style={{ marginBottom: 0 }}>
+                <label>보강 제안 시간 (선택)</label>
+                <input
+                  className="inp"
+                  type="datetime-local"
+                  value={cancelMakeupAt}
+                  onChange={(e) => setCancelMakeupAt(e.target.value)}
                 />
               </div>
             </div>
@@ -387,7 +417,13 @@ export function TeacherStudentsManager({
                 type="button"
                 className="btn danger solid"
                 disabled={cancelling}
-                onClick={() => void handleCancelLesson(cancelTarget.id)}
+                onClick={() =>
+                  void handleCancelLesson(
+                    cancelTarget.id,
+                    cancelReason,
+                    cancelMakeupAt,
+                  )
+                }
               >
                 {cancelling ? "취소 중…" : "취소 + 보강 제안"}
               </button>

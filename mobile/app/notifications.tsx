@@ -1,6 +1,8 @@
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -24,6 +26,7 @@ import { accTint } from "../theme/tokens";
 
 interface NotificationItem {
   id: string;
+  type: string;
   category: string;
   title: string;
   body: string;
@@ -31,6 +34,29 @@ interface NotificationItem {
   icon: string;
   accent: boolean;
   isRead: boolean;
+}
+
+type NotifRoute = "/(tabs)/qna" | "/(tabs)/learning" | "/(tabs)";
+
+// 알림 type → 대상 화면 매핑. 매핑 불가한 type은 null(탭 없음).
+function routeForType(type: string): NotifRoute | null {
+  switch (type) {
+    case "NEW_QUESTION":
+    case "TEACHER_ANSWERED":
+    case "QUESTION_UNANSWERED":
+      return "/(tabs)/qna";
+    case "TEACHER_COMMENT":
+    case "PROGRESS_WARNING":
+    case "PROGRESS_DANGER":
+      return "/(tabs)/learning";
+    case "NEW_BOOKING":
+    case "BOOKING_CONFIRMED":
+    case "TEACHER_ASSIGNED":
+    case "VISIT_TIMES_UPDATED":
+      return "/(tabs)";
+    default:
+      return null;
+  }
 }
 
 interface NotificationsData {
@@ -51,6 +77,7 @@ function NRow({
   body,
   time,
   divider,
+  onPress,
 }: {
   accent: boolean;
   unread?: boolean;
@@ -59,15 +86,19 @@ function NRow({
   body: string;
   time: string;
   divider?: boolean;
+  onPress?: () => void;
 }) {
   const { t } = useTheme();
   return (
-    <View
-      style={[
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [
         notifS.row,
         divider && { borderTopWidth: 1, borderTopColor: t.line },
         // 시안: 미읽음 행 배경 accent 5%
         unread && { backgroundColor: accTint(t, 0.05) },
+        pressed && onPress && { backgroundColor: accTint(t, 0.1) },
       ]}
     >
       <View style={[notifS.ic, { backgroundColor: accent ? accTint(t, 0.12) : t.panel2 }]}>
@@ -79,12 +110,13 @@ function NRow({
         <Text style={[notifS.tm, { color: t.mut2 }]}>{time}</Text>
       </View>
       {unread && <View style={[notifS.ud, { backgroundColor: t.acc }]} />}
-    </View>
+    </Pressable>
   );
 }
 
 export default function NotificationsScreen() {
   const { t } = useTheme();
+  const router = useRouter();
   const [data, setData] = useState<NotificationsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -157,18 +189,22 @@ export default function NotificationsScreen() {
             {sections.map((section) => (
               <View key={section.cat}>
                 <NCategory label={section.cat} />
-                {section.items.map((item, i) => (
-                  <NRow
-                    key={item.id}
-                    accent={item.accent}
-                    unread={!item.isRead}
-                    icon={item.icon}
-                    title={item.title}
-                    body={item.body}
-                    time={item.timeAgo}
-                    divider={i > 0}
-                  />
-                ))}
+                {section.items.map((item, i) => {
+                  const target = routeForType(item.type);
+                  return (
+                    <NRow
+                      key={item.id}
+                      accent={item.accent}
+                      unread={!item.isRead}
+                      icon={item.icon}
+                      title={item.title}
+                      body={item.body}
+                      time={item.timeAgo}
+                      divider={i > 0}
+                      onPress={target ? () => router.push(target) : undefined}
+                    />
+                  );
+                })}
               </View>
             ))}
           </View>

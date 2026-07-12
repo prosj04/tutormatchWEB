@@ -43,6 +43,7 @@ export function ManagerMatchingPage({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [matchReason, setMatchReason] = useState<string>("");
+  const [showAllTeachers, setShowAllTeachers] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,7 +73,7 @@ export function ManagerMatchingPage({
     [selected],
   );
 
-  const filteredTeachers = useMemo(() => {
+  const subjectMatchedTeachers = useMemo(() => {
     if (!selected || studentSubjectList.length === 0) return teachers;
     return teachers.filter((t) => {
       const ts = parseSubjects(t.subjects);
@@ -81,6 +82,8 @@ export function ManagerMatchingPage({
       );
     });
   }, [teachers, selected, studentSubjectList]);
+
+  const filteredTeachers = showAllTeachers ? teachers : subjectMatchedTeachers;
 
   useEffect(() => {
     if (!selected) {
@@ -91,6 +94,7 @@ export function ManagerMatchingPage({
     setMatchSubjects(studentSubjectList);
     setTeacherId(null);
     setMatchReason("");
+    setShowAllTeachers(false);
   }, [selected, studentSubjectList]);
 
   function toggleSubject(s: string) {
@@ -196,23 +200,51 @@ export function ManagerMatchingPage({
                 {selected.name} → 선생님 선택
               </h2>
               {filteredTeachers.length === 0 ? (
-                <p style={{ fontSize: "13px", color: "var(--mut)", marginBottom: "14px" }}>
-                  조건에 맞는 선생님이 없습니다.
-                </p>
-              ) : (
-                <div className="opts" style={{ marginBottom: "14px" }}>
-                  {filteredTeachers.map((t) => (
+                <div style={{ marginBottom: "14px" }}>
+                  <p style={{ fontSize: "13px", color: "var(--mut)" }}>
+                    {showAllTeachers
+                      ? "등록된 선생님이 없습니다."
+                      : "학생 과목과 일치하는 선생님이 없습니다."}
+                  </p>
+                  {!showAllTeachers && teachers.length > 0 ? (
                     <button
-                      key={t.id}
                       type="button"
-                      className="opt"
-                      aria-pressed={teacherId === t.id}
-                      onClick={() => setTeacherId(t.id)}
+                      className="btn sec sm"
+                      style={{ marginTop: "8px" }}
+                      onClick={() => setShowAllTeachers(true)}
                     >
-                      {t.name} · {t.subjects} · 담당 {t.activeStudentCount}명
+                      과목 필터 해제 · 전체 선생님 보기 ({teachers.length}명)
                     </button>
-                  ))}
+                  ) : null}
                 </div>
+              ) : (
+                <>
+                  {showAllTeachers ? (
+                    <p style={{ fontSize: "12px", color: "var(--mut)", marginBottom: "8px" }}>
+                      과목 필터 해제됨 — 전체 선생님 표시 중{" "}
+                      <button
+                        type="button"
+                        className="btn ghost sm"
+                        onClick={() => setShowAllTeachers(false)}
+                      >
+                        과목 맞춤만 보기
+                      </button>
+                    </p>
+                  ) : null}
+                  <div className="opts" style={{ marginBottom: "14px" }}>
+                    {filteredTeachers.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className="opt"
+                        aria-pressed={teacherId === t.id}
+                        onClick={() => setTeacherId(t.id)}
+                      >
+                        {t.name} · {t.subjects} · 담당 {t.activeStudentCount}명
+                      </button>
+                    ))}
+                  </div>
+                </>
               )}
 
               <div className="field">
@@ -239,7 +271,13 @@ export function ManagerMatchingPage({
               </div>
 
               <div className="field">
-                <label>매칭 사유 (matchReason)</label>
+                <label>
+                  매칭 사유{" "}
+                  <span style={{ color: "var(--mut-2)", fontWeight: 400 }}>
+                    · 학생·학부모에게 그대로 전달돼요
+                  </span>{" "}
+                  <span className="bst acc">학생 공개</span>
+                </label>
                 <textarea
                   className="inp area filled"
                   value={matchReason}

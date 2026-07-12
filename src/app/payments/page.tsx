@@ -39,6 +39,25 @@ function formatShortDate(date: Date | null) {
   return date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
 }
 
+/**
+ * 다음 결제일 계산. PAUSED 구독은 정지 경과분만큼 periodEnd를 앞으로 투영해
+ * 과거로 남은 날짜가 노출되는 오해를 방지한다(정지 사실은 노출하지 않음).
+ */
+function nextPaymentDate(sub: {
+  status: string;
+  periodEnd: Date | null;
+  pausedAt: Date | null;
+}): Date | null {
+  if (!sub.periodEnd) return null;
+  if (sub.status === "PAUSED" && sub.pausedAt) {
+    const elapsedPaused = Date.now() - sub.pausedAt.getTime();
+    if (elapsedPaused > 0) {
+      return new Date(sub.periodEnd.getTime() + elapsedPaused);
+    }
+  }
+  return sub.periodEnd;
+}
+
 export default async function PaymentsPage({
   searchParams,
 }: {
@@ -106,10 +125,15 @@ export default async function PaymentsPage({
               label: currentSubscription.status,
               cls: "bst mut",
             };
+            // PAUSED 동안 청구가 이연되므로 periodEnd가 과거로 남는다. 정지 사실을
+            // 노출하지 않으면서(정책) 오해를 없애기 위해, 정지 경과분만큼 다음 결제일을
+            // 앞으로 투영해 항상 미래 날짜를 보여준다(RESUME 시 실제 연장과 동일 계산).
+            const projectedNextPayment = nextPaymentDate(currentSubscription);
             const priceMeta = info.price ? `${formatKRW(info.price)}/월 · ` : "";
-            const dateMeta = currentSubscription.periodEnd
-              ? `다음 결제 ${formatDate(currentSubscription.periodEnd)}`
+            const dateMeta = projectedNextPayment
+              ? `다음 결제 ${formatDate(projectedNextPayment)}${info.price ? ` · ${formatKRW(info.price)}` : ""}`
               : `시작 ${formatDate(currentSubscription.periodStart)}`;
+            const isPastDue = currentSubscription.status === "PAST_DUE";
             return (
               <div className="row">
                 <div className="g">
@@ -123,11 +147,22 @@ export default async function PaymentsPage({
                       AI 질답 토큰 {wallet.quota - wallet.used} / {wallet.quota} 잔여 ({wallet.month})
                     </p>
                   ) : null}
+                  {isPastDue ? (
+                    <p style={{ color: "var(--warn, #b45309)", fontWeight: 600 }}>
+                      카드 승인에 실패했습니다. 카드를 확인하고 재결제해 주세요.
+                    </p>
+                  ) : null}
                 </div>
                 <span className={badge.cls}>{badge.label}</span>
-                <Link className="btn ghost sm" href="/checkout">
-                  플랜 변경
-                </Link>
+                {isPastDue ? (
+                  <a className="btn sec sm" href="#pg-payments-billing">
+                    카드 확인·재결제
+                  </a>
+                ) : (
+                  <Link className="btn ghost sm" href="/checkout">
+                    플랜 변경
+                  </Link>
+                )}
               </div>
             );
           })()
@@ -145,7 +180,7 @@ export default async function PaymentsPage({
       </div>
 
       {/* 자동결제 관리 (Toss 위젯 — 기존 로직 유지) */}
-      <div className="sec" data-portal-content>
+      <div className="sec" data-portal-content id="pg-payments-billing">
         <BillingManageSection
           customerKey={`student-${student.id}`}
           profile={billingProfile}

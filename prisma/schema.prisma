@@ -274,6 +274,7 @@ model ConsultationBooking {
   status              ConsultationStatus @default(WAITING)
   note                String?
   managerNote         String?
+  nextStep            String? // 완료 시 다음 단계: MATCHING | HOLD | CLOSED
   assignedAt          DateTime?
   followUpSentAt      DateTime?
   createdAt           DateTime  @default(now())
@@ -427,6 +428,7 @@ model Lesson {
   joinUrl     String?
   status      LessonStatus @default(SCHEDULED)
   cancelledBy String? // "TEACHER" | "STUDENT" | "MANAGER" (only set when status is CANCELLED)
+  cancelReason String? // 취소 사유(선생님 입력, 선택)
   createdAt   DateTime @default(now())
 
   @@index([studentId])
@@ -555,6 +557,11 @@ model MonthlyReport {
   summary   String
   weakTypes String   @default("[]") // JSON string array
   detail    String?
+  overallScore   Int?    // 이번 달 종합 점수(완료율 기반 0~100)
+  prevScore      Int?    // 전월 overallScore(없으면 null)
+  subjectScores  String? // JSON [{subject, prev, curr}] 과목별 완료율
+  teacherComment String? // 그 달 최신 선생님 플랜 코멘트 원문
+  managerComment String? // 그 달 최신 매니저 CareLog note(학부모 공개분)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 

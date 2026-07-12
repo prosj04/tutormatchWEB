@@ -110,6 +110,7 @@ export default function ConsultScreen() {
   const [memo, setMemo] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showStatusLink, setShowStatusLink] = useState(false);
 
   function toggleSubject(s: string) {
     setSubjects((prev) =>
@@ -122,6 +123,7 @@ export default function ConsultScreen() {
   async function handleSubmit() {
     if (!canSubmit) return;
     setError("");
+    setShowStatusLink(false);
     setLoading(true);
     const payload = {
       grade,
@@ -148,6 +150,7 @@ export default function ConsultScreen() {
       const msg = e instanceof Error ? e.message : "";
       if (msg.includes("409") || msg.includes("이미")) {
         setError("이미 진행 중인 상담 신청이 있어요. 상태 화면에서 확인해 주세요.");
+        setShowStatusLink(true);
       } else {
         setError("상담 신청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       }
@@ -232,6 +235,16 @@ export default function ConsultScreen() {
           {error ? (
             <Text style={[styles.errorText, { color: t.accText }]}>{error}</Text>
           ) : null}
+          {showStatusLink ? (
+            <Pressable
+              style={styles.statusLink}
+              onPress={() => router.replace("/consult/status")}
+            >
+              <Text style={[styles.statusLinkText, { color: t.accText }]}>
+                상태 보기
+              </Text>
+            </Pressable>
+          ) : null}
           {/* .sub text-align:center font-size:12 margin-bottom:10 */}
           <Text style={[ctaBarS.sub, { color: t.mut }]}>
             상담은{" "}
@@ -294,4 +307,6 @@ const styles = StyleSheet.create({
   },
   ctaBtnText: { fontFamily: font.extrabold, fontSize: 16, textAlign: "center" },
   errorText: { fontSize: 12.5, textAlign: "center", marginBottom: 8, fontFamily: font.semibold },
+  statusLink: { alignSelf: "center", paddingVertical: 6, paddingHorizontal: 12, marginBottom: 6 },
+  statusLinkText: { fontSize: 13, fontFamily: font.bold, textDecorationLine: "underline" },
 });

@@ -51,7 +51,10 @@ export async function POST(request: Request) {
     const msg = e instanceof Error ? e.message : "";
     if (msg === "ALREADY_ACTIVE") {
       return NextResponse.json(
-        { error: "이미 진행 중인 상담 신청이 있습니다." },
+        {
+          error:
+            "회원가입 시 상담이 자동으로 접수되었습니다. 아래 상담 현황에서 확인해 주세요.",
+        },
         { status: 409 },
       );
     }

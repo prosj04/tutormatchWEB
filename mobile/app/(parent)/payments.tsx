@@ -205,7 +205,11 @@ export default function PaymentsTab() {
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.panel }]}>
           <Pressable
             style={[ctaBarS.btn, styles.ctaShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}
-            onPress={() => router.push("/subscribe" as never)}
+            onPress={() =>
+              router.push(
+                `/subscribe?studentId=${encodeURIComponent(selectedChild.id)}&childName=${encodeURIComponent(selectedChild.name)}` as never,
+              )
+            }
           >
             <Text style={[styles.ctaText, { color: t.onAcc }]}>
               {`${selectedChild.name} 플랜 결제하기`}

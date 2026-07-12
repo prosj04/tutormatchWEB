@@ -38,6 +38,9 @@ export function ManagerConsultationsPage({
   const [completeTarget, setCompleteTarget] =
     useState<ConsultationBooking | null>(null);
   const [managerNote, setManagerNote] = useState("");
+  const [nextStep, setNextStep] = useState<"MATCHING" | "HOLD" | "CLOSED">(
+    "MATCHING",
+  );
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // visitConfirmedAt state per booking (keyed by booking id)
@@ -155,12 +158,14 @@ export function ManagerConsultationsPage({
           body: JSON.stringify({
             status: "COMPLETED",
             managerNote,
+            nextStep,
           }),
         },
       );
       if (res.ok) {
         setCompleteTarget(null);
         setManagerNote("");
+        setNextStep("MATCHING");
         showToast("상담 완료 처리되었습니다.");
         await refreshAll();
       }
@@ -421,13 +426,37 @@ export function ManagerConsultationsPage({
                 {completeTarget.student.subjects ? ` · ${completeTarget.student.subjects}` : ""}
               </p>
               <div className="field" style={{ marginTop: "14px" }}>
-                <label>상담 노트 (필수)</label>
+                <label>
+                  상담 노트 (필수) <span className="bst mut">내부용</span>
+                </label>
                 <textarea
                   className="inp area filled"
                   value={managerNote}
                   onChange={(e) => setManagerNote(e.target.value)}
                   placeholder="상담 메모 (내부용, 매칭 시 참고)"
                 />
+              </div>
+              <div className="field">
+                <label>다음 단계</label>
+                <div className="opts">
+                  {(
+                    [
+                      ["MATCHING", "매칭 진행"],
+                      ["HOLD", "보류"],
+                      ["CLOSED", "종결"],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className="opt"
+                      aria-pressed={nextStep === value}
+                      onClick={() => setNextStep(value)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="m-f">
@@ -512,7 +541,9 @@ export function ManagerConsultationsPage({
                     />
                   </div>
                   <div className="field" style={{ marginBottom: 0 }}>
-                    <label>종합 의견 (내부용)</label>
+                    <label>
+                      종합 의견 <span className="bst mut">내부용</span>
+                    </label>
                     <textarea
                       className="inp area filled"
                       value={reportNote}
@@ -719,11 +750,15 @@ function MineRow({
               type="button"
               className="btn sec sm"
               disabled={loading || !hasMatch}
-              title={hasMatch ? undefined : "선생님 배정 후 완료 처리할 수 있습니다"}
               onClick={onComplete}
             >
               완료 처리
             </button>{" "}
+            {!hasMatch ? (
+              <span className="muted" style={{ fontSize: "11.5px" }}>
+                선생님 배정 후 완료할 수 있어요
+              </span>
+            ) : null}{" "}
             <button
               type="button"
               className="btn ghost sm"
