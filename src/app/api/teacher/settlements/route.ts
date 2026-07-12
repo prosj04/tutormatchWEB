@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { TEACHER_HOURLY_RATE_KRW } from "@/lib/settlement";
+import { isRefundedLesson, type RefundedPeriod } from "@/lib/settlement-refund";
 import { requireTeacher } from "@/lib/teacher-auth";
 
 /**
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
     .map((p) => p.subscriptionId)
     .filter((id): id is string => id !== null);
 
-  const refundedPeriods: { studentId: string; start: Date; end: Date | null }[] = [];
+  const refundedPeriods: RefundedPeriod[] = [];
   if (refundedSubscriptionIds.length > 0) {
     const subs = await prisma.subscription.findMany({
       where: { id: { in: refundedSubscriptionIds } },
@@ -85,12 +86,7 @@ export async function GET(request: Request) {
   }
 
   const isRefunded = (studentId: string, startAt: Date): boolean =>
-    refundedPeriods.some(
-      (p) =>
-        p.studentId === studentId &&
-        startAt >= p.start &&
-        (p.end === null || startAt < p.end),
-    );
+    isRefundedLesson(refundedPeriods, studentId, startAt);
 
   const payableLessons = lessons.filter((l) => !isRefunded(l.studentId, l.startAt));
 

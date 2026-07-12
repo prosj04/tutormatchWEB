@@ -1,4 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { isRefundedLesson, type RefundedPeriod } from "@/lib/settlement-refund";
+
+export { isRefundedLesson, type RefundedPeriod };
 
 /**
  * Teacher hourly rate in KRW.
@@ -93,7 +96,7 @@ export async function computeMonthlySettlement(
     .map((p) => p.subscriptionId)
     .filter((id): id is string => id !== null);
 
-  const refundedPeriods: { studentId: string; start: Date; end: Date | null }[] = [];
+  const refundedPeriods: RefundedPeriod[] = [];
   if (refundedSubscriptionIds.length > 0) {
     const subs = await prisma.subscription.findMany({
       where: { id: { in: refundedSubscriptionIds } },
@@ -105,12 +108,7 @@ export async function computeMonthlySettlement(
   }
 
   const isRefunded = (studentId: string, startAt: Date): boolean =>
-    refundedPeriods.some(
-      (p) =>
-        p.studentId === studentId &&
-        startAt >= p.start &&
-        (p.end === null || startAt < p.end),
-    );
+    isRefundedLesson(refundedPeriods, studentId, startAt);
 
   // Group by teacherId
   const grouped: Record<string, { totalMinutes: number; lessonCount: number; needsReview: number }> = {};

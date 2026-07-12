@@ -64,6 +64,7 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
     if (!grade) return setError("학년을 선택해 주세요.");
     if (!region) return setError("지역을 선택해 주세요.");
     if (subjects.length === 0) return setError("과목을 1개 이상 선택해 주세요.");
+    if (!preferredTime) return setError("희망 상담 시간을 선택해 주세요.");
     if (!phoneValid) return setError("올바른 휴대폰 번호를 입력해 주세요.");
     if (!privacyAgreed)
       return setError("개인정보 수집·이용(필수)에 동의해 주세요.");
@@ -80,7 +81,7 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
           region,
           subjects,
           phone,
-          preferredTime: preferredTime || null,
+          preferredTime,
           privacyAgreed,
           marketingOptIn,
           source: source || "consult_page",

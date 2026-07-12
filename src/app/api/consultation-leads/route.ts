@@ -9,6 +9,7 @@ import {
   LEAD_GRADES,
   LEAD_STATUSES,
   LEAD_SUBJECTS,
+  LEAD_TIME_SLOTS,
 } from "@/lib/consultation-lead";
 
 /* Simple in-memory rate limit: 5 submissions / 10 min / IP */
@@ -34,6 +35,42 @@ function normalizePhone(raw: string): string | null {
   const digits = raw.replace(/[^0-9]/g, "");
   if (!/^01[016789][0-9]{7,8}$/.test(digits)) return null;
   return digits;
+}
+
+/**
+ * C-23: 새 상담 리드 즉시알림. env 미설정 시 무동작, 실패해도 throw하지 않음
+ * (접수 성공을 알림 발신 실패로 되돌리지 않는다).
+ */
+async function sendConsultAlert(lead: {
+  name: string | null;
+  grade: string;
+  region: string;
+  subjects: string[];
+  preferredTime: string;
+  phone: string;
+  source: string;
+}): Promise<void> {
+  const url = process.env.CONSULT_ALERT_WEBHOOK_URL;
+  if (!url) return;
+  const text = [
+    "새 상담 신청",
+    `이름: ${lead.name ?? "-"}`,
+    `학년: ${lead.grade} / 지역: ${lead.region}`,
+    `과목: ${lead.subjects.join(", ")}`,
+    `희망시간: ${lead.preferredTime}`,
+    `연락처: ${lead.phone}`,
+    `유입: ${lead.source}`,
+  ].join("\n");
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+      signal: AbortSignal.timeout(4000),
+    });
+  } catch {
+    // ponytail: best-effort 알림 — 실패 무시. 신뢰성 필요 시 큐/재시도로 승급.
+  }
 }
 
 export async function POST(request: Request) {
@@ -82,10 +119,15 @@ export async function POST(request: Request) {
     );
   }
 
+  // C-13: 희망 상담 시간을 필수화(정해진 슬롯만 허용) — 첫 터치 품질 확보.
   const preferredTime =
-    typeof body.preferredTime === "string" && body.preferredTime.trim()
-      ? body.preferredTime.trim().slice(0, 50)
-      : null;
+    typeof body.preferredTime === "string" ? body.preferredTime.trim() : "";
+  if (!(LEAD_TIME_SLOTS as readonly string[]).includes(preferredTime)) {
+    return NextResponse.json(
+      { error: "희망 상담 시간을 선택해 주세요." },
+      { status: 400 },
+    );
+  }
   const name =
     typeof body.name === "string" && body.name.trim()
       ? body.name.trim().slice(0, 50)
@@ -108,8 +150,15 @@ export async function POST(request: Request) {
     );
   }
 
+  // C-13: 지역 필수화 — 서비스 권역 판단·첫 터치 품질.
   const region =
-    typeof body.region === "string" ? body.region.trim().slice(0, 40) || null : null;
+    typeof body.region === "string" ? body.region.trim().slice(0, 40) : "";
+  if (!region) {
+    return NextResponse.json(
+      { error: "지역을 선택해 주세요." },
+      { status: 400 },
+    );
+  }
 
   const lead = await prisma.consultationLead.create({
     data: {
@@ -129,6 +178,18 @@ export async function POST(request: Request) {
     name: ANALYTICS_EVENTS.consultationSubmitted,
     platform: "web",
     payload: { leadId: lead.id, source: source ?? "consult_page", public: true },
+  });
+
+  // C-23: 상담 신청 즉시알림(누락 방지). CONSULT_ALERT_WEBHOOK_URL 설정 시에만 발신.
+  // 텔레그램/카카오워크/슬랙 등 `{ text }` 페이로드를 받는 웹훅 호환. 실패해도 접수는 성공.
+  await sendConsultAlert({
+    name,
+    grade,
+    region,
+    subjects,
+    preferredTime,
+    phone,
+    source: source ?? "consult_page",
   });
 
   return NextResponse.json({ lead: { id: lead.id } }, { status: 201 });
