@@ -128,19 +128,6 @@ export function QuestionSection({
     }
   }
 
-  async function handleMarkResolved(id: string) {
-    const res = await fetch(`/api/questions/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isResolved: true }),
-    });
-    if (!res.ok) return;
-    const data = (await res.json()) as { question: Question };
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === id ? data.question : q)),
-    );
-  }
-
   return (
     <section className="mt-10 border-t border-gray-200 pt-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -180,14 +167,13 @@ export function QuestionSection({
           </p>
         </div>
       ) : (
-        <ul className="mt-6 space-y-4">
+        <ul className="mt-6 space-y-8">
           {questions.map((q) => (
             <li key={q.id}>
               <QuestionCard
                 question={q}
                 aiAnswerEnabled={aiAnswerEnabled}
                 aiLoading={aiLoadingIds.has(q.id)}
-                onMarkResolved={handleMarkResolved}
               />
             </li>
           ))}

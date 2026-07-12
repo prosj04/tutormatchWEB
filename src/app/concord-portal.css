@@ -264,3 +264,49 @@ a:hover{ text-decoration:underline; }
 .kv{ padding:18px 20px; display:flex; flex-direction:column; gap:9px; }
 .kv div{ display:flex; justify-content:space-between; font-size:13px; }
 .kv span{ color:var(--mut); } .kv b{ font-variant-numeric:tabular-nums; }
+
+/* ============================================================
+   QnA chat timeline — 모바일 앱 qna.tsx와 동일한 채팅 멘탈모델
+   ============================================================ */
+.chat{ display:flex; flex-direction:column; height:calc(100vh - 210px); min-height:420px; }
+.chat-head{ display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line); }
+.chat-head .av{ width:40px; height:40px; border-radius:12px; flex:0 0 auto; background:rgba(var(--acc-rgb),.12);
+  display:grid; place-items:center; font-weight:800; color:var(--acc-text); font-size:15px; }
+.chat-head b{ font-size:14px; font-weight:700; display:block; }
+.chat-head p{ font-size:12px; color:var(--mut); margin-top:2px; }
+
+.chat-scroll{ flex:1; overflow-y:auto; padding:18px 20px 8px; display:flex; flex-direction:column; gap:2px; }
+
+/* 말풍선 래퍼: me=오른쪽, them/ai=왼쪽 */
+.bwrap{ display:flex; flex-direction:column; max-width:78%; margin-bottom:10px; }
+.bwrap.me{ align-self:flex-end; align-items:flex-end; }
+.bwrap.them{ align-self:flex-start; align-items:flex-start; }
+.bwrap .sndr{ font-size:11px; font-weight:700; color:var(--mut-2); margin:0 2px 4px; }
+.msg{ padding:10px 13px; border-radius:15px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+.msg.me{ background:var(--acc); color:var(--on-acc); border-bottom-right-radius:5px; }
+.msg.them{ background:var(--panel-2); color:var(--fg); border:1px solid var(--line); border-bottom-left-radius:5px; }
+.msg.ai{ background:rgba(var(--acc-rgb),.1); color:var(--fg); border:1px solid rgba(var(--acc-rgb),.2); border-bottom-left-radius:5px; }
+.msg .ai-tag{ display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--acc-text); margin-bottom:5px; }
+.msg .att{ display:block; margin-top:8px; border-radius:10px; overflow:hidden; border:1px solid var(--line-2); }
+.msg .att img{ display:block; max-width:200px; max-height:200px; object-fit:cover; cursor:zoom-in; }
+.bwrap .time{ font-size:11px; color:var(--mut-2); margin:0 2px; font-variant-numeric:tabular-nums; }
+
+/* composer (하단 고정) */
+.chat-note{ padding:10px 20px 0; }
+.chat-note p{ font-size:12px; color:var(--mut-2); line-height:1.5; }
+.composer{ display:flex; align-items:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--line); background:var(--panel); }
+.composer .attach{ width:40px; height:40px; flex:0 0 auto; border-radius:11px; border:1px solid var(--line-2);
+  background:var(--panel); color:var(--mut); display:grid; place-items:center; font-size:17px; }
+.composer .attach:hover{ color:var(--acc-text); border-color:var(--acc); }
+.composer textarea{ flex:1; resize:none; max-height:120px; padding:11px 14px; border-radius:12px; border:1px solid var(--line-2);
+  background:var(--bg); color:var(--fg); font-size:13.5px; font-family:inherit; line-height:1.5; }
+.composer textarea:focus{ outline:none; border-color:var(--acc); box-shadow:0 0 0 3px rgba(var(--acc-rgb),.15); }
+.composer textarea:disabled{ opacity:.6; }
+.composer .send{ width:40px; height:40px; flex:0 0 auto; border-radius:11px; border:0; background:var(--acc); color:var(--on-acc);
+  display:grid; place-items:center; font-size:17px; }
+.composer .send:disabled{ background:var(--line-2); color:var(--mut-2); }
+.composer .cpv{ position:relative; }
+.composer .cpv img{ width:44px; height:44px; border-radius:9px; object-fit:cover; border:1px solid var(--line-2); display:block; }
+.composer .cpv .rm{ position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; border:0;
+  background:var(--fg); color:var(--bg); font-size:11px; line-height:1; display:grid; place-items:center; }

@@ -71,6 +71,56 @@ function rootToLegacyQuestion(row: RootWithReplies): LegacyQuestion {
   };
 }
 
+/**
+ * 채팅 타임라인용 단일 메시지 셰이프. 웹 학생 QnA를 모바일 앱과 동일한
+ * 시간순 말풍선 모델로 재구성하기 위해 루트+답변을 평탄화한 것.
+ */
+export type QnaTimelineMessage = {
+  id: string;
+  /** me=학생, ai=AI 즉답, tutor=선생님 */
+  sender: "me" | "ai" | "tutor";
+  body: string;
+  imageUrl: string | null;
+  tokenCost: number;
+  date: string | null;
+  createdAt: string;
+};
+
+/**
+ * 학생의 전체 QnA를 시간순 평탄 메시지 배열로 반환한다.
+ * 루트(학생 질문)와 모든 답변(AI/선생님)을 하나의 타임라인으로 병합한다.
+ * 모바일 `/api/mobile/qna`의 messages 셰이프와 동일한 멘탈모델을 웹에도 제공.
+ */
+export async function listStudentTimeline(
+  studentId: string,
+  options: { take?: number } = {},
+): Promise<QnaTimelineMessage[]> {
+  const rows = await prisma.questionMessage.findMany({
+    where: { studentId },
+    orderBy: { createdAt: "asc" },
+    take: options.take,
+    select: {
+      id: true,
+      sender: true,
+      body: true,
+      imageUrl: true,
+      tokenCost: true,
+      date: true,
+      createdAt: true,
+    },
+  });
+
+  return rows.map((r) => ({
+    id: r.id,
+    sender: r.sender === "me" || r.sender === "ai" ? r.sender : "tutor",
+    body: r.body,
+    imageUrl: r.imageUrl,
+    tokenCost: r.tokenCost ?? 0,
+    date: r.date ?? null,
+    createdAt: r.createdAt.toISOString(),
+  }));
+}
+
 type ListStudentQuestionsOptions = {
   date?: string;
   isResolved?: boolean;

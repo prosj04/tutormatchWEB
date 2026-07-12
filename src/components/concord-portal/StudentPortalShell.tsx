@@ -55,6 +55,14 @@ const NAV: PortalNavItem[] = [
     ),
   },
   {
+    href: "/dashboard/reports",
+    label: "리포트",
+    prefix: true,
+    icon: (
+      <svg viewBox="0 0 24 24" {...stroke}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M9 13l2 2 4-4" /></svg>
+    ),
+  },
+  {
     href: "/dashboard/account",
     label: "계정",
     icon: (
