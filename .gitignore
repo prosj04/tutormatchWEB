@@ -54,3 +54,7 @@ concord_bizplan.rtf
 .cursor/
 .hermes/
 mobile/.hermes/
+
+# photo drop folder (116MB+ raw shoots — deployed copies live in public/)
+/photos/*
+!/photos/README.md
