@@ -11,6 +11,9 @@ type AuditLogRow = {
   targetId: string;
   detail: string | null;
   createdAt: string;
+  // G-8adm: 서버가 join한 표시명. 매핑 불가한 대상은 null → ID로 폴백.
+  actorName: string | null;
+  targetName: string | null;
 };
 
 type ApiResponse = {
@@ -129,12 +132,14 @@ export function AdminAuditLogsPage() {
                 <tr key={row.id}>
                   <td>{new Date(row.createdAt).toLocaleString("ko-KR")}</td>
                   <td title={row.actorUserId}>
-                    <b>{row.actorUserId.slice(0, 8)}…</b>
+                    <b>{row.actorName ?? `${row.actorUserId.slice(0, 8)}…`}</b>
                     <span className="mini">{row.actorRole}</span>
                   </td>
                   <td><span className="bst acc">{row.action}</span></td>
                   <td>{row.targetType}</td>
-                  <td title={row.targetId}>{row.targetId.slice(0, 8)}…</td>
+                  <td title={row.targetId}>
+                    {row.targetName ?? `${row.targetId.slice(0, 8)}…`}
+                  </td>
                   <td>{row.detail ?? "—"}</td>
                 </tr>
               ))
