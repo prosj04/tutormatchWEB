@@ -245,10 +245,10 @@ export function TeacherPortalApplyClient() {
                   신청이 완료되었습니다
                 </h2>
                 <p className="panel-note" style={{ marginTop: 12 }}>
-                  선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
+                  선생님 등록 심사 위하여 곧 개별 연락드리겠습니다. 승인 후 로그인하시면 포털을 이용하실 수 있습니다.
                 </p>
-                <Link href="/teacher-portal/dashboard" className="btn btn-acc" style={{ marginTop: 28 }}>
-                  선생님 포털로 이동
+                <Link href="/teacher-portal" className="btn btn-acc" style={{ marginTop: 28 }}>
+                  로그인하러 가기
                 </Link>
               </div>
             )}

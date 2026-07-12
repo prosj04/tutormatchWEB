@@ -65,6 +65,7 @@ export default function TeacherTabsLayout() {
       <Tabs.Screen name="student/[id]" options={{ href: null }} />
       <Tabs.Screen name="student/plan" options={{ href: null }} />
       <Tabs.Screen name="templates" options={{ href: null }} />
+      <Tabs.Screen name="settlements" options={{ href: null }} />
     </Tabs>
   );
 }

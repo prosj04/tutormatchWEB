@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
 
+import { requireMobileTeacher } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { TEACHER_HOURLY_RATE_KRW } from "@/lib/settlement";
-import { requireTeacher } from "@/lib/teacher-auth";
 
 /**
- * E9: 강사 본인 월별 정산 read-only 조회.
+ * E9-3: 모바일 강사 본인 월별 정산 read-only 조회.
  *
- * admin 정산(computeMonthlySettlement)은 전체 강사를 집계하므로 그대로 노출할 수
- * 없다. 여기서는 로그인한 강사 본인의 COMPLETED 수업만 조회하고, admin과 동일한
- * KST 월 경계·시급(TEACHER_HOURLY_RATE_KRW)·환불 제외 규칙을 따른다.
+ * 웹 /api/teacher/settlements(requireTeacher, 쿠키)와 동일 규칙을 Bearer 인증
+ * (requireMobileTeacher)으로 재현한다. KST 월 경계·시급·환불 제외·durationMin=0
+ * needsReview 규칙 모두 웹 라우트와 일치한다.
  *
  * Query: ?month=YYYY-MM (미지정 시 현재 KST 월)
  */
 export async function GET(request: Request) {
-  const authResult = await requireTeacher();
+  const authResult = await requireMobileTeacher(request);
   if ("error" in authResult) return authResult.error;
   const { teacher } = authResult;
 
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
     },
   });
 
-  // 환불 기간에 걸친 수업은 정산에서 제외 (admin 로직과 동일)
+  // 환불 기간에 걸친 수업은 정산에서 제외 (admin/웹 로직과 동일)
   const refundedPayments = await prisma.paymentCompletion.findMany({
     where: {
       status: "REFUNDED",
@@ -94,8 +94,7 @@ export async function GET(request: Request) {
 
   const payableLessons = lessons.filter((l) => !isRefunded(l.studentId, l.startAt));
 
-  // E9-1: durationMin=0 수업은 admin(computeMonthlySettlement)과 동일하게
-  // 합계(payout)에서 제외하고 needsReview로 표기한다. lessonCount에는 포함.
+  // E9-1: durationMin=0 수업은 합계에서 제외하고 needsReview로 표기.
   const items = payableLessons.map((l) => ({
     id: l.id,
     date: l.startAt.toISOString(),

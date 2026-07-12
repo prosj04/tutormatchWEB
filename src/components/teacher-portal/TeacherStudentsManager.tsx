@@ -31,6 +31,15 @@ function initial(name: string) {
   return name.slice(0, 1);
 }
 
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatMakeupDate(iso: string) {
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]}) ${String(
+    d.getHours(),
+  ).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 type TeacherStudentsManagerProps = {
   initialStudents?: StudentListItem[];
 };
@@ -40,6 +49,7 @@ export function TeacherStudentsManager({
 }: TeacherStudentsManagerProps) {
   const [students, setStudents] = useState<StudentListItem[]>(initialStudents);
   const [loading, setLoading] = useState(initialStudents.length === 0);
+  const [loadError, setLoadError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(
     initialStudents[0]?.id ?? null,
   );
@@ -58,9 +68,13 @@ export function TeacherStudentsManager({
 
   const fetchStudents = useCallback(async () => {
     setLoading(true);
+    setLoadError(false);
     try {
       const res = await fetch("/api/teacher/students");
-      if (!res.ok) return;
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = (await res.json()) as { students: StudentListItem[] };
       setStudents(data.students);
       setSelectedId((prev) => {
@@ -68,6 +82,8 @@ export function TeacherStudentsManager({
         if (prev && data.students.some((s) => s.id === prev)) return prev;
         return data.students[0].id;
       });
+    } catch {
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -121,13 +137,17 @@ export function TeacherStudentsManager({
       }
       const data = (await res.json()) as {
         makeupCreated?: boolean;
+        makeup?: { startAt: string } | null;
         makeupSkippedReason?: string | null;
       };
+      const makeupWhen = data.makeup?.startAt
+        ? formatMakeupDate(data.makeup.startAt)
+        : null;
       setCancelMessage(
         data.makeupCreated
-          ? makeupAtIso
-            ? "수업이 취소되었습니다. 제안하신 시간에 보강 수업이 생성되었습니다."
-            : "수업이 취소되었습니다. 보강 수업이 7일 뒤 자동 생성되었습니다."
+          ? makeupWhen
+            ? `수업이 취소되었습니다. 보강 수업이 ${makeupWhen}에 생성되었습니다.`
+            : "수업이 취소되었습니다. 보강 수업이 생성되었습니다."
           : `수업이 취소되었습니다. ${
               data.makeupSkippedReason ?? "보충 수업은 자동 생성되지 않았습니다."
             }`,
@@ -209,6 +229,20 @@ export function TeacherStudentsManager({
             <div className="g">
               <p>불러오는 중…</p>
             </div>
+          </div>
+        ) : loadError ? (
+          <div className="banner warn" style={{ margin: "12px 20px 16px" }} role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
+            <span>
+              담당 학생을 불러오지 못했습니다.{" "}
+              <button
+                type="button"
+                className="btn ghost sm"
+                onClick={() => void fetchStudents()}
+              >
+                다시 시도
+              </button>
+            </span>
           </div>
         ) : students.length === 0 ? (
           <div className="row">

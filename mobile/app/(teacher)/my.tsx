@@ -177,6 +177,13 @@ export default function TeacherMyScreen() {
                 sub="자주 쓰는 주간 루틴 저장·관리"
                 onPress={() => router.push("/(teacher)/templates" as never)}
               />
+              <MRow
+                icon={<FileTextIcon color={t.accText} size={18} />}
+                label="정산"
+                sub="월별 완료 수업·정산 합계 조회"
+                onPress={() => router.push("/(teacher)/settlements" as never)}
+                divider
+              />
             </View>
 
             <Text style={[sectTS, styles.sectT, { color: t.fg }]}>설정</Text>
@@ -277,7 +284,7 @@ function PasswordForm({ onDone }: { onDone: () => void }) {
           secureTextEntry
         />
       </View>
-      {err !== "" ? <Text style={styles.error}>{err}</Text> : null}
+      {err !== "" ? <Text style={[styles.error, { color: t.danger }]}>{err}</Text> : null}
       <Pressable
         style={[styles.pwSave, { backgroundColor: t.acc }, (saving || !current || !next) && styles.disabled]}
         onPress={() => void save()}
@@ -305,7 +312,7 @@ const styles = StyleSheet.create({
   chev: { fontSize: 20, fontFamily: font.bold },
   chevOpen: { transform: [{ rotate: "90deg" }] },
   pwForm: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 16, borderTopWidth: 1 },
-  error: { color: "#dc2626", fontSize: 12.5, marginBottom: 8, fontFamily: font.medium },
+  error: { fontSize: 12.5, marginBottom: 8, fontFamily: font.medium },
   pwSave: { width: "100%", paddingVertical: 13, borderRadius: 13, alignItems: "center", justifyContent: "center" },
   pwSaveText: { fontFamily: font.extrabold, fontSize: 14.5 },
   disabled: { opacity: 0.5 },

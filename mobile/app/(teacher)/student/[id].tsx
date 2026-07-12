@@ -134,8 +134,24 @@ export default function StudentDetailScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            await apiFetch(`/api/mobile/teacher/lessons/${lesson.id}/cancel`, { method: "PATCH" });
+            // E13-2: 취소 응답의 보강 생성 여부·날짜·미생성 사유를 파싱해 안내한다.
+            const res = await apiFetch<{
+              makeupCreated?: boolean;
+              makeup?: { startAt: string } | null;
+              makeupSkippedReason?: string | null;
+            }>(`/api/mobile/teacher/lessons/${lesson.id}/cancel`, { method: "PATCH" });
             await load();
+            if (res.makeupCreated && res.makeup?.startAt) {
+              Alert.alert(
+                "수업 취소 완료",
+                `보강 수업이 ${formatLessonDate(res.makeup.startAt)}에 생성됐어요.`,
+              );
+            } else {
+              Alert.alert(
+                "수업 취소 완료",
+                res.makeupSkippedReason ?? "보강 수업은 자동 생성되지 않았어요.",
+              );
+            }
           } catch (e) {
             Alert.alert("취소 실패", e instanceof Error ? e.message.replace(/^API \d+: /, "") : "다시 시도해 주세요.");
           }
