@@ -66,6 +66,7 @@ export default function TeacherQuestionsScreen() {
   const [rows, setRows] = useState<QuestionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [approvalPending, setApprovalPending] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
 
@@ -95,8 +96,13 @@ export default function TeacherQuestionsScreen() {
       const all = perStudent.flat();
       all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setRows(all);
-    } catch {
-      setError(true);
+    } catch (e) {
+      // 승인 대기 강사의 403은 오류가 아니라 잠금 안내로 표시
+      if (e instanceof Error && e.message.includes("403") && e.message.includes("승인")) {
+        setApprovalPending(true);
+      } else {
+        setError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -171,6 +177,11 @@ export default function TeacherQuestionsScreen() {
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
+        ) : approvalPending ? (
+          <EmptyState
+            title="승인 후 이용할 수 있어요"
+            description="관리자 승인이 완료되면 학생·질문 기능이 열립니다."
+          />
         ) : error ? (
           <ErrorState title="질문을 불러오지 못했어요" onRetry={() => void load()} />
         ) : list.length === 0 ? (

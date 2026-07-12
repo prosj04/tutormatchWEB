@@ -351,13 +351,14 @@ export async function getManagerMonitoringData(managerId: string): Promise<{
     teacherMatches.map((match) => [match.studentId, match.teacher.name]),
   );
 
-  // 학생당 활성/일시정지 구독 1건(최신 우선).
+  // 학생당 구독 1건 — ACTIVE 우선(일시정지 대상은 ACTIVE), 동순위면 최신.
   const subscriptionMap = new Map<
     string,
     { id: string; status: string; pausedUntil: string | null }
   >();
   for (const sub of subscriptions) {
-    if (subscriptionMap.has(sub.studentId)) continue;
+    const existing = subscriptionMap.get(sub.studentId);
+    if (existing && !(existing.status !== "ACTIVE" && sub.status === "ACTIVE")) continue;
     subscriptionMap.set(sub.studentId, {
       id: sub.id,
       status: sub.status,

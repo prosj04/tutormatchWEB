@@ -53,6 +53,7 @@ export default function TeacherStudentsScreen() {
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [pending, setPending] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,8 +61,13 @@ export default function TeacherStudentsScreen() {
     try {
       const d = await apiFetch<{ students: TeacherStudent[] }>("/api/mobile/teacher/students");
       setStudents(d.students);
-    } catch {
-      setError(true);
+    } catch (e) {
+      // 승인 대기 강사의 403은 오류가 아니라 잠금 안내로 표시
+      if (e instanceof Error && e.message.includes("403") && e.message.includes("승인")) {
+        setPending(true);
+      } else {
+        setError(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -84,6 +90,11 @@ export default function TeacherStudentsScreen() {
           <View style={styles.center}>
             <ActivityIndicator color={t.acc} />
           </View>
+        ) : pending ? (
+          <EmptyState
+            title="승인 후 이용할 수 있어요"
+            description="관리자 승인이 완료되면 학생·질문 기능이 열립니다."
+          />
         ) : error ? (
           <ErrorState title="학생 목록을 불러오지 못했어요" onRetry={() => void load()} />
         ) : students.length === 0 ? (

@@ -77,7 +77,8 @@ export default function PaymentsTab() {
     [pay, selectedId],
   );
   const sub = selectedChild?.subscription;
-  const active = sub?.status === "ACTIVE";
+  // PAUSED는 학부모에게 구독중과 동일 취급(매니저 전용 상태)
+  const active = sub?.status === "ACTIVE" || sub?.status === "PAUSED";
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]} edges={["top", "left", "right"]}>

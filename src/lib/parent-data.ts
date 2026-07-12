@@ -25,7 +25,8 @@ export async function listParentChildren(parentId: string) {
           grade: true,
           subjects: true,
           subscriptions: {
-            where: { status: "ACTIVE" },
+            // PAUSED 포함 — 학부모에겐 구독중과 동일 표기(2026-07-11 정책, 라벨에서 마스킹)
+            where: { status: { in: ["ACTIVE", "PAUSED"] } },
             orderBy: { createdAt: "desc" },
             take: 1,
             select: { plan: true, status: true, periodEnd: true },

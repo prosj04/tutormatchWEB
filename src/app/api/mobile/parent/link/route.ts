@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { logAnalyticsEvent } from "@/lib/analytics";
 import { requireMobileParent } from "@/lib/mobile-auth";
+import { prisma } from "@/lib/prisma";
 import { linkParentByCode } from "@/lib/parent-link";
 
 const LINK_ERROR_MESSAGE: Record<string, string> = {
@@ -47,5 +48,14 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ ok: true, studentId: result.studentId, alreadyLinked: result.alreadyLinked });
+  const child = await prisma.student.findUnique({
+    where: { id: result.studentId },
+    select: { name: true, grade: true },
+  });
+  return NextResponse.json({
+    ok: true,
+    studentId: result.studentId,
+    alreadyLinked: result.alreadyLinked,
+    child: child ? { name: child.name, grade: child.grade } : null,
+  });
 }

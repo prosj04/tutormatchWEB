@@ -8,8 +8,12 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request) {
   const authResult = await requireMobileParent(request);
   if ("error" in authResult) return authResult.error;
-  const { parent } = authResult;
-  return NextResponse.json({ name: parent.name, phone: parent.phone });
+  const { parent, userId } = authResult;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true },
+  });
+  return NextResponse.json({ name: parent.name, phone: parent.phone, email: user?.email ?? null });
 }
 
 /** PATCH /api/mobile/parent/profile — 이름·전화번호 수정(모바일) */

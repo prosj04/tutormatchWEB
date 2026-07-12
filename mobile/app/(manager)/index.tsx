@@ -252,13 +252,15 @@ export default function ConsultScreen() {
                     >
                       <Text style={[styles.actSecText, { color: t.fg }]}>리포트</Text>
                     </Pressable>
-                    <Pressable
-                      style={[styles.actWarn, { borderColor: t.line }]}
-                      onPress={() => handleCancel(b)}
-                      disabled={busyId === b.id}
-                    >
-                      <Text style={[styles.actWarnText, { color: t.mut }]}>취소</Text>
-                    </Pressable>
+                    {b.status !== "COMPLETED" ? (
+                      <Pressable
+                        style={[styles.actWarn, { borderColor: t.line }]}
+                        onPress={() => handleCancel(b)}
+                        disabled={busyId === b.id}
+                      >
+                        <Text style={[styles.actWarnText, { color: t.mut }]}>취소</Text>
+                      </Pressable>
+                    ) : null}
                   </>
                 )}
               </View>
