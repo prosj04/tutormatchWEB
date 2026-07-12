@@ -27,12 +27,15 @@ import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse, Report, ReportsResponse } from "./_shared";
 import { KidSwitch } from "./_KidSwitch";
+import { useSelectedChildId } from "./_selectedChild";
 
 export default function ReportsTab() {
   const { t } = useTheme();
   const router = useRouter();
   const [children, setChildren] = useState<Child[] | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { selectedId, setSelectedId } = useSelectedChildId(
+    (children ?? []).map((c) => c.id),
+  );
   const [reports, setReports] = useState<Report[] | null>(null);
   const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +48,6 @@ export default function ReportsTab() {
     try {
       const d = await apiFetch<ChildrenResponse>("/api/mobile/parent/children");
       setChildren(d.children ?? []);
-      setSelectedId((prev) => prev ?? d.children?.[0]?.id ?? null);
     } catch {
       setChildren(null);
       setError(true);

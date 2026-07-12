@@ -29,9 +29,17 @@ import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse, PaymentsResponse, PaymentChild } from "./_shared";
 import { KidSwitch } from "./_KidSwitch";
+import { useSelectedChildId } from "./_selectedChild";
 
 function won(n: number): string {
   return `${n.toLocaleString("ko-KR")}원`;
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`;
 }
 
 export default function PaymentsTab() {
@@ -39,7 +47,9 @@ export default function PaymentsTab() {
   const router = useRouter();
   const [children, setChildren] = useState<Child[] | null>(null);
   const [pay, setPay] = useState<PaymentChild[] | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { selectedId, setSelectedId } = useSelectedChildId(
+    (children ?? []).map((c) => c.id),
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -53,7 +63,6 @@ export default function PaymentsTab() {
       ]);
       setChildren(c.children ?? []);
       setPay(p.children ?? []);
-      setSelectedId((prev) => prev ?? c.children?.[0]?.id ?? null);
     } catch {
       setChildren(null);
       setError(true);
@@ -79,6 +88,8 @@ export default function PaymentsTab() {
   const sub = selectedChild?.subscription;
   // PAUSED는 학부모에게 구독중과 동일 취급(매니저 전용 상태)
   const active = sub?.status === "ACTIVE" || sub?.status === "PAUSED";
+  // PAST_DUE는 미납 — 재결제 개입을 위해 별도 노출(D10-1)
+  const pastDue = sub?.status === "PAST_DUE";
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]} edges={["top", "left", "right"]}>
@@ -109,13 +120,26 @@ export default function PaymentsTab() {
               labelMode="nameOnly"
             />
 
+            {/* 미납 안내 (.plan-pastdue) — 재결제 개입 유도 */}
+            {pastDue && sub ? (
+              <View style={[cardS, styles.pastDueCard, { backgroundColor: t.panel, borderColor: "#E53E3E", shadowColor: t.fg }]}>
+                <Text style={[styles.pastDueK, { color: "#E53E3E" }]}>
+                  {`${selectedChild?.name ?? ""} · 결제 확인 필요`}
+                </Text>
+                <Text style={[styles.pastDueNm, { color: t.fg }]}>{sub.planLabel}</Text>
+                <Text style={[styles.pastDueP, { color: t.mut }]}>
+                  카드 승인에 실패했어요. 카드를 확인하고 재결제해 주세요.
+                </Text>
+              </View>
+            ) : null}
+
             {/* 현재 플랜 (.plan-now) */}
             {active && sub ? (
               <View style={[planS.now, styles.planShadow, { backgroundColor: t.acc, shadowColor: t.acc }]}>
                 <Text style={[planS.nowK, { color: t.onAcc }]}>
                   {`${selectedChild?.name ?? ""} · 현재 플랜`}
                 </Text>
-                <Text style={[planS.nowNm, { color: t.onAcc }]}>{sub.plan}</Text>
+                <Text style={[planS.nowNm, { color: t.onAcc }]}>{sub.planLabel}</Text>
                 {(selectedChild?.subjects?.length ?? 0) > 0 ? (
                   <Text style={[styles.nowPr, { color: t.onAcc }]}>
                     {selectedChild!.subjects.join("·")}
@@ -123,10 +147,10 @@ export default function PaymentsTab() {
                 ) : null}
                 <View style={planS.nowNx}>
                   <Text style={[styles.nxSpan, { color: t.onAcc }]}>다음 결제일</Text>
-                  <Text style={[styles.nxB, { color: t.onAcc }]}>{sub.periodEnd ?? "-"}</Text>
+                  <Text style={[styles.nxB, { color: t.onAcc }]}>{formatDate(sub.nextPaymentDate)}</Text>
                 </View>
               </View>
-            ) : (
+            ) : pastDue ? null : (
               <View style={[cardS, styles.emptyPlan, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
                 <Text style={[styles.emptyPlanH, { color: t.fg }]}>진행 중인 플랜이 없어요</Text>
                 <Text style={[styles.emptyPlanP, { color: t.mut }]}>
@@ -144,7 +168,7 @@ export default function PaymentsTab() {
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.tokB, { color: t.fg }]}>자동 갱신</Text>
                   <Text style={[styles.tokP, { color: t.mut }]}>
-                    {sub?.periodEnd ? `${sub.periodEnd} 갱신 예정` : "매월 자동 결제"}
+                    {sub?.nextPaymentDate ? `${formatDate(sub.nextPaymentDate)} 갱신 예정` : "매월 자동 결제"}
                   </Text>
                 </View>
                 <View style={[styles.switchTrack, { backgroundColor: t.acc }]}>
@@ -200,7 +224,7 @@ export default function PaymentsTab() {
         )}
       </ScrollView>
 
-      {/* 미구독 자녀 결제 CTA */}
+      {/* 미구독·미납 자녀 결제 CTA (PAST_DUE는 재결제 유도, D10-1) */}
       {!loading && !error && selectedChild && !active ? (
         <View style={[ctaBarS.wrap, { borderTopColor: t.line, backgroundColor: t.panel }]}>
           <Pressable
@@ -212,7 +236,9 @@ export default function PaymentsTab() {
             }
           >
             <Text style={[styles.ctaText, { color: t.onAcc }]}>
-              {`${selectedChild.name} 플랜 결제하기`}
+              {pastDue
+                ? `${selectedChild.name} 카드 확인·재결제`
+                : `${selectedChild.name} 플랜 결제하기`}
             </Text>
           </Pressable>
         </View>
@@ -247,6 +273,16 @@ const styles = StyleSheet.create({
   emptyPlan: { padding: 20 },
   emptyPlanH: { fontSize: 17, fontFamily: font.extrabold, letterSpacing: -0.34 },
   emptyPlanP: { fontSize: 13, marginTop: 6, lineHeight: 20 },
+
+  pastDueCard: { padding: 20, borderWidth: 1 },
+  pastDueK: {
+    fontSize: 11,
+    fontFamily: font.extrabold,
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+  },
+  pastDueNm: { fontSize: 20, fontFamily: font.extrabold, letterSpacing: -0.4, marginTop: 6 },
+  pastDueP: { fontSize: 13, marginTop: 6, lineHeight: 20 },
 
   // .tok
   tok: {

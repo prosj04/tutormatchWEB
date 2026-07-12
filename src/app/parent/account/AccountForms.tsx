@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 
 function formatPhone(digits: string): string {
   const d = digits.replace(/\D/g, "");
@@ -47,6 +48,32 @@ export function AccountForms({
   const [newPassword, setNewPassword] = useState("");
   const [pwBusy, setPwBusy] = useState(false);
   const [pwMsg, setPwMsg] = useState<Banner>(null);
+
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState<Banner>(null);
+
+  async function deleteAccount() {
+    if (deleteBusy) return;
+    const ok = window.confirm(
+      "탈퇴하면 자녀 연결이 해제되고 개인정보가 익명화되며 되돌릴 수 없습니다. 결제 기록은 법령에 따라 보관됩니다. 계속하시겠습니까?",
+    );
+    if (!ok) return;
+    setDeleteBusy(true);
+    setDeleteMsg(null);
+    try {
+      const res = await fetch("/api/account/delete", { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setDeleteMsg({ text: data.error ?? "탈퇴에 실패했습니다.", error: true });
+        setDeleteBusy(false);
+        return;
+      }
+      await signOut({ redirectTo: "/" });
+    } catch {
+      setDeleteMsg({ text: "네트워크 오류가 발생했습니다.", error: true });
+      setDeleteBusy(false);
+    }
+  }
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -99,6 +126,7 @@ export function AccountForms({
   }
 
   return (
+    <>
     <div className="sec grid2">
       <div className="card" style={{ padding: "20px" }}>
         <form onSubmit={saveProfile}>
@@ -167,5 +195,26 @@ export function AccountForms({
         </form>
       </div>
     </div>
+
+    <div className="sec">
+      <div className="card" style={{ padding: "20px" }}>
+        <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>회원 탈퇴</h2>
+        <p style={{ fontSize: "13px", color: "var(--mut)", lineHeight: 1.6 }}>
+          탈퇴하면 자녀 연결이 해제되고 개인정보가 익명화됩니다. 되돌릴 수 없으며, 결제
+          기록은 관련 법령에 따라 보관됩니다.
+        </p>
+        <button
+          type="button"
+          className="btn ghost"
+          style={{ marginTop: "14px", color: "var(--warn, #b45309)" }}
+          onClick={deleteAccount}
+          disabled={deleteBusy}
+        >
+          {deleteBusy ? "탈퇴 처리 중…" : "회원 탈퇴"}
+        </button>
+        <BannerBox banner={deleteMsg} />
+      </div>
+    </div>
+    </>
   );
 }

@@ -5,8 +5,12 @@
 
 export interface Subscription {
   plan: string;
+  /** 서버 계산 라벨(예: "고등 · 주 2회 · 회당 2시간"). planId 원값 노출 금지(C2-5). */
+  planLabel: string;
   status: string;
   periodEnd: string | null;
+  /** 서버 계산 다음 결제일(ISO). PAUSED 투영 반영, pausedAt 원값 미노출(C2-4). */
+  nextPaymentDate: string | null;
 }
 
 export interface Child {

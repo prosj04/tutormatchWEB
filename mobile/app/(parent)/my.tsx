@@ -219,6 +219,33 @@ export default function ParentMy() {
             <Pressable style={styles.logoutWrap} onPress={logout}>
               <Text style={[styles.logoutText, { color: t.mut2 }]}>로그아웃</Text>
             </Pressable>
+
+            {/* 회원 탈퇴 (C2-10) */}
+            <Pressable
+              style={styles.deleteWrap}
+              onPress={() => {
+                Alert.alert(
+                  "회원 탈퇴",
+                  "탈퇴하면 자녀 연결이 해제되고 개인정보가 익명화되며 되돌릴 수 없습니다. 결제 기록은 법령에 따라 보관됩니다.",
+                  [
+                    { text: "취소", style: "cancel" },
+                    {
+                      text: "탈퇴",
+                      style: "destructive",
+                      onPress: () => {
+                        apiFetch<{ ok: boolean }>("/api/mobile/parent/profile", { method: "DELETE" })
+                          .then(() => logout())
+                          .catch(() =>
+                            Alert.alert("오류", "탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."),
+                          );
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text style={[styles.deleteText, { color: t.mut2 }]}>회원 탈퇴</Text>
+            </Pressable>
           </>
         )}
         <View style={{ height: 6 }} />
@@ -337,4 +364,6 @@ const styles = StyleSheet.create({
 
   logoutWrap: { paddingVertical: 18, paddingBottom: 4, alignItems: "center" },
   logoutText: { fontSize: 13, fontFamily: font.semibold },
+  deleteWrap: { paddingVertical: 10, paddingBottom: 8, alignItems: "center" },
+  deleteText: { fontSize: 12.5, fontFamily: font.semibold, textDecorationLine: "underline" },
 });

@@ -134,10 +134,10 @@ export default function Subscribe() {
     if (!selectedId) return;
     let url = `${API_BASE}/checkout?plan=${selectedId}`;
     if (studentId) url += `&studentId=${encodeURIComponent(studentId)}`;
-    const who = childName ? `${childName}(자녀 학생)` : "자녀(학생)";
+    const forWhom = childName ? `${childName} 자녀 플랜을 ` : "";
     Alert.alert(
       "웹에서 결제 진행",
-      `결제 페이지가 브라우저에서 열려요.\n브라우저에서 ${who} 계정으로 로그인한 뒤 결제해 주세요.`,
+      `결제 페이지가 브라우저에서 열려요.\n브라우저에서 학부모 계정으로 로그인하면 ${forWhom}자녀를 선택해 결제할 수 있어요.`,
       [
         { text: "취소", style: "cancel" },
         { text: "계속", onPress: () => void Linking.openURL(url) },

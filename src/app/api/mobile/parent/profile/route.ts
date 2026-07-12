@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { softDeleteUser } from "@/lib/account-deletion";
+import { recordAudit } from "@/lib/audit-log";
 import { requireMobileParent } from "@/lib/mobile-auth";
 import { normalizePhoneDigits } from "@/lib/phone-login";
 import { prisma } from "@/lib/prisma";
@@ -47,4 +49,29 @@ export async function PATCH(request: Request) {
 
   await prisma.parent.update({ where: { id: parent.id }, data });
   return NextResponse.json({ ok: true });
+}
+
+/**
+ * DELETE /api/mobile/parent/profile — 학부모 계정 탈퇴(모바일, 소프트삭제).
+ * 학생 앱 DELETE /api/mobile/me와 동일 패턴. softDeleteUser가 자녀 연결 해제 포함.
+ */
+export async function DELETE(request: Request) {
+  const authResult = await requireMobileParent(request);
+  if ("error" in authResult) return authResult.error;
+  const { userId } = authResult;
+
+  try {
+    await softDeleteUser(userId);
+    recordAudit({
+      actorUserId: userId,
+      actorRole: "PARENT",
+      action: "ACCOUNT_DELETE",
+      targetType: "User",
+      targetId: userId,
+    });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[mobile/parent/profile] DELETE error:", error);
+    return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+  }
 }

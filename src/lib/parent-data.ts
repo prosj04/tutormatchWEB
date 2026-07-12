@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { createConsultationRequest } from "@/lib/student-enrollment";
+import { getV2PlanById, PRICING_PLANS } from "@/lib/pricing-plans";
+import { formatSubscriptionPlanLabel } from "@/lib/subscription-label";
 
 function parseJsonArray(value: string): string[] {
   try {
@@ -11,6 +13,36 @@ function parseJsonArray(value: string): string[] {
 }
 
 export type SubjectScore = { subject: string; prev: number | null; curr: number };
+
+/**
+ * 다음 결제일 계산. PAUSED 구독은 정지 경과분만큼 periodEnd를 앞으로 투영해
+ * 과거로 남은 날짜가 노출되는 오해를 방지한다(정지 사실은 노출하지 않음).
+ * 웹 결제 페이지와 동일한 투영식: periodEnd + (now - pausedAt).
+ */
+export function projectNextPaymentDate(sub: {
+  status: string;
+  periodEnd: Date | null;
+  pausedAt: Date | null;
+}): Date | null {
+  if (!sub.periodEnd) return null;
+  if (sub.status === "PAUSED" && sub.pausedAt) {
+    const elapsedPaused = Date.now() - new Date(sub.pausedAt).getTime();
+    if (elapsedPaused > 0) {
+      return new Date(new Date(sub.periodEnd).getTime() + elapsedPaused);
+    }
+  }
+  return new Date(sub.periodEnd);
+}
+
+/** 플랜 월정액 — v2 우선, legacy v1 계산식 폴백. 알 수 없으면 null(D5-1). */
+export function planPriceKrw(planId: string): number | null {
+  const v2 = getV2PlanById(planId);
+  if (v2) return v2.priceKrw;
+  const legacy = PRICING_PLANS.find((p) => p.id === planId);
+  if (!legacy) return null;
+  // LEGACY v1 계산식 — 신규 발급 금지, 예전 구독 이력 금액 병기용.
+  return legacy.sessions * legacy.subjects * (legacy.sessions === 4 ? 100_000 : 90_000);
+}
 
 function parseSubjectScores(value: string | null): SubjectScore[] {
   if (!value) return [];
@@ -44,8 +76,9 @@ export async function listParentChildren(parentId: string) {
           grade: true,
           subjects: true,
           subscriptions: {
-            // PAUSED 포함 — 학부모에겐 구독중과 동일 표기(2026-07-11 정책, 라벨에서 마스킹)
-            where: { status: { in: ["ACTIVE", "PAUSED"] } },
+            // PAUSED 포함 — 학부모에겐 구독중과 동일 표기(2026-07-11 정책, 라벨에서 마스킹).
+            // PAST_DUE 포함 — 학부모가 자녀 미납을 인지하고 재결제 개입할 수 있도록(D10-1).
+            where: { status: { in: ["ACTIVE", "PAUSED", "PAST_DUE"] } },
             orderBy: { createdAt: "desc" },
             select: { plan: true, status: true, periodEnd: true, pausedAt: true },
           },
@@ -65,9 +98,13 @@ export async function listParentChildren(parentId: string) {
   });
 
   return links.map((link) => {
-    // ACTIVE 우선 1건 선택 — 없으면 최신(PAUSED). 모니터링 §11과 동일 규칙.
+    // ACTIVE 우선, 없으면 PAST_DUE(미납 알림 노출용), 그다음 최신(PAUSED).
     const subs = link.student.subscriptions;
-    const sub = subs.find((s) => s.status === "ACTIVE") ?? subs[0] ?? null;
+    const sub =
+      subs.find((s) => s.status === "ACTIVE") ??
+      subs.find((s) => s.status === "PAST_DUE") ??
+      subs[0] ??
+      null;
     return {
       id: link.student.id,
       name: link.student.name,
@@ -75,7 +112,15 @@ export async function listParentChildren(parentId: string) {
       subjects: link.student.subjects,
       linkedVia: link.linkedVia,
       subscription: sub
-        ? { plan: sub.plan, status: sub.status, periodEnd: sub.periodEnd, pausedAt: sub.pausedAt }
+        ? {
+            plan: sub.plan,
+            // 서버 계산 라벨·투영 결제일을 함께 내려 클라이언트가 원값을 노출하지 않도록 한다.
+            // (pausedAt 원값은 정책상 노출 금지 — 여기서 nextPaymentDate로만 투영)
+            planLabel: formatSubscriptionPlanLabel(sub.plan),
+            status: sub.status,
+            periodEnd: sub.periodEnd,
+            nextPaymentDate: projectNextPaymentDate(sub),
+          }
         : null,
       latestReportMonth: link.student.monthlyReports[0]?.month ?? null,
       consultationStatus: link.student.consultationBookings[0]?.status ?? null,

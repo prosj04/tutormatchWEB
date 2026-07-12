@@ -29,6 +29,7 @@ import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse } from "./_shared";
+import { useSelectedChildId } from "./_selectedChild";
 
 interface ConsultResult {
   ok: boolean;
@@ -40,7 +41,9 @@ export default function ConsultTab() {
   const { t } = useTheme();
   const router = useRouter();
   const [children, setChildren] = useState<Child[] | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { selectedId, setSelectedId } = useSelectedChildId(
+    (children ?? []).map((c) => c.id),
+  );
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -54,7 +57,6 @@ export default function ConsultTab() {
     try {
       const d = await apiFetch<ChildrenResponse>("/api/mobile/parent/children");
       setChildren(d.children ?? []);
-      setSelectedId((prev) => prev ?? d.children?.[0]?.id ?? null);
     } catch {
       setChildren(null);
       setError(true);

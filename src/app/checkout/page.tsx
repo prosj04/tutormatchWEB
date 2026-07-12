@@ -57,6 +57,9 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const role = session?.user?.role;
   const isParent = Boolean(session?.user?.id) && role === "PARENT";
 
+  // ?studentId= 로 특정 자녀를 초기 선택(C2-3). 앱 subscribe.tsx / 학부모 결제 페이지가 전달.
+  const requestedChildId = first(searchParams.studentId);
+
   // 학부모 세션이면 연결된 자녀 목록을 조회해 "자녀 명의 결제"로 분기한다.
   // 자녀가 있으면 가입 폼 없이 자녀 선택 UI를 노출한다(needsSignup=false).
   let parentChildren: CheckoutChild[] | undefined;
@@ -77,6 +80,12 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
       parentChildren = [];
     }
   }
+
+  // 요청된 studentId가 실제 연결 자녀일 때만 초기 선택으로 사용(검증).
+  const initialChildId =
+    requestedChildId && parentChildren?.some((c) => c.id === requestedChildId)
+      ? requestedChildId
+      : undefined;
 
   // 비로그인·학생 외 세션은 가입 폼 필요. 단, 학부모는 자녀 명의 결제이므로 가입 폼 없음.
   const needsSignup = !isParent && (!session?.user?.id || role !== "STUDENT");
@@ -125,6 +134,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         needsSignup={needsSignup}
         isEditMode={isEditMode}
         parentChildren={parentChildren}
+        initialChildId={initialChildId}
       />
     </>
   );

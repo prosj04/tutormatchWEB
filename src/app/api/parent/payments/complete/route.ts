@@ -52,10 +52,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "orderId required" }, { status: 400 });
   }
 
+  // paymentKey는 선택 — 학생 라우트와 대칭(D2-1). 이미 COMPLETED된 주문의 재시도/유실
+  // 복구 시 paymentKey 없이도 멱등 반환되도록, 필수(400) 대신 optional로 둔다.
   const paymentKey = typeof body.paymentKey === "string" ? body.paymentKey.trim() : "";
-  if (!paymentKey) {
-    return NextResponse.json({ error: "paymentKey required" }, { status: 400 });
-  }
 
   const amount = typeof body.amount === "number" ? body.amount : NaN;
   if (!Number.isFinite(amount)) {
@@ -88,7 +87,7 @@ export async function POST(request: Request) {
       studentName: student.name,
       studentGrade: student.grade,
       orderId,
-      paymentKey,
+      paymentKey: paymentKey || null,
       amount,
       plan,
       cashReceipt,

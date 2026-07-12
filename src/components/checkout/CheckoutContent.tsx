@@ -61,6 +61,8 @@ type CheckoutContentProps = {
    * undefined면 일반(학생/비회원) 결제.
    */
   parentChildren?: CheckoutChild[];
+  /** ?studentId= 로 검증된 초기 선택 자녀 id(C2-3). 없으면 첫 자녀. */
+  initialChildId?: string;
 };
 
 function CmsText({
@@ -86,6 +88,7 @@ export function CheckoutContent({
   needsSignup,
   isEditMode: isEditModeProp,
   parentChildren,
+  initialChildId,
 }: CheckoutContentProps) {
   const searchParams = useSearchParams();
   const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
@@ -96,7 +99,7 @@ export function CheckoutContent({
   const isParentCheckout = parentChildren !== undefined;
   const hasChildren = (parentChildren?.length ?? 0) > 0;
   const [selectedChildId, setSelectedChildId] = useState<string>(
-    () => parentChildren?.[0]?.id ?? "",
+    () => initialChildId ?? parentChildren?.[0]?.id ?? "",
   );
 
   // v2 플랜 결정. 알 수 없는 id면 안전 폴백(고등·주2·2시간).
