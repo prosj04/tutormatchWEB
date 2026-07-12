@@ -24,6 +24,11 @@ export type NotificationType =
   | "POST_CONSULTATION_FOLLOWUP"
   | "TEACHER_CHANGE_REQUEST"
   | "LESSON_CANCELLED_BY_TEACHER"
+  | "FIRST_LESSON_SET"
+  // 수업 확인 제도
+  | "LESSON_CONFIRM_REQUEST"
+  | "LESSON_COMPLETED_CONFIRMED"
+  | "LESSON_NOT_HELD"
   // Phase 3 additions
   | "CONSULTATION_REMINDER"
   | "SUBSCRIPTION_EXPIRY_SOON"
@@ -43,6 +48,7 @@ const SMS_NOTIFICATION_TYPES = new Set<string>([
   "BOOKING_CONFIRMED",
   "QUESTION_UNANSWERED",
   "NEW_STUDENT_ASSIGNED",
+  "LESSON_CANCELLED_BY_TEACHER",
   // Phase 3 additions
   "CONSULTATION_REMINDER",
   "SUBSCRIPTION_EXPIRY_SOON",
@@ -62,6 +68,36 @@ const PUSH_NOTIFICATION_TYPES = new Set<string>([
   "TEACHER_ANSWERED",
   "NEW_STUDENT_ASSIGNED",
   "NEW_QUESTION",
+]);
+
+/**
+ * 학부모 팬아웃 화이트리스트 — 오너 확정 정책 "결제 + 핵심만".
+ * 학생 userId로 이 타입 알림이 생성되면 연결된 학부모(ParentStudent)에게도 복제한다.
+ * 그 외 타입은 절대 복제 금지(학부모 피로도 방지).
+ */
+const PARENT_FANOUT_TYPES = new Set<string>([
+  "SUBSCRIPTION_RENEWAL_FAILED",
+  "SUBSCRIPTION_AUTO_CANCELLED",
+  "SUBSCRIPTION_EXPIRED",
+  "SUBSCRIPTION_EXPIRY_SOON",
+  "SUBSCRIPTION_EXPIRED_SOON",
+  "LESSON_CANCELLED_BY_TEACHER",
+  // 수업 확인 결과 3자 공지(정상 완료 / 미완료+사유) — 인앱만.
+  "LESSON_COMPLETED_CONFIRMED",
+  "LESSON_NOT_HELD",
+  // 월간 리포트 생성(인앱만) — 해당 타입 발화 시 자동 복제. 현재 미발화(후속).
+  "MONTHLY_REPORT_READY",
+]);
+
+/**
+ * 학부모에게도 SMS까지 보낼 팬아웃 타입(결제 계열). 나머지 팬아웃 타입은 인앱만.
+ */
+const PARENT_FANOUT_SMS_TYPES = new Set<string>([
+  "SUBSCRIPTION_RENEWAL_FAILED",
+  "SUBSCRIPTION_AUTO_CANCELLED",
+  "SUBSCRIPTION_EXPIRED",
+  "SUBSCRIPTION_EXPIRY_SOON",
+  "SUBSCRIPTION_EXPIRED_SOON",
 ]);
 
 export async function createNotification({
@@ -102,7 +138,71 @@ export async function createNotification({
     });
   }
 
+  // 학부모 팬아웃 — 화이트리스트 타입만, 단일 지점에서 분기(생성부는 손대지 않음).
+  if (PARENT_FANOUT_TYPES.has(type)) {
+    void fanoutToParents({ studentUserId: userId, type, title, body, relatedId });
+  }
+
   return notification;
+}
+
+/**
+ * 학생 userId에 연결된 학부모들에게 알림을 복제 발송한다.
+ * 화이트리스트 타입만 도달(호출부에서 필터됨). 결제 계열은 SMS까지, 그 외는 인앱만.
+ * fire-and-forget — 원 알림 생성 흐름을 막지 않는다.
+ */
+async function fanoutToParents({
+  studentUserId,
+  type,
+  title,
+  body,
+  relatedId,
+}: {
+  studentUserId: string;
+  type: string;
+  title: string;
+  body: string;
+  relatedId?: string | null;
+}): Promise<void> {
+  try {
+    const student = await prisma.student.findUnique({
+      where: { userId: studentUserId },
+      select: {
+        parentLinks: {
+          select: {
+            parent: {
+              select: { userId: true, phone: true, deletedAt: true },
+            },
+          },
+        },
+      },
+    });
+    if (!student) return;
+
+    const wantsSms = PARENT_FANOUT_SMS_TYPES.has(type);
+
+    await Promise.all(
+      student.parentLinks
+        .map((ps) => ps.parent)
+        .filter((p) => p && p.deletedAt === null)
+        .map(async (parent) => {
+          await prisma.notification.create({
+            data: {
+              userId: parent.userId,
+              type,
+              title,
+              body,
+              relatedId: relatedId ?? null,
+            },
+          });
+          if (wantsSms && parent.phone) {
+            await sendSms(parent.phone, `[Concord] ${body}`);
+          }
+        }),
+    );
+  } catch (e) {
+    console.error("[notifications] fanoutToParents error:", e);
+  }
 }
 
 /** userId → Student 또는 Teacher phone 조회 후 SMS 발송 (fire-and-forget) */
@@ -112,9 +212,10 @@ async function dispatchSms(userId: string, body: string): Promise<void> {
       where: { userId },
       select: { phone: true },
     });
-    const phone = student?.phone ?? (
-      await prisma.teacher.findUnique({ where: { userId }, select: { phone: true } })
-    )?.phone;
+    const phone =
+      student?.phone ??
+      (await prisma.teacher.findUnique({ where: { userId }, select: { phone: true } }))?.phone ??
+      (await prisma.parent.findUnique({ where: { userId }, select: { phone: true } }))?.phone;
 
     if (phone) {
       await sendSms(phone, `[Concord] ${body}`);
@@ -169,6 +270,13 @@ export function getNotificationIcon(type: string): string {
     case "TEACHER_CHANGE_REQUEST":
       return "🔄";
     case "LESSON_CANCELLED_BY_TEACHER":
+    case "FIRST_LESSON_SET":
+      return "📅";
+    case "LESSON_CONFIRM_REQUEST":
+      return "✅";
+    case "LESSON_COMPLETED_CONFIRMED":
+      return "✅";
+    case "LESSON_NOT_HELD":
       return "📅";
     case "NEW_QUESTION":
       return "✉️";
@@ -228,6 +336,17 @@ export function resolveNotificationHref(
         ? "/teacher-portal/dashboard/matching"
         : null;
     case "LESSON_CANCELLED_BY_TEACHER":
+      return role === "STUDENT"
+        ? "/dashboard"
+        : "/teacher-portal/dashboard/students";
+    case "FIRST_LESSON_SET":
+      return role === "STUDENT"
+        ? "/dashboard"
+        : "/dashboard/consultation";
+    case "LESSON_CONFIRM_REQUEST":
+      return "/teacher-portal/dashboard";
+    case "LESSON_COMPLETED_CONFIRMED":
+    case "LESSON_NOT_HELD":
       return role === "STUDENT"
         ? "/dashboard"
         : "/teacher-portal/dashboard/students";

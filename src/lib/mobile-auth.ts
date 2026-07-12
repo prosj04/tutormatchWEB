@@ -130,6 +130,21 @@ export async function getMobileUser(
   return payload;
 }
 
+/**
+ * 역할 무관 인증(모바일). Bearer access JWT 서명·만료·소프트삭제만 검증하고
+ * 역할은 제한하지 않는다. 알림처럼 "자기 userId 데이터만" 다루는 라우트용 —
+ * STUDENT/TEACHER/MANAGER/CHIEF_MANAGER/PARENT 모두 자기 알림 조회·읽음 처리 가능.
+ */
+export async function requireMobileUser(request: Request) {
+  const payload = await getMobileUser(request);
+  if (!payload) {
+    return {
+      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+    } as const;
+  }
+  return { userId: payload.sub, role: payload.role } as const;
+}
+
 /** 학생 권한 필수 — 라우트 핸들러에서 `if ("error" in r) return r.error` 패턴 */
 export async function requireMobileStudent(request: Request) {
   const payload = await getMobileUser(request);

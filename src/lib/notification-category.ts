@@ -6,6 +6,9 @@ export function getNotificationCategory(type: string): string {
     case "TEACHER_ASSIGNED":
     case "NEW_STUDENT_ASSIGNED":
     case "VISIT_TIMES_UPDATED":
+    case "LESSON_CONFIRM_REQUEST":
+    case "LESSON_COMPLETED_CONFIRMED":
+    case "LESSON_NOT_HELD":
       return "수업";
     case "TEACHER_COMMENT":
     case "PROGRESS_WARNING":

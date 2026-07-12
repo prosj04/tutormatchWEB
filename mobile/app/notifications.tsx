@@ -21,6 +21,7 @@ import { SubHead } from "../components/ui/SubHead";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorState } from "../components/ui/ErrorState";
 import { apiFetch } from "../lib/api";
+import { getRole, type UserRole } from "../lib/auth";
 import { useTheme } from "../theme/ThemeProvider";
 import { accTint } from "../theme/tokens";
 
@@ -36,24 +37,113 @@ interface NotificationItem {
   isRead: boolean;
 }
 
-type NotifRoute = "/(tabs)/qna" | "/(tabs)/learning" | "/(tabs)";
+/**
+ * 알림 type + 로그인 역할 → 대상 화면 딥링크. 웹 resolveNotificationHref 수준으로 확장.
+ * 같은 타입이라도 역할별로 스택이 다르므로((tabs)/(teacher)/(manager)/(parent)) role로 분기.
+ * 매핑 불가한 type은 null(탭 없음).
+ */
+function routeForType(type: string, role: UserRole | null): string | null {
+  // 역할별 기본 홈
+  const home =
+    role === "TEACHER"
+      ? "/(teacher)"
+      : role === "MANAGER"
+        ? "/(manager)"
+        : role === "PARENT"
+          ? "/(parent)"
+          : "/(tabs)";
 
-// 알림 type → 대상 화면 매핑. 매핑 불가한 type은 null(탭 없음).
-function routeForType(type: string): NotifRoute | null {
   switch (type) {
+    // 질문/답변 — 학생: qna 탭, 강사: 질문 큐
     case "NEW_QUESTION":
-    case "TEACHER_ANSWERED":
     case "QUESTION_UNANSWERED":
+      return role === "TEACHER" ? "/(teacher)/questions" : "/(tabs)/qna";
+    case "TEACHER_ANSWERED":
       return "/(tabs)/qna";
+
+    // 리포트·학습 진도
     case "TEACHER_COMMENT":
+      return role === "PARENT" ? "/(parent)/reports" : "/(tabs)/learning";
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":
-      return "/(tabs)/learning";
+      return role === "MANAGER"
+        ? "/(manager)/monitoring"
+        : role === "TEACHER"
+          ? "/(teacher)/students"
+          : "/(tabs)/learning";
+
+    // 수업 일정 / 예약 확정 / 배정
     case "NEW_BOOKING":
+    case "NEW_STUDENT_WAITING":
+      return role === "MANAGER" ? "/(manager)" : home;
     case "BOOKING_CONFIRMED":
-    case "TEACHER_ASSIGNED":
     case "VISIT_TIMES_UPDATED":
-      return "/(tabs)";
+      return home;
+    case "TEACHER_ASSIGNED":
+    case "MATCH_ACCEPTANCE_REMINDER":
+    case "STALE_MATCH_ACCEPTANCE":
+      return home;
+    case "NEW_STUDENT_ASSIGNED":
+    case "POST_CONSULTATION_FOLLOWUP":
+      return role === "TEACHER" ? "/(teacher)/students" : home;
+
+    // 첫 수업 관련
+    case "FIRST_LESSON_SET":
+      return role === "PARENT" ? "/(parent)/reports" : home;
+    case "FIRST_LESSON_REMINDER":
+    case "FIRST_LESSON_SLA_BREACH":
+      return role === "TEACHER" ? "/(teacher)/students" : home;
+    case "LESSON_REMINDER":
+      return home;
+
+    // 수업 취소 — 학부모: 리포트, 학생: 홈, 강사: 학생
+    case "LESSON_CANCELLED_BY_TEACHER":
+      return role === "TEACHER"
+        ? "/(teacher)/students"
+        : role === "PARENT"
+          ? "/(parent)/reports"
+          : "/(tabs)";
+
+    // 수업 확인 제도 — 강사: 확인 카드가 있는 홈, 학부모: 리포트, 학생: 홈
+    case "LESSON_CONFIRM_REQUEST":
+      return role === "TEACHER" ? "/(teacher)" : home;
+    case "LESSON_COMPLETED_CONFIRMED":
+    case "LESSON_NOT_HELD":
+      return role === "TEACHER"
+        ? "/(teacher)/students"
+        : role === "PARENT"
+          ? "/(parent)/reports"
+          : "/(tabs)";
+
+    // 상담 리마인더
+    case "CONSULTATION_REMINDER":
+      return role === "PARENT"
+        ? "/(parent)/consult"
+        : role === "MANAGER"
+          ? "/(manager)"
+          : home;
+
+    // 구독·결제 계열 — 학부모: 결제 화면, 학생: 홈
+    case "SUBSCRIPTION_EXPIRY_REMINDER":
+    case "SUBSCRIPTION_EXPIRY_SOON":
+    case "SUBSCRIPTION_EXPIRED_SOON":
+    case "SUBSCRIPTION_EXPIRED":
+    case "SUBSCRIPTION_RENEWED":
+    case "SUBSCRIPTION_RENEWAL_FAILED":
+    case "SUBSCRIPTION_AUTO_CANCELLED":
+      return role === "PARENT" ? "/(parent)/payments" : home;
+
+    // 만족도 체크인 — 학생: 홈, 매니저(저평가): 모니터링
+    case "SATISFACTION_CHECKIN_REQUEST":
+    case "SATISFACTION_CHECKIN_REMINDER":
+      return home;
+    case "SATISFACTION_LOW_SCORE":
+      return role === "MANAGER" ? "/(manager)/monitoring" : home;
+
+    // 강사 변경 요청 — 매니저 매칭
+    case "TEACHER_CHANGE_REQUEST":
+      return role === "MANAGER" ? "/(manager)/matching" : null;
+
     default:
       return null;
   }
@@ -121,6 +211,11 @@ export default function NotificationsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
+  const [role, setRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    void getRole().then(setRole);
+  }, []);
 
   const load = useCallback((isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -147,6 +242,33 @@ export default function NotificationsScreen() {
       // ignore
     }
   }
+
+  // 개별 읽음 처리 + 로컬 state 낙관적 갱신 후 딥링크 이동(G-4).
+  const openNotification = useCallback(
+    (item: NotificationItem) => {
+      const target = routeForType(item.type, role);
+      if (!item.isRead) {
+        setData((prev) =>
+          prev
+            ? {
+                unreadCount: Math.max(0, prev.unreadCount - 1),
+                notifications: prev.notifications.map((n) =>
+                  n.id === item.id ? { ...n, isRead: true, accent: false } : n,
+                ),
+              }
+            : prev,
+        );
+        void apiFetch("/api/mobile/notifications", {
+          method: "PATCH",
+          body: JSON.stringify({ ids: [item.id] }),
+        }).catch(() => {
+          // 실패해도 이동은 진행 — 다음 로드 시 정합화
+        });
+      }
+      if (target) router.push(target as never);
+    },
+    [role, router],
+  );
 
   const sections = useMemo(() => {
     if (!data?.notifications.length) return [];
@@ -189,22 +311,19 @@ export default function NotificationsScreen() {
             {sections.map((section) => (
               <View key={section.cat}>
                 <NCategory label={section.cat} />
-                {section.items.map((item, i) => {
-                  const target = routeForType(item.type);
-                  return (
-                    <NRow
-                      key={item.id}
-                      accent={item.accent}
-                      unread={!item.isRead}
-                      icon={item.icon}
-                      title={item.title}
-                      body={item.body}
-                      time={item.timeAgo}
-                      divider={i > 0}
-                      onPress={target ? () => router.push(target) : undefined}
-                    />
-                  );
-                })}
+                {section.items.map((item, i) => (
+                  <NRow
+                    key={item.id}
+                    accent={item.accent}
+                    unread={!item.isRead}
+                    icon={item.icon}
+                    title={item.title}
+                    body={item.body}
+                    time={item.timeAgo}
+                    divider={i > 0}
+                    onPress={() => openNotification(item)}
+                  />
+                ))}
               </View>
             ))}
           </View>

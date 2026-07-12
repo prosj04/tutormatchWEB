@@ -27,12 +27,17 @@ import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse } from "./_shared";
 
+interface NotifSummary {
+  unreadCount: number;
+}
+
 export default function ParentHome() {
   const { t } = useTheme();
   const router = useRouter();
   const [children, setChildren] = useState<Child[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -48,10 +53,21 @@ export default function ParentHome() {
     }
   }, []);
 
+  // 알림 미읽음 여부 — 벨 뱃지를 실제 데이터로 반영(하드코딩 점 제거).
+  const loadUnread = useCallback(async () => {
+    try {
+      const d = await apiFetch<NotifSummary>("/api/mobile/notifications");
+      setHasUnread((d.unreadCount ?? 0) > 0);
+    } catch {
+      setHasUnread(false);
+    }
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       void load();
-    }, [load]),
+      void loadUnread();
+    }, [load, loadUnread]),
   );
 
   const hasChildren = (children?.length ?? 0) > 0;
@@ -80,7 +96,7 @@ export default function ParentHome() {
               style={[iconbtnS, { backgroundColor: t.panel, borderColor: t.line }]}
               onPress={() => router.push("/notifications" as never)}
             >
-              <View style={[iconbtnBadge, { backgroundColor: t.acc }]} />
+              {hasUnread && <View style={[iconbtnBadge, { backgroundColor: t.acc }]} />}
               <BellIcon color={t.fg} size={19} />
             </Pressable>
           </View>
