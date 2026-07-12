@@ -29,6 +29,7 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [phone, setPhone] = useState("");
   const [guardianConsent, setGuardianConsent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,14 @@ export default function Signup() {
 
   async function handleSignup() {
     if (!name.trim() || !password || !phone.trim()) return;
+    if (password.length < 8) {
+      setError("비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
     if (!guardianConsent) {
       setError("보호자 동의가 필요합니다.");
       return;
@@ -81,7 +90,8 @@ export default function Signup() {
     }
   }
 
-  const canSubmit = name.trim() && password && phone.trim() && guardianConsent;
+  const canSubmit =
+    name.trim() && password && passwordConfirm && phone.trim() && guardianConsent;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -137,6 +147,20 @@ export default function Signup() {
                 placeholderTextColor={t.mut2}
                 value={password}
                 onChangeText={setPassword}
+                secureTextEntry
+                returnKeyType="next"
+              />
+            </View>
+
+            {/* .field 비밀번호 확인 */}
+            <View style={fieldS.wrap}>
+              <Text style={[fieldS.label, { color: t.fg }]}>비밀번호 확인</Text>
+              <TextInput
+                style={[fieldS.inp, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg }]}
+                placeholder="비밀번호 다시 입력"
+                placeholderTextColor={t.mut2}
+                value={passwordConfirm}
+                onChangeText={setPasswordConfirm}
                 secureTextEntry
                 returnKeyType="next"
               />

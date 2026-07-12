@@ -36,7 +36,7 @@ function first(v: string | string[] | undefined): string | undefined {
 
 export default async function LoginPage({ searchParams }: { searchParams?: SearchParams }) {
   const isEditMode = first(searchParams?.cms_edit) === "1";
-  const siteContent = await getGroupedSiteContentBySections(["login_page"]);
+  const siteContent = await getGroupedSiteContentBySections(["login_page", "footer"]);
   const title = getCmsSectionValue(siteContent, "login_page", "title", "다시 오신 것을 환영해요");
   const subtext = getCmsSectionValue(
     siteContent,
@@ -44,6 +44,8 @@ export default async function LoginPage({ searchParams }: { searchParams?: Searc
     "subtext",
     "학습 플래너와 상담 내역을 확인하세요.",
   );
+  // 비밀번호 찾기 안내에 재사용할 기존 상담 전화(푸터 CMS 값).
+  const contactPhone = getCmsSectionValue(siteContent, "footer", "phone_number", "010-0000-0000");
 
   return (
     <Suspense fallback={<LoginFallback />}>
@@ -52,6 +54,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Searc
         isEditMode={isEditMode}
         defaultTitle={title}
         defaultSubtext={subtext}
+        contactPhone={contactPhone}
       />
     </Suspense>
   );

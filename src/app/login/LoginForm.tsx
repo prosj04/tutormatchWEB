@@ -228,25 +228,33 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
+const LOGIN_LOCKED_MESSAGE =
+  "여러 번 실패해 잠시 잠겼어요. 약 15분 후 다시 시도해 주세요";
+
 export function LoginForm({
   isEditMode = false,
   defaultTitle = "다시 오신 것을 환영해요",
   defaultSubtext = "학습 플래너와 상담 내역을 확인하세요.",
+  contactPhone = "010-0000-0000",
 }: {
   siteContent?: Record<string, Record<string, string>>;
   isEditMode?: boolean;
   defaultTitle?: string;
   defaultSubtext?: string;
+  contactPhone?: string;
 }) {
   const searchParams = useSearchParams();
   const goConsultation = useConsultationCta();
   const showAdminSetup = searchParams.get("setup") === "admin";
+  // 상담 접수 후 자동 로그인 실패 경로에서 넘어온 안내 배너 (A2-8)
+  const justRegistered = searchParams.get("registered") === "1";
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [adminSetupHidden, setAdminSetupHidden] = useState(false);
+  const [showRecover, setShowRecover] = useState(false);
 
   async function handleSubmit() {
     setError("");
@@ -257,6 +265,25 @@ export function LoginForm({
     }
     setLoading(true);
     try {
+      // signIn 이전에 잠금 여부를 확인해 "비밀번호 오류"와 "잠김"을 구분한다 (A2-3).
+      try {
+        const statusRes = await fetch("/api/auth/login-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier: trimmed }),
+          cache: "no-store",
+        });
+        if (statusRes.ok) {
+          const { locked } = (await statusRes.json()) as { locked?: boolean };
+          if (locked) {
+            setError(LOGIN_LOCKED_MESSAGE);
+            return;
+          }
+        }
+      } catch {
+        // 사전 체크 실패는 무시하고 정상 로그인 흐름으로 진행한다.
+      }
+
       let result: Awaited<ReturnType<typeof signIn>>;
       try {
         result = await signIn("credentials", {
@@ -269,6 +296,24 @@ export function LoginForm({
         return;
       }
       if (result?.error) {
+        // 실패 후 잠금 임계에 도달했으면 잠금 안내로 전환한다 (A2-3).
+        try {
+          const statusRes = await fetch("/api/auth/login-status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ identifier: trimmed }),
+            cache: "no-store",
+          });
+          if (statusRes.ok) {
+            const { locked } = (await statusRes.json()) as { locked?: boolean };
+            if (locked) {
+              setError(LOGIN_LOCKED_MESSAGE);
+              return;
+            }
+          }
+        } catch {
+          // 무시
+        }
         setError("이메일·전화번호 또는 비밀번호가 올바르지 않습니다");
         return;
       }
@@ -319,6 +364,23 @@ export function LoginForm({
             </CmsEdit>
           </p>
 
+          {justRegistered ? (
+            <p
+              role="status"
+              style={{
+                marginBottom: 16,
+                padding: "10px 12px",
+                borderRadius: 10,
+                background: "var(--acc-weak, rgba(0,0,0,0.04))",
+                color: "var(--acc-text)",
+                fontSize: 13.5,
+                lineHeight: 1.5,
+              }}
+            >
+              상담이 접수되었어요. 방금 만든 계정으로 로그인해 주세요.
+            </p>
+          ) : null}
+
           <div className="field">
             <label htmlFor="id">전화번호 또는 이메일</label>
             <input
@@ -358,6 +420,35 @@ export function LoginForm({
               {error}
             </p>
           ) : null}
+
+          {/* 비밀번호 찾기 — 로그인 전 셀프 리셋 불가, 담당 매니저 재설정 안내 (A2-1/A2-4) */}
+          <div style={{ marginTop: 14, textAlign: "center" }}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              style={{ fontSize: 13 }}
+              aria-expanded={showRecover}
+              onClick={() => setShowRecover((v) => !v)}
+            >
+              비밀번호를 잊으셨나요?
+            </button>
+            {showRecover ? (
+              <p
+                style={{
+                  marginTop: 10,
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  color: "var(--mut, #666)",
+                }}
+              >
+                로그인 전에는 직접 재설정할 수 없어요.
+                <br />
+                담당 매니저에게 재설정을 요청할 수 있어요.
+                <br />
+                상담 전화 <a href={`tel:${contactPhone.replace(/[^0-9+]/g, "")}`}>{contactPhone}</a>
+              </p>
+            ) : null}
+          </div>
 
           <div className="auth-alt">
             아직 회원이 아니신가요?{" "}

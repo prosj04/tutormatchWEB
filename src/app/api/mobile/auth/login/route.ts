@@ -2,6 +2,12 @@ import type { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import {
+  clearLoginFailures,
+  isLoginBlocked,
+  loginRateLimitKey,
+  recordLoginFailure,
+} from "@/lib/login-rate-limit";
 import { issueMobileTokens } from "@/lib/mobile-auth";
 import {
   normalizePhoneDigits,
@@ -10,6 +16,9 @@ import {
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 import { prisma } from "@/lib/prisma";
+
+const LOGIN_LOCKED_MESSAGE =
+  "여러 번 실패해 잠시 잠겼어요. 약 15분 후 다시 시도해 주세요";
 
 const userForAuthSelect = {
   id: true,
@@ -44,6 +53,12 @@ export async function POST(request: Request) {
     );
   }
 
+  // 웹(auth.ts)과 동일한 브루트포스 방어 — 잠금 시 시도 자체를 거부한다.
+  const rateKey = loginRateLimitKey(identifier);
+  if (isLoginBlocked(rateKey)) {
+    return NextResponse.json({ error: LOGIN_LOCKED_MESSAGE }, { status: 429 });
+  }
+
   let user: Prisma.UserGetPayload<{ select: typeof userForAuthSelect }> | null =
     null;
 
@@ -76,11 +91,14 @@ export async function POST(request: Request) {
   }
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
+    recordLoginFailure(rateKey);
     return NextResponse.json(
       { error: "아이디 또는 비밀번호가 올바르지 않습니다." },
       { status: 401 },
     );
   }
+  // 자격 증명이 유효하면 실패 카운트 초기화 — 이후 정책성 거부는 잠금 대상 아님.
+  clearLoginFailures(rateKey);
 
   // 탈퇴(소프트 삭제)한 계정은 로그인 차단 — 웹 auth.ts와 동일 정책.
   if (user.deletedAt) {

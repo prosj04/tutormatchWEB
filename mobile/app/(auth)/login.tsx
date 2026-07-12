@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -39,6 +40,15 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // 로그인 전에는 셀프 리셋이 불가하므로, 담당 매니저 재설정 요청 안내만 노출한다.
+  function handleForgotPassword() {
+    Alert.alert(
+      "비밀번호 재설정",
+      "로그인 전에는 직접 재설정할 수 없어요.\n담당 매니저에게 재설정을 요청할 수 있어요.\n\n상담 전화: 010-0000-0000",
+      [{ text: "확인" }],
+    );
+  }
 
   async function handleLogin() {
     if (!identifier.trim() || !password) return;
@@ -79,12 +89,12 @@ export default function Login() {
           {/* .mid flex:1 justify-content:center */}
           <View style={authS.mid}>
 
-            {/* .field 이메일 */}
+            {/* .field 전화번호 또는 이메일 (웹 로그인 폼과 통일) */}
             <View style={fieldS.wrap}>
-              <Text style={[fieldS.label, { color: t.fg }]}>이메일</Text>
+              <Text style={[fieldS.label, { color: t.fg }]}>전화번호 또는 이메일</Text>
               <TextInput
                 style={[fieldS.inp, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg }]}
-                placeholder="이메일"
+                placeholder="전화번호 또는 이메일"
                 placeholderTextColor={t.mut2}
                 value={identifier}
                 onChangeText={setIdentifier}
@@ -110,7 +120,12 @@ export default function Login() {
             </View>
 
             {/* .forgot text-align:right font-size:12.5 font-weight:600 color:acc-text margin-top:-6 */}
-            <Text style={[authS.forgot, { color: t.accText }]}>비밀번호를 잊으셨나요?</Text>
+            <Text
+              style={[authS.forgot, { color: t.accText }]}
+              onPress={handleForgotPassword}
+            >
+              비밀번호를 잊으셨나요?
+            </Text>
 
             {error !== "" && (
               <Text style={styles.error}>{error}</Text>
@@ -127,29 +142,7 @@ export default function Login() {
               </Text>
             </Pressable>
 
-            {/* .divider flex-row align-items:center gap:12 margin:20 0 font-size:12 font-weight:600 */}
-            <View style={styles.divider}>
-              <View style={[styles.dividerLine, { backgroundColor: t.line }]} />
-              <Text style={[styles.dividerText, { color: t.mut2 }]}>또는</Text>
-              <View style={[styles.dividerLine, { backgroundColor: t.line }]} />
-            </View>
-
-            {/* .socials flex-col gap:9 */}
-            <View style={styles.socials}>
-              {/* .sbtn.kakao background:#FEE500 color:#191600 border:transparent */}
-              <Pressable style={styles.sbtnKakao}>
-                {/* .sbtn .lg width:18 height:18 border-radius:4 font-size:12 font-weight:800 */}
-                <View style={styles.kakaoBadge}>
-                  <Text style={styles.kakaoBadgeText}>k</Text>
-                </View>
-                <Text style={styles.sbtnKakaoText}>카카오로 계속하기</Text>
-              </Pressable>
-
-              {/* .sbtn.apple background:#000 color:#fff border:transparent */}
-              <Pressable style={styles.sbtnApple}>
-                <Text style={styles.sbtnAppleText}>Apple로 계속하기</Text>
-              </Pressable>
-            </View>
+            {/* 카카오/Apple 소셜 로그인 미구현 — 죽은 버튼 노출 금지 (추후 구현 시 복원) */}
           </View>
 
           {/* .foot text-align:center font-size:13 color:mut padding-top:18 */}
@@ -210,57 +203,4 @@ const styles = StyleSheet.create({
   p1Text: { fontFamily: font.extrabold, fontSize: 15, textAlign: "center" },
 
   error: { fontSize: 13, color: "#E53E3E", marginTop: 8, fontFamily: font.semibold },
-
-  // .auth .divider flex-row align:center gap:12 margin:20 0
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginVertical: 20,
-  },
-  dividerLine: { flex: 1, height: 1 },
-  dividerText: { fontSize: 12, fontFamily: font.semibold },
-
-  // .socials flex-col gap:9
-  socials: { flexDirection: "column", gap: 9 },
-
-  // .sbtn.kakao background:#FEE500 color:#191600 border-color:transparent
-  sbtnKakao: {
-    width: "100%",
-    paddingVertical: 13,
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: "transparent",
-    backgroundColor: "#FEE500",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-  },
-  // .sbtn .lg width:18 height:18 border-radius:4 font-size:12 font-weight:800
-  kakaoBadge: {
-    width: 18,
-    height: 18,
-    borderRadius: 4,
-    backgroundColor: "#191600",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  kakaoBadgeText: { color: "#FEE500", fontSize: 12, fontFamily: font.extrabold },
-  sbtnKakaoText: { color: "#191600", fontFamily: font.bold, fontSize: 14 },
-
-  // .sbtn.apple background:#000 color:#fff border-color:transparent
-  sbtnApple: {
-    width: "100%",
-    paddingVertical: 13,
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: "transparent",
-    backgroundColor: "#000",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-  },
-  sbtnAppleText: { color: "#fff", fontFamily: font.bold, fontSize: 14 },
 });

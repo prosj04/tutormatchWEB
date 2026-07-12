@@ -165,7 +165,8 @@ export function ConsultationSignupForm({
           phone: "신청은 완료되었으나 자동 로그인에 실패했습니다. 로그인 페이지에서 시도해 주세요.",
         });
         onSuccess?.();
-        router.push("/login");
+        // 접수·계정 생성 사실을 로그인 화면에 전달해 안내 배너를 띄운다 (A2-8).
+        router.push("/login?registered=1&applied=1");
         return;
       }
       setStep(2);
