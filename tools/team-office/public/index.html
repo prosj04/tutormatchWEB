@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concord War Room</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="topbar">
+  <div id="brand">⭐ CONCORD WAR ROOM <span id="conn-dot" title="연결 상태"></span></div>
+  <div id="task-board-wrap">
+    <span class="board-label">작전 현황</span>
+    <div id="task-board"></div>
+  </div>
+</header>
+
+<main id="layout">
+  <section id="office">
+    <div id="meeting-banner" hidden>⚑ 작전 브리핑 진행 중</div>
+    <div id="order-banner" hidden>★ 사령관 명령 하달</div>
+    <canvas id="world"></canvas>
+    <div id="world-overlay"></div>
+    <div id="hint">🖱 드래그 이동 · 휠 줌 · 캐릭터 클릭 = 상세 · 책장 클릭 = 문서고</div>
+
+    <div id="detail-drawer" hidden>
+      <div id="detail-head"><span id="detail-title">—</span><button id="detail-close">✕</button></div>
+      <div id="detail-meta"></div>
+      <div id="detail-log"></div>
+    </div>
+
+    <div id="cmd-bar">
+      <span class="cmd-label">★ 사령관 명령</span>
+      <select id="cmd-to">
+        <option value="전체">전체</option>
+        <option value="LEAD">지휘관(리더)</option>
+        <option value="web-implementer">웹 공병</option>
+        <option value="mobile-implementer">모바일 공병</option>
+        <option value="reviewer">검열관</option>
+        <option value="qa-verifier">검증반</option>
+        <option value="codex-operator">통신병</option>
+        <option value="biz-strategist">전략참모</option>
+      </select>
+      <input id="cmd-input" type="text" placeholder="명령 입력 — OWNER_ORDERS.md에 기록됨. 리더 세션에 '명령 확인해'라고 말하면 반영">
+      <button id="cmd-send">하달</button>
+    </div>
+  </section>
+
+  <aside id="comm-panel">
+    <div class="panel-title decision-title">📋 결재 대기 <span id="decision-count">0</span></div>
+    <div id="decision-board"><div class="empty-note">지휘부 보고 없음</div></div>
+    <div class="panel-title">📻 통신 기록</div>
+    <div id="log-tabs">
+      <button class="log-tab active" data-f="all">전체</button>
+      <button class="log-tab" data-f="message">교신</button>
+      <button class="log-tab" data-f="alert">결재·경보</button>
+      <button class="log-tab" data-f="tool">작업</button>
+    </div>
+    <div id="comm-log"></div>
+  </aside>
+</main>
+
+<!-- archive modal -->
+<div id="archive-modal" hidden>
+  <div id="archive-box">
+    <div id="archive-head">📚 기록실 <button id="archive-close">✕ 닫기</button></div>
+    <div id="archive-body">
+      <div id="doc-tree"></div>
+      <pre id="doc-view">좌측에서 문서 선택</pre>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
