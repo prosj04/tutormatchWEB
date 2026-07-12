@@ -574,7 +574,7 @@ git log 실측 요약. 상세 세션 로그는 `CLAUDE_HANDOFF.md §25.1a~h`.
 - ✅ **수정 8커밋** (`ad60145`~`11ef9ea`): 4역할 앱 알림 개방+학부모 팬아웃+딥링크, 학부모 미납 인지·앱 비대칭 해소·탈퇴, 수업 확인 제도, 인증 잠금 안내·모바일 rate-limit(보안), 어드민 confirm 가드·치프 서류 열람·CMS 검색, QnA 배지 회귀, 크로스커팅(다크 토큰·테이블 overflow·a11y·용어), 모바일 정산 화면·보강 실날짜·nextStep.
 - ✅ expo-image-picker·document-picker 설치, 강사 모바일 업로드 UI 연결(진행).
 - ⚠️ **push 차단 중**: 로컬 히스토리의 hourly 워크플로 커밋(3f89879) 때문에 PAT workflow scope 없이는 전체 push 거부. 동시 세션 활동으로 rebase는 회피. **오너 PAT 갱신이 배포+hourly cron+향후 push 모두의 유일 해소책.**
-- ⚠️ 잔여: E-UPLOAD 마무리 검증, 감사로그 이름 join·반려 사유 저장(API 후속), 만료 구독 상태 마감(G-6sys), 매니저 내부 화면 용어 통일.
+- ✅ (같은 날 후속 완주) E-UPLOAD 업로드 UI 연결(`00671f1`), 만료 구독 D+3 자동 마감(`9d15fea`), 감사로그 이름 표시+반려 사유·SMS(`e532a53`), API_REFERENCE 173 라우트(`49ff10b`), 로컬 프로덕션 빌드 통과 확인. 잔여: 매니저 내부 화면 용어 통일(선택), 배포 후 프로덕션 스모크.
 
 ---
 
