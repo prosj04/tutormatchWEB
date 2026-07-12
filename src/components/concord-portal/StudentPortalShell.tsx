@@ -109,8 +109,9 @@ export async function StudentPortalShell({
     prisma.notification.count({
       where: { userId: session.user.id, isRead: false },
     }),
-    prisma.question.count({
-      where: { studentId: student.id, isResolved: false },
+    // QnA는 QuestionMessage 단일 저장소로 이관됨 — 레거시 Question count는 死통계 (B6-1)
+    prisma.questionMessage.count({
+      where: { studentId: student.id, replyToId: null, isResolved: false },
     }),
   ]);
 
