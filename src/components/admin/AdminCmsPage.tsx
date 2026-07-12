@@ -16,7 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import { CmsCardBox, CmsCardBoxGrid } from "@/components/admin/CmsCardBox";
 import { CmsVisibilityToggle } from "@/components/admin/CmsVisibilityToggle";
@@ -835,6 +835,22 @@ function findTextFieldConfig(section: string, keyName: string): TextFieldConfig 
   return staticFields.find((field) => field.section === section && field.keyName === keyName);
 }
 
+// G-12adm: CMS 검색. 검색어를 하위 AdminTextField가 구독해 비일치 필드를 숨긴다.
+// 100+개 호출 지점에 prop을 넣지 않도록 컨텍스트로 전달.
+const CmsSearchContext = createContext("");
+
+function fieldMatchesQuery(field: TextFieldConfig, value: string, query: string): boolean {
+  if (!query) return true;
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return (
+    field.label.toLowerCase().includes(q) ||
+    field.section.toLowerCase().includes(q) ||
+    field.keyName.toLowerCase().includes(q) ||
+    value.toLowerCase().includes(q)
+  );
+}
+
 export function AdminCmsPage() {
   const sensors = useSensors(useSensor(PointerSensor));
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -844,6 +860,7 @@ export function AdminCmsPage() {
   const [testimonials, setTestimonials] = useState<TestimonialRow[]>([]);
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const iframeSrc = getIframeSrc(activePage);
 
   const hasNoContent =
@@ -931,11 +948,25 @@ export function AdminCmsPage() {
   }
 
   async function initDefaults() {
+    if (
+      !confirm(
+        "현재 사이트 문구·사진(1,000+개)을 코드 기본값으로 덮어씁니다. 되돌릴 수 없습니다. 계속할까요?",
+      )
+    ) {
+      return;
+    }
     const res = await fetch("/api/admin/cms/init", { method: "POST" });
     if (res.ok) await load();
   }
 
   async function upsertMarketingCopy() {
+    if (
+      !confirm(
+        "현재 사이트 문구·사진(1,000+개)을 코드 기본값으로 덮어씁니다. 되돌릴 수 없습니다. 계속할까요?",
+      )
+    ) {
+      return;
+    }
     const res = await fetch("/api/admin/cms/init?force=true", { method: "POST" });
     if (res.ok) await load();
   }
@@ -1033,6 +1064,7 @@ export function AdminCmsPage() {
   }
 
   return (
+    <CmsSearchContext.Provider value={search}>
     <section className="page on" data-screen-label="CMS">
       <div className="crumb">/admin/cms</div>
       <h1>CMS</h1>
@@ -1082,6 +1114,26 @@ export function AdminCmsPage() {
             <p className="mt-1 text-sm text-amber-900">기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</p>
           </div>
         ) : null}
+
+        {/* G-12adm: 문구 검색 — 섹션·키·라벨·현재값 부분 일치 필드만 표시 */}
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="문구 검색 (섹션·키·라벨·현재값)"
+            className={inputClass}
+          />
+          {search ? (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="shrink-0 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-text-secondary"
+            >
+              지우기
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {/* 좌: 미리보기 / 우: 편집 패널 */}
@@ -1926,6 +1978,7 @@ export function AdminCmsPage() {
       </div>
       </div>
     </section>
+    </CmsSearchContext.Provider>
   );
 }
 
@@ -2126,6 +2179,10 @@ function ContentField({
   value: string;
   onSave: (section: string, key: string, value: string) => Promise<void>;
 }) {
+  // G-12adm: 검색어 비일치 필드는 렌더하지 않는다.
+  const search = useContext(CmsSearchContext);
+  if (!fieldMatchesQuery(field, value, search)) return null;
+
   return (
     <AutoSaveInput
       label={field.label}
@@ -2149,6 +2206,9 @@ function AdminTextField({
   onSave: (section: string, key: string, value: string) => Promise<void>;
 }) {
   const styleTarget = getCmsTextStyleTarget(field.section, field.keyName);
+  const search = useContext(CmsSearchContext);
+  // G-12adm: 검색 비일치 시 style 컨트롤 래퍼까지 함께 숨긴다(빈 박스 방지).
+  if (!fieldMatchesQuery(field, value, search)) return null;
 
   return (
     <div className="rounded-2xl bg-background">

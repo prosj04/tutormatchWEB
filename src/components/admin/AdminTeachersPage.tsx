@@ -44,6 +44,7 @@ export function AdminTeachersPage() {
   const [rows, setRows] = useState<TeacherRow[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -68,7 +69,7 @@ export function AdminTeachersPage() {
   const fetchList = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), limit: "20" });
-    if (q) params.set("q", q);
+    if (debouncedQ) params.set("q", debouncedQ);
     if (status !== "all") params.set("status", status);
     const res = await fetch(`/api/admin/teachers?${params}`);
     if (res.ok) {
@@ -77,13 +78,24 @@ export function AdminTeachersPage() {
       setPagination(data.pagination);
     }
     setLoading(false);
-  }, [page, q, status]);
+  }, [page, debouncedQ, status]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
 
   useEffect(() => {
     fetchList();
   }, [fetchList]);
 
   async function toggleApprove(row: TeacherRow) {
+    if (row.approved) {
+      const ok = confirm(
+        `${row.name} 선생님의 승인을 취소하시겠습니까?\n\n이 선생님이 매칭 후보에서 제외되고 진행 중 수업에 영향이 있을 수 있습니다.`,
+      );
+      if (!ok) return;
+    }
     await fetch(`/api/admin/teachers/${row.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -244,7 +256,7 @@ export function AdminTeachersPage() {
           <option value="approved">승인됨</option>
           <option value="pending">대기중</option>
         </select>
-        <button type="button" className="btn sec sm" onClick={() => fetchList()}>검색</button>
+        <button type="button" className="btn sec sm" onClick={() => setDebouncedQ(q)}>검색</button>
       </div>
 
       <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
@@ -393,6 +405,9 @@ export function AdminTeachersPage() {
                 </>
               ) : (
                 <>
+                  <p className="f-hint" style={{ marginBottom: "10px" }}>
+                    열람 링크는 10분 후 만료됩니다. 만료되면 이 서류 탭을 다시 열어 재발급하세요.
+                  </p>
                   {[
                     {
                       type: "resume" as const,
@@ -418,7 +433,14 @@ export function AdminTeachersPage() {
                           group.files.map((file) => (
                             <div key={file.url} className="row">
                               <div className="g"><b>{file.name}</b></div>
-                              <a href={file.signedUrl} target="_blank" rel="noreferrer">열기</a>
+                              <a
+                                href={file.signedUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                title="열람 링크는 10분 후 만료됩니다. 만료 시 서류 탭을 다시 열면 재발급됩니다."
+                              >
+                                열기
+                              </a>
                               <button
                                 type="button"
                                 className="btn ghost sm"

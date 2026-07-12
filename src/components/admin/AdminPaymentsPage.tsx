@@ -39,20 +39,26 @@ export function AdminPaymentsPage() {
   const [rows, setRows] = useState<PaymentRow[]>([]);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [refundReason, setRefundReason] = useState("");
   const [refundPending, setRefundPending] = useState(false);
 
   const fetchList = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (status) params.set("status", status);
-    const res = await fetch(`/api/admin/payments?${params.toString()}`);
-    if (res.ok) {
+    setLoadError(false);
+    try {
+      const params = new URLSearchParams();
+      if (status) params.set("status", status);
+      const res = await fetch(`/api/admin/payments?${params.toString()}`);
+      if (!res.ok) throw new Error("failed");
       const data = (await res.json()) as { payments: PaymentRow[] };
       setRows(data.payments);
+    } catch {
+      setLoadError(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [status]);
 
   useEffect(() => {
@@ -114,6 +120,18 @@ export function AdminPaymentsPage() {
         </div>
       </div>
 
+      {loadError && (
+        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
+          <div className="row">
+            <div className="g">
+              <b>불러오지 못했습니다</b>
+              <p>결제 목록을 불러오는 중 문제가 발생했습니다.</p>
+            </div>
+            <button type="button" className="btn sec sm" onClick={() => fetchList()}>다시 시도</button>
+          </div>
+        </div>
+      )}
+
       <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
         <table className="tbl">
           <thead>
@@ -130,6 +148,8 @@ export function AdminPaymentsPage() {
           <tbody>
             {loading ? (
               <tr><td colSpan={7}>불러오는 중…</td></tr>
+            ) : loadError ? (
+              <tr><td colSpan={7}>—</td></tr>
             ) : rows.length === 0 ? (
               <tr><td colSpan={7}>결과 없음</td></tr>
             ) : (
@@ -167,6 +187,9 @@ export function AdminPaymentsPage() {
               {refundingRow
                 ? `${refundingRow.orderId} · ${refundingRow.studentName ?? "학생"}${refundingRow.amount != null ? ` · ${refundingRow.amount.toLocaleString()}원` : ""}`
                 : "해당 결제를 환불 처리합니다. 이 작업은 되돌릴 수 없습니다."}
+            </p>
+            <p className="m-p" style={{ marginTop: "8px", color: "var(--danger, #d33)", fontWeight: 600 }}>
+              카드 결제는 Toss에서 전액 취소됩니다. 부분 환불은 지원하지 않습니다.
             </p>
             <div className="field" style={{ marginTop: "14px" }}>
               <label>환불 사유 (선택)</label>

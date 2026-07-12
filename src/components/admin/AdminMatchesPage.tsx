@@ -40,31 +40,39 @@ export function AdminMatchesPage() {
     new Date().toISOString().slice(0, 10),
   );
   const [unmatchId, setUnmatchId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   const loadTeachers = useCallback(async () => {
     const res = await fetch("/api/admin/teachers?status=approved&limit=100");
-    if (res.ok) {
-      const data = (await res.json()) as { teachers: TeacherItem[] };
-      const list = data.teachers;
-      setTeachers(list);
-      if (list.length > 0) {
-        setSelectedTeacherId((prev) => prev ?? list[0].id);
-      }
+    if (!res.ok) throw new Error("failed");
+    const data = (await res.json()) as { teachers: TeacherItem[] };
+    const list = data.teachers;
+    setTeachers(list);
+    if (list.length > 0) {
+      setSelectedTeacherId((prev) => prev ?? list[0].id);
     }
   }, []);
 
   const loadMatches = useCallback(async () => {
     const res = await fetch("/api/admin/matches");
-    if (res.ok) {
-      const data = (await res.json()) as { matches: MatchRow[] };
-      setMatches(data.matches);
-    }
+    if (!res.ok) throw new Error("failed");
+    const data = (await res.json()) as { matches: MatchRow[] };
+    setMatches(data.matches);
   }, []);
 
-  useEffect(() => {
-    loadTeachers();
-    loadMatches();
+  const loadAll = useCallback(async () => {
+    setLoadError(false);
+    try {
+      await Promise.all([loadTeachers(), loadMatches()]);
+    } catch {
+      setLoadError(true);
+    }
   }, [loadTeachers, loadMatches]);
+
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
   const selectedTeacher = teachers.find((t) => t.id === selectedTeacherId);
   const teacherMatches = matches.filter(
@@ -92,20 +100,34 @@ export function AdminMatchesPage() {
   }
 
   async function createMatch() {
-    if (!selectedTeacherId || !studentId || selectedSubjects.length === 0) return;
-    const res = await fetch("/api/admin/matches", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        teacherId: selectedTeacherId,
-        studentId,
-        subjects: selectedSubjects.join(","),
-        startDate,
-      }),
-    });
-    if (res.ok) {
-      setModalOpen(false);
-      loadMatches();
+    if (!selectedTeacherId || !studentId || selectedSubjects.length === 0) {
+      alert("학생과 담당 과목을 선택해 주세요.");
+      return;
+    }
+    setCreating(true);
+    try {
+      const res = await fetch("/api/admin/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          teacherId: selectedTeacherId,
+          studentId,
+          subjects: selectedSubjects.join(","),
+          startDate,
+        }),
+      });
+      if (res.ok) {
+        setModalOpen(false);
+        await loadMatches();
+        alert("매칭이 등록되었습니다.");
+      } else {
+        const err = (await res.json().catch(() => ({}))) as { error?: string };
+        alert(err.error ?? "매칭 등록에 실패했습니다. 다시 시도해 주세요.");
+      }
+    } catch {
+      alert("매칭 등록에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -154,6 +176,18 @@ export function AdminMatchesPage() {
           </button>
         ) : null}
       </div>
+
+      {loadError && (
+        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
+          <div className="row">
+            <div className="g">
+              <b>불러오지 못했습니다</b>
+              <p>매칭 현황을 불러오는 중 문제가 발생했습니다.</p>
+            </div>
+            <button type="button" className="btn sec sm" onClick={() => loadAll()}>다시 시도</button>
+          </div>
+        </div>
+      )}
 
       <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
         <table className="tbl">
@@ -225,8 +259,10 @@ export function AdminMatchesPage() {
             </div>
           </div>
           <div className="m-f">
-            <button type="button" className="btn sec" onClick={() => setModalOpen(false)}>취소</button>
-            <button type="button" className="btn pri" onClick={() => void createMatch()}>매칭 등록</button>
+            <button type="button" className="btn sec" onClick={() => setModalOpen(false)} disabled={creating}>취소</button>
+            <button type="button" className="btn pri" onClick={() => void createMatch()} disabled={creating}>
+              {creating ? "등록 중…" : "매칭 등록"}
+            </button>
           </div>
         </div>
       </div>

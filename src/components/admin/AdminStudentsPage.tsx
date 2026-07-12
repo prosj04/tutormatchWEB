@@ -32,27 +32,39 @@ export function AdminStudentsPage() {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [grade, setGrade] = useState("");
   const [subject, setSubject] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [editRow, setEditRow] = useState<StudentRow | null>(null);
   const [form, setForm] = useState({ name: "", grade: "", subjects: "", phone: "" });
 
   const fetchList = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: "20" });
-    if (q) params.set("q", q);
-    if (grade) params.set("grade", grade);
-    if (subject) params.set("subject", subject);
-    const res = await fetch(`/api/admin/students?${params}`);
-    if (res.ok) {
+    setLoadError(false);
+    try {
+      const params = new URLSearchParams({ page: String(page), limit: "20" });
+      if (debouncedQ) params.set("q", debouncedQ);
+      if (grade) params.set("grade", grade);
+      if (subject) params.set("subject", subject);
+      const res = await fetch(`/api/admin/students?${params}`);
+      if (!res.ok) throw new Error("failed");
       const data = (await res.json()) as { students: StudentRow[]; pagination: Pagination };
       setRows(data.students);
       setPagination(data.pagination);
+    } catch {
+      setLoadError(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [page, q, grade, subject]);
+  }, [page, debouncedQ, grade, subject]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
 
   useEffect(() => {
     fetchList();
@@ -82,7 +94,7 @@ export function AdminStudentsPage() {
   }
 
   async function deleteRow(id: string, name: string) {
-    if (!confirm(`${name} 학생을 삭제하시겠습니까?`)) return;
+    if (!confirm(`${name} 학생을 삭제하시겠습니까?\n\n진행 중 구독·수업이 함께 취소됩니다.`)) return;
     const res = await fetch(`/api/admin/students/${id}`, { method: "DELETE" });
     if (res.ok) {
       setEditRow(null);
@@ -134,8 +146,20 @@ export function AdminStudentsPage() {
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <button type="button" className="btn sec sm" onClick={() => fetchList()}>검색</button>
+        <button type="button" className="btn sec sm" onClick={() => setDebouncedQ(q)}>검색</button>
       </div>
+
+      {loadError && (
+        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
+          <div className="row">
+            <div className="g">
+              <b>불러오지 못했습니다</b>
+              <p>학생 목록을 불러오는 중 문제가 발생했습니다.</p>
+            </div>
+            <button type="button" className="btn sec sm" onClick={() => fetchList()}>다시 시도</button>
+          </div>
+        </div>
+      )}
 
       <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
         <table className="tbl">
@@ -152,6 +176,8 @@ export function AdminStudentsPage() {
           <tbody>
             {loading ? (
               <tr><td colSpan={6}>불러오는 중…</td></tr>
+            ) : loadError ? (
+              <tr><td colSpan={6}>—</td></tr>
             ) : rows.length === 0 ? (
               <tr><td colSpan={6}>결과 없음</td></tr>
             ) : (

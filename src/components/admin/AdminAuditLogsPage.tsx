@@ -37,6 +37,7 @@ export function AdminAuditLogsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [targetType, setTargetType] = useState("");
+  const [actionFilter, setActionFilter] = useState("");
   const take = 50;
 
   const fetchLogs = useCallback(async () => {
@@ -65,6 +66,12 @@ export function AdminAuditLogsPage() {
     setPage(1);
   }
 
+  // G-8adm: 액션 유형 필터 — 현재 페이지에 로드된 로그의 action 종류로 구성(클라이언트 필터).
+  const actionOptions = Array.from(new Set(rows.map((row) => row.action))).sort();
+  const visibleRows = actionFilter
+    ? rows.filter((row) => row.action === actionFilter)
+    : rows;
+
   return (
     <section className="page on" data-screen-label="감사 로그">
       <div className="crumb">/admin/audit-logs</div>
@@ -85,6 +92,19 @@ export function AdminAuditLogsPage() {
             </button>
           ))}
         </div>
+        {actionOptions.length > 0 && (
+          <select
+            className="inp filled"
+            style={{ width: "auto" }}
+            value={actionFilter}
+            onChange={(e) => setActionFilter(e.target.value)}
+          >
+            <option value="">모든 액션</option>
+            {actionOptions.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="sec card" style={{ overflow: "hidden", marginTop: 0 }}>
@@ -102,19 +122,19 @@ export function AdminAuditLogsPage() {
           <tbody>
             {loading ? (
               <tr><td colSpan={6}>불러오는 중…</td></tr>
-            ) : rows.length === 0 ? (
+            ) : visibleRows.length === 0 ? (
               <tr><td colSpan={6}>결과 없음</td></tr>
             ) : (
-              rows.map((row) => (
+              visibleRows.map((row) => (
                 <tr key={row.id}>
                   <td>{new Date(row.createdAt).toLocaleString("ko-KR")}</td>
-                  <td>
+                  <td title={row.actorUserId}>
                     <b>{row.actorUserId.slice(0, 8)}…</b>
                     <span className="mini">{row.actorRole}</span>
                   </td>
                   <td><span className="bst acc">{row.action}</span></td>
                   <td>{row.targetType}</td>
-                  <td>{row.targetId.slice(0, 8)}…</td>
+                  <td title={row.targetId}>{row.targetId.slice(0, 8)}…</td>
                   <td>{row.detail ?? "—"}</td>
                 </tr>
               ))
