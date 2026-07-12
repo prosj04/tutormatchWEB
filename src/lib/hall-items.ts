@@ -33,6 +33,11 @@ export const HALL_DEFAULT_CARDS = [
   { logo: "/images/logos/univ/khu.png", color: "#A0132F", title: "경희대학교 합격", dept: "의예과", student: "고*원", course: "3년간 수학·과학 수강" },
   { logo: "/images/logos/univ/khu.png", color: "#A0132F", title: "경희대학교 합격", dept: "국제학과", student: "백*경", course: "15개월간 영어 수강" },
   { logo: "/images/logos/univ/hufs.png", color: "#003087", title: "한국외국어대학교 합격", dept: "중국어통번역학과", student: "심*아", course: "2년간 국어·영어 수강" },
+  { logo: "/images/logos/univ/snu.png", color: "#003E7E", title: "서울대학교 합격", dept: "의예과", student: "류*원", course: "3년간 수학·과학 수강" },
+  { logo: "/images/logos/univ/yonsei.png", color: "#003876", title: "연세대학교 합격", dept: "치의예과", student: "안*서", course: "2년간 수학·과학 수강" },
+  { logo: "/images/logos/univ/korea.png", color: "#8C0021", title: "고려대학교 합격", dept: "의과대학", student: "표*진", course: "3년간 수학·과학 수강" },
+  { logo: "/images/logos/univ/cau.png", color: "#143C8C", title: "중앙대학교 합격", dept: "약학부", student: "석*희", course: "20개월간 수학·과학 수강" },
+  { logo: "/images/logos/univ/snu.png", color: "#003E7E", title: "서울대학교 합격", dept: "수의예과", student: "진*우", course: "2년간 과학 수강" },
 ] as const;
 
 export type HallCardItem = {

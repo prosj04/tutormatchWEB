@@ -2,13 +2,32 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const MANAGER = "d02d5530-91f1-4dc2-bf19-6fdea49dfa9f"; // Chief_manager
-const T_KIM = "16839428-70a5-448d-8e8b-c947d4bb9d1e"; // 김도현 (수학) — 로그인 대상 강사
+// 시드 재실행 시 UUID가 바뀌므로 이름으로 동적 해석
+let MANAGER = ""; // Chief_manager
+let T_KIM = ""; // 김도현 (수학) — 로그인 대상 강사
+let S_HONG = ""; // 홍서준 → ACTIVE
+let S_HA = ""; // 김하은 → 수락 대기
+let S_MIN = ""; // 이민재 → 첫 수업 대기
+let S_YU = ""; // 박유나 → 배정(유지)
 
-const S_HONG = "b17ef730-2ea0-4896-8fac-f9ad2fff8492"; // 홍서준 → ACTIVE
-const S_HA = "aad1fb04-6b5e-4547-9208-f02af375220a"; // 김하은 → 수락 대기
-const S_MIN = "2e2d8061-a67a-447a-9c5d-a448a0ffc9f9"; // 이민재 → 첫 수업 대기
-const S_YU = "74ca6771-7c25-4024-8ea4-d2a2c821aafc"; // 박유나 → 배정(유지)
+async function resolveIds() {
+  const student = async (name: string) => {
+    const s = await prisma.student.findFirst({ where: { name: { contains: name } }, select: { id: true } });
+    if (!s) throw new Error(`student not found: ${name}`);
+    return s.id;
+  };
+  const teacher = async (name: string) => {
+    const t = await prisma.teacher.findFirst({ where: { name: { contains: name } }, select: { id: true } });
+    if (!t) throw new Error(`teacher not found: ${name}`);
+    return t.id;
+  };
+  MANAGER = await teacher("Chief_manager");
+  T_KIM = await teacher("김도현");
+  S_HONG = await student("홍서준");
+  S_HA = await student("김하은");
+  S_MIN = await student("이민재");
+  S_YU = await student("박유나");
+}
 
 function dayKey(offset: number) {
   const d = new Date();
@@ -25,6 +44,7 @@ const monthKey = dayKey(0).slice(0, 7);
 
 async function main() {
   console.log("==> 데모 데이터 심화 (로컬 전용)");
+  await resolveIds();
 
   // 0) 상담 노트 정리 + 상태 전이
   await prisma.consultationBooking.updateMany({
@@ -107,25 +127,33 @@ async function main() {
     });
   }
 
-  // 5) 질문 (AI 즉답 + 강사 답변 이중 구조)
-  await prisma.question.deleteMany({ where: { studentId: S_HONG } });
-  await prisma.question.createMany({
-    data: [
-      {
-        studentId: S_HONG, date: dayKey(0),
-        content: "미분계수 정의에서 극한이 존재하지 않으면 미분 불가능인가요?",
-        aiAnswer: "네. 미분계수는 그 점에서의 순간변화율(극한값)로 정의되므로, 좌·우 극한이 다르거나 극한이 존재하지 않으면 그 점에서 미분 불가능합니다. 대표적으로 뾰족점(절댓값 함수의 꼭짓점)이나 불연속점이 그렇습니다.",
-        teacherAnswer: "정확해요. 추가로 '연속이지만 미분 불가능'한 예(y=|x|)를 꼭 기억하세요. 시험에 자주 나옵니다.",
-        teacherAnswerAt: at(0, 11), answeredBy: T_KIM, isResolved: true,
-      },
-      {
-        studentId: S_HONG, date: dayKey(0),
-        content: "합성함수 미분에서 안쪽 함수 미분을 곱하는 이유가 이해가 안 돼요.",
-        aiAnswer: "연쇄법칙 때문입니다. y=f(g(x))일 때 x가 조금 변하면 g(x)가 변하고(=g'(x)), 그 변화가 다시 f를 통해 증폭됩니다(=f'(g(x))). 두 변화율의 곱이 전체 변화율이에요.",
-        teacherAnswer: null, teacherAnswerAt: null, answeredBy: null, isResolved: false,
-      },
-    ],
-  });
+  // 5) 질문 (QuestionMessage 스레드 — 현행 /api/questions 모델)
+  await prisma.questionMessage.deleteMany({ where: { studentId: S_HONG } });
+  const qThreads: Array<{ q: string; ai: string; tutor: string | null }> = [
+    {
+      q: "미분계수 정의에서 극한이 존재하지 않으면 미분 불가능인가요?",
+      ai: "네. 미분계수는 그 점에서의 순간변화율(극한값)로 정의되므로, 좌·우 극한이 다르거나 극한이 존재하지 않으면 그 점에서 미분 불가능합니다. 대표적으로 뾰족점(절댓값 함수의 꼭짓점)이나 불연속점이 그렇습니다.",
+      tutor: "정확해요. 추가로 '연속이지만 미분 불가능'한 예(y=|x|)를 꼭 기억하세요. 시험에 자주 나옵니다.",
+    },
+    {
+      q: "합성함수 미분에서 안쪽 함수 미분을 곱하는 이유가 이해가 안 돼요.",
+      ai: "연쇄법칙 때문입니다. y=f(g(x))일 때 x가 조금 변하면 g(x)가 변하고(=g'(x)), 그 변화가 다시 f를 통해 증폭됩니다(=f'(g(x))). 두 변화율의 곱이 전체 변화율이에요.",
+      tutor: null,
+    },
+  ];
+  for (const t of qThreads) {
+    const root = await prisma.questionMessage.create({
+      data: { studentId: S_HONG, teacherId: T_KIM, sender: "me", body: t.q, date: dayKey(0), replyToId: null },
+    });
+    await prisma.questionMessage.create({
+      data: { studentId: S_HONG, teacherId: T_KIM, sender: "ai", body: t.ai, replyToId: root.id },
+    });
+    if (t.tutor) {
+      await prisma.questionMessage.create({
+        data: { studentId: S_HONG, teacherId: T_KIM, sender: "tutor", body: t.tutor, replyToId: root.id },
+      });
+    }
+  }
 
   // 6) 매니저 케어 로그 (학생에게 노출)
   await prisma.managerCareLog.deleteMany({ where: { studentId: S_HONG } });

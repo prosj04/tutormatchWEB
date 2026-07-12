@@ -515,9 +515,8 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   display: flex;
   gap: 18px;
   width: max-content;
-  animation: hall-scroll 48s linear infinite;
+  animation: hall-scroll 80s linear infinite;
 }
-.hall-marquee:hover .hall-track { animation-play-state: paused; }
 @keyframes hall-scroll { to { transform: translateX(-50%); } }
 .hall-card {
   position: relative;
@@ -537,7 +536,7 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
 /* 로고를 텍스트 위 워터마크로 배치 — 카드 폭 대비 약 36%(기존 1.5배) */
 .hall-logo {
   position: absolute;
-  top: 13%; left: 50%;
+  top: 21%; left: 50%;
   width: 36%; height: 24%;
   transform: translateX(-50%);
   opacity: 0.62;

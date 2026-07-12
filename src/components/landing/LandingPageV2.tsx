@@ -180,8 +180,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
 
   const kickers = {
     teachers: getCmsValue("home_labels", "kicker_teachers", "TEACHERS"),
-    management: getCmsValue("home_labels", "kicker_management", "REPORTS"),
-    lessonCare: getCmsValue("home_labels", "kicker_lesson_care", "LESSON CARE"),
     process: getCmsValue("home_labels", "kicker_process", "PROCESS"),
     plans: getCmsValue("home_labels", "kicker_plans", "PLANS"),
     reviews: getCmsValue("home_labels", "kicker_reviews", "REVIEWS"),
@@ -214,12 +212,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
       "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
     ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n알게 되실 겁니다"),
-    lessonCare: getCmsMultiline("lesson_care", "headline", "수업이 없는 날에도,\n공부는 계속됩니다"),
-    lessonCareSubtext: getCmsValue(
-      "lesson_care",
-      "subtext",
-      "성적은 수업 사이의 매일이 만듭니다. 숙제와 질문을 시스템으로 관리합니다.",
-    ),
     process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
     processSubtext: getCmsValue("features", "section_subtext", "상담과 배정부터 수업 관리, 사후 관리까지 전담 매니저가 처음부터 끝까지 책임집니다."),
     teachers: getCmsMultiline("tutors_featured", "home_title", "아무 선생님이나\n소개하지 않습니다"),
@@ -313,7 +305,7 @@ function useMobileCenterActive(
   manualLockRef?: React.MutableRefObject<number>,
 ) {
   useEffect(() => {
-    if (!window.matchMedia("(max-width: 960px)").matches) return;
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
     const list = listRef.current;
     if (!list) return;
     let raf = 0;
@@ -355,11 +347,12 @@ function useMobileCenterActive(
 function makeRowHoverMove(
   setActive: React.Dispatch<React.SetStateAction<number>>,
   manualLockRef?: React.MutableRefObject<number>,
+  listRef?: React.RefObject<HTMLDivElement | null>,
 ) {
-  return (e: React.MouseEvent<HTMLDivElement>) => {
+  return (e: React.MouseEvent<HTMLElement>) => {
     if (typeof window !== "undefined" && !window.matchMedia("(hover: hover)").matches) return;
     if (manualLockRef && Date.now() - manualLockRef.current < TAP_LOCK_MS) return;
-    const list = e.currentTarget;
+    const list = listRef?.current ?? e.currentTarget;
     const y = e.clientY;
     const rows = list.children;
     for (let i = 0; i < rows.length; i++) {
@@ -418,12 +411,6 @@ export function LandingPageV2({
   const careMockRef = useRef<HTMLDivElement | null>(null);
   const careMockY = useAlignedMockY(careListRef, careMockRef, activeCare);
   useMobileCenterActive(careListRef, setActiveCare);
-
-  const [activeLessonCare, setActiveLessonCare] = useState(0);
-  const lessonCareListRef = useRef<HTMLDivElement | null>(null);
-  const lessonCareMockRef = useRef<HTMLDivElement | null>(null);
-  const lessonCareMockY = useAlignedMockY(lessonCareListRef, lessonCareMockRef, activeLessonCare);
-  useMobileCenterActive(lessonCareListRef, setActiveLessonCare);
 
   // hover 없는 터치 기기: 스텝 탭이 곧바로 중앙 감지에 덮이지 않도록 탭을 우선시
   const activateStepByTap = (index: number) => {
@@ -527,44 +514,10 @@ export function LandingPageV2({
       <div className="lp2-proc-mock-note">방문 진단으로 성향까지 맞춘 선생님을 배정합니다</div>
     </>,
     <>
-      <div className="lp2-report-card lp2-mock-hw">
-        <div className="lp2-report-head">
-          <span className="lp2-proof-dot" />
-          <strong>오늘의 숙제</strong>
-          <span className="t">매일 체크</span>
-        </div>
-        <div className="lp2-hw-list">
-          <div className="lp2-hw-row done">
-            <span className="c">✓</span>
-            <span className="v">유형 연습 4문항</span>
-          </div>
-          <div className="lp2-hw-row done">
-            <span className="c">✓</span>
-            <span className="v">오답노트 정리 2개</span>
-          </div>
-          <div className="lp2-hw-row todo">
-            <span className="c" />
-            <span className="v">개념 복습 p.84~87</span>
-          </div>
-        </div>
+      <div className="lp2-shot">
+        <Image src="/images/landing/app-qna.png" alt="" width={632} height={600} sizes="380px" />
       </div>
-      <div className="lp2-qna-card lp2-mock-qna">
-        <div className="lp2-qna-body">
-          <div className="lp2-qmsg q">
-            <span className="who">학생</span>
-            <p>12번, 판별식으로 풀었는데 답이 왜 다르죠?</p>
-          </div>
-          <div className="lp2-qmsg a">
-            <span className="chip ai">AI 즉시 답변</span>
-            <p>범위 조건 x&gt;0이 빠졌어요. 반영하면 근이 하나로 정해집니다.</p>
-          </div>
-          <div className="lp2-qmsg a">
-            <span className="chip tc">선생님 답변</span>
-            <p>맞아요. 자주 놓치는 유형이라 다음 수업에 한 번 더 봐요.</p>
-          </div>
-        </div>
-      </div>
-      <div className="lp2-proc-mock-note">매일 체크하는 숙제 + AI·선생님 2단 답변</div>
+      <div className="lp2-proc-mock-note">실제 학생 화면 — 매일 체크하는 숙제 + AI·선생님 2단 답변</div>
     </>,
     <>
       <div className="lp2-report-card lp2-mock-parent">
@@ -687,62 +640,45 @@ export function LandingPageV2({
     </div>
   );
 
-  /* 수업 관리 목업 — 숙제 매일 체크 + AI 질의응답 */
+  /* 수업 관리 목업 — 실제 학생 앱 화면 (숙제 체크리스트 · AI 질의응답) */
   const homeworkMock = (
-    <div className="lp2-report-card">
+    <div className="lp2-shot">
       <div className="lp2-report-head">
         <span className="lp2-proof-dot" />
-        <strong>이번 주 숙제</strong>
-        <span className="t">선생님이 등록</span>
+        <strong>오늘의 숙제</strong>
+        <span className="t">실제 학생 화면</span>
       </div>
-      <div className="lp2-hw-list">
-        <div className="lp2-hw-row done">
-          <span className="d">월</span>
-          <span className="v">유형 연습 4문항</span>
-          <span className="c">✓</span>
-        </div>
-        <div className="lp2-hw-row done">
-          <span className="d">화</span>
-          <span className="v">오답노트 2개</span>
-          <span className="c">✓</span>
-        </div>
-        <div className="lp2-hw-row today">
-          <span className="d">수</span>
-          <span className="v">유형 연습 4문항</span>
-          <span className="c">오늘</span>
-        </div>
-        <div className="lp2-hw-row">
-          <span className="d">목</span>
-          <span className="v">수업 전 복습</span>
-          <span className="c" />
-        </div>
-      </div>
+      <Image src="/images/landing/app-homework.png" alt="" width={844} height={1116} sizes="460px" />
       <div className="lp2-report-foot">학생이 매일 체크하고, 선생님이 확인합니다</div>
     </div>
   );
   const careQnaMock = (
-    <div className="lp2-qna-card">
+    <div className="lp2-shot">
       <div className="lp2-report-head">
         <span className="lp2-proof-dot" />
         <strong>질문·답변</strong>
-        <span className="t">수업 없는 날에도</span>
+        <span className="t">실제 학생 화면</span>
       </div>
-      <div className="lp2-qna-body">
-        <div className="lp2-bubble student">
-          <span className="who">학생 · 밤 11:24</span>
-          <p>쌤, 오늘 숙제 12번이요… 판별식으로 풀었는데 답이 왜 다르죠?</p>
-        </div>
-        <div className="lp2-bubble ai">
-          <span className="who">AI 답변 · 밤 11:24 · 즉시</span>
-          <p>범위 조건 x&gt;0이 빠졌어요. 조건을 반영하면 근이 하나로 정해집니다. 풀이 단계를 정리해 드릴게요.</p>
-        </div>
-        <div className="lp2-bubble teacher">
-          <span className="who">선생님 · 아침 7:40</span>
-          <p>AI 풀이 그대로예요. 범위 조건은 자주 놓치는 유형이라 다음 수업 때 한 번 더 봐요.</p>
-        </div>
-      </div>
+      <Image src="/images/landing/app-qna.png" alt="" width={632} height={600} sizes="460px" />
+      <div className="lp2-report-foot">AI가 즉시 답하고, 선생님이 이어서 확인합니다</div>
     </div>
   );
+
+  /* Learning care 통합 행 — 리포트 3종 + 숙제·질문 관리 (오너 지시: 두 섹션 통합).
+     CMS가 라벨을 재정의할 수 있어 라벨 키워드로 목업을 매칭하고, 같은 라벨은 1회만 노출. */
+  const learningCareMocks = [lessonReportMock, monthlyReportMock, parentAppMock, homeworkMock, careQnaMock];
+  const pickCareMock = (label: string, fallback: number) =>
+    label.includes("숙제") ? 3
+    : label.includes("질문") ? 4
+    : label.includes("월간") ? 1
+    : label.includes("학부모") || label.includes("진도") ? 2
+    : label.includes("리포트") ? 1
+    : fallback;
+  const seenCareLabels = new Set<string>();
+  const learningCareRows = [
+    ...managementItems.map((it) => ({ key: `m${it.n}`, label: it.label, desc: it.desc, mock: pickCareMock(it.label, it.n - 1) })),
+    ...lessonCareItems.map((it) => ({ key: `l${it.n}`, label: it.label, desc: it.desc, mock: pickCareMock(it.label, 2 + it.n) })),
+  ].filter((r) => (seenCareLabels.has(r.label) ? false : (seenCareLabels.add(r.label), true)));
 
   return (
     <div className="lp2-root">
@@ -810,7 +746,13 @@ export function LandingPageV2({
       <HomeSafetyStory data={safetyStory} />
 
       {/* ══ 4. PROCESS (Concord 방식 5단계) ════════════════ */}
-      <section id="process" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+      {/* 좌우 여백 포함 섹션 전폭에서 커서 y좌표로 단계 활성화 (오너 지시) */}
+      <section
+        id="process"
+        className="lp2-sec"
+        style={{ scrollMarginTop: "80px" }}
+        onMouseMove={makeRowHoverMove(setActiveStep, procTapLockRef, procListRef)}
+      >
         <div className="lp2-wrap">
           <div className="lp2-sec-head reveal">
             <span className="lp2-eyebrow">{kickers.process}</span>
@@ -819,11 +761,7 @@ export function LandingPageV2({
           </div>
 
           <div className="lp2-proc-cols">
-            <div
-              className="lp2-proc-list"
-              ref={procListRef}
-              onMouseMove={makeRowHoverMove(setActiveStep, procTapLockRef)}
-            >
+            <div className="lp2-proc-list" ref={procListRef}>
               {cmsSteps.map((step, index) => (
                 <details
                   key={step.number}
@@ -1043,28 +981,33 @@ export function LandingPageV2({
             <p className="lp2-rev-imgnote">*사진은 실제 후기 작성자와 다를 수 있습니다</p>
           ) : null}
 
-          <div className="lp2-cta-row" style={{ marginTop: 40 }}>
-            <Link href="/reviews" className="lp2-btn lp2-btn-ghost lp2-btn-sm">
-              {uiLabels.viewAllReviews}
+          <div className="lp2-cta-row" style={{ marginTop: 40, justifyContent: "center" }}>
+            <Link href="/reviews" className="lp2-btn lp2-btn-ghost">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              {uiLabels.viewAllReviews.replace(/\s*→\s*$/, "")}
             </Link>
           </div>
         </div>
         )}
       </section>
 
-      {/* ══ 7. REPORTS (수업·월간 리포트 + 학부모 페이지) ══ */}
+      {/* ══ 7. LEARNING CARE (리포트·학부모 페이지 + 숙제·질문 관리 통합) ══ */}
       <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
         <div className="lp2-wrap">
           <div className="lp2-care-cols">
             <div className="lp2-care-left">
               <div className="lp2-sec-head reveal">
-                <span className="lp2-eyebrow">{kickers.management}</span>
+                <span className="lp2-eyebrow">
+                  {getCmsValue("home_labels", "kicker_management", "LEARNING CARE")}
+                </span>
                 <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.management}</h2>
                 <p>
                   {getCmsValue(
                     "management",
                     "subtext",
-                    "모든 수업은 기록으로 남습니다. 수업 리포트, 월간 리포트, 학부모 페이지로 아이의 공부를 그대로 보실 수 있습니다.",
+                    "수업이 없는 날에도 공부는 계속됩니다. 숙제·질문·리포트·학부모 페이지로 아이의 매일을 그대로 보실 수 있습니다.",
                   )}
                 </p>
               </div>
@@ -1074,13 +1017,13 @@ export function LandingPageV2({
                 ref={careListRef}
                 onMouseMove={makeRowHoverMove(setActiveCare)}
               >
-                {managementItems.map((item, index) => (
+                {learningCareRows.map((item, index) => (
                   <div
-                    key={item.n}
+                    key={item.key}
                     className="lp2-care-row reveal"
                     onMouseEnter={() => setActiveCare(index)}
                   >
-                    <div className="num">0{item.n}</div>
+                    <div className="num">0{index + 1}</div>
                     <div>
                       <h3>{item.label}</h3>
                       <p>{item.desc}</p>
@@ -1093,9 +1036,7 @@ export function LandingPageV2({
             {/* 모바일: 화면 중앙 항목의 목업이 뷰포트 하단에 고정 */}
             <div className="lp2-care-mobile-mock lp2-mobile-only" aria-hidden="true">
               <div key={`m-care-${activeCare}`}>
-                {[lessonReportMock, monthlyReportMock, parentAppMock][
-                  (managementItems[activeCare]?.n ?? 1) - 1
-                ]}
+                {learningCareMocks[learningCareRows[activeCare]?.mock ?? 0]}
               </div>
             </div>
 
@@ -1110,66 +1051,7 @@ export function LandingPageV2({
               }}
             >
               <div key={`care-${activeCare}`}>
-                {[lessonReportMock, monthlyReportMock, parentAppMock][
-                  (managementItems[activeCare]?.n ?? 1) - 1
-                ]}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 7.2 LESSON CARE (숙제·질문 관리) ═══════════════ */}
-      <section id="lesson-care" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
-        <div className="lp2-wrap">
-          <div className="lp2-care-cols">
-            <div className="lp2-care-left">
-              <div className="lp2-sec-head reveal">
-                <span className="lp2-eyebrow">{kickers.lessonCare}</span>
-                <h2 style={{ whiteSpace: "pre-line" }}>{sectionTitles.lessonCare}</h2>
-                <p>{sectionTitles.lessonCareSubtext}</p>
-              </div>
-
-              <div
-                className="lp2-care-list"
-                ref={lessonCareListRef}
-                onMouseMove={makeRowHoverMove(setActiveLessonCare)}
-              >
-                {lessonCareItems.map((item, index) => (
-                  <div
-                    key={item.n}
-                    className="lp2-care-row reveal"
-                    onMouseEnter={() => setActiveLessonCare(index)}
-                  >
-                    <div className="num">0{item.n}</div>
-                    <div>
-                      <h3>{item.label}</h3>
-                      <p>{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 모바일: 화면 중앙 항목의 목업이 뷰포트 하단에 고정 */}
-            <div className="lp2-care-mobile-mock lp2-mobile-only" aria-hidden="true">
-              <div key={`m-lc-${activeLessonCare}`}>
-                {[homeworkMock, careQnaMock][(lessonCareItems[activeLessonCare]?.n ?? 1) - 1]}
-              </div>
-            </div>
-
-            <div
-              className="lp2-care-mock reveal lp2-desktop-only"
-              aria-hidden="true"
-              ref={lessonCareMockRef}
-              style={{
-                transform: `translateY(${lessonCareMockY}px)`,
-                transition:
-                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
-              }}
-            >
-              <div key={`lc-${activeLessonCare}`}>
-                {[homeworkMock, careQnaMock][(lessonCareItems[activeLessonCare]?.n ?? 1) - 1]}
+                {learningCareMocks[learningCareRows[activeCare]?.mock ?? 0]}
               </div>
             </div>
           </div>
@@ -1264,11 +1146,8 @@ export function LandingPageV2({
                         </CmsEdit>
                       </td>
                       <td>
-                        {row.other === "✗" || row.other === "없음" ? (
-                          <>
-                            <span className="lp2-no">✗</span>
-                            {row.other.replace("✗", "").trim() || "없음"}
-                          </>
+                        {/✗|없음/.test(row.other) ? (
+                          <span className="lp2-no">✗</span>
                         ) : (
                           <CmsEdit active={isEditMode} section="compare" cmsKey={`row${row.rowIndex}_other`} type="text">
                             {row.other}
