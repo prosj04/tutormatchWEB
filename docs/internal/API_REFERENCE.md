@@ -1,8 +1,10 @@
 # Concord Private Tutoring — API Reference
 
 > 대상: 백엔드·프론트 통합 담당자  
-> 기준: `src/app/api/**/route.ts` 실측 (최초 2026-07-04 / **재실측 2026-07-12**, 총 **166개** 라우트)  
+> 기준: `src/app/api/**/route.ts` 실측 (최초 2026-07-04 / 재실측 2026-07-12 166개 / **2026-07-13 증분 갱신, 총 173개** 라우트)  
 > 원칙: 정확성 > 완전성. 각 라우트의 `require*()` 헬퍼·`session.user.role` 분기 코드로 권한 결정. 확인 못 한 것은 `[미확인]`.
+>
+> **2026-07-13 증분 갱신:** 07-12~07-13에 7개 라우트 추가(166→173). 신규 — 학부모 대납 결제 `/api/parent/payments/complete`, 강사 본인 정산 read-only `/api/teacher/settlements`·`/api/mobile/teacher/settlements`, 수업 확인 제도 `/api/teacher/lessons/[id]/confirm`·`/api/mobile/teacher/lessons/[id]/confirm`·`/api/teacher/lessons/pending-confirm`, 로그인 잠금 사전조회 `/api/auth/login-status`. 기존 라우트 변경(정정 표기) — `/api/mobile/parent/profile`에 DELETE(소프트삭제) 추가, `/api/mobile/notifications` 가드가 `requireMobileStudent`→`requireMobileUser`(역할 무관)로 변경. 신규 헬퍼/모듈: `lesson-confirm`(`confirmLesson`·`parseConfirmInput`·`getPendingConfirmLessons`), `settlement`(`TEACHER_HOURLY_RATE_KRW`), `login-rate-limit`(`isLoginBlocked`·`loginRateLimitKey`), `requireMobileUser`. 제거된 라우트 없음.
 >
 > **2026-07-12 갱신 요약:** 07-05~07-12에 56개 라우트 추가(110→166). 주요 증가분 — PARENT 역할 계열(웹 `/api/parent/*` 8, 모바일 `/api/mobile/parent/*` 8), 강사 모바일 API `/api/mobile/teacher/*` 15, 매니저 모바일 API `/api/mobile/manager/*` 15, 웹 매니저 추가(`parent-link`·`password-reset`·`questions`), 공개 상담 리드 `/api/consultation-leads`, 비밀번호 변경·리셋(`/api/account/password`·`/api/mobile/me/password`·`manager/password-reset`), 학부모 연결 코드(`student/parent-link-code`·`mobile/me/parent-link-code`), `student/profile`. 신규 헬퍼: `requireParent`(웹 NextAuth PARENT) / `requireMobileParent`·`requireMobileManager`·`requireMobileTeacher`·`requireMobileTeacherAllowPending`(모바일 Bearer JWT) / `requireManagerOrAbove`. 제거된 라우트 없음.
 
@@ -29,35 +31,35 @@
 
 ## 그룹별 개수
 
-> 2026-07-12 실측 기준 개수. 괄호 안은 07-04 대비 증감.
+> 2026-07-13 증분 실측 기준 개수. 괄호 안은 직전(07-12) 대비 증감.
 
 | 그룹 | 라우트 파일 수 |
 |---|---|
-| account | 2 (+1) |
+| account | 2 |
 | admin | 30 |
-| auth | 1 |
+| auth | 2 (+1) |
 | billing | 2 |
 | chief-manager | 1 |
 | consultation | 3 |
-| consultation-leads | 1 (신규) |
+| consultation-leads | 1 |
 | cron | 2 |
 | events | 1 |
-| manager | 16 (+3) |
+| manager | 16 |
 | matches | 1 |
-| mobile | 63 (+43) |
+| mobile | 65 (+2) |
 | notifications | 3 |
-| parent | 8 (신규) |
+| parent | 9 (+1) |
 | payments | 1 |
 | plans | 4 |
-| question-images | 1 (07-04 표에서 누락됐던 기존 라우트) |
+| question-images | 1 |
 | questions | 3 |
 | register | 3 |
-| student | 5 (+2) |
-| teacher | 14 (+1) |
+| student | 5 |
+| teacher | 16 (+2) |
 | webhooks | 1 |
-| **합계** | **166** |
+| **합계** | **173** |
 
-> 참고: 07-04 문서의 합계 110은 `question-images` 1개가 표에서 누락된 값(실측 111)이었을 가능성. 07-12 재실측은 `find src/app/api -name route.ts` 기준 166개.
+> 참고: 07-04 문서의 합계 110은 `question-images` 1개가 표에서 누락된 값(실측 111)이었을 가능성. 07-12 재실측은 `find src/app/api -name route.ts` 기준 166개, 07-13 증분 실측은 173개.
 
 ---
 
@@ -66,6 +68,7 @@
 | 경로 | 메서드 | 권한 | 요청 | 응답 | 비고 |
 |---|---|---|---|---|---|
 | `/api/auth/[...nextauth]` | GET/POST | Public | NextAuth 프로토콜 (`identifier`, `password`) | NextAuth JWT 세션 쿠키 | `handlers` re-export |
+| `/api/auth/login-status` | POST | Public | `{ identifier }` | `{ locked: boolean }` 200 | 07-13 신규. 로그인 폼이 `signIn` 이전 브루트포스 잠금 여부만 조회(`isLoginBlocked`). auth.ts와 동일 인메모리 스토어 공유. 계정 존재 여부는 비노출·항상 200 |
 
 ## 2. register (공개 가입)
 
@@ -136,6 +139,9 @@
 | `/api/teacher/homework-templates/[templateId]` | PATCH/DELETE | TEACHER | `{ title?, tasks?, ... }` | `{ template }` / `{ ok }` | — |
 | `/api/teacher/lessons` | GET | TEACHER | `?studentId=&status=&upcoming=1` | `{ lessons }` | 담당 학생의 수업 |
 | `/api/teacher/lessons/[id]/cancel` | PATCH | TEACHER | — | `{ lesson }` | 7일 뒤 자동 보충 수업 생성 |
+| `/api/teacher/lessons/[id]/confirm` | PATCH | TEACHER | `{ outcome: "COMPLETED" }` 또는 `{ outcome: "NOT_HELD", fault: "STUDENT"\|"NOT_STUDENT", reason }` | `{ resolvedStatus, makeup, makeupCreated, makeupSkippedReason }` | 07-13 신규. 수업 확인 제도(`confirmLesson`). `NOT_HELD`+`NOT_STUDENT` 시 원 수업 CANCELLED + 대체 수업 자동 이월 생성 |
+| `/api/teacher/lessons/pending-confirm` | GET | TEACHER | — | `{ lessons }` | 07-13 신규. 종료된 확인 대기 수업 목록(`getPendingConfirmLessons`) |
+| `/api/teacher/settlements` | GET | TEACHER | `?month=YYYY-MM`(미지정=현재 KST 월) | `{ year, month, hourlyRateKrw, lessonCount, totalMinutes, totalHours, payoutKrw, needsReview, lessons[] }` | 07-13 신규. 강사 본인 월별 정산 read-only. admin과 동일 KST 월경계·시급(`TEACHER_HOURLY_RATE_KRW`)·환불 제외. `durationMin=0`은 합계 제외+`needsReview` |
 | `/api/teacher/plans/[planId]/comment` | PATCH | TEACHER | `{ comment }` | `{ plan }` | `requireTeacherStudentMatch` |
 | `/api/teacher/questions/[id]/answer` | PATCH | TEACHER | `{ answer }` | `{ question }` | 매칭 검증 후 답변 |
 | `/api/teacher/students` | GET | TEACHER | — | `{ students }` | 담당 학생 목록 |
@@ -273,7 +279,7 @@
 
 CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 
-## 19. mobile — 63개 (07-12: 20→63)
+## 19. mobile — 65개 (07-12: 20→63, 07-13: +2 → 65)
 
 권한: 학생 데이터는 `requireMobileStudent` (`role=STUDENT`, HMAC-JWT Bearer). 07-12에 학부모/강사/매니저 모바일 계열이 대거 추가돼 각각 `requireMobileParent`·`requireMobileTeacher(AllowPending)`·`requireMobileManager` 헬퍼를 사용한다. 예외 표기.
 
@@ -300,7 +306,7 @@ CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 | `/api/mobile/consultation` | POST | 상담 신청 |
 | `/api/mobile/qna` | GET/POST | 통합 QnA |
 | `/api/mobile/qna/[tutorId]` | GET/POST | 강사별 스레드 |
-| `/api/mobile/notifications` | GET/PATCH | 목록·읽음 |
+| `/api/mobile/notifications` | GET/PATCH | 목록·읽음. **07-13 정정: 가드 `requireMobileStudent`→`requireMobileUser`(역할 무관, 자기 것만).** PATCH 본문 없음/`{}`=모두 읽음, `{ ids[] }`=개별 읽음 |
 | `/api/mobile/satisfaction-checkins` | GET | 미응답 체크인 |
 | `/api/mobile/satisfaction-checkins/[id]/respond` | POST | 응답 등록 |
 | `/api/mobile/me/parent-link-code` | GET/POST | 07-12 신규. 학부모 연결 코드 조회·발급(웹 `student/parent-link-code` 대응) |
@@ -335,9 +341,9 @@ CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 | `/api/mobile/parent/children/[studentId]/reports` | GET | PARENT | — | `{ reports }` | 자녀 월간 리포트(읽기). 미소유 403 |
 | `/api/mobile/parent/children/[studentId]/consultation` | POST | PARENT | `{ note? }` | `{ ok, status, alreadyOpen }` | 자녀 상담 신청. 미소유 403 |
 | `/api/mobile/parent/payments` | GET | PARENT | — | `{ children }` | 자녀별 결제·청구 이력 그룹 |
-| `/api/mobile/parent/profile` | GET/PATCH | PARENT | PATCH `{ name?, phone? }` | GET `{ name, phone, email }` / PATCH `{ ok }` | 이름·전화 수정 |
+| `/api/mobile/parent/profile` | GET/PATCH/DELETE | PARENT | PATCH `{ name?, phone? }` | GET `{ name, phone, email }` / PATCH `{ ok }` / DELETE `{ ok }` | 이름·전화 수정. **07-13 정정: DELETE(계정 소프트삭제) 추가** — `softDeleteUser`가 자녀 연결 해제 포함, `AuditLog(ACCOUNT_DELETE)` 기록 |
 
-### 19.6 mobile teacher — 15개 (07-12 신규)
+### 19.6 mobile teacher — 17개 (07-12 신규 15 / 07-13 +2: confirm·settlements)
 
 권한: 데이터 계열 `requireMobileTeacher`(승인 강사), 프로필·홈 계열 `requireMobileTeacherAllowPending`(미승인 강사 포함). 담당 학생 접근은 `requireTeacherStudentMatch(teacher.id, studentId)` 검사. 웹 `/api/teacher/*`와 1:1 대응.
 
@@ -351,6 +357,8 @@ CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 | `/api/mobile/teacher/homework-templates/[templateId]` | PATCH/DELETE | Teacher | 부분 수정 / 삭제 204 | 소유 검사 |
 | `/api/mobile/teacher/lessons` | GET | Teacher | `?studentId=&status=&upcoming=1` → `{ lessons }` | 담당 수업 |
 | `/api/mobile/teacher/lessons/[id]/cancel` | PATCH | Teacher | `{ lesson, makeup, makeupCreated, makeupSkippedReason }` | 7일 뒤 보충 자동 생성(중복·과거면 skip 사유 반환) |
+| `/api/mobile/teacher/lessons/[id]/confirm` | PATCH | Teacher | `{ outcome: "COMPLETED" }` 또는 `{ outcome: "NOT_HELD", fault, reason }` → `{ resolvedStatus, makeup, makeupCreated, makeupSkippedReason }` | 07-13 신규. 웹 `/api/teacher/lessons/[id]/confirm`와 동일 로직(`confirmLesson`) |
+| `/api/mobile/teacher/settlements` | GET | Teacher | `?month=YYYY-MM` → `{ year, month, hourlyRateKrw, lessonCount, totalMinutes, totalHours, payoutKrw, needsReview, lessons[] }` | 07-13 신규. 웹 `/api/teacher/settlements`를 Bearer 인증으로 재현. 동일 규칙 |
 | `/api/mobile/teacher/plans/[planId]/comment` | PATCH | Teacher | `{ comment }` → `{ plan }` | 매칭 검증. 코멘트 시 `TEACHER_COMMENT` 알림 |
 | `/api/mobile/teacher/questions/[id]/answer` | PATCH | Teacher | `{ teacherAnswer }` → `{ question }` | 최초 답변/재편집 지원. `TEACHER_ANSWERED` 알림 |
 | `/api/mobile/teacher/students` | GET | Teacher | `{ students }` (firstLessonAt 포함) | 담당 학생 목록 |
@@ -404,6 +412,7 @@ CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 | `/api/parent/children/[studentId]/reports` | GET | PARENT | — | `{ reports }` | 자녀 리포트(읽기). 미소유 403 |
 | `/api/parent/children/[studentId]/consultation` | POST | PARENT | `{ note? }` | `{ ok, status, alreadyOpen }` | 자녀 상담 신청. 미소유 403 |
 | `/api/parent/payments` | GET | PARENT | — | `{ children }` | 자녀별 결제·청구 이력 |
+| `/api/parent/payments/complete` | POST | PARENT | `{ studentId, orderId, amount, paymentKey?, cashReceipt? }` | `{ ok, assigned, plan, subscription }` | 07-13 신규. 학부모가 연결 자녀 명의로 결제 완료. `parentOwnsStudent` 검증 후 `completeStudentPayment` 위임(멱등). plan은 서버가 amount로 산출. 미연결 403 |
 | `/api/parent/profile` | GET/PATCH | PARENT | PATCH `{ name?, phone? }` | GET `{ name, phone }` / PATCH `{ ok }` | 이름·전화 수정 |
 
 ## 22. question-images (질문 이미지 프록시) — 07-04 표 누락분
@@ -427,3 +436,6 @@ CMS 변경 라우트는 `revalidatePublicCms(...)`로 캐시 태그 재검증.
 9. **(07-12) `/api/manager/password-reset`·`/api/mobile/manager/password-reset`** — 매니저가 임의 학생·학부모 비밀번호를 재설정(`findResettableUser`). 강사·매니저·어드민 대상은 아니지만 대면 전제이므로 남용 방지·감사 로그 의존. `AuditLog` 기록됨.
 10. **(07-12) `teacher-approval` 가드 완화** — 웹·모바일 모두 `requireManagerOrAbove`로 매니저가 강사 승인/거절(거절=`softDeleteUser`) 가능. 미승인 `role=TEACHER`에만 한정하는 방어 코드 존재.
 11. **(07-12) 모바일 report 라우트 메서드 불일치** — `/api/mobile/manager/consultations/[id]/report`는 **PUT**, 웹 동일 기능은 **POST/PATCH**. 클라이언트 공유 코드 작성 시 주의.
+12. **(07-13) `/api/auth/login-status` 잠금 스토어가 인메모리** — `login-rate-limit` 스토어를 auth.ts와 공유하나 서버리스 인스턴스별 분리. 다중 인스턴스에서 잠금 판정이 인스턴스마다 다를 수 있음. 계정 존재 여부는 비노출.
+13. **(07-13) 강사 정산 라우트가 amount/시급을 서버 고정 상수(`TEACHER_HOURLY_RATE_KRW`)로 계산** — 강사별 차등 시급 미지원. `durationMin=0` 수업은 합계 제외 후 `needsReview`로만 표기되므로 실제 정산 전 수동 검토 필요.
+14. **(07-13) `/api/parent/payments/complete`의 `paymentKey` optional** — 학생 라우트와 대칭. 이미 COMPLETED된 주문의 재시도·유실 복구를 멱등 반환하기 위한 설계. plan은 클라이언트 값 무시하고 서버가 amount로 산출.
