@@ -64,6 +64,41 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   return res.json() as Promise<T>;
 }
 
+/**
+ * multipart/form-data 업로드 헬퍼 — RN FormData(파일 파트: {uri,name,type})를 그대로 전송.
+ * apiFetch와 달리 Content-Type을 지정하지 않아 RN이 boundary를 자동으로 붙인다.
+ * 401 시 refresh 후 1회 재시도(FormData는 재사용 가능).
+ */
+export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
+  let token = await getAccessToken();
+
+  const doFetch = (t: string | null) =>
+    fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: { ...(t ? { Authorization: `Bearer ${t}` } : {}) },
+      body: form,
+    });
+
+  let res = await doFetch(token);
+
+  if (res.status === 401 && token) {
+    token = await refreshAccessToken();
+    if (token) {
+      res = await doFetch(token);
+    }
+  }
+
+  if (!res.ok) {
+    const body = await res.text();
+    if (res.status === 401) {
+      await clearTokens();
+    }
+    throw new Error(`API ${res.status}: ${body}`);
+  }
+
+  return res.json() as Promise<T>;
+}
+
 export async function apiLogin(identifier: string, password: string) {
   const res = await fetch(`${API_BASE}/api/mobile/auth/login`, {
     method: "POST",

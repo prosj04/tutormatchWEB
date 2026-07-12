@@ -11,6 +11,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 
 import {
   card as cardS,
@@ -29,7 +31,7 @@ import {
   InfoCircleIcon,
 } from "../../components/teacher/TeacherIcons";
 import { useAuth } from "../../hooks/useAuth";
-import { apiFetch } from "../../lib/api";
+import { apiFetch, apiUpload } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 
@@ -45,6 +47,19 @@ interface ProfileData {
     documentUrls: string[];
     updatedAt: string;
   } | null;
+}
+
+type DocType = "resume" | "document";
+const DOC_LABEL: Record<DocType, string> = { resume: "이력서", document: "인증서류" };
+
+// RN FormData 파일 파트 — 로컬 uri에서 파일명/MIME 유추
+function filePart(uri: string, name: string | null | undefined, mime?: string | null) {
+  const fallbackName = uri.split("/").pop() || "upload";
+  const fileName = name || fallbackName;
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  const type =
+    mime || (ext === "png" ? "image/png" : ext === "pdf" ? "application/pdf" : "image/jpeg");
+  return { uri, name: fileName, type } as unknown as Blob;
 }
 
 function MRow({
@@ -97,6 +112,8 @@ export default function TeacherMyScreen() {
   const [error, setError] = useState(false);
   const [notifyOn, setNotifyOn] = useState(true);
   const [pwOpen, setPwOpen] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [docUploading, setDocUploading] = useState<DocType | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -121,11 +138,71 @@ export default function TeacherMyScreen() {
   const docCount =
     (data?.profile?.documentUrls.length ?? 0) + (data?.profile?.resumeUrls.length ?? 0);
 
-  const notReady = () =>
-    Alert.alert(
-      "웹에서 이용해 주세요",
-      "사진·서류 업로드는 현재 웹 포털에서 지원돼요. 앱 업로드는 준비 중입니다.",
-    );
+  const pickPhoto = useCallback(async () => {
+    if (photoUploading) return;
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert("사진 접근 권한 필요", "설정에서 사진 보관함 접근을 허용해 주세요.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+    if (result.canceled) return;
+    const asset = result.assets[0];
+    if (!asset) return;
+
+    setPhotoUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", filePart(asset.uri, asset.fileName, asset.mimeType));
+      await apiUpload<{ photoUrl: string }>("/api/mobile/teacher/profile/photo", form);
+      await load();
+    } catch {
+      Alert.alert("업로드 실패", "프로필 사진 업로드에 실패했어요. 다시 시도해 주세요.");
+    } finally {
+      setPhotoUploading(false);
+    }
+  }, [photoUploading, load]);
+
+  const uploadDoc = useCallback(
+    async (type: DocType) => {
+      if (docUploading) return;
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/pdf", "image/*"],
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled) return;
+      const asset = result.assets[0];
+      if (!asset) return;
+
+      setDocUploading(type);
+      try {
+        const form = new FormData();
+        form.append("file", filePart(asset.uri, asset.name, asset.mimeType));
+        form.append("type", type);
+        await apiUpload("/api/mobile/teacher/profile/documents", form);
+        await load();
+      } catch {
+        Alert.alert("업로드 실패", "서류 업로드에 실패했어요. 다시 시도해 주세요.");
+      } finally {
+        setDocUploading(null);
+      }
+    },
+    [docUploading, load],
+  );
+
+  const pickDoc = useCallback(() => {
+    if (docUploading) return;
+    Alert.alert("서류 업로드", "업로드할 서류 종류를 선택해 주세요.", [
+      { text: DOC_LABEL.resume, onPress: () => void uploadDoc("resume") },
+      { text: DOC_LABEL.document, onPress: () => void uploadDoc("document") },
+      { text: "취소", style: "cancel" },
+    ]);
+  }, [docUploading, uploadDoc]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]} edges={["top", "left", "right"]}>
@@ -157,14 +234,26 @@ export default function TeacherMyScreen() {
               <MRow
                 icon={<ImageIcon color={t.accText} size={18} />}
                 label="프로필 사진"
-                sub={data?.profile?.photoUrl ? "등록됨 · 웹에서 변경" : "웹 포털에서 업로드"}
-                onPress={notReady}
+                sub={data?.profile?.photoUrl ? "등록됨 · 눌러서 변경" : "갤러리에서 사진 업로드"}
+                onPress={photoUploading ? undefined : () => void pickPhoto()}
+                trailing={
+                  photoUploading ? <ActivityIndicator color={t.acc} size="small" /> : undefined
+                }
               />
               <MRow
                 icon={<FileTextIcon color={t.accText} size={18} />}
                 label="서류 관리"
-                sub={docCount > 0 ? `${docCount}건 등록됨 · 웹에서 관리` : "이력서·증빙 서류 (웹)"}
-                onPress={notReady}
+                sub={
+                  docUploading
+                    ? `${DOC_LABEL[docUploading]} 업로드 중…`
+                    : docCount > 0
+                      ? `${docCount}건 등록됨 · 눌러서 추가`
+                      : "이력서·인증서류 (PDF·이미지)"
+                }
+                onPress={docUploading ? undefined : pickDoc}
+                trailing={
+                  docUploading ? <ActivityIndicator color={t.acc} size="small" /> : undefined
+                }
                 divider
               />
             </View>
@@ -212,7 +301,7 @@ export default function TeacherMyScreen() {
             <View style={[styles.banner, { backgroundColor: "rgba(0,0,0,0)", borderColor: t.line2 }]}>
               <InfoCircleIcon color={t.accText} size={17} />
               <Text style={[styles.bannerText, { color: t.mut }]}>
-                프로필·서류는 웹 포털과 공유돼요. 사진과 서류 업로드는 웹에서 진행해 주세요.
+                프로필·서류는 웹 포털과 공유돼요. 여러 파일을 한 번에 정리하려면 웹 포털에서도 관리할 수 있어요.
               </Text>
             </View>
 
