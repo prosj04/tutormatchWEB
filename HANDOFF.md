@@ -442,9 +442,9 @@ git log 실측 요약. 상세 세션 로그는 `CLAUDE_HANDOFF.md §25.1a~h`.
 |---|---|---|---|---|
 | P1-1 | GA4 이벤트 계측 — ⏳ 부분 완료: env-gated 페이지 태그는 07-05 추가(`13916e4`), 이벤트 세분화(`AnalyticsEvent` 이중 계측 or 대체) 잔여 | — | `src/lib` 이벤트 로직 | M |
 | P1-2 | 카카오 비즈니스 채널 개설 → (a) 알림톡 템플릿 심사 후 env 설정 (b) 카카오 로그인 KakaoProvider (c) 채널 플로팅 버튼 | Q4 (사업자) | `CLAUDE_HANDOFF.md §26.2 #1` | M |
-| P1-3 | Hourly 알림 복원: GitHub PAT `workflow` scope 부여 또는 Vercel Pro cron 전환 | 오너 결정 | `CLAUDE_HANDOFF.md §26.2 #2` | S |
+| P1-3 | Hourly 알림 복원 — ✅ 07-12 오너 결정(PAT 방식): 워크플로 파일 복원 완료. **잔여 오너 액션 2가지**: ① `workflow` scope 있는 PAT로 push 자격 갱신 ② GitHub 저장소 Settings→Secrets에 `CRON_SECRET` 등록 | 오너 액션 | `.github/workflows/hourly-alerts.yml` | S |
 | P1-4 | ~~번들 할인(#17) 할인율 결정~~ ❌ **폐기 (2026-07-12 오너 확정)**: 요금은 일관된 할인 규칙이 아니라 오너가 소비자 심리 최적가로 직접 설정한 금액 — 코드값(38\|43·55\|58·76\|78·106\|112만)이 진실. 할인 구조 제안·금액 변경 금지 | — | — | ❌ |
-| P1-5 | 리뷰 별점 정책 확정 후 Testimonial UI 반영 | 정책 결정 | `docs/30-제품·디자인.md`(구 PRODUCT_DESIGN_TRACKER) | S |
+| P1-5 | ~~리뷰 별점 정책~~ ✅ **종결 (2026-07-12 오너 확정)**: 별점 미도입 — 텍스트 후기 + 성적 배지 현행 유지 (별점은 조작 시비 여지). UI 변경 없음 | — | — | ✅ |
 | P1-6 | 커스텀 도메인 연결 | 도메인 확보 | — | S |
 
 ### 4.3 P2 — 확장·성숙

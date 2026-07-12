@@ -58,3 +58,4 @@ mobile/.hermes/
 # photo drop folder (116MB+ raw shoots — deployed copies live in public/)
 /photos/*
 !/photos/README.md
+tools/team-office/events.log

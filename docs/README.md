@@ -24,6 +24,7 @@
 | [IMPLEMENTATION_SESSIONS_REVISED.md](IMPLEMENTATION_SESSIONS_REVISED.md) | 세션별 구현 기록 | 타 세션 활성 |
 | [MANAGER_GUIDELINES.md](MANAGER_GUIDELINES.md) | 매니저 운영 가이드 | 운영 |
 | [REFACTORING_PLAN.md](REFACTORING_PLAN.md) | 리팩토링 제안 R-1~16 (P0 보안~P2 파일 분할) | 기술 부채 추적 |
+| [STORE_SUBMISSION_2026-07.md](STORE_SUBMISSION_2026-07.md) | 앱 스토어 제출 체크리스트·등록 텍스트 초안 (07-12 오너 제출 결정) | 제출 준비 |
 | [PHOTO_SHOOT_LIST.md](PHOTO_SHOOT_LIST.md) · [PHOTO_GENERATION_PROMPT.md](PHOTO_GENERATION_PROMPT.md) | 촬영 리스트 / 이미지 생성 프롬프트(보류) | 콘텐츠 |
 | [FRONTEND_BUILD_SPEC.md](FRONTEND_BUILD_SPEC.md) | 포인터 스텁 → 원본 `design handoff/FRONTEND_BUILD_SPEC.md` | 디자인 패키지 |
 | `app-guide.html` · `ceo-proposal.html` · `proposal-ledger.html` | 덱 PDF 소스 (headless Chrome `--print-to-pdf`로 재생성) | `branding/*.pdf` |
