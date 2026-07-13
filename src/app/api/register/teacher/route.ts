@@ -9,6 +9,7 @@ import {
   teacherSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 import { parseProfileGender } from "@/lib/profile-gender";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 type TeacherBody = {
   name?: unknown;
@@ -27,6 +28,10 @@ function isNonEmptyString(v: unknown): v is string {
 }
 
 export async function POST(request: Request) {
+  if (!checkRateLimit("register", clientIp(request), { windowMs: 10 * 60_000, max: 5 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: TeacherBody;
   try {
     body = (await request.json()) as TeacherBody;

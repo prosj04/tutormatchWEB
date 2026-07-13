@@ -12,6 +12,7 @@ import {
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 import { parseProfileGender } from "@/lib/profile-gender";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 type StudentBody = {
   name?: unknown;
@@ -57,6 +58,10 @@ function buildLeadNote(lead: {
 }
 
 export async function POST(request: Request) {
+  if (!checkRateLimit("register", clientIp(request), { windowMs: 10 * 60_000, max: 5 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: StudentBody;
   try {
     body = (await request.json()) as StudentBody;

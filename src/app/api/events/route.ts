@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { logAnalyticsEvent } from "@/lib/analytics";
 import type { AnalyticsPayload } from "@/lib/analytics-events";
 import { getMobileUser } from "@/lib/mobile-auth";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { auth } from "@/auth";
 
 /**
@@ -10,6 +11,11 @@ import { auth } from "@/auth";
  * body: { name: string; payload?: object; platform?: "web" | "mobile" }
  */
 export async function POST(request: Request) {
+  // 비인증 쓰기 라우트 — IP당 분당 30회 제한
+  if (!checkRateLimit("events", clientIp(request), { windowMs: 60_000, max: 30 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: { name?: unknown; payload?: unknown; platform?: unknown };
   try {
     body = await request.json();

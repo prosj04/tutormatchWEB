@@ -4,9 +4,14 @@ import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { logAnalyticsEvent } from "@/lib/analytics";
 import { issueMobileTokens } from "@/lib/mobile-auth";
 import { createParentAccount } from "@/lib/parent-account";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 /** POST /api/mobile/parent/register — 학부모 계정 생성(모바일, 토큰 발급) */
 export async function POST(request: Request) {
+  if (!checkRateLimit("register", clientIp(request), { windowMs: 10 * 60_000, max: 5 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: { name?: unknown; email?: unknown; password?: unknown; phone?: unknown };
   try {
     body = await request.json();

@@ -7,8 +7,14 @@ import { NextResponse } from "next/server";
 
 import { adminCount } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+  // 시크릿 키 브루트포스 방지
+  if (!checkRateLimit("admin-recover", clientIp(request), { windowMs: 10 * 60_000, max: 5 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   if ((await adminCount()) === 0) {
     return NextResponse.json({ error: "관리자 계정이 없습니다. 먼저 계정을 만드세요." }, { status: 404 });
   }

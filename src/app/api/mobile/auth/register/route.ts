@@ -10,6 +10,7 @@ import {
   studentSyntheticEmailFromDigits,
 } from "@/lib/phone-login";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { createConsultationRequest } from "@/lib/student-enrollment";
 
 type ConsultationPayload = {
@@ -71,6 +72,10 @@ async function attachConsultationIfProvided(
 
 /** POST /api/mobile/auth/register — 학생 계정 생성 */
 export async function POST(request: Request) {
+  if (!checkRateLimit("register", clientIp(request), { windowMs: 10 * 60_000, max: 5 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: {
     name?: unknown;
     email?: unknown;
