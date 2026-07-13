@@ -3,6 +3,7 @@ import { formatDateKey } from "@/lib/study-plan-dates";
 import { prisma } from "@/lib/prisma";
 import { sendSms } from "@/lib/sms";
 import { createNotification } from "@/lib/notifications";
+import { autoCarryOverUnconfirmedLesson } from "@/lib/lesson-confirm";
 import { getV2PlanById } from "@/lib/pricing-plans";
 import { chargeBillingKey } from "@/lib/toss-payments";
 
@@ -64,10 +65,12 @@ export async function runAlertChecks() {
   let subscriptionExpiryChecked = 0; // kept for backward compat — total of all expiry stages
   let lessonRemindersChecked = 0;
   let closedLessons = 0;
-  let studySessionsWritten = 0;
+  // Retained for /api/cron/check-alerts response compatibility. Always 0 —
+  // D+7 무응답이 이월(CANCELLED)로 바뀌어 StudySession을 쓰지 않는다 (§4 참고).
+  const studySessionsWritten = 0;
   let postConsultationFollowUpsSent = 0;
   let firstLessonSlaBreachesChecked = 0;
-  let lessonsAutoCompleted = 0;
+  let lessonsCarriedOver = 0;
   let consultationRemindersChecked = 0;
   let satisfactionCheckinsCreated = 0;
   let renewalChargesAttempted = 0;
@@ -388,14 +391,14 @@ export async function runAlertChecks() {
     }
   }
 
-  // ── 4. 수업 확인 제도 — 종료 수업 확인 요청 + 리마인더 + D+7 자동 완료 ────────
+  // ── 4. 수업 확인 제도 — 종료 수업 확인 요청 + 리마인더 + D+7 비과실 이월 ──────
   //
   // 방문 수업이라 시스템이 노쇼를 감지할 수 없다. 자동 완료(구 12h·60min 버퍼)를
   // 폐지하고, 예정 종료 시각이 지난 SCHEDULED 수업은 선생님에게 확인 요청을 보낸다.
   //   - 종료 경과 & 미발송 → LESSON_CONFIRM_REQUEST (중복 발송 가드)
   //   - 확인 요청 후 D+1·D+3 & 여전히 SCHEDULED → 리마인더(각 단계 1회)
-  //   - 확인 요청 후 D+7 & 여전히 SCHEDULED → 자동 COMPLETED + 사유 기록 + 3자 알림
-  // COMPLETED 전이 시 StudySession(source="lesson") 재계산으로 학습시간 집계를 유지한다.
+  //   - 확인 요청 후 D+7 & 여전히 SCHEDULED → 비과실 이월(CANCELLED + 대체 수업) + 3자 알림
+  //     (오너 확정: 무응답 자동 완료 폐지 — 정산·학습시간 집계에서 제외)
 
   const nowMs = Date.now();
   const scheduledLessons = await prisma.lesson.findMany({
@@ -459,7 +462,7 @@ export async function runAlertChecks() {
       relatedId: string;
     }> = [];
 
-    const toAutoComplete: typeof endedLessons = [];
+    const toCarryOver: typeof endedLessons = [];
 
     for (const l of endedLessons) {
       const requestedAt = firstRequestAt.get(l.id);
@@ -481,8 +484,8 @@ export async function runAlertChecks() {
       const sentCount = requestCount.get(l.id) ?? 1;
 
       if (ageMs >= 7 * DAY_MS) {
-        // D+7 무응답 → 자동 완료 대상.
-        toAutoComplete.push(l);
+        // D+7 무응답 → 비과실 이월 대상.
+        toCarryOver.push(l);
       } else if (ageMs >= 3 * DAY_MS && sentCount < 3) {
         // D+3 리마인더 (최초 + D+1 이후 3번째 발송).
         confirmRequestsToCreate.push({
@@ -509,89 +512,47 @@ export async function runAlertChecks() {
       notificationsCreated += confirmRequestsToCreate.length;
     }
 
-    // ── D+7 무응답 자동 완료 ──────────────────────────────────────────────────
-    if (toAutoComplete.length > 0) {
-      await prisma.lesson.updateMany({
-        where: { id: { in: toAutoComplete.map((l) => l.id) } },
-        data: {
-          status: "COMPLETED",
-          confirmedAt: new Date(),
-          notHeldReason: "선생님 미확인 자동 처리",
-        },
-      });
-      closedLessons = toAutoComplete.length;
-      lessonsAutoCompleted += toAutoComplete.length;
+    // ── D+7 무응답 → 비과실 이월 (오너 확정: 자동 완료 폐지) ────────────────────
+    //
+    // confirmLesson의 비학생 과실 경로와 동일한 공유 로직(autoCarryOverUnconfirmedLesson)
+    // 재사용. CANCELLED 전이이므로 정산·StudySession 집계 대상이 아니고, 3자 공지는
+    // 공유 함수가 처리한다(학생→학부모 팬아웃 포함). 멱등: 이미 처리된 수업은 null.
+    if (toCarryOver.length > 0) {
+      const carryOverFailures: Array<{
+        lesson: (typeof toCarryOver)[number];
+        reason: string;
+      }> = [];
 
-      // StudySession 재계산 (기존 §4 로직 재사용 — 학습시간 집계 유지).
-      const pairMap = new Map<string, { studentId: string; date: string }>();
-      for (const l of toAutoComplete) {
-        const date = lessonDateStr(l.startAt);
-        pairMap.set(`${l.studentId}:${date}`, { studentId: l.studentId, date });
-      }
-      const pairs = Array.from(pairMap.values());
-      const affectedStudentIds = Array.from(new Set(pairs.map((p) => p.studentId)));
-      const affectedSet = new Set(pairs.map((p) => `${p.studentId}:${p.date}`));
-      const minDate = pairs.map((p) => p.date).sort()[0];
-
-      const completedLessons = await prisma.lesson.findMany({
-        where: {
-          studentId: { in: affectedStudentIds },
-          status: "COMPLETED",
-          startAt: { gte: new Date(minDate + "T00:00:00.000Z") },
-        },
-        select: { studentId: true, startAt: true, durationMin: true },
-      });
-
-      const minutesByKey = new Map<string, number>();
-      for (const l of completedLessons) {
-        const key = `${l.studentId}:${lessonDateStr(l.startAt)}`;
-        if (affectedSet.has(key)) {
-          minutesByKey.set(key, (minutesByKey.get(key) ?? 0) + l.durationMin);
+      for (const l of toCarryOver) {
+        const result = await autoCarryOverUnconfirmedLesson(l.id);
+        if (!result) continue;
+        closedLessons += 1;
+        lessonsCarriedOver += 1;
+        notificationsCreated += 2; // 3자 공지(학생+선생님, 학부모는 팬아웃)
+        if (result.makeupSkippedReason) {
+          carryOverFailures.push({ lesson: l, reason: result.makeupSkippedReason });
         }
       }
 
-      const sessionData = pairs
-        .map(({ studentId, date }) => ({
-          studentId,
-          date,
-          minutes: minutesByKey.get(`${studentId}:${date}`) ?? 0,
-          source: "lesson",
-        }))
-        .filter((s) => s.minutes > 0);
-
-      if (sessionData.length > 0) {
-        await prisma.$transaction(async (tx) => {
-          await tx.studySession.deleteMany({
-            where: {
-              OR: sessionData.map(({ studentId, date }) => ({
-                studentId,
-                date,
-                source: "lesson",
-              })),
-            },
-          });
-          await tx.studySession.createMany({ data: sessionData });
+      // 대체 수업 자동 생성 실패(시각 경과·슬롯 충돌) → CHIEF_MANAGER 격상.
+      if (carryOverFailures.length > 0) {
+        const chiefs = await prisma.teacher.findMany({
+          where: { approved: true, user: { role: "CHIEF_MANAGER" } },
+          select: { userId: true },
         });
-        studySessionsWritten = sessionData.length;
-      }
-
-      // 3자 공지(학생→학부모 팬아웃 + 선생님). 사유 표기.
-      for (const l of toAutoComplete) {
-        const dateStr = lessonDateStr(l.startAt);
-        await createNotification({
-          userId: l.student.userId,
-          type: "LESSON_COMPLETED_CONFIRMED",
-          title: "수업 완료",
-          body: `${dateStr} 수업이 완료 처리되었습니다. (선생님 미확인 자동 처리)`,
-          relatedId: l.id,
-        });
-        await createNotification({
-          userId: l.teacher.userId,
-          type: "LESSON_COMPLETED_CONFIRMED",
-          title: "수업 완료",
-          body: `${l.student.name} 학생의 ${dateStr} 수업이 미확인 상태로 자동 완료 처리되었습니다.`,
-          relatedId: l.id,
-        });
+        for (const { lesson } of carryOverFailures) {
+          const dateStr = lessonDateStr(lesson.startAt);
+          for (const chief of chiefs) {
+            await createNotification({
+              userId: chief.userId,
+              type: "LESSON_NOT_HELD",
+              title: "이월 대체 수업 미생성",
+              body: `${lesson.student.name} 학생의 ${dateStr} 수업(${lesson.teacher.name} 선생님)이 무응답 이월되었으나 대체 수업이 자동 생성되지 않았습니다. 일정 조율이 필요합니다.`,
+              relatedId: lesson.id,
+            });
+            notificationsCreated++;
+          }
+        }
       }
     }
   }
@@ -2000,7 +1961,7 @@ export async function runAlertChecks() {
   // ── NEW-C. (폐지) 60-min 자동 완료 ─────────────────────────────────────────
   //
   // 수업 확인 제도 도입으로 자동 완료를 폐지했다. 종료 수업 처리는 §4의 확인
-  // 요청·리마인더·D+7 무응답 자동 완료 경로가 전담한다(유령 수업 정산 집계 방지).
+  // 요청·리마인더·D+7 무응답 비과실 이월 경로가 전담한다(유령 수업 정산 집계 방지).
 
   return {
     questionsChecked,
@@ -2019,7 +1980,7 @@ export async function runAlertChecks() {
     studySessionsWritten,
     postConsultationFollowUpsSent,
     firstLessonSlaBreachesChecked,
-    lessonsAutoCompleted,
+    lessonsCarriedOver,
     consultationRemindersChecked,
     satisfactionCheckinsCreated,
     renewalChargesAttempted,

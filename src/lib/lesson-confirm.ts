@@ -133,6 +133,25 @@ async function notifyThreeParties(
 }
 
 /**
+ * 대체 수업 시각 계산(순수) — 기준점(anchor) + 7일, 원 수업의 시·분을 유지.
+ * 이미 지난 시각이면 null (자동 생성 불가 → 직접 예약 안내).
+ */
+export function computeMakeupAt(
+  anchor: Date,
+  originalStartAt: Date,
+  now: Date = new Date(),
+): Date | null {
+  const makeupAt = new Date(anchor.getTime() + 7 * 24 * 60 * 60 * 1000);
+  makeupAt.setHours(
+    originalStartAt.getHours(),
+    originalStartAt.getMinutes(),
+    0,
+    0,
+  );
+  return makeupAt > now ? makeupAt : null;
+}
+
+/**
  * 비학생 과실 이월 — 해당 (teacher, student) 매칭의 마지막 예정(SCHEDULED) 수업
  * 이후 같은 요일·시간대로 대체 수업 1회를 생성한다. cancel 라우트 보강 로직 재사용.
  */
@@ -153,15 +172,9 @@ async function createCarryoverLesson(
 
   const anchor = lastScheduled?.startAt ?? lesson.startAt;
   // 같은 요일·시간대 = 기준점 + 7일(원 수업의 시·분을 유지)
-  const makeupAt = new Date(anchor.getTime() + 7 * 24 * 60 * 60 * 1000);
-  makeupAt.setHours(
-    lesson.startAt.getHours(),
-    lesson.startAt.getMinutes(),
-    0,
-    0,
-  );
+  const makeupAt = computeMakeupAt(anchor, lesson.startAt);
 
-  if (makeupAt <= new Date()) {
+  if (!makeupAt) {
     return {
       makeup: null,
       skipped:
@@ -335,6 +348,67 @@ export async function confirmLesson(
     makeup,
     makeupSkippedReason: skipped,
   };
+}
+
+/**
+ * D+7 무응답 자동 이월 — 확인 요청 후 7일간 선생님 응답이 없으면 비과실(NOT_STUDENT)로
+ * 간주해 이월한다(오너 확정: 무응답 자동 완료 폐지). confirmLesson의 비학생 과실 경로와
+ * 동일한 메커니즘(CANCELLED + 대체 수업 자동 생성 + 3자 공지)을 재사용한다.
+ * CANCELLED이므로 정산(COMPLETED 집계)·StudySession(source="lesson") 대상이 아니다.
+ *
+ * 멱등: 수업이 없거나 SCHEDULED가 아니면 아무것도 하지 않고 null을 반환한다.
+ */
+export async function autoCarryOverUnconfirmedLesson(lessonId: string): Promise<{
+  makeup: { id: string; startAt: Date } | null;
+  makeupSkippedReason: string | null;
+} | null> {
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    select: {
+      id: true,
+      studentId: true,
+      teacherId: true,
+      subject: true,
+      startAt: true,
+      durationMin: true,
+      status: true,
+      student: { select: { userId: true, name: true } },
+      teacher: { select: { userId: true, name: true } },
+    },
+  });
+  if (!lesson || lesson.status !== "SCHEDULED") return null;
+
+  await prisma.lesson.update({
+    where: { id: lesson.id },
+    data: {
+      status: "CANCELLED",
+      cancelledBy: "SYSTEM",
+      confirmedAt: new Date(),
+      notHeldFault: "NOT_STUDENT",
+      notHeldReason: "선생님 확인 무응답 이월",
+    },
+  });
+
+  const { makeup, skipped } = await createCarryoverLesson(lesson);
+
+  const dateStr = formatDate(lesson.startAt);
+  const makeupStr = makeup ? formatDateTime(makeup.startAt) : null;
+  const studentBody = makeupStr
+    ? `${dateStr} 수업이 확인되지 않아 이월되었습니다. 대체 수업이 ${makeupStr}에 예정되었습니다.`
+    : `${dateStr} 수업이 확인되지 않아 이월되었습니다. 대체 수업 일정은 선생님과 조율해 주세요.`;
+  const teacherBody = makeupStr
+    ? `${lesson.student.name} 학생의 ${dateStr} 수업이 확인되지 않아 이월 처리되었습니다. 대체 수업: ${makeupStr}`
+    : `${lesson.student.name} 학생의 ${dateStr} 수업이 확인되지 않아 이월 처리되었습니다. 대체 수업을 직접 예약해 주세요.`;
+
+  await notifyThreeParties(
+    lesson,
+    "LESSON_NOT_HELD",
+    studentBody,
+    teacherBody,
+    lesson.teacher.userId,
+  );
+
+  return { makeup, makeupSkippedReason: skipped };
 }
 
 export type PendingConfirmLesson = {

@@ -427,7 +427,7 @@ model Lesson {
   durationMin Int      @default(50)
   joinUrl     String?
   status      LessonStatus @default(SCHEDULED)
-  cancelledBy String? // "TEACHER" | "STUDENT" | "MANAGER" (only set when status is CANCELLED)
+  cancelledBy String? // "TEACHER" | "STUDENT" | "MANAGER" | "SYSTEM"(D+7 무응답 이월) (only set when status is CANCELLED)
   cancelReason String? // 취소 사유(선생님 입력, 선택)
   confirmedAt   DateTime? // 수업 확인 제도: 선생님이 완료/미완료 확인을 마친 시각(무응답 자동 처리 포함)
   notHeldReason String? // 미완료 사유(선생님 선택 또는 직접 입력)
