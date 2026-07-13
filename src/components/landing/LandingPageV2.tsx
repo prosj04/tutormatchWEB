@@ -640,27 +640,15 @@ export function LandingPageV2({
     </div>
   );
 
-  /* 수업 관리 목업 — 실제 학생 앱 화면 (숙제 체크리스트 · AI 질의응답) */
+  /* 수업 관리 목업 — 실제 학생 앱 화면. 박스-안-박스 금지: 스크린샷 단일 프레임만. */
   const homeworkMock = (
     <div className="lp2-shot">
-      <div className="lp2-report-head">
-        <span className="lp2-proof-dot" />
-        <strong>오늘의 숙제</strong>
-        <span className="t">실제 학생 화면</span>
-      </div>
       <Image src="/images/landing/app-homework.png" alt="" width={844} height={1116} sizes="460px" />
-      <div className="lp2-report-foot">학생이 매일 체크하고, 선생님이 확인합니다</div>
     </div>
   );
   const careQnaMock = (
     <div className="lp2-shot">
-      <div className="lp2-report-head">
-        <span className="lp2-proof-dot" />
-        <strong>질문·답변</strong>
-        <span className="t">실제 학생 화면</span>
-      </div>
       <Image src="/images/landing/app-qna.png" alt="" width={632} height={600} sizes="460px" />
-      <div className="lp2-report-foot">AI가 즉시 답하고, 선생님이 이어서 확인합니다</div>
     </div>
   );
 
@@ -1047,7 +1035,7 @@ export function LandingPageV2({
               style={{
                 transform: `translateY(${careMockY}px)`,
                 transition:
-                  "transform .45s cubic-bezier(.22,1,.36,1), opacity 2s cubic-bezier(.45,.05,.25,1)",
+                  "transform .45s cubic-bezier(.22,1,.36,1), opacity .6s cubic-bezier(.45,.05,.25,1)",
               }}
             >
               <div key={`care-${activeCare}`}>
