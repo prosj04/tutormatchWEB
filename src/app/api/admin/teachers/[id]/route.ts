@@ -25,6 +25,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     experience?: unknown;
     bio?: unknown;
     gender?: unknown;
+    hourlyRateKrw?: unknown;
   };
   try {
     body = await request.json();
@@ -40,6 +41,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     experience?: string;
     bio?: string;
     gender?: string | null;
+    hourlyRateKrw?: number | null;
   } = {};
 
   if (typeof body.approved === "boolean") data.approved = body.approved;
@@ -52,6 +54,19 @@ export async function PATCH(request: Request, context: RouteContext) {
     if (body.gender === "FEMALE") data.gender = "FEMALE";
     else if (body.gender === "MALE") data.gender = "MALE";
     else data.gender = null;
+  }
+  if ("hourlyRateKrw" in body) {
+    // 프리셋만 허용 (오너 확정) — null = 기본 30,000원
+    const allowed = [32_000, 34_000, 40_000];
+    if (body.hourlyRateKrw === null) data.hourlyRateKrw = null;
+    else if (typeof body.hourlyRateKrw === "number" && allowed.includes(body.hourlyRateKrw)) {
+      data.hourlyRateKrw = body.hourlyRateKrw;
+    } else {
+      return NextResponse.json(
+        { error: "시급은 기본(30,000) 또는 32,000/34,000/40,000원만 지정할 수 있습니다" },
+        { status: 400 },
+      );
+    }
   }
 
   const updated = await prisma.teacher.update({ where: { id }, data });

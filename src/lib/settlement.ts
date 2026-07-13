@@ -4,10 +4,16 @@ import { isRefundedLesson, type RefundedPeriod } from "@/lib/settlement-refund";
 export { isRefundedLesson, type RefundedPeriod };
 
 /**
- * Teacher hourly rate in KRW.
- * Per-teacher rates are a later feature — single constant for now.
+ * Default teacher hourly rate in KRW. Per-teacher override: Teacher.hourlyRateKrw.
  */
 export const TEACHER_HOURLY_RATE_KRW = 30_000;
+
+/** 관리자 수동 지정 프리셋 (2026-07-13 오너 확정). null = 기본 30,000. */
+export const TEACHER_HOURLY_RATE_PRESETS_KRW = [32_000, 34_000, 40_000] as const;
+
+export function resolveTeacherHourlyRate(hourlyRateKrw: number | null | undefined): number {
+  return hourlyRateKrw ?? TEACHER_HOURLY_RATE_KRW;
+}
 
 export type TeacherSettlement = {
   teacherId: string;
@@ -17,7 +23,7 @@ export type TeacherSettlement = {
   totalMinutes: number;
   /** totalMinutes / 60, rounded to 2 decimal places */
   totalHours: number;
-  /** Math.round(totalMinutes / 60 * TEACHER_HOURLY_RATE_KRW) — integer KRW */
+  /** Math.round(totalMinutes / 60 * 강사별 시급(hourlyRateKrw ?? 30,000)) — integer KRW */
   payoutKrw: number;
   /** Lessons where durationMin === 0. Schema has durationMin as non-null Int @default(50),
    *  so the only "missing" case in practice is an explicitly stored 0. */
@@ -130,11 +136,11 @@ export async function computeMonthlySettlement(
   const teacherIds = Object.keys(grouped);
   const teacherRows = await prisma.teacher.findMany({
     where: { id: { in: teacherIds } },
-    select: { id: true, name: true, phone: true },
+    select: { id: true, name: true, phone: true, hourlyRateKrw: true },
   });
-  const teacherMap: Record<string, { name: string; phone: string }> = {};
+  const teacherMap: Record<string, { name: string; phone: string; hourlyRateKrw: number | null }> = {};
   for (const t of teacherRows) {
-    teacherMap[t.id] = { name: t.name, phone: t.phone };
+    teacherMap[t.id] = { name: t.name, phone: t.phone, hourlyRateKrw: t.hourlyRateKrw };
   }
 
   // Build per-teacher settlements
@@ -142,7 +148,9 @@ export async function computeMonthlySettlement(
     .map((teacherId) => {
       const { totalMinutes, lessonCount, needsReview } = grouped[teacherId];
       const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
-      const payoutKrw = Math.round((totalMinutes / 60) * TEACHER_HOURLY_RATE_KRW);
+      const payoutKrw = Math.round(
+        (totalMinutes / 60) * resolveTeacherHourlyRate(teacherMap[teacherId]?.hourlyRateKrw),
+      );
       return {
         teacherId,
         name: teacherMap[teacherId]?.name ?? teacherId,

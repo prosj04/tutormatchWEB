@@ -60,6 +60,7 @@ export async function GET(request: Request) {
       experience: t.experience,
       photoUrl: t.profile?.photoUrl ?? null,
       gender: t.gender ?? null,
+      hourlyRateKrw: t.hourlyRateKrw ?? null,
       studentCount: t._count.students,
       createdAt: t.user.createdAt,
     })),

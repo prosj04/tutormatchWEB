@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireMobileTeacher } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
-import { TEACHER_HOURLY_RATE_KRW } from "@/lib/settlement";
+import { resolveTeacherHourlyRate } from "@/lib/settlement";
 
 /**
  * E9-3: 모바일 강사 본인 월별 정산 read-only 조회.
@@ -104,15 +104,16 @@ export async function GET(request: Request) {
     needsReview: l.durationMin === 0,
   }));
 
+  const hourlyRateKrw = resolveTeacherHourlyRate(teacher.hourlyRateKrw);
   const totalMinutes = payableLessons.reduce((acc, l) => acc + l.durationMin, 0);
   const totalHours = Math.round((totalMinutes / 60) * 100) / 100;
-  const payoutKrw = Math.round((totalMinutes / 60) * TEACHER_HOURLY_RATE_KRW);
+  const payoutKrw = Math.round((totalMinutes / 60) * hourlyRateKrw);
   const needsReview = payableLessons.filter((l) => l.durationMin === 0).length;
 
   return NextResponse.json({
     year,
     month,
-    hourlyRateKrw: TEACHER_HOURLY_RATE_KRW,
+    hourlyRateKrw,
     lessonCount: payableLessons.length,
     totalMinutes,
     totalHours,

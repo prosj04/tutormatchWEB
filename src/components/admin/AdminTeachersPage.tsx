@@ -20,6 +20,7 @@ type TeacherRow = {
   experience: string;
   photoUrl: string | null;
   gender: string | null;
+  hourlyRateKrw: number | null;
   studentCount: number;
   createdAt: string;
 };
@@ -64,6 +65,7 @@ export function AdminTeachersPage() {
     experience: "",
     bio: "",
     gender: "" as ProfileGender | "",
+    hourlyRateKrw: "" as "" | "32000" | "34000" | "40000",
   });
 
   const fetchList = useCallback(async () => {
@@ -129,6 +131,10 @@ export function AdminTeachersPage() {
       bio: row.bio,
       gender:
         row.gender === "FEMALE" ? "FEMALE" : row.gender === "MALE" ? "MALE" : "",
+      hourlyRateKrw:
+        row.hourlyRateKrw === 32000 || row.hourlyRateKrw === 34000 || row.hourlyRateKrw === 40000
+          ? (String(row.hourlyRateKrw) as "32000" | "34000" | "40000")
+          : "",
     });
     void loadDocuments(row.id);
   }
@@ -141,6 +147,7 @@ export function AdminTeachersPage() {
       body: JSON.stringify({
         ...form,
         gender: form.gender === "FEMALE" ? "FEMALE" : form.gender === "MALE" ? "MALE" : null,
+        hourlyRateKrw: form.hourlyRateKrw ? Number(form.hourlyRateKrw) : null,
       }),
     });
     if (res.ok) {
@@ -400,6 +407,24 @@ export function AdminTeachersPage() {
                   <div className="field">
                     <label>성별</label>
                     <GenderSelect value={form.gender} onChange={(g) => setForm((f) => ({ ...f, gender: g }))} />
+                  </div>
+                  <div className="field">
+                    <label>정산 시급</label>
+                    <select
+                      className="inp filled"
+                      value={form.hourlyRateKrw}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          hourlyRateKrw: e.target.value as "" | "32000" | "34000" | "40000",
+                        }))
+                      }
+                    >
+                      <option value="">기본 (30,000원)</option>
+                      <option value="32000">32,000원</option>
+                      <option value="34000">34,000원</option>
+                      <option value="40000">40,000원</option>
+                    </select>
                   </div>
                   <p className="f-hint">업로드 사진이 없으면 CMS 강사진 탭의 남·여 기본 이미지가 표시됩니다.</p>
                 </>

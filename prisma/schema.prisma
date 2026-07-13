@@ -159,6 +159,8 @@ model Teacher {
   experience        String
   /// 공개 강사진 사진 구분: "MALE" | "FEMALE" (미설정 시 남성 기본 이미지)
   gender            String?
+  /// 정산 시급(원). null = 기본 30,000. 관리자 수동 지정 — 프리셋 32,000/34,000/40,000
+  hourlyRateKrw     Int?
   approved          Boolean               @default(false)
   profile           TeacherProfile?
   students          TeacherStudent[]
