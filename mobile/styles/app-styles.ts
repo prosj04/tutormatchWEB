@@ -46,23 +46,6 @@ export const scroll = {
   paddingBottom: 18,
 } as const;
 
-// ─── 로고 (.dotw) ─────────────────────────────────────────────────────────────
-// .dotw { font-weight:800; letter-spacing:-.045em; display:inline-flex; align-items:baseline; }
-// .dotw .d { width:.16em; height:.16em; border-radius:50%; margin-left:.04em; }
-export const dotw = {
-  wrap: {
-    flexDirection: "row" as const,
-    alignItems: "baseline" as const,
-    fontFamily: font.extrabold,
-  },
-  // fontSize 주입 시: letterSpacing = -0.045 * fontSize
-  letterSpacingMultiplier: -0.045,
-  dot: {
-    // width/height = 0.16 * fontSize, borderRadius = 999, marginLeft = 0.04 * fontSize
-    borderRadius: 999,
-  },
-} as const;
-
 // ─── 앱바 (.appbar) ───────────────────────────────────────────────────────────
 // .appbar { display:flex; align-items:center; gap:12; padding:8px 2px 16px; }
 export const appbar = {
@@ -343,88 +326,6 @@ export const lrow = {
     alignItems: "center" as const,
     justifyContent: "center" as const,
   },
-} as const;
-
-// ─── 검색 + 칩 (.search / .chip) ─────────────────────────────────────────────
-export const search = {
-  wrap: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 9,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderRadius: 14,
-    ...shadowSm,
-  },
-  label: { fontSize: 14 },
-} as const;
-
-export const chip = {
-  base: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 999,
-    borderWidth: 1,
-    fontSize: 13,
-    fontFamily: font.semibold,
-  },
-} as const;
-
-// ─── 강사 카드 (.tutor) ───────────────────────────────────────────────────────
-// .tutor { padding:15; margin-top:11; }
-export const tutor = {
-  wrap: { padding: 15, marginTop: 11 },
-  // .tutor .h { flex-row; gap:13; }
-  h: { flexDirection: "row" as const, gap: 13 },
-  // .tutor .ph { width:60; height:60; border-radius:16; border:1px; }
-  ph: { width: 60, height: 60, borderRadius: 16, borderWidth: 1 },
-  // .tutor .vb { bottom:-5; right:-5; width:22; height:22; border-radius:11; }
-  vb: {
-    position: "absolute" as const,
-    bottom: -5,
-    right: -5,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  },
-  // .tutor .nm { font-size:16; font-weight:800; letter-spacing:-.02em; }
-  nm: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 7,
-    fontSize: 16,
-    fontFamily: font.extrabold,
-    letterSpacing: -0.32,  // -0.02 * 16
-  },
-  // .tutor .subj { font-size:11; font-weight:700; padding:3 9; border-radius:999; }
-  subj: {
-    fontSize: 11,
-    fontFamily: font.bold,
-    paddingVertical: 3,
-    paddingHorizontal: 9,
-    borderRadius: 999,
-  },
-  // .tutor .edu { font-size:13; margin-top:4; }
-  edu: { fontSize: 13, marginTop: 4 },
-  // .tutor .ln { font-size:13; margin-top:9; }
-  ln: { fontSize: 13, marginTop: 9 },
-  // .tutor .ft { flex-row; gap:14; margin-top:13; padding-top:13; border-top:1px; font-size:12.5; }
-  ft: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 14,
-    marginTop: 13,
-    paddingTop: 13,
-    borderTopWidth: 1,
-    fontSize: 12.5,
-  },
-  // .tutor .ft .st { flex-row; gap:4; font-weight:600; }
-  st: { flexDirection: "row" as const, alignItems: "center" as const, gap: 4, fontFamily: font.semibold },
-  // .tutor .ft .go { margin-left:auto; font-weight:700; }
-  go: { marginLeft: "auto" as const, fontFamily: font.bold },
 } as const;
 
 // ─── 서브페이지 헤더 (.sub-head) ──────────────────────────────────────────────
@@ -804,70 +705,6 @@ export const chat = {
   },
 } as const;
 
-// ─── 온보딩 (.onb) ────────────────────────────────────────────────────────────
-export const onb = {
-  // .onb { position:absolute; inset:0; flex-col; padding:0 26px 30px; }
-  wrap: {
-    flex: 1,
-    flexDirection: "column" as const,
-    paddingHorizontal: 26,
-    paddingBottom: 30,
-  },
-  // .onb .mid { flex:1; flex-col; align-items:center; justify:center; gap:18; }
-  mid: {
-    flex: 1,
-    flexDirection: "column" as const,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    gap: 18,
-  },
-  // .onb .icon { width:84; height:84; border-radius:24; }
-  icon: {
-    width: 84,
-    height: 84,
-    borderRadius: 24,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  },
-  // .onb .wm { font-size:30; margin-top:2; }
-  wm: { fontSize: 30, marginTop: 2 },
-  // .onb h2 { font-size:23; font-weight:800; letter-spacing:-.03em; line-height:1.25; }
-  h2: {
-    fontSize: 23,
-    fontFamily: font.extrabold,
-    letterSpacing: -0.69,   // -0.03 * 23
-    lineHeight: 29,          // 1.25 * 23 = 28.75
-    textAlign: "center" as const,
-  },
-  // .onb-lede { font-size:14; max-width:30ch; margin-bottom:18; line-height:1.5; }
-  lede: {
-    fontSize: 14,
-    lineHeight: 21,          // 1.5 * 14
-    textAlign: "center" as const,
-    marginBottom: 18,
-  },
-  // .onb .acts { flex-col; gap:10; }
-  acts: { flexDirection: "column" as const, gap: 10 },
-  // .onb .p1 { width:100%; padding:16; border-radius:15; font-weight:800; font-size:16; }
-  p1: {
-    width: "100%" as const,
-    paddingVertical: 16,
-    borderRadius: 15,
-    fontFamily: font.extrabold,
-    fontSize: 16,
-    textAlign: "center" as const,
-  },
-  // .onb .p2 { width:100%; padding:14; font-weight:600; font-size:14; }
-  p2: {
-    width: "100%" as const,
-    paddingVertical: 14,
-    fontFamily: font.semibold,
-    fontSize: 14,
-    textAlign: "center" as const,
-    backgroundColor: "transparent",
-  },
-} as const;
-
 // ─── 인증 (.auth) ─────────────────────────────────────────────────────────────
 export const auth = {
   // .auth { position:absolute; inset:0; flex-col; padding:0 26px 28px; }
@@ -1184,37 +1021,6 @@ export const plan = {
   },
 } as const;
 
-// ─── 결제 (.co-sum / .co-line / .pay-method) ─────────────────────────────────
-export const checkout = {
-  // .co-sum { padding:16; }
-  sum: { padding: 16 },
-  // .co-line { flex-row; align-items:center; padding:9 0; font-size:13.5; }
-  line: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    paddingVertical: 9,
-    fontSize: 13.5,
-  },
-  // .co-line.total { padding-top:13; font-size:15; }
-  lineTotal: { paddingTop: 13, fontSize: 15 },
-  // .co-line.total b { font-size:18; font-weight:800; }
-  lineTotalB: { fontSize: 18, fontFamily: font.extrabold },
-  // .pay-method { flex-row; align-items:center; gap:12; padding:14 16; }
-  payMethod: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  // .pay-method .ic { width:38; height:26; border-radius:6; }
-  payIc: { width: 38, height: 26, borderRadius: 6 },
-  // .pay-method b { font-size:13.5; font-weight:700; }
-  payB: { fontSize: 13.5, fontFamily: font.bold },
-  // .pay-method p { font-size:11.5; }
-  payP: { fontSize: 11.5 },
-} as const;
-
 // ─── 추천 강사 카드 (.rec-card / .match-badge) ────────────────────────────────
 export const rec = {
   // .rec-card { padding:16; margin-top:11; }
@@ -1265,72 +1071,6 @@ export const rec = {
   },
 } as const;
 
-// ─── 빈 상태 / 잠금 (.empty-st / .locked-card) ────────────────────────────────
-export const emptyState = {
-  // .empty-st { flex-col; align-items:center; text-align:center; padding:36 22; gap:15; }
-  wrap: {
-    flexDirection: "column" as const,
-    alignItems: "center" as const,
-    paddingVertical: 36,
-    paddingHorizontal: 22,
-    gap: 15,
-  },
-  // .empty-st .ill { width:80; height:80; border-radius:24; }
-  ill: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  },
-  // .empty-st h3 { font-size:18; font-weight:800; letter-spacing:-.02em; }
-  h3: {
-    fontSize: 18,
-    fontFamily: font.extrabold,
-    letterSpacing: -0.36,   // -0.02 * 18
-    textAlign: "center" as const,
-  },
-  // .empty-st p { font-size:13.5; line-height:1.6; }
-  p: {
-    fontSize: 13.5,
-    lineHeight: 22,         // 1.6 * 13.5 = 21.6
-    textAlign: "center" as const,
-  },
-} as const;
-
-// ─── 리포트 점수 행 (.scrow) ──────────────────────────────────────────────────
-export const scrow = {
-  // .scrow { flex-row; align-items:center; gap:12; padding:14 16; }
-  wrap: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  // .scrow .sj { font-size:13.5; font-weight:700; flex:1; }
-  sj: { fontSize: 13.5, fontFamily: font.bold, flex: 1 },
-  // .scrow .ch { flex-row; align-items:baseline; gap:6; tabular-nums; font-size:13; }
-  ch: {
-    flexDirection: "row" as const,
-    alignItems: "baseline" as const,
-    gap: 6,
-    fontVariant: ["tabular-nums"] as TextStyle["fontVariant"],
-    fontSize: 13,
-  },
-  // .scrow .ch b { font-size:16; font-weight:800; }
-  chB: { fontSize: 16, fontFamily: font.extrabold },
-  // .scrow .up { font-weight:700; font-size:12; margin-left:8; }
-  up: {
-    fontFamily: font.bold,
-    fontSize: 12,
-    marginLeft: 8,
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 2,
-  },
-} as const;
-
 // ─── 스위치 (.switch) ─────────────────────────────────────────────────────────
 // .switch { width:42; height:25; border-radius:999; }
 // .switch i { top:2.5; left:2.5; width:20; height:20; border-radius:10; }
@@ -1343,30 +1083,5 @@ export const switchStyle = {
     height: 20,
     borderRadius: 10,
     backgroundColor: "#fff",
-  },
-} as const;
-
-// ─── 탭바 (.tabs / .tab) ──────────────────────────────────────────────────────
-// .tabs { flex-row; padding:9 8 22; border-top:1px; }
-// .tab { flex:1; flex-col; align-items:center; gap:4; }
-// .tab span { font-size:10; font-weight:600; letter-spacing:-.01em; }
-export const tabBar = {
-  bar: {
-    flexDirection: "row" as const,
-    paddingTop: 9,
-    paddingHorizontal: 8,
-    paddingBottom: 22,
-    borderTopWidth: 1,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: "column" as const,
-    alignItems: "center" as const,
-    gap: 4,
-  },
-  label: {
-    fontSize: 10,
-    fontFamily: font.semibold,
-    letterSpacing: -0.10,   // -0.01 * 10
   },
 } as const;
