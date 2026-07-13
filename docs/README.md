@@ -20,6 +20,7 @@
 | 문서 | 내용 | 사용처 |
 |---|---|---|
 | [PILOT_SIM2_2026-07.md](PILOT_SIM2_2026-07.md) | 파일럿 2차 — 11라운드까지 기록, 라운드 계속 append | `pilot-verify` 스킬이 `docs/PILOT_SIM2_*.md` 글롭 참조 |
+| [BUSINESS_EXPANSION_MASTER_2026-07.md](BUSINESS_EXPANSION_MASTER_2026-07.md) | 확장 라운드 통합 마스터 — 63건 재정 후 생존 4·조건부 47·기각 2·재탕 10, 실행체 39·Top 10 | `biz-rounds` 후속·확장 게이트 판단 |
 | [IMPLEMENTATION_PLAN_2026-07.md](IMPLEMENTATION_PLAN_2026-07.md) | 2026-07 구현 계획 | 타 세션 활성 |
 | [IMPLEMENTATION_SESSIONS_REVISED.md](IMPLEMENTATION_SESSIONS_REVISED.md) | 세션별 구현 기록 | 타 세션 활성 |
 | [MANAGER_GUIDELINES.md](MANAGER_GUIDELINES.md) | 매니저 운영 가이드 | 운영 |
