@@ -1,6 +1,4 @@
-export type ColorScheme = "green" | "blue";
 export type ThemeMode = "light" | "dark";
-export type ThemeKey = `${ColorScheme}-${ThemeMode}`;
 
 export interface ThemeTokens {
   bg: string;
@@ -19,8 +17,8 @@ export interface ThemeTokens {
   danger: string;
 }
 
-export const themes: Record<ThemeKey, ThemeTokens> = {
-  "green-light": {
+export const themes: Record<ThemeMode, ThemeTokens> = {
+  light: {
     bg: "#FAF9F4",
     panel: "#FFFFFF",
     panel2: "#F0EFE7",
@@ -36,23 +34,7 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accText: "#07875A",
     danger: "#A93636",
   },
-  "blue-light": {
-    bg: "#F5F8FE",
-    panel: "#FFFFFF",
-    panel2: "#EAF0FB",
-    line: "rgba(20,38,74,0.085)",
-    line2: "rgba(20,38,74,0.15)",
-    fg: "#0F1A2E",
-    mut: "#54627A",
-    mut2: "#93A1B8",
-    acc: "#2563EB",
-    accPress: "#1D54CF",
-    accRgb: [37, 99, 235],
-    onAcc: "#FFFFFF",
-    accText: "#1D4ED8",
-    danger: "#A93636",
-  },
-  "green-dark": {
+  dark: {
     bg: "#181A1B",
     panel: "#202325",
     panel2: "#282B2D",
@@ -68,26 +50,10 @@ export const themes: Record<ThemeKey, ThemeTokens> = {
     accText: "#64C699",
     danger: "#E58A8A",
   },
-  "blue-dark": {
-    bg: "#0A1120",
-    panel: "#101D32",
-    panel2: "#16273F",
-    line: "rgba(140,175,230,0.13)",
-    line2: "rgba(140,175,230,0.22)",
-    fg: "#EAF1FB",
-    mut: "#9DABC4",
-    mut2: "#6A7894",
-    acc: "#3B82F6",
-    accPress: "#5B9CFF",
-    accRgb: [59, 130, 246],
-    onAcc: "#06122A",
-    accText: "#85B5FF",
-    danger: "#E58A8A",
-  },
 };
 
-export function getTheme(color: ColorScheme, mode: ThemeMode): ThemeTokens {
-  return themes[`${color}-${mode}`];
+export function getTheme(mode: ThemeMode): ThemeTokens {
+  return themes[mode];
 }
 
 export function accTint(t: ThemeTokens, opacity: number): string {
