@@ -16,9 +16,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
+  const text = await request.text();
+  if (text.length > 10 * 1024) {
+    return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+  }
+
   let body: { name?: unknown; payload?: unknown; platform?: unknown };
   try {
-    body = await request.json();
+    body = JSON.parse(text) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }

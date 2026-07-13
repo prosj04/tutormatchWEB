@@ -45,6 +45,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Content is required" }, { status: 400 });
   }
 
+  if (content.length > 5000) {
+    return NextResponse.json({ error: "Content must be 5,000 characters or less" }, { status: 400 });
+  }
+
   if (imageUrl !== undefined && imageUrl !== null && typeof imageUrl !== "string") {
     return NextResponse.json({ error: "Invalid imageUrl" }, { status: 400 });
   }
