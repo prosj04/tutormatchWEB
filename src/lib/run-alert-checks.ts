@@ -939,7 +939,7 @@ export async function runAlertChecks() {
           userId: booking.student.userId,
           type: "CONSULTATION_REMINDER",
           title: "방문 상담 일정 안내",
-          body: `${visitStr}에 방문 상담이 예정되어 있습니다. 잊지 말고 방문해 주세요!`,
+          body: `${visitStr}에 방문 상담이 예정되어 있습니다.`,
           relatedId: booking.id,
         });
         notificationsCreated++;

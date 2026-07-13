@@ -8,6 +8,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VisitTimesPicker } from "@/components/dashboard/VisitTimesPicker";
+import { trackEvent } from "@/lib/analytics-client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { usePortalCopy } from "@/components/providers/PortalSiteContentProvider";
 import type { ConsultationBookingDto } from "@/lib/consultation-booking-dto";
@@ -99,7 +101,7 @@ export function ConsultationBookingPage({
   const brand = usePortalCopy("student_consultation", "brand", "Concord.");
   const welcomeTpl = usePortalCopy("student_consultation", "welcome_template", "{name}님 환영합니다");
   const logoutLabel = usePortalCopy("student_consultation", "logout", "로그아웃");
-  const toastAssigned = usePortalCopy("student_consultation", "toast_assigned", "매니저가 배정되었습니다!");
+  const toastAssigned = usePortalCopy("student_consultation", "toast_assigned", "매니저가 배정되었습니다");
   const noBookingTitle = usePortalCopy(
     "student_consultation",
     "no_booking_title",
@@ -201,6 +203,9 @@ export function ConsultationBookingPage({
         }
         return;
       }
+      trackEvent(ANALYTICS_EVENTS.consultationSubmitted, {
+        source: "portal_consultation",
+      });
       setSuccess(true);
       setShowVisitPicker(true);
       await fetchBooking();

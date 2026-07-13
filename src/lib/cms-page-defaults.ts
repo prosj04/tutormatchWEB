@@ -1175,7 +1175,7 @@ export const portalPagesDefaults = [
   {
     section: "student_consultation",
     key: "toast_assigned",
-    value: "매니저가 배정되었습니다!",
+    value: "매니저가 배정되었습니다",
     type: "text",
     order: 4,
   },

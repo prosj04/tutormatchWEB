@@ -20,6 +20,14 @@ function forwardToGa4(name: string, payload?: AnalyticsPayload): void {
     });
     return;
   }
+  if (name === "consultation_submitted") {
+    // GA4 표준 리드 이벤트로 매핑 — 상담 신청 전환 리포트용
+    window.gtag("event", "generate_lead", {
+      currency: "KRW",
+      source: payload?.source ?? undefined,
+    });
+    return;
+  }
   if (name === "checkout_started") {
     window.gtag("event", "begin_checkout", {
       currency: "KRW",
