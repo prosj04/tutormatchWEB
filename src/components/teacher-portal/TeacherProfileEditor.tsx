@@ -34,7 +34,6 @@ type DocumentsResponse = {
 };
 
 type TeacherProfileEditorProps = {
-  teacherId: string;
   teacherName: string;
   subjects: string[];
   gender: string | null;
@@ -42,7 +41,6 @@ type TeacherProfileEditorProps = {
 };
 
 export function TeacherProfileEditor({
-  teacherId,
   teacherName,
   subjects,
   gender,

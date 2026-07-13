@@ -49,7 +49,6 @@ export default async function TeacherProfilePage() {
       <p className="sub">학생·학부모에게 보여질 프로필과 제출 서류를 관리합니다.</p>
       <div className="sec">
         <TeacherProfileEditor
-          teacherId={teacher.id}
           teacherName={teacher.name}
           subjects={subjects}
           gender={teacher.gender}
