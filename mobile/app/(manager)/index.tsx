@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BellIcon } from "../../components/ui/Icons";
+import { BellIcon } from "../../components/manager/ManagerIcons";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";

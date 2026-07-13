@@ -12,11 +12,31 @@ interface IconProps {
  * 24×24 · currentColor(=color) · stroke 2 round cap/join.
  */
 
+// 'user' (탭바 학생/MY)
+export function UserIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx={12} cy={8} r={4} />
+      <Path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+    </Svg>
+  );
+}
+
 // 'message' (탭바 질문)
 export function MessageIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <Path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </Svg>
+  );
+}
+
+// 'alert-circle' — 경고 배너(circle r10, !)
+export function AlertCircleIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx={12} cy={12} r={10} />
+      <Path d="M12 8v4M12 16h.01" />
     </Svg>
   );
 }

@@ -27,6 +27,26 @@ export function QrIcon({ color = "currentColor", size = 24 }: IconProps) {
   );
 }
 
+// 경고 배너 아이콘 (circle + ! ) — 학부모 시안 .banner.warn
+export function AlertCircleIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 8v4M12 16h.01" />
+      <Path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+    </Svg>
+  );
+}
+
+// icons.js 'info' 대응 — 정보 배너
+export function InfoIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+      <Path d="M12 16v-4M12 8h.01" />
+    </Svg>
+  );
+}
+
 // 자동 갱신(카드 교체) 아이콘 — 학부모 결제 시안 .tok .ic
 export function RenewIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (

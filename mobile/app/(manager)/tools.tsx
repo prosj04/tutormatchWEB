@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ChevronRightIcon, UserIcon } from "../../components/ui/Icons";
+import { ChevronRightIcon, UserIcon } from "../../components/manager/ManagerIcons";
 import { useAuth } from "../../hooks/useAuth";
 import { apiFetch } from "../../lib/api";
 import {

@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ChevronRightIcon } from "../../components/ui/Icons";
+import { ChevronRightIcon } from "../../components/manager/ManagerIcons";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";

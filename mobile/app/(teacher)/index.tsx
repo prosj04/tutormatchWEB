@@ -24,7 +24,7 @@ import {
 } from "../../styles/app-styles";
 import { ErrorState } from "../../components/ui/ErrorState";
 import { BellIcon, ChevronRightIcon } from "../../components/ui/Icons";
-import { AlertCircleIcon } from "../../components/ui/Icons";
+import { AlertCircleIcon } from "../../components/teacher/TeacherIcons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";

@@ -2,8 +2,7 @@ import { Tabs } from "expo-router";
 import React, { useEffect } from "react";
 
 import { HomeIcon } from "../../components/ui/Icons";
-import { UserIcon } from "../../components/ui/Icons";
-import { MessageIcon } from "../../components/teacher/TeacherIcons";
+import { MessageIcon, UserIcon } from "../../components/teacher/TeacherIcons";
 import { registerPushToken } from "../../lib/push";
 import { useTheme } from "../../theme/ThemeProvider";
 
