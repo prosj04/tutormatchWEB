@@ -3,7 +3,7 @@ import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { UserIcon } from "../../components/manager/ManagerIcons";
+import { UserIcon } from "../../components/ui/Icons";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
 import { SubHead } from "../../components/ui/SubHead";

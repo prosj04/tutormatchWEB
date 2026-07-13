@@ -14,6 +14,7 @@ import {
 import { EmptyState } from "../components/ui/EmptyState";
 import { SubHead } from "../components/ui/SubHead";
 import { apiFetch } from "../lib/api";
+import { won } from "../lib/format";
 import { useTheme } from "../theme/ThemeProvider";
 import { type ThemeTokens } from "../theme/tokens";
 
@@ -63,9 +64,6 @@ function getFeaturesForPlan(planId: string): string[] {
   return LEGACY_FEATURES[planId] ?? DEFAULT_FEATURES;
 }
 
-function formatPrice(n: number): string {
-  return n.toLocaleString("ko-KR") + "원";
-}
 
 export default function BillingScreen() {
   const { t } = useTheme();
@@ -111,7 +109,7 @@ export default function BillingScreen() {
                 <Text style={[planS.nowNm, { color: t.onAcc }]}>{sub.planLabel}</Text>
                 {price != null ? (
                   <Text style={[planS.nowPr as object, { color: t.onAcc }]}>
-                    {formatPrice(price)} / 월
+                    {won(price)} / 월
                   </Text>
                 ) : null}
                 {sub.nextBilling ? (

@@ -23,17 +23,15 @@ import {
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
-import { InfoIcon, RenewIcon } from "../../components/parent/ParentIcons";
+import { InfoIcon } from "../../components/ui/Icons";
+import { RenewIcon } from "../../components/parent/ParentIcons";
 import { apiFetch } from "../../lib/api";
+import { won } from "../../lib/format";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
 import type { Child, ChildrenResponse, PaymentsResponse, PaymentChild } from "./_shared";
 import { KidSwitch } from "./_KidSwitch";
 import { useSelectedChildId } from "./_selectedChild";
-
-function won(n: number): string {
-  return `${n.toLocaleString("ko-KR")}원`;
-}
 
 function formatDate(iso: string | null): string {
   if (!iso) return "-";

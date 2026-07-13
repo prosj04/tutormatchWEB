@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { field as fieldS, font, scroll as scrollS } from "../../styles/app-styles";
 import { SubHead } from "../../components/ui/SubHead";
-import { AlertCircleIcon } from "../../components/parent/ParentIcons";
+import { AlertCircleIcon } from "../../components/ui/Icons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 

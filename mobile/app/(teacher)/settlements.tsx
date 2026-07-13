@@ -19,6 +19,7 @@ import { ErrorState } from "../../components/ui/ErrorState";
 import { SubHead } from "../../components/ui/SubHead";
 import { InfoCircleIcon } from "../../components/teacher/TeacherIcons";
 import { apiFetch } from "../../lib/api";
+import { won } from "../../lib/format";
 import { useTheme } from "../../theme/ThemeProvider";
 
 interface SettlementLesson {
@@ -58,9 +59,6 @@ function recentMonthsFrom(year: number, month: number): string[] {
   return out;
 }
 
-function formatKrw(krw: number) {
-  return `${krw.toLocaleString("ko-KR")}원`;
-}
 
 function formatLessonDate(iso: string) {
   const d = new Date(iso);
@@ -169,7 +167,7 @@ export default function TeacherSettlementsScreen() {
                 <Text style={[styles.kpiLabel, { color: t.mut }]}>총 수업 시간</Text>
               </View>
               <View style={[cardS, styles.kpi, { backgroundColor: t.panel, borderColor: t.line, shadowColor: t.fg }]}>
-                <Text style={[styles.kpiNumSm, { color: t.fg }]}>{formatKrw(data.payoutKrw)}</Text>
+                <Text style={[styles.kpiNumSm, { color: t.fg }]}>{won(data.payoutKrw)}</Text>
                 <Text style={[styles.kpiLabel, { color: t.mut }]}>정산 합계</Text>
               </View>
             </View>
@@ -213,7 +211,7 @@ export default function TeacherSettlementsScreen() {
             <View style={[styles.banner, { backgroundColor: "rgba(0,0,0,0)", borderColor: t.line2, marginTop: 14 }]}>
               <InfoCircleIcon color={t.accText} size={17} />
               <Text style={[styles.bannerText, { color: t.mut }]}>
-                완료된 수업 기준 조회 전용 내역이에요. 시급 {formatKrw(data.hourlyRateKrw)} × 수업 시간으로 계산됩니다.
+                완료된 수업 기준 조회 전용 내역이에요. 시급 {won(data.hourlyRateKrw)} × 수업 시간으로 계산됩니다.
               </Text>
             </View>
           </>

@@ -24,7 +24,7 @@ import {
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
-import { InfoIcon } from "../../components/parent/ParentIcons";
+import { InfoIcon } from "../../components/ui/Icons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";

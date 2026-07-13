@@ -2,16 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 
-import { type ColorScheme, type ThemeMode, type ThemeTokens, getTheme } from "./tokens";
+import { type ThemeMode, type ThemeTokens, getTheme } from "./tokens";
 
-const COLOR_KEY = "concord-color";
 const MODE_KEY = "concord-mode";
 
 interface ThemeContextValue {
-  color: ColorScheme;
   mode: ThemeMode;
   t: ThemeTokens;
-  setColor: (c: ColorScheme) => void;
   toggleMode: () => void;
 }
 
@@ -19,16 +16,11 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
-  const [color, setColorState] = useState<ColorScheme>("green");
   const [mode, setModeState] = useState<ThemeMode>("light");
 
   useEffect(() => {
     (async () => {
-      const [storedColor, storedMode] = await Promise.all([
-        AsyncStorage.getItem(COLOR_KEY),
-        AsyncStorage.getItem(MODE_KEY),
-      ]);
-      if (storedColor === "blue") setColorState("blue");
+      const storedMode = await AsyncStorage.getItem(MODE_KEY);
       if (storedMode === "dark" || storedMode === "light") {
         setModeState(storedMode);
       } else {
@@ -36,11 +28,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
     })();
   }, [systemScheme]);
-
-  const setColor = useCallback((c: ColorScheme) => {
-    setColorState(c);
-    AsyncStorage.setItem(COLOR_KEY, c);
-  }, []);
 
   const toggleMode = useCallback(() => {
     setModeState((prev) => {
@@ -51,7 +38,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ color, mode, t: getTheme(color, mode), setColor, toggleMode }}>
+    <ThemeContext.Provider value={{ mode, t: getTheme(mode), toggleMode }}>
       {children}
     </ThemeContext.Provider>
   );

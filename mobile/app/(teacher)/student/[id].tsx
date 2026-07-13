@@ -21,7 +21,8 @@ import {
 } from "../../../styles/app-styles";
 import { ErrorState } from "../../../components/ui/ErrorState";
 import { SubHead } from "../../../components/ui/SubHead";
-import { AlertCircleIcon, InfoCircleIcon } from "../../../components/teacher/TeacherIcons";
+import { AlertCircleIcon } from "../../../components/ui/Icons";
+import { InfoCircleIcon } from "../../../components/teacher/TeacherIcons";
 import { apiFetch } from "../../../lib/api";
 import { useTheme } from "../../../theme/ThemeProvider";
 

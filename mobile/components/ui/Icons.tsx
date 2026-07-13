@@ -158,6 +158,24 @@ export function FileIcon({ color = "currentColor", size = 24 }: IconProps) {
   );
 }
 
+export function UserIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx={12} cy={8} r={4} />
+      <Path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+    </Svg>
+  );
+}
+
+export function InfoIcon({ color = "currentColor", size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx={12} cy={12} r={10} />
+      <Path d="M12 16v-4M12 8h.01" />
+    </Svg>
+  );
+}
+
 export function AlertCircleIcon({ color = "currentColor", size = 24 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">

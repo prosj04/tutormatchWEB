@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { InfoIcon } from "../../../components/manager/ManagerIcons";
+import { InfoIcon } from "../../../components/ui/Icons";
 import { ErrorState } from "../../../components/ui/ErrorState";
 import { SubHead } from "../../../components/ui/SubHead";
 import { apiFetch } from "../../../lib/api";
