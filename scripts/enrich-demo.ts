@@ -224,13 +224,15 @@ async function main() {
     })),
   });
 
-  // 9) 학부모 계정 (홍서준 연결) — 전화 01090005001 / 비밀번호 11111111
+  // 9) 학부모 계정 (홍서준 연결) — 전화 01090005001 / 비밀번호 env SEED_PORTAL_PASSWORD
+  const parentPassword = process.env.SEED_PORTAL_PASSWORD;
+  if (!parentPassword) throw new Error("SEED_PORTAL_PASSWORD 환경변수가 필요합니다");
   const parentDigits = "01090005001";
   const parentEmail = parentSyntheticEmailFromDigits(parentDigits);
   const parentUser = await prisma.user.upsert({
     where: { email: parentEmail },
     update: {},
-    create: { email: parentEmail, password: await bcrypt.hash("11111111", 12), role: "PARENT" },
+    create: { email: parentEmail, password: await bcrypt.hash(parentPassword, 12), role: "PARENT" },
   });
   const parent = await prisma.parent.upsert({
     where: { userId: parentUser.id },

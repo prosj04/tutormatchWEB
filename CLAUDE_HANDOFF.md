@@ -1349,7 +1349,7 @@ npm run dev
 
 ### 25.1f 새벽 세션 완료분 (2026-07-04)
 
-- ✅ 새 DB 시드: `npm run seed:sample` 실행(치프 매니저 계정 `chief@concord.local` 추가). 비번: 스태프 Sample1234! / 학생·선생 11111111
+- ✅ 새 DB 시드: `npm run seed:sample` 실행(치프 매니저 계정 `<env에서 확인>` 추가). 비번: 스태프 `<env에서 확인>` / 학생·선생 `<env에서 확인>` — 실 계정정보는 Vercel env·비밀 관리에서 확인
 - ✅ **스모크 테스트 9/10 통과** (dev 서버 + 실 HTTP): 상담 확정→리포트→매칭(matchReason)→학생 수락→첫 수업→수업 조회→어드민 지표 전부 PASS. 유일 실패였던 cron은 로컬 `.env`에 CRON_SECRET 부재가 원인 → 추가 후 **알림 엔진 전 체크 무오류 완주 확인**
 - ✅ 버그 픽스: cron 라우트가 카운터를 수동 나열해 신규 체크 7종을 응답에서 누락 → 스프레드로 교체
 - ✅ **스토리지 서버 경유(BR-14 잔여)**: 브라우저 anon 키 업로드 전면 제거 — 질문 이미지 `POST /api/student/question-images`, 선생 사진 `POST /api/teacher/profile/photo` 신설, `createSupabaseBrowserClient` 삭제. **후속(사용자): Supabase 대시보드에서 anon INSERT 정책 제거**

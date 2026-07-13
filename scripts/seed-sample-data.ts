@@ -3,7 +3,7 @@
  * 실행: npm run seed:sample
  *
  * 표시: 이름 앞 [sample]
- * 비밀번호: 학생·선생님 11111111 / 관리자·매니저 Sample1234! (별도)
+ * 비밀번호: env SEED_PORTAL_PASSWORD(학생·선생님) / SEED_STAFF_PASSWORD(관리자·매니저) — 실 값은 비밀 관리에서 확인
  */
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -17,8 +17,13 @@ import {
 const prisma = new PrismaClient();
 
 const SAMPLE_PREFIX = "[sample]";
-const PORTAL_PASSWORD = "11111111";
-const STAFF_PASSWORD = "Sample1234!";
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} 환경변수가 필요합니다`);
+  return value;
+}
+const PORTAL_PASSWORD = requireEnv("SEED_PORTAL_PASSWORD");
+const STAFF_PASSWORD = requireEnv("SEED_STAFF_PASSWORD");
 
 function sampleName(base: string): string {
   const trimmed = base.trim();
