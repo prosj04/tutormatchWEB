@@ -1,27 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/require-role";
 
 /**
  * 강사 신원 확인만 수행(승인 여부 무관).
  * 승인 대기 중인 강사도 접근해야 하는 온보딩 라우트(프로필/문서/사진)용.
  */
 export async function requireTeacherAllowPending() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return {
-      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
-    } as const;
-  }
-  if (session.user.role !== "TEACHER" && session.user.role !== "MANAGER" && session.user.role !== "CHIEF_MANAGER") {
-    return {
-      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-    } as const;
-  }
+  const guard = await requireRole(["TEACHER", "MANAGER", "CHIEF_MANAGER"]);
+  if ("error" in guard) return guard;
 
   const teacher = await prisma.teacher.findUnique({
-    where: { userId: session.user.id },
+    where: { userId: guard.userId },
     include: { user: { select: { deletedAt: true, role: true } } },
   });
 
@@ -32,13 +23,13 @@ export async function requireTeacherAllowPending() {
   }
 
   // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
-  if (teacher.user.deletedAt !== null || teacher.user.role !== session.user.role) {
+  if (teacher.user.deletedAt !== null || teacher.user.role !== guard.session.user.role) {
     return {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
 
-  return { session, teacher, userId: session.user.id } as const;
+  return { session: guard.session, teacher, userId: guard.userId } as const;
 }
 
 /**

@@ -1,16 +1,13 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
 import { getTeacherByUserId } from "@/lib/get-teacher-cache";
-import { prisma } from "@/lib/prisma";
+import { requireRole, revalidateUser } from "@/lib/require-role";
 
 export async function requireManagerPage() {
-  const session = await auth();
-  if (!session?.user?.id || (session.user.role !== "MANAGER" && session.user.role !== "CHIEF_MANAGER")) {
-    redirect("/teacher-portal/dashboard");
-  }
+  const guard = await requireRole(["MANAGER", "CHIEF_MANAGER"]);
+  if ("error" in guard) redirect("/teacher-portal/dashboard");
 
-  const teacher = await getTeacherByUserId(session.user.id);
+  const teacher = await getTeacherByUserId(guard.userId);
 
   if (!teacher) {
     redirect("/teacher-portal");
@@ -18,13 +15,10 @@ export async function requireManagerPage() {
 
   // 캐시(getTeacherByUserId)는 deletedAt/role 미포함 — 별도 재조회로
   // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
-  const account = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { deletedAt: true, role: true },
-  });
-  if (!account || account.deletedAt !== null || account.role !== session.user.role) {
+  const invalid = await revalidateUser(guard.session.user.role, guard.userId);
+  if (invalid) {
     redirect("/login");
   }
 
-  return { session, teacher };
+  return { session: guard.session, teacher };
 }

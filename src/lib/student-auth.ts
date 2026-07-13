@@ -1,23 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/require-role";
 
 export async function requireStudent() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return {
-      error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
-    } as const;
-  }
-  if (session.user.role !== "STUDENT") {
-    return {
-      error: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
-    } as const;
-  }
+  const guard = await requireRole(["STUDENT"]);
+  if ("error" in guard) return guard;
 
   const student = await prisma.student.findUnique({
-    where: { userId: session.user.id },
+    where: { userId: guard.userId },
     include: { user: { select: { deletedAt: true, role: true } } },
   });
 
@@ -28,13 +19,13 @@ export async function requireStudent() {
   }
 
   // 소프트삭제·역할변경 즉시 반영(모바일 getMobileUser와 동일 정책)
-  if (student.user.deletedAt !== null || student.user.role !== session.user.role) {
+  if (student.user.deletedAt !== null || student.user.role !== guard.session.user.role) {
     return {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     } as const;
   }
 
-  return { session, student, userId: session.user.id } as const;
+  return { session: guard.session, student, userId: guard.userId } as const;
 }
 
 export function isValidDateString(date: string): boolean {
