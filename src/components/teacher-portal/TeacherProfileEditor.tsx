@@ -238,7 +238,6 @@ export function TeacherProfileEditor({
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
         <div className="lg:sticky lg:top-[7.5rem] lg:self-start">
           <TeacherProfilePreview
-            teacherId={teacherId}
             name={teacherName}
             subjects={subjects}
             gender={gender}

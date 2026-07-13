@@ -44,7 +44,6 @@ export default async function NotificationsPage() {
 
   return (
     <NotificationsPageClient
-      studentName={student.name}
       initialItems={items}
       initialUnreadCount={unreadCount}
     />

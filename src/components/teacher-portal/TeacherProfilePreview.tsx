@@ -11,7 +11,6 @@ type CredentialItem = {
 };
 
 type TeacherProfilePreviewProps = {
-  teacherId: string;
   name: string;
   subjects: string[];
   gender: string | null;

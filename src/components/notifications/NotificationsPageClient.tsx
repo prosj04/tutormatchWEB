@@ -17,7 +17,6 @@ type NotificationItem = {
 };
 
 type Props = {
-  studentName: string;
   initialItems: NotificationItem[];
   initialUnreadCount: number;
 };
