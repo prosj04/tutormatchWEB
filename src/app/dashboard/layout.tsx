@@ -1,5 +1,6 @@
 import "../portal-design.css";
 
+import { PortalDesignProvider } from "@/components/providers/PortalDesignProvider";
 import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
 
@@ -15,5 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     "student_consultation",
     "visit_picker",
   ]);
-  return <PortalSiteContentProvider value={siteContent}>{children}</PortalSiteContentProvider>;
+  return (
+    <PortalDesignProvider>
+      <PortalSiteContentProvider value={siteContent}>{children}</PortalSiteContentProvider>
+    </PortalDesignProvider>
+  );
 }
