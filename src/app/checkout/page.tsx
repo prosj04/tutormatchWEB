@@ -81,6 +81,17 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
     }
   }
 
+  // 학부모가 연결된 학생 세션: 학부모 결제 동선을 기본 안내(C-2, 재심-8).
+  // 미연결 학생은 false 그대로 — 기존 경로 완전 무변경.
+  let studentHasLinkedParent = false;
+  if (role === "STUDENT" && session?.user?.id) {
+    const link = await prisma.parentStudent.findFirst({
+      where: { student: { userId: session.user.id } },
+      select: { id: true },
+    });
+    studentHasLinkedParent = link != null;
+  }
+
   // 요청된 studentId가 실제 연결 자녀일 때만 초기 선택으로 사용(검증).
   const initialChildId =
     requestedChildId && parentChildren?.some((c) => c.id === requestedChildId)
@@ -135,6 +146,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         isEditMode={isEditMode}
         parentChildren={parentChildren}
         initialChildId={initialChildId}
+        studentHasLinkedParent={studentHasLinkedParent}
       />
     </>
   );

@@ -63,6 +63,8 @@ type CheckoutContentProps = {
   parentChildren?: CheckoutChild[];
   /** ?studentId= 로 검증된 초기 선택 자녀 id(C2-3). 없으면 첫 자녀. */
   initialChildId?: string;
+  /** 학부모가 연결된 학생 세션이면 학부모 결제 안내를 우선 노출(C-2). */
+  studentHasLinkedParent?: boolean;
 };
 
 function CmsText({
@@ -89,6 +91,7 @@ export function CheckoutContent({
   isEditMode: isEditModeProp,
   parentChildren,
   initialChildId,
+  studentHasLinkedParent,
 }: CheckoutContentProps) {
   const searchParams = useSearchParams();
   const isEditMode = isEditModeProp ?? searchParams.get("cms_edit") === "1";
@@ -342,6 +345,16 @@ export function CheckoutContent({
               </button>
             </CmsText>
           </div>
+
+          {studentHasLinkedParent ? (
+            <article className="card panel-card" style={{ marginBottom: 20 }}>
+              <h2 className="panel-title">학부모 계정에서 결제하실 수 있습니다</h2>
+              <p className="panel-note" style={{ marginTop: 8 }}>
+                연결된 학부모 계정으로 로그인하면 학부모 결제 페이지에서 이 플랜을 바로
+                결제합니다. 아래에서 학생 명의로 직접 결제하는 것도 가능합니다.
+              </p>
+            </article>
+          ) : null}
 
           <div className="checkout-layout">
             <div className="panel-stack">
