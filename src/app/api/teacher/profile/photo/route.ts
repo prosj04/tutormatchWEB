@@ -51,7 +51,8 @@ export async function POST(request: Request) {
   uploadTimer.end();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[teacher/profile/photo] upload failed:", error.message);
+    return NextResponse.json({ error: "업로드에 실패했습니다." }, { status: 500 });
   }
 
   const publicData = timeSync(

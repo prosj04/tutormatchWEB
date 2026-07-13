@@ -40,7 +40,8 @@ export async function POST(request: Request) {
       upsert: false,
     });
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[mobile/teacher/profile/photo] upload failed:", error.message);
+    return NextResponse.json({ error: "업로드에 실패했습니다." }, { status: 500 });
   }
 
   const photoUrl = supabase.storage
