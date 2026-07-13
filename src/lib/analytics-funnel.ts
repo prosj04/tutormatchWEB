@@ -3,14 +3,6 @@ import { Prisma } from "@prisma/client";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { prisma } from "@/lib/prisma";
 
-export const FUNNEL_EVENT_NAMES = [
-  ANALYTICS_EVENTS.landingConsultationCtaClicked,
-  ANALYTICS_EVENTS.consultationSubmitted,
-  ANALYTICS_EVENTS.consultationPostSignupClicked,
-  ANALYTICS_EVENTS.studentRegistered,
-  ANALYTICS_EVENTS.journeyActiveReached,
-] as const;
-
 export type FunnelStepKey =
   | "ctaClicked"
   | "consultationSubmitted"

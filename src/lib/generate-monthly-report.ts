@@ -100,7 +100,7 @@ function parseSubjectScores(value: string | null | undefined): SubjectScore[] {
   }
 }
 
-export async function generateReportForStudent(
+async function generateReportForStudent(
   studentId: string,
   month: string,
 ): Promise<void> {

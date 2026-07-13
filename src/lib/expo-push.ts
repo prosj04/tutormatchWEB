@@ -9,7 +9,7 @@ type PushMessage = {
 };
 
 /** Expo Push API로 토큰 목록에 알림 발송 */
-export async function sendExpoPush(
+async function sendExpoPush(
   tokens: string[],
   message: PushMessage,
 ): Promise<void> {

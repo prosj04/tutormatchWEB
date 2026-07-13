@@ -189,16 +189,6 @@ export async function getFaqPageFaqs(): Promise<LandingCmsContent["faqs"]> {
   }
 }
 
-/** @deprecated use getReviewsPageTestimonials */
-export async function getActiveTestimonials(): Promise<LandingCmsContent["testimonials"]> {
-  return getReviewsPageTestimonials();
-}
-
-/** @deprecated use getFaqPageFaqs */
-export async function getActiveFaqs(): Promise<LandingCmsContent["faqs"]> {
-  return getFaqPageFaqs();
-}
-
 /** connection_limit=1 환경: siteContent 먼저, testimonials·faqs는 캐시된 조회만 병렬 */
 export async function getLandingCmsContent(): Promise<LandingCmsContent> {
   const timer = startPerfTimer("cms.getLandingCmsContent");

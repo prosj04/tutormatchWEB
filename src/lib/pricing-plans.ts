@@ -1,5 +1,3 @@
-import { formatKRW } from "@/lib/format-won";
-
 /** 공개 요금 카드 학년 탭 — 중등/고등 카드 세트 분리 시 사용 */
 export type PricingSchoolTier = "middle" | "high";
 
@@ -17,7 +15,7 @@ export type V2Weekly = 1 | 2;
 export type V2HoursPerLesson = 2 | 3;
 
 /** 정가 기준 시급 (원). 마케팅 정가/할인율 산출 기준. */
-export const LIST_PRICE_PER_HOUR_KRW = 50_000;
+const LIST_PRICE_PER_HOUR_KRW = 50_000;
 
 /** 월 4주 기준 (weekly × hoursPerLesson × 4) */
 export const MONTHS_PER_BILLING_CYCLE_WEEKS = 4;
@@ -96,10 +94,6 @@ export function getV2PlanById(id: string | null | undefined): PricingPlanV2 | nu
   return V2_PLAN_BY_ID.get(id) ?? null;
 }
 
-export function isV2PlanId(id: string | null | undefined): boolean {
-  return !!id && V2_PLAN_BY_ID.has(id);
-}
-
 /**
  * ─────────────────────────────────────────────────────────────────────────────
  *  LEGACY PRICING (호환용) — v1
@@ -115,11 +109,9 @@ export type SessionPlan = 4 | 8;
 export type SubjectCount = 1 | 2;
 
 /** @deprecated v1 회당 요금 상수. */
-export const RATE_WEEKLY_ONCE = 100_000;
+const RATE_WEEKLY_ONCE = 100_000;
 /** @deprecated v1 회당 요금 상수. */
-export const RATE_WEEKLY_TWICE_OR_MORE = 90_000;
-
-export const CONSULTATION_HREF = "/dashboard/consultation";
+const RATE_WEEKLY_TWICE_OR_MORE = 90_000;
 
 /** 모든 플랜에 공통으로 포함되는 가치 항목 */
 export const PLAN_INCLUDES = [
@@ -138,53 +130,6 @@ export function getRatePerSession(sessions: SessionPlan): number {
 /** @deprecated v1 계산식 유지. 마케팅/CMS 표시용. */
 export function calculatePlanTotal(sessions: SessionPlan, subjects: SubjectCount): number {
   return getRatePerSession(sessions) * sessions * subjects;
-}
-
-/** @deprecated v1 계산식 유지. 마케팅/CMS 표시용. */
-export function formatPlanPrice(sessions: SessionPlan, subjects: SubjectCount): string {
-  return formatKRW(calculatePlanTotal(sessions, subjects));
-}
-
-/** v1 (sessions, subjects) → 가장 가까운 v2 planId로 매핑. */
-function legacyToV2PlanId(sessions: SessionPlan, subjects: SubjectCount): string {
-  // 주1회≈sessions 4, 주2회≈sessions 8. 회당 2시간 기본. 과목수는 폐지되었으나 2과목이면 회당 3시간으로 heuristic 매핑.
-  const weekly: V2Weekly = sessions === 8 ? 2 : 1;
-  const hours: V2HoursPerLesson = subjects === 2 ? 3 : 2;
-  // tier 정보가 없으므로 고등 기본. (마케팅 링크에서는 이후 파라미터로 재정의 가능)
-  return v2Id("high", weekly, hours);
-}
-
-/**
- * @deprecated v1 checkout href. v2 planId로 변환해 /checkout?plan= 링크를 발급한다.
- * untouchable file(PricingContent.tsx / PricingPlanCard.tsx)에서 계속 호출됨.
- */
-export function buildCheckoutHref(sessions: SessionPlan, subjects: SubjectCount): string {
-  const planId = legacyToV2PlanId(sessions, subjects);
-  const params = new URLSearchParams({
-    plan: planId,
-    tutor: "1",
-  });
-  return `/checkout?${params.toString()}`;
-}
-
-/** v2 결제 링크. 신규 도입. */
-export function buildCheckoutHrefV2(planId: string, tutorId: string = "1"): string {
-  const params = new URLSearchParams({ plan: planId, tutor: tutorId });
-  return `/checkout?${params.toString()}`;
-}
-
-/** 상담 대기 없이 즉시 등록 (대표 매니저 배정) — v1 그대로 유지 */
-export function buildInstantSignupHref(
-  sessions: SessionPlan,
-  subjects: SubjectCount,
-): string {
-  const params = new URLSearchParams({
-    signup: "1",
-    instant: "1",
-    sessions: String(sessions),
-    subjects: String(subjects),
-  });
-  return `/?${params.toString()}`;
 }
 
 export type PricingPlanDefinition = {
@@ -261,44 +206,6 @@ export const PRICING_PLANS: PricingPlanDefinition[] = [
     recommended: true,
   },
 ];
-
-/** @deprecated CMS 박스 슬롯 (v1 카드 6개). */
-export const PRICING_PLAN_SLOTS: PricingPlanDefinition[] = [
-  ...PRICING_PLANS,
-  {
-    id: "box-5",
-    sessions: 4,
-    subjects: 2,
-    title: "월 4회",
-    subtitle: "2과목 · 주 1회 (추가)",
-    features: [
-      "과목별 주 1회 수업 (50분)",
-      "선생님 2명 배정",
-      "학습 진도·과제 관리",
-      "AI 질답 이용 가능",
-    ],
-    recommended: false,
-  },
-  {
-    id: "box-6",
-    sessions: 8,
-    subjects: 2,
-    title: "월 8회",
-    subtitle: "2과목 · 주 2회 (추가)",
-    features: [
-      "과목별 주 2회 수업 (50분)",
-      "선생님 2명 배정",
-      "학습 진도·과제 관리",
-      "AI 질답 횟수 2배 제공",
-    ],
-    recommended: false,
-  },
-];
-
-/** 홈 우측 열에서는 1과목 카드만 (박스 1–2에 해당할 때까지 사용) */
-export function isHomePricingOneSubject(plan: PricingPlanDefinition): boolean {
-  return plan.subjects === 1;
-}
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────

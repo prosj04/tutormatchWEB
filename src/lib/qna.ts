@@ -312,13 +312,3 @@ export async function setResolved(
     data: { isResolved },
   });
 }
-
-/**
- * 미답변 스레드 조건 — 통계·크론에서 공용으로 쓴다.
- * 학생 루트 메시지 중 강사 답변(sender="tutor")이 아직 없는 것.
- */
-export const unansweredRootMessageWhere = {
-  sender: "me",
-  replyToId: null,
-  replies: { none: { sender: "tutor" } },
-} as const;

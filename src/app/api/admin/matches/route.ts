@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireChiefManagerOrAdmin } from "@/lib/admin-auth";
-import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
+import { trackJourneyActiveIfFirst } from "@/lib/analytics";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 

@@ -223,7 +223,8 @@ export function CheckoutContent({
       return;
     }
 
-    const orderId = `CONCORD_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    // Toss orderId: 영숫자·-·_ 6~64자. "CONCORD_" + UUID(36) = 44자.
+    const orderId = `CONCORD_${crypto.randomUUID()}`;
     const orderName = `Concord ${planLabel} · ${tutorName}`;
 
     setPaying(true);

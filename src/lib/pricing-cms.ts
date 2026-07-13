@@ -5,7 +5,6 @@ import {
   pricingBoxFieldKey,
   pricingMiddleBoxFieldKey,
 } from "@/lib/cms-page-defaults";
-import { formatKRW } from "@/lib/format-won";
 import { PRICING_PLANS_V2, type PricingPlanV2, type PricingSchoolTier } from "@/lib/pricing-plans";
 
 export type PricingPlanItem = {
@@ -81,9 +80,4 @@ function defaultV2Features(plan: PricingPlanV2): string[] {
     plan.weekly === 2 ? "AI 질답 횟수 2배 제공" : "AI 질답 이용 가능",
     "수시 강사 첨삭, 질답",
   ];
-}
-
-/** 포맷: "380,000원" */
-export function formatV2Price(plan: PricingPlanV2): string {
-  return formatKRW(plan.priceKrw);
 }

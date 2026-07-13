@@ -1,10 +1,7 @@
 /** 공개 페이지별 CMS 섹션 기본값 (seed + 관리자 UI 공용) */
 
 import type { CSSProperties } from "react";
-import { getEffectivePhotoUrl } from "@/lib/profile-gender";
 import { PRICING_PLANS_V2, type PricingPlanV2 } from "@/lib/pricing-plans";
-
-export { getGenderDefaultPhotoUrl, getEffectivePhotoUrl } from "@/lib/profile-gender";
 
 /** 홈·요금제 등 관리자에서 동일 박스 UI로 노출되는 카드 슬롯 수 (v2: 4개 플랜/tier) */
 export const CMS_MANAGED_CARD_SLOT_COUNT = 4;
@@ -25,14 +22,6 @@ export function pricingMiddleBoxFieldKey(
   return `pricing_middle_box_${boxIndex1Based}_${field}`;
 }
 
-/** 예: 요금 플랜 id "8-2" → plan_8_2_title */
-export function pricingPlanFieldKey(
-  planId: string,
-  field: "title" | "subtitle" | "price" | "features" | "visible",
-): string {
-  return `plan_${planId.replace("-", "_")}_${field}`;
-}
-
 /** 1 / true 등은 표시, 0 · false · off · 숨김 은 미표시. 빈 문자열은 defaultVisible */
 export function parseCmsVisibility(raw: string | undefined, defaultVisible = true): boolean {
   if (raw === undefined || raw === "") return defaultVisible;
@@ -51,18 +40,13 @@ export function isPublicSectionVisible(
   return parseCmsVisibility(raw?.trim() === "" ? undefined : raw, defaultVisible);
 }
 
-/** CMS·공개 페이지 제목에서 줄바꿈 제거 */
-export function cmsPlainLine(text: string): string {
-  return text.replace(/\s*\n+\s*/g, " ").trim();
-}
-
 /** CMS 텍스트 크기 옵션 → Tailwind `text-*` */
 export const CMS_TEXT_SIZE_OPTIONS = ["sm", "base", "lg", "xl", "2xl", "3xl", "4xl"] as const;
 export type CmsTextSize = (typeof CMS_TEXT_SIZE_OPTIONS)[number];
 
 const CMS_TEXT_SIZE_SET = new Set<string>(CMS_TEXT_SIZE_OPTIONS);
 
-export function getCmsTextSizeClass(raw: string | undefined, fallback: string): string {
+function getCmsTextSizeClass(raw: string | undefined, fallback: string): string {
   const value = raw?.trim();
   if (!value) return fallback;
   if (CMS_TEXT_SIZE_SET.has(value)) return `text-${value}`;
@@ -70,7 +54,7 @@ export function getCmsTextSizeClass(raw: string | undefined, fallback: string): 
 }
 
 /** CMS bold: "1" → font-bold, "0" → font-normal. 빈 값이면 "" (호출부 fallback 유지) */
-export function getCmsTextWeightClass(raw: string | undefined): string {
+function getCmsTextWeightClass(raw: string | undefined): string {
   const value = raw?.trim();
   if (!value) return "";
   if (value === "0") return "font-normal";
@@ -86,7 +70,7 @@ export type CmsTextStyleTarget = {
 };
 
 /** 폰트 크기·볼드 CMS 대상 (seed·관리자 UI 공용) */
-export const CMS_TEXT_STYLE_TARGETS: readonly CmsTextStyleTarget[] = [
+const CMS_TEXT_STYLE_TARGETS: readonly CmsTextStyleTarget[] = [
   { section: "hero", key: "headline", defaultSize: "4xl", defaultBold: "1" },
   { section: "hero", key: "subtext", defaultSize: "lg", defaultBold: "0" },
   { section: "management", key: "headline", defaultSize: "3xl", defaultBold: "1" },
@@ -181,7 +165,7 @@ export const CMS_HOME_SPACING_SECTIONS = [
 ] as const;
 
 /** 홈 외 페이지 섹션 — admin UI에는 표시되지만 기본값 초기화에는 포함되지 않음 */
-export const CMS_EXTRA_SPACING_SECTIONS = [
+const CMS_EXTRA_SPACING_SECTIONS = [
   { key: "hero_buttons", label: "히어로 - 버튼 그룹" },
   { key: "results_cards", label: "결과 - 카드 목록" },
   { key: "teachers_cards", label: "선생님 - 카드 목록" },
@@ -1558,15 +1542,6 @@ export function getCmsSectionValue(
   fallback: string,
 ) {
   return siteContent?.[section]?.[key] ?? fallback;
-}
-
-/** 강사진 공개 목록·상세: 개별 photoUrl 우선, 없으면 CMS 성별 기본 얼굴 */
-export function getTutorPublicPhotoUrl(
-  gender: string | null | undefined,
-  siteContent: Record<string, Record<string, string>> | undefined,
-  photoUrl?: string | null,
-): string {
-  return getEffectivePhotoUrl(photoUrl, gender, siteContent);
 }
 
 /** 홈 안전 스토리(스크롤텔링) 섹션 기본값 */

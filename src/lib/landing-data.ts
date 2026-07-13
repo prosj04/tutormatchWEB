@@ -44,5 +44,3 @@ export const showcaseTutors: ShowcaseTutor[] = [
     image: "/images/teachers/default-female.png",
   },
 ];
-
-export const heroSampleTutor = showcaseTutors[0];

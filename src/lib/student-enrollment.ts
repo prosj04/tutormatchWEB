@@ -1,6 +1,5 @@
 import { createNotification } from "@/lib/notifications";
 import { getChiefManager } from "@/lib/chief-manager";
-import { getDefaultManager } from "@/lib/default-manager";
 import { OPEN_BOOKING_STATUSES } from "@/lib/consultation-current";
 import { prisma } from "@/lib/prisma";
 import { serializeVisitTimes } from "@/lib/visit-consultation";
@@ -84,61 +83,6 @@ export async function createConsultationRequest({
   );
 
   return booking;
-}
-
-/** 즉시 등록: 대표 매니저 배정 + 상담 예약 ASSIGNED */
-export async function assignDefaultManagerToStudent({
-  studentId,
-  studentName,
-  studentGrade,
-  note,
-}: EnrollConsultationParams) {
-  const manager = await getDefaultManager();
-  const now = new Date();
-
-  const openExisting = await findOpenBookingByStudentId(studentId);
-
-  const booking = openExisting
-    ? await prisma.consultationBooking.update({
-        where: { id: openExisting.id },
-        data: {
-          managerId: manager.id,
-          preferredTimes: "[]",
-          visitPreferredTimes: openExisting.visitPreferredTimes || "{}",
-          status: "ASSIGNED",
-          note: note ?? openExisting.note,
-          assignedAt: now,
-        },
-      })
-    : await prisma.consultationBooking.create({
-        data: {
-          studentId,
-          managerId: manager.id,
-          preferredTimes: "[]",
-          visitPreferredTimes: serializeVisitTimes({}),
-          status: "ASSIGNED",
-          note: note ?? null,
-          assignedAt: now,
-        },
-      });
-
-  await prisma.managerStudent.upsert({
-    where: {
-      managerId_studentId: { managerId: manager.id, studentId },
-    },
-    create: { managerId: manager.id, studentId },
-    update: {},
-  });
-
-  await createNotification({
-    userId: manager.user.id,
-    type: "BOOKING_CONFIRMED",
-    title: "담당 학생 배정",
-    body: `${studentName}(${studentGrade})님이 배정되었습니다.`,
-    relatedId: booking.id,
-  });
-
-  return { booking, manager };
 }
 
 /**

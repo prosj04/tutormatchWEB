@@ -5,8 +5,8 @@
  * 없거나 SDK 로드에 실패하면 pf.kakao.com 채널 URL을 새 창으로 열어 동일 UX를 보장한다.
  */
 
-export const KAKAO_CHANNEL_PUBLIC_ID = "_xlxcjwX";
-export const KAKAO_CHANNEL_URL = `https://pf.kakao.com/${KAKAO_CHANNEL_PUBLIC_ID}`;
+const KAKAO_CHANNEL_PUBLIC_ID = "_xlxcjwX";
+const KAKAO_CHANNEL_URL = `https://pf.kakao.com/${KAKAO_CHANNEL_PUBLIC_ID}`;
 export const KAKAO_CHANNEL_CHAT_URL = `${KAKAO_CHANNEL_URL}/chat`;
 
 const KAKAO_SDK_SRC = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js";

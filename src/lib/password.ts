@@ -20,7 +20,7 @@ export type PasswordResult =
   | { ok: false; status: number; error: string };
 
 /** 새 비밀번호 형식 검증. 문제 없으면 null. */
-export function validateNewPassword(value: unknown): string | null {
+function validateNewPassword(value: unknown): string | null {
   if (typeof value !== "string" || value.length < MIN_PASSWORD_LENGTH) {
     return "8자 이상의 새 비밀번호를 입력해 주세요.";
   }

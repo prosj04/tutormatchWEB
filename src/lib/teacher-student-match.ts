@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { trackJourneyActiveIfFirst } from "@/lib/analytics-journey";
+import { trackJourneyActiveIfFirst } from "@/lib/analytics";
 import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
@@ -94,7 +94,7 @@ export async function acceptTeacherStudentMatch(
   };
 }
 
-export async function getActiveTeacherStudentMatch(
+async function getActiveTeacherStudentMatch(
   teacherId: string,
   studentId: string,
 ) {

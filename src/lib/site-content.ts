@@ -51,7 +51,7 @@ function pickSections(
   return filtered;
 }
 
-export function groupSiteContentRows(
+function groupSiteContentRows(
   rows: Array<{ section: string; key: string; value: string }>,
 ): GroupedSiteContent {
   const grouped: GroupedSiteContent = {};

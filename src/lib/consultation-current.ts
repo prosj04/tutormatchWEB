@@ -50,20 +50,3 @@ export async function getOpenBooking(
   } as Prisma.ConsultationBookingFindFirstArgs;
   return prisma.consultationBooking.findFirst(args);
 }
-
-/**
- * Returns the student's "current" booking: the open one if any, else the most
- * recent booking (any status). Returns null if the student has never had one.
- */
-export async function getCurrentBooking(
-  studentId: string,
-  extras: Extras = {},
-) {
-  const { include, select } = extras;
-  const args = {
-    where: { studentId },
-    orderBy: { createdAt: "desc" as const },
-    ...(select ? { select } : include ? { include } : {}),
-  } as Prisma.ConsultationBookingFindFirstArgs;
-  return prisma.consultationBooking.findFirst(args);
-}
