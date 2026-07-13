@@ -516,6 +516,8 @@ model PaymentCompletion {
   bookingId       String?
   cashReceiptType String? // e.g. "PERSONAL" | "BUSINESS"
   cashReceiptUrl  String?
+  /// 결제자 귀속(C-2): 결제를 실행한 세션 사용자 User.id. 시스템 자동결제·웹훅 복구는 null.
+  paidByUserId    String?
   createdAt       DateTime  @default(now())
   completedAt     DateTime?
   updatedAt       DateTime  @default(now()) @updatedAt

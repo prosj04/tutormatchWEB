@@ -81,6 +81,8 @@ export async function POST(request: Request) {
       amount,
       plan,
       cashReceipt,
+      // 결제자 귀속(C-2): 학생 단독 결제는 학생 본인 User.id.
+      paidByUserId: session.user.id,
     });
 
     return NextResponse.json({

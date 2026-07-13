@@ -12,6 +12,8 @@ type CompleteStudentPaymentParams = {
   amount?: number | null;
   plan?: string | null;
   cashReceipt?: CashReceipt;
+  /** 결제자 귀속(C-2): 결제를 실행한 세션 User.id. 웹훅·자동결제 등 세션 없는 경로는 생략. */
+  paidByUserId?: string | null;
 };
 
 /** v2 기본 플랜(고등 · 주2회 · 회당 2시간) — 유효성 실패 시 폴백. */
@@ -72,6 +74,7 @@ export async function completeStudentPayment({
   amount,
   plan,
   cashReceipt,
+  paidByUserId,
 }: CompleteStudentPaymentParams) {
   const normalizedPlan = normalizePlan(plan);
   const now = new Date();
@@ -124,6 +127,8 @@ export async function completeStudentPayment({
           amount: safeStoredAmount,
           cashReceiptType: cashReceipt?.type ?? null,
           cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
+          // 미제공(웹훅 재시도 등)이면 기존 귀속을 보존한다.
+          paidByUserId: paidByUserId ?? undefined,
         },
       });
     } else {
@@ -137,6 +142,7 @@ export async function completeStudentPayment({
           amount: safeStoredAmount,
           cashReceiptType: cashReceipt?.type ?? null,
           cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
+          paidByUserId: paidByUserId ?? null,
         },
       });
     }
@@ -182,6 +188,7 @@ export async function completeStudentPayment({
         amount: safeStoredAmount,
         cashReceiptType: cashReceipt?.type ?? null,
         cashReceiptUrl: cashReceipt?.receiptUrl ?? null,
+        paidByUserId: paidByUserId ?? undefined,
         subscriptionId: subscription.id,
         bookingId: booking.id,
         completedAt: new Date(),

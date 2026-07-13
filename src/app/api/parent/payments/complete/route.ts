@@ -14,7 +14,7 @@ import type { CashReceipt } from "@/lib/toss-payments";
 export async function POST(request: Request) {
   const authResult = await requireParent();
   if ("error" in authResult) return authResult.error;
-  const { parent } = authResult;
+  const { parent, userId } = authResult;
 
   let body: {
     studentId?: unknown;
@@ -91,6 +91,8 @@ export async function POST(request: Request) {
       amount,
       plan,
       cashReceipt,
+      // 결제자 귀속(C-2): 학부모 명의 결제는 학부모 User.id.
+      paidByUserId: userId,
     });
 
     return NextResponse.json({

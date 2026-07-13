@@ -9,6 +9,7 @@ import {
   type SubjectCount,
 } from "@/lib/order-pricing";
 import { listParentChildren } from "@/lib/parent-data";
+import { shouldPromptParentPayment } from "@/lib/payment-payer";
 import { getV2PlanById, PRICING_PLANS_V2 } from "@/lib/pricing-plans";
 import { prisma } from "@/lib/prisma";
 import { getGroupedSiteContentBySections } from "@/lib/site-content";
@@ -89,7 +90,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
       where: { student: { userId: session.user.id } },
       select: { id: true },
     });
-    studentHasLinkedParent = link != null;
+    studentHasLinkedParent = shouldPromptParentPayment(role, link != null);
   }
 
   // 요청된 studentId가 실제 연결 자녀일 때만 초기 선택으로 사용(검증).
