@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+import { parentSyntheticEmailFromDigits } from "../src/lib/phone-login";
 
 const prisma = new PrismaClient();
 
@@ -221,7 +224,26 @@ async function main() {
     })),
   });
 
-  console.log("==> 완료: 매칭 3 · 수업 3 · 플랜 5 · 질문 2 · 케어로그 2 · 월간리포트 1 · 템플릿 1 · 후기 4 · FAQ 5");
+  // 9) 학부모 계정 (홍서준 연결) — 전화 01090005001 / 비밀번호 11111111
+  const parentDigits = "01090005001";
+  const parentEmail = parentSyntheticEmailFromDigits(parentDigits);
+  const parentUser = await prisma.user.upsert({
+    where: { email: parentEmail },
+    update: {},
+    create: { email: parentEmail, password: await bcrypt.hash("11111111", 12), role: "PARENT" },
+  });
+  const parent = await prisma.parent.upsert({
+    where: { userId: parentUser.id },
+    update: {},
+    create: { userId: parentUser.id, name: "[sample] 홍서준 학부모", phone: parentDigits },
+  });
+  await prisma.parentStudent.upsert({
+    where: { parentId_studentId: { parentId: parent.id, studentId: S_HONG } },
+    update: {},
+    create: { parentId: parent.id, studentId: S_HONG, linkedVia: "MANAGER" },
+  });
+
+  console.log("==> 완료: 매칭 3 · 수업 3 · 플랜 5 · 질문 2 · 케어로그 2 · 월간리포트 1 · 템플릿 1 · 후기 4 · FAQ 5 · 학부모 1");
 }
 
 main().catch((e) => { console.error(e); process.exit(1); }).finally(() => prisma.$disconnect());

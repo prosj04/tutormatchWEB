@@ -616,27 +616,8 @@ export function LandingPageV2({
     </div>
   );
   const parentAppMock = (
-    <div className="lp2-report-card">
-      <div className="lp2-report-head">
-        <span className="lp2-proof-dot" />
-        <strong>Concord 학부모 페이지</strong>
-        <span className="t">실시간</span>
-      </div>
-      <div className="lp2-report-body">
-        <div className="lp2-report-row">
-          <span className="k">이번 주 수업</span>
-          <span className="v">화 완료 · 목 예정</span>
-        </div>
-        <div className="lp2-report-row">
-          <span className="k">숙제 진행</span>
-          <span className="v">12문항 중 8문항 완료</span>
-        </div>
-        <div className="lp2-report-row">
-          <span className="k">진도</span>
-          <span className="v">이차함수 그래프 활용</span>
-        </div>
-      </div>
-      <div className="lp2-report-foot">수업·숙제·진도를 한 화면에서 바로 확인하실 수 있습니다</div>
+    <div className="lp2-shot">
+      <Image src="/images/landing/app-parent.png" alt="" width={652} height={296} sizes="460px" />
     </div>
   );
 
@@ -663,10 +644,14 @@ export function LandingPageV2({
     : label.includes("리포트") ? 1
     : fallback;
   const seenCareLabels = new Set<string>();
+  // 오너 확정: 학생 루틴 축 — 숙제 → 질문 → 진도 → 리포트 순
+  const careRank: Record<number, number> = { 3: 0, 4: 1, 2: 2, 1: 3, 0: 4 };
   const learningCareRows = [
     ...managementItems.map((it) => ({ key: `m${it.n}`, label: it.label, desc: it.desc, mock: pickCareMock(it.label, it.n - 1) })),
     ...lessonCareItems.map((it) => ({ key: `l${it.n}`, label: it.label, desc: it.desc, mock: pickCareMock(it.label, 2 + it.n) })),
-  ].filter((r) => (seenCareLabels.has(r.label) ? false : (seenCareLabels.add(r.label), true)));
+  ]
+    .filter((r) => (seenCareLabels.has(r.label) ? false : (seenCareLabels.add(r.label), true)))
+    .sort((a, b2) => (careRank[a.mock] ?? 9) - (careRank[b2.mock] ?? 9));
 
   return (
     <div className="lp2-root">

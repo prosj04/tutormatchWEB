@@ -218,7 +218,7 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-result-track {
   display: flex; gap: 12px; align-items: stretch;
-  animation: lp2-result-scroll 24s linear infinite;
+  animation: lp2-result-scroll 28s linear infinite;
   will-change: transform;
 }
 .lp2-result-marquee:hover .lp2-result-track { animation-play-state: paused; }
@@ -697,12 +697,13 @@ body:has(.lp2-root) footer.site .logo span {
   font-size: 12px; font-weight: 500; opacity: .6; text-decoration: underline;
 }
 
-/* ── 실제 앱 화면 캡처 — 단일 프레임 (박스-안-박스 금지) ── */
+/* ── 실제 앱 화면 캡처 — 디바이스 베젤형 단일 프레임 (박스-안-박스 금지: 텍스트 크롬 없음) ── */
 .lp2-shot {
-  border-radius: 16px; overflow: hidden;
+  border-radius: 20px; overflow: hidden; padding: 10px;
+  background: var(--panel-2);
   border: 1px solid var(--line); box-shadow: var(--shadow-md);
 }
-.lp2-shot img { width: 100%; height: auto; display: block; }
+.lp2-shot img { width: 100%; height: auto; display: block; border-radius: 12px; }
 
 /* ── CTA band ── */
 .lp2-cta-band {
