@@ -8,7 +8,6 @@ import "./dark-mode-bridge.css";
 import "./responsive.css";
 
 import { HydrationMarker } from "@/components/layout/HydrationMarker";
-import { getPortalDesign } from "@/lib/portal-design";
 import { SITE_URL } from "@/lib/site-config";
 
 const pretendard = localFont({
@@ -105,10 +104,10 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="ko" className={pretendard.variable} data-portal-design={getPortalDesign()} suppressHydrationWarning>
+    <html lang="ko" className={pretendard.variable} data-portal-design="concord" suppressHydrationWarning>
       {/* Prevent flash-of-wrong-theme: read localStorage before first paint */}
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');var po=localStorage.getItem('portal-design-override');var pd=po==='legacy'?'legacy':po==='concord'?'concord':'${getPortalDesign()}';document.documentElement.setAttribute('data-portal-design',pd);}catch(e){document.documentElement.setAttribute('data-portal-design','${getPortalDesign()}');}})();` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();` }} />
         {/* No-JS safeguard: reveal elements stay visible if scripts are disabled */}
         <noscript><style>{`.reveal{opacity:1!important;transform:none!important;}`}</style></noscript>
       </head>
