@@ -143,8 +143,22 @@ export async function confirmTossPayment(
   }
 
   // Toss returns this when the payment was already confirmed (e.g., FAILED-retry path).
-  // The capture already succeeded; proceed to finish the DB work.
-  if (errorCode === "ALREADY_PROCESSED_PAYMENT") return;
+  // 클라이언트가 보낸 amount를 신뢰하지 않는다 — Toss 서버에서 실제 결제를 재조회해
+  // orderId·status·amount가 모두 일치할 때만 성공으로 취급한다 (planIdFromAmount
+  // 역매핑이 부풀린 금액으로 상위 플랜을 부여하는 것을 차단).
+  if (errorCode === "ALREADY_PROCESSED_PAYMENT") {
+    const payment = await fetchTossPayment(paymentKey);
+    if (payment.orderId !== orderId) {
+      throw new Error("TOSS_CONFIRM_FAILED:ORDER_ID_MISMATCH");
+    }
+    if (payment.status !== "DONE") {
+      throw new Error("TOSS_CONFIRM_FAILED:STATUS_NOT_DONE");
+    }
+    if (payment.amount !== amount) {
+      throw new Error("TOSS_CONFIRM_FAILED:AMOUNT_MISMATCH");
+    }
+    return;
+  }
 
   throw new Error(`TOSS_CONFIRM_FAILED:${errorCode}`);
 }
