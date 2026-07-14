@@ -1,6 +1,7 @@
 # HANDOFF.md — Concord Private Tutoring 마스터 핸드오프
 
 > 이 문서는 **모든 후속 AI 세션의 진입점**이다. 다른 문서로 가기 전에 Part 0을 반드시 통독한다.  
+> **기본 원칙**: `CLAUDE.md` + [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)를 동급 필독 원칙으로 삼는다 (세계관·카피 헌법·미학·반복 교정 8패턴의 단일 출처).  
 > 갱신: **2026-07-12 · main** (07-04 원본 작성, 07-12 정정·추록 — Part 3.4에 07-05~07-12 사이클 143커밋 반영)  
 > 원격 `https://github.com/prosj04/tutormatchWEB.git`  
 > 상세 히스토리 원본: `CLAUDE_HANDOFF.md` (1,425줄, §1~26 세션 로그·이연 스펙 보존)  
@@ -517,7 +518,7 @@ git log 실측 요약. 상세 세션 로그는 `CLAUDE_HANDOFF.md §25.1a~h`.
 | 디자인 시스템 원본 | `design handoff/DESIGN_SYSTEM.md` (+ HTML 시안, `tokens-reference.css`) | `design handoff/` |
 | 아카이브 (병합 원본 15종 + 구버전 사업계획서 4종) | `docs/archive/` | `docs/archive/` |
 
-**루트 정리 (07-12 실행 완료)**: `concord_bizplan.*` 3종·`Concord_사업계획서_2026.docx`는 `docs/archive/`로 이동됨. `Concord_사업계획서_2026.md`가 원본 소스로 루트 유지, PSST 버전(`docs/external/BUSINESS_PLAN_PSST.md`)이 계승.
+**루트 정리 (07-12 실행, 07-14 완결)**: `concord_bizplan.*` 3종·`Concord_사업계획서_2026.docx`·`Concord_사업계획서_2026.md`(원본 소스) 전부 `docs/archive/`로 이동됨. PSST 버전(`docs/external/BUSINESS_PLAN_PSST.md`)이 계승. `.hermes/`(07-01·02 계획 잔재)도 `docs/archive/hermes/`로 이동.
 
 ### 5.2 세션 로그
 

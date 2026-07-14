@@ -1,7 +1,7 @@
 # Concord 사업 개선 마스터 (2026-07 통합 최종본)
 
 > 최종 통합자 산출물 · 2026-07-13. 밤새 전 라운드(R1~R6) 통합 — 발굴 249건 + 레드팀 판정 + R6 재심.
-> 입력: `docs/BUSINESS_IMPROVEMENT_PLAN_2026-07.md`(C-1~50) + `docs/strategy-rounds/` R5 웨이브 5문서·verdict 3건 + **R6-fable-supplement(최우선 — verdict와 충돌 시 R6 우선)**.
+> 입력: `docs/archive/BUSINESS_IMPROVEMENT_PLAN_2026-07.md`(C-1~50) + `docs/strategy-rounds/` R5 웨이브 5문서·verdict 3건 + **R6-fable-supplement(최우선 — verdict와 충돌 시 R6 우선)**.
 > 절대 제약(위반 0 유지): 큐레이션 세계관(비교·선택·평점·수락·할인 UX 금지) · 요금제 v2 확정가 불변(중38·55·76·106 / 고43·58·78·112만) · "언제든 해지" 훼손 금지 · 홈/랜딩 코드 동결(§6 문서만) · 느낌표·이모지 카피 금지.
 > 본 문서는 **통합·정리만** — 새 제안 0건.
 
@@ -250,12 +250,12 @@
 
 ## 8. 토론 이력 요약 (R1~R6)
 
-- **R1 전략가** ([R1-strategist.md](strategy-rounds/R1-strategist.md), S-1~32): 병목은 CAC 아닌 콜드스타트·유지율·1인 키맨. "하방 삼중 봉쇄=필승" 골격 + 실패모드 F-1~11 + 확장 순서 + 오너 사각지대 6종 제시.
-- **R1 개선발굴자** ([R1-improver.md](strategy-rounds/R1-improver.md), I-1~36): 운영·수급·학부모심리·지역·데이터·수익 7카테고리 발굴. 핵심 통찰=대면상담=데이터 창구, 리퍼럴=유일 저CAC 엔진.
-- **R2 레드팀+코드검수** ([R2-skeptic.md](strategy-rounds/R2-skeptic.md)·[R2b-code-reality-audit.md](strategy-rounds/R2b-code-reality-audit.md)): 68건→생존34·조건부26·기각8. 관통 논제="지금 필요한 제안이 적다". R2b가 전략 전제 3오류(정산버그·리텐션부재·학부모갭)를 코드 대조로 정정.
-- **R3 반박** ([R3-strategist-rebuttal.md](strategy-rounds/R3-strategist-rebuttal.md)·[R3-improver-rebuttal.md](strategy-rounds/R3-improver-rebuttal.md)): 필승 v2=하방 봉쇄만 필승·성장은 실측 함수. BEP 5~7명 밴드·리드 릴레이·리텐션 3층·파일럿 안전판 R3-A/B/C 정식화 → **C-1~50 마스터**([BUSINESS_IMPROVEMENT_PLAN_2026-07.md](BUSINESS_IMPROVEMENT_PLAN_2026-07.md)) 확정.
-- **R5 웨이브1** ([marketing](strategy-rounds/R5-wave1-marketing.md)·[verdict](strategy-rounds/R5-wave1-marketing-verdict.md) / [product](strategy-rounds/R5-wave1-product.md)·[verdict](strategy-rounds/R5-wave1-product-verdict.md)): M-1~45(생존18/조건부24/기각3 → R6 조정)·P-1~46(생존15/조건부27/기각4 → R6 조정). 최대 발견=P-1·P-6 "기구현 착각"(발굴 Top 1·2가 이미 완성) + M-38 공급 과소평가 교정.
-- **R5 웨이브2** ([conversion](strategy-rounds/R5-wave2-conversion.md)·[verdict](strategy-rounds/R5-wave2-conversion-verdict.md) / [moat](strategy-rounds/R5-wave2-moat.md)·[visionary](strategy-rounds/R5-wave2-visionary.md)·[verdict](strategy-rounds/R5-wave2-moat-visionary-verdict.md)): V-1~40(생존20/조건부19/기각1)·D-1~38(생존27/조건부10/기각1)·X-1~30(생존8/조건부21/기각1). 최대 발견=터치 인플레이션(40일 12~15터치)→V-38 게이트 승격, 문서 인플레이션→병합 압축, 법무 6건→3콜 묶음, `:942` 느낌표 위반 실증.
-- **R6 fable 보완** ([R6-fable-supplement.md](strategy-rounds/R6-fable-supplement.md) — **본 마스터의 최신 진실**): 재심 뒤집음 5건(V-36 기구현·M-28 철회·P-38 승계·수업확인 V 채택·M-24 P 재배치) + verdict 간 모순 6건 정리 + 마스터 재배치 12건(최위험=D+7 fallback 약관-코드 불일치) + 시너지 12조합 + 이번 주 Top 10. C-plan 시기 골격(P/A/B/C)은 스트레스 테스트 통과 — 구조 결함 아닌 해상도 결함.
+- **R1 전략가** ([R1-strategist.md](strategy-rounds/improvement/R1-strategist.md), S-1~32): 병목은 CAC 아닌 콜드스타트·유지율·1인 키맨. "하방 삼중 봉쇄=필승" 골격 + 실패모드 F-1~11 + 확장 순서 + 오너 사각지대 6종 제시.
+- **R1 개선발굴자** ([R1-improver.md](strategy-rounds/improvement/R1-improver.md), I-1~36): 운영·수급·학부모심리·지역·데이터·수익 7카테고리 발굴. 핵심 통찰=대면상담=데이터 창구, 리퍼럴=유일 저CAC 엔진.
+- **R2 레드팀+코드검수** ([R2-skeptic.md](strategy-rounds/improvement/R2-skeptic.md)·[R2b-code-reality-audit.md](strategy-rounds/improvement/R2b-code-reality-audit.md)): 68건→생존34·조건부26·기각8. 관통 논제="지금 필요한 제안이 적다". R2b가 전략 전제 3오류(정산버그·리텐션부재·학부모갭)를 코드 대조로 정정.
+- **R3 반박** ([R3-strategist-rebuttal.md](strategy-rounds/improvement/R3-strategist-rebuttal.md)·[R3-improver-rebuttal.md](strategy-rounds/improvement/R3-improver-rebuttal.md)): 필승 v2=하방 봉쇄만 필승·성장은 실측 함수. BEP 5~7명 밴드·리드 릴레이·리텐션 3층·파일럿 안전판 R3-A/B/C 정식화 → **C-1~50 마스터**([archive/BUSINESS_IMPROVEMENT_PLAN_2026-07.md](archive/BUSINESS_IMPROVEMENT_PLAN_2026-07.md)) 확정.
+- **R5 웨이브1** ([marketing](strategy-rounds/improvement/R5-wave1-marketing.md)·[verdict](strategy-rounds/improvement/R5-wave1-marketing-verdict.md) / [product](strategy-rounds/improvement/R5-wave1-product.md)·[verdict](strategy-rounds/improvement/R5-wave1-product-verdict.md)): M-1~45(생존18/조건부24/기각3 → R6 조정)·P-1~46(생존15/조건부27/기각4 → R6 조정). 최대 발견=P-1·P-6 "기구현 착각"(발굴 Top 1·2가 이미 완성) + M-38 공급 과소평가 교정.
+- **R5 웨이브2** ([conversion](strategy-rounds/improvement/R5-wave2-conversion.md)·[verdict](strategy-rounds/improvement/R5-wave2-conversion-verdict.md) / [moat](strategy-rounds/improvement/R5-wave2-moat.md)·[visionary](strategy-rounds/improvement/R5-wave2-visionary.md)·[verdict](strategy-rounds/improvement/R5-wave2-moat-visionary-verdict.md)): V-1~40(생존20/조건부19/기각1)·D-1~38(생존27/조건부10/기각1)·X-1~30(생존8/조건부21/기각1). 최대 발견=터치 인플레이션(40일 12~15터치)→V-38 게이트 승격, 문서 인플레이션→병합 압축, 법무 6건→3콜 묶음, `:942` 느낌표 위반 실증.
+- **R6 fable 보완** ([R6-fable-supplement.md](strategy-rounds/improvement/R6-fable-supplement.md) — **본 마스터의 최신 진실**): 재심 뒤집음 5건(V-36 기구현·M-28 철회·P-38 승계·수업확인 V 채택·M-24 P 재배치) + verdict 간 모순 6건 정리 + 마스터 재배치 12건(최위험=D+7 fallback 약관-코드 불일치) + 시너지 12조합 + 이번 주 Top 10. C-plan 시기 골격(P/A/B/C)은 스트레스 테스트 통과 — 구조 결함 아닌 해상도 결함.
 
 **한 줄 결론**: 249건 중 파일럿을 실제로 성패시키는 것은 §3의 10묶음이며, 신규 오너 결정은 D+7 fallback 단 1건이다. 필승은 숫자가 아니라 구조(활성 5~7명 하방 삼중 봉쇄)에 있다 — 어떤 실측이 나와도 죽지 않고, 실측이 좋으면 크게 이긴다.

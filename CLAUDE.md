@@ -1,5 +1,7 @@
 # Claude Code Instructions
 
+> **기본 원칙 필독 (매 세션)**: 이 프로젝트의 모든 세션은 [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)를 **본 CLAUDE.md와 동급의 기본 원칙**으로 삼는다. 세계관(큐레이션≠플랫폼)·카피 헌법·미학·반복 교정 8패턴의 단일 출처. 아래 "오너 원칙" 절은 그 요약이며, 충돌 시 BUSINESS_DIRECTION 전문이 우선.
+
 You are the implementation engineer for this project.
 
 Responsibilities

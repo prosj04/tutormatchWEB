@@ -1,7 +1,7 @@
 # Concord 확장(Expansion) 마스터 (2026-07 통합 최종본)
 
 > 최종 통합자 산출물 · 2026-07-14. 확장 라운드 전 문서(R1 이중 발굴 63건 → R1b diff → R2 레드팀 → R2b 코드 감사 → R3 반박 → 반박 재정) 통합 — **신규 제안 0건, 통합·정리·재정만**.
-> 입력: [R1-expansion-strategist](strategy-rounds/R1-expansion-strategist.md)(ES-1~31) · [R1-expansion-improver](strategy-rounds/R1-expansion-improver.md)(EI-1~32) · [R1b diff](strategy-rounds/R1b-expansion-diff.md) · [R2 판정](strategy-rounds/R2-expansion-skeptic.md) · [R2b 코드 감사](strategy-rounds/R2b-expansion-code-audit.md) · [R3 반박 2건×2](strategy-rounds/R3-expansion-strategist-rebuttal.md)([improver](strategy-rounds/R3-expansion-improver-rebuttal.md)).
+> 입력: [R1-expansion-strategist](strategy-rounds/expansion/R1-expansion-strategist.md)(ES-1~31) · [R1-expansion-improver](strategy-rounds/expansion/R1-expansion-improver.md)(EI-1~32) · [R1b diff](strategy-rounds/expansion/R1b-expansion-diff.md) · [R2 판정](strategy-rounds/expansion/R2-expansion-skeptic.md) · [R2b 코드 감사](strategy-rounds/expansion/R2b-expansion-code-audit.md) · [R3 반박 2건×2](strategy-rounds/expansion/R3-expansion-strategist-rebuttal.md)([improver](strategy-rounds/expansion/R3-expansion-improver-rebuttal.md)).
 > 절대 제약(전 항목 재검증·위반 0): 큐레이션 세계관(비교·선택·평점·수락 강조·할인 UX 금지) · 요금제 v2 확정가 불변(중38·55·76·106 / 고43·58·78·112만) · "언제든 해지" 훼손 금지 · 홈/랜딩 코드 동결(§6 격리) · 카피 헌법(느낌표·이모지 0) · 오너 1인 운영 용량.
 > 기존 마스터 [BUSINESS_IMPROVEMENT_MASTER_2026-07.md](BUSINESS_IMPROVEMENT_MASTER_2026-07.md)(243건)와의 관계: 본 문서는 그 "이후"의 성장 경로 전용. 재탕 10건은 기존 ID로 병합·귀속하며 기존 마스터는 수정하지 않는다.
 
@@ -259,12 +259,12 @@
 
 | 라운드 | 한 줄 | 문서 |
 |---|---|---|
-| R1 전략가 | ES-1~31 발굴(E3 9건) + 병목 3진단: 공급=돈으로 못 사는 유일 자원 · 확장=오너 복제 문제 · 시장 총량 첫 감소→"면적에서 깊이로" | [R1-expansion-strategist.md](strategy-rounds/R1-expansion-strategist.md) |
-| R1 개선발굴자 | EI-1~32 발굴(E3 9건) + 검토 후 제외 4건(늘봄·비대면·부트캠프·평점) + 확장 경로 한 줄(단핵→공급 파이프→셀 도구→이동 축→B2B→Gate4) | [R1-expansion-improver.md](strategy-rounds/R1-expansion-improver.md) |
-| R1b diff | 블라인드 이중 발굴 대조 — 고신뢰 쌍 6·부분 겹침 4·단독 발굴 정밀 심사 지정 | [R1b-expansion-diff.md](strategy-rounds/R1b-expansion-diff.md) |
-| R2 레드팀 | 생존 4·조건부 46·기각 4·재탕 9(처분율 20.6%) + 서열 3분위 + steelman kill 10 + 프리모템 + 모순 신고 6 + 병합 8묶음 | [R2-expansion-skeptic.md](strategy-rounds/R2-expansion-skeptic.md) |
-| R2b 코드 감사 | 6건 실측 — EI-7 전제 반증(`/teacher-portal/apply` 기존재), EI-4·EI-6 전제 참, EI-20 school 필드 부재 승격, EI-9 프리셋 기구현, ES-18·EI-2 공통 선행=EI-4 | [R2b-expansion-code-audit.md](strategy-rounds/R2b-expansion-code-audit.md) |
-| R3 반박 | 반박 4건(ES-23·ES-11·EI-18·EI-2 — 전건 신규 증거 제시형) + 승복 59건 전건 한 줄 명시 | [strategist](strategy-rounds/R3-expansion-strategist-rebuttal.md) · [improver](strategy-rounds/R3-expansion-improver-rebuttal.md) |
+| R1 전략가 | ES-1~31 발굴(E3 9건) + 병목 3진단: 공급=돈으로 못 사는 유일 자원 · 확장=오너 복제 문제 · 시장 총량 첫 감소→"면적에서 깊이로" | [R1-expansion-strategist.md](strategy-rounds/expansion/R1-expansion-strategist.md) |
+| R1 개선발굴자 | EI-1~32 발굴(E3 9건) + 검토 후 제외 4건(늘봄·비대면·부트캠프·평점) + 확장 경로 한 줄(단핵→공급 파이프→셀 도구→이동 축→B2B→Gate4) | [R1-expansion-improver.md](strategy-rounds/expansion/R1-expansion-improver.md) |
+| R1b diff | 블라인드 이중 발굴 대조 — 고신뢰 쌍 6·부분 겹침 4·단독 발굴 정밀 심사 지정 | [R1b-expansion-diff.md](strategy-rounds/expansion/R1b-expansion-diff.md) |
+| R2 레드팀 | 생존 4·조건부 46·기각 4·재탕 9(처분율 20.6%) + 서열 3분위 + steelman kill 10 + 프리모템 + 모순 신고 6 + 병합 8묶음 | [R2-expansion-skeptic.md](strategy-rounds/expansion/R2-expansion-skeptic.md) |
+| R2b 코드 감사 | 6건 실측 — EI-7 전제 반증(`/teacher-portal/apply` 기존재), EI-4·EI-6 전제 참, EI-20 school 필드 부재 승격, EI-9 프리셋 기구현, ES-18·EI-2 공통 선행=EI-4 | [R2b-expansion-code-audit.md](strategy-rounds/expansion/R2b-expansion-code-audit.md) |
+| R3 반박 | 반박 4건(ES-23·ES-11·EI-18·EI-2 — 전건 신규 증거 제시형) + 승복 59건 전건 한 줄 명시 | [strategist](strategy-rounds/expansion/R3-expansion-strategist-rebuttal.md) · [improver](strategy-rounds/expansion/R3-expansion-improver-rebuttal.md) |
 | 재정 (본 문서 §1) | 수용 3(ES-23 조건부 C 복원·ES-11 재탕 병합·EI-2 증거 분해+수지 교정) · 유지 1(EI-18 기각) — 재심 라운드 생략, 오너 지시 기준 적용 | 본 문서 |
 
 **미커버 렌즈 (차기 라운드 가동 트리거)**
