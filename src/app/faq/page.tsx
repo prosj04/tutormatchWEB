@@ -19,7 +19,8 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function FaqPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function FaqPage(props: { searchParams?: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const timer = startPerfTimer("page.faq.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const [siteContent, faqs] = await Promise.all([

@@ -19,11 +19,12 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function DashboardPage(
+  props: {
+    searchParams?: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const session = await auth();
   if (!session) {

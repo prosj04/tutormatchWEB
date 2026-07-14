@@ -7,10 +7,8 @@ import { createNotification } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
 /** GET /api/mobile/qna/[tutorId] — 강사별 Q&A 대화 + 토큰 잔여 */
-export async function GET(
-  request: Request,
-  { params }: { params: { tutorId: string } },
-) {
+export async function GET(request: Request, props: { params: Promise<{ tutorId: string }> }) {
+  const params = await props.params;
   const authResult = await requireMobileStudent(request);
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;
@@ -36,10 +34,8 @@ export async function GET(
 }
 
 /** POST /api/mobile/qna/[tutorId] — 메시지 전송 (+ AI 즉답, 토큰 1 차감) */
-export async function POST(
-  request: Request,
-  { params }: { params: { tutorId: string } },
-) {
+export async function POST(request: Request, props: { params: Promise<{ tutorId: string }> }) {
+  const params = await props.params;
   const authResult = await requireMobileStudent(request);
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;

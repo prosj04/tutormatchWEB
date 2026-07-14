@@ -14,11 +14,12 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function PricingPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function PricingPage(
+  props: {
+    searchParams?: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const timer = startPerfTimer("page.pricing.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["pricing_page", "spacing"]);

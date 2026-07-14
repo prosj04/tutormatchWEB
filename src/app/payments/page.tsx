@@ -58,11 +58,12 @@ function nextPaymentDate(sub: {
   return sub.periodEnd;
 }
 
-export default async function PaymentsPage({
-  searchParams,
-}: {
-  searchParams?: { billing?: string | string[] };
-}) {
+export default async function PaymentsPage(
+  props: {
+    searchParams?: Promise<{ billing?: string | string[] }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.role !== "STUDENT") redirect("/teacher-portal/dashboard");

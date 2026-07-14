@@ -43,8 +43,8 @@ const nextConfig = {
       { source: "/teacher-potal/:path*", destination: "/teacher-portal/:path*", permanent: true },
     ];
   },
+  serverExternalPackages: ["@prisma/client"],
   experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
     optimizePackageImports: [
       "@dnd-kit/core",
       "@dnd-kit/sortable",

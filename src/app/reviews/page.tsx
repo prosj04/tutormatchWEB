@@ -21,7 +21,8 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function ReviewsPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function ReviewsPage(props: { searchParams?: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const timer = startPerfTimer("page.reviews.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const [siteContent, testimonials] = await Promise.all([

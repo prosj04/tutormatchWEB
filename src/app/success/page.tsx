@@ -19,10 +19,11 @@ export const metadata = {
 };
 
 type PageProps = {
-  searchParams: Search;
+  searchParams: Promise<Search>;
 };
 
-export default async function SuccessPage({ searchParams }: PageProps) {
+export default async function SuccessPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const isEditMode = first(searchParams.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["success_page", "footer"]);
   const s = (key: string, fb: string) => getCmsSectionValue(siteContent, "success_page", key, fb);

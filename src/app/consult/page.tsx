@@ -18,11 +18,12 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function ConsultPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function ConsultPage(
+  props: {
+    searchParams?: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const siteContent = await getGroupedSiteContentBySections(["consult_page"]);
   const get = (key: string, fallback: string) =>
     getCmsSectionValue(siteContent, "consult_page", key, fallback);

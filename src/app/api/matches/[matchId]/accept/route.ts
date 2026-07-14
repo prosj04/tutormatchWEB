@@ -4,10 +4,8 @@ import { requireStudent } from "@/lib/student-auth";
 import { acceptTeacherStudentMatch } from "@/lib/teacher-student-match";
 
 /** POST /api/matches/[matchId]/accept — 웹 학생이 배정 선생님 수락 */
-export async function POST(
-  request: Request,
-  { params }: { params: { matchId: string } },
-) {
+export async function POST(request: Request, props: { params: Promise<{ matchId: string }> }) {
+  const params = await props.params;
   const authResult = await requireStudent();
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;

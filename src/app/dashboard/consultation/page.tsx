@@ -15,11 +15,12 @@ function isVisitOpenFlag(visit: string | string[] | undefined): boolean {
   return Array.isArray(visit) && visit[0] === "1";
 }
 
-export default async function ConsultationPage({
-  searchParams,
-}: {
-  searchParams: { visit?: string | string[] };
-}) {
+export default async function ConsultationPage(
+  props: {
+    searchParams: Promise<{ visit?: string | string[] }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!session) {
     redirect("/login");

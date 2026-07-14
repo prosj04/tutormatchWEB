@@ -6,9 +6,9 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { QUESTION_IMAGE_BUCKET } from "@/lib/supabase-client";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     path?: string[];
-  };
+  }>;
 };
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -75,7 +75,8 @@ async function canAccessQuestionImage(userId: string, role: string, studentId: s
   return false;
 }
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(_request: Request, props: RouteContext) {
+  const params = await props.params;
   const session = await auth();
   const userId = session?.user?.id;
   const role = session?.user?.role;

@@ -25,7 +25,7 @@ export const metadata = {
 };
 
 type PageProps = {
-  searchParams: Search;
+  searchParams: Promise<Search>;
 };
 
 /**
@@ -38,7 +38,8 @@ function legacyToV2PlanId(sessions: SessionPlan, subjects: SubjectCount): string
   return `high-w${weekly}h${hours}`;
 }
 
-export default async function CheckoutPage({ searchParams }: PageProps) {
+export default async function CheckoutPage(props: PageProps) {
+  const searchParams = await props.searchParams;
   const [session, siteContent] = await Promise.all([
     auth(),
     getGroupedSiteContentBySections(["checkout_page"]),

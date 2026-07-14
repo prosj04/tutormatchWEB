@@ -16,7 +16,8 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function TutorsPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function TutorsPage(props: { searchParams?: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const timer = startPerfTimer("page.tutors.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["tutors_featured", "tutors_proof", "safety_story", "spacing"]);

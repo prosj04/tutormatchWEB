@@ -48,6 +48,7 @@ export function PortalShell({
     <div className="shell">
       <aside className="side">
         {/* 공개 페이지로는 풀 로드 이동(포털 CSS가 공개 페이지를 오염하지 않도록) */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a className="dotw logo" href="/">
           Concord<span className="d"></span>
         </a>

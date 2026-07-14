@@ -34,7 +34,8 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function LoginPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function LoginPage(props: { searchParams?: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const siteContent = await getGroupedSiteContentBySections(["login_page", "footer"]);
   const title = getCmsSectionValue(siteContent, "login_page", "title", "다시 오신 것을 환영해요");

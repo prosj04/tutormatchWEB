@@ -27,11 +27,12 @@ function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function HomePage(
+  props: {
+    searchParams?: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const timer = startPerfTimer("page.home.total");
   const isEditMode = first(searchParams?.cms_edit) === "1";
   const cms = await getLandingCmsContent();
