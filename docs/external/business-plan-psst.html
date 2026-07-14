@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord 사업계획서 (PSST) — 예비창업패키지 제출 베이스</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-text:#07875A; --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; line-height:1.55; }
+  @page{ size:210mm 297mm; margin:0; }
+  .page{ width:210mm; height:297mm; background:var(--bg); padding:14mm 16mm 16mm; display:flex; flex-direction:column;
+    page-break-after:always; position:relative; overflow:hidden; }
+  .page:last-child{ page-break-after:auto; }
+
+  .ph{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6mm; }
+  .ph .no{ font-size:10px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--green-text); }
+  .ph .wm{ font-size:12px; font-weight:800; letter-spacing:-.02em; color:var(--mut2); }
+  .pf{ position:absolute; bottom:9mm; left:16mm; right:16mm; display:flex; justify-content:space-between;
+    font-size:8.5px; color:var(--mut2); border-top:1px solid var(--line); padding-top:2.5mm; }
+
+  h1.t{ font-size:22px; font-weight:800; letter-spacing:-.035em; line-height:1.2; margin-bottom:2.5mm; }
+  h2.s{ font-size:13px; font-weight:800; letter-spacing:-.02em; margin:6mm 0 2.5mm; }
+  h2.s:first-of-type{ margin-top:0; }
+  .lede{ font-size:11px; color:var(--mut); margin-bottom:5mm; max-width:105ch; }
+  .kw{ color:var(--green-text); }
+  p.b{ font-size:10.5px; color:var(--mut); margin-bottom:2.5mm; }
+  p.b b{ color:var(--fg); }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:5mm 6mm;
+    box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06); }
+  .eyebrow{ display:block; font-size:8.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--green-text); margin-bottom:1.8mm; }
+  .grid{ display:grid; gap:4mm; }
+  .c2{ grid-template-columns:1fr 1fr; } .c3{ grid-template-columns:1fr 1fr 1fr; }
+
+  ul.t{ list-style:none; } ul.t li{ padding-left:4mm; position:relative; margin-bottom:1.8mm; font-size:10.5px; color:var(--mut); }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.55em; width:1.7mm; height:1.7mm; border-radius:50%; background:var(--green); }
+  ul.t b{ color:var(--fg); }
+
+  table{ width:100%; border-collapse:collapse; margin-bottom:2mm; }
+  th{ font-size:9px; font-weight:700; color:var(--mut2); text-align:left; padding:2mm 2.5mm; border-bottom:1.5px solid var(--line2); letter-spacing:.04em; }
+  td{ font-size:10px; padding:2.1mm 2.5mm; border-bottom:1px solid var(--line); color:var(--mut); font-variant-numeric:tabular-nums; vertical-align:top; }
+  td b{ color:var(--fg); } tr:last-child td{ border-bottom:0; }
+  tr.hl td{ background:rgba(16,185,129,.07); }
+
+  .stat b{ display:block; font-size:19px; font-weight:800; letter-spacing:-.03em; color:var(--fg); font-variant-numeric:tabular-nums; }
+  .stat b em{ font-style:normal; color:var(--green-text); }
+  .stat span{ font-size:8.5px; color:var(--mut2); }
+  .cap{ font-size:8.5px; color:var(--mut2); }
+
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+
+  .dark{ background:var(--fg); color:#fff; }
+  .dark .grid-bg{ position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:60px 60px; -webkit-mask-image:radial-gradient(800px 560px at 82% -8%,#000,transparent 78%); }
+  .dark .glow{ position:absolute; inset:0; background:radial-gradient(700px 480px at 84% -14%, rgba(16,185,129,.28), transparent 62%); }
+</style>
+</head>
+<body>
+
+<!-- ═══ P1. 커버 ═══ -->
+<div class="page dark" style="justify-content:space-between;">
+  <div class="grid-bg"></div><div class="glow"></div>
+  <div style="position:relative; padding-top:6mm;">
+    <div class="wordmark" style="font-size:24px;">Concord<span class="dot"></span></div>
+  </div>
+  <div style="position:relative; padding-bottom:14mm;">
+    <p style="font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:#5EE0AC; margin-bottom:5mm;">Business Plan — PSST</p>
+    <h1 style="font-size:42px; font-weight:800; letter-spacing:-.04em; line-height:1.15; margin-bottom:6mm;">사업계획서<br><span style="color:rgba(255,255,255,.55); font-size:24px;">Concord Private Tutoring</span></h1>
+    <p style="font-size:13.5px; color:rgba(255,255,255,.72); line-height:1.6; margin-bottom:10mm;">검증된 강사와 전담 매니저가 대면 1:1 과외를 매칭하고<br>수업 밖까지 관리하는 서울·동탄 프리미엄 과외 서비스</p>
+    <div style="display:flex; gap:14mm; font-size:10.5px; color:rgba(255,255,255,.55);">
+      <div><b style="color:#fff; display:block;">예비창업패키지</b>제출 베이스 문서</div>
+      <div><b style="color:#fff; display:block;">2026. 07 · v1.0</b>Problem–Solution–Scale-up–Team</div>
+      <div><b style="color:#fff; display:block;">tutormatch-web.vercel.app</b>라이브 서비스</div>
+      <div><b style="color:#fff; display:block;">[기재 필요]</b>대표자</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ P2. 사업 개요 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">00 — Overview</span><span class="wm">Concord</span></div>
+  <h1 class="t">사업 개요</h1>
+  <p class="lede">Concord는 학부모가 개별로 부담하던 강사 검증·탐색·관리 비용을 서비스가 대신 수행합니다. 제품은 이미 완성되어 작동하며, 남은 것은 아이디어 검증이 아니라 시장 검증입니다.</p>
+
+  <table>
+    <tr><th style="width:30mm;">구분</th><th>내용</th></tr>
+    <tr><td><b>서비스명</b></td><td>Concord Private Tutoring (콩코드)</td></tr>
+    <tr><td><b>한 줄 정의</b></td><td>면접·검증된 강사와 전담 매니저가 대면 1:1 과외를 매칭·관리하는 프리미엄 과외 서비스</td></tr>
+    <tr><td><b>서비스 지역</b></td><td>서울 · 동탄</td></tr>
+    <tr><td><b>대표자</b></td><td>[기재 필요] (성명·생년·학력·경력)</td></tr>
+    <tr><td><b>창업 형태</b></td><td>[기재 필요] (사업자 등록 상태·법인 여부는 신청 시점 확정)</td></tr>
+    <tr><td><b>사업 분야</b></td><td>교육 서비스 / O2O 대면 과외 매칭·학습관리</td></tr>
+    <tr><td><b>개발 현황</b></td><td>웹 플랫폼 실서비스 수준 완성 · 모바일 백엔드 API 58종 완성 · 학생용 앱 개발 후반</td></tr>
+    <tr><td><b>차별점</b></td><td>비대면 태블릿 과외 대비 <b>대면 수업 + 전담 매니저 밀착 관리</b></td></tr>
+  </table>
+
+  <h2 class="s">요지</h2>
+  <ul class="t">
+    <li><b>Problem</b> — 강사 공급은 과잉이지만 학부모가 실력·성실성·궁합을 사전에 검증할 수단이 없습니다. 검증 비용이 매 가정·매 계약마다 중복 지불되고, 매칭 이후 진도·과제는 확인 채널이 없습니다.</li>
+    <li><b>Solution</b> — 검증(면접·서류·범죄경력조회) · 매칭(매니저 대면 상담 후 직접 배정, 미스매치 시 무료 재매칭) · 관리(학습 플랜·숙제 자동 분배·실시간 열람)를 서비스가 대신 수행합니다.</li>
+    <li><b>Product</b> — 4역할 포털 · 서버 검증 결제 · 학습 플랜 · 정산·퍼널·감사로그 백오피스까지 작동하는 소프트웨어를 대표자 1인이 풀스택으로 구현했습니다.</li>
+  </ul>
+
+  <h2 class="s">핵심 지표</h2>
+  <div class="grid c3">
+    <div class="card stat"><span class="eyebrow">Unit Economics</span>
+      <b>마진율 <em>34.2%</em></b><span>4주 정액 선불 38만~112만 원 − 강사 시급 30,000원/h 정산 (플랜별 29.9~42.0%)</span></div>
+    <div class="card stat"><span class="eyebrow">손익분기</span>
+      <b>활성 <em>5명</em></b><span>Phase 1 BEP. Phase 2는 활성 14명 · 학생 1인 월 기여마진 약 21.6만 원</span></div>
+    <div class="card stat"><span class="eyebrow">3개년 목표 (기본)</span>
+      <b>거래 <em>15억</em> 원</b><span>활성 학생 170명 · 누적 기여마진 약 5.1억 원 · 12개월 내 자립</span></div>
+  </div>
+
+  <p class="cap" style="margin-top:4mm;">본 문서는 PSST(Problem–Solution–Scale-up–Team) 표준 구성을 따릅니다. 시장 통계는 국가데이터처 「2025년 초중고 사교육비조사」(2026.3 발표) 실측 기준입니다.</p>
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>2</span></div>
+</div>
+
+<!-- ═══ P3. Problem 1 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">01 — Problem</span><span class="wm">Concord</span></div>
+  <h1 class="t">문제인식 — 프리미엄 집중화 시장의 <span class="kw">검증 비대칭</span></h1>
+  <p class="lede">사교육 총액은 줄었지만 참여 가구는 더 깊게 씁니다. 지불 의향이 확인된 프리미엄 수요 앞에서, 정작 "믿을 수 있는 공급"을 확인할 수단이 없다는 것이 이 시장의 구조적 문제입니다.</p>
+
+  <h2 class="s">1-1. 시장 배경 (2025년 조사 실측)</h2>
+  <ul class="t">
+    <li>초중고 사교육비 총액(2025): 약 <b>27.5조 원</b> — 전년 대비 5.7% 감소, 5년 만의 첫 감소. 참여율도 4.3%p 하락.</li>
+    <li>그러나 <b>참여학생 1인당 월평균 사교육비는 60.4만 원으로 오히려 증가(+2.0%)</b>.</li>
+    <li>소득별 밴드: 월소득 800만 원 이상 가구 <b>66.2만 원</b> vs 300만 원 미만 가구 19.2만 원.</li>
+    <li>1:1 개인과외는 사교육 유형 중 최고 단가 영역입니다. (유형별 참여학생 1인당 월평균: 개인과외 43.9만 원 — 2024년 조사 기준<sup>*</sup>)</li>
+  </ul>
+  <div class="card" style="display:flex; gap:12mm; align-items:center; background:var(--panel-2); border:0; box-shadow:none; margin:3mm 0 2mm;">
+    <div class="stat"><b>27.5조</b><span>사교육비 총액 (2025)</span></div>
+    <div class="stat"><b>60.4만 <em>+2.0%</em></b><span>참여학생 1인당 월평균</span></div>
+    <div class="stat"><b>66.2만</b><span>월소득 800만+ 가구</span></div>
+    <div style="margin-left:auto; max-width:52mm;"><span class="cap">독해 — 총액은 줄고 참여 가구는 더 깊게 씁니다. 프리미엄 집중화가 데이터로 확인된 시장입니다.</span></div>
+  </div>
+  <p class="b">Concord의 4주 38만~112만 원 요금은 참여학생 평균 상단에서 고소득 가구 밴드 사이에 위치합니다. 축소 국면에서도 지출이 늘어나는 구간을 겨냥합니다.</p>
+
+  <h2 class="s">1-2. 핵심 문제 — 정보 비대칭과 매칭 실패 비용</h2>
+  <p class="b">강사의 실제 실력·성실성·학생 궁합은 수업을 몇 주 진행해야만 드러나는 경험재입니다. 학부모는 계약 시점에 학력·사진·자기소개라는 빈약한 신호만 보고 결정을 강요받습니다. 공급이 100명이어도 신뢰할 수 있는 "검증된 공급"은 0명에 수렴합니다.</p>
+  <table>
+    <tr><th style="width:26mm;">문제</th><th>실체</th><th style="width:44mm;">부담 주체</th></tr>
+    <tr><td><b>검증 비대칭</b></td><td>학부모가 사전에 실력·성실성·궁합을 검증할 수단 없음</td><td>학부모 — 매 계약마다 검증 비용 중복 지불</td></tr>
+    <tr><td><b>매칭 실패 비용</b></td><td>재탐색·계약 해지·환불 분쟁, 학습 공백</td><td>학부모·학생</td></tr>
+    <tr><td><b>관리 부재</b></td><td>매칭 이후 진도·과제·성적 변화 확인 채널 부재</td><td>학부모(불안·이탈) · 강사(부당한 평판 리스크)</td></tr>
+  </table>
+  <p class="b" style="margin-top:2mm;">강사 측 2차 비용도 큽니다 — 기존 중개앱 수수료 20~30%, 불안정한 수요와 자기 홍보 부담, 출결·정산·소통 등 비교육 행정, 스펙·외모 중심의 평가 왜곡.</p>
+
+  <p class="cap" style="margin-top:auto;">* 출처: 국가데이터처 「2025년 초중고 사교육비조사」(2026.3 발표). 유형별 단가는 교육부·통계청 2024년 조사 기준으로, 2025년 유형별 수치 공표 시 교체 예정.</p>
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>3</span></div>
+</div>
+
+<!-- ═══ P4. Problem 2 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">01 — Problem</span><span class="wm">Concord</span></div>
+  <h1 class="t">기존 대안의 한계와 시장 진입 시점</h1>
+
+  <h2 class="s">1-3. 기존 대안의 한계</h2>
+  <table>
+    <tr><th style="width:34mm;">대안 유형</th><th style="width:32mm;">대표 서비스</th><th>한계</th></tr>
+    <tr><td><b>개인과외 중개앱</b></td><td>김과외, 숨고</td><td>강사 목록 나열만 제공. 검증·매칭·사후 관리 부재. 학부모가 직접 검증하고 양측 수수료를 부담</td></tr>
+    <tr><td><b>비대면 태블릿 과외</b></td><td>콴다과외, 설탭</td><td>원격 수업. 대면 수업 수요(특히 초·중등) 미충족, 매니저 밀착 관리 부재</td></tr>
+    <tr><td><b>학원·교습소</b></td><td>대형 학원</td><td>1:1 맞춤성 낮음, 일괄 진도, 학생당 케어 시간 부족</td></tr>
+    <tr><td><b>지인 소개·단체방</b></td><td>—</td><td>완전 비공식. 검증 0, 분쟁 시 보호 장치 0</td></tr>
+  </table>
+  <div class="card" style="background:var(--panel-2); border:0; box-shadow:none; margin:3mm 0;">
+    <p style="font-size:11.5px; font-weight:700; color:var(--fg);">"검증된 대면 1:1 과외 + 전담 매니저 학습관리"를 동시에 제공하는 사업자는 국내 시장에 부재합니다. Concord는 이 빈 카테고리를 선점합니다.</p>
+  </div>
+
+  <h2 class="s">1-4. 왜 지금인가</h2>
+  <ul class="t">
+    <li><b>프리미엄 집중화</b> — 총액 감소 국면에서도 참여 가구의 1인당 지출은 증가합니다. 검증된 서비스에 대한 지불 의향이 데이터로 확인됩니다.</li>
+    <li><b>인프라 성숙</b> — 결제(토스페이먼츠)·클라우드(Vercel·Supabase)가 성숙해 소규모 창업팀도 안정 운영이 가능합니다. AI는 강사의 수업 준비·질문 대응을 보조하는 내부 도구로 활용해 소수 인력으로도 밀도 있는 관리를 유지합니다.</li>
+    <li><b>디지털 수용성</b> — 학부모의 학습관리 앱 수용성이 높아져, 대면 수업의 과정을 앱으로 투명하게 공개하는 운영이 가능해졌습니다.</li>
+    <li><b>제품 준비 완료</b> — 웹 플랫폼과 모바일 백엔드가 이미 완성되어, 지원사업 자금을 개발이 아니라 시장 검증에 즉시 투입할 수 있는 시점입니다.</li>
+  </ul>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>4</span></div>
+</div>
+
+<!-- ═══ P5. Solution 1 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">02 — Solution</span><span class="wm">Concord</span></div>
+  <h1 class="t">실현가능성 — 검증·매칭·관리를 <span class="kw">서비스가 대신</span></h1>
+  <p class="lede">학부모가 개별로 부담하던 ①검증 ②탐색·재탐색 ③관리·모니터링 비용을 서비스가 집합적으로 단 한 번 수행해 모든 수요자에게 재사용시키는 구조입니다. 학부모는 비교·선택하지 않아도 되고, Concord는 수업료 수취액과 강사 정산액의 차액을 매출로 수취합니다.</p>
+
+  <h2 class="s">2-1. 솔루션 3축</h2>
+  <table>
+    <tr><th style="width:34mm;">축</th><th style="width:34mm;">해결하는 문제</th><th>상세</th></tr>
+    <tr><td><b>① 강사 직접 검증</b></td><td>검증 비대칭</td><td>서류 심사(학력·경력·과목 증빙) → 대면 면접 → 범죄경력조회 → 합격자만 등록. 검증 결과는 모든 수요자가 재사용</td></tr>
+    <tr><td><b>② 전담 매니저 배정</b></td><td>탐색·미스매치 비용</td><td>대면 심층 상담(목표·과목·학습 스타일·일정) 후 매니저가 최적 강사를 직접 배정. 추천 이유를 함께 안내하고 미스매치 시 무료 재매칭</td></tr>
+    <tr><td><b>③ 디지털 학습 관리</b></td><td>학습 투명성 부재</td><td>캘린더 학습 플랜 · 주간 숙제 자동 분배(가중치 기반) · 질문 스레드 · 진도·과제 실시간 열람</td></tr>
+  </table>
+
+  <h2 class="s">2-2. 서비스 플로우 — 전 단계 구현 완료</h2>
+  <table>
+    <tr><th style="width:8mm;">단계</th><th>내용</th><th style="width:26mm;">주체</th><th style="width:30mm;">시스템 상태</th></tr>
+    <tr><td>1</td><td>상담 신청 또는 즉시 결제</td><td>학부모·학생</td><td>완성</td></tr>
+    <tr><td>2</td><td>매니저 자동 배정(결제 시 대표 매니저) 또는 배정 대기</td><td>시스템</td><td>완성</td></tr>
+    <tr><td>3</td><td>매니저의 대면 심층 상담</td><td>매니저</td><td>상담 이력·CMS 완성</td></tr>
+    <tr><td>4</td><td>매니저의 강사 직접 배정 (추천 이유 함께 안내)</td><td>매니저</td><td>완성</td></tr>
+    <tr><td>5</td><td>강사의 첫 수업일 설정 및 수업 시작</td><td>강사</td><td>완성</td></tr>
+    <tr><td>6</td><td>주간·4일 단위 숙제 자동 분배 · 반복 템플릿 재사용</td><td>시스템·강사</td><td>완성</td></tr>
+    <tr><td>7</td><td>학생 질문 스레드 → 강사 답변 (AI 보조 도구가 강사의 대응을 지원)</td><td>강사</td><td>완성</td></tr>
+    <tr><td>8</td><td>학부모의 진도·과제 실시간 열람</td><td>학부모</td><td>완성</td></tr>
+    <tr><td>9</td><td>월말 강사 정산 (시급 30,000원/h)</td><td>시스템</td><td>완성</td></tr>
+  </table>
+
+  <h2 class="s">2-3. 부수 문제 흡수 → 경쟁 해자</h2>
+  <ul class="t">
+    <li><b>재탐색 비용 → 매니저 재배정</b> — 강사 교체 시 학부모는 아무것도 하지 않습니다. 매니저가 즉시 재배정합니다.</li>
+    <li><b>학습 투명성 → 데이터 자산화</b> — 일별 플랜·질문·완료율 데이터가 누적될수록 이탈 전환 비용이 커지고, 향후 배정 정밀화의 근거가 됩니다.</li>
+    <li><b>강사 수수료·행정 부담 → 시급 보장 + 행정 대행</b> — 안정적 시급과 장기 인센티브(차등 시급 프리셋 32,000/34,000/40,000원, 관리자 지정)를 보장하고 결제·정산·소통을 대행합니다. 우수 강사가 머무는 공급 측 해자입니다.</li>
+    <li><b>평가 왜곡 → 지속성·성과 기반 대우</b> — 외모·스펙이 아니라 수업 지속성·성과가 강사 대우를 결정합니다.</li>
+  </ul>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>5</span></div>
+</div>
+
+<!-- ═══ P6. Solution 2 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">02 — Solution</span><span class="wm">Concord</span></div>
+  <h1 class="t">이미 구현된 제품 — 실행 리스크가 낮습니다</h1>
+  <p class="lede">대다수 예비창업 아이템이 기획서·와이어프레임 단계인 것과 달리, Concord는 웹 플랫폼과 모바일 백엔드가 실서비스 수준으로 완성되어 있습니다. 심사 대상은 아이디어가 아니라 작동하는 소프트웨어입니다.</p>
+
+  <h2 class="s">2-4. 구현 현황</h2>
+  <table>
+    <tr><th>기능 영역 — 웹 (Next.js 14)</th><th style="width:38mm;">상태</th></tr>
+    <tr><td>마케팅 홈·요금제·강사진·FAQ·후기 (CMS 실시간 편집)</td><td>완성</td></tr>
+    <tr><td>학생/강사 이메일·전화번호 인증 회원가입 · 상담 신청 + 자동 매니저 배정</td><td>완성</td></tr>
+    <tr><td>토스페이먼츠 결제 위젯 + 서버 승인 검증</td><td>완성 (빌링키 자동결제는 다음 단계)</td></tr>
+    <tr><td>4역할 포털(학생·강사·매니저·관리자) 완전 분리</td><td>완성</td></tr>
+    <tr><td>캘린더 학습 플랜(드래그 앤 드롭) + 숙제 자동 분배</td><td>완성</td></tr>
+    <tr><td>학생 질문 스레드 — 강사 답변 · AI 보조(내부 도구)</td><td>완성</td></tr>
+    <tr><td>관리자 CMS · 정산 · 퍼널 · 감사로그 백오피스</td><td>완성</td></tr>
+    <tr><td>인앱 알림 + 일일 자동 배치(미답변 24h · 진도 경고 50/70% · 대기 상담 2h)</td><td>완성</td></tr>
+    <tr><td>구독 일시정지/재개 · 환불 처리 · 보호자 동의 · 결제자 확인</td><td>완성</td></tr>
+  </table>
+  <table style="margin-top:2mm;">
+    <tr><th>모바일 (React Native · Expo)</th><th style="width:38mm;">상태</th></tr>
+    <tr><td>학생/강사 모바일 API 58종 · JWT 인증 · 푸시 스키마</td><td>완성</td></tr>
+    <tr><td>학생용 앱 프론트엔드</td><td>개발 후반 — 학부모 모드·스토어 출시는 지원금 활용</td></tr>
+  </table>
+  <p class="cap" style="margin:1mm 0 3mm;">기술 스택: Next.js 14 App Router(Vercel) · PostgreSQL + Prisma(Supabase) · NextAuth 4역할 라우트 가드 · 토스페이먼츠 서버 검증 · Supabase Storage(강사 서류) · Cron 알림 배치. 선불 결제 → 말일 정산 구조로 미수금 리스크가 없습니다.</p>
+
+  <h2 class="s">2-5. 포지셔닝 — 빈 카테고리 선점</h2>
+  <table>
+    <tr><th style="width:26mm;">항목</th><th>콴다과외</th><th>설탭</th><th>김과외/숨고</th><th>Concord</th></tr>
+    <tr><td>수업 형태</td><td>비대면(태블릿)</td><td>비대면(태블릿)</td><td>대면(중개만)</td><td><b>대면 1:1</b></td></tr>
+    <tr><td>강사 검증</td><td>자체 검증</td><td>자체 검증</td><td>없음</td><td><b>면접·서류·범죄경력조회</b></td></tr>
+    <tr><td>매칭 방식</td><td>앱 매칭</td><td>앱 매칭</td><td>학부모 셀프</td><td><b>매니저 대면 상담 후 배정</b></td></tr>
+    <tr><td>사후 학습관리</td><td>앱 내 도구</td><td>앱 내 도구</td><td>없음</td><td><b>매니저 밀착 + 앱</b></td></tr>
+    <tr><td>지역</td><td>전국</td><td>전국</td><td>전국</td><td><b>서울·동탄 (프리미엄 근거)</b></td></tr>
+  </table>
+  <p class="b" style="margin-top:2mm;">콴다과외·설탭(비대면)과 김과외·숨고(나열형 중개) 사이의 빈 카테고리 — "검증된 대면 1:1 + 매니저 관리"를 선점합니다. <b>화면 너머가 아니라, 옆자리에서.</b></p>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>6</span></div>
+</div>
+
+<!-- ═══ P7. Scale-up 1 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">03 — Scale-up</span><span class="wm">Concord</span></div>
+  <h1 class="t">성장전략 — 시장 규모와 확장 로드맵</h1>
+
+  <h2 class="s">3-1. 시장 규모 (TAM/SAM/SOM)</h2>
+  <table>
+    <tr><th style="width:56mm;">구분</th><th style="width:32mm;">규모</th><th>근거</th></tr>
+    <tr><td><b>TAM</b> — 국내 초중고 사교육 시장</td><td><b>약 27.5조 원</b></td><td>국가데이터처 2025년 조사 실측</td></tr>
+    <tr><td><b>SAM</b> — 국내 1:1 개인과외 시장</td><td><b>약 3조 원</b></td><td>공식 통계의 유형별 비중 적용 자체 추산 [확인 필요]</td></tr>
+    <tr><td><b>SOM</b> — 서울·동탄 프리미엄 1:1 과외 (3년 내 유효시장)</td><td><b>약 400~500억 원</b></td><td>지역·단가 기반 자체 추산 [확인 필요]</td></tr>
+  </table>
+  <p class="b">3년차 목표(플랫폼 기여마진 기준 매출 약 5억 원, 수업료 거래액 약 10억 원)는 SOM의 약 2% 수준으로 초기 진입 목표로서 현실적 범위입니다. 확장 자본의 우선순위는 ①기존 가정 점유율(과목·형제·기간) ②기존 지역 밀도 ③신규 지역 순입니다 — 축소 시장에서 유효한 전략은 다지역 확장이 아니라 프리미엄 집중화의 수혜입니다.</p>
+
+  <h2 class="s">3-2. 수익 모델</h2>
+  <ul class="t">
+    <li><b>4주 정액 선불</b> — 학부모가 매 4주 수업료를 선불 결제합니다 (8개 플랜, 38만~112만 원).</li>
+    <li><b>시급제 정산</b> — 강사에게 시급 30,000원/h 기준 월말 정산하며, 수취액과 정산액의 <b>차액이 매출</b>입니다. 8개 플랜 평균 마진율 약 34.2% (범위 29.9~42.0%).</li>
+    <li><b>부가 매출(파일럿 검증 후)</b> — (i) 매니저형 학원 SaaS 라이선스 (ii) 학습 데이터 기반 진로·컨설팅 (iii) B2B 학원 파트너십.</li>
+  </ul>
+
+  <h2 class="s">3-3. 콜드스타트 → 파일럿 → 확장 로드맵</h2>
+  <table>
+    <tr><th style="width:40mm;">시기</th><th style="width:52mm;">목표</th><th>실행</th></tr>
+    <tr><td><b>Phase 0</b> 공급 확보 (D-8~D-0)</td><td>검증 강사 5~10명, 매니저 1명</td><td>대학 커뮤니티·지인, "창립 멤버" 조건</td></tr>
+    <tr><td><b>Phase 1</b> 파일럿 (~10주)</td><td>서울·동탄 5~10가정 유상 파일럿</td><td>지인·지역 맘카페, 후기·사진 동의 조건</td></tr>
+    <tr><td><b>Phase 2</b> 증거 전환 (~6개월)</td><td>실촬영·실후기·성적 향상 사례 반영</td><td>파일럿 결과로 마케팅 자산 교체</td></tr>
+    <tr><td><b>Phase 3</b> 유료 채널 (~12개월)</td><td>활성 학생 50명, 강사 20명</td><td>네이버·카카오 채널, 계측 위 CAC 검증 채널만 증액</td></tr>
+    <tr><td><b>Phase 4</b> 지역 확장 (~24개월)</td><td>활성 학생 100명 이상</td><td>지역별 매니저 채용(변동비 구조), 자동 강사 추천 도입</td></tr>
+    <tr><td><b>Phase 5</b> 전국·B2B (~36개월)</td><td>활성 학생 150~170명</td><td>매니저 프랜차이즈형, 학원 백오피스 SaaS 검토</td></tr>
+  </table>
+
+  <h2 class="s">3-4. Go-to-Market — 4트랙, 1~2개 동 반경 집중</h2>
+  <table>
+    <tr><th style="width:24mm;">트랙</th><th style="width:34mm;">대상</th><th>핵심 채널</th><th style="width:34mm;">CAC 가설</th></tr>
+    <tr><td><b>T1 학생</b></td><td>사용자·가정 내 추천</td><td>숏폼·무료체험 → "부모님께 보내기"</td><td>콘텐츠 비용</td></tr>
+    <tr><td><b>T2 학부모</b></td><td>결제자(본진)</td><td>네이버 SA(로컬 키워드)·카카오 CRM·당근 비즈프로필</td><td>결제 CAC 20~50만 원</td></tr>
+    <tr><td><b>T3 강사</b></td><td>공급 — 수요보다 2~6주 선행</td><td>채용 공고 SEO·재직 강사 추천(보너스 10만 원)</td><td>건당 10만 원</td></tr>
+    <tr><td><b>T4 매니저</b></td><td>운영 인력</td><td>맘카페·당근 구인(지역)</td><td>겸용 ≈0</td></tr>
+  </table>
+  <p class="cap">규율 — 채널별 주간 계측, 2주 연속 리드 0이면 채널 교체. 콜드스타트 순서 준수: 증거(후기·사진) 제작 → 무료·저비용 채널 → 후기 3건 이상 → 유료 채널.</p>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>7</span></div>
+</div>
+
+<!-- ═══ P8. Scale-up 2: 리스크 + KPI ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">03 — Scale-up</span><span class="wm">Concord</span></div>
+  <h1 class="t">핵심 리스크와 대응 · 성과 지표</h1>
+  <p class="lede">리스크는 내부 사업성 검토 문서에서 사전 식별한 항목의 요약이며, 각 항목마다 대응 시점이 지정되어 있습니다. 개시 전 블로커는 지원사업 착수 전 완료 계획입니다.</p>
+
+  <h2 class="s">3-5. 핵심 리스크와 대응</h2>
+  <table>
+    <tr><th style="width:34mm;">리스크</th><th style="width:56mm;">근거</th><th>대응</th></tr>
+    <tr><td><b>재결제 이탈</b></td><td>자동결제·리마인더 미비</td><td>토스 빌링키 자동결제 + 만료 D-5/D-1 알림 (Phase 1 내)</td></tr>
+    <tr><td><b>탈중개·직거래</b></td><td>대면 수업 특성상 강사·학부모 직접 접촉</td><td>매니저 밀착 + 리포트·플래너 락인, 강사 계약서 위약 조항</td></tr>
+    <tr><td><b>매니저 병목</b></td><td>대표 매니저 1인 처리량 한계</td><td>지역 라우팅 데이터 축적, Phase 4 매니저 다인화</td></tr>
+    <tr><td><b>환불 분쟁</b></td><td>고액 선불 구조</td><td>수업 완료 기록 시스템 구현 완료, 회차 일할 환불 규정 문서화</td></tr>
+    <tr><td><b>신뢰 훼손</b></td><td>개시 전 시연용 정보 노출</td><td>개시 전 실제 사업자·강사 정보 교체, 실촬영·실후기 확보</td></tr>
+    <tr><td><b>미성년 결제 취소</b></td><td>학생 명의 결제 시 민법상 취소 가능</td><td>결제자(보호자) 확인 단계 구현 완료</td></tr>
+    <tr><td><b>공급-수요 타이밍 역전</b></td><td>모집 후 매칭 실패가 최대 유지 리스크</td><td>강사 채용을 수요보다 2~6주 선행, 파이프라인 잔고 = 학생 목표의 1.3배</td></tr>
+  </table>
+
+  <h2 class="s">3-6. 핵심 성과 지표 (KPI)</h2>
+  <table>
+    <tr><th>지표</th><th style="width:52mm;">목표</th><th style="width:44mm;">측정</th></tr>
+    <tr><td>월 활성 학생 수 (MAS)</td><td>램프업 계획 대비 달성률</td><td>백오피스 지표 대시보드</td></tr>
+    <tr><td>신규 상담 → 결제 전환율</td><td><b>30~40%</b></td><td>퍼널 계측 (구현 완료)</td></tr>
+    <tr><td>3개월 학생 유지율</td><td><b>80% 이상</b></td><td>구독 데이터</td></tr>
+    <tr><td>6개월 강사 유지율</td><td><b>70% 이상</b></td><td>정산 데이터</td></tr>
+    <tr><td>학부모 만족도 (NPS)</td><td>분기 조사</td><td>파일럿부터 실측</td></tr>
+    <tr><td>LTV / CAC</td><td><b>5:1 이상</b></td><td>GA4·채널 계측 도입 후 실측</td></tr>
+  </table>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>8</span></div>
+</div>
+
+<!-- ═══ P9. 재무 요약 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">04 — Financials</span><span class="wm">Concord</span></div>
+  <h1 class="t">재무 요약 — 학생 1명부터 흑자 기여</h1>
+  <p class="lede">실제 제품에 적용된 요금제를 단가 근거로 합니다. 강사 정산은 수수료율이 아니라 시급제(30,000원/h 확정)이며, 변동비가 수업 시간에 정비례해 마진 구조가 단순하고 예측 가능합니다.</p>
+
+  <h2 class="s">4-1. 요금제와 플랜별 기여마진 (4주 정액 선불 · PG 2.2%)</h2>
+  <table>
+    <tr><th>플랜</th><th>월 수업</th><th>판매가(원)</th><th>강사비(원)</th><th>PG(원)</th><th>기여마진(원)</th><th>마진율</th></tr>
+    <tr><td>중등 · 주1 · 2h</td><td>8h</td><td>380,000</td><td>240,000</td><td>8,360</td><td>131,640</td><td>34.6%</td></tr>
+    <tr><td>중등 · 주1 · 3h</td><td>12h</td><td>550,000</td><td>360,000</td><td>12,100</td><td>177,900</td><td>32.4%</td></tr>
+    <tr><td>중등 · 주2 · 2h</td><td>16h</td><td>760,000</td><td>480,000</td><td>16,720</td><td>263,280</td><td>34.6%</td></tr>
+    <tr><td>중등 · 주2 · 3h</td><td>24h</td><td>1,060,000</td><td>720,000</td><td>23,320</td><td>316,680</td><td>29.9%</td></tr>
+    <tr><td>고등 · 주1 · 2h</td><td>8h</td><td>430,000</td><td>240,000</td><td>9,460</td><td>180,540</td><td>42.0%</td></tr>
+    <tr><td>고등 · 주1 · 3h</td><td>12h</td><td>580,000</td><td>360,000</td><td>12,760</td><td>207,240</td><td>35.7%</td></tr>
+    <tr><td>고등 · 주2 · 2h</td><td>16h</td><td>780,000</td><td>480,000</td><td>17,160</td><td>282,840</td><td>36.3%</td></tr>
+    <tr><td>고등 · 주2 · 3h</td><td>24h</td><td>1,120,000</td><td>720,000</td><td>24,640</td><td>375,360</td><td>33.5%</td></tr>
+    <tr class="hl"><td><b>8플랜 산술평균</b></td><td>15h</td><td><b>707,500</b></td><td>450,000</td><td>15,565</td><td><b>241,935</b></td><td><b>34.2%</b></td></tr>
+  </table>
+
+  <h2 class="s">4-2. 손익분기 (BEP)</h2>
+  <p class="b">파일럿 믹스 기준 객단가 650,000원 − 강사 정산 420,000원(14h × 30,000원) − PG 14,300원 = <b>학생 1인 월 기여마진 약 215,700원</b>. 월 고정비 100만 원(Phase 1) 기준 <b>활성 5명</b>, 300만 원(Phase 2) 기준 <b>활성 14명</b>이 손익분기입니다. 매니저 보상이 성과급 변동비 구조이므로 인력 확장에 따른 BEP 후퇴가 없습니다.</p>
+
+  <h2 class="s">4-3. 3개년 시나리오 요약 (2026 H2 ~ 2029 H1)</h2>
+  <table>
+    <tr><th>지표</th><th>보수</th><th>기본</th><th>공격</th></tr>
+    <tr><td>상담 → 결제 전환율 / 월 이탈률 가정</td><td>20% / 8%</td><td>30% / 5%</td><td>40% / 3%</td></tr>
+    <tr><td>3년차(2029 H1) 반기말 활성 학생</td><td>110명</td><td><b>170명</b></td><td>270명</td></tr>
+    <tr><td>3년 누적 총 수업료 매출</td><td>약 8.9억 원</td><td><b>약 15.0억 원</b></td><td>약 26.0억 원</td></tr>
+    <tr><td>3년 누적 플랫폼 기여마진</td><td>약 3.0억 원</td><td><b>약 5.1억 원</b></td><td>약 8.9억 원</td></tr>
+    <tr><td>Phase 2 BEP 도달 (활성 14명)</td><td>2027 H2</td><td><b>2027 H1 말</b></td><td>2026 H2 말</td></tr>
+    <tr><td>지원금 소진 후 자립</td><td>2027 H2</td><td><b>2027 H1</b></td><td>2026 H2</td></tr>
+  </table>
+  <p class="cap">객단가·전환율·이탈률은 가정 명시형이며 파일럿 실측 후 재조정합니다. 상세 램프업은 부속 재무계획 문서를 따릅니다.</p>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>9</span></div>
+</div>
+
+<!-- ═══ P10. 추진 일정 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">05 — Funding &amp; Schedule</span><span class="wm">Concord</span></div>
+  <h1 class="t">자금 계획과 추진 일정</h1>
+  <p class="lede">지원금은 집행 시기와 마일스톤에 결합해 운용합니다. 협약 기간 내 90일 단위로 실행하고, 이후 반기 단위 마일스톤으로 관리합니다. 공급(강사) 확보를 수요 모집보다 선행하는 순서를 지킵니다.</p>
+
+  <h2 class="s">5-1. 자금 계획 — 지원금 1억 원 활용</h2>
+  <table>
+    <tr><th style="width:28mm;">항목</th><th style="width:14mm;">비율</th><th style="width:22mm;">금액</th><th style="width:26mm;">집행 시기</th><th>세부 내용</th></tr>
+    <tr><td><b>인건비</b></td><td>30%</td><td>3,000만 원</td><td>개시~9개월</td><td>학습 매니저 1~2인 채용, 대표자는 개발·전략 집중</td></tr>
+    <tr><td><b>사업화(개발)</b></td><td>25%</td><td>2,500만 원</td><td>1~9개월</td><td>모바일 앱 완성·스토어 출시, 빌링키 자동결제, 강사 추천 1차</td></tr>
+    <tr><td><b>마케팅·홍보</b></td><td>25%</td><td>2,500만 원</td><td>전 기간</td><td>네이버 검색광고·스마트플레이스·맘카페·카카오 채널, 실촬영·후기 자산</td></tr>
+    <tr><td><b>운영 제반비</b></td><td>15%</td><td>1,500만 원</td><td>초기 집중</td><td>설립·통신판매업 신고, 법무·세무, 약관·환불정책 정비, 배상책임보험</td></tr>
+    <tr><td><b>예비비</b></td><td>5%</td><td>500만 원</td><td>상시</td><td>환불 대비 준비금·긴급 비용</td></tr>
+  </table>
+  <p class="b">제품이 이미 구현되어 있으므로 지원금은 개발이 아니라 <b>시장 검증·인력·모바일 완성·마케팅 자산 확보</b>에 투입됩니다. 기본 시나리오 기준 지원금 투입 후 12개월 이내 자립 가능한 손익 구조입니다.</p>
+
+  <h2 class="s">5-2. 협약 기간 90일 실행 로드맵</h2>
+  <table>
+    <tr><th style="width:30mm;">기간</th><th>마일스톤</th></tr>
+    <tr><td><b>Week 1~3</b></td><td>선행 자산 제작(후기·사진·계측·카카오 채널) · 강사 채용 파이프라인 가동(수요보다 2~6주 선행) · 사업자·법무 정비</td></tr>
+    <tr><td><b>M1</b></td><td>집중 지역(서울·동탄 1~2개 동 반경) 무료·저비용 채널 개시 · 첫 상담→매칭→첫 수업 플로우 실주행 · 파일럿 학생 확보</td></tr>
+    <tr><td><b>M2~3</b></td><td>후기 3건 이상 확보 후 유료 채널(네이버 SA·당근) 소액 테스트 · 활성 5명(Phase 1 BEP) 도달</td></tr>
+  </table>
+
+  <h2 class="s">5-3. 반기별 마일스톤 (기본 시나리오)</h2>
+  <table>
+    <tr><th style="width:26mm;">시기</th><th style="width:34mm;">반기말 활성 학생</th><th>핵심 과업</th></tr>
+    <tr><td><b>2026 H2</b></td><td>15명 (파일럿)</td><td>유상 파일럿 · Phase 1 BEP(5명) 달성 · 실후기 자산 확보 · 빌링키 자동결제</td></tr>
+    <tr><td><b>2027 H1</b></td><td>40명</td><td>증거 전환 완료 · 유료 채널 개시 · 학습 매니저 1인 채용 · 모바일 앱 스토어 출시</td></tr>
+    <tr><td><b>2027 H2</b></td><td>75명</td><td>Phase 2 BEP(14명) 안정권 · 강사 20명 · 마케팅 파트너 합류</td></tr>
+    <tr><td><b>2028</b></td><td>115 → 145명</td><td>지역 확장(매니저 변동비 구조) · 자동 강사 추천 도입</td></tr>
+    <tr><td><b>2029 H1</b></td><td>170명</td><td>누적 거래액 약 15억 원 · 학원 백오피스 SaaS 파일럿 검토</td></tr>
+  </table>
+
+  <h2 class="s">5-4. 후속 자금 계획</h2>
+  <p class="b">1~2차년도는 지원금 + 자체 매출로 자립 운영합니다. 활성 학생 150명·플랫폼 매출 5억 원 규모 도달 후 TIPS·교육 특화 액셀러레이터·프리A 라운드를 검토하며, B2B(학원 SaaS)·지역 확장·매칭 고도화를 성장 축으로 시리즈 A에 대비합니다.</p>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>10</span></div>
+</div>
+
+<!-- ═══ P11. Team ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">06 — Team</span><span class="wm">Concord</span></div>
+  <h1 class="t">팀 구성 — 도메인 경험과 구현 역량의 결합</h1>
+
+  <h2 class="s">6-1. 창업팀 (대표자)</h2>
+  <table>
+    <tr><th style="width:30mm;">항목</th><th>내용</th></tr>
+    <tr><td><b>성명</b></td><td>[기재 필요]</td></tr>
+    <tr><td><b>학력</b></td><td>[기재 필요] (기존 근거: 성균관대학교 경영학과 재학 — 신청 시점 확인)</td></tr>
+    <tr><td><b>역할</b></td><td>기획 · 풀스택 개발 · 초기 매니저 겸무</td></tr>
+    <tr><td><b>도메인 경력</b></td><td>학원·개인 과외 강사 2년 이상 — 학부모·학생·강사 3자 관점 체득</td></tr>
+    <tr><td><b>기술 역량</b></td><td>Next.js, React, TypeScript, Prisma, PostgreSQL, NextAuth, Vercel 풀스택 단독 구현</td></tr>
+  </table>
+
+  <h2 class="s">6-2. 실행 역량의 증거</h2>
+  <ul class="t">
+    <li><b>이미 만든 제품</b> — 웹 플랫폼(4역할 포털·결제·CMS·백오피스)과 모바일 백엔드가 실서비스 수준으로 완성되어 있습니다. 심사 대상은 아이디어가 아니라 작동하는 소프트웨어입니다.</li>
+    <li><b>도메인 밀착</b> — 강사 경력에서 도출한 문제 인식(검증 비대칭·매칭 실패 비용·관리 부재)이 그대로 제품 설계에 반영되어 있습니다.</li>
+    <li><b>의사결정 속도</b> — 1인 완결 구조로 기획~배포 사이클이 최단입니다.</li>
+  </ul>
+
+  <h2 class="s">6-3. 채용·보완 계획</h2>
+  <table>
+    <tr><th style="width:26mm;">시기</th><th style="width:44mm;">포지션</th><th>목적</th><th style="width:32mm;">재원</th></tr>
+    <tr><td>개시 직후</td><td>학습 매니저 1~2명</td><td>학생 상담·강사 배정·모니터링, 대표자는 개발·전략 집중</td><td>지원금 인건비</td></tr>
+    <tr><td>~6개월</td><td>마케팅 파트너 1명</td><td>SNS·맘카페·네이버 콘텐츠 운영</td><td>지원금 마케팅비</td></tr>
+    <tr><td>~12개월</td><td>모바일 개발 1명 또는 외주</td><td>학부모 모드·앱 고도화</td><td>지원금 사업화비 + 매출</td></tr>
+    <tr><td>~24개월</td><td>매칭 고도화 개발자 1명</td><td>강사 추천 알고리즘 고도화</td><td>매출·후속 투자</td></tr>
+  </table>
+
+  <h2 class="s">6-4. 사회적 가치 및 기대 효과</h2>
+  <ul class="t">
+    <li><b>교육 접근성</b> — 검증·배정 시스템 표준화로 학군지 밖에도 검증된 교육 접근 기회를 확대합니다 (Phase 4~5).</li>
+    <li><b>강사 처우 개선</b> — 시급 보장 + 장기 인센티브 + 행정 대행으로 강사가 교육 품질에 집중하게 합니다.</li>
+    <li><b>일자리 창출</b> — 매니저·마케터·개발자 직접 고용 + 3년 내 검증 강사 100명 이상.</li>
+    <li><b>학습 데이터 자산</b> — 학습 플랜·질답 데이터 축적으로 개인화 교육의 기반을 마련합니다.</li>
+  </ul>
+
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>11</span></div>
+</div>
+
+<!-- ═══ P12. 종합 + 부록 ═══ -->
+<div class="page">
+  <div class="ph"><span class="no">07 — Appendix</span><span class="wm">Concord</span></div>
+  <h1 class="t">종합</h1>
+  <p class="lede">Concord는 (i) 사교육 시장의 검증 비대칭·매칭 실패·관리 부재라는 3대 구조 문제를, (ii) 매니저 대면 상담 + 검증 강사 + 앱 학습관리라는 통합 서비스로 해결하며, (iii) 이미 작동하는 제품과 서울·동탄 프리미엄 포지셔닝을 갖춘 사업입니다. 지원금은 개발이 아니라 시장 검증·인력 확보·모바일 완성에 집중 투입됩니다.</p>
+
+  <h2 class="s">A. [기재 필요] · [확인 필요] 색인</h2>
+  <table>
+    <tr><th style="width:22mm;">구분</th><th>항목</th></tr>
+    <tr><td>[기재 필요]</td><td>대표자 성명·생년·학력·경력 상세</td></tr>
+    <tr><td>[기재 필요]</td><td>창업 형태 (개인·법인, 사업자 등록 여부)</td></tr>
+    <tr><td>[확인 필요]</td><td>SAM(1:1 과외 시장) 약 3조 원 추산 — 신청 시점 최신 통계로 재확인</td></tr>
+    <tr><td>[확인 필요]</td><td>SOM(서울·동탄 프리미엄) 400~500억 원 추산 — 지역 단가 재검증</td></tr>
+    <tr><td>[확인 필요]</td><td>개인과외 유형별 단가(43.9만 원) — 2024년 조사 기준, 2025년 유형별 수치 공표 시 교체</td></tr>
+    <tr><td>[확인 필요]</td><td>매니저 성과급 비율(기여마진의 20% vs 30%) — Phase 2 전환 전 확정</td></tr>
+    <tr><td>[확인 필요]</td><td>객단가(650,000원)·전환율(20/30/40%)·이탈률(8/5/3%) 가정 — 파일럿 실측 후 재조정</td></tr>
+  </table>
+
+  <h2 class="s">B. 출처</h2>
+  <table>
+    <tr><th style="width:52mm;">구분</th><th>출처</th></tr>
+    <tr><td>사교육 시장 통계 (2025 실측)</td><td>국가데이터처, 「2025년 초중고 사교육비조사」 (2026.3 발표) · 정책브리핑</td></tr>
+    <tr><td>유형별 단가</td><td>교육부·통계청, 「2024년 초중고 사교육비조사 결과」 (2025.3.13)</td></tr>
+    <tr><td>요금제·정산 단가</td><td>실 적용 요금제 및 정산 정책 (제품 코드 기준, 2026-07 시행)</td></tr>
+    <tr><td>리스크·마케팅·성장 근거</td><td>내부 사업성 검토·마케팅 계획 문서</td></tr>
+    <tr><td>재무계획 상세</td><td>부속 재무계획 문서 (3시나리오 램프업·비용 구조·CAC 가정)</td></tr>
+  </table>
+
+  <div style="margin-top:auto; margin-bottom:10mm; text-align:center;">
+    <div class="wordmark" style="font-size:22px;">Concord<span class="dot"></span></div>
+    <p class="cap" style="margin-top:2mm;">Concord Private Tutoring · tutormatch-web.vercel.app · 2026. 07 · v1.0</p>
+  </div>
+  <div class="pf"><span>Concord Private Tutoring — 사업계획서 (PSST) v1.0</span><span>12</span></div>
+</div>
+
+</body>
+</html>

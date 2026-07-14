@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Concord 방문 상담 안내</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --green:#10B981; --green-text:#07875A; --bg:#FAF9F4; --panel:#FFFFFF;
+    --fg:#161A16; --mut:#585C53; --mut2:#9AA095;
+    --line:rgba(34,38,30,.085); --line2:rgba(34,38,30,.15);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif; color:var(--fg);
+    letter-spacing:-.01em; word-break:keep-all; -webkit-font-smoothing:antialiased; }
+  @page{ size:210mm 297mm; margin:0; }
+  .page{ width:210mm; height:297mm; background:var(--bg); padding:12mm 13mm; display:flex; flex-direction:column; gap:5mm; }
+
+  .hdr{ display:flex; align-items:center; justify-content:space-between; background:var(--fg); border-radius:14px; padding:6.5mm 8mm; color:#fff; position:relative; overflow:hidden; }
+  .hdr .glow{ position:absolute; inset:0; background:radial-gradient(320px 180px at 85% -20%, rgba(16,185,129,.35), transparent 65%); }
+  .wordmark{ font-weight:800; letter-spacing:-.03em; display:inline-flex; align-items:baseline; position:relative; }
+  .wordmark .dot{ display:inline-block; width:.16em; height:.16em; border-radius:50%; background:var(--green); margin-left:.06em; transform:translateY(-.08em); }
+  .hdr .tag{ position:relative; text-align:right; font-size:10px; color:rgba(255,255,255,.65); line-height:1.55; }
+  .hdr .tag b{ color:#fff; font-size:11px; }
+
+  .oneline{ font-size:17px; font-weight:700; letter-spacing:-.02em; line-height:1.45; }
+  .oneline .kw{ color:var(--green-text); }
+  .meta{ font-size:10.5px; color:var(--mut); margin-top:1.5mm; line-height:1.55; }
+
+  .row{ display:grid; gap:5mm; }
+  .c2{ grid-template-columns:1fr 1fr; }
+  .box{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:5.5mm 6mm; }
+  .eyebrow{ display:block; font-size:9px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--green-text); margin-bottom:2.2mm; }
+  .box p, .box li{ font-size:10.8px; color:var(--mut); line-height:1.6; }
+  .box b{ color:var(--fg); }
+  ul.t{ list-style:none; } ul.t li{ padding-left:4mm; position:relative; margin-bottom:1.6mm; }
+  ul.t li::before{ content:""; position:absolute; left:0; top:.55em; width:1.6mm; height:1.6mm; border-radius:50%; background:var(--green); }
+
+  .steps{ display:grid; grid-template-columns:repeat(5,1fr); gap:3mm; }
+  .step{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4.5mm 3.5mm; text-align:center; }
+  .step .n{ display:inline-flex; align-items:center; justify-content:center; width:6mm; height:6mm; border-radius:50%; background:var(--fg); color:#fff; font-size:9.5px; font-weight:800; margin-bottom:1.8mm; font-variant-numeric:tabular-nums; }
+  .step b{ display:block; font-size:11px; letter-spacing:-.02em; margin-bottom:1mm; }
+  .step span{ font-size:8.8px; color:var(--mut2); line-height:1.5; display:block; }
+
+  .assure{ background:var(--fg); color:#fff; border:0; }
+  .assure .eyebrow{ color:#5EE0AC; }
+  .assure p{ color:rgba(255,255,255,.75); }
+  .assure b{ color:#fff; }
+  .assure .big{ font-size:14px; font-weight:800; letter-spacing:-.02em; color:#fff; line-height:1.5; }
+
+  .fn{ font-size:8.5px; color:var(--mut2); line-height:1.55; }
+  .ftr{ display:flex; justify-content:space-between; font-size:9px; color:var(--mut2); border-top:1px solid var(--line); padding-top:3mm; margin-top:auto; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr">
+    <div class="glow"></div>
+    <div style="position:relative;">
+      <div class="wordmark" style="font-size:27px;">Concord<span class="dot"></span></div>
+      <div style="font-size:10px; color:rgba(255,255,255,.65); margin-top:.5mm;">방문 상담 안내</div>
+    </div>
+    <div class="tag"><b>대면 1:1 프리미엄 과외</b><br>서울 · 동탄<br>tutormatch-web.vercel.app</div>
+  </div>
+
+  <div>
+    <p class="oneline">우리는 직접 만나고, <span class="kw">학생에게 맞춥니다.</span></p>
+    <p class="meta">상담을 신청해 주셔서 감사합니다. Concord는 선생님을 골라 드리는 서비스가 아니라, 학생에게 맞는 선생님을 우리가 찾아 배정하는 서비스입니다. 비교하고 고르는 일은 우리의 몫입니다.</p>
+  </div>
+
+  <div>
+    <span class="eyebrow" style="margin-bottom:2mm;">이렇게 진행됩니다</span>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><b>상담 신청</b><span>일정을 조율해 방문일을 확정합니다</span></div>
+      <div class="step"><span class="n">2</span><b>방문 상담</b><span>매니저가 직접 찾아뵙습니다</span></div>
+      <div class="step"><span class="n">3</span><b>진단·처방전</b><span>상담 결과를 문서로 전달합니다</span></div>
+      <div class="step"><span class="n">4</span><b>선생님 배정</b><span>왜 이 선생님인지 설명드립니다</span></div>
+      <div class="step"><span class="n">5</span><b>첫 수업</b><span>날짜를 확정하고 수업이 시작됩니다</span></div>
+    </div>
+  </div>
+
+  <div class="row c2">
+    <div class="box">
+      <span class="eyebrow">상담에서 확인하는 것</span>
+      <ul class="t">
+        <li><b>목표</b> — 다음 시험, 이번 학년, 입시까지 무엇을 이루고 싶은지 듣습니다.</li>
+        <li><b>수준</b> — 현재 위치를 과목별로 짚습니다. 성적표보다 정확하게 봅니다.</li>
+        <li><b>성향</b> — 어떤 선생님과 맞는 학생인지 파악합니다. 배정의 근거가 됩니다.</li>
+        <li><b>환경</b> — 학습 공간·일정·생활 리듬을 확인합니다.</li>
+      </ul>
+      <p style="margin-top:2mm;">상담이 끝나면 진단 결과와 학습 처방전을 그 자리에서 전달합니다.</p>
+    </div>
+    <div class="box">
+      <span class="eyebrow">선생님 검증</span>
+      <ul class="t">
+        <li>모든 선생님은 대면 면접과 시강을 거쳐 등록됩니다.</li>
+        <li>담당 선생님은 범죄경력 회보서를 확인하고 배정합니다.</li>
+        <li>방문 수업은 배상책임보험 가입 상태에서 진행합니다.</li>
+        <li>첫 수업 후 매니저가 수업 품질을 직접 확인합니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row c2">
+    <div class="box assure">
+      <span class="eyebrow">부담 없이 시작하실 수 있습니다</span>
+      <p class="big">첫 수업이 맞지 않으면 100% 환불<br>선생님 교체 비용 0원 · 언제든 해지</p>
+      <p style="margin-top:1.5mm; font-size:8.5px; color:rgba(255,255,255,.5);">* 환불·해지 조건은 환불정책 참고</p>
+    </div>
+    <div class="box">
+      <span class="eyebrow">준비하실 것</span>
+      <p><b>없습니다.</b> 학생과 함께하는 30분이면 충분합니다. 최근 성적표나 교재가 있다면 참고가 되지만, 없어도 상담에는 지장이 없습니다.</p>
+      <p style="margin-top:2mm;">요금은 <b>월 38만 원부터</b>이며, 학생에게 맞는 플랜은 상담에서 안내합니다.</p>
+    </div>
+  </div>
+
+  <div class="box" style="padding:4.5mm 6mm;">
+    <p>일정 변경이나 궁금한 점은 카카오톡 채널 <b>pf.kakao.com/_xlxcjwX</b>로 편하게 남겨주세요. 담당 매니저가 답변드려요.</p>
+  </div>
+
+  <div class="ftr">
+    <span>Concord Private Tutoring · 서울 · 동탄</span>
+    <span>tutormatch-web.vercel.app</span>
+  </div>
+</div>
+</body>
+</html>

@@ -35,9 +35,59 @@ const groups = [
   { out: '50-운영.html', title: '운영·파일럿', files: [ 'chapters/운영.md' ] },
   { out: '60-법무·기술.html', title: '법무·기술', files: [ 'chapters/법무기술.md' ] },
   { out: '70-대외·IR.html', title: '대외·IR', files: [ 'chapters/대외IR.md' ] },
+  { out: '80-자산.html', title: '제출·발표 자산', special: 'assets' },
 ];
 
+// 제출·발표 자산 — external/dist 전량 + branding 제출용 PDF를 files/로 복사해 목록 페이지 생성
+const ASSET_DESC = {
+  'Concord-Business-Plan-PSST.pdf': 'PSST 사업계획서 12p — 예비창업패키지 제출 베이스 (2025 실측)',
+  'Concord-Financial-Model.xlsx': '재무 모델 — 플랜 마진·BEP·램프업 3시나리오·CAC. 가정 셀 수정 시 재계산',
+  'Concord-IR-OnePager.pdf': 'IR 원페이저 1p — v1.1 (2025 실측·서울·동탄)',
+  'Concord-IR-Deck.pdf': 'IR 덱 13p — v1.1 (2025 실측·서울·동탄)',
+  'Concord-Teacher-Recruit.pdf': '강사 채용 안내 1장 — 공고 첨부용, 정산 구조 사실만',
+  'Concord-Consult-Guide.pdf': '학부모 방문 상담 안내 1장 — 방문 전 전달용',
+  'Concord-Brand-Guidelines.pdf': '브랜드 가이드라인 11p',
+  'Concord-App-Guide.pdf': '앱 가이드 — 역할별 화면 안내 (대용량)',
+  'Concord-CEO-Proposal.pdf': '대표 제안서 — 07-12판 (서사 B 반영 전, 사용 전 점검)',
+};
+const EXTRA_ASSETS = [
+  'branding/Concord-Brand-Guidelines.pdf',
+  'branding/Concord-App-Guide.pdf',
+  'branding/Concord-CEO-Proposal.pdf',
+];
+
+function buildAssets() {
+  const dist = path.join(DOCS, 'external/dist');
+  const filesDir = path.join(OUT, 'files');
+  fs.mkdirSync(filesDir, { recursive: true });
+  const names = [];
+  if (fs.existsSync(dist)) for (const f of fs.readdirSync(dist)) {
+    fs.copyFileSync(path.join(dist, f), path.join(filesDir, f));
+    names.push(f);
+  }
+  for (const rel of EXTRA_ASSETS) {
+    const abs = path.join(DOCS, rel), f = path.basename(rel);
+    if (fs.existsSync(abs) && !names.includes(f)) {
+      fs.copyFileSync(abs, path.join(filesDir, f));
+      names.push(f);
+    }
+  }
+  const order = Object.keys(ASSET_DESC);
+  names.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
+  const fmt = n => n > 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.round(n / 1e3) + ' KB';
+  const rows = names.map(f => {
+    const size = fs.statSync(path.join(filesDir, f)).size;
+    const ext = f.split('.').pop().toUpperCase();
+    const preview = ext === 'PDF' ? `<a href="files/${f}" target="_blank">미리보기</a> · ` : '';
+    return `<tr><td><strong>${esc(f)}</strong><br><span style="color:var(--mut);font-size:12.5px">${esc(ASSET_DESC[f] || '')}</span></td><td>${ext}</td><td style="white-space:nowrap">${fmt(size)}</td><td style="white-space:nowrap">${preview}<a href="files/${f}" download>다운로드</a></td></tr>`;
+  }).join('');
+  return `<h1>제출·발표 자산</h1>
+<p>외부 제출·발표용 실물 파일. 원장은 저장소 <code>docs/external/dist</code>·<code>docs/branding</code>.</p>
+<table><thead><tr><th>문서</th><th>형식</th><th>크기</th><th>받기</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
 function resolveFiles(g) {
+  if (g.special) return [];
   if (g.dir) return walkMd(path.join(DOCS, g.dir)).map(p => path.relative(DOCS, p));
   return g.files.filter(f => fs.existsSync(path.join(DOCS, f)));
 }
@@ -122,6 +172,7 @@ function pageHtml(g) {
     body += `<section id="${id}">${rule}${marked.parse(md)}</section>`;
     toc += `<li><a href="#${id}">${esc(title)}</a></li>`;
   }
+  if (g.special === 'assets') body = buildAssets();
   // 단일 문서 탭: H2에 앵커를 달고 좌측 목차를 H2로 구성
   if (!multi) {
     toc = '';
