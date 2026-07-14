@@ -25,39 +25,16 @@ function walkMd(dir) {
 
 // 그룹 정의: files = 명시 순서(경로는 DOCS/ROOT 기준), dir = 재귀 수집
 const groups = [
-  // 단권화(합성) — 대시보드 진입점
-  { out: '00-결정.html', title: '① 결정 대기', files: [ '결정대기.md' ],
-    lead: '지금 정해야 할 것만. 발굴·라운드 이력은 뺐다.' },
-  { out: '00b-개선책.html', title: '② 개선책', files: [ '개선책.md' ],
-    lead: '살아남은 실행 항목을 유형별로 압축. 시기 태그 P·A·B·C.' },
-  // 원문 — 주제별 큐레이션(읽는 순서 지정). 역사·아카이브·감사 문서는 나열에서 제외(레포에 보존).
-  { out: '10-방향.html', title: '방향·현황', lead: '세계관·카피 헌법 → 현재 상태 → 저장소 지도.', files: [
-    'BUSINESS_DIRECTION.md', '00-현재상태.md', 'README.md',
-  ] },
-  { out: '20-전략.html', title: '전략', lead: '전략 골격 → 개선 마스터 → 확장 마스터 → 리뷰·취약점.', files: [
-    '10-사업전략.md', 'BUSINESS_IMPROVEMENT_MASTER_2026-07.md',
-    'BUSINESS_EXPANSION_MASTER_2026-07.md', '11-사업리뷰·취약점.md',
-  ] },
-  { out: '30-마케팅.html', title: '마케팅·카피', lead: '마케팅 계획 → 카피 대안.', files: [
-    '20-마케팅.md', 'COPY_ALTERNATIVES.md',
-  ] },
-  { out: '40-제품.html', title: '제품·디자인', lead: '제품·디자인 원칙 → 프론트 빌드 사양.', files: [
-    '30-제품·디자인.md', 'FRONTEND_BUILD_SPEC.md',
-  ] },
-  { out: '50-운영.html', title: '운영·파일럿', lead: '파일럿 계획·시뮬 → 매니저 지침 → 집행 큐 → 구현·촬영·스토어.', files: [
-    '40-파일럿.md', 'PILOT_SIM2_2026-07.md', 'MANAGER_GUIDELINES.md',
-    'OWNER_EXECUTION_QUEUE.md', 'IMPLEMENTATION_PLAN_2026-07.md',
-    'session-instructions.md', 'STORE_SUBMISSION_2026-07.md',
-    'PHOTO_SHOOT_LIST.md', 'PHOTO_GENERATION_PROMPT.md',
-  ] },
-  { out: '60-법무·기술.html', title: '법무·기술', lead: '기술 개요 → API → 법무 자문·문서 현황.', files: [
-    'internal/TECH_OVERVIEW.md', 'internal/API_REFERENCE.md',
-    'internal/LEGAL_ADVISORY_MEMO.md', 'internal/LEGAL_DOCS_STATUS.md',
-  ] },
-  { out: '70-대외·IR.html', title: '대외·IR', lead: '사업계획(PSST) → 원페이저 → 재무 → 대표 제안 → 앱 안내.', files: [
-    'external/BUSINESS_PLAN_PSST.md', 'external/IR_ONE_PAGER.md',
-    'external/FINANCIAL_PLAN.md', 'external/CEO_PROPOSAL.md', 'external/APP_GUIDE.md',
-  ] },
+  // 전 탭 재저작 문서 1권씩 — 원문 md는 레포에 보존(DB), 여기서는 나열하지 않는다.
+  { out: '00-결정.html', title: '① 결정 대기', files: [ '결정대기.md' ] },
+  { out: '00b-개선책.html', title: '② 개선책', files: [ '개선책.md' ] },
+  { out: '10-방향.html', title: '방향·현황', files: [ 'chapters/방향현황.md' ] },
+  { out: '20-전략.html', title: '전략', files: [ 'chapters/전략.md' ] },
+  { out: '30-마케팅.html', title: '마케팅·카피', files: [ 'chapters/마케팅.md' ] },
+  { out: '40-제품.html', title: '제품·디자인', files: [ 'chapters/제품.md' ] },
+  { out: '50-운영.html', title: '운영·파일럿', files: [ 'chapters/운영.md' ] },
+  { out: '60-법무·기술.html', title: '법무·기술', files: [ 'chapters/법무기술.md' ] },
+  { out: '70-대외·IR.html', title: '대외·IR', files: [ 'chapters/대외IR.md' ] },
 ];
 
 function resolveFiles(g) {
@@ -145,8 +122,18 @@ function pageHtml(g) {
     body += `<section id="${id}">${rule}${marked.parse(md)}</section>`;
     toc += `<li><a href="#${id}">${esc(title)}</a></li>`;
   }
-  const tocBlock = multi
-    ? `<nav class="toc"><span class="eyebrow">이 탭의 문서</span><ul>${toc}</ul></nav>`
+  // 단일 문서 탭: H2에 앵커를 달고 좌측 목차를 H2로 구성
+  if (!multi) {
+    toc = '';
+    body = body.replace(/<h2>([\s\S]*?)<\/h2>/g, (m, inner) => {
+      const plain = inner.replace(/<[^>]+>/g, '');
+      const hid = slug(plain);
+      toc += `<li><a href="#${hid}">${plain}</a></li>`;
+      return `<h2 id="${hid}">${inner}</h2>`;
+    });
+  }
+  const tocBlock = toc
+    ? `<nav class="toc"><span class="eyebrow">${multi ? '이 탭의 문서' : '목차'}</span><ul>${toc}</ul></nav>`
     : '';
   const lead = g.lead ? `<p class="lead">${esc(g.lead)}</p>` : '';
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
