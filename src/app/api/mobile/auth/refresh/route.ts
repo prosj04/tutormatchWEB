@@ -20,16 +20,20 @@ export async function POST(request: Request) {
 
   const user = await prisma.user.findUnique({
     where: { id: payload.sub },
-    select: { id: true, role: true, deletedAt: true },
+    select: { id: true, role: true, deletedAt: true, tokenVersion: true },
   });
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   // 탈퇴(소프트 삭제)한 계정은 리프레시 토큰으로도 재발급 불가 — 세션 연장 차단.
-  if (user.deletedAt) {
+  // 로그아웃·비밀번호 변경으로 tokenVersion이 올라간 경우도 동일하게 폐기.
+  if (user.deletedAt || user.tokenVersion !== payload.v) {
     return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
   }
 
-  return NextResponse.json(issueMobileTokens(user.id, user.role));
+  // 회전: 새 access + 새 refresh 동시 재발급 (클라이언트는 둘 다 교체 저장).
+  return NextResponse.json(
+    issueMobileTokens(user.id, user.role, user.tokenVersion),
+  );
 }

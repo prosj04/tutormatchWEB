@@ -62,7 +62,8 @@ export async function POST(request: Request) {
   const hashed = await bcrypt.hash(newPassword, 12);
   await prisma.user.update({
     where: { id: user.id },
-    data: { password: hashed },
+    // ADMIN은 모바일 로그인 불가지만, 비밀번호 변경 = 토큰 폐기 원칙을 일관 적용.
+    data: { password: hashed, tokenVersion: { increment: 1 } },
   });
 
   return NextResponse.json({ ok: true });

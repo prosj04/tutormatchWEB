@@ -144,7 +144,12 @@ export async function POST(request: Request) {
         },
       },
     },
-    select: { id: true, role: true, student: { select: { id: true, name: true } } },
+    select: {
+      id: true,
+      role: true,
+      tokenVersion: true,
+      student: { select: { id: true, name: true } },
+    },
   });
 
   let consultationAttached = false;
@@ -157,7 +162,7 @@ export async function POST(request: Request) {
     consultationAttached = result.attached;
   }
 
-  const tokens = issueMobileTokens(user.id, user.role);
+  const tokens = issueMobileTokens(user.id, user.role, user.tokenVersion);
 
   logAnalyticsEvent({
     name: ANALYTICS_EVENTS.studentRegistered,

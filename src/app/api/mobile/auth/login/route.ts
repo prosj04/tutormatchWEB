@@ -25,6 +25,7 @@ const userForAuthSelect = {
   email: true,
   password: true,
   role: true,
+  tokenVersion: true,
   deletedAt: true,
   student: { select: { name: true } },
   teacher: { select: { name: true } },
@@ -123,7 +124,7 @@ export async function POST(request: Request) {
     user.parent?.name ??
     user.teacher?.name ??
     user.email.split("@")[0];
-  const tokens = issueMobileTokens(user.id, user.role);
+  const tokens = issueMobileTokens(user.id, user.role, user.tokenVersion);
 
   return NextResponse.json({
     ...tokens,

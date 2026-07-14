@@ -60,6 +60,8 @@ model User {
   id            String         @id @default(uuid())
   email         String         @unique
   password      String
+  /// 모바일 JWT 폐기용 버전 — 로그아웃·비밀번호 변경 시 +1하면 기존 토큰 전부 무효.
+  tokenVersion  Int            @default(0)
   role          UserRole       @default(STUDENT)
   student       Student?
   teacher       Teacher?

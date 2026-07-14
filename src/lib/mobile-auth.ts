@@ -10,13 +10,15 @@ import { prisma } from "@/lib/prisma";
  * HMAC-SHA256 서명 JWT를 발급한다(추가 의존성 없이 Node crypto만 사용).
  */
 
-const ACCESS_TTL_SEC = 60 * 60 * 24 * 7; // 7d
-const REFRESH_TTL_SEC = 60 * 60 * 24 * 60; // 60d
+const ACCESS_TTL_SEC = 60 * 60; // 1h
+const REFRESH_TTL_SEC = 60 * 60 * 24 * 30; // 30d
 
 export type MobileTokenPayload = {
   sub: string; // user id
   role: string;
   typ: "access" | "refresh";
+  /** User.tokenVersion 스냅샷 — 불일치 시 폐기된 토큰 */
+  v: number;
   exp: number; // epoch seconds
 };
 
@@ -66,6 +68,7 @@ function signToken(
   userId: string,
   role: string,
   typ: "access" | "refresh",
+  tokenVersion: number,
 ): string {
   const ttl = typ === "access" ? ACCESS_TTL_SEC : REFRESH_TTL_SEC;
   const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
@@ -73,6 +76,7 @@ function signToken(
     sub: userId,
     role,
     typ,
+    v: tokenVersion,
     exp: Math.floor(Date.now() / 1000) + ttl,
   };
   const body = base64url(JSON.stringify(payload));
@@ -80,10 +84,14 @@ function signToken(
   return `${header}.${body}.${signature}`;
 }
 
-export function issueMobileTokens(userId: string, role: string) {
+export function issueMobileTokens(
+  userId: string,
+  role: string,
+  tokenVersion: number,
+) {
   return {
-    accessToken: signToken(userId, role, "access"),
-    refreshToken: signToken(userId, role, "refresh"),
+    accessToken: signToken(userId, role, "access", tokenVersion),
+    refreshToken: signToken(userId, role, "refresh", tokenVersion),
     expiresIn: ACCESS_TTL_SEC,
   };
 }
@@ -112,6 +120,8 @@ export function verifyMobileToken(token: string): MobileTokenPayload | null {
     return null;
   }
   if (!payload?.sub || typeof payload.exp !== "number") return null;
+  // v 없는 구버전 토큰은 무효 — 파일럿 전 강제 재로그인 승인됨.
+  if (typeof payload.v !== "number") return null;
   if (payload.exp < Math.floor(Date.now() / 1000)) return null;
   return payload;
 }
@@ -139,12 +149,17 @@ export async function getMobileUser(
   const payload = verifyMobileToken(token);
   if (!payload || payload.typ !== "access") return null;
 
-  // 소프트삭제·역할변경 즉시 반영을 위해 user 재조회
+  // 소프트삭제·역할변경·토큰폐기(tokenVersion 불일치) 즉시 반영을 위해 user 재조회
   const user = await prisma.user.findUnique({
     where: { id: payload.sub },
-    select: { id: true, role: true, deletedAt: true },
+    select: { id: true, role: true, deletedAt: true, tokenVersion: true },
   });
-  if (!user || user.deletedAt !== null || user.role !== payload.role) {
+  if (
+    !user ||
+    user.deletedAt !== null ||
+    user.role !== payload.role ||
+    user.tokenVersion !== payload.v
+  ) {
     return null;
   }
   return payload;

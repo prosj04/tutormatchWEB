@@ -57,7 +57,11 @@ export async function changeOwnPassword(
 
   await prisma.user.update({
     where: { id: userId },
-    data: { password: await bcrypt.hash(newPassword as string, 12) },
+    data: {
+      password: await bcrypt.hash(newPassword as string, 12),
+      // 비밀번호 변경 시 모바일 JWT 전부 폐기 (웹 NextAuth 세션과는 무관).
+      tokenVersion: { increment: 1 },
+    },
   });
   return { ok: true };
 }
@@ -72,7 +76,11 @@ export async function resetUserPassword(
 
   await prisma.user.update({
     where: { id: targetUserId },
-    data: { password: await bcrypt.hash(newPassword as string, 12) },
+    data: {
+      password: await bcrypt.hash(newPassword as string, 12),
+      // 재설정 시에도 모바일 JWT 전부 폐기 — 탈취된 세션이 살아남지 않게.
+      tokenVersion: { increment: 1 },
+    },
   });
   return { ok: true };
 }

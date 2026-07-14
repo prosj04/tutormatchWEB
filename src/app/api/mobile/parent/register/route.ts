@@ -24,7 +24,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
 
-  const tokens = issueMobileTokens(result.userId, result.role);
+  // 방금 생성된 계정 — tokenVersion은 스키마 기본값 0.
+  const tokens = issueMobileTokens(result.userId, result.role, 0);
 
   logAnalyticsEvent({
     name: ANALYTICS_EVENTS.parentRegistered,
