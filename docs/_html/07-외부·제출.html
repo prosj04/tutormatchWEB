@@ -1,0 +1,2122 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>외부·제출 — Concord 문서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --green:#10B981;--green-text:#07875A;--bg:#FAF9F4;--panel:#FFFFFF;--panel2:#F0EFE7;
+  --fg:#161A16;--mut:#585C53;--mut2:#9AA095;--line:rgba(34,38,30,.085);--line2:rgba(34,38,30,.15);
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif}
+body{color:var(--fg);background:var(--bg);line-height:1.65;letter-spacing:-.01em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.tabs{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:2px;padding:11px 22px;background:rgba(250,249,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:-.03em;font-size:16px;margin-right:14px;align-self:center}
+.brand .dot{display:inline-block;width:.16em;height:.16em;border-radius:50%;background:var(--green);vertical-align:baseline;margin-left:.05em}
+.tab{padding:6px 13px;border-radius:999px;text-decoration:none;color:var(--mut);font-size:13px;font-weight:700}
+.tab:hover{background:var(--panel2)}
+.tab.active{background:var(--fg);color:#fff}
+.wrap{display:flex;max-width:1440px;margin:0 auto;gap:34px;padding:0 22px}
+.toc{position:sticky;top:60px;align-self:flex-start;flex:0 0 230px;font-size:12.5px;padding:26px 0;max-height:calc(100vh - 60px);overflow:auto}
+.toc .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--green-text);margin-bottom:9px;display:block}
+.toc ul{list-style:none;padding:0;margin:0}
+.toc li{margin:2px 0}
+.toc a{text-decoration:none;color:var(--mut);display:block;padding:4px 9px;border-radius:8px;word-break:break-all}
+.toc a:hover{background:var(--panel2);color:var(--fg)}
+main{flex:1;min-width:0;padding:34px 0 140px}
+section{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--line)}
+.fname{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--green-text);background:var(--panel2);padding:4px 10px;border-radius:999px;margin-bottom:14px;letter-spacing:0}
+main h1{font-size:30px;font-weight:800;letter-spacing:-.038em;line-height:1.12;border-bottom:1px solid var(--line);padding-bottom:10px;margin:.2em 0 .6em}
+main h2{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:1.8em 0 .5em}
+main h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:1.5em 0 .4em}
+main h4{font-size:14px;font-weight:700;color:var(--mut);margin:1.3em 0 .3em}
+main p{margin:.7em 0}
+main a{color:var(--green-text);text-decoration:none;border-bottom:1px solid var(--line2)}
+main strong{font-weight:800}
+main code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--panel2);padding:1.5px 6px;border-radius:6px}
+main pre{background:var(--fg);color:#ECEEEC;padding:16px 18px;border-radius:14px;overflow:auto;box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06)}
+main pre code{background:none;color:inherit;padding:0;font-size:12.5px}
+main blockquote{margin:1.1em 0;padding:12px 20px;border-left:3px solid var(--green);background:var(--panel);border-radius:0 12px 12px 0;color:var(--mut)}
+main blockquote p{margin:.3em 0}
+main table{border-collapse:collapse;width:100%;margin:1.1em 0;font-size:13.5px;display:block;overflow-x:auto;border-radius:14px}
+main th,main td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+main th{background:var(--panel2);font-weight:800;letter-spacing:-.01em}
+main td{background:var(--panel)}
+main tr:nth-child(even) td{background:#FCFBF7}
+main del{color:var(--mut2)}
+main hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+main ul,main ol{padding-left:22px;margin:.6em 0}
+main li{margin:4px 0}
+main li::marker{color:var(--green-text)}
+main img{max-width:100%;border-radius:12px}
+@media(max-width:860px){.toc{display:none}.wrap{padding:0 15px}.tabs{padding:10px 15px}}
+</style></head><body>
+<div class="tabs"><span class="brand">Concord<span class="dot"></span></span><a class="tab" href="01-개요.html">개요·현황</a><a class="tab" href="02-사업전략.html">사업전략</a><a class="tab" href="03-리뷰·마케팅.html">리뷰·마케팅</a><a class="tab" href="04-제품·디자인.html">제품·디자인</a><a class="tab" href="05-운영·파일럿.html">운영·파일럿·구현</a><a class="tab" href="06-내부·기술.html">내부·기술</a><a class="tab active" href="07-외부·제출.html">외부·제출</a><a class="tab" href="08-전략라운드.html">전략 라운드</a><a class="tab" href="09-아카이브.html">아카이브</a></div>
+<div class="wrap">
+<nav class="toc"><span class="eyebrow">이 묶음 문서 5</span><ul><li><a href="#d-external-APP-GUIDE-md">external/APP_GUIDE.md</a></li><li><a href="#d-external-BUSINESS-PLAN-PSST-md">external/BUSINESS_PLAN_PSST.md</a></li><li><a href="#d-external-CEO-PROPOSAL-md">external/CEO_PROPOSAL.md</a></li><li><a href="#d-external-FINANCIAL-PLAN-md">external/FINANCIAL_PLAN.md</a></li><li><a href="#d-external-IR-ONE-PAGER-md">external/IR_ONE_PAGER.md</a></li></ul></nav>
+<main><section id="d-external-APP-GUIDE-md"><span class="fname">external/APP_GUIDE.md</span><h1>Concord — 앱 상세 설명 자료</h1>
+<blockquote>
+<p>실제 구동 화면 기반 제품 설명서 · 2026-07 · 캡처 원본: <code>docs/app-screenshots/{역할}/{desktop|mobile}/</code>
+모든 스크린샷은 로컬 시연 데이터(가상의 학생·강사)로 촬영되었으며, 실제 고객 개인정보는 포함되지 않습니다.
+요약 지표·재무 근거는 <code>IR_ONE_PAGER.md</code> · <code>FINANCIAL_PLAN.md</code> · <code>BUSINESS_PLAN_PSST.md</code>를 따릅니다.
+✅ <strong>정책 반영 완료 (2026-07-12)</strong>: 수락 버튼·&quot;동의 기반 매칭&quot; 강조 제거 — 추천 이유가 함께 안내되는 매니저 직접 배정 중심으로 수정, PDF 재생성됨.</p>
+</blockquote>
+<hr>
+<h2>0. 한눈에 보는 Concord</h2>
+<p><strong>Concord Private Tutoring</strong>은 면접·검증된 강사와 전담 매니저가 <strong>대면 1:1 과외를 매칭·관리</strong>하는 프리미엄 에듀테크 플랫폼입니다. 아이디어 단계가 아니라 <strong>웹 4역할 포털·결제·AI 질답·학습관리가 모두 작동하는 완성된 소프트웨어</strong>입니다.</p>
+<table>
+<thead>
+<tr>
+<th>축</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>사용자 역할</td>
+<td>학생/학부모 · 강사 · 매니저(+최고매니저) · 최고관리자</td>
+</tr>
+<tr>
+<td>핵심 플로우</td>
+<td>상담 신청 → 매니저 배정 → 대면 상담 → 강사 매칭 → 첫 수업 → 진행관리</td>
+</tr>
+<tr>
+<td>차별 기능</td>
+<td>강사 검증 · 매니저 대면 매칭 · <strong>주간 숙제 자동 분배</strong> · <strong>Claude AI 질답</strong> · 학습 리포트</td>
+</tr>
+<tr>
+<td>기술</td>
+<td>Next.js 14 · Prisma · Supabase · Vercel · 토스페이먼츠(서버 검증)</td>
+</tr>
+<tr>
+<td>대응 화면</td>
+<td>데스크톱 + 모바일 웹 (반응형) · 네이티브 앱 백엔드 API 완비</td>
+</tr>
+</tbody></table>
+<p>문서 구성: <strong>1) 공개 페이지 → 2) 학생 여정 → 3) 강사 포털 → 4) 매니저 포털 → 5) 최고관리자 → 6) 모바일</strong>. 각 절은 데스크톱 캡처를 기본으로 하며, 동일 화면의 모바일 버전은 <code>app-screenshots/{역할}/mobile/</code>에 있습니다.</p>
+<hr>
+<h2>1. 공개 페이지 — 첫인상과 신뢰 설계</h2>
+<p>로그인 없이 접근하는 마케팅·전환 페이지입니다. 서사는 **&quot;성적보다 습관이 먼저 바뀐다&quot;**는 불안 해소 카피를 축으로 합니다.</p>
+<h3>1.1 홈 (랜딩)</h3>
+<p><img src="app-screenshots/public/desktop/home.png" alt="홈"></p>
+<p>히어로 → 문제 제기 → 검증/매칭/관리 3단 약속 → 프루프 카드 → 상담 CTA로 이어지는 단일 전환 퍼널. 우상단 <strong>무료 상담</strong> 버튼이 모든 페이지에 상주합니다.</p>
+<h3>1.2 요금제</h3>
+<p><img src="app-screenshots/public/desktop/pricing.png" alt="요금제"></p>
+<p>월정액 선불 8개 플랜(38만~112만 원)을 과목·횟수 조합으로 제시. 강사 시급 30,000원 정산 구조 위에 평균 마진율 34.2%를 확보하는 단가 체계입니다.</p>
+<h3>1.3 강사진 / 강사 상세</h3>
+<p><img src="app-screenshots/public/desktop/tutors.png" alt="강사진">
+<img src="app-screenshots/public/desktop/tutor-detail.png" alt="강사 상세"></p>
+<p>검증을 통과한(<code>approved</code>) 강사만 노출됩니다. 상세 페이지는 과목·경력·소개를 담아 &quot;사전 검증된 강사&quot;라는 핵심 가치를 시각화합니다.</p>
+<h3>1.4 후기</h3>
+<p><img src="app-screenshots/public/desktop/reviews.png" alt="후기"></p>
+<p>성적 수치가 아니라 <strong>습관·태도 변화</strong> 중심의 후기 카드. &quot;대치동 학원을 옮겨다녔는데 매니저님이 직접 상담…&quot;, &quot;모르는 문제를 밤에 올리면 AI가 바로 답을…&quot; 등 제품 차별점이 그대로 사회적 증거가 됩니다.</p>
+<h3>1.5 FAQ · 약관 · 개인정보 · 환불정책</h3>
+<p><img src="app-screenshots/public/desktop/faq.png" alt="FAQ"></p>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FAQ</td>
+<td><code>public/desktop/faq.png</code></td>
+</tr>
+<tr>
+<td>이용약관</td>
+<td><code>public/desktop/terms.png</code></td>
+</tr>
+<tr>
+<td>개인정보처리방침</td>
+<td><code>public/desktop/privacy.png</code></td>
+</tr>
+<tr>
+<td>환불정책</td>
+<td><code>public/desktop/refund.png</code></td>
+</tr>
+</tbody></table>
+<p>법률·신뢰 문서가 이미 페이지로 편입되어 있어, 결제·분쟁 대응의 기본 골격을 갖췄습니다(정식 법률 검토는 별도 진행).</p>
+<h3>1.6 가입 · 로그인</h3>
+<p><img src="app-screenshots/public/desktop/login.png" alt="로그인"></p>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>로그인(휴대폰/이메일 + 비밀번호)</td>
+<td><code>public/desktop/login.png</code></td>
+</tr>
+<tr>
+<td>학생 회원가입</td>
+<td><code>public/desktop/register.png</code></td>
+</tr>
+<tr>
+<td>강사 지원</td>
+<td><code>public/desktop/register-teacher.png</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. 학생 여정 — 상담부터 수업 진행까지</h2>
+<p>Concord의 제품 북극성은 **&quot;화면 너머가 아니라 옆자리에서&quot;**입니다. 학생 대시보드는 학습 단계(Journey Stage)에 따라 다른 화면을 보여주며, 각 단계가 실제 DB 상태에서 자동 산출됩니다.</p>
+<p><strong>단계: 상담대기 → 매니저 배정 → 매칭 진행 → 배정 확인 → 첫 수업 대기 → 수업 진행(ACTIVE)</strong></p>
+<h3>2.1 ① 매칭 진행 (상담 완료)</h3>
+<p><img src="app-screenshots/student/desktop/state-matching.png" alt="매칭 진행"></p>
+<p>대면 상담이 끝나면 &quot;곧 맞춤 선생님을 추천해 드릴게요&quot; 상태 카드가 뜨고, 상담 메모(예: &quot;수학 내신 대비, 주 2회 대면 희망&quot;)가 그대로 이어집니다.</p>
+<h3>2.2 ② 배정 확인 — <strong>핵심 차별점: 이유를 설명하는 매칭</strong></h3>
+<p><img src="app-screenshots/student/desktop/state-pending-accept.png" alt="배정 확인"></p>
+<p>매니저가 배정한 강사가 <strong>추천 이유</strong>(&quot;학생 성향(차분한 설명 선호)에 맞춰 추천드립니다&quot;)와 함께 안내됩니다. 일방 통보가 아니라 <strong>왜 이 선생님인지 설명하는 매칭</strong>이며, 미스매치 시 무료 재매칭을 보장합니다.</p>
+<h3>2.3 ③ 첫 수업 일정 대기</h3>
+<p><img src="app-screenshots/student/desktop/state-first-lesson.png" alt="첫 수업 대기"></p>
+<p>배정이 확정되면 강사가 첫 수업 날짜를 설정하고, 그 전까지 &quot;첫 수업 일정 조율 중&quot; 상태를 유지합니다.</p>
+<h3>2.4 ④ 수업 진행 대시보드 (ACTIVE) — 제품의 심장</h3>
+<p><img src="app-screenshots/student/desktop/dashboard.png" alt="학생 대시보드"></p>
+<p>수업이 시작되면 학생은 통합 학습 대시보드를 받습니다. 한 화면에:</p>
+<ul>
+<li><strong>캘린더 학습 플래너</strong> — 날짜별 할 일(&quot;미적분 개념정리 p88 예제 4개&quot; 등), &quot;이전 날에서 복사&quot; 재사용</li>
+<li><strong>담당 선생님 카드</strong> + 매니저 케어 기록(&quot;2주차 점검 — 과제 이행률 양호…&quot;)</li>
+<li><strong>선생님 코멘트</strong>와 <strong>학습 목표</strong>(정량/정성 목표 분리)</li>
+<li><strong>질문(Q&amp;A) 스레드</strong> — 아래 2.5</li>
+</ul>
+<h3>2.5 ⑤ AI + 강사 질답 (Q&amp;A) — 두 번째 차별점</h3>
+<p><img src="app-screenshots/student/desktop/questions.png" alt="질문 목록"></p>
+<p>학생이 모르는 문제를 올리면 <strong>Claude AI가 즉시 1차 답변</strong>하고, <strong>담당 강사가 이어서 확인·보강</strong>합니다. 대시보드 하단(2.4)에서도 동일 스레드가 보이며, &quot;해결됨&quot; 플래그로 관리됩니다.</p>
+<blockquote>
+<p>예시: &quot;미분계수 정의에서 극한이 존재하지 않으면 미분 불가능인가요?&quot; → AI 즉답(순간변화율 정의) → 강사 보강(&quot;연속이지만 미분 불가능한 예 y=|x| 를 꼭 기억하세요&quot;) → <strong>해결됨</strong>.</p>
+</blockquote>
+<p>이 구조는 &quot;밤에 질문해도 방치되지 않는다&quot;는 후기(1.4)의 실체이자, <strong>AI 토큰 = 원가 통제 가능한 부가가치</strong>라는 사업적 의미를 갖습니다.</p>
+<h3>2.6 결제 · 계정 · 알림</h3>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>설명</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>결제(체크아웃)</td>
+<td>토스페이먼츠 서버 검증 결제</td>
+<td><code>student/desktop/checkout.png</code></td>
+</tr>
+<tr>
+<td>결제 내역</td>
+<td>납부·환불 이력</td>
+<td><code>student/desktop/payments.png</code></td>
+</tr>
+<tr>
+<td>계정 관리</td>
+<td>프로필·보호자 정보</td>
+<td><code>student/desktop/dashboard-account.png</code></td>
+</tr>
+<tr>
+<td>알림</td>
+<td>배정·매칭·수업 알림 배치</td>
+<td><code>student/desktop/notifications.png</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>3. 강사 포털 — 검증된 공급자 도구</h2>
+<p>강사는 별도 포털(<code>/teacher-portal</code>)에서 승인·학생·수업을 관리합니다.</p>
+<h3>3.1 강사 대시보드</h3>
+<p><img src="app-screenshots/teacher/desktop/tp-dashboard.png" alt="강사 대시보드"></p>
+<p>승인 상태(<strong>승인 완료 → 수업을 시작하실 수 있습니다</strong>)와 등록 정보(이름·담당 과목·연락처)를 노출. 상단 탭으로 프로필/학생 관리 이동.</p>
+<h3>3.2 강사 지원 · 랜딩 · 프로필</h3>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>강사 포털 랜딩</td>
+<td><code>teacher/desktop/tp-landing.png</code></td>
+</tr>
+<tr>
+<td>강사 지원 폼</td>
+<td><code>teacher/desktop/tp-apply.png</code></td>
+</tr>
+<tr>
+<td>프로필 관리</td>
+<td><code>teacher/desktop/tp-profile.png</code></td>
+</tr>
+<tr>
+<td>담당 학생 관리</td>
+<td><code>teacher/desktop/tp-students.png</code></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>매칭·모니터링·상담 관리(<code>tp-matching</code>, <code>tp-monitoring</code>, <code>tp-consultations</code>)는 <strong>매니저 권한 전용</strong>이므로 일반 강사 계정에서는 대시보드로 안내됩니다(권한 게이팅 정상 동작).</p>
+</blockquote>
+<hr>
+<h2>4. 매니저 포털 — 운영의 중심</h2>
+<p>매니저는 배정된 학생을 상담하고, 강사를 매칭하고, 진행을 모니터링합니다. 최고매니저(Chief)는 강사 승인 권한을 추가로 가집니다.</p>
+<h3>4.1 매칭 관리 — <strong>운영 차별점</strong></h3>
+<p><img src="app-screenshots/manager/desktop/tp-matching.png" alt="매칭 관리"></p>
+<p>상담이 끝난 학생(예: 박유나, 고3, 물리·수학)을 좌측에서 선택 → <strong>강사 후보 카드</strong>(김도현·박준호, 각 담당 학생 수 표시) → <strong>담당 과목 매칭</strong> → <strong>매칭 이유(학생에게 표시)</strong> 입력 → 매칭 등록. 이 이유가 학생 화면(2.2)의 &quot;매니저의 추천 이유&quot;로 그대로 전달됩니다.</p>
+<h3>4.2 상담 · 학생 · 모니터링</h3>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>설명</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>상담 관리</td>
+<td>배정 학생 상담 일정·메모</td>
+<td><code>manager/desktop/tp-consultations.png</code></td>
+</tr>
+<tr>
+<td>학생 관리</td>
+<td>담당 학생 전체 현황</td>
+<td><code>manager/desktop/tp-students.png</code></td>
+</tr>
+<tr>
+<td>모니터링</td>
+<td>진행률·이상징후 감시</td>
+<td><code>manager/desktop/tp-monitoring.png</code></td>
+</tr>
+<tr>
+<td>강사 승인</td>
+<td>(매니저/최고매니저) 강사 심사</td>
+<td><code>manager/desktop/manager-teacher-approval.png</code></td>
+</tr>
+</tbody></table>
+<h3>4.3 최고매니저(Chief)</h3>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>최고매니저 대시보드</td>
+<td><code>chief/desktop/tp-dashboard.png</code></td>
+</tr>
+<tr>
+<td>강사 승인</td>
+<td><code>chief/desktop/chief-teacher-approval.png</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. 최고관리자(Admin) — 데이터·정산·운영 콘솔</h2>
+<p><code>/admin</code>은 사업 운영 전반을 통제하는 백오피스입니다.</p>
+<p><img src="app-screenshots/admin/desktop/admin-home.png" alt="관리자 홈"></p>
+<table>
+<thead>
+<tr>
+<th>콘솔</th>
+<th>역할</th>
+<th>캡처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>학생 관리</td>
+<td>전 학생 상태·이력</td>
+<td><code>admin/desktop/admin-students.png</code></td>
+</tr>
+<tr>
+<td>강사 관리</td>
+<td>강사 승인·정산 대상</td>
+<td><code>admin/desktop/admin-teachers.png</code></td>
+</tr>
+<tr>
+<td>매칭 관리</td>
+<td>전체 매칭 현황</td>
+<td><code>admin/desktop/admin-matches.png</code></td>
+</tr>
+<tr>
+<td>결제 관리</td>
+<td>결제 트랜잭션</td>
+<td><code>admin/desktop/admin-payments.png</code></td>
+</tr>
+<tr>
+<td>정산 관리</td>
+<td>강사 정산(시급 30,000원 기준)</td>
+<td><code>admin/desktop/admin-settlements.png</code></td>
+</tr>
+<tr>
+<td>지표(Metrics)</td>
+<td>매출·활성·마진 KPI</td>
+<td><code>admin/desktop/admin-metrics.png</code></td>
+</tr>
+<tr>
+<td>퍼널(Funnel)</td>
+<td>상담→결제 전환 분석</td>
+<td><code>admin/desktop/admin-funnel.png</code></td>
+</tr>
+<tr>
+<td>감사 로그</td>
+<td>권한·데이터 변경 추적</td>
+<td><code>admin/desktop/admin-audit-logs.png</code></td>
+</tr>
+<tr>
+<td>CMS</td>
+<td>공개 페이지 카피 관리</td>
+<td><code>admin/desktop/admin-cms.png</code></td>
+</tr>
+<tr>
+<td>데이터</td>
+<td>원장·백업·운영 데이터</td>
+<td><code>admin/desktop/admin-data.png</code></td>
+</tr>
+</tbody></table>
+<p>정산·퍼널·감사 로그까지 갖춰, <strong>1인 운영에서 다인 운영으로 확장할 때 필요한 통제 인프라가 선제적으로 구축</strong>되어 있습니다.</p>
+<hr>
+<h2>6. 모바일 대응</h2>
+<p>모든 페이지는 반응형으로 모바일 화면(390×844)에서도 동일 기능을 제공합니다. 캡처는 각 역할 폴더의 <code>mobile/</code>에 데스크톱과 1:1 대응됩니다.</p>
+<ul>
+<li>학생: <code>student/mobile/dashboard.png</code>, <code>state-*.png</code>, <code>questions.png</code></li>
+<li>강사/매니저: <code>teacher/mobile/*</code>, <code>manager/mobile/*</code></li>
+<li>관리자: <code>admin/mobile/*</code></li>
+</ul>
+<blockquote>
+<p>네이티브 앱(React Native)은 백엔드 API 58종이 이미 완성되어 있어, 지원금 확보 시 프론트엔드 개발만으로 출시 가능한 상태입니다.</p>
+</blockquote>
+<hr>
+<h2>부록 — 캡처 커버리지</h2>
+<table>
+<thead>
+<tr>
+<th>역할</th>
+<th>페이지 수</th>
+<th>뷰포트</th>
+<th>합계</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>공개</td>
+<td>12</td>
+<td>2</td>
+<td>24</td>
+</tr>
+<tr>
+<td>학생(상태 3종 포함)</td>
+<td>10</td>
+<td>2</td>
+<td>20</td>
+</tr>
+<tr>
+<td>강사</td>
+<td>8</td>
+<td>2</td>
+<td>16</td>
+</tr>
+<tr>
+<td>매니저</td>
+<td>6</td>
+<td>2</td>
+<td>12</td>
+</tr>
+<tr>
+<td>최고매니저</td>
+<td>2</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>최고관리자</td>
+<td>11</td>
+<td>2</td>
+<td>22</td>
+</tr>
+<tr>
+<td><strong>총계</strong></td>
+<td><strong>49</strong></td>
+<td>—</td>
+<td><strong>98</strong></td>
+</tr>
+</tbody></table>
+<p>전 페이지·전 역할·양대 뷰포트를 실데이터 시연 환경에서 촬영. 재촬영 스크립트: <code>/tmp/shoot.mjs</code>(전체) · <code>/tmp/shoot_states.mjs</code>(학생 단계).</p>
+</section><section id="d-external-BUSINESS-PLAN-PSST-md"><span class="fname">external/BUSINESS_PLAN_PSST.md</span><h1>Concord Private Tutoring 사업계획서 (PSST)</h1>
+<blockquote>
+<p>정부 창업지원사업(예비창업패키지 · 초기창업패키지) 제출용 · PSST(Problem–Solution–Scale up–Team) 구조
+서비스명: <strong>Concord Private Tutoring</strong> — 서울·분당 대면 프리미엄 1:1 과외 매칭 + 전담 매니저 학습관리 SaaS
+작성 시점 기준 개발 현황: Next.js 웹 플랫폼 완성 · 모바일 백엔드 API 완성 · 모바일 RN 프론트엔드 미착수</p>
+<p><strong>갱신일</strong></p>
+<ul>
+<li>2026-07-04 정산 정책 확정 반영 (강사 시급 30,000원/h 확정, 아래 §2-2 및 부속 재무계획 §1-3·§4 참조).</li>
+</ul>
+</blockquote>
+<hr>
+<h2>0. 사업 개요 요약</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>서비스명</td>
+<td>Concord Private Tutoring (콩코드 프라이빗 튜터링)</td>
+</tr>
+<tr>
+<td>한 줄 정의</td>
+<td>검증된 강사와 전담 매니저가 대면 1:1 과외를 매칭·관리하는 프리미엄 에듀테크 SaaS</td>
+</tr>
+<tr>
+<td>창업 형태</td>
+<td>[기재 필요] (사업자 등록 상태·법인 여부는 신청 시점 확정)</td>
+</tr>
+<tr>
+<td>대표자</td>
+<td>[기재 필요] (성명·생년·학력·경력)</td>
+</tr>
+<tr>
+<td>사업 분야</td>
+<td>에듀테크 / O2O 대면 과외 매칭 · 학습관리 플랫폼</td>
+</tr>
+<tr>
+<td>목표 시장</td>
+<td>서울 학군지(대치·목동·강남)·성남시 분당 프리미엄 1:1 과외</td>
+</tr>
+<tr>
+<td>개발 현황</td>
+<td>웹 플랫폼 실서비스 수준 완성, 모바일 백엔드 완성, 모바일 프론트엔드 개발 예정</td>
+</tr>
+<tr>
+<td>차별점</td>
+<td>콴다과외·설탭(비대면 태블릿) 대비 <strong>대면 수업 + 매니저 밀착 관리</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. 문제인식 (Problem) — 창업 아이템 배경 및 필요성</h2>
+<h3>1-1. 시장 배경</h3>
+<ul>
+<li>국내 사교육비 총액(2024년): 약 <strong>29.2조 원</strong>, 4년 연속 최고치 경신 (교육부·통계청, 「2024년 초·중·고 사교육비조사」, 2025.3.13).</li>
+<li>참여학생 1인당 월평균 사교육비: 47.4만 원(전체) / 59.2만 원(참여자 기준). 참여율 80.0%.</li>
+<li>유형별 참여학생 1인당 월평균(일반교과): 학원수강 52.6만 · <strong>개인과외 43.9만</strong> · 그룹과외 31.3만 · 인터넷·통신 14.0만.</li>
+<li>지역 최고: 서울 62.8만 원(전국 1위, 2023년 조사 기준). 서울·분당 학군지 프리미엄 수요가 두터움.</li>
+<li>1:1 개인과외 시장 규모(추산): 약 <strong>3조 원 내외</strong> — 전체 사교육비 중 개인과외 비중을 적용한 자체 추산치. [확인 필요]</li>
+</ul>
+<blockquote>
+<p>시장 통계는 통계청·교육부 공식 자료로 검증 완료. SAM(1:1 과외 시장) 규모는 공식 통계의 유형별 비중을 적용한 추산이며 신청 시 최종 인용치는 재확인 필요. [확인 필요]</p>
+</blockquote>
+<h3>1-2. 핵심 문제 — 정보 비대칭과 매칭 실패 비용</h3>
+<p>과외 시장의 구조적 문제는 다음 3가지로 정리된다.</p>
+<table>
+<thead>
+<tr>
+<th>문제</th>
+<th>실체</th>
+<th>부담 주체</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>검증 비대칭</strong></td>
+<td>강사 공급은 과잉, 그러나 학부모가 사전에 실력·성실성·궁합을 검증할 수단 없음 (학력·사진·자기소개만으로 판단)</td>
+<td>학부모 (매 계약마다 개별 검증 비용 중복 지불)</td>
+</tr>
+<tr>
+<td><strong>매칭 실패 비용</strong></td>
+<td>선택 실패 시 재탐색·계약해지·환불 분쟁 발생. 학군지 학부모 1가정당 연 수백만 원 손실 사례 존재</td>
+<td>학부모·학생(학습 공백)</td>
+</tr>
+<tr>
+<td><strong>관리 부재</strong></td>
+<td>매칭 이후 진도·과제·성적 변화가 &quot;깜깜이&quot;. 학부모가 수업 품질을 확인할 채널 부재</td>
+<td>학부모(불안·이탈), 강사(부당한 평판 리스크)</td>
+</tr>
+</tbody></table>
+<h3>1-3. 기존 대안의 한계</h3>
+<table>
+<thead>
+<tr>
+<th>대안 유형</th>
+<th>대표 서비스</th>
+<th>한계</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>개인과외 중개앱</td>
+<td>김과외, 숨고</td>
+<td>강사 목록 &quot;나열&quot;만 제공. 검증·매칭·사후 관리 부재. 학부모가 셀프 검증. 양측 수수료</td>
+</tr>
+<tr>
+<td>비대면 태블릿 과외</td>
+<td>콴다과외, 설탭</td>
+<td>태블릿 기반 원격 수업. 대면 수업 수요(특히 초·중등, 학군지) 미충족. 매니저 밀착 관리 부재</td>
+</tr>
+<tr>
+<td>학원·교습소</td>
+<td>대형 학원</td>
+<td>1:1 맞춤성 낮음, 일괄 진도, 학생당 케어 시간 부족</td>
+</tr>
+<tr>
+<td>지인 소개·단체방</td>
+<td>—</td>
+<td>완전 비공식. 검증 0, 분쟁 시 보호 장치 0</td>
+</tr>
+</tbody></table>
+<p><strong>결론</strong>: &quot;검증된 대면 1:1 과외 + 전담 매니저 학습관리&quot;를 동시에 제공하는 사업자는 국내 시장에 부재하다.</p>
+<h3>1-4. 왜 지금인가 (Timing)</h3>
+<ul>
+<li>사교육비 4년 연속 최고치 — 프리미엄 교육 지불 의향의 비탄력성 증명.</li>
+<li>LLM API(Claude·GPT) 보편화로 &quot;수업 외 학습 공백&quot;을 저비용으로 메울 수 있음 → 대면 수업 + AI 학습 지원의 결합 가능.</li>
+<li>결제·클라우드 인프라(토스페이먼츠·Vercel·Supabase) 성숙으로 소규모 창업팀도 안정 운영 가능.</li>
+<li>코로나 이후 학부모의 디지털 학습관리 앱 수용성 급상승.</li>
+</ul>
+<hr>
+<h2>2. 실현가능성 (Solution) — 창업 아이템의 구체화</h2>
+<h3>2-1. 솔루션 개요</h3>
+<p><strong>&quot;검증·매칭·관리를 플랫폼이 대신 떠안고, 그 편익을 프리미엄 마진으로 회수한다.&quot;</strong></p>
+<p>Concord는 학부모가 개별로 부담하던 (①검증 ②탐색·재탐색 ③관리·모니터링) 비용을 플랫폼이 집합적으로 단 한 번 수행해 모든 수요자에게 재사용시키는 구조이다. 학부모는 &quot;검증된 강사를 매니저에게 배정받고 그 이후를 앱으로 관리 받는&quot; 편익을, Concord는 수업료 수취액과 강사 정산액의 차액을 매출로 수취한다.</p>
+<h3>2-2. 서비스 플로우</h3>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>주체</th>
+<th>시스템 상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. 상담 신청 또는 즉시 결제</td>
+<td>학부모·학생</td>
+<td>웹/앱 완성</td>
+</tr>
+<tr>
+<td>2. 매니저 자동 배정(결제 시 대표 매니저) 또는 배정 대기(신청만)</td>
+<td>시스템</td>
+<td>구현 완료</td>
+</tr>
+<tr>
+<td>3. 매니저의 대면 심층 상담</td>
+<td>매니저</td>
+<td>관리자 CMS·상담 이력 기능 완성</td>
+</tr>
+<tr>
+<td>4. 매니저의 자율 강사 배정</td>
+<td>매니저</td>
+<td>매칭 기능 완성</td>
+</tr>
+<tr>
+<td>5. 학생의 강사 수락(명시적 승인 버튼)</td>
+<td>학생</td>
+<td>승인 플로우 완성</td>
+</tr>
+<tr>
+<td>6. 강사의 첫 수업일 설정 및 수업 시작</td>
+<td>강사</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>7. 주간·4일 단위 숙제 자동 분배(가중치 기반)</td>
+<td>시스템</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>8. 반복 숙제 템플릿 재사용</td>
+<td>강사</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>9. 학생 질문 → AI 즉시 답변 + 강사 답변</td>
+<td>시스템 + 강사</td>
+<td>Claude API 연동 완료</td>
+</tr>
+<tr>
+<td>10. 학부모의 진도·과제 실시간 열람</td>
+<td>학부모</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>11. 월말 강사 정산</td>
+<td>시스템</td>
+<td><strong>완성 (시급 30,000원/h 확정, 2026-07-04). 강사별 차등 시급은 추후 도입.</strong></td>
+</tr>
+</tbody></table>
+<h3>2-3. 이미 구현된 제품 — 실행 리스크가 낮다</h3>
+<p>대다수 예비창업 아이템이 기획서·와이어프레임 단계에 있는 것과 달리, Concord는 <strong>웹 플랫폼과 모바일 백엔드가 실서비스 수준으로 완성</strong>되어 있다.</p>
+<h4>웹 플랫폼(Next.js 14 App Router)</h4>
+<table>
+<thead>
+<tr>
+<th>기능 영역</th>
+<th>구현 상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>마케팅 홈·요금제·강사진·FAQ·후기 (CMS 실시간 편집)</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>학생/강사 이메일·전화번호 인증 회원가입</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>상담 신청 + 자동 매니저 배정</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>토스페이먼츠 결제 위젯 + 서버 승인 검증</td>
+<td>완성(빌링키 자동결제는 다음 단계)</td>
+</tr>
+<tr>
+<td>4역할 포털(학생·강사·매니저·관리자) 완전 분리</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>캘린더 기반 학습 플랜(DnD) + 자동 숙제 분배</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>학생 질문 → Claude AI 답변 + 강사 답변 이중 구조</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>관리자 CMS(강사·학생·매칭·통계·요금제 편집)</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>인앱 알림 + 일일 자동 배치(미답변·진도 경고·대기 상담)</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>매니저 구독 일시정지/재개·환불 처리</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>보호자 동의(만14세 미만) 및 결제자 확인 플로우</td>
+<td>완성</td>
+</tr>
+</tbody></table>
+<h4>모바일 (React Native · Expo)</h4>
+<table>
+<thead>
+<tr>
+<th>영역</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>학생/강사 모바일 API (58종 엔드포인트)</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>JWT 인증, 푸시 알림 스키마</td>
+<td>완성</td>
+</tr>
+<tr>
+<td>React Native 프론트엔드</td>
+<td><strong>미착수 (본 지원사업 자금 활용 예정)</strong></td>
+</tr>
+</tbody></table>
+<h3>2-4. 기술 스택 및 아키텍처</h3>
+<ul>
+<li>Next.js 14 App Router + Server Components (Vercel 배포)</li>
+<li>PostgreSQL + Prisma ORM (Supabase 관리형)</li>
+<li>NextAuth (JWT 세션, 학생/강사/매니저/관리자 4역할 라우트 가드)</li>
+<li>토스페이먼츠 결제 위젯 + 서버 승인 검증</li>
+<li>Anthropic Claude API 연동 (학생 질문 즉시 답변)</li>
+<li>Supabase Storage (강사 신분·자격 서류, 학생 질문 이미지)</li>
+<li>Cron 기반 자동 알림 배치 (미답변 24h, 진도 경고 50/70%, 상담 대기 2h)</li>
+</ul>
+<h3>2-5. 콴다과외·설탭 대비 명확한 포지셔닝</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>콴다과외</th>
+<th>설탭</th>
+<th>김과외/숨고</th>
+<th><strong>Concord</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>수업 형태</td>
+<td>비대면(태블릿)</td>
+<td>비대면(태블릿)</td>
+<td>대면(중개만)</td>
+<td><strong>대면 1:1</strong></td>
+</tr>
+<tr>
+<td>강사 검증</td>
+<td>자체 검증</td>
+<td>자체 검증</td>
+<td>없음</td>
+<td><strong>면접·서류·범죄경력조회</strong></td>
+</tr>
+<tr>
+<td>매칭 방식</td>
+<td>앱 매칭</td>
+<td>앱 매칭</td>
+<td>학부모 셀프</td>
+<td><strong>매니저 대면 상담 후 배정</strong></td>
+</tr>
+<tr>
+<td>사후 학습관리</td>
+<td>앱 내 도구</td>
+<td>앱 내 도구</td>
+<td>없음</td>
+<td><strong>매니저 밀착 + 앱</strong></td>
+</tr>
+<tr>
+<td>지역 한정</td>
+<td>전국</td>
+<td>전국</td>
+<td>전국</td>
+<td><strong>서울·분당 (프리미엄 근거)</strong></td>
+</tr>
+<tr>
+<td>타겟</td>
+<td>중저가 대중</td>
+<td>중저가 대중</td>
+<td>셀프 검증 가능층</td>
+<td><strong>학군지 프리미엄</strong></td>
+</tr>
+</tbody></table>
+<p><strong>차별화 카피</strong>: &quot;화면 너머가 아니라, 옆자리에서. 서울·분당만, 매니저가 직접 가기 때문입니다.&quot;</p>
+<hr>
+<h2>3. 성장전략 (Scale-up) — 시장·수익모델·확장 로드맵</h2>
+<h3>3-1. 시장 규모 (TAM/SAM/SOM)</h3>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>규모</th>
+<th>근거</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>TAM</strong> — 국내 초중고 사교육 시장</td>
+<td>약 29.2조 원</td>
+<td>통계청·교육부 공식 통계(2024)</td>
+</tr>
+<tr>
+<td><strong>SAM</strong> — 국내 1:1 개인과외 시장</td>
+<td>약 3조 원</td>
+<td>공식 통계의 유형별 비중 적용 자체 추산 [확인 필요]</td>
+</tr>
+<tr>
+<td><strong>SOM</strong> — 서울·분당 프리미엄 1:1 과외 (3년 내 유효시장)</td>
+<td>약 400~500억 원</td>
+<td>지역·단가 기반 자체 추산 [확인 필요]</td>
+</tr>
+</tbody></table>
+<p>3년차 목표(플랫폼 매출 약 5억 원, 수업료 거래액 약 10억 원)는 SOM의 약 2% 수준으로, 초기 진입 목표로서 현실적 범위.</p>
+<h3>3-2. 수익 모델</h3>
+<ul>
+<li><strong>월 정액 수강료 선불</strong> — 학부모가 매월 수업료를 선불 결제.</li>
+<li>강사에게 <strong>시급 30,000원/h 기준 월말 정산 (2026-07-04 확정)</strong>, 그 <strong>차액이 플랫폼 매출</strong>. 8개 플랜 평균 마진율은 약 <strong>34.2%</strong> (범위 29.9~42.0%). 상세 산출은 부속 재무계획 §1-3.</li>
+<li>부가 매출: 파일럿 검증 후 향후 (i) 매니저형 학원 SaaS 라이선스, (ii) 학습 데이터 기반 진로·컨설팅 상품, (iii) B2B 학원 파트너십.</li>
+</ul>
+<h3>3-3. 콜드스타트 → 파일럿 → 지역 확장 로드맵</h3>
+<table>
+<thead>
+<tr>
+<th>시기</th>
+<th>목표</th>
+<th>실행</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Phase 0: 공급 확보</strong> (개시 D-8 ~ D-0)</td>
+<td>검증된 강사 5~10명, 매니저 1명 확보</td>
+<td>대학 커뮤니티·지인, &quot;창립 멤버&quot; 조건(수수료 우대)</td>
+</tr>
+<tr>
+<td><strong>Phase 1: 파일럿</strong> (개시 후 ~10주)</td>
+<td>서울·분당 5~10가정 유상 파일럿</td>
+<td>지인·지역 맘카페, 후기·사진 사용 동의 조건 할인</td>
+</tr>
+<tr>
+<td><strong>Phase 2: 증거 전환</strong> (~6개월)</td>
+<td>실촬영·실후기·성적 향상 사례 사이트 반영, MK-6 수치 교체</td>
+<td>파일럿 결과로 마케팅 자산 교체</td>
+</tr>
+<tr>
+<td><strong>Phase 3: 유료 채널 개시</strong> (~12개월)</td>
+<td>활성 학생 50명, 강사 20명</td>
+<td>네이버 스마트플레이스·검색광고 소액, 카카오톡 채널, GA4 계측 위 CAC 검증된 채널만 증액</td>
+</tr>
+<tr>
+<td><strong>Phase 4: 지역 확장</strong> (~24개월)</td>
+<td>활성 학생 100명 이상, 서초·용인·수지 확장</td>
+<td>지역별 매니저 채용 (변동비 구조), 자동 강사 추천 알고리즘 도입</td>
+</tr>
+<tr>
+<td><strong>Phase 5: 전국·B2B</strong> (~36개월)</td>
+<td>활성 학생 150~170명, 학원 SaaS 파일럿</td>
+<td>타 지역 매니저 프랜차이즈형, 학원 백오피스 SaaS 검토</td>
+</tr>
+</tbody></table>
+<h3>3-4. 경쟁 분석 요약</h3>
+<ul>
+<li><strong>콴다과외/설탭</strong>: 비대면 태블릿 카테고리. Concord는 정면 경쟁이 아니라 &quot;다른 카테고리&quot;(대면 프리미엄)로 포지셔닝하여 회피.</li>
+<li><strong>김과외/숨고</strong>: 검증·관리 부재. 셀프 검증이 가능한 저관여층 시장 → 학군지 프리미엄과 오버랩 낮음.</li>
+<li><strong>대형 학원</strong>: 학원 회원 이탈층 흡수(1:1 맞춤 요구, 시간 자율성).</li>
+<li><strong>동네 개인 소개</strong>: 브랜드·안정성 우위. 매니저 대면 상담이 곧 소개의 &quot;체감 신뢰&quot;를 대체.</li>
+</ul>
+<h3>3-5. 핵심 리스크와 대응 (BUSINESS_REVIEW 근거)</h3>
+<table>
+<thead>
+<tr>
+<th>리스크</th>
+<th>근거</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>재결제 이탈 (BR-1)</td>
+<td>자동결제·리마인더 미비</td>
+<td>토스 빌링키 자동결제 도입 + D-5/D-1 알림 (Phase 1 내 완료)</td>
+</tr>
+<tr>
+<td>탈중개·직거래 (BR-2)</td>
+<td>대면 수업 특성상 강사·학부모 직접 접촉</td>
+<td>매니저 밀착 관리 + 학습 리포트·플래너 락인, 강사 계약서 위약 조항</td>
+</tr>
+<tr>
+<td>매니저 병목 (BR-3)</td>
+<td>대표 매니저 1인 배정 시 처리량 한계</td>
+<td>지역 기반 라우팅 데이터 축적, Phase 4에 매니저 다인화</td>
+</tr>
+<tr>
+<td>환불 분쟁 (BR-4)</td>
+<td>고액 선불 + 수업 실적 기록 부재 리스크</td>
+<td>수업 완료 기록 시스템(EC-7) 구현 완료, 회차 일할 환불 규정 문서화</td>
+</tr>
+<tr>
+<td>신뢰 훼손 (MK-1, MK-2, MK-6)</td>
+<td>더미 사업자 정보·샘플 강사 노출</td>
+<td>개시 전 실제 사업자·강사 정보로 교체, 실촬영·실후기 자산 확보</td>
+</tr>
+<tr>
+<td>미성년 결제 취소 (BR-9)</td>
+<td>학생 명의 결제 시 민법상 취소 가능</td>
+<td>결제자(보호자) 확인 단계 구현 완료</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>리스크 항목은 내부 <code>docs/BUSINESS_REVIEW.md</code>(Part 1<del>3, BR-1</del>23·MK-1<del>8·§1</del>9)에서 사전 식별된 항목을 요약. 각 리스크마다 대응 시점과 담당이 지정되어 있으며, 개시 전 블로커(BR-7<del>9, MK-1</del>2)는 지원사업 착수 전 완료 계획.</p>
+</blockquote>
+<h3>3-6. 핵심 지표 (KPI)</h3>
+<ul>
+<li>월 활성 학생 수 (MAS)</li>
+<li>신규 상담 → 결제 전환율 (목표 30~40%)</li>
+<li>3개월 학생 유지율 (목표 80% 이상)</li>
+<li>6개월 강사 유지율 (목표 70% 이상)</li>
+<li>학부모 만족도 NPS</li>
+<li>CAC(고객획득비용) / LTV(생애가치) 비율 (목표 1:5 이상, GA4 계측 후 측정)</li>
+</ul>
+<hr>
+<h2>4. 팀 구성 (Team)</h2>
+<h3>4-1. 창업팀</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>성명</td>
+<td>[기재 필요]</td>
+</tr>
+<tr>
+<td>학력</td>
+<td>[기재 필요] (기존 사업계획서 근거: 성균관대학교 경영학과 재학 — 신청 시점 확인)</td>
+</tr>
+<tr>
+<td>역할</td>
+<td>기획 · 풀스택 개발 · 초기 매니저 겸무</td>
+</tr>
+<tr>
+<td>도메인 경력</td>
+<td>학원 강사 및 개인 과외 강사 2년 이상 (학부모·학생·강사 3자 관점 체득)</td>
+</tr>
+<tr>
+<td>기술 역량</td>
+<td>Next.js, React, TypeScript, Prisma, PostgreSQL, NextAuth, Vercel 풀스택 단독 구현 실적</td>
+</tr>
+</tbody></table>
+<h3>4-2. 실행 역량의 증거</h3>
+<ul>
+<li><strong>이미 만든 제품</strong>: 웹 플랫폼(4역할 포털·결제·AI·CMS)과 모바일 백엔드가 실서비스 수준으로 완성되어 있음. 아이디어가 아니라 <strong>작동하는 소프트웨어</strong>가 심사 대상.</li>
+<li><strong>도메인 밀착</strong>: 강사 경력에서 도출한 문제 인식(검증 비대칭, 매칭 실패 비용, 관리 부재)이 그대로 제품 설계에 반영됨.</li>
+<li><strong>의사결정 속도</strong>: 1인 완결 구조로 기획~배포 사이클이 최단.</li>
+</ul>
+<h3>4-3. 채용·보완 계획</h3>
+<table>
+<thead>
+<tr>
+<th>시기</th>
+<th>포지션</th>
+<th>목적</th>
+<th>재원</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>개시 직후</td>
+<td>학습 매니저 1~2명</td>
+<td>학생 상담·강사 배정·모니터링, 대표자는 개발/전략 집중</td>
+<td>지원금 인건비</td>
+</tr>
+<tr>
+<td>~6개월</td>
+<td>마케팅 파트너 1명</td>
+<td>SNS·맘카페·네이버 콘텐츠 운영</td>
+<td>지원금 마케팅비</td>
+</tr>
+<tr>
+<td>~12개월</td>
+<td>모바일 프론트 개발자 1명 또는 외주</td>
+<td>React Native 앱 완성</td>
+<td>지원금 사업화비 + 매출</td>
+</tr>
+<tr>
+<td>~24개월</td>
+<td>자동 매칭·AI 개발자 1명</td>
+<td>강사 추천 알고리즘 고도화</td>
+<td>매출·후속 투자</td>
+</tr>
+</tbody></table>
+<h3>4-4. 사회적 가치 및 기대 효과</h3>
+<ul>
+<li><strong>교육 접근성</strong>: 검증·배정 시스템 표준화로 학군지 밖에도 검증된 교육 접근 기회 확대 (Phase 4~5).</li>
+<li><strong>강사 처우 개선</strong>: 시급 보장 + 장기 인센티브 + 행정 대행 → 교육 퀄리티 집중.</li>
+<li><strong>일자리 창출</strong>: 매니저·마케터·개발자 직접 고용 + 검증된 강사 100명 이상 (3년 내).</li>
+<li><strong>에듀테크 데이터 자산</strong>: 학습 플랜·질답 데이터 축적으로 개인화 교육 기반 마련.</li>
+</ul>
+<hr>
+<h2>5. 종합</h2>
+<p>Concord Private Tutoring은 (i) 국내 사교육 시장의 검증 비대칭·매칭 실패·관리 부재라는 3대 구조 문제를, (ii) 매니저 대면 상담 + 검증 강사 + 앱 학습관리라는 통합 솔루션으로 해결하며, (iii) 이미 작동하는 웹·모바일 제품과 명확한 서울·분당 프리미엄 포지셔닝을 갖춘 사업이다. 지원금은 <strong>개발이 아니라 시장 검증·인력 확보·모바일 앱 완성</strong>에 집중 투입되며, 실행 리스크가 낮고 확장성이 높은 프리미엄 에듀테크 모델이다.</p>
+<hr>
+<h2>참고 자료</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>사교육 시장 통계</td>
+<td>교육부·통계청, 「2024년 초중고 사교육비조사 결과」 (2025.3.13)</td>
+</tr>
+<tr>
+<td>유형별 단가, 지역 단가</td>
+<td>위 조사 및 2023년 조사</td>
+</tr>
+<tr>
+<td>리스크·마케팅·성장 근거</td>
+<td>내부 문서 <code>docs/BUSINESS_REVIEW.md</code> (Part 1~3)</td>
+</tr>
+<tr>
+<td>요금제 및 단가 산출</td>
+<td><code>src/lib/pricing-plans.ts</code> (본 문서 부속 재무계획 참조)</td>
+</tr>
+<tr>
+<td>서비스 플로우</td>
+<td><code>docs/project-goals.md</code></td>
+</tr>
+<tr>
+<td>재무계획</td>
+<td>부속 문서 <code>docs/external/FINANCIAL_PLAN.md</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>[확인 필요] · [기재 필요] 항목 색인</h2>
+<ul>
+<li>SAM(1:1 과외 시장) 3조 원 추산치 — 신청 시점 최신 통계로 재확인</li>
+<li>SOM(서울·분당 프리미엄) 400~500억 원 추산치 — 지역 단가 재검증</li>
+<li>창업 형태(개인·법인, 사업자 등록 여부)</li>
+<li>대표자 성명·생년·학력·경력 상세</li>
+<li><del>강사 정산 비율</del> <strong>→ 2026-07-04 시급 30,000원/h 확정 (<code>src/lib/settlement.ts</code>).</strong> 강사별 차등 시급 도입은 추후.</li>
+</ul>
+</section><section id="d-external-CEO-PROPOSAL-md"><span class="fname">external/CEO_PROPOSAL.md</span><h1>Concord — 경영자 보고용 사업·마케팅 제안</h1>
+<blockquote>
+<p>의사결정용 요약 · 2026-07 · IR 원페이저 양식 계승
+근거: <code>IR_ONE_PAGER.md</code>(시장·유닛이코노믹스) · <code>FINANCIAL_PLAN.md</code>(3시나리오) · <code>MARKETING_PLAN.md</code>(4트랙 채널) · <code>BM_EVOLUTION.md</code>(게이트·리스크). 제품 실물은 <code>APP_GUIDE.md</code>(실 구동 캡처 98장).
+✅ <strong>정책 반영 완료 (2026-07-12)</strong>: 수락 버튼 강조 서술 제거 — 매니저 직접 배정·무료 재매칭 중심으로 수정, PDF 재생성됨.</p>
+</blockquote>
+<hr>
+<h2>0. 한 장 요약 — 지금 무엇을, 왜</h2>
+<p><strong>Concord는 &quot;검증된 대면 1:1 과외 + 전담 매니저 관리&quot;를 소프트웨어로 표준화한 프리미엄 에듀테크입니다.</strong> 제품은 이미 완성되어 작동합니다(4역할 포털·결제·AI 질답·학습관리). 남은 것은 <strong>아이디어 검증이 아니라 시장 검증과 성장 실행</strong>입니다.</p>
+<p>경영자께 드리는 제안의 골자:</p>
+<ol>
+<li><strong>지금이 파일럿 개시 적기</strong> — 제품 리스크가 제거된 상태이므로, 자본은 개발이 아니라 <strong>분당 1~2개 동 집중 파일럿</strong>에 투입합니다.</li>
+<li><strong>공급(강사) 채용을 수요 모집보다 2~6주 먼저</strong> 가동합니다(모집 후 매칭 실패가 최대 유지 리스크).</li>
+<li><strong>CAC ≤ 20만 원 채널만</strong> 파일럿에서 사용하고, 주간 계측으로 2주 무반응 채널은 교체합니다.</li>
+<li>지원금 1억 원 확보 시 <strong>인건비·마케팅·모바일 앱</strong>에 배분해 12개월 내 자립을 목표합니다.</li>
+</ol>
+<hr>
+<h2>1. Problem — 검증 비대칭</h2>
+<ul>
+<li>사교육비 총액 <strong>29.2조 원</strong>(2024, 4년 연속 최고치), 참여율 80.0%. 1:1 과외는 참여학생 1인 월 43.9만 원의 최고단가 영역.</li>
+<li>강사 공급은 과잉이나 학부모가 실력·성실성·궁합을 <strong>사전 검증할 수단이 없음</strong> → 검증비용이 매 가정·매 계약마다 중복 지불.</li>
+<li>매칭 실패 시 재탐색·환불 분쟁·학습 공백. 매칭 이후 진도·과제는 &quot;깜깜이&quot;.</li>
+</ul>
+<h2>2. Solution — 검증·매칭·관리를 플랫폼이 대신</h2>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>무엇을</th>
+<th>앱에서의 실물(캡처)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>검증</strong></td>
+<td>면접·서류·범죄경력조회 통과 강사만 등록</td>
+<td><code>admin-teachers</code>, <code>chief-teacher-approval</code></td>
+</tr>
+<tr>
+<td><strong>매칭</strong></td>
+<td>매니저 대면 상담 후 <strong>직접 배정</strong> (추천 이유 함께 안내) → 무료 재매칭</td>
+<td><code>manager/tp-matching</code>, <code>student/state-pending-accept</code></td>
+</tr>
+<tr>
+<td><strong>관리</strong></td>
+<td>주간 숙제 자동 분배 · <strong>Claude AI 질답</strong> · 학습 리포트</td>
+<td><code>student/dashboard</code>, <code>student/questions</code></td>
+</tr>
+</tbody></table>
+<p><strong>포지셔닝</strong>: 콴다과외·설탭(비대면) ↔ 김과외·숨고(나열형 중개) 사이의 빈 카테고리 — <strong>&quot;검증된 대면 1:1 + 매니저 관리&quot;</strong> 선점. <em>&quot;화면 너머가 아니라, 옆자리에서.&quot;</em></p>
+<h2>3. Product — 아이디어가 아니라 작동하는 소프트웨어</h2>
+<ul>
+<li><strong>웹 완성</strong>: 학생·강사·매니저·관리자 4역할 포털 · 토스페이먼츠 서버검증 결제 · 캘린더 학습 플랜 · 숙제 자동 분배 · AI 질답 · CMS · 정산·퍼널·감사로그 백오피스</li>
+<li><strong>모바일</strong>: 백엔드 API 58종 완성, RN 앱은 지원금 활용 개발 예정</li>
+<li><strong>1인 풀스택 자체 개발</strong> (Next.js 14 · Prisma · Supabase · Vercel) — 기획→개발→배포 최단 사이클</li>
+<li>상세 화면·기능은 별첨 <strong><code>APP_GUIDE.md</code></strong>(전 페이지 실 구동 캡처 98장) 참조</li>
+</ul>
+<blockquote>
+<p>경영자 관점의 함의: <strong>자본이 &quot;제품이 될까?&quot;가 아니라 &quot;얼마나 빨리 팔리는가?&quot;에만 쓰인다.</strong> 대부분 초기 스타트업이 감당하는 개발 리스크·기간이 이미 소거됨.</p>
+</blockquote>
+<h2>4. Business Model &amp; Unit Economics</h2>
+<table>
+<thead>
+<tr>
+<th>지표</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>요금</td>
+<td>월정액 선불 38만~112만 원 (8개 플랜)</td>
+</tr>
+<tr>
+<td>강사 정산</td>
+<td>시급 30,000원/h (확정)</td>
+</tr>
+<tr>
+<td>평균 마진율</td>
+<td><strong>34.2%</strong> (플랜별 29.9~42.0%)</td>
+</tr>
+<tr>
+<td>학생 1인 월 기여마진</td>
+<td>약 21.6만~24.2만 원</td>
+</tr>
+<tr>
+<td>BEP</td>
+<td>Phase 1 활성 <strong>5명</strong> / Phase 2 활성 <strong>14명</strong></td>
+</tr>
+<tr>
+<td>LTV/CAC 목표</td>
+<td><strong>5:1 이상</strong> (CAC 규율 ≤20만)</td>
+</tr>
+</tbody></table>
+<p><strong>BEP가 활성 5명</strong>이라는 점이 핵심입니다 — 파일럿에서 소수 고객만으로 손익분기에 도달, 초기 현금 리스크가 낮습니다.</p>
+<h2>5. 3개년 목표 (기본 시나리오)</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>2026 H2</th>
+<th>2027</th>
+<th>2028</th>
+<th>2029 H1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>반기말 활성 학생</td>
+<td>15명(파일럿)</td>
+<td>75명</td>
+<td>145명</td>
+<td><strong>170명</strong></td>
+</tr>
+<tr>
+<td>수업료 거래액</td>
+<td>0.3억</td>
+<td>2.5억</td>
+<td>6.0억</td>
+<td>반기 6.2억</td>
+</tr>
+</tbody></table>
+<p>3년 누적: 거래액 <strong>약 15억 원</strong> · 플랫폼 기여마진 <strong>약 5.1억 원</strong> · 지원금 소진 후 <strong>12개월 내 자립</strong>. 보수·공격 시나리오는 <code>FINANCIAL_PLAN.md</code> 참조.</p>
+<h2>6. Go-to-Market — 4트랙 마케팅 (요약)</h2>
+<p>전 채널 <strong>분당 1~2개 동 반경 집중</strong>. 콜드스타트 순서 준수: <strong>증거(후기·사진) 제작 → 무료·저비용 채널 → 후기 3건+ → 유료 채널</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>트랙</th>
+<th>대상</th>
+<th>우선순위 / 가동 시점</th>
+<th>핵심 채널</th>
+<th>CAC 가설</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>T1 학생</strong></td>
+<td>사용자·가정 내 추천</td>
+<td>1순위</td>
+<td>숏폼·AI 무료체험 → &quot;부모님께 보내기&quot;</td>
+<td>콘텐츠 비용</td>
+</tr>
+<tr>
+<td><strong>T2 학부모</strong></td>
+<td>결제자(본진)</td>
+<td>2순위</td>
+<td>네이버 SA(로컬 키워드)·카카오 CRM·당근 비즈프로필</td>
+<td>결제 CAC 20~50만</td>
+</tr>
+<tr>
+<td><strong>T3 강사</strong></td>
+<td>공급(최선행)</td>
+<td>3순위 / <strong>수요보다 2~6주 선행</strong></td>
+<td>채용 공고 SEO·재직 강사 추천(보너스 10만)</td>
+<td>건당 10만</td>
+</tr>
+<tr>
+<td><strong>T4 매니저</strong></td>
+<td>운영 인력</td>
+<td>4순위 / Gate 2 이후</td>
+<td>맘카페·당근 구인(지역)</td>
+<td>≈0 겸용</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>예산</strong>: 파일럿 자력 월 30<del>50만 → 성장기 월 100</del>300만 → 지원금 마케팅비 2,500만</li>
+<li><strong>규율</strong>: 채널별 주간 계측, 2주 연속 리드 0 → 채널 교체. 학생 트랙 성패는 <strong>&quot;부모님께 보내기 → 상담 신청&quot;</strong> 단일 지표로 판정.</li>
+<li>소재·콘티(영상 13편)·리타겟 시나리오 등 실행 상세는 <code>MARKETING_PLAN.md</code>.</li>
+</ul>
+<h2>7. 90일 실행 로드맵</h2>
+<table>
+<thead>
+<tr>
+<th>기간</th>
+<th>마일스톤</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Week 1~3</strong></td>
+<td>선행 자산 제작(후기·사진·GA4/UTM·카카오 채널) · 강사 채용 파이프라인 가동(수요보다 선행)</td>
+</tr>
+<tr>
+<td><strong>M1</strong></td>
+<td>분당 집중 무료·저비용 채널 개시 · 첫 상담→매칭→첫 수업 플로우 실주행 · 파일럿 학생 확보</td>
+</tr>
+<tr>
+<td><strong>M2~3</strong></td>
+<td>후기 3건+ 확보 후 유료 채널(네이버 SA·당근) 소액 테스트 · 활성 5명(BEP) 도달</td>
+</tr>
+</tbody></table>
+<p>게이트(Go/Fix/Kill)·리스크 레지스터는 <code>BM_EVOLUTION.md</code>.</p>
+<h2>8. 리스크와 대응 (요약)</h2>
+<table>
+<thead>
+<tr>
+<th>리스크</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>공급-수요 타이밍 역전(모집 후 매칭 실패)</td>
+<td>강사 채용을 수요 파도보다 2~6주 선행, 파이프라인 잔고 = 학생 목표 1.3배</td>
+</tr>
+<tr>
+<td>CAC 초과 소각</td>
+<td>파일럿 CAC ≤20만 채널만, 주간 계측·2주 룰</td>
+</tr>
+<tr>
+<td>1인 운영 병목</td>
+<td>매니저 1~2명 개시 직후 채용, 백오피스(정산·감사로그) 선구축 완료</td>
+</tr>
+<tr>
+<td>법률·정산 리스크</td>
+<td>약관·환불·개인정보 페이지 편입 완료, 정식 법률 검토는 <code>LEGAL_ADVISORY_MEMO.md</code> 후속</td>
+</tr>
+</tbody></table>
+<h2>9. Ask — 경영자 의사결정 요청</h2>
+<p><strong>즉시 결정이 필요한 사항:</strong></p>
+<ol>
+<li><strong>파일럿 개시 승인</strong> — 분당 집중, M1 착수 여부 및 자력 마케팅 예산(월 30~50만) 배정</li>
+<li><strong>강사 선행 채용 착수</strong> — 수요 모집 전 강사 파이프라인 가동 승인</li>
+<li><strong>매니저 채용 시점</strong> — Gate 2(활성 학생 임계) 도달 시 1~2명 채용안</li>
+<li><strong>지원금 신청 방향</strong> — 예비창업패키지 1억 기준(인건비 30% · 사업화 25% · 마케팅 25% · 운영 15% · 예비 5%)</li>
+</ol>
+<p><strong>경영자 직접 입력이 필요한 문서 항목:</strong> IR·PSST·덱의 <code>[기재 필요]</code>(대표자 프로필·창업 형태) — 이 정보만 채우면 지원사업 3종 문서가 즉시 제출 가능 상태가 됩니다.</p>
+<hr>
+<blockquote>
+<p>별첨: <strong><code>APP_GUIDE.md</code></strong>(제품 실물 98장) · <code>IR_ONE_PAGER.md</code> · <code>FINANCIAL_PLAN.md</code> · <code>MARKETING_PLAN.md</code> · <code>BUSINESS_PLAN_PSST.md</code></p>
+</blockquote>
+</section><section id="d-external-FINANCIAL-PLAN-md"><span class="fname">external/FINANCIAL_PLAN.md</span><h1>Concord Private Tutoring 3개년 재무계획</h1>
+<blockquote>
+<p>정부 창업지원사업 제출용 부속 문서 · 대상 기간: <strong>2026년 하반기(2026 H2) ~ 2029년 상반기(2029 H1)</strong>
+본 재무계획은 실제 제품에 적용 중인 요금제(<code>src/lib/pricing-plans.ts</code> V2)를 단가 근거로 하고, 시나리오는 보수/기본/공격 3종으로 제시한다. 제출 전 수치는 파일럿 결과에 따라 재조정 가능하도록 <strong>가정 명시형</strong>으로 작성됨.</p>
+<p><strong>갱신일</strong></p>
+<ul>
+<li>2026-07-04 정산 정책 확정 반영 (강사 시급 30,000원/h 기반의 플랜별 마진 표 신설, 변동비·BEP 재산출).</li>
+</ul>
+</blockquote>
+<hr>
+<h2>1. 단가 근거 — 실 적용 요금제</h2>
+<h3>1-1. V2 요금제 표 (<code>src/lib/pricing-plans.ts</code> 기준, 2026-07 시행)</h3>
+<table>
+<thead>
+<tr>
+<th>학년</th>
+<th>주 수업 횟수</th>
+<th>회당 시간</th>
+<th>월 수업 시간</th>
+<th>정가(50,000원/h 기준)</th>
+<th><strong>월정액(원)</strong></th>
+<th>정가 대비 할인율</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>중등</td>
+<td>1회</td>
+<td>2시간</td>
+<td>8h</td>
+<td>400,000</td>
+<td><strong>380,000</strong></td>
+<td>5%</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>1회</td>
+<td>3시간</td>
+<td>12h</td>
+<td>600,000</td>
+<td><strong>550,000</strong></td>
+<td>8%</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>2회</td>
+<td>2시간</td>
+<td>16h</td>
+<td>800,000</td>
+<td><strong>760,000</strong></td>
+<td>5%</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>2회</td>
+<td>3시간</td>
+<td>24h</td>
+<td>1,200,000</td>
+<td><strong>1,060,000</strong></td>
+<td>12%</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>1회</td>
+<td>2시간</td>
+<td>8h</td>
+<td>400,000</td>
+<td><strong>430,000</strong></td>
+<td>(정가 이상)</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>1회</td>
+<td>3시간</td>
+<td>12h</td>
+<td>600,000</td>
+<td><strong>580,000</strong></td>
+<td>3%</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>2회</td>
+<td>2시간</td>
+<td>16h</td>
+<td>800,000</td>
+<td><strong>780,000</strong></td>
+<td>3%</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>2회</td>
+<td>3시간</td>
+<td>24h</td>
+<td>1,200,000</td>
+<td><strong>1,120,000</strong></td>
+<td>7%</td>
+</tr>
+</tbody></table>
+<ul>
+<li>정가 기준 시급: <strong>50,000원/시간</strong> (<code>LIST_PRICE_PER_HOUR_KRW</code>)</li>
+<li>월 4주 기준으로 산정 (<code>MONTHS_PER_BILLING_CYCLE_WEEKS = 4</code>)</li>
+<li>8개 플랜의 월정액이 모두 유일하여 결제 금액 → 플랜 ID 역매핑이 결제 검증의 진실 원천으로 사용됨.</li>
+</ul>
+<h3>1-2. 재무 모델 대표 단가</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+<th>산출</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>가정 객단가(월)</strong></td>
+<td>약 <strong>707,500원</strong> <em>(8플랜 산술평균)</em> / 파일럿 가정 믹스는 약 <strong>650,000원</strong></td>
+<td>8개 플랜 평균 및 파일럿 예상 믹스(중등 주1×2h·주1×3h·주2×2h 중심 + 고등 주1×3h 일부) 가중</td>
+</tr>
+<tr>
+<td>월 평균 수업 시간</td>
+<td>약 14시간</td>
+<td>위 믹스 가중평균</td>
+</tr>
+<tr>
+<td><strong>강사 시급 (정산 단가)</strong></td>
+<td><strong>30,000원 / 시간 (확정)</strong></td>
+<td><code>src/lib/settlement.ts</code> <code>TEACHER_HOURLY_RATE_KRW = 30_000</code>. 강사별 차등 시급은 추후 도입 예정.</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>정산 정책 확정 (2026-07-04)</strong>: 강사 정산은 <strong>수수료율이 아니라 시급제</strong>이며, <code>변동비 = 월 수업 시간(h) × 30,000원</code>이다. 이전 판본에서 사용된 &quot;수강료 대비 45~55%&quot; 표현은 폐기되고 아래 §1-3의 플랜별 마진 표가 새로운 진실 원천으로 사용된다.</p>
+</blockquote>
+<h3>1-3. 플랜별 기여마진 표 (2026-07-04 확정)</h3>
+<ul>
+<li>변동비 산식: <strong>강사비 = 월 수업 시간 × 30,000원</strong>, <strong>PG 수수료 = 판매가 × 2.2%</strong> (토스페이먼츠).</li>
+<li>마진율 = (판매가 − 강사비 − PG) ÷ 판매가.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>플랜</th>
+<th>월 수업 시간</th>
+<th>판매가(원)</th>
+<th>강사비(원)</th>
+<th>PG 2.2%(원)</th>
+<th><strong>기여마진(원)</strong></th>
+<th><strong>마진율</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>중등 · 주1 · 2h</td>
+<td>8h</td>
+<td>380,000</td>
+<td>240,000</td>
+<td>8,360</td>
+<td><strong>131,640</strong></td>
+<td>34.64%</td>
+</tr>
+<tr>
+<td>중등 · 주1 · 3h</td>
+<td>12h</td>
+<td>550,000</td>
+<td>360,000</td>
+<td>12,100</td>
+<td><strong>177,900</strong></td>
+<td>32.35%</td>
+</tr>
+<tr>
+<td>중등 · 주2 · 2h</td>
+<td>16h</td>
+<td>760,000</td>
+<td>480,000</td>
+<td>16,720</td>
+<td><strong>263,280</strong></td>
+<td>34.64%</td>
+</tr>
+<tr>
+<td>중등 · 주2 · 3h</td>
+<td>24h</td>
+<td>1,060,000</td>
+<td>720,000</td>
+<td>23,320</td>
+<td><strong>316,680</strong></td>
+<td>29.88%</td>
+</tr>
+<tr>
+<td>고등 · 주1 · 2h</td>
+<td>8h</td>
+<td>430,000</td>
+<td>240,000</td>
+<td>9,460</td>
+<td><strong>180,540</strong></td>
+<td>41.99%</td>
+</tr>
+<tr>
+<td>고등 · 주1 · 3h</td>
+<td>12h</td>
+<td>580,000</td>
+<td>360,000</td>
+<td>12,760</td>
+<td><strong>207,240</strong></td>
+<td>35.73%</td>
+</tr>
+<tr>
+<td>고등 · 주2 · 2h</td>
+<td>16h</td>
+<td>780,000</td>
+<td>480,000</td>
+<td>17,160</td>
+<td><strong>282,840</strong></td>
+<td>36.26%</td>
+</tr>
+<tr>
+<td>고등 · 주2 · 3h</td>
+<td>24h</td>
+<td>1,120,000</td>
+<td>720,000</td>
+<td>24,640</td>
+<td><strong>375,360</strong></td>
+<td>33.51%</td>
+</tr>
+<tr>
+<td><strong>8플랜 산술평균</strong></td>
+<td>15h</td>
+<td><strong>707,500</strong></td>
+<td>450,000</td>
+<td>15,565</td>
+<td><strong>241,935</strong></td>
+<td><strong>34.20%</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>플랜별 마진율 범위: <strong>29.88% ~ 41.99%</strong> (평균 34.20%). 고등 주1·2h 플랜이 최고 마진(월 수업 시간 대비 판매가가 상대적으로 높음).</p>
+</blockquote>
+<hr>
+<h2>2. 시나리오별 가정표 (3년, 반기 단위)</h2>
+<h3>2-1. 공통 가정</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>파일럿 기간</td>
+<td>개시 후 첫 반기(2026 H2)</td>
+<td>서울·분당 지역 한정</td>
+</tr>
+<tr>
+<td>상담 → 결제 전환율</td>
+<td>20% (보수) / 30% (기본) / 40% (공격)</td>
+<td>대면 상담 특성상 상대적으로 높음 (기존 사업계획서 40% 목표를 기본에 반영)</td>
+</tr>
+<tr>
+<td>월 평균 이탈률(Churn)</td>
+<td>8% (보수) / 5% (기본) / 3% (공격)</td>
+<td>3개월 유지율 목표 80%를 기본에 반영</td>
+</tr>
+<tr>
+<td>객단가</td>
+<td><strong>650,000원</strong> (파일럿 믹스 가정)</td>
+<td>위 1-2</td>
+</tr>
+<tr>
+<td>학생 1인 월 기여마진</td>
+<td><strong>약 226,700원</strong> (객단가 650,000원 기준)</td>
+<td>강사비 = 월 14h × 30,000원 = 420,000원, PG = 14,300원 → 마진 215,700원~226,700원 (믹스별). 상세는 §4</td>
+</tr>
+<tr>
+<td>PG 수수료</td>
+<td>매출의 2.2%</td>
+<td>토스페이먼츠</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>기존 판본의 &quot;강사 정산율 45~55%&quot; 가정은 폐기. 시급제(30,000원/h) × 평균 14h/월 = 420,000원(월)이 학생 1인당 변동비의 주축이며, 객단가 대비 약 <strong>65% 수준</strong>이 강사비 비중이다. 파일럿 이후 실제 플랜 믹스에 따라 재산출.</p>
+</blockquote>
+<h3>2-2. 시나리오: 월 신규 상담 → 활성 학생 램프업</h3>
+<p><strong>보수 시나리오</strong> (전환율 20%, 이탈률 8%/월)</p>
+<table>
+<thead>
+<tr>
+<th>반기</th>
+<th>월 신규 상담</th>
+<th>월 신규 결제</th>
+<th>반기말 활성 학생</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2026 H2 (파일럿)</td>
+<td>10건</td>
+<td>2명</td>
+<td>10명</td>
+</tr>
+<tr>
+<td>2027 H1</td>
+<td>20건</td>
+<td>4명</td>
+<td>25명</td>
+</tr>
+<tr>
+<td>2027 H2</td>
+<td>40건</td>
+<td>8명</td>
+<td>45명</td>
+</tr>
+<tr>
+<td>2028 H1</td>
+<td>60건</td>
+<td>12명</td>
+<td>70명</td>
+</tr>
+<tr>
+<td>2028 H2</td>
+<td>80건</td>
+<td>16명</td>
+<td>90명</td>
+</tr>
+<tr>
+<td>2029 H1</td>
+<td>100건</td>
+<td>20명</td>
+<td>110명</td>
+</tr>
+</tbody></table>
+<p><strong>기본 시나리오</strong> (전환율 30%, 이탈률 5%/월)</p>
+<table>
+<thead>
+<tr>
+<th>반기</th>
+<th>월 신규 상담</th>
+<th>월 신규 결제</th>
+<th>반기말 활성 학생</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2026 H2 (파일럿)</td>
+<td>15건</td>
+<td>4~5명</td>
+<td>15명</td>
+</tr>
+<tr>
+<td>2027 H1</td>
+<td>30건</td>
+<td>9명</td>
+<td>40명</td>
+</tr>
+<tr>
+<td>2027 H2</td>
+<td>60건</td>
+<td>18명</td>
+<td>75명</td>
+</tr>
+<tr>
+<td>2028 H1</td>
+<td>90건</td>
+<td>27명</td>
+<td>115명</td>
+</tr>
+<tr>
+<td>2028 H2</td>
+<td>120건</td>
+<td>36명</td>
+<td>145명</td>
+</tr>
+<tr>
+<td>2029 H1</td>
+<td>150건</td>
+<td>45명</td>
+<td><strong>170명</strong></td>
+</tr>
+</tbody></table>
+<p><strong>공격 시나리오</strong> (전환율 40%, 이탈률 3%/월)</p>
+<table>
+<thead>
+<tr>
+<th>반기</th>
+<th>월 신규 상담</th>
+<th>월 신규 결제</th>
+<th>반기말 활성 학생</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2026 H2 (파일럿)</td>
+<td>20건</td>
+<td>8명</td>
+<td>20명</td>
+</tr>
+<tr>
+<td>2027 H1</td>
+<td>40건</td>
+<td>16명</td>
+<td>55명</td>
+</tr>
+<tr>
+<td>2027 H2</td>
+<td>80건</td>
+<td>32명</td>
+<td>110명</td>
+</tr>
+<tr>
+<td>2028 H1</td>
+<td>120건</td>
+<td>48명</td>
+<td>170명</td>
+</tr>
+<tr>
+<td>2028 H2</td>
+<td>160건</td>
+<td>64명</td>
+<td>220명</td>
+</tr>
+<tr>
+<td>2029 H1</td>
+<td>200건</td>
+<td>80명</td>
+<td>270명</td>
+</tr>
+</tbody></table>
+<h3>2-3. 시나리오별 매출 요약 (활성 학생 × 객단가 × 6개월)</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th>2026 H2 반기 매출(총 수업료)</th>
+<th>2027 연 매출</th>
+<th>2028 연 매출</th>
+<th>2029 H1 반기 매출</th>
+<th>누적 3년 수업료</th>
+<th>누적 3년 플랫폼 기여마진</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>보수</td>
+<td>약 2천만 원</td>
+<td>약 1.6억</td>
+<td>약 3.2억</td>
+<td>약 3.9억</td>
+<td>약 8.9억</td>
+<td>약 3.0억</td>
+</tr>
+<tr>
+<td><strong>기본</strong></td>
+<td>약 3천만 원</td>
+<td>약 2.5억</td>
+<td>약 6.0억</td>
+<td>약 6.2억</td>
+<td><strong>약 15.0억</strong></td>
+<td><strong>약 5.1억</strong></td>
+</tr>
+<tr>
+<td>공격</td>
+<td>약 5천만 원</td>
+<td>약 4.5억</td>
+<td>약 11.4억</td>
+<td>약 9.6억</td>
+<td>약 26.0억</td>
+<td>약 8.9억</td>
+</tr>
+</tbody></table>
+<ul>
+<li>반기 매출 = 반기 평균 활성 학생 × 650,000원 × 6개월 (평균값 근사).</li>
+<li><strong>플랫폼 기여마진(수업료 − 강사비 − PG)</strong> 은 총 수업료의 약 <strong>32~35% 수준</strong> (시급제 30,000원/h × 평균 14h/월 = 강사비 약 65%). 기본 시나리오 3년 누적 기여마진은 <strong>약 4.8~5.3억 원 규모</strong>로 추산 (판매가 대비 34.2% 평균 마진율 적용).</li>
+</ul>
+<hr>
+<h2>3. 비용 구조</h2>
+<h3>3-1. 변동비</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>산출식</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>강사 정산 (확정)</strong></td>
+<td>월 수업 시간 × <strong>30,000원/h</strong></td>
+<td>시급제 확정, <code>src/lib/settlement.ts</code> <code>TEACHER_HOURLY_RATE_KRW = 30_000</code>. 평균 14h/월 가정 시 학생 1인당 월 420,000원</td>
+</tr>
+<tr>
+<td>PG 수수료</td>
+<td>수업료 매출 × 2.2%</td>
+<td>토스페이먼츠</td>
+</tr>
+<tr>
+<td>매니저 성과급</td>
+<td>담당 학생당 플랫폼 기여마진의 20~30% [정책 확정 필요]</td>
+<td>30명 초과 시 도입. <code>docs/BUSINESS_REVIEW.md</code> BR-2/BR-3 참조</td>
+</tr>
+</tbody></table>
+<h3>3-2. 고정비 (월 기준)</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>Phase 1 (~학생 30명)</th>
+<th>Phase 2 (학생 30명 초과)</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>대표자 인건비</td>
+<td>지원금으로 충당</td>
+<td>지원금 → 매출 자립</td>
+<td>창업지원금 인건비</td>
+</tr>
+<tr>
+<td>매니저 인건비</td>
+<td>대표자 겸무 (0원)</td>
+<td>성과급 변동비 구조</td>
+<td>고정 인건비 최소화</td>
+</tr>
+<tr>
+<td>인프라(Vercel + Supabase + 토스 등)</td>
+<td>약 10~30만 원</td>
+<td>규모에 비례하나 소액</td>
+<td>Supabase Pro + Vercel Pro 기준</td>
+</tr>
+<tr>
+<td>마케팅</td>
+<td>파일럿 30<del>50만 원 → 100</del>300만 원</td>
+<td>200~500만 원</td>
+<td>GA4 계측 후 CAC 검증된 채널 우선</td>
+</tr>
+<tr>
+<td>사무·법무·세무·통신비</td>
+<td>20~30만 원</td>
+<td>30~50만 원</td>
+<td>법무 자문·세무 대행 포함</td>
+</tr>
+<tr>
+<td>배상책임보험</td>
+<td>5~10만 원</td>
+<td>10만 원</td>
+<td>대면 수업 특성상 필수 (BR-22)</td>
+</tr>
+<tr>
+<td><strong>월 고정비 합계</strong></td>
+<td><strong>약 65~120만 원</strong></td>
+<td><strong>약 250~500만 원</strong></td>
+<td>Phase 1의 실질 수지 균형점: 활성 학생 3~5명</td>
+</tr>
+</tbody></table>
+<h3>3-3. 마케팅 CAC 가정</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th>초기 CAC (2026 H2 파일럿)</th>
+<th>안정기 CAC (2028+)</th>
+<th>LTV/CAC 목표</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>보수</td>
+<td>30만 원/명</td>
+<td>40만 원/명</td>
+<td>3:1 이상</td>
+</tr>
+<tr>
+<td><strong>기본</strong></td>
+<td>20만 원/명</td>
+<td>25만 원/명</td>
+<td><strong>5:1 이상</strong></td>
+</tr>
+<tr>
+<td>공격</td>
+<td>10만 원/명</td>
+<td>15만 원/명</td>
+<td>8:1 이상</td>
+</tr>
+</tbody></table>
+<ul>
+<li>LTV = 객단가 × 평균 유지 기간 × 마진율. 기본 시나리오 기준 LTV 약 130만~200만 원 추산.</li>
+<li>CAC 실측은 GA4·네이버 프리미엄로그·카카오 픽셀 도입 이후 가능 (<code>docs/BUSINESS_REVIEW.md</code> Part 3 §2 참조).</li>
+</ul>
+<hr>
+<h2>4. 손익분기(BEP) 추정</h2>
+<h3>4-1. 학생 1인당 월 기여마진 (기본 시나리오, 시급제 확정 반영)</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>월 수업료(객단가)</td>
+<td>650,000원</td>
+</tr>
+<tr>
+<td>강사 정산 (시급제 확정)</td>
+<td><strong>-420,000원</strong> (평균 14h × 30,000원/h)</td>
+</tr>
+<tr>
+<td>PG 수수료</td>
+<td>-14,300원 (2.2%)</td>
+</tr>
+<tr>
+<td><strong>학생 1인 월 기여마진</strong></td>
+<td><strong>약 215,700원</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>8개 플랜의 산술평균 기여마진은 <strong>241,935원 / 학생</strong> (판매가 평균 707,500원 × 34.20%). 위 표는 파일럿 예상 믹스(객단가 650,000원)를 기준으로 하며, 실제 플랜 믹스에 따라 216,000 ~ 242,000원 범위에서 변동한다.</p>
+</blockquote>
+<h3>4-2. 시나리오별 BEP 시점</h3>
+<p>기여마진 하락(310,700원 → 215,700원)에 따라 BEP 필요 학생 수가 상향된다.</p>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th>Phase 1 BEP (월 고정비 100만 원)</th>
+<th>Phase 2 BEP (월 고정비 300만 원)</th>
+<th>도달 시점(예상)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>보수</td>
+<td>활성 <strong>5명</strong> (⌈100만 ÷ 21.6만⌉)</td>
+<td>활성 <strong>14명</strong> (⌈300만 ÷ 21.6만⌉)</td>
+<td>2026 H2 내 Phase 1 BEP, Phase 2 BEP는 2027 H2</td>
+</tr>
+<tr>
+<td><strong>기본</strong></td>
+<td>활성 <strong>5명</strong></td>
+<td>활성 <strong>14명</strong></td>
+<td><strong>2026 H2 내 Phase 1 BEP, 2027 H1 내 Phase 2 BEP (증가한 학생 수 달성 필요)</strong></td>
+</tr>
+<tr>
+<td>공격</td>
+<td>활성 <strong>5명</strong></td>
+<td>활성 <strong>14명</strong></td>
+<td>2026 H2 내 Phase 1 BEP, Phase 2 BEP는 2026 H2 말~2027 H1 초</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>시급제 확정 반영으로 Phase 1 BEP는 기존 4명에서 <strong>5명</strong>, Phase 2 BEP는 기존 10명에서 <strong>14명</strong>으로 상향. 대표자 인건비를 지원금으로 충당하는 Phase 1에서는 여전히 활성 학생 5명 안팎에서 손익분기가 가능하며, 매니저 도입(Phase 2)이 성과급 변동비 구조이므로 고정 인건비로 인한 BEP 후퇴는 없다는 구조적 특징은 유지된다.</p>
+</blockquote>
+<hr>
+<h2>5. 자금 계획 (창업지원금 활용안)</h2>
+<h3>5-1. 예비창업패키지 1억 원 가정 배분</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>비율</th>
+<th>금액</th>
+<th>집행 시기</th>
+<th>세부 내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>인건비</strong></td>
+<td>30%</td>
+<td>3,000만 원</td>
+<td>개시~9개월</td>
+<td>학습 매니저 1~2인 채용, 대표자는 개발·전략 집중</td>
+</tr>
+<tr>
+<td><strong>사업화(개발)</strong></td>
+<td>25%</td>
+<td>2,500만 원</td>
+<td>1~9개월</td>
+<td>모바일 React Native 앱 완성(백엔드는 완료), 토스 빌링키 자동결제, 자동 강사 추천 알고리즘 1차</td>
+</tr>
+<tr>
+<td><strong>마케팅·홍보</strong></td>
+<td>25%</td>
+<td>2,500만 원</td>
+<td>전 기간</td>
+<td>네이버 검색광고·스마트플레이스·블로그 콘텐츠·맘카페·카카오톡 채널, 실촬영·후기 자산</td>
+</tr>
+<tr>
+<td><strong>운영 제반비</strong></td>
+<td>15%</td>
+<td>1,500만 원</td>
+<td>초기 집중</td>
+<td>법인 설립·통신판매업 신고, 법무·세무 자문, 약관/개인정보/환불정책 정비, 배상책임보험, 실무자 도구</td>
+</tr>
+<tr>
+<td><strong>예비비</strong></td>
+<td>5%</td>
+<td>500만 원</td>
+<td>상시</td>
+<td>환불 대비 준비금·긴급 비용</td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td>100%</td>
+<td>1억 원</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>핵심: 제품이 이미 구현되어 있으므로 지원금은 &quot;개발&quot;이 아니라 <strong>시장 검증·인력·모바일 앱 완성·마케팅 자산 확보</strong>에 집중 투입됨. 초기창업패키지(최대 1억) 또는 예비창업패키지(최대 1억) 어느 쪽도 동일 원칙.</p>
+</blockquote>
+<h3>5-2. 후속 자금 계획</h3>
+<ul>
+<li><strong>1~2차년도</strong>: 지원금 + 자체 매출로 자립 운영.</li>
+<li><strong>3차년도 이후</strong>: 활성 학생 150명·플랫폼 매출 5억 원 규모 도달 후, TIPS·에듀테크 특화 액셀러레이터·프리A 투자 라운드 검토. B2B(학원 SaaS)·타 지역 확장·AI 매칭 고도화를 성장 축으로 시리즈 A 대비.</li>
+</ul>
+<hr>
+<h2>6. 요약</h2>
+<table>
+<thead>
+<tr>
+<th>지표</th>
+<th>보수</th>
+<th>기본</th>
+<th>공격</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3년차(2029 H1) 반기말 활성 학생</td>
+<td>110명</td>
+<td><strong>170명</strong></td>
+<td>270명</td>
+</tr>
+<tr>
+<td>3년 누적 총 수업료 매출</td>
+<td>약 8.9억</td>
+<td><strong>약 15.0억</strong></td>
+<td>약 26.0억</td>
+</tr>
+<tr>
+<td>3년 누적 플랫폼 기여마진(시급제 확정, 평균 마진율 34.2% 반영)</td>
+<td>약 3.0억</td>
+<td><strong>약 5.1억</strong></td>
+<td>약 8.9억</td>
+</tr>
+<tr>
+<td>Phase 2 BEP 도달 시점 (활성 14명 기준)</td>
+<td>2027 H2</td>
+<td><strong>2027 H1 말</strong></td>
+<td>2026 H2 말</td>
+</tr>
+<tr>
+<td>지원금 소진 후 자립</td>
+<td>2027 H2</td>
+<td><strong>2027 H1</strong></td>
+<td>2026 H2</td>
+</tr>
+</tbody></table>
+<p><strong>결론</strong>: 기본 시나리오 기준으로 지원금 1억 원 투입 후 12개월 이내에 자립 운영 가능한 손익 구조가 확보되며, 3년차에는 서울·분당 프리미엄 SOM의 약 2% 수준 거래 점유가 가능한 규모로 성장한다.</p>
+<hr>
+<h2>부록: [정책 확정 필요] · [확인 필요] 항목 색인</h2>
+<ul>
+<li><del>강사 정산율(수강료 대비 %)</del> <strong>→ 2026-07-04 시급제 30,000원/h 확정 (<code>src/lib/settlement.ts</code>).</strong> 강사별 차등 시급(직급별 기본/유지/Pro) 도입 여부는 추후 정책.</li>
+<li>매니저 성과급 비율(담당 학생 기여마진의 20% vs 30%) — Phase 2 전환 전 확정</li>
+<li>객단가 가정(650,000원) — 파일럿 첫 3개월 실측 후 재조정. 8플랜 산술평균은 707,500원.</li>
+<li>상담 → 결제 전환율(20/30/40%) — 파일럿 첫 3개월 실측 후 시나리오 갱신</li>
+<li>이탈률(8/5/3%) — 파일럿 6개월 실측 후 갱신</li>
+<li>SAM/SOM 세부 산출 근거 — 신청 시 최신 통계로 재확인 (본 계획서 §3-1)</li>
+<li>CAC 실측 — GA4·픽셀 도입 이후 채널별 확정</li>
+</ul>
+</section><section id="d-external-IR-ONE-PAGER-md"><span class="fname">external/IR_ONE_PAGER.md</span><h1>Concord — IR 원페이저</h1>
+<blockquote>
+<p>투자·창업지원사업 제출용 1페이지 요약 · 2026-07 · PDF 산출본: <code>branding/Concord-IR-OnePager.pdf</code>
+수치 출처: <code>BUSINESS_PLAN_PSST.md</code>(시장·전략) · <code>FINANCIAL_PLAN.md</code>(단가·시나리오). 이 문서는 요약본이며 상세 근거는 원본 문서를 따른다.
+✅ <strong>정책 반영 완료 (2026-07-12)</strong>: 수락 버튼 강조 서술 제거 — 매니저 직접 배정·무료 재매칭 중심으로 수정, PDF 재생성됨.</p>
+</blockquote>
+<hr>
+<h2>한 줄 정의</h2>
+<p><strong>Concord Private Tutoring</strong> — 면접·검증된 강사와 전담 매니저가 <strong>대면 1:1 과외를 매칭·관리</strong>하는 프리미엄 에듀테크 플랫폼 (서울·분당)</p>
+<ul>
+<li>웹: <a href="https://tutormatch-web.vercel.app">https://tutormatch-web.vercel.app</a></li>
+<li>대표자: [기재 필요] · 창업 형태: [기재 필요]</li>
+</ul>
+<h2>Problem — 검증 비대칭</h2>
+<ul>
+<li>사교육비 총액 <strong>29.2조 원</strong>(2024, 4년 연속 최고치) · 참여율 80.0%. 1:1 과외는 참여학생 1인 월 43.9만 원의 최고단가 영역.</li>
+<li>강사 공급은 과잉이지만, 학부모가 실력·성실성·궁합을 <strong>사전 검증할 수단이 없음</strong> → 검증 비용이 매 가정·매 계약마다 중복 지불됨.</li>
+<li>매칭 실패 시 재탐색·환불 분쟁·학습 공백. 매칭 이후 진도·과제는 &quot;깜깜이&quot;.</li>
+</ul>
+<h2>Solution — 검증 · 매칭 · 관리를 플랫폼이 대신</h2>
+<ol>
+<li><strong>검증</strong>: 면접 · 서류 · 범죄경력조회를 통과한 강사만 등록</li>
+<li><strong>매칭</strong>: 전담 매니저가 대면 상담에서 성향·수준을 파악해 <strong>직접 배정</strong> → 미스매치 시 무료 재매칭 보장</li>
+<li><strong>관리</strong>: 주간 숙제 자동 분배 · Claude AI 질답 · 학습 리포트로 수업 밖 과정을 학부모에게 투명 공개</li>
+</ol>
+<p><strong>포지셔닝</strong>: 콴다과외·설탭(비대면 태블릿)과 김과외·숨고(나열형 중개) 사이의 빈 카테고리 — &quot;검증된 대면 1:1 + 매니저 관리&quot; 선점. <em>&quot;화면 너머가 아니라, 옆자리에서.&quot;</em></p>
+<h2>Product — 아이디어가 아니라 작동하는 소프트웨어</h2>
+<ul>
+<li><strong>웹 플랫폼 완성</strong>: 4역할 포털(학생·강사·매니저·관리자) · 토스페이먼츠 결제(서버 검증) · 캘린더 학습 플랜 · 숙제 자동 분배 · AI 질답 · CMS · 알림 배치</li>
+<li><strong>모바일</strong>: 백엔드 API 58종 완성 · React Native 앱은 지원금 활용 개발 예정</li>
+<li>1인 풀스택 자체 개발 (Next.js 14 · Prisma · Supabase · Vercel)</li>
+</ul>
+<h2>Business Model &amp; Unit Economics</h2>
+<table>
+<thead>
+<tr>
+<th>지표</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>요금</td>
+<td>월정액 선불 38만~112만 원 (8개 플랜)</td>
+</tr>
+<tr>
+<td>강사 정산</td>
+<td>시급 30,000원/h (확정)</td>
+</tr>
+<tr>
+<td>평균 마진율</td>
+<td><strong>34.2%</strong> (플랜별 29.9~42.0%)</td>
+</tr>
+<tr>
+<td>학생 1인 월 기여마진</td>
+<td>약 21.6만~24.2만 원</td>
+</tr>
+<tr>
+<td>BEP</td>
+<td>Phase 1 활성 <strong>5명</strong> / Phase 2 활성 <strong>14명</strong></td>
+</tr>
+<tr>
+<td>LTV/CAC 목표</td>
+<td>5:1 이상</td>
+</tr>
+</tbody></table>
+<h2>3개년 목표 (기본 시나리오)</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>2026 H2</th>
+<th>2027</th>
+<th>2028</th>
+<th>2029 H1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>반기말 활성 학생</td>
+<td>15명 (파일럿)</td>
+<td>75명</td>
+<td>145명</td>
+<td><strong>170명</strong></td>
+</tr>
+<tr>
+<td>수업료 거래액</td>
+<td>0.3억</td>
+<td>2.5억</td>
+<td>6.0억</td>
+<td>반기 6.2억</td>
+</tr>
+</tbody></table>
+<ul>
+<li>3년 누적: 거래액 <strong>약 15억 원</strong> · 플랫폼 기여마진 <strong>약 5.1억 원</strong> · 지원금 소진 후 <strong>12개월 내 자립</strong></li>
+</ul>
+<h2>Team</h2>
+<ul>
+<li>대표 1인: 과외·학원 강사 2년 도메인 경력 + 풀스택 단독 구현 (기획→개발→배포 최단 사이클)</li>
+<li>채용 계획: 학습 매니저 1~2명(개시 직후) → 마케터(6M) → 모바일 개발(12M)</li>
+</ul>
+<h2>Ask — 지원금 1억 원 활용 (예비창업패키지 기준)</h2>
+<p>인건비 30% · 사업화(모바일 앱·자동결제) 25% · 마케팅 25% · 운영 제반 15% · 예비비 5%
+— 제품이 이미 완성되어 있어 지원금은 <strong>시장 검증과 성장</strong>에 집중 투입.</p>
+</section></main>
+</div></body></html>

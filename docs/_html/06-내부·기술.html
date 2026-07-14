@@ -1,0 +1,2978 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>내부·기술 — Concord 문서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --green:#10B981;--green-text:#07875A;--bg:#FAF9F4;--panel:#FFFFFF;--panel2:#F0EFE7;
+  --fg:#161A16;--mut:#585C53;--mut2:#9AA095;--line:rgba(34,38,30,.085);--line2:rgba(34,38,30,.15);
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif}
+body{color:var(--fg);background:var(--bg);line-height:1.65;letter-spacing:-.01em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.tabs{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:2px;padding:11px 22px;background:rgba(250,249,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:-.03em;font-size:16px;margin-right:14px;align-self:center}
+.brand .dot{display:inline-block;width:.16em;height:.16em;border-radius:50%;background:var(--green);vertical-align:baseline;margin-left:.05em}
+.tab{padding:6px 13px;border-radius:999px;text-decoration:none;color:var(--mut);font-size:13px;font-weight:700}
+.tab:hover{background:var(--panel2)}
+.tab.active{background:var(--fg);color:#fff}
+.wrap{display:flex;max-width:1440px;margin:0 auto;gap:34px;padding:0 22px}
+.toc{position:sticky;top:60px;align-self:flex-start;flex:0 0 230px;font-size:12.5px;padding:26px 0;max-height:calc(100vh - 60px);overflow:auto}
+.toc .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--green-text);margin-bottom:9px;display:block}
+.toc ul{list-style:none;padding:0;margin:0}
+.toc li{margin:2px 0}
+.toc a{text-decoration:none;color:var(--mut);display:block;padding:4px 9px;border-radius:8px;word-break:break-all}
+.toc a:hover{background:var(--panel2);color:var(--fg)}
+main{flex:1;min-width:0;padding:34px 0 140px}
+section{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--line)}
+.fname{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--green-text);background:var(--panel2);padding:4px 10px;border-radius:999px;margin-bottom:14px;letter-spacing:0}
+main h1{font-size:30px;font-weight:800;letter-spacing:-.038em;line-height:1.12;border-bottom:1px solid var(--line);padding-bottom:10px;margin:.2em 0 .6em}
+main h2{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:1.8em 0 .5em}
+main h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:1.5em 0 .4em}
+main h4{font-size:14px;font-weight:700;color:var(--mut);margin:1.3em 0 .3em}
+main p{margin:.7em 0}
+main a{color:var(--green-text);text-decoration:none;border-bottom:1px solid var(--line2)}
+main strong{font-weight:800}
+main code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--panel2);padding:1.5px 6px;border-radius:6px}
+main pre{background:var(--fg);color:#ECEEEC;padding:16px 18px;border-radius:14px;overflow:auto;box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06)}
+main pre code{background:none;color:inherit;padding:0;font-size:12.5px}
+main blockquote{margin:1.1em 0;padding:12px 20px;border-left:3px solid var(--green);background:var(--panel);border-radius:0 12px 12px 0;color:var(--mut)}
+main blockquote p{margin:.3em 0}
+main table{border-collapse:collapse;width:100%;margin:1.1em 0;font-size:13.5px;display:block;overflow-x:auto;border-radius:14px}
+main th,main td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+main th{background:var(--panel2);font-weight:800;letter-spacing:-.01em}
+main td{background:var(--panel)}
+main tr:nth-child(even) td{background:#FCFBF7}
+main del{color:var(--mut2)}
+main hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+main ul,main ol{padding-left:22px;margin:.6em 0}
+main li{margin:4px 0}
+main li::marker{color:var(--green-text)}
+main img{max-width:100%;border-radius:12px}
+@media(max-width:860px){.toc{display:none}.wrap{padding:0 15px}.tabs{padding:10px 15px}}
+</style></head><body>
+<div class="tabs"><span class="brand">Concord<span class="dot"></span></span><a class="tab" href="01-개요.html">개요·현황</a><a class="tab" href="02-사업전략.html">사업전략</a><a class="tab" href="03-리뷰·마케팅.html">리뷰·마케팅</a><a class="tab" href="04-제품·디자인.html">제품·디자인</a><a class="tab" href="05-운영·파일럿.html">운영·파일럿·구현</a><a class="tab active" href="06-내부·기술.html">내부·기술</a><a class="tab" href="07-외부·제출.html">외부·제출</a><a class="tab" href="08-전략라운드.html">전략 라운드</a><a class="tab" href="09-아카이브.html">아카이브</a></div>
+<div class="wrap">
+<nav class="toc"><span class="eyebrow">이 묶음 문서 6</span><ul><li><a href="#d-internal-API-REFERENCE-md">internal/API_REFERENCE.md</a></li><li><a href="#d-internal-LEGAL-ADVISORY-MEMO-md">internal/LEGAL_ADVISORY_MEMO.md</a></li><li><a href="#d-internal-LEGAL-DOCS-STATUS-md">internal/LEGAL_DOCS_STATUS.md</a></li><li><a href="#d-internal-TECH-OVERVIEW-md">internal/TECH_OVERVIEW.md</a></li><li><a href="#d-internal-contracts-TUITION-CONTRACT-DRAFT-md">internal/contracts/TUITION_CONTRACT_DRAFT.md</a></li><li><a href="#d-internal-contracts-TUTOR-ENGAGEMENT-CONTRACT-DRAFT-md">internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md</a></li></ul></nav>
+<main><section id="d-internal-API-REFERENCE-md"><span class="fname">internal/API_REFERENCE.md</span><h1>Concord Private Tutoring — API Reference</h1>
+<blockquote>
+<p>대상: 백엔드·프론트 통합 담당자<br>기준: <code>src/app/api/**/route.ts</code> 실측 (최초 2026-07-04 / 재실측 2026-07-12 166개 / <strong>2026-07-13 증분 갱신, 총 173개</strong> 라우트)<br>원칙: 정확성 &gt; 완전성. 각 라우트의 <code>require*()</code> 헬퍼·<code>session.user.role</code> 분기 코드로 권한 결정. 확인 못 한 것은 <code>[미확인]</code>.</p>
+<p><strong>2026-07-13 증분 갱신:</strong> 07-12~07-13에 7개 라우트 추가(166→173). 신규 — 학부모 대납 결제 <code>/api/parent/payments/complete</code>, 강사 본인 정산 read-only <code>/api/teacher/settlements</code>·<code>/api/mobile/teacher/settlements</code>, 수업 확인 제도 <code>/api/teacher/lessons/[id]/confirm</code>·<code>/api/mobile/teacher/lessons/[id]/confirm</code>·<code>/api/teacher/lessons/pending-confirm</code>, 로그인 잠금 사전조회 <code>/api/auth/login-status</code>. 기존 라우트 변경(정정 표기) — <code>/api/mobile/parent/profile</code>에 DELETE(소프트삭제) 추가, <code>/api/mobile/notifications</code> 가드가 <code>requireMobileStudent</code>→<code>requireMobileUser</code>(역할 무관)로 변경. 신규 헬퍼/모듈: <code>lesson-confirm</code>(<code>confirmLesson</code>·<code>parseConfirmInput</code>·<code>getPendingConfirmLessons</code>), <code>settlement</code>(<code>TEACHER_HOURLY_RATE_KRW</code>), <code>login-rate-limit</code>(<code>isLoginBlocked</code>·<code>loginRateLimitKey</code>), <code>requireMobileUser</code>. 제거된 라우트 없음.</p>
+<p><strong>2026-07-12 갱신 요약:</strong> 07-05~07-12에 56개 라우트 추가(110→166). 주요 증가분 — PARENT 역할 계열(웹 <code>/api/parent/*</code> 8, 모바일 <code>/api/mobile/parent/*</code> 8), 강사 모바일 API <code>/api/mobile/teacher/*</code> 15, 매니저 모바일 API <code>/api/mobile/manager/*</code> 15, 웹 매니저 추가(<code>parent-link</code>·<code>password-reset</code>·<code>questions</code>), 공개 상담 리드 <code>/api/consultation-leads</code>, 비밀번호 변경·리셋(<code>/api/account/password</code>·<code>/api/mobile/me/password</code>·<code>manager/password-reset</code>), 학부모 연결 코드(<code>student/parent-link-code</code>·<code>mobile/me/parent-link-code</code>), <code>student/profile</code>. 신규 헬퍼: <code>requireParent</code>(웹 NextAuth PARENT) / <code>requireMobileParent</code>·<code>requireMobileManager</code>·<code>requireMobileTeacher</code>·<code>requireMobileTeacherAllowPending</code>(모바일 Bearer JWT) / <code>requireManagerOrAbove</code>. 제거된 라우트 없음.</p>
+</blockquote>
+<h2>범례</h2>
+<ul>
+<li>권한 표기:<ul>
+<li><code>STUDENT</code>, <code>TEACHER</code>, <code>MANAGER</code>, <code>CHIEF_MANAGER</code>, <code>ADMIN</code> — NextAuth 세션 role.</li>
+<li><code>STUDENT (mobile)</code> — <code>requireMobileStudent()</code> (Bearer HMAC-JWT).</li>
+<li><code>Public</code> — 세션 무관.</li>
+<li><code>CRON_SECRET</code> — <code>Authorization: Bearer ${CRON_SECRET}</code> 또는 <code>x-vercel-cron</code> 헤더.</li>
+</ul>
+</li>
+<li>헬퍼 통과 역할 확장 (재기재):<ul>
+<li><code>requireAdmin</code> → <code>ADMIN</code> <strong>또는</strong> <code>CHIEF_MANAGER</code>.</li>
+<li><code>requireTeacher</code> → <code>TEACHER</code> / <code>MANAGER</code> / <code>CHIEF_MANAGER</code>.</li>
+<li><code>requireManager</code> → <code>MANAGER</code> / <code>CHIEF_MANAGER</code>.</li>
+<li><code>requireManagerOrAbove</code> → <code>MANAGER</code> / <code>CHIEF_MANAGER</code> / <code>ADMIN</code> (07-12 신규).</li>
+<li><code>requireParent</code> → NextAuth <code>role=PARENT</code> (웹, 07-12 신규).</li>
+<li><code>requireMobileParent</code> → <code>role=PARENT</code> (모바일 Bearer JWT, 07-12 신규).</li>
+<li><code>requireMobileManager</code> → <code>role=MANAGER</code> / <code>CHIEF_MANAGER</code> (모바일 Bearer JWT, 07-12 신규).</li>
+<li><code>requireMobileTeacher</code> → <code>role=TEACHER</code>(승인 완료)/<code>MANAGER</code>/<code>CHIEF_MANAGER</code> (모바일 Bearer JWT, 07-12 신규).</li>
+<li><code>requireMobileTeacherAllowPending</code> → 위와 동일하되 미승인(<code>approved=false</code>) 강사도 통과 (프로필·홈 접근용, 07-12 신규).</li>
+</ul>
+</li>
+<li>⚠️ = 부트스트랩·복구·디버그 성격 (프로덕션 노출 주의).</li>
+<li>스키마는 핵심 필드만. 응답은 성공 응답 요약.</li>
+<li><code>src/app/api/dev/</code> 디렉토리 <strong>존재하지 않음</strong> — 명시적 개발 전용 라우트 그룹 없음.</li>
+</ul>
+<h2>그룹별 개수</h2>
+<blockquote>
+<p>2026-07-13 증분 실측 기준 개수. 괄호 안은 직전(07-12) 대비 증감.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>그룹</th>
+<th>라우트 파일 수</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>account</td>
+<td>2</td>
+</tr>
+<tr>
+<td>admin</td>
+<td>30</td>
+</tr>
+<tr>
+<td>auth</td>
+<td>2 (+1)</td>
+</tr>
+<tr>
+<td>billing</td>
+<td>2</td>
+</tr>
+<tr>
+<td>chief-manager</td>
+<td>1</td>
+</tr>
+<tr>
+<td>consultation</td>
+<td>3</td>
+</tr>
+<tr>
+<td>consultation-leads</td>
+<td>1</td>
+</tr>
+<tr>
+<td>cron</td>
+<td>2</td>
+</tr>
+<tr>
+<td>events</td>
+<td>1</td>
+</tr>
+<tr>
+<td>manager</td>
+<td>16</td>
+</tr>
+<tr>
+<td>matches</td>
+<td>1</td>
+</tr>
+<tr>
+<td>mobile</td>
+<td>65 (+2)</td>
+</tr>
+<tr>
+<td>notifications</td>
+<td>3</td>
+</tr>
+<tr>
+<td>parent</td>
+<td>9 (+1)</td>
+</tr>
+<tr>
+<td>payments</td>
+<td>1</td>
+</tr>
+<tr>
+<td>plans</td>
+<td>4</td>
+</tr>
+<tr>
+<td>question-images</td>
+<td>1</td>
+</tr>
+<tr>
+<td>questions</td>
+<td>3</td>
+</tr>
+<tr>
+<td>register</td>
+<td>3</td>
+</tr>
+<tr>
+<td>student</td>
+<td>5</td>
+</tr>
+<tr>
+<td>teacher</td>
+<td>16 (+2)</td>
+</tr>
+<tr>
+<td>webhooks</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td><strong>173</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>참고: 07-04 문서의 합계 110은 <code>question-images</code> 1개가 표에서 누락된 값(실측 111)이었을 가능성. 07-12 재실측은 <code>find src/app/api -name route.ts</code> 기준 166개, 07-13 증분 실측은 173개.</p>
+</blockquote>
+<hr>
+<h2>1. auth</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/auth/[...nextauth]</code></td>
+<td>GET/POST</td>
+<td>Public</td>
+<td>NextAuth 프로토콜 (<code>identifier</code>, <code>password</code>)</td>
+<td>NextAuth JWT 세션 쿠키</td>
+<td><code>handlers</code> re-export</td>
+</tr>
+<tr>
+<td><code>/api/auth/login-status</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>{ identifier }</code></td>
+<td><code>{ locked: boolean }</code> 200</td>
+<td>07-13 신규. 로그인 폼이 <code>signIn</code> 이전 브루트포스 잠금 여부만 조회(<code>isLoginBlocked</code>). auth.ts와 동일 인메모리 스토어 공유. 계정 존재 여부는 비노출·항상 200</td>
+</tr>
+</tbody></table>
+<h2>2. register (공개 가입)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/register/student</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>name, grade, subjects[], phone, password, gender, guardianPhone?, guardianConsent?, instantEnroll?</code></td>
+<td><code>{ ok, userId, instant? }</code></td>
+<td>합성 이메일 생성. <code>instantEnroll=true</code> → Chief 즉시 배정</td>
+</tr>
+<tr>
+<td><code>/api/register/teacher</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>name, phone, subjects[], bio, education, experience, password, gender, careerEntries?</code></td>
+<td><code>{ ok, userId }</code></td>
+<td>신규 강사 <code>approved: false</code></td>
+</tr>
+<tr>
+<td><code>/api/register/teacher/documents</code></td>
+<td>POST</td>
+<td>Public (multipart)</td>
+<td><code>file</code>, <code>type: &quot;resume&quot;|&quot;document&quot;</code>, <code>teacherId</code></td>
+<td><code>{ url }</code></td>
+<td>Supabase Storage 업로드. 세션 검증 없음 — <code>teacherId</code>만 신뢰 [보안 검토 필요]</td>
+</tr>
+</tbody></table>
+<h2>3. account</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/account/delete</code></td>
+<td>POST</td>
+<td>로그인 유저 전체</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>소프트 삭제, <code>AuditLog</code> 기록</td>
+</tr>
+<tr>
+<td><code>/api/account/password</code></td>
+<td>POST</td>
+<td>로그인 유저 전체 (NextAuth <code>session.user.id</code>)</td>
+<td><code>{ currentPassword, newPassword }</code></td>
+<td><code>{ ok }</code></td>
+<td>07-12 신규. <code>changeOwnPassword()</code>. 실패 시 헬퍼가 status 반환</td>
+</tr>
+</tbody></table>
+<h2>4. consultation (학생 상담)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/consultation/request</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ note? }</code></td>
+<td><code>{ booking }</code></td>
+<td><code>createConsultationRequest</code></td>
+</tr>
+<tr>
+<td><code>/api/consultation/my-booking</code></td>
+<td>GET</td>
+<td>STUDENT</td>
+<td>—</td>
+<td><code>{ booking }</code> (최신 1건 DTO)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/consultation/visit-times</code></td>
+<td>PATCH</td>
+<td>STUDENT</td>
+<td><code>{ visitPreferredTimes }</code></td>
+<td><code>{ ok }</code></td>
+<td>방문 상담 시간대 저장</td>
+</tr>
+</tbody></table>
+<h2>5. matches (학생 수락)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/matches/[matchId]/accept</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td>—</td>
+<td><code>{ match }</code></td>
+<td><code>acceptTeacherStudentMatch()</code> — 매칭 활성화</td>
+</tr>
+</tbody></table>
+<h2>6. plans (학생 학습 계획)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/plans</code></td>
+<td>GET</td>
+<td>STUDENT</td>
+<td><code>?date=YYYY-MM-DD</code></td>
+<td><code>{ plan }</code></td>
+<td>날짜별 조회</td>
+</tr>
+<tr>
+<td><code>/api/plans</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ date, tasks[] }</code></td>
+<td><code>{ plan }</code></td>
+<td>생성</td>
+</tr>
+<tr>
+<td><code>/api/plans/copy</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ sourceDate, targetDate }</code></td>
+<td><code>{ plan }</code></td>
+<td>다른 날짜 복사</td>
+</tr>
+<tr>
+<td><code>/api/plans/[planId]/tasks</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ title, order? }</code></td>
+<td><code>{ task }</code></td>
+<td>개별 task 추가</td>
+</tr>
+<tr>
+<td><code>/api/plans/tasks/[taskId]</code></td>
+<td>PATCH/DELETE</td>
+<td>STUDENT</td>
+<td><code>{ isDone?, title? }</code></td>
+<td><code>{ task }</code> / <code>{ ok }</code></td>
+<td>소유권 검사</td>
+</tr>
+</tbody></table>
+<h2>7. questions (학생 QnA)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/questions</code></td>
+<td>GET</td>
+<td>STUDENT</td>
+<td><code>?date=YYYY-MM-DD</code></td>
+<td><code>{ questions }</code></td>
+<td><code>QuestionMessage</code> 루트 목록</td>
+</tr>
+<tr>
+<td><code>/api/questions</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ content, imageUrl?, date? }</code></td>
+<td><code>{ question }</code></td>
+<td>학생 질문 등록</td>
+</tr>
+<tr>
+<td><code>/api/questions/[id]</code></td>
+<td>PATCH</td>
+<td>STUDENT</td>
+<td><code>{ isResolved: boolean }</code></td>
+<td><code>{ question }</code></td>
+<td>해결 표시</td>
+</tr>
+<tr>
+<td><code>/api/questions/[id]/ai-answer</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td>—</td>
+<td><code>{ answer }</code></td>
+<td>Claude로 자동 답변, <code>TokenWallet</code> 차감</td>
+</tr>
+</tbody></table>
+<h2>8. student (기타 학생 액션)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/student/question-images</code></td>
+<td>POST</td>
+<td>STUDENT (multipart)</td>
+<td><code>file</code></td>
+<td><code>{ url }</code></td>
+<td>Supabase Storage</td>
+</tr>
+<tr>
+<td><code>/api/student/teacher-change-request</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ reason? }</code></td>
+<td><code>{ ok }</code></td>
+<td>관리자 알림 생성</td>
+</tr>
+<tr>
+<td><code>/api/student/satisfaction-checkins/[id]/respond</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ score: 1-5, comment? }</code></td>
+<td><code>{ checkin }</code></td>
+<td>소유 학생만</td>
+</tr>
+<tr>
+<td><code>/api/student/parent-link-code</code></td>
+<td>GET/POST</td>
+<td>STUDENT (<code>requireStudent</code>)</td>
+<td>—</td>
+<td>GET <code>{ code, expiresAt }</code>(없으면 null) / POST <code>{ code, expiresAt }</code> 201</td>
+<td>07-12 신규. 학부모 연결용 <code>ParentLinkCode</code> 발급·조회</td>
+</tr>
+<tr>
+<td><code>/api/student/profile</code></td>
+<td>PATCH</td>
+<td>STUDENT (<code>requireStudent</code>)</td>
+<td><code>{ grade?, gender?, region?, subjects?[], guardianPhone? }</code></td>
+<td><code>{ ok }</code></td>
+<td>07-12 신규. 가입 후 선택 정보 보강. 유효한 필드만 부분 저장</td>
+</tr>
+</tbody></table>
+<h2>9. teacher</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/teacher/profile</code></td>
+<td>GET/PATCH</td>
+<td>TEACHER (헬퍼상 MANAGER/CHIEF도)</td>
+<td><code>{ intro?, career?, education?, certificates? }</code></td>
+<td><code>{ profile }</code></td>
+<td>프로필 수정 시 <code>PUBLIC_TEACHERS_CACHE_TAG</code> 재검증</td>
+</tr>
+<tr>
+<td><code>/api/teacher/profile/photo</code></td>
+<td>POST</td>
+<td>TEACHER</td>
+<td><code>file</code> multipart</td>
+<td><code>{ url }</code></td>
+<td>Supabase Storage</td>
+</tr>
+<tr>
+<td><code>/api/teacher/profile/documents</code></td>
+<td>POST</td>
+<td>TEACHER</td>
+<td><code>file</code>, <code>type</code></td>
+<td><code>{ url }</code></td>
+<td>Supabase Storage</td>
+</tr>
+<tr>
+<td><code>/api/teacher/homework-templates</code></td>
+<td>GET/POST</td>
+<td>TEACHER</td>
+<td><code>{ title, subject?, tasks, defaultDays?, isDefault? }</code></td>
+<td><code>{ templates }</code> / <code>{ template }</code></td>
+<td>본인 소유 목록</td>
+</tr>
+<tr>
+<td><code>/api/teacher/homework-templates/[templateId]</code></td>
+<td>PATCH/DELETE</td>
+<td>TEACHER</td>
+<td><code>{ title?, tasks?, ... }</code></td>
+<td><code>{ template }</code> / <code>{ ok }</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/teacher/lessons</code></td>
+<td>GET</td>
+<td>TEACHER</td>
+<td><code>?studentId=&amp;status=&amp;upcoming=1</code></td>
+<td><code>{ lessons }</code></td>
+<td>담당 학생의 수업</td>
+</tr>
+<tr>
+<td><code>/api/teacher/lessons/[id]/cancel</code></td>
+<td>PATCH</td>
+<td>TEACHER</td>
+<td>—</td>
+<td><code>{ lesson }</code></td>
+<td>7일 뒤 자동 보충 수업 생성</td>
+</tr>
+<tr>
+<td><code>/api/teacher/lessons/[id]/confirm</code></td>
+<td>PATCH</td>
+<td>TEACHER</td>
+<td><code>{ outcome: &quot;COMPLETED&quot; }</code> 또는 <code>{ outcome: &quot;NOT_HELD&quot;, fault: &quot;STUDENT&quot;|&quot;NOT_STUDENT&quot;, reason }</code></td>
+<td><code>{ resolvedStatus, makeup, makeupCreated, makeupSkippedReason }</code></td>
+<td>07-13 신규. 수업 확인 제도(<code>confirmLesson</code>). <code>NOT_HELD</code>+<code>NOT_STUDENT</code> 시 원 수업 CANCELLED + 대체 수업 자동 이월 생성</td>
+</tr>
+<tr>
+<td><code>/api/teacher/lessons/pending-confirm</code></td>
+<td>GET</td>
+<td>TEACHER</td>
+<td>—</td>
+<td><code>{ lessons }</code></td>
+<td>07-13 신규. 종료된 확인 대기 수업 목록(<code>getPendingConfirmLessons</code>)</td>
+</tr>
+<tr>
+<td><code>/api/teacher/settlements</code></td>
+<td>GET</td>
+<td>TEACHER</td>
+<td><code>?month=YYYY-MM</code>(미지정=현재 KST 월)</td>
+<td><code>{ year, month, hourlyRateKrw, lessonCount, totalMinutes, totalHours, payoutKrw, needsReview, lessons[] }</code></td>
+<td>07-13 신규. 강사 본인 월별 정산 read-only. admin과 동일 KST 월경계·시급(<code>TEACHER_HOURLY_RATE_KRW</code>)·환불 제외. <code>durationMin=0</code>은 합계 제외+<code>needsReview</code></td>
+</tr>
+<tr>
+<td><code>/api/teacher/plans/[planId]/comment</code></td>
+<td>PATCH</td>
+<td>TEACHER</td>
+<td><code>{ comment }</code></td>
+<td><code>{ plan }</code></td>
+<td><code>requireTeacherStudentMatch</code></td>
+</tr>
+<tr>
+<td><code>/api/teacher/questions/[id]/answer</code></td>
+<td>PATCH</td>
+<td>TEACHER</td>
+<td><code>{ answer }</code></td>
+<td><code>{ question }</code></td>
+<td>매칭 검증 후 답변</td>
+</tr>
+<tr>
+<td><code>/api/teacher/students</code></td>
+<td>GET</td>
+<td>TEACHER</td>
+<td>—</td>
+<td><code>{ students }</code></td>
+<td>담당 학생 목록</td>
+</tr>
+<tr>
+<td><code>/api/teacher/students/[id]/plans</code></td>
+<td>GET/POST</td>
+<td>TEACHER</td>
+<td><code>?date=</code> / <code>{ date, tasks }</code></td>
+<td><code>{ plan }</code></td>
+<td>강사 관점 학습 플랜</td>
+</tr>
+<tr>
+<td><code>/api/teacher/students/[id]/questions</code></td>
+<td>GET</td>
+<td>TEACHER</td>
+<td><code>?date=</code></td>
+<td><code>{ questions }</code></td>
+<td>담당 학생 질문</td>
+</tr>
+<tr>
+<td><code>/api/teacher/students/[id]/first-lesson</code></td>
+<td>POST</td>
+<td>TEACHER</td>
+<td><code>{ date, time, durationMin?, subject? }</code></td>
+<td><code>{ lesson }</code></td>
+<td>첫 수업 설정 + 자동 숙제 템플릿 적용</td>
+</tr>
+<tr>
+<td><code>/api/teacher/students/[id]/homework-distribution</code></td>
+<td>POST</td>
+<td>TEACHER</td>
+<td><code>{ startDate, days, tasks[], repeatWeeks? }</code></td>
+<td><code>{ plans }</code></td>
+<td>주간 숙제 자동 분배</td>
+</tr>
+</tbody></table>
+<h2>10. manager</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/manager/consultations/waiting</code></td>
+<td>GET</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td><code>{ bookings }</code></td>
+<td><code>WAITING</code> + <code>managerId=null</code></td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/mine</code></td>
+<td>GET</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td><code>{ bookings }</code></td>
+<td>자신에게 배정된 booking</td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/[id]/assign</code></td>
+<td>PATCH</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>self-assign (<code>WAITING</code>→<code>ASSIGNED</code>)</td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/[id]/cancel</code></td>
+<td>PATCH</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>매니저가 취소</td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/[id]/complete</code></td>
+<td>PATCH</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ managerNote?, status? }</code></td>
+<td><code>{ booking }</code></td>
+<td>상담 완료 처리</td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/[id]/report</code></td>
+<td>GET/POST/PATCH</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ goals, subjectLevels?, recommendedPlan?, note? }</code></td>
+<td><code>{ report }</code></td>
+<td><code>ConsultationReport</code> CRUD</td>
+</tr>
+<tr>
+<td><code>/api/manager/consultations/[id]/visit-confirmed</code></td>
+<td>PATCH</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ visitConfirmedAt: string | null }</code></td>
+<td><code>{ booking }</code></td>
+<td>방문 상담 일시 확정</td>
+</tr>
+<tr>
+<td><code>/api/manager/matches</code></td>
+<td>GET</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td><code>{ students, teachers }</code></td>
+<td>매칭 대상·후보</td>
+</tr>
+<tr>
+<td><code>/api/manager/matches</code></td>
+<td>POST</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ teacherId, studentId, subjects, startDate, matchReason? }</code></td>
+<td><code>{ match }</code></td>
+<td><code>TeacherStudent</code> 생성 (<code>PENDING_STUDENT_ACCEPT</code>)</td>
+</tr>
+<tr>
+<td><code>/api/manager/monitoring</code></td>
+<td>GET</td>
+<td>MANAGER/CHIEF</td>
+<td>—</td>
+<td>자기 담당 학생 모니터링 스냅샷</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/manager/monitoring/stats</code></td>
+<td>GET</td>
+<td>MANAGER/CHIEF</td>
+<td><code>?studentId=</code></td>
+<td>학생 상세 통계</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/manager/care-logs</code></td>
+<td>POST/GET</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ studentId, type, note, visibleToStudent? }</code></td>
+<td><code>{ log }</code> / <code>{ logs }</code></td>
+<td><code>managerOwnsStudent</code> 검사 (CHIEF는 항상 통과)</td>
+</tr>
+<tr>
+<td><code>/api/manager/subscriptions/[id]/pause</code></td>
+<td>POST</td>
+<td>MANAGER/CHIEF</td>
+<td><code>{ action: &quot;PAUSE&quot;|&quot;RESUME&quot;, until?, reason? }</code></td>
+<td><code>{ subscription }</code></td>
+<td>담당 학생 or CHIEF만. <code>AuditLog</code> 기록</td>
+</tr>
+<tr>
+<td><code>/api/manager/teacher-approval</code></td>
+<td>GET/POST</td>
+<td><strong>MANAGER/CHIEF/ADMIN</strong> (<code>requireManagerOrAbove</code>)</td>
+<td><code>{ teacherId, approve: boolean }</code></td>
+<td><code>{ pendingTeachers }</code> / <code>{ ok }</code></td>
+<td>07-12 가드 변경: 기존 <code>requireAdmin</code>→<code>requireManagerOrAbove</code>(매니저도 승인 가능). 미승인 <code>role=TEACHER</code>만 처리, 거절 시 <code>softDeleteUser</code>. <code>PUBLIC_TEACHERS_CACHE_TAG</code> 재검증</td>
+</tr>
+<tr>
+<td><code>/api/manager/parent-link</code></td>
+<td>POST</td>
+<td>MANAGER/CHIEF (<code>requireManager</code>)</td>
+<td><code>{ studentId, parentId? , parentPhone? }</code></td>
+<td><code>{ ok, alreadyLinked }</code> 201</td>
+<td>07-12 신규. 매니저 수동 학부모↔학생 연결. <code>parentId</code> 우선, 없으면 전화번호 조회</td>
+</tr>
+<tr>
+<td><code>/api/manager/password-reset</code></td>
+<td>POST</td>
+<td>MANAGER/CHIEF (<code>requireManager</code>)</td>
+<td><code>{ identifier, newPassword }</code></td>
+<td><code>{ ok, target: { role, name } }</code></td>
+<td>07-12 신규. 대면 재설정용 — 학생·학부모 계정만(<code>findResettableUser</code>). <code>AuditLog(PASSWORD_RESET)</code> 기록</td>
+</tr>
+<tr>
+<td><code>/api/manager/questions</code></td>
+<td>GET/POST</td>
+<td><strong>MANAGER/CHIEF/ADMIN</strong> (<code>requireManagerOrAbove</code>)</td>
+<td>POST <code>{ questionId, answer }</code></td>
+<td>GET <code>{ questions }</code> / POST <code>{ ok }</code></td>
+<td>07-12 신규. 담당 강사 없는 학생 질문 인박스·매니저 대리 답변. <code>TEACHER_ANSWERED</code> 알림</td>
+</tr>
+</tbody></table>
+<h2>11. chief-manager</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/chief-manager/teacher-approval</code></td>
+<td>GET/POST</td>
+<td>ADMIN 또는 CHIEF_MANAGER</td>
+<td><code>{ teacherId, approve }</code></td>
+<td><code>{ ok }</code></td>
+<td><code>manager/teacher-approval</code>와 동일 코드 (중복 라우트)</td>
+</tr>
+</tbody></table>
+<h2>12. notifications</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/notifications</code></td>
+<td>GET</td>
+<td>로그인 유저 전체</td>
+<td><code>?unreadOnly=1</code></td>
+<td><code>{ notifications }</code></td>
+<td><code>requireNotificationUser</code> (role 미검사)</td>
+</tr>
+<tr>
+<td><code>/api/notifications/[id]/read</code></td>
+<td>PATCH</td>
+<td>로그인 유저 전체</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>본인 소유만</td>
+</tr>
+<tr>
+<td><code>/api/notifications/read-all</code></td>
+<td>PATCH</td>
+<td>로그인 유저 전체</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h2>13. payments</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/payments/complete</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ orderId, paymentKey, amount, cashReceipt? }</code></td>
+<td><code>{ ok, plan, subscription }</code></td>
+<td>서버 Toss confirm → <code>completeStudentPayment()</code> (멱등)</td>
+</tr>
+</tbody></table>
+<h2>14. billing (자동결제 빌링키)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/billing/register-success</code></td>
+<td>GET</td>
+<td>STUDENT (redirect target)</td>
+<td><code>?authKey=&amp;customerKey=</code></td>
+<td>302 → <code>/payments?billing=registered|failed</code></td>
+<td><code>customerKey === &quot;student-{studentId}&quot;</code> 검증 후 <code>issueBillingKey</code></td>
+</tr>
+<tr>
+<td><code>/api/billing/autorenew</code></td>
+<td>POST</td>
+<td>STUDENT</td>
+<td><code>{ enabled: boolean }</code></td>
+<td><code>{ profile }</code></td>
+<td>billingKey는 유지, autoRenew 플래그만 토글</td>
+</tr>
+</tbody></table>
+<h2>15. webhooks</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/webhooks/toss</code></td>
+<td>POST</td>
+<td>Public (서명 미검증)</td>
+<td>Toss <code>PAYMENT_STATUS_CHANGED</code> payload</td>
+<td><code>200</code></td>
+<td>본문 신뢰 X — <code>paymentKey</code>로 <code>fetchTossPayment</code> 후 처리. 인식 못한 이벤트도 200</td>
+</tr>
+</tbody></table>
+<h2>16. events (분석)</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/events</code></td>
+<td>POST</td>
+<td>Public / 세션 유저 / 모바일 유저</td>
+<td><code>{ name, payload?, platform?: &quot;web&quot;|&quot;mobile&quot; }</code></td>
+<td><code>204</code></td>
+<td>웹은 NextAuth 세션, 모바일은 Bearer JWT → <code>userId</code> 부착. 비로그인도 저장</td>
+</tr>
+</tbody></table>
+<h2>17. cron</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/cron/check-alerts</code></td>
+<td>GET</td>
+<td><code>CRON_SECRET</code></td>
+<td>—</td>
+<td><code>{ checked, ... }</code></td>
+<td>Vercel Cron 매일 00:00 UTC. <code>x-vercel-cron</code> 또는 <code>Authorization: Bearer $CRON_SECRET</code></td>
+</tr>
+<tr>
+<td><code>/api/cron/generate-monthly-reports</code></td>
+<td>GET</td>
+<td><code>CRON_SECRET</code></td>
+<td><code>?month=YYYY-MM</code> (선택)</td>
+<td><code>{ month, ... }</code></td>
+<td>매월 1일 01:00 UTC. <code>getPreviousMonth()</code> 기본</td>
+</tr>
+</tbody></table>
+<h2>18. admin — 30개</h2>
+<p>권한: 별도 표기 없으면 모두 <code>ADMIN</code> 또는 <code>CHIEF_MANAGER</code> (<code>requireAdmin</code>). 표는 압축.</p>
+<h3>18.1 부트스트랩·복구 ⚠️</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/admin/setup</code> ⚠️</td>
+<td>POST</td>
+<td>Public + <code>ADMIN_SETUP_SECRET</code></td>
+<td>최초 관리자 1명 생성. 이후는 항상 403. dev에서 secret 없이 허용</td>
+</tr>
+<tr>
+<td><code>/api/admin/recover</code> ⚠️</td>
+<td>POST</td>
+<td>Public + <code>ADMIN_SETUP_SECRET</code></td>
+<td>관리자 비밀번호 재설정. dev에서 secret 없이 허용</td>
+</tr>
+<tr>
+<td><code>/api/admin/db-check</code> ⚠️</td>
+<td>GET</td>
+<td>requireAdmin</td>
+<td>DB 연결 확인</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/init</code> ⚠️</td>
+<td>POST</td>
+<td>requireAdmin</td>
+<td>CMS 시딩</td>
+</tr>
+</tbody></table>
+<h3>18.2 데이터 조회</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>요청</th>
+<th>응답</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/admin/stats</code></td>
+<td>GET</td>
+<td>—</td>
+<td>대시보드 카운트</td>
+</tr>
+<tr>
+<td><code>/api/admin/metrics</code></td>
+<td>GET</td>
+<td><code>?days=</code></td>
+<td>지표 시계열</td>
+</tr>
+<tr>
+<td><code>/api/admin/funnel</code></td>
+<td>GET</td>
+<td><code>?days=</code> (7–90, 기본 30)</td>
+<td>퍼널 스냅샷</td>
+</tr>
+<tr>
+<td><code>/api/admin/audit-logs</code></td>
+<td>GET</td>
+<td>페이지네이션</td>
+<td><code>AuditLog</code> 목록</td>
+</tr>
+<tr>
+<td><code>/api/admin/settlements</code></td>
+<td>GET</td>
+<td>페이지네이션</td>
+<td>정산 목록</td>
+</tr>
+<tr>
+<td><code>/api/admin/check-alerts</code></td>
+<td>POST</td>
+<td>—</td>
+<td>알림 배치 수동 실행</td>
+</tr>
+<tr>
+<td><code>/api/admin/data/plans</code></td>
+<td>GET</td>
+<td><code>?page&amp;limit&amp;q&amp;from&amp;to</code></td>
+<td><code>StudyPlan</code> 목록</td>
+</tr>
+<tr>
+<td><code>/api/admin/data/questions</code></td>
+<td>GET</td>
+<td><code>?page&amp;limit&amp;q&amp;from&amp;to</code></td>
+<td><code>QuestionMessage</code> 목록</td>
+</tr>
+</tbody></table>
+<h3>18.3 학생·강사·매칭 CRUD</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/admin/students</code></td>
+<td>GET</td>
+<td>페이지네이션 목록</td>
+</tr>
+<tr>
+<td><code>/api/admin/students/[id]</code></td>
+<td>GET/PATCH/DELETE</td>
+<td>AuditLog 기록 (변경·삭제 시)</td>
+</tr>
+<tr>
+<td><code>/api/admin/teachers</code></td>
+<td>GET</td>
+<td>페이지네이션 목록</td>
+</tr>
+<tr>
+<td><code>/api/admin/teachers/[id]</code></td>
+<td>GET/PATCH/DELETE</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/admin/teachers/[id]/role</code></td>
+<td>PATCH</td>
+<td>역할 변경 (AuditLog)</td>
+</tr>
+<tr>
+<td><code>/api/admin/teachers/[id]/photo</code></td>
+<td>POST</td>
+<td>Supabase Storage</td>
+</tr>
+<tr>
+<td><code>/api/admin/teachers/[id]/documents</code></td>
+<td>GET/POST</td>
+<td>이력·인증 서류</td>
+</tr>
+<tr>
+<td><code>/api/admin/matches</code></td>
+<td>GET/POST</td>
+<td>매칭 CRUD</td>
+</tr>
+<tr>
+<td><code>/api/admin/matches/[id]</code></td>
+<td>PATCH/DELETE</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3>18.4 결제·환불</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/admin/payments</code></td>
+<td>GET</td>
+<td>페이지네이션 결제 이력</td>
+</tr>
+<tr>
+<td><code>/api/admin/payments/[id]/refund</code></td>
+<td>POST</td>
+<td>환불 처리, AuditLog 기록. Toss 환불 API 호출 여부 <code>[미확인]</code></td>
+</tr>
+</tbody></table>
+<h3>18.5 CMS</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/admin/cms</code></td>
+<td>GET/POST/PATCH/DELETE</td>
+<td><code>SiteContent</code> 종합</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/content</code></td>
+<td>GET/PATCH</td>
+<td><code>SiteContent</code> 개별</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/testimonials</code></td>
+<td>GET/POST</td>
+<td>후기</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/testimonials/[id]</code></td>
+<td>PATCH/DELETE</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/faq</code></td>
+<td>GET/POST</td>
+<td>FAQ</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/faq/[id]</code></td>
+<td>PATCH/DELETE</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/admin/cms/upload-image</code></td>
+<td>POST</td>
+<td>Supabase Storage</td>
+</tr>
+</tbody></table>
+<p>CMS 변경 라우트는 <code>revalidatePublicCms(...)</code>로 캐시 태그 재검증.</p>
+<h2>19. mobile — 65개 (07-12: 20→63, 07-13: +2 → 65)</h2>
+<p>권한: 학생 데이터는 <code>requireMobileStudent</code> (<code>role=STUDENT</code>, HMAC-JWT Bearer). 07-12에 학부모/강사/매니저 모바일 계열이 대거 추가돼 각각 <code>requireMobileParent</code>·<code>requireMobileTeacher(AllowPending)</code>·<code>requireMobileManager</code> 헬퍼를 사용한다. 예외 표기.</p>
+<h3>19.1 인증</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/auth/login</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>{ identifier, password }</code></td>
+<td><code>{ accessToken, refreshToken, expiresIn, user }</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/auth/refresh</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>{ refreshToken }</code></td>
+<td>새 토큰 페어</td>
+</tr>
+<tr>
+<td><code>/api/mobile/auth/register</code></td>
+<td>POST</td>
+<td>Public</td>
+<td>학생 가입 페이로드 + 상담 페이로드</td>
+<td>새 유저 + 토큰</td>
+</tr>
+</tbody></table>
+<h3>19.2 학생 데이터 (STUDENT mobile)</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>요청/응답</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/home</code></td>
+<td>GET</td>
+<td>홈 위젯</td>
+</tr>
+<tr>
+<td><code>/api/mobile/me</code></td>
+<td>GET/PATCH</td>
+<td>프로필</td>
+</tr>
+<tr>
+<td><code>/api/mobile/me/journey</code></td>
+<td>GET</td>
+<td>온보딩 스테이지</td>
+</tr>
+<tr>
+<td><code>/api/mobile/me/tokens</code></td>
+<td>GET</td>
+<td><code>TokenWallet</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/learning/weekly</code></td>
+<td>GET</td>
+<td>주간 학습 시간</td>
+</tr>
+<tr>
+<td><code>/api/mobile/lessons</code></td>
+<td>GET</td>
+<td>예약 수업</td>
+</tr>
+<tr>
+<td><code>/api/mobile/reports</code></td>
+<td>GET</td>
+<td>월간 리포트</td>
+</tr>
+<tr>
+<td><code>/api/mobile/matches</code></td>
+<td>GET/POST</td>
+<td>매칭 조회·수락</td>
+</tr>
+<tr>
+<td><code>/api/mobile/consultation</code></td>
+<td>POST</td>
+<td>상담 신청</td>
+</tr>
+<tr>
+<td><code>/api/mobile/qna</code></td>
+<td>GET/POST</td>
+<td>통합 QnA</td>
+</tr>
+<tr>
+<td><code>/api/mobile/qna/[tutorId]</code></td>
+<td>GET/POST</td>
+<td>강사별 스레드</td>
+</tr>
+<tr>
+<td><code>/api/mobile/notifications</code></td>
+<td>GET/PATCH</td>
+<td>목록·읽음. <strong>07-13 정정: 가드 <code>requireMobileStudent</code>→<code>requireMobileUser</code>(역할 무관, 자기 것만).</strong> PATCH 본문 없음/<code>{}</code>=모두 읽음, <code>{ ids[] }</code>=개별 읽음</td>
+</tr>
+<tr>
+<td><code>/api/mobile/satisfaction-checkins</code></td>
+<td>GET</td>
+<td>미응답 체크인</td>
+</tr>
+<tr>
+<td><code>/api/mobile/satisfaction-checkins/[id]/respond</code></td>
+<td>POST</td>
+<td>응답 등록</td>
+</tr>
+<tr>
+<td><code>/api/mobile/me/parent-link-code</code></td>
+<td>GET/POST</td>
+<td>07-12 신규. 학부모 연결 코드 조회·발급(웹 <code>student/parent-link-code</code> 대응)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/me/password</code></td>
+<td>POST</td>
+<td>07-12 신규. <code>getMobileUser</code>(role 무관)로 본인 비번 변경 <code>{ currentPassword, newPassword }</code> → <code>{ ok }</code></td>
+</tr>
+</tbody></table>
+<h3>19.3 공개 조회 (모바일 토큰만 사용, role 미검사)</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/tutors</code></td>
+<td>GET</td>
+<td>모바일 유저 (역할 무관, <code>getMobileUser</code>)</td>
+<td>공개 강사 목록</td>
+</tr>
+<tr>
+<td><code>/api/mobile/tutors/[id]</code></td>
+<td>GET</td>
+<td>모바일 유저</td>
+<td>강사 상세</td>
+</tr>
+<tr>
+<td><code>/api/mobile/tutors/[id]/slots</code></td>
+<td>GET</td>
+<td>모바일 유저</td>
+<td><code>TutorAvailability</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/pricing-plans</code></td>
+<td>GET</td>
+<td>(헬퍼 사용 여부 [미확인] — 응답만 확인)</td>
+<td>요금제</td>
+</tr>
+<tr>
+<td><code>/api/mobile/push/register</code></td>
+<td>POST</td>
+<td>모바일 유저</td>
+<td><code>PushDevice</code> 등록</td>
+</tr>
+</tbody></table>
+<h3>19.4 미구현</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/payments/complete</code></td>
+<td>POST</td>
+<td><code>501 USE_WEB_CHECKOUT</code></td>
+<td>명시적 미구현. 웹 체크아웃 사용 유도</td>
+</tr>
+</tbody></table>
+<h3>19.5 mobile parent — 8개 (07-12 신규)</h3>
+<p>권한: 별도 표기 없으면 <code>requireMobileParent</code> (<code>role=PARENT</code>, Bearer JWT). 자녀 접근은 <code>parentChildOrNull(parent.id, studentId)</code> 소유 검사. 웹 <code>/api/parent/*</code>와 1:1 대응.</p>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/parent/register</code></td>
+<td>POST</td>
+<td>Public</td>
+<td><code>{ name, email, password, phone }</code></td>
+<td><code>{ accessToken, refreshToken, ... }</code> 201</td>
+<td><code>createParentAccount</code> 후 즉시 토큰 발급</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/link</code></td>
+<td>POST</td>
+<td>PARENT</td>
+<td><code>{ code, via?: &quot;CODE&quot;|&quot;QR&quot; }</code></td>
+<td><code>{ ok, studentId, alreadyLinked, child }</code></td>
+<td>코드/QR로 자녀 연결. INVALID_CODE=404, EXPIRED/USED=409</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/link/[studentId]</code></td>
+<td>DELETE</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>자녀 연결 해제. 미소유 404</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/children</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ children }</code></td>
+<td>연결 자녀 목록·요약</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/children/[studentId]/reports</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ reports }</code></td>
+<td>자녀 월간 리포트(읽기). 미소유 403</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/children/[studentId]/consultation</code></td>
+<td>POST</td>
+<td>PARENT</td>
+<td><code>{ note? }</code></td>
+<td><code>{ ok, status, alreadyOpen }</code></td>
+<td>자녀 상담 신청. 미소유 403</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/payments</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ children }</code></td>
+<td>자녀별 결제·청구 이력 그룹</td>
+</tr>
+<tr>
+<td><code>/api/mobile/parent/profile</code></td>
+<td>GET/PATCH/DELETE</td>
+<td>PARENT</td>
+<td>PATCH <code>{ name?, phone? }</code></td>
+<td>GET <code>{ name, phone, email }</code> / PATCH <code>{ ok }</code> / DELETE <code>{ ok }</code></td>
+<td>이름·전화 수정. <strong>07-13 정정: DELETE(계정 소프트삭제) 추가</strong> — <code>softDeleteUser</code>가 자녀 연결 해제 포함, <code>AuditLog(ACCOUNT_DELETE)</code> 기록</td>
+</tr>
+</tbody></table>
+<h3>19.6 mobile teacher — 17개 (07-12 신규 15 / 07-13 +2: confirm·settlements)</h3>
+<p>권한: 데이터 계열 <code>requireMobileTeacher</code>(승인 강사), 프로필·홈 계열 <code>requireMobileTeacherAllowPending</code>(미승인 강사 포함). 담당 학생 접근은 <code>requireTeacherStudentMatch(teacher.id, studentId)</code> 검사. 웹 <code>/api/teacher/*</code>와 1:1 대응.</p>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청/응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/teacher/home</code></td>
+<td>GET</td>
+<td>AllowPending</td>
+<td><code>{ approved, name, todayLessonCount, upcomingLessons }</code></td>
+<td>대시보드 요약</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/profile</code></td>
+<td>GET/PATCH</td>
+<td>AllowPending</td>
+<td><code>{ teacher, profile }</code> / <code>{ intro?, career?, education?, certificates?, photoUrl? }</code></td>
+<td><code>PUBLIC_TEACHERS_CACHE_TAG</code> 재검증</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/profile/photo</code></td>
+<td>POST</td>
+<td>AllowPending (multipart)</td>
+<td><code>file</code> → <code>{ photoUrl }</code></td>
+<td>Supabase Storage</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/profile/documents</code></td>
+<td>GET/POST/DELETE</td>
+<td>AllowPending</td>
+<td>POST multipart(<code>file</code>,<code>type</code>) / DELETE <code>{ url, type }</code></td>
+<td>서명 URL 반환</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/homework-templates</code></td>
+<td>GET/POST</td>
+<td>Teacher</td>
+<td>POST <code>{ title/name, subject?, defaultDays/days: 4|7, tasks }</code> → <code>{ template }</code></td>
+<td>본인 소유 목록</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/homework-templates/[templateId]</code></td>
+<td>PATCH/DELETE</td>
+<td>Teacher</td>
+<td>부분 수정 / 삭제 204</td>
+<td>소유 검사</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/lessons</code></td>
+<td>GET</td>
+<td>Teacher</td>
+<td><code>?studentId=&amp;status=&amp;upcoming=1</code> → <code>{ lessons }</code></td>
+<td>담당 수업</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/lessons/[id]/cancel</code></td>
+<td>PATCH</td>
+<td>Teacher</td>
+<td><code>{ lesson, makeup, makeupCreated, makeupSkippedReason }</code></td>
+<td>7일 뒤 보충 자동 생성(중복·과거면 skip 사유 반환)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/lessons/[id]/confirm</code></td>
+<td>PATCH</td>
+<td>Teacher</td>
+<td><code>{ outcome: &quot;COMPLETED&quot; }</code> 또는 <code>{ outcome: &quot;NOT_HELD&quot;, fault, reason }</code> → <code>{ resolvedStatus, makeup, makeupCreated, makeupSkippedReason }</code></td>
+<td>07-13 신규. 웹 <code>/api/teacher/lessons/[id]/confirm</code>와 동일 로직(<code>confirmLesson</code>)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/settlements</code></td>
+<td>GET</td>
+<td>Teacher</td>
+<td><code>?month=YYYY-MM</code> → <code>{ year, month, hourlyRateKrw, lessonCount, totalMinutes, totalHours, payoutKrw, needsReview, lessons[] }</code></td>
+<td>07-13 신규. 웹 <code>/api/teacher/settlements</code>를 Bearer 인증으로 재현. 동일 규칙</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/plans/[planId]/comment</code></td>
+<td>PATCH</td>
+<td>Teacher</td>
+<td><code>{ comment }</code> → <code>{ plan }</code></td>
+<td>매칭 검증. 코멘트 시 <code>TEACHER_COMMENT</code> 알림</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/questions/[id]/answer</code></td>
+<td>PATCH</td>
+<td>Teacher</td>
+<td><code>{ teacherAnswer }</code> → <code>{ question }</code></td>
+<td>최초 답변/재편집 지원. <code>TEACHER_ANSWERED</code> 알림</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/students</code></td>
+<td>GET</td>
+<td>Teacher</td>
+<td><code>{ students }</code> (firstLessonAt 포함)</td>
+<td>담당 학생 목록</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/students/[id]/plans</code></td>
+<td>GET</td>
+<td>Teacher</td>
+<td><code>?date=&amp;month=&amp;templateStart=&amp;templateDays=</code> → <code>{ plan|plans|dates|template }</code></td>
+<td>강사 관점 플랜 조회</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/students/[id]/questions</code></td>
+<td>GET</td>
+<td>Teacher</td>
+<td><code>?date=</code> → <code>{ questions }</code></td>
+<td>담당 학생 질문</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/students/[id]/first-lesson</code></td>
+<td>PATCH/POST</td>
+<td>Teacher</td>
+<td><code>{ date, time, durationMin?, joinUrl? }</code> → <code>{ lesson, startDate }</code></td>
+<td>첫 수업 설정+자동 숙제 템플릿. v2 플랜 hoursPerLesson 반영. POST는 PATCH로 위임</td>
+</tr>
+<tr>
+<td><code>/api/mobile/teacher/students/[id]/homework-distribution</code></td>
+<td>POST</td>
+<td>Teacher</td>
+<td><code>{ startDate, days: 4|7, tasks[], repeatWeeks?(1-12) }</code> → <code>{ plans, dates }</code> 201</td>
+<td>주간 숙제 자동 분배(기존 플랜에는 append)</td>
+</tr>
+</tbody></table>
+<h3>19.7 mobile manager — 15개 (07-12 신규)</h3>
+<p>권한: 모두 <code>requireMobileManager</code> (<code>role=MANAGER</code>/<code>CHIEF_MANAGER</code>, Bearer JWT). 담당 검사는 <code>booking.managerId===teacher.id</code> 또는 CHIEF 우회. 웹 <code>/api/manager/*</code>와 1:1 대응.</p>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/mobile/manager/consultations/waiting</code></td>
+<td>GET</td>
+<td>—</td>
+<td><code>{ bookings }</code></td>
+<td><code>WAITING</code>+<code>managerId=null</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/mine</code></td>
+<td>GET</td>
+<td>—</td>
+<td><code>{ bookings }</code></td>
+<td>자기 배정 booking</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/[id]/assign</code></td>
+<td>PATCH</td>
+<td>—</td>
+<td><code>{ booking }</code></td>
+<td>self-assign(<code>WAITING</code>→<code>ASSIGNED</code>), 경합 시 409</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/[id]/cancel</code></td>
+<td>PATCH</td>
+<td>—</td>
+<td><code>{ booking }</code></td>
+<td>배정 해제(<code>ASSIGNED</code>→<code>WAITING</code>)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/[id]/complete</code></td>
+<td>PATCH</td>
+<td><code>{ managerNote }</code></td>
+<td><code>{ booking }</code></td>
+<td>선생 배정 존재해야 완료 가능</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/[id]/report</code></td>
+<td>GET/PUT</td>
+<td><code>{ goals, subjectLevels?, recommendedPlan?, note? }</code></td>
+<td><code>{ report }</code></td>
+<td><code>ConsultationReport</code> upsert (웹은 POST/PATCH, 모바일은 <strong>PUT</strong>)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/consultations/[id]/visit-confirmed</code></td>
+<td>PATCH</td>
+<td><code>{ visitConfirmedAt: string|null }</code></td>
+<td><code>{ visitConfirmedAt }</code></td>
+<td>방문 일시 확정·해제</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/care-logs</code></td>
+<td>POST/GET</td>
+<td>POST <code>{ studentId, type, note, visibleToStudent? }</code> / GET <code>?studentId=</code></td>
+<td><code>{ log }</code> 201 / <code>{ logs }</code></td>
+<td><code>managerOwnsStudent</code> 검사(CHIEF 우회)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/matches</code></td>
+<td>GET/POST</td>
+<td>POST <code>{ teacherId, studentId, subjects, startDate?, matchReason?, reassign? }</code></td>
+<td><code>{ students, teachers }</code> / <code>{ ok }</code> 201</td>
+<td><code>PENDING_STUDENT_ACCEPT</code> 생성. ASSIGNED/COMPLETED 상담 필요(CHIEF 우회)</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/monitoring</code></td>
+<td>GET</td>
+<td>—</td>
+<td>담당 학생 모니터링 스냅샷</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/monitoring/stats</code></td>
+<td>GET</td>
+<td><code>?studentId=</code></td>
+<td>학생 상세 통계</td>
+<td>미소유 404</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/parent-link</code></td>
+<td>POST</td>
+<td><code>{ studentId, parentId?, parentPhone? }</code></td>
+<td><code>{ ok, alreadyLinked }</code> 201</td>
+<td>수동 학부모 연결</td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/password-reset</code></td>
+<td>POST</td>
+<td><code>{ identifier, newPassword }</code></td>
+<td><code>{ ok, target }</code></td>
+<td>학생·학부모 재설정. <code>AuditLog</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/subscriptions/[id]/pause</code></td>
+<td>POST</td>
+<td><code>{ action: &quot;PAUSE&quot;|&quot;RESUME&quot;, until?, reason? }</code></td>
+<td><code>{ subscription }</code></td>
+<td>PAUSE 최대 35일. 담당 or CHIEF. <code>AuditLog</code></td>
+</tr>
+<tr>
+<td><code>/api/mobile/manager/teacher-approval</code></td>
+<td>GET/POST</td>
+<td>POST <code>{ teacherId, approve: boolean }</code></td>
+<td><code>{ pendingTeachers }</code> / <code>{ ok }</code></td>
+<td>미승인 <code>role=TEACHER</code>만. 거절=<code>softDeleteUser</code>. 캐시 재검증</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>20. consultation-leads (공개 상담 리드) — 신규</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/consultation-leads</code></td>
+<td>POST</td>
+<td><strong>Public</strong></td>
+<td><code>{ phone, grade, subjects[], name?, gender?, region?, preferredTime?, marketingOptIn?, source?, privacyAgreed(필수 true) }</code></td>
+<td><code>{ lead: { id } }</code> 201</td>
+<td>07-12 신규. IP당 5회/10분 인메모리 레이트리밋. 전화·학년·과목 유효성 검사. <code>consultationSubmitted</code> 분석 이벤트</td>
+</tr>
+<tr>
+<td><code>/api/consultation-leads</code></td>
+<td>GET</td>
+<td>ADMIN/CHIEF (<code>requireAdmin</code>)</td>
+<td><code>?page&amp;limit&amp;status</code></td>
+<td><code>{ leads, total, page, limit }</code></td>
+<td>리드 목록(페이지네이션)</td>
+</tr>
+<tr>
+<td><code>/api/consultation-leads</code></td>
+<td>PATCH</td>
+<td>ADMIN/CHIEF (<code>requireAdmin</code>)</td>
+<td><code>{ id, status?, note? }</code></td>
+<td><code>{ lead }</code></td>
+<td>상태·메모 갱신</td>
+</tr>
+</tbody></table>
+<h2>21. parent (웹 학부모 포털) — 신규</h2>
+<p>권한: 별도 표기 없으면 <code>requireParent</code> (NextAuth <code>role=PARENT</code>). 자녀 접근은 <code>parentOwnsStudent(parent.id, studentId)</code>. 모바일 <code>/api/mobile/parent/*</code>와 1:1 대응.</p>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/parent/register</code></td>
+<td>POST</td>
+<td><strong>Public</strong></td>
+<td><code>{ name, email, password, phone }</code></td>
+<td><code>{ ok }</code> 201</td>
+<td><code>createParentAccount</code>. 로그인은 NextAuth로 별도. <code>parentRegistered</code> 이벤트</td>
+</tr>
+<tr>
+<td><code>/api/parent/link</code></td>
+<td>POST</td>
+<td>PARENT</td>
+<td><code>{ code, via?: &quot;CODE&quot;|&quot;QR&quot; }</code></td>
+<td><code>{ ok, studentId, alreadyLinked }</code></td>
+<td>코드/QR 자녀 연결. INVALID_CODE=404, EXPIRED/USED=409</td>
+</tr>
+<tr>
+<td><code>/api/parent/link/[studentId]</code></td>
+<td>DELETE</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ ok }</code></td>
+<td>연결 해제. 미소유 404</td>
+</tr>
+<tr>
+<td><code>/api/parent/children</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ children }</code></td>
+<td>연결 자녀 목록·요약</td>
+</tr>
+<tr>
+<td><code>/api/parent/children/[studentId]/reports</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ reports }</code></td>
+<td>자녀 리포트(읽기). 미소유 403</td>
+</tr>
+<tr>
+<td><code>/api/parent/children/[studentId]/consultation</code></td>
+<td>POST</td>
+<td>PARENT</td>
+<td><code>{ note? }</code></td>
+<td><code>{ ok, status, alreadyOpen }</code></td>
+<td>자녀 상담 신청. 미소유 403</td>
+</tr>
+<tr>
+<td><code>/api/parent/payments</code></td>
+<td>GET</td>
+<td>PARENT</td>
+<td>—</td>
+<td><code>{ children }</code></td>
+<td>자녀별 결제·청구 이력</td>
+</tr>
+<tr>
+<td><code>/api/parent/payments/complete</code></td>
+<td>POST</td>
+<td>PARENT</td>
+<td><code>{ studentId, orderId, amount, paymentKey?, cashReceipt? }</code></td>
+<td><code>{ ok, assigned, plan, subscription }</code></td>
+<td>07-13 신규. 학부모가 연결 자녀 명의로 결제 완료. <code>parentOwnsStudent</code> 검증 후 <code>completeStudentPayment</code> 위임(멱등). plan은 서버가 amount로 산출. 미연결 403</td>
+</tr>
+<tr>
+<td><code>/api/parent/profile</code></td>
+<td>GET/PATCH</td>
+<td>PARENT</td>
+<td>PATCH <code>{ name?, phone? }</code></td>
+<td>GET <code>{ name, phone }</code> / PATCH <code>{ ok }</code></td>
+<td>이름·전화 수정</td>
+</tr>
+</tbody></table>
+<h2>22. question-images (질문 이미지 프록시) — 07-04 표 누락분</h2>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>메서드</th>
+<th>권한</th>
+<th>요청</th>
+<th>응답</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/api/question-images/[...path]</code></td>
+<td>GET</td>
+<td>로그인 유저(role별 접근 검사)</td>
+<td>경로 <code>[studentId]/...</code></td>
+<td>이미지 바이너리 (private, max-age=3600)</td>
+<td>07-04 표에서 누락됐던 기존 라우트. ADMIN/CHIEF/MANAGER는 전체 허용, STUDENT는 본인, TEACHER는 담당(<code>teacherStudent</code>/<code>managerStudent</code>) 소유만. 경로 순회 방어</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>부록. 특이 사항 (보안·설계 관점)</h2>
+<ol>
+<li><strong><code>/api/register/teacher/documents</code>가 세션 없이 <code>teacherId</code>만으로 업로드 허용</strong> — 다른 강사 문서 위·변조 위험. 실측 후 재확인 필요.</li>
+<li><strong><code>/api/webhooks/toss</code> 서명 미검증</strong> — Toss 서명 헤더가 있는 경우 활용하지 않고 서버 재조회에만 의존. 위조 방지에는 충분하나 처리 지연·재플레이 관점 <code>[미확인]</code>.</li>
+<li><strong><code>requireAdmin</code>이 <code>CHIEF_MANAGER</code>를 통과</strong> — Chief는 admin API를 대부분 호출 가능. 미들웨어는 <code>/admin</code> UI를 열지 않아 UI/API 접근 정책이 비대칭.</li>
+<li><strong><code>/api/manager/teacher-approval</code>과 <code>/api/chief-manager/teacher-approval</code>이 동일 로직 중복</strong> — 유지보수 리스크.</li>
+<li><strong>모바일 tutors 계열이 role 검사 없이 토큰만 확인</strong> — 만료 안 된 어떤 mobile Bearer로도 조회 가능. 공개 정보이므로 정책상 문제 여부 <code>[미확인]</code>.</li>
+<li><strong><code>admin/setup</code>·<code>admin/recover</code>는 non-production에서 secret 없이 통과</strong> — 로컬 개발 편의성. 배포 전 <code>NODE_ENV</code> 확인 필수.</li>
+<li><strong>Toss 환불 실제 호출 여부 <code>[미확인]</code></strong> — <code>/api/admin/payments/[id]/refund</code>가 <code>PaymentCompletion</code> 상태만 바꾸는지, Toss <code>/cancel</code>을 호출하는지 실측 안 함.</li>
+<li><strong>(07-12) <code>/api/consultation-leads</code> POST 레이트리밋이 인메모리 Map</strong> — 서버리스 인스턴스별로 분리돼 다중 인스턴스·재시작 시 우회 가능. 공개 엔드포인트이므로 분산 스토어 기반으로 승격 검토.</li>
+<li><strong>(07-12) <code>/api/manager/password-reset</code>·<code>/api/mobile/manager/password-reset</code></strong> — 매니저가 임의 학생·학부모 비밀번호를 재설정(<code>findResettableUser</code>). 강사·매니저·어드민 대상은 아니지만 대면 전제이므로 남용 방지·감사 로그 의존. <code>AuditLog</code> 기록됨.</li>
+<li><strong>(07-12) <code>teacher-approval</code> 가드 완화</strong> — 웹·모바일 모두 <code>requireManagerOrAbove</code>로 매니저가 강사 승인/거절(거절=<code>softDeleteUser</code>) 가능. 미승인 <code>role=TEACHER</code>에만 한정하는 방어 코드 존재.</li>
+<li><strong>(07-12) 모바일 report 라우트 메서드 불일치</strong> — <code>/api/mobile/manager/consultations/[id]/report</code>는 <strong>PUT</strong>, 웹 동일 기능은 <strong>POST/PATCH</strong>. 클라이언트 공유 코드 작성 시 주의.</li>
+<li><strong>(07-13) <code>/api/auth/login-status</code> 잠금 스토어가 인메모리</strong> — <code>login-rate-limit</code> 스토어를 auth.ts와 공유하나 서버리스 인스턴스별 분리. 다중 인스턴스에서 잠금 판정이 인스턴스마다 다를 수 있음. 계정 존재 여부는 비노출.</li>
+<li><strong>(07-13) 강사 정산 라우트가 amount/시급을 서버 고정 상수(<code>TEACHER_HOURLY_RATE_KRW</code>)로 계산</strong> — 강사별 차등 시급 미지원. <code>durationMin=0</code> 수업은 합계 제외 후 <code>needsReview</code>로만 표기되므로 실제 정산 전 수동 검토 필요.</li>
+<li><strong>(07-13) <code>/api/parent/payments/complete</code>의 <code>paymentKey</code> optional</strong> — 학생 라우트와 대칭. 이미 COMPLETED된 주문의 재시도·유실 복구를 멱등 반환하기 위한 설계. plan은 클라이언트 값 무시하고 서버가 amount로 산출.</li>
+</ol>
+</section><section id="d-internal-LEGAL-ADVISORY-MEMO-md"><span class="fname">internal/LEGAL_ADVISORY_MEMO.md</span><h1>임시 법률 자문 메모 (AI 작성)</h1>
+<blockquote>
+<p>⚠️ <strong>본 메모는 AI(Claude)가 작성한 임시 참고 의견이며 법률 자문이 아닙니다.</strong> 변호사·세무사·노무사의 정식 자문으로 대체하기 전까지 대외적 의사결정의 단독 근거로 사용하지 마십시오. 법령·판례는 변경될 수 있고, 구체적 사실관계에 따라 결론이 달라질 수 있습니다.
+작성: 2026-07-04 · 대상: <code>contracts/</code> 초안의 [법률 자문 필요]·[세무 확인 필요] 항목과 <code>LEGAL_DOCS_STATUS.md</code> §3 행정 지위 논점.
+각 항목 끝의 <strong>[정식 자문 질문]</strong> 은 변호사 미팅 때 그대로 물어볼 수 있게 정리한 것.</p>
+</blockquote>
+<hr>
+<h2>A-1. 직거래 금지 — 기간·위약금 구조 (강사 위촉 계약 제O조)</h2>
+<p><strong>임시 결론</strong></p>
+<ul>
+<li><strong>기간: 계약 종료 후 12개월</strong> — 경업·유인 금지 약정은 기간·범위가 과도하면 무효 판단 위험. 24개월 이상은 과도 판단 가능성이 커지고, 12개월은 중개 플랫폼 실무에서 통용되는 수준.</li>
+<li><strong>범위 한정 필수</strong>: &quot;회사를 통해 알게 된 학생·학부모&quot;로 한정 (이미 초안에 반영됨 — 유지). 일반적 과외 활동 전체를 금지하면 직업 자유 침해로 무효 위험.</li>
+<li><strong>위약금 산정: &quot;해당 학생의 최근 월 수강료 4개월분 상당액&quot;</strong> 단일 기준 권장. 근거: 민법 제398조상 위약금은 손해배상액의 예정으로 추정되고 법원이 과도 시 감액 가능 — 회사의 실제 일실이익(월 기여마진 약 21.6만원 × 잔존 기대 수강기간)과 크게 괴리되지 않는 수준이어야 유지된다. 수강료 4개월분(약 260만원 내외)은 마진 기준 약 12개월치 일실이익과 유사한 규모로, 상한으로서 방어 가능한 범위라 판단.</li>
+<li><strong>⚠️ 초안 수정 필요점</strong>: &quot;위약금 지급 + 이와 별개로 실제 손해배상 청구&quot; 병존 문구는 위약금을 &#39;위약벌&#39;로 해석하게 만들 수 있고, 위약벌은 과도 시 공서양속 위반으로 전부 무효 위험이 있음. <strong>손해배상 예정액 단일 구조로 단순화</strong>하는 것이 안전 (초안에 반영함).</li>
+</ul>
+<p><strong>학부모(소비자) 측 직거래 금지는 다른 문제</strong></p>
+<ul>
+<li>소비자 상대 위약금 조항은 약관규제법 제8조(과중한 손해배상 의무 부과 조항 무효) 리스크가 큼. <strong>학부모 측에는 위약금을 두지 말고</strong>, &quot;직거래 시 재매칭 보증·환불 보장 등 회사 보증의 적용 종료&quot; 수준의 불이익으로 설계 (수강 계약서에는 위약금 조항을 넣지 않음).</li>
+</ul>
+<p><strong>[정식 자문 질문]</strong> ① 12개월·수강료 4개월분이 손해배상 예정으로 유효한 범위인지 ② 위약벌 구조로 가져갈 실익이 있는지 ③ 학부모 측 보증 종료 방식의 약관규제법 적합성.</p>
+<h2>A-2. 강사 신원확인 — 플랫폼의 조회 권한 범위 (L-4)</h2>
+<p><strong>임시 결론</strong></p>
+<ul>
+<li>아동·청소년의 성보호에 관한 법률(제56조)상 성범죄 경력자 취업제한과 경력 조회 의무는 학원·교습소·<strong>개인과외교습자</strong> 등 &quot;아동·청소년 관련기관등&quot;에 적용됨. 당사가 학원·교습소가 아닌 중개·관리 플랫폼이라면 <strong>당사가 직접 경찰관서에 조회를 요청할 법적 근거는 불분명</strong>함.</li>
+<li>따라서 실무 표준 방식으로 설계: <strong>① 강사 본인이 경찰서에서 발급받는 「성범죄 경력 회보서(본인 확인용)」를 위촉 전 제출</strong>하게 하고, <strong>② 개인과외교습자 신고 대상 강사는 신고증 사본 제출</strong>(신고 과정에서 결격 확인이 이뤄짐), ③ 제출·확인 사실과 목적을 명시한 <strong>별도 동의서(L-4)</strong> 로 개인정보(민감정보 아님, 그러나 형의 실효 등에 관한 법률상 취급 주의) 수집 근거를 확보.</li>
+<li>일반 범죄경력회보서(성범죄 외 전과 전체)를 요구하는 것은 형실효법상 수집 제한 논점이 있어 <strong>성범죄 경력 회보서 + 신고증으로 한정</strong>하는 것을 권장.</li>
+</ul>
+<p><strong>[정식 자문 질문]</strong> ① 당사 사업 형태가 아청법상 &quot;아동·청소년 관련기관등&quot;에 해당해 조회 &#39;의무&#39; 주체가 되는지 ② 본인 제출 방식의 적법성과 보관 기간 ③ 성범죄 외 결격 확인 가능 범위.</p>
+<h2>A-3. 학원법상 회사 지위 (개인과외교습자 신고 / 중개 플랫폼)</h2>
+<p><strong>임시 결론</strong></p>
+<ul>
+<li>과외교습의 신고 의무 주체는 <strong>교습을 하는 강사 개인</strong> (학원법 제14조의2, 주소지 교육지원청에 개인과외교습자 신고). <strong>단, 대학(원) 재학생의 과외교습은 신고 의무가 면제</strong>됨 — 명문대 재학생 중심 강사풀이면 상당수가 면제 대상. 휴학생·졸업생·전업 강사는 신고 필요.</li>
+<li>회사가 직접 교습하지 않고 매칭·학습관리만 제공하면 <strong>학원 등록 대상이 아니라는 것이 당사 모델의 전제</strong>이나, 다음 경계를 지켜야 함: ① 광고·계약 문구에서 회사가 교습 주체로 보이지 않게 (&quot;수업은 강사가 제공하며 회사는 매칭·관리 서비스를 제공&quot;) — 강사 위촉 계약과 수강 계약에 이 구조를 명시(초안 반영), ② 매니저의 &quot;학습관리&quot;가 교과 지도(교습)에 해당하지 않도록 업무 범위를 상담·일정·리포트로 한정.</li>
+<li>행정: 회사는 <strong>통신판매업 신고</strong>(전자상거래) + 필요 시 <strong>통신판매중개자 고지</strong>(전자상거래법 제20조 — 거래 당사자가 아님을 표시하는 모델을 택할 경우) 정비. 유료직업소개사업 해당 여부는 &quot;근로계약 알선&quot;이 아닌 위탁계약 매칭이므로 비해당으로 보는 것이 합리적이나 확인 필요.</li>
+<li>강사 위촉 계약에 <strong>개인과외교습자 신고(면제자 제외) 의무 조항</strong>을 두는 것으로 초안 반영.</li>
+</ul>
+<p><strong>[정식 자문 질문]</strong> ① 당사 모델(중개+유상 학습관리)의 학원법상 등록·신고 요부 ② 통신판매업&#39;자&#39;로서 직접 판매 모델 vs 중개자 고지 모델 중 유리한 구조 ③ 직업안정법상 유료직업소개 해당 여부.</p>
+<h2>A-4. 강사 정산 원천징수 (세무)</h2>
+<p><strong>임시 결론</strong></p>
+<ul>
+<li>강사는 위촉 계약으로 <strong>계속·반복적으로</strong> 용역을 제공하므로 소득세법상 <strong>사업소득</strong>에 해당 — 지급 시 <strong>3.3% (소득세 3% + 지방소득세 0.3%) 원천징수</strong>가 표준. 일시·우발적 용역에 적용되는 기타소득(8.8%) 처리는 부적절.</li>
+<li>회사 의무: 원천세 익월 10일까지 신고·납부, <strong>사업소득 간이지급명세서 매월 제출</strong>, 연간 지급명세서 제출. 강사는 5월 종합소득세 신고 대상임을 계약서에 안내 (초안 반영).</li>
+<li>[세무 확인 필요] 마커는 &quot;사업소득 3.3% 확정(임시), 세무사에게 신고 일정·명세서 제출만 확인&quot; 수준으로 완화 가능.</li>
+</ul>
+<p><strong>[정식 자문 질문(세무사)]</strong> ① 간이지급명세서 제출 주기 현행 확인 ② 강사 다수 시 원천세 반기납부 특례 적용 여부.</p>
+<h2>A-5. 남은 미결 (이 메모로 해소되지 않음)</h2>
+<ul>
+<li>미성년자 법정대리인 <strong>동의 기록의 DB 보존</strong> 여부 — 법률이 아니라 코드 확인 사항 (<code>LEGAL_DOCS_STATUS.md</code> §1).</li>
+<li>사업자등록·통신판매업 신고 완료 후 법률 페이지 placeholder 8곳 기입.</li>
+<li>매니저 성과급 비율 — 법률 아닌 경영 정책.</li>
+</ul>
+</section><section id="d-internal-LEGAL-DOCS-STATUS-md"><span class="fname">internal/LEGAL_DOCS_STATUS.md</span><h1>법률 문서 현황과 필요 목록 (내부)</h1>
+<blockquote>
+<p>작성: 2026-07-04 · 근거: 웹 게시 법률 페이지 3종 코드 실측 + <code>docs/BUSINESS_REVIEW.md</code> Part 2(법률·개인정보 리스크 BR-7~).
+⚠️ 이 문서는 내부 체크리스트이며 법률 자문을 대체하지 않음. 최종본은 변호사/노무사 검토 필수.</p>
+</blockquote>
+<hr>
+<h2>1. 현재 보유 (웹 게시 중)</h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>위치</th>
+<th>상태</th>
+<th>남은 placeholder</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>이용약관</td>
+<td><code>/terms</code> (<code>src/app/terms/page.tsx</code>)</td>
+<td>게시 중, 목차·앵커 완료</td>
+<td><code>[기재 예정]</code> 4곳 — 부칙 사업자 정보</td>
+</tr>
+<tr>
+<td>개인정보처리방침</td>
+<td><code>/privacy</code> (<code>src/app/privacy/page.tsx</code>)</td>
+<td>게시 중</td>
+<td><code>[기재 예정]</code> 3곳 — 보호책임자 성명·직책, 시행일</td>
+</tr>
+<tr>
+<td>환불정책</td>
+<td><code>/refund</code> (<code>src/app/refund/page.tsx</code>)</td>
+<td>게시 중, 첫 수업 100% 환불 명시</td>
+<td><code>[기재 예정]</code> 1곳 — 시행일</td>
+</tr>
+</tbody></table>
+<ul>
+<li>미성년자 법정대리인 동의: 약관 제~조에 조항 존재 + 가입 플로우에 보호자 동의 구현됨(커밋 70ee8c4). 동의 <strong>기록 보존</strong>(일시·방법) DB 저장 여부는 [확인 필요].</li>
+<li>placeholder 해소 조건: 사업자등록·통신판매업 신고 완료 → 실제 정보 기입 (BUSINESS_REVIEW Part 2 개시 블로커와 동일).</li>
+</ul>
+<h2>2. 미보유 — 작성 필요 (우선순위순)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>문서</th>
+<th>왜 필요한가</th>
+<th>우선순위</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L-1</td>
+<td><strong>수강(과외) 계약서 / 수강 신청 확인서</strong></td>
+<td>선불 고액 + 대면 수업. 분쟁 시 약관만으로는 개별 조건(요일·시간·강사·금액) 입증 곤란. 결제 완료 화면·메일로 자동 발급하는 형태 권장</td>
+<td>🔴 결제 개시 전</td>
+</tr>
+<tr>
+<td>L-2</td>
+<td><strong>강사 위촉 계약서 (업무위탁)</strong></td>
+<td>강사는 근로자가 아닌 위탁계약 구조여야 함(노무 리스크). 정산율·직거래 금지·비밀유지·아동학대 예방 조항 포함. 정산 기능이 코드에 진행 중이므로 정산율 확정과 동시 작성</td>
+<td>🔴 강사 온보딩 전</td>
+</tr>
+<tr>
+<td>L-3</td>
+<td><strong>개인정보 내부관리계획</strong></td>
+<td>개인정보보호법상 내부 관리계획 수립 의무(미성년자 정보 다량 처리). 접근권한·암호화·교육 계획</td>
+<td>🟠</td>
+</tr>
+<tr>
+<td>L-4</td>
+<td><strong>강사 신원확인 동의서</strong> (범죄경력 조회 등)</td>
+<td>미성년자 대면 수업 — BR-6. 임시 자문(<code>LEGAL_ADVISORY_MEMO.md</code> A-2): 본인 발급 「성범죄 경력 회보서」 + 개인과외교습자 신고증(재학생은 재학증명서) 제출 방식으로 설계, 위촉 계약 제8조 반영 완료</td>
+<td>🟠</td>
+</tr>
+<tr>
+<td>L-5</td>
+<td><strong>직거래 방지 약정</strong> (학부모측 약관 조항 + 강사 계약 조항 쌍)</td>
+<td>BR-2 탈중개 방어. 약관 개정 + L-2에 위약 조항</td>
+<td>🟠</td>
+</tr>
+<tr>
+<td>L-6</td>
+<td><strong>마케팅 수신 동의 문구</strong> (SMS/카카오 발송 전)</td>
+<td>광고성 정보 전송 시 별도 동의 필요. 현재 알림이 인앱뿐이라 미래 대비</td>
+<td>🟡</td>
+</tr>
+<tr>
+<td>L-7</td>
+<td><strong>촬영·초상권 사용 동의서</strong> (후기·사진 자산화용)</td>
+<td>BUSINESS_REVIEW Part 3 §3(실촬영)·§5(후기 루프) 실행 전제</td>
+<td>🟡</td>
+</tr>
+</tbody></table>
+<h2>3. 신고·등록 (문서 아님, 선행 행정)</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>사업자등록</td>
+<td>[확인 필요]</td>
+<td>placeholder 해소의 전제</td>
+</tr>
+<tr>
+<td>통신판매업 신고</td>
+<td>[확인 필요]</td>
+<td>온라인 결제 필수</td>
+</tr>
+<tr>
+<td>학원법상 지위 (개인과외교습자 신고 / 중개 플랫폼 해당 여부)</td>
+<td>임시 자문 완료 (<code>LEGAL_ADVISORY_MEMO.md</code> A-3) — 신고 의무는 강사 개인(재학생 면제), 회사는 학원 등록 비대상 전제 + 통신판매업 신고, 교습 주체로 안 보이게 문구 관리. 정식 자문으로 확정 필요</td>
+<td>설탭은 학원설립운영등록번호 게시 — 당사 모델(중개+관리)의 요구사항 확인</td>
+</tr>
+<tr>
+<td>개인정보처리방침 시행일 확정</td>
+<td>사업 개시일과 동기화</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2>4. 실행 순서 제안</h2>
+<ol>
+<li>사업자등록·통신판매업 신고 → 법률 페이지 placeholder 8곳 일괄 기입 (코드 수정 10분)</li>
+<li>L-1·L-2 초안 작성 (표준계약서 기반 초안은 요청 시 이 저장소에서 작성 가능 — 단 변호사 검토 전 사용 금지 표시)</li>
+<li>학원법 지위 자문 1회 (L-4 조회 권한 포함해 한 번에)</li>
+<li>파일럿 시작 전 L-5·L-7, 마케팅 시작 전 L-6</li>
+</ol>
+</section><section id="d-internal-TECH-OVERVIEW-md"><span class="fname">internal/TECH_OVERVIEW.md</span><h1>Concord Private Tutoring — 기술 아키텍처 개요</h1>
+<blockquote>
+<p>대상: 신규 합류 엔지니어<br>기준: 저장소 실측 (2026-07-04)<br>리서치 원칙: 파일 실측만 반영. 확인하지 못한 항목은 <code>[미확인]</code>.</p>
+</blockquote>
+<hr>
+<h2>1. 스택 요약</h2>
+<p><code>package.json</code> (2026-07-04) 실측:</p>
+<table>
+<thead>
+<tr>
+<th>계층</th>
+<th>라이브러리</th>
+<th>버전</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>프레임워크</td>
+<td><code>next</code></td>
+<td>14.2.35 (App Router)</td>
+</tr>
+<tr>
+<td>언어</td>
+<td><code>typescript</code></td>
+<td>^5</td>
+</tr>
+<tr>
+<td>인증</td>
+<td><code>next-auth</code></td>
+<td>^5.0.0-beta.31 (JWT Credentials)</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td><code>@prisma/client</code>, <code>prisma</code></td>
+<td>5.22.0</td>
+</tr>
+<tr>
+<td>DB</td>
+<td>Supabase PostgreSQL (pooler 6543 + direct 5432)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>스토리지</td>
+<td><code>@supabase/supabase-js</code></td>
+<td>^2.105.4</td>
+</tr>
+<tr>
+<td>결제</td>
+<td><code>@tosspayments/payment-widget-sdk</code></td>
+<td>^0.12.1</td>
+</tr>
+<tr>
+<td>AI</td>
+<td><code>@anthropic-ai/sdk</code></td>
+<td>^0.96.0</td>
+</tr>
+<tr>
+<td>스타일</td>
+<td><code>tailwindcss</code></td>
+<td>^3.4.1</td>
+</tr>
+<tr>
+<td>모션·DnD</td>
+<td><code>framer-motion</code> 12.38, <code>@dnd-kit/*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>문서 생성</td>
+<td><code>docx</code></td>
+<td>^9.7.0</td>
+</tr>
+<tr>
+<td>해시</td>
+<td><code>bcryptjs</code></td>
+<td>^3.0.3</td>
+</tr>
+</tbody></table>
+<p>빌드 스크립트: <code>next build</code> 앞단에 <code>prisma migrate deploy</code>가 붙어 있어 배포 시 DB 마이그레이션이 강제됨 (<code>package.json</code> <code>build</code>).</p>
+<hr>
+<h2>2. 디렉토리 구조</h2>
+<h3>루트</h3>
+<pre><code>premium-tutoring/
+├─ auth.ts                 # NextAuth v5 엔트리(핸들러·auth 함수)
+├─ middleware.ts           # 역할별 라우트 가드
+├─ next.config.mjs
+├─ vercel.json             # icn1 리전, cron 2건
+├─ prisma/
+│  ├─ schema.prisma        # 608 줄, 모델 30여 개
+│  └─ migrations/
+├─ scripts/                # check-env, setup-storage, seed-sample
+├─ src/
+│  ├─ app/                 # App Router
+│  ├─ components/
+│  └─ lib/                 # 도메인 로직·헬퍼 (약 80개)
+├─ mobile/                 # React Native (Expo) 앱 워크스페이스
+└─ docs/                   # 제품·핸드오프 문서
+</code></pre>
+<h3><code>src/app</code> 라우트 그룹</h3>
+<table>
+<thead>
+<tr>
+<th>경로</th>
+<th>목적</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>(home)/</code></td>
+<td>마케팅 홈 (라우트 그룹으로 그룹핑, URL엔 미노출)</td>
+</tr>
+<tr>
+<td><code>login</code>, <code>register</code>, <code>checkout</code>, <code>success</code></td>
+<td>공개 진입점</td>
+</tr>
+<tr>
+<td><code>dashboard/</code></td>
+<td>학생 포털</td>
+</tr>
+<tr>
+<td><code>teacher-portal/</code></td>
+<td>선생님·매니저 포털 (역할별 탭 분기)</td>
+</tr>
+<tr>
+<td><code>admin/</code></td>
+<td>관리자 CMS·운영 콘솔</td>
+</tr>
+<tr>
+<td><code>pricing</code>, <code>faq</code>, <code>tutors</code>, <code>reviews</code>, <code>terms</code>, <code>privacy</code>, <code>refund</code></td>
+<td>공개 페이지</td>
+</tr>
+<tr>
+<td><code>notifications</code>, <code>payments</code>, <code>questions</code></td>
+<td>학생용 서브 페이지</td>
+</tr>
+<tr>
+<td><code>api/</code></td>
+<td>서버 라우트 (<code>route.ts</code> 110개)</td>
+</tr>
+<tr>
+<td><code>layout.tsx</code>, <code>robots.ts</code>, <code>sitemap.ts</code></td>
+<td>전역</td>
+</tr>
+</tbody></table>
+<h3><code>src/lib</code> 핵심 모듈 (요약 인덱스, 실측 80+ 파일 중 발췌)</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>prisma.ts</code></td>
+<td>Prisma 클라이언트 싱글턴</td>
+</tr>
+<tr>
+<td><code>admin-auth.ts</code>, <code>student-auth.ts</code>, <code>teacher-auth.ts</code>, <code>manager-auth.ts</code>, <code>mobile-auth.ts</code>, <code>notification-auth.ts</code></td>
+<td>라우트별 <code>requireXxx()</code> 가드</td>
+</tr>
+<tr>
+<td><code>student-enrollment.ts</code></td>
+<td>상담 신청·Chief 즉시 배정 로직</td>
+</tr>
+<tr>
+<td><code>student-payment.ts</code></td>
+<td>Toss 결제 완료 후 구독·Chief 배정 (멱등)</td>
+</tr>
+<tr>
+<td><code>toss-payments.ts</code></td>
+<td>Toss confirm / fetch / 빌링키 발급·청구</td>
+</tr>
+<tr>
+<td><code>manager-portal-data.ts</code></td>
+<td>매니저 포털 서버 페처</td>
+</tr>
+<tr>
+<td><code>manager-student-stats.ts</code>, <code>manager-stats.ts</code></td>
+<td>매니저 KPI</td>
+</tr>
+<tr>
+<td><code>pricing-plans.ts</code>, <code>pricing-cms.ts</code>, <code>pricing-tier-preference.ts</code></td>
+<td>요금제</td>
+</tr>
+<tr>
+<td><code>qna.ts</code>, <code>ai-answer.ts</code></td>
+<td>통합 QnA + Anthropic AI 답변</td>
+</tr>
+<tr>
+<td><code>homework-distribution.ts</code></td>
+<td>주간 숙제 자동 분배</td>
+</tr>
+<tr>
+<td><code>landing-data.ts</code>, <code>cms.ts</code>, <code>cms-seed.ts</code>, <code>cms-page-defaults.ts</code>, <code>site-content.ts</code></td>
+<td>CMS 콘텐츠 조회·시딩</td>
+</tr>
+<tr>
+<td><code>public-cms-cache.ts</code>, <code>public-teachers-cache.ts</code></td>
+<td><code>unstable_cache</code> 태그 관리</td>
+</tr>
+<tr>
+<td><code>run-alert-checks.ts</code></td>
+<td>크론 알림·모니터링 배치</td>
+</tr>
+<tr>
+<td><code>generate-monthly-report.ts</code></td>
+<td>월간 리포트 생성</td>
+</tr>
+<tr>
+<td><code>analytics.ts</code>, <code>analytics-events.ts</code>, <code>analytics-funnel.ts</code>, <code>analytics-journey.ts</code></td>
+<td>이벤트 로깅·퍼널</td>
+</tr>
+<tr>
+<td><code>supabase-admin.ts</code>, <code>supabase-client.ts</code></td>
+<td>Supabase Storage 클라이언트</td>
+</tr>
+<tr>
+<td><code>audit-log.ts</code></td>
+<td><code>AuditLog</code> 기록 헬퍼 (BR-15 요건)</td>
+</tr>
+<tr>
+<td><code>sms.ts</code>, <code>expo-push.ts</code>, <code>notifications.ts</code></td>
+<td>알림 채널</td>
+</tr>
+<tr>
+<td><code>visit-consultation.ts</code></td>
+<td>방문 상담 시간대 파싱</td>
+</tr>
+<tr>
+<td><code>chief-manager.ts</code>, <code>default-manager.ts</code></td>
+<td>Chief 매니저 조회·폴백</td>
+</tr>
+<tr>
+<td><code>consultation-report.ts</code>, <code>consultation-booking-dto.ts</code></td>
+<td>상담 리포트·DTO</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>3. 인증·인가 흐름</h2>
+<h3>3.1 NextAuth v5 설정 (<code>auth.ts</code>)</h3>
+<ul>
+<li><code>basePath: &quot;/api/auth&quot;</code> — <code>NEXTAUTH_URL</code>에 경로 포함 금지 (basePath 오염 시 전원 로그인 실패).</li>
+<li><code>session.strategy: &quot;jwt&quot;</code> — DB 세션 미사용.</li>
+<li>Secret: <code>AUTH_SECRET</code> 또는 <code>NEXTAUTH_SECRET</code> (앞의 값 우선).</li>
+<li>Provider: <code>CredentialsProvider</code> 하나만. <code>identifier</code>(이메일 또는 전화번호) + <code>password</code>.</li>
+<li>전화번호 로그인: <code>phone-login.ts</code>의 <code>normalizePhoneDigits</code>로 정규화 후, 학생·선생님 합성 이메일(<code>*@concord.local</code> 계열) 또는 relation <code>phone</code> 컬럼과 매칭.</li>
+<li>소프트 삭제 가드: <code>user.deletedAt</code>이 있으면 authorize에서 null 반환.</li>
+<li><code>jwt</code> 콜백에서 <code>id</code>, <code>role</code>, <code>name</code>을 토큰에 저장 → <code>session</code> 콜백에서 <code>session.user</code>에 주입.</li>
+<li><strong>Prisma select 최소화</strong>: <code>include</code> 대신 명시적 <code>select</code>. 신규 컬럼이 마이그레이션 이전이면 P2022로 모든 로그인이 죽는 사고를 방지하기 위한 의도적 설계.</li>
+</ul>
+<h3>3.2 미들웨어 라우트 가드 (<code>middleware.ts</code>)</h3>
+<p><code>matcher</code>가 <code>/api/auth</code>·정적 자산을 제외한 모든 경로에 적용됨.</p>
+<ul>
+<li><code>/admin/*</code> → <code>ADMIN</code>만 통과, 이외는 <code>/login</code>으로 리다이렉트.</li>
+<li>로그인한 <code>STUDENT</code>:<ul>
+<li>허용: <code>isMarketingPublicPath(pathname)</code> OR <code>/dashboard/*</code> OR <code>/api/*</code></li>
+<li>그 외는 <code>/dashboard</code>로 리다이렉트.</li>
+</ul>
+</li>
+<li>로그인한 <code>TEACHER</code> 또는 <code>MANAGER</code>:<ul>
+<li>허용: 마케팅 공개 경로 OR <code>/teacher-portal/*</code> OR <code>/api/*</code></li>
+<li>그 외는 <code>/teacher-portal/dashboard</code>로 리다이렉트.</li>
+</ul>
+</li>
+<li><code>ADMIN</code>은 자유롭게 통과.</li>
+<li>비로그인: <code>/dashboard</code>, <code>/teacher-portal/dashboard</code> 접근 시 각각 <code>/login</code>·<code>/teacher-portal</code>로 리다이렉트.</li>
+</ul>
+<p>주의: 미들웨어는 <code>CHIEF_MANAGER</code>를 명시적으로 분기하지 않음. 미들웨어의 <code>role === &quot;MANAGER&quot;</code> 매칭에 <code>CHIEF_MANAGER</code>는 걸리지 않아, 현재 코드 경로에서는 <code>else</code>로 빠져 아무 리다이렉트도 걸리지 않을 가능성이 있음 (마지막 <code>!session</code> 블록에서만 걸림). <strong><code>CHIEF_MANAGER</code> 세션 유저가 어떤 경로로 라우팅되는지 [미확인]</strong> — 실제 UI 동작을 통해 검증 필요.</p>
+<h3>3.3 공개 경로 판정 (<code>src/lib/public-routes.ts</code>)</h3>
+<p><code>isMarketingPublicPath()</code>는 다음 prefix를 정확히 매치하거나 하위 경로로 허용:</p>
+<p><code>/</code>, <code>/pricing</code>, <code>/tutors</code>, <code>/faq</code>, <code>/reviews</code>, <code>/login</code>, <code>/register</code>, <code>/checkout</code>, <code>/success</code></p>
+<h3>3.4 API 라우트 가드 헬퍼</h3>
+<p>역할별 헬퍼가 있고 <code>route.ts</code>에서 <code>if (&quot;error&quot; in r) return r.error</code> 패턴으로 호출:</p>
+<table>
+<thead>
+<tr>
+<th>헬퍼</th>
+<th>통과 역할</th>
+<th>부가 검사</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>requireStudent</code></td>
+<td><code>STUDENT</code></td>
+<td><code>Student</code> 레코드 존재 확인 (<code>userId</code> unique)</td>
+</tr>
+<tr>
+<td><code>requireTeacher</code></td>
+<td><code>TEACHER</code> / <code>MANAGER</code> / <code>CHIEF_MANAGER</code></td>
+<td><code>Teacher</code> 레코드 존재 확인</td>
+</tr>
+<tr>
+<td><code>requireManager</code></td>
+<td><code>MANAGER</code> / <code>CHIEF_MANAGER</code></td>
+<td>캐시된 <code>Teacher</code> 조회</td>
+</tr>
+<tr>
+<td><code>requireAdmin</code></td>
+<td><code>ADMIN</code> / <code>CHIEF_MANAGER</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>requireNotificationUser</code></td>
+<td>로그인 유저 전체 (역할 미검사)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>requireMobileStudent</code></td>
+<td>Bearer 토큰 <code>role=STUDENT</code></td>
+<td>HMAC-SHA256 JWT 검증 후 <code>Student</code> 조회</td>
+</tr>
+</tbody></table>
+<p>특이 사항:</p>
+<ul>
+<li><code>requireAdmin</code>이 <code>CHIEF_MANAGER</code>도 통과시킴 → <code>admin/*</code> 상당수를 Chief가 사용할 수 있음 (미들웨어는 <code>/admin</code> UI를 Chief에게 열지 않으나 API는 열림).</li>
+<li><code>chief-manager/teacher-approval</code>·<code>manager/teacher-approval</code> 두 라우트는 <code>requireAdmin</code> 후 다시 <code>ADMIN</code> 또는 <code>CHIEF_MANAGER</code>만 통과시키는 이중 가드 (동일 코드 · 별도 위치).</li>
+</ul>
+<h3>3.5 모바일 인증</h3>
+<ul>
+<li><code>src/lib/mobile-auth.ts</code> — HMAC-SHA256 서명 커스텀 JWT (외부 라이브러리 없이 <code>crypto</code>).</li>
+<li>Access: 7일, Refresh: 60일.</li>
+<li><code>Authorization: Bearer &lt;token&gt;</code>.</li>
+<li>Secret은 <code>AUTH_SECRET</code> / <code>NEXTAUTH_SECRET</code> 재사용.</li>
+</ul>
+<hr>
+<h2>4. DB 모델 관계도</h2>
+<p><code>prisma/schema.prisma</code> 608줄, enum 6개 + 모델 27개 실측.</p>
+<h3>4.1 enum</h3>
+<ul>
+<li><code>UserRole</code>: <code>ADMIN</code>, <code>CHIEF_MANAGER</code>, <code>MANAGER</code>, <code>TEACHER</code>, <code>STUDENT</code></li>
+<li><code>ConsultationStatus</code>: <code>WAITING</code>, <code>ASSIGNED</code>, <code>COMPLETED</code>, <code>CANCELLED</code></li>
+<li><code>LessonStatus</code>: <code>SCHEDULED</code>, <code>COMPLETED</code>, <code>CANCELLED</code></li>
+<li><code>SubscriptionStatus</code>: <code>ACTIVE</code>, <code>PAST_DUE</code>, <code>PAUSED</code>, <code>CANCELLED</code></li>
+<li><code>MatchStatus</code>: <code>PENDING_STUDENT_ACCEPT</code>, <code>ACTIVE</code>, <code>CANCELLED</code></li>
+<li><code>PaymentStatus</code>: <code>PROCESSING</code>, <code>COMPLETED</code>, <code>FAILED</code>, <code>REFUNDED</code></li>
+</ul>
+<h3>4.2 텍스트 관계도</h3>
+<pre><code>User (role: UserRole, deletedAt?)
+ ├─1:1─ Student ──1:1─ OnboardingSurvey
+ │       ├─1:1─ BillingProfile (customerKey = &quot;student-{studentId}&quot;)
+ │       ├─1:N─ StudyPlan ──1:N─ StudyTask
+ │       ├─1:N─ Question              (DEPRECATED — QuestionMessage로 통합)
+ │       ├─1:N─ QuestionMessage (self-join: replyToId → parent)
+ │       ├─1:N─ TeacherStudent ──N:1─ Teacher   (매칭 · MatchStatus)
+ │       ├─1:N─ ConsultationBooking ──N:1─ Teacher(as manager)
+ │       │       └─1:1─ ConsultationReport
+ │       ├─1:N─ ManagerStudent ──N:1─ Teacher(as manager)
+ │       ├─1:N─ ManagerCareLog ──N:1─ Teacher(as manager)
+ │       ├─1:N─ Lesson ──N:1─ Teacher
+ │       ├─1:N─ TutorReview ──N:1─ Teacher
+ │       ├─1:N─ StudySession
+ │       ├─1:N─ Subscription           (SubscriptionStatus)
+ │       ├─1:N─ PaymentCompletion      (orderId unique · 멱등성)
+ │       ├─1:N─ TokenWallet            (studentId+month unique)
+ │       ├─1:N─ MonthlyReport          (studentId+month unique)
+ │       └─1:N─ SatisfactionCheckin
+ ├─1:1─ Teacher (approved, gender)
+ │       ├─1:1─ TeacherProfile
+ │       ├─1:N─ TutorAvailability
+ │       ├─1:N─ HomeworkTemplate
+ │       └─(N:M via TeacherStudent · ManagerStudent · ManagerCareLog · Lesson · TutorReview · QuestionMessage · ConsultationBooking)
+ ├─1:N─ Notification
+ └─1:N─ PushDevice          (expoPushToken unique)
+
+무관계(독립):
+ - SiteContent (section+key unique)
+ - Testimonial · FaqItem  (CMS)
+ - AnalyticsEvent (userId는 FK 없음, 플레인 문자열)
+ - AuditLog (BR-15 요건 · FK 없음)
+</code></pre>
+<p>주요 유니크·인덱스 하이라이트:</p>
+<ul>
+<li><code>TeacherStudent (teacherId, studentId)</code> 유니크 → 학생–선생 1쌍 매칭.</li>
+<li><code>ConsultationBooking.studentId</code> — 학생당 다중 booking 허용 (2026-06 이후 히스토리 축적 정책).</li>
+<li><code>TutorReview (teacherId, studentId)</code> — 학생당 한 강사 1리뷰.</li>
+<li><code>PaymentCompletion.orderId</code> unique → Toss 재시도·중복 콜백 대비 멱등성 키.</li>
+<li><code>BillingProfile.customerKey</code> unique.</li>
+<li><code>TutorAvailability (teacherId, weekday, time)</code> — 슬롯 중복 방지.</li>
+</ul>
+<p><strong>주의점</strong>:</p>
+<ul>
+<li><code>Student ⇄ Teacher</code> 매칭 활성 판단은 여전히 <code>isActive</code> 기준 (스키마 코멘트, 라인 139–141). <code>matchStatus</code>는 병기되지만 정책적 진리는 <code>isActive</code>.</li>
+<li><code>Question</code> 모델은 DEPRECATED (<code>QuestionMessage</code>로 통합).</li>
+<li>결제 이력 무결성을 위해 <code>Subscription</code>, <code>PaymentCompletion.student</code>는 <code>onDelete: Restrict</code>.</li>
+</ul>
+<hr>
+<h2>5. 캐싱 전략</h2>
+<p>Next.js <code>unstable_cache</code> 태그 기반 재검증.</p>
+<h3>5.1 태그 정의 (<code>src/lib/public-cms-cache.ts</code>)</h3>
+<ul>
+<li><code>PUBLIC_CMS_REVALIDATE_SECONDS = 300</code> — 5분.</li>
+<li>태그:<ul>
+<li><code>public-site-content</code> (<code>SITE_CONTENT_CACHE_TAG</code>)</li>
+<li><code>public-testimonials</code> (<code>TESTIMONIALS_CACHE_TAG</code>)</li>
+<li><code>public-faqs</code> (<code>FAQS_CACHE_TAG</code>)</li>
+<li><code>public-teachers</code> (<code>PUBLIC_TEACHERS_CACHE_TAG</code>)</li>
+</ul>
+</li>
+<li><code>revalidatePublicCms(...tags)</code> — 관리자 CMS 변경 후 호출. 인자 미지정 시 상단 3개(teachers 제외)를 일괄 재검증.</li>
+<li>Teachers 캐시는 별도 태그로 분리 — 강사 승인·프로필 변경 시에만 무효화.</li>
+</ul>
+<h3>5.2 캐시 사용처 [미확인 상세]</h3>
+<ul>
+<li><code>src/lib/cms.ts</code>, <code>landing-data.ts</code>, <code>public-teachers-cache.ts</code>가 <code>unstable_cache</code>로 감싸 tag를 부여함 (파일 존재 실측, 구현 상세 [미확인]).</li>
+<li>Admin CMS 라우트(<code>api/admin/cms/*</code>)와 <code>api/admin/teachers/*</code> 및 <code>api/teacher/profile/*</code>는 변경 시 <code>revalidatePublicCms(...)</code> 또는 <code>revalidateTag(PUBLIC_TEACHERS_CACHE_TAG)</code>를 호출 (import 실측).</li>
+</ul>
+<hr>
+<h2>6. 결제 흐름</h2>
+<h3>6.1 웹 정기결제 (일회성 위젯)</h3>
+<ol>
+<li><code>/checkout</code> — Toss Payments 위젯 SDK가 렌더링. <code>TOSS_CLIENT_KEY</code> 사용(<code>toss-client.ts</code>).</li>
+<li>사용자가 승인 → Toss가 <code>/success?paymentKey=&amp;orderId=&amp;amount=</code>로 리다이렉트.</li>
+<li><code>SuccessPaymentComplete</code> 클라이언트 컴포넌트가 <code>POST /api/payments/complete</code>로 전송.</li>
+<li><code>/api/payments/complete</code> (<code>src/app/api/payments/complete/route.ts</code>):<ul>
+<li><code>auth()</code> → <code>role === &quot;STUDENT&quot;</code> 필수.</li>
+<li>body 필수 필드: <code>orderId</code> (string), <code>paymentKey</code> (string), <code>amount</code> (number).</li>
+<li><code>planIdFromAmount(amount)</code>로 서버가 요금제를 재계산 — 클라이언트 값 미신뢰.</li>
+<li><code>completeStudentPayment()</code> 호출.</li>
+</ul>
+</li>
+<li><code>completeStudentPayment()</code> (<code>src/lib/student-payment.ts</code>):<ul>
+<li><code>PaymentCompletion.orderId</code>로 멱등성 조회.</li>
+<li>COMPLETED 재호출: DB 상태만 반환.</li>
+<li>REFUNDED: <code>PAYMENT_REFUNDED</code> throw.</li>
+<li>PROCESSING: 이미 처리 중 → 상태만 조회 시도.</li>
+<li>FAILED/신규: <strong><code>confirmTossPayment(paymentKey, orderId, amount)</code> 호출</strong>(Toss <code>/v1/payments/confirm</code>) → PROCESSING로 upsert → <code>assignChiefManagerToStudent()</code> → <code>Subscription</code> upsert (ACTIVE, 1개월 periodEnd) → PaymentCompletion을 COMPLETED로 클로즈.</li>
+<li>예외 발생 시 <code>PaymentCompletion.status = FAILED</code>로 재설정.</li>
+</ul>
+</li>
+</ol>
+<h3>6.2 빌링키 자동결제</h3>
+<ul>
+<li>등록: 위젯이 authKey를 <code>?authKey=&amp;customerKey=</code>로 <code>/api/billing/register-success?authKey=&amp;customerKey=</code>로 리다이렉트.</li>
+<li><code>/api/billing/register-success</code>:<ul>
+<li><code>STUDENT</code> 세션 필수.</li>
+<li><code>customerKey === &quot;student-{studentId}&quot;</code> 검증 (미스매치 시 실패).</li>
+<li><code>issueBillingKey(authKey, customerKey)</code> → Toss <code>/v1/billing/authorizations/issue</code>.</li>
+<li><code>BillingProfile</code> upsert (autoRenew=true 기본).</li>
+</ul>
+</li>
+<li><code>/api/billing/autorenew</code> — <code>POST { enabled: boolean }</code>로 학생이 토글. billingKey는 유지되므로 재등록 없이 재활성 가능.</li>
+<li>결제: <code>src/lib/toss-payments.ts</code>의 <code>chargeBillingKey({ billingKey, customerKey, amount, orderId, orderName, customerName })</code> → Toss <code>/v1/billing/{billingKey}</code>. 실패 시 <code>TOSS_BILLING_CHARGE_FAILED:{code}</code>로 상위(dunning) 로직에 위임.</li>
+<li><strong>자동 청구를 실제로 트리거하는 스케줄러 진입점</strong> [미확인] — <code>chargeBillingKey</code>를 호출하는 크론/API 위치를 검증하지 않았음.</li>
+</ul>
+<h3>6.3 웹훅</h3>
+<ul>
+<li><code>POST /api/webhooks/toss</code> — Toss <code>PAYMENT_STATUS_CHANGED</code> 수신.</li>
+<li>서명 검증 없이 body에서 <code>paymentKey</code>를 뽑아 <code>fetchTossPayment</code>로 <strong>Toss 서버에서 직접 재확인</strong>한 뒤 처리 (본문 신뢰 최소화).</li>
+<li>인식 못 하는 이벤트도 200 반환 (Toss 재시도 유도 방지).</li>
+</ul>
+<h3>6.4 모바일 결제</h3>
+<ul>
+<li><code>POST /api/mobile/payments/complete</code> — <strong>미구현 501</strong> 반환. 모바일은 웹 체크아웃 사용 유도.</li>
+</ul>
+<hr>
+<h2>7. 배포 · 인프라</h2>
+<h3>7.1 Vercel (<code>vercel.json</code>)</h3>
+<ul>
+<li>Region: <code>icn1</code> (서울)</li>
+<li>Cron:<ul>
+<li><code>/api/cron/check-alerts</code> — 매일 00:00 UTC.</li>
+<li><code>/api/cron/generate-monthly-reports</code> — 매월 1일 01:00 UTC.</li>
+</ul>
+</li>
+<li>인증: <code>CRON_SECRET</code> 환경변수. <code>Authorization: Bearer $CRON_SECRET</code> 또는 Vercel의 <code>x-vercel-cron</code> 헤더 중 하나 필요 (<code>src/app/api/cron/check-alerts/route.ts</code> 등).</li>
+</ul>
+<h3>7.2 환경변수 (실측 소스: <code>.env.example</code> + <code>scripts/check-env.ts</code>)</h3>
+<p><code>check-env.ts</code> <code>REQUIRED_KEYS</code> (배포 필수):</p>
+<table>
+<thead>
+<tr>
+<th>키</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DATABASE_URL</code></td>
+<td>Supabase pooler (6543, <code>pgbouncer=true&amp;connection_limit=1</code>) — Prisma 런타임</td>
+</tr>
+<tr>
+<td><code>DIRECT_URL</code></td>
+<td>Supabase direct (5432) — <code>prisma migrate deploy</code> 전용</td>
+</tr>
+<tr>
+<td><code>AUTH_SECRET</code></td>
+<td>NextAuth JWT 서명 (fallback: <code>NEXTAUTH_SECRET</code>)</td>
+</tr>
+<tr>
+<td><code>NEXTAUTH_URL</code></td>
+<td>스킴+호스트만 (경로 붙이면 basePath 오염)</td>
+</tr>
+<tr>
+<td><code>ADMIN_SETUP_SECRET</code></td>
+<td>최초 관리자 부트스트랩·비밀번호 복구</td>
+</tr>
+<tr>
+<td><code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td>
+<td>Supabase 클라이언트</td>
+</tr>
+<tr>
+<td><code>CRON_SECRET</code></td>
+<td>Vercel Cron 인증</td>
+</tr>
+<tr>
+<td><code>ANTHROPIC_API_KEY</code></td>
+<td>Claude AI 답변 (<code>ai-answer.ts</code>)</td>
+</tr>
+</tbody></table>
+<p><code>.env.example</code>에서 추가로 언급된 키:</p>
+<ul>
+<li><code>DEFAULT_MANAGER_EMAIL</code> (선택) — 즉시 등록 시 배정할 대표 매니저.</li>
+<li><code>NEXTAUTH_SECRET</code> (<code>AUTH_SECRET</code> fallback).</li>
+<li><code>AUTH_URL</code> (선택).</li>
+<li><code>SUPABASE_SERVICE_ROLE_KEY</code> — 서버 전용, <code>npm run setup-storage</code>에서 사용.</li>
+<li><code>NEXT_PUBLIC_PORTAL_DESIGN</code> (선택) — <code>concord</code> / <code>legacy</code>.</li>
+</ul>
+<p>핸드오프에 언급되나 <code>.env.example</code>에 없는 키(코드 grep으로 확인됨):</p>
+<ul>
+<li><code>TOSS_SECRET_KEY</code> — <code>src/lib/toss-payments.ts</code>의 confirm/fetch/billing에서 사용. <strong>production 미설정 시 confirm/fetch가 명시적으로 throw</strong>.</li>
+<li><code>CHIEF_MANAGER_EMAIL</code> — 결제·즉시등록 Chief 매니저 지정 (핸드오프 §14 언급, 파일 grep 필요) <code>[미확인]</code> (코드 상세 미검증).</li>
+</ul>
+<h3>7.3 Supabase Storage</h3>
+<ul>
+<li>버킷 이름은 <code>src/lib/supabase-client.ts</code>에 상수로 정의 (<code>TEACHER_DOCUMENT_BUCKET</code> 등).</li>
+<li>사용처:<ul>
+<li><code>POST /api/register/teacher/documents</code> — 이력서·인증서류 업로드.</li>
+<li><code>POST /api/admin/teachers/[id]/documents</code> — 관리자용.</li>
+<li><code>POST /api/teacher/profile/documents</code>, <code>POST /api/teacher/profile/photo</code> — 강사 본인 업로드.</li>
+<li><code>POST /api/admin/teachers/[id]/photo</code>, <code>POST /api/admin/cms/upload-image</code>, <code>POST /api/student/question-images</code> — 이미지 업로드.</li>
+</ul>
+</li>
+<li>서버 사이드는 <code>createSupabaseAdminClient()</code> (service role) 사용.</li>
+</ul>
+<hr>
+<h2>8. 알려진 기술 부채</h2>
+<h3>8.1 결제 검증 (핸드오프 §19에서 지적된 P0 이슈)</h3>
+<p>핸드오프 §19는 <code>/api/payments/complete</code>가 <code>orderId</code>만 검사한다고 서술하나, <strong>현행 코드는 갱신됨</strong>:</p>
+<ul>
+<li><code>route.ts:41–49</code>가 <code>paymentKey</code>, <code>amount</code>를 필수화하고 서버가 <code>planIdFromAmount(amount)</code>로 요금제를 결정.</li>
+<li><code>student-payment.ts:107–109</code>에서 <code>confirmTossPayment(paymentKey, orderId, amount)</code>를 실제 호출 (프로덕션 secret 미설정 시 throw).</li>
+<li>모바일 <code>/api/mobile/payments/complete</code>는 501로 명시적 차단됨.</li>
+</ul>
+<p><strong>남은 우려</strong>:</p>
+<ul>
+<li><strong>웹훅 서명 검증 부재</strong> — <code>/api/webhooks/toss</code>는 Toss가 서명 헤더를 보내더라도 확인하지 않고, Toss 서버 재조회로만 신뢰를 확보 (본문 위조 방지에는 충분하나 재플레이·타이밍 공격 관점 <code>[미확인]</code>).</li>
+<li><code>TOSS_SECRET_KEY</code> 미설정 시 dev/test 환경에서 confirm/fetch가 warning으로 통과 → 로컬 테스트 편의성 vs. 스테이징 실수 위험 트레이드오프.</li>
+</ul>
+<h3>8.2 Supabase RLS</h3>
+<ul>
+<li>앱 코드에 RLS 정책 정의 없음 (핸드오프 §13 명시).</li>
+<li><code>SUPABASE_SERVICE_ROLE_KEY</code>를 서버에서 사용하므로 스토리지 접근은 서비스 롤로 우회됨. 프론트가 anon 키로 스토리지 직접 접근하는 경로가 있는지 <code>[미확인]</code>.</li>
+</ul>
+<h3>8.3 기타 (핸드오프 §19·§18에서 요약)</h3>
+<ul>
+<li><strong>QnA 모델 이중화</strong>: <code>Question</code>(DEPRECATED) vs <code>QuestionMessage</code>(현행). 웹 카드와 앱 flat 리스트가 같은 소스를 소비하지만 히스토리 잔재 정리 마이그레이션 대기.</li>
+<li><strong>Journey drift</strong>: 웹 <code>FIRST_LESSON_PENDING</code> 단계가 앱 <code>student-journey.ts</code>에 미반영.</li>
+<li><strong>CMS 캐시 5분 지연</strong>: <code>PUBLIC_CMS_REVALIDATE_SECONDS = 300</code>.</li>
+<li><strong>합성 이메일 <code>*@concord.local</code></strong>: 실제 메일 없음 → 이메일 채널 알림 불가.</li>
+<li><strong><code>connection_limit=1</code></strong>: pooler URL 설정 → <code>Promise.all</code> 병렬 Prisma 쿼리 금지, <code>cache()</code>/순차 처리로 우회.</li>
+<li><strong><code>admin/setup</code>·<code>admin/recover</code> non-production 완화</strong>: <code>ADMIN_SETUP_SECRET</code>이 없을 때 dev에서 통과 허용 (production은 여전히 403/503).</li>
+<li><strong><code>CHIEF_MANAGER</code> 미들웨어 경로 처리 [미확인]</strong>: <code>middleware.ts</code>가 <code>MANAGER</code>만 명시적으로 매칭하고 있어 Chief의 UI 라우팅이 어떻게 되는지 검증 필요.</li>
+<li><strong>모바일 프론트엔드</strong>: 백엔드 API는 완성, RN 프론트엔드 미시작 상태 (MEMORY.md 참조).</li>
+</ul>
+<hr>
+<h2>부록. 참고 문서</h2>
+<ul>
+<li>상세 온보딩: <code>CLAUDE_HANDOFF.md</code> (프로젝트 루트)</li>
+<li>제품 상태: <code>docs/PRODUCT_DESIGN_TRACKER.md</code></li>
+<li>API 표: <code>docs/internal/API_REFERENCE.md</code> (본 문서와 함께 유지)</li>
+</ul>
+</section><section id="d-internal-contracts-TUITION-CONTRACT-DRAFT-md"><span class="fname">internal/contracts/TUITION_CONTRACT_DRAFT.md</span><h1>수강 계약서 (초안)</h1>
+<blockquote>
+<h2>⚠️ 초안 — 변호사 검토 전 실제 사용 금지</h2>
+<p>본 문서는 사내 검토용 초안이며, 법률 자문(변호사·소비자 관련 규제 검토)을 거쳐 확정하기 전까지 실제 학부모·학생에게 배포·서명·전자 발급하여서는 아니 됩니다. 각 조항 말미의 <code>[법률 자문 필요]</code> · <code>[기재 필요]</code> 표기는 확정 전 반드시 처리해야 하는 항목입니다.</p>
+<ul>
+<li>근거 실측: <code>src/app/refund/page.tsx</code> (환불정책), <code>src/app/terms/page.tsx</code> (이용약관), <code>src/lib/pricing-plans.ts</code> (V2 요금제), <code>docs/internal/LEGAL_DOCS_STATUS.md</code> (L-1 요구사항).</li>
+<li>작성일: 2026-07-04.</li>
+<li>분량 목표: 결제 완료 시 전자 발급 전제, 2~3페이지 이내.</li>
+</ul>
+</blockquote>
+<hr>
+<h2>제1조 (계약 당사자)</h2>
+<p>본 계약은 아래의 당사자 사이에 체결됩니다.</p>
+<ul>
+<li><strong>회사 (이하 &quot;회사&quot;)</strong>: 콘코드 (상호 [기재 필요] / 대표자 [기재 필요] / 사업자등록번호 [기재 필요] / 통신판매업신고번호 [기재 필요] / 주소 [기재 필요])</li>
+<li><strong>학부모 (법정대리인, 이하 &quot;학부모&quot;)</strong>: 성명 [<em><strong><strong><strong><strong><strong><strong>], 생년월일 [</strong></strong></strong></strong></strong></strong></em>], 연락처 [<em><strong><strong><strong><strong><strong><strong>], 학생과의 관계 [</strong></strong></strong></strong></strong></strong></em>]</li>
+<li><strong>수강생 (이하 &quot;학생&quot;)</strong>: 성명 [<em><strong><strong><strong><strong><strong><strong>], 생년월일 [</strong></strong></strong></strong></strong></strong></em>], 학교·학년 [_____________]</li>
+</ul>
+<blockquote>
+<p>학생이 미성년자인 경우 본 계약의 결제·해지·환불 등 재산상 처분은 반드시 법정대리인인 학부모가 수행하여야 하며, 학부모의 서명이 없는 계약은 효력이 발생하지 아니합니다.</p>
+</blockquote>
+<h2>제2조 (수업 내용)</h2>
+<ol>
+<li>회사는 아래의 조건으로 대면 1:1 과외 수업 매칭 및 학습관리 서비스를 제공합니다.<ul>
+<li>요금제 상품명(플랜): [_____________] <em>(예: 중등 · 주 1회 · 회당 3시간)</em></li>
+<li>과목: [_____________]</li>
+<li>담당 강사: [_____________] <em>(강사 배정은 상담 후 확정되며, 학생 수락 후 발효)</em></li>
+<li>담당 매니저: [_____________]</li>
+<li>수업 요일·시간: [_____________]</li>
+<li>수업 장소: [_____________] <em>(학생 자택·지정 학습공간 등)</em></li>
+<li>개시 예정일: [_____________]</li>
+</ul>
+</li>
+<li>강사·요일·시간·장소는 학생·학부모·강사 3자의 협의로 변경할 수 있으며, 변경 사항은 회사가 관리하는 서비스 내 기록으로 갈음합니다.</li>
+</ol>
+<h2>제3조 (계약 기간 및 갱신)</h2>
+<ol>
+<li>본 계약의 최초 기간은 <strong>결제된 월 이용 기간(월 단위 선불)</strong> 으로 하며, 최초 수업 개시일로부터 산정합니다.</li>
+<li>회사는 현재 결제 자동 갱신을 지원하지 아니하며, 학부모의 매월 명시적인 재결제로 계약이 갱신됩니다. <em>(향후 토스 빌링키 기반 자동결제 도입 시 별도의 자동결제 동의 절차를 거쳐야 하며 본 계약에 우선하지 아니합니다.)</em> — 근거: 이용약관 제6조 제3항.</li>
+</ol>
+<h2>제4조 (수강료 및 결제)</h2>
+<ol>
+<li>이용요금은 회사가 공시하는 요금제(별첨 플랜표 참조, <code>src/lib/pricing-plans.ts</code> V2 8종 기준)에 따르며, 본 계약에 적용되는 월정액은 아래와 같습니다.<ul>
+<li>월정액: <strong>[_________]원</strong> <em>(부가세 포함 여부: [_______])</em></li>
+<li>월 총 수업 시간: [__<em>]시간 *(주 [</em>]회 × 회당 [_]시간 × 4주)*</li>
+</ul>
+</li>
+<li>결제는 회사가 지정한 결제대행사(토스페이먼츠 등)를 통한 신용카드·계좌이체 등의 방식으로 이루어지며, 결제자는 성인인 학부모(법정대리인)여야 합니다.</li>
+<li>결제 완료 시 회사는 본 계약서를 전자적 방법(이메일·앱 내 발급 등)으로 학부모에게 발급합니다.</li>
+</ol>
+<h2>제5조 (환불)</h2>
+<p>환불 조건의 상세는 회사가 공시하는 <a href="/refund">환불정책</a> 을 따르며, 본 계약의 요지는 다음과 같습니다.</p>
+<ol>
+<li><strong>첫 수업 100% 환불 보장</strong>: 학생이 콘코드를 통해 최초로 결제한 후 첫 회차 수업에 만족하지 못한 경우, 첫 수업 종료 후 <strong>72시간(3일) 이내</strong> 담당 매니저 또는 고객센터로 신청하면 결제 금액 전액을 환불합니다. 학생 1인당 최초 가입 시 1회에 한하며, 재가입 시에는 적용되지 아니합니다.</li>
+<li><strong>수업 시작 전 환불</strong>: 결제 후 첫 수업 개시 전까지는 언제든 전액 환불되며, 결제 후 7일 이내이고 수업 미개시인 경우 「전자상거래 등에서의 소비자보호에 관한 법률」제17조에 따른 청약철회권이 보장됩니다.</li>
+<li><strong>월 중도 해지 및 정산</strong>: 이용자는 언제든 이용을 중단할 수 있으며, 중도 해지 시 이미 진행된 수업 회차의 정가(회사 공시 요금표 기준)를 결제 금액에서 공제한 후 잔액을 환불합니다. 결제대행사 수수료 등 실비가 차감될 수 있으며 차감 시 사전 안내합니다.</li>
+<li><strong>환불 제한</strong>: 이미 진행된 수업 회차(첫 수업 보장 예외), 이용자의 중대한 약관·법령 위반으로 인한 해지, 사전 통지 없는 결석·수업 시작 24시간 이내 취소로 보강 불가한 회차, 플랫폼 외 직거래 등 부정 이용이 확인된 경우.</li>
+<li><strong>회사 사유 환불</strong>: 강사 사정으로 수업이 취소되었으나 합리적 기간 내 보강 불가한 경우 등 회사 귀책 사유 시 이용자가 이용하지 못한 회차에 대해 전액 환불하거나 대체 서비스를 제공합니다.</li>
+<li><strong>환불 절차</strong>: 담당 매니저 또는 고객센터 접수 → 회사가 이용 회차·환불 금액 확인 → 확정 후 영업일 기준 3~5일 이내 결제 수단으로 환급.</li>
+</ol>
+<blockquote>
+<p>상세 조항 및 계산 예시는 회사가 공시하는 환불정책(<code>/refund</code>)에 따르며, 본 계약과 환불정책의 내용이 상충하는 경우 이용자에게 유리한 규정을 우선 적용합니다.</p>
+</blockquote>
+<h2>제6조 (수업 취소·일정 변경 및 휴회)</h2>
+<ol>
+<li>이용자가 예정된 수업을 취소·변경하고자 하는 경우 <strong>수업 시작 시각으로부터 최소 24시간 전</strong> 담당 매니저 또는 강사에게 통보하여야 하며, 24시간 전 통보 시 보강 수업이 제공됩니다.</li>
+<li>수업 시작 24시간 이내의 취소 또는 무단 결석 시 해당 회차는 진행된 수업으로 간주될 수 있으며, 질병·재난 등 부득이한 사유가 있는 경우 회사와 협의하여 보강할 수 있습니다.</li>
+<li>강사 사정으로 인한 취소는 별도 비용 없이 회사가 보강 일정을 조율합니다.</li>
+<li>회사는 관리자 권한(매니저)에 한하여 구독의 <strong>일시정지·재개</strong>를 지원하며, 일시정지 기간만큼 이용 기간이 연장됩니다. <em>(근거: <code>feat(subscriptions): manager-only pause/resume</code>)</em></li>
+</ol>
+<h2>제7조 (강사 교체 및 재매칭)</h2>
+<ol>
+<li>학생·학부모는 담당 강사와의 학습적 궁합이 맞지 않는 경우 담당 매니저에게 재매칭을 요청할 수 있으며, 회사는 <strong>추가 비용 없이</strong> 후보 강사를 재제안합니다.</li>
+<li>강사 교체는 학생(또는 법정대리인)의 명시적 수락(승인 버튼)이 있을 때에만 확정되며, 수락 전까지 기존 강사와의 수업이 유지됩니다.</li>
+</ol>
+<h2>제8조 (학부모·학생의 의무)</h2>
+<ol>
+<li>학부모·학생은 정확한 신상 정보를 제공하여야 하며, 계정 정보를 제3자에게 양도·대여할 수 없습니다.</li>
+<li>학부모·학생은 강사에 대한 존중과 예의를 지켜야 하며 인격권 침해·법령 위반의 언동을 하여서는 아니 됩니다.</li>
+<li>학부모·학생은 회사의 플랫폼을 통하지 아니하고 강사와 <strong>직접 수업료를 수수하거나 별도의 과외 계약을 체결하여서는 아니 됩니다</strong>. 위반 시 회사는 이용을 제한하거나 이용계약을 해지할 수 있으며, 발생한 손해의 배상을 청구할 수 있습니다. <em>(근거: 이용약관 제10조.)</em></li>
+</ol>
+<h2>제9조 (개인정보의 수집 및 이용)</h2>
+<ol>
+<li>회사는 본 계약의 이행을 위하여 필요한 최소한의 개인정보(학부모·학생 성명, 생년월일, 연락처, 결제 정보 등)를 수집·이용하며, 상세는 회사의 <a href="/privacy">개인정보처리방침</a>에 따릅니다.</li>
+<li><strong>만 14세 미만 아동</strong>의 정보 처리에는 반드시 법정대리인의 동의가 필요하며, 회사는 동의 기록(일시·방법)을 보존합니다. <em>(관련 시스템 상태는 <code>docs/internal/LEGAL_DOCS_STATUS.md</code> 참조 — 동의 기록 DB 저장 여부 [확인 필요].)</em></li>
+<li>회원 탈퇴 시 개인정보는 즉시 익명화 처리되며, 관련 법령에 따라 보관이 요구되는 결제·계약 기록은 별도로 정한 기간 동안 보관됩니다.</li>
+</ol>
+<h2>제10조 (분쟁 해결 및 관할)</h2>
+<ol>
+<li>본 계약과 관련하여 분쟁이 발생한 경우 회사와 이용자는 상호 협의를 통해 원만히 해결하도록 노력합니다.</li>
+<li>협의로 해결되지 아니한 분쟁에 대하여는 「전자상거래 등에서의 소비자보호에 관한 법률」 등 관련 법령에 따르며, 소송이 제기될 경우 민사소송법상의 관할법원을 제1심 관할법원으로 합니다.</li>
+<li>본 계약의 준거법은 대한민국 법으로 합니다.</li>
+</ol>
+<h2>제11조 (기타)</h2>
+<ol>
+<li>본 계약에 규정되지 아니한 사항은 회사의 <a href="/terms">이용약관</a>, <a href="/refund">환불정책</a>, <a href="/privacy">개인정보처리방침</a> 및 관련 법령에 따릅니다.</li>
+<li>본 계약과 이용약관·환불정책의 내용이 상충하는 경우, 이용자에게 유리한 규정을 우선 적용합니다.</li>
+</ol>
+<hr>
+<h2>서명</h2>
+<p>본인은 본 계약서의 내용을 충분히 읽고 이해하였으며, 이에 동의합니다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>성명</th>
+<th>서명</th>
+<th>서명일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>학부모(법정대리인)</td>
+<td>[_____________]</td>
+<td>______________</td>
+<td>2026 년 [ ]월 [ ]일</td>
+</tr>
+<tr>
+<td>학생 <em>(만 14세 이상 시 병기)</em></td>
+<td>[_____________]</td>
+<td>______________</td>
+<td>2026 년 [ ]월 [ ]일</td>
+</tr>
+<tr>
+<td>회사(대리인)</td>
+<td>[_____________]</td>
+<td>______________</td>
+<td>2026 년 [ ]월 [ ]일</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>학생이 미성년자인 경우 학부모(법정대리인)의 서명이 필수이며, 학생의 서명은 본인 확인용으로만 활용됩니다.</p>
+</blockquote>
+<hr>
+<h2>별첨 A. 요금제 표 (V2, 2026-07 시행)</h2>
+<p><code>src/lib/pricing-plans.ts</code> V2 8개 플랜 발췌.</p>
+<table>
+<thead>
+<tr>
+<th>학년</th>
+<th>주 수업 횟수</th>
+<th>회당 시간</th>
+<th>월 수업 시간</th>
+<th>월정액(원)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>중등</td>
+<td>1회</td>
+<td>2시간</td>
+<td>8h</td>
+<td>380,000</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>1회</td>
+<td>3시간</td>
+<td>12h</td>
+<td>550,000</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>2회</td>
+<td>2시간</td>
+<td>16h</td>
+<td>760,000</td>
+</tr>
+<tr>
+<td>중등</td>
+<td>2회</td>
+<td>3시간</td>
+<td>24h</td>
+<td>1,060,000</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>1회</td>
+<td>2시간</td>
+<td>8h</td>
+<td>430,000</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>1회</td>
+<td>3시간</td>
+<td>12h</td>
+<td>580,000</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>2회</td>
+<td>2시간</td>
+<td>16h</td>
+<td>780,000</td>
+</tr>
+<tr>
+<td>고등</td>
+<td>2회</td>
+<td>3시간</td>
+<td>24h</td>
+<td>1,120,000</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>내부 메모 (계약서에는 포함하지 않음)</h2>
+<ul>
+<li>L-1 요구사항 커버 상태: 당사자·수업 내용·기간·요금·환불·휴회·강사 교체·개인정보·분쟁 관할·서명 — 모두 반영.</li>
+<li>placeholder는 결제 완료 시점에 서버 데이터로 자동 치환되는 것을 전제로 함(전자 발급).</li>
+<li>변호사 검토 시 확인 요청 항목: 미성년자 서명 유효성, 첫 수업 100% 환불 보장의 약관 규제법상 유효성, 자동 갱신 도입 시 개별 동의 요건, 관할 합의 조항의 소비자 관련 규제 준수.</li>
+</ul>
+</section><section id="d-internal-contracts-TUTOR-ENGAGEMENT-CONTRACT-DRAFT-md"><span class="fname">internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md</span><h1>강사 위촉 계약서 (업무위탁) — 초안</h1>
+<blockquote>
+<h2>⚠️ 초안 — 변호사·노무사 검토 전 실제 사용 금지</h2>
+<p>본 문서는 사내 검토용 초안이며, 법률 자문(변호사·노무사)을 거쳐 확정하기 전까지 실제 강사에게 배포·서명하여서는 아니 됩니다. 특히 근로계약 오인 리스크, 3.3% 원천징수 처리, 직거래 금지 위약금의 유효성은 반드시 자문 후 확정하여야 합니다.</p>
+<ul>
+<li>근거 실측: <code>src/lib/settlement.ts</code> (강사 시급 30,000원 확정), <code>src/lib/pricing-plans.ts</code> (V2 요금제), <code>src/app/terms/page.tsx</code> 제10조 (직거래 금지), <code>docs/internal/LEGAL_DOCS_STATUS.md</code> (L-2·L-4·L-5 요구사항).</li>
+<li>작성일: 2026-07-04.</li>
+</ul>
+</blockquote>
+<hr>
+<h2>제1조 (계약 당사자 및 계약의 성격)</h2>
+<p>본 계약은 아래의 당사자 사이에 체결됩니다.</p>
+<ul>
+<li><strong>회사 (위탁자, 이하 &quot;회사&quot;)</strong>: 콘코드 (상호 [기재 필요] / 대표자 [기재 필요] / 사업자등록번호 [기재 필요] / 주소 [기재 필요])</li>
+<li><strong>강사 (수탁자, 이하 &quot;강사&quot;)</strong>: 성명 [<em><strong><strong><strong><strong><strong><strong>], 생년월일 [</strong></strong></strong></strong></strong></strong></em>], 연락처 [<em><strong><strong><strong><strong><strong><strong>], 주소 [</strong></strong></strong></strong></strong></strong></em>]</li>
+</ul>
+<p>본 계약은 회사와 강사 사이의 <strong>업무위탁(용역위탁) 계약</strong>이며, 근로계약이 아닙니다. 강사는 회사의 지휘·감독을 받지 아니하고 수업 수행에 관한 재량과 책임을 스스로 부담하는 독립적 지위에서 회사가 위탁하는 수업 용역을 제공합니다.</p>
+<h2>제2조 (위탁 업무의 내용)</h2>
+<ol>
+<li>회사는 강사에게 다음의 업무를 위탁합니다.<ul>
+<li>회사가 매칭한 학생에 대한 대면 1:1 과외 수업 수행</li>
+<li>수업 준비(자료 제작·과제 출제 등) 및 진도·과제 관리 협조</li>
+<li>회사가 운영하는 서비스 내 학습 리포트·수업 완료 기록 입력</li>
+</ul>
+</li>
+<li>강사는 위탁 업무 수행 시 회사의 학습관리 시스템(웹·모바일)을 이용합니다.</li>
+<li>수업의 방식·교수법·구체적 진행은 강사의 전문적 재량에 따르며, 회사는 수업의 결과물(진도·과제·리포트)에 대한 품질 관리 목적의 확인만 수행합니다.</li>
+</ol>
+<h2>제3조 (계약 기간)</h2>
+<ol>
+<li>본 계약의 기간은 [YYYY-MM-DD]부터 [YYYY-MM-DD]까지로 하며, 만료 30일 전까지 양 당사자 중 어느 쪽도 이의를 제기하지 아니하면 동일 조건으로 1년간 자동 갱신됩니다.</li>
+<li>학생별 개별 수업 배정 기간은 학생과의 계약 기간에 연동됩니다.</li>
+</ol>
+<h2>제4조 (정산)</h2>
+<ol>
+<li>회사는 강사에게 <strong>수업 시간당 정액</strong>을 지급합니다.<ul>
+<li><strong>강사 시급: 30,000원 / 시간</strong> <em>(근거: <code>src/lib/settlement.ts</code> <code>TEACHER_HOURLY_RATE_KRW = 30_000</code>. 강사별 차등 시급은 추후 도입 예정.)</em></li>
+<li>산식: 월 정산액 = Σ(완료된 수업의 실제 진행 분(min)) ÷ 60 × 30,000원 (원 단위 반올림).</li>
+<li>정산 대상: 서비스 내 &quot;COMPLETED&quot; 상태로 확정된 수업.</li>
+<li>정산 기간: 한국 표준시(KST) 기준 매월 1일 00:00 ~ 다음 달 1일 00:00.</li>
+</ul>
+</li>
+<li>회사는 매월 정산 명세를 작성하여 강사에게 통지하고, <strong>매월 [_]일</strong>까지 강사가 지정한 계좌로 지급합니다. 은행 영업일이 아닌 경우 다음 영업일로 이월됩니다.</li>
+<li>강사가 정산 명세에 이의를 제기하는 경우, 통지받은 날부터 <strong>7일 이내</strong> 회사에 서면(이메일 포함)으로 이의를 제기하여야 하며, 회사는 확인 후 조정 처리합니다.</li>
+<li><strong>세금 처리</strong>: 강사는 계속·반복적으로 용역을 제공하는 사업소득자에 해당하며, 회사는 정산 지급 시 <strong>소득세 3%·지방소득세 0.3% (합계 3.3%)</strong> 를 원천징수하고 나머지 금액을 지급합니다. 강사는 매년 5월 종합소득세 신고 대상입니다. <em>(임시 자문으로 사업소득 3.3% 확정 — <code>LEGAL_ADVISORY_MEMO.md</code> A-4. 세무사에게는 명세서 제출 주기 등 실무 절차만 확인.)</em></li>
+<li>정산액이 실제 진행되지 아니한 회차(예: <code>durationMin = 0</code>으로 기록된 회차)에 대하여 강사는 회사에 소명을 요청할 수 있으며, 회사는 별도 검토 후 반영합니다.</li>
+</ol>
+<h2>제5조 (수업 준수사항)</h2>
+<ol>
+<li>강사는 배정된 수업의 요일·시간·장소를 준수하여야 하며, 부득이한 사유로 수업 취소·변경이 필요한 경우 <strong>수업 시작 24시간 전</strong> 담당 매니저에게 사전 통지하여 학생·학부모와 재조정하여야 합니다.</li>
+<li>강사의 정당한 사유 없는 무단 결강·반복적인 지각·수업 시간 임의 축소가 확인되는 경우, 회사는 해당 회차의 정산액을 감액하거나 계약을 해지할 수 있습니다.</li>
+<li>강사는 학생·학부모에게 예의와 존중을 다하여야 하며, 인격권 침해·법령 위반의 언동을 하여서는 아니 됩니다.</li>
+</ol>
+<h2>제6조 (직거래 금지 및 위약 조항)  ⟵ L-5</h2>
+<ol>
+<li>강사는 회사의 매칭·상담·관리 절차를 통하지 아니하고 회사가 매칭한 학생·학부모와 별도의 과외 계약을 체결하거나 수업료를 직접 수수하여서는 아니 됩니다.</li>
+<li>위 금지 의무는 본 계약 존속 기간은 물론, <strong>본 계약 종료 후 12개월 동안</strong> <em>(임시 자문 기준 — <code>LEGAL_ADVISORY_MEMO.md</code> A-1, 정식 자문으로 확정)</em> 회사로부터 소개받았거나 회사의 서비스를 통해 알게 된 학생·학부모에 대하여 동일하게 적용됩니다.</li>
+<li>위반 사실이 확인되는 경우 강사는 회사에 손해배상액의 예정으로서 <strong>해당 학생의 최근 월 수강료 4개월분 상당액</strong>의 위약금을 지급합니다. <em>(임시 자문 기준 — 손해배상 예정 단일 구조로 설계하여 별도 손해배상 청구 병존 문구를 두지 않음. 상당성 검토는 <code>LEGAL_ADVISORY_MEMO.md</code> A-1, 정식 자문으로 확정.)</em></li>
+<li>회사는 위반이 확인되는 경우 사전 통보 후 본 계약을 즉시 해지할 수 있습니다.</li>
+</ol>
+<blockquote>
+<p>근거: 이용약관 제10조(직거래 금지), <code>docs/internal/LEGAL_DOCS_STATUS.md</code> L-5.</p>
+</blockquote>
+<h2>제7조 (비밀유지 및 개인정보 보호)</h2>
+<ol>
+<li>강사는 위탁 업무 수행 과정에서 알게 된 학생·학부모의 개인정보, 학습 성적, 가정 상황, 회사의 영업비밀(요금제·매칭 로직·시스템 화면 등) 일체에 대하여 비밀을 유지하여야 하며, 제3자에게 누설·제공하여서는 아니 됩니다. 본 의무는 계약 종료 후에도 지속됩니다.</li>
+<li>강사는 학생 관련 정보를 위탁 업무 수행 목적으로만 이용하여야 하며, 개인적 목적·상업적 목적으로 유용할 수 없습니다.</li>
+<li>강사가 본 조를 위반하여 개인정보 유출·제3자 손해가 발생한 경우, 그로 인한 모든 법적 책임과 손해배상 책임은 강사가 부담합니다.</li>
+</ol>
+<h2>제8조 (미성년자 보호 및 신원확인 협조)  ⟵ L-4</h2>
+<ol>
+<li>강사는 미성년자와 대면하는 수업 특성을 인식하고, <strong>아동학대범죄의 처벌 등에 관한 특례법</strong>, <strong>아동·청소년의 성보호에 관한 법률</strong> 등 관련 법령을 준수하여야 합니다.</li>
+<li>강사는 신체적·정서적·성적 학대에 해당할 수 있는 일체의 언동을 하여서는 아니 되며, 학생과의 <strong>1:1 단독 접촉 상황에서의 안전 수칙</strong>(예: 부적절한 신체 접촉 금지, 사적 연락 자제, 수업 장소·시간의 투명한 공유)을 준수하여야 합니다.</li>
+<li>강사는 위촉 전 다음 서류를 회사에 제출하고, 회사의 신원확인 절차에 협조합니다. <em>(임시 자문 기준 — 회사가 직접 관계 기관에 조회할 권한이 불분명하므로 본인 발급·제출 방식으로 설계. <code>LEGAL_ADVISORY_MEMO.md</code> A-2, 정식 자문으로 확정.)</em><ul>
+<li><strong>성범죄 경력 회보서(본인 확인용)</strong> — 강사 본인이 경찰관서에서 발급받아 제출</li>
+<li><strong>개인과외교습자 신고증 사본</strong> — 신고 의무 대상자에 한함 (대학·대학원 재학생은 학원법상 신고 면제이므로 재학증명서로 갈음)</li>
+<li>위 서류의 수집·이용 목적과 보관 기간을 명시한 <strong>별도 동의서(L-4)</strong> 에 서명</li>
+</ul>
+</li>
+<li>강사에게 관련 법령 위반의 유죄 판결 또는 취업제한 사유가 발생·확인된 경우 회사는 즉시 계약을 해지할 수 있으며, 이 경우 발생한 손해에 대하여 강사에게 배상을 청구할 수 있습니다.</li>
+</ol>
+<h2>제9조 (계약 해지)</h2>
+<ol>
+<li>회사는 다음 각 호에 해당하는 경우 사전 통보 후 계약을 해지할 수 있으며, 사유의 중대성에 따라 통보 없이 즉시 해지할 수 있습니다.<ul>
+<li>강사가 무단 결강, 반복적인 지각, 수업 품질 현저 저하 등 수업 준수사항(제5조)을 중대하게 위반한 경우</li>
+<li>강사가 직거래 금지(제6조), 비밀유지(제7조), 미성년자 보호(제8조)를 위반한 경우</li>
+<li>강사에게 관련 법령 위반의 유죄 판결 또는 취업제한 사유가 발생한 경우</li>
+</ul>
+</li>
+<li>강사는 계약을 해지하고자 하는 경우 최소 <strong>30일 전</strong> 회사에 서면 통지하고, 담당 학생의 인수인계에 협조하여야 합니다.</li>
+</ol>
+<h2>제10조 (손해배상)</h2>
+<ol>
+<li>각 당사자는 본 계약의 위반으로 상대방에게 손해를 발생시킨 경우 그 손해를 배상할 책임을 부담합니다.</li>
+<li>강사가 위탁 업무 수행 중 학생·학부모에게 손해를 발생시킨 경우, 그 손해에 대한 1차적 책임은 강사가 부담하며, 회사는 그 범위 내에서 학생·학부모에게 지급한 손해액에 대하여 강사에게 구상권을 행사할 수 있습니다.</li>
+</ol>
+<h2>제11조 (분쟁 해결 및 관할)</h2>
+<ol>
+<li>본 계약과 관련하여 분쟁이 발생한 경우 상호 협의로 원만히 해결하도록 노력합니다.</li>
+<li>협의로 해결되지 아니한 경우 민사소송법상의 관할법원을 제1심 관할법원으로 하며, 준거법은 대한민국 법으로 합니다.</li>
+</ol>
+<h2>제12조 (기타)</h2>
+<ol>
+<li>본 계약에 규정되지 아니한 사항은 관련 법령, 회사의 이용약관·개인정보처리방침 및 사회통념에 따릅니다.</li>
+<li>본 계약의 수정·변경은 서면(전자문서 포함)에 의한 양 당사자의 합의로만 유효합니다.</li>
+</ol>
+<hr>
+<h2>서명</h2>
+<p>본인은 본 계약서의 내용을 충분히 읽고 이해하였으며, 이에 동의합니다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>성명</th>
+<th>서명</th>
+<th>서명일</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>회사(대리인)</td>
+<td>[_____________]</td>
+<td>______________</td>
+<td>2026 년 [ ]월 [ ]일</td>
+</tr>
+<tr>
+<td>강사</td>
+<td>[_____________]</td>
+<td>______________</td>
+<td>2026 년 [ ]월 [ ]일</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>별첨 A. 정산 방식 요약</h2>
+<ul>
+<li>강사 시급: <strong>30,000원 / 시간</strong> (모든 강사 공통, 강사별 차등 시급은 추후 도입).</li>
+<li>산식: 월 정산액 = Σ(완료 수업 실제 진행 분) ÷ 60 × 30,000원, 원 단위 반올림.</li>
+<li>세금 처리: 사업소득 3.3% 원천징수 후 지급 (임시 자문 확정 — <code>LEGAL_ADVISORY_MEMO.md</code> A-4).</li>
+<li>정산 대상 기간: 한국 표준시(KST) 기준 매월 1일 00:00 ~ 다음 달 1일 00:00.</li>
+<li>근거 코드: <code>src/lib/settlement.ts</code> <code>computeMonthlySettlement()</code>.</li>
+</ul>
+<hr>
+<h2>내부 메모 (계약서에는 포함하지 않음)</h2>
+<ul>
+<li><strong>노무 리스크 주의</strong>: 본 계약이 &quot;위촉(용역위탁)&quot;으로 명시되어 있어도, 실제 운영에서 (i) 출퇴근 관리, (ii) 근무 시간·장소 지휘, (iii) 회사의 일방적 업무 지시, (iv) 다른 업무 병행 금지 등이 축적되면 근로계약으로 판단될 소지가 있음. 매니저의 매칭·조율은 &quot;학생-강사 매칭 및 스케줄 협의&quot;에 한정되어야 하며, 강사에 대한 근태 관리·근무 강제·복장 강제 등은 금지. 아래는 반드시 자문 검토.<ul>
+<li>원천징수 3.3% 처리 방식(사업소득 vs 기타소득)과 세무 신고 의무 — 세무사 검토.</li>
+<li>위약금 조항(제6조)의 손해배상 예정액 상당성 — 변호사 검토.</li>
+<li>미성년자 신원조회의 플랫폼 권한 범위 — L-4와 함께 자문.</li>
+<li>자동 갱신(제3조)의 강사 이의권 보장 — 노무사 검토.</li>
+</ul>
+</li>
+<li>L-2 요구사항 커버 상태: 위촉 내용·정산(시급 30,000원 확정)·세금·수업 준수·직거래 금지 위약(L-5)·비밀유지·미성년자 보호(L-4 연계)·해지·손해배상·서명 — 모두 반영.</li>
+<li>L-5(직거래 방지)는 학부모측 약관(이용약관 제10조)에 이미 존재. 본 계약 제6조와 쌍을 이룸.</li>
+</ul>
+</section></main>
+</div></body></html>

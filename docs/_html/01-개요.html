@@ -1,0 +1,2081 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>개요·현황 — Concord 문서</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --green:#10B981;--green-text:#07875A;--bg:#FAF9F4;--panel:#FFFFFF;--panel2:#F0EFE7;
+  --fg:#161A16;--mut:#585C53;--mut2:#9AA095;--line:rgba(34,38,30,.085);--line2:rgba(34,38,30,.15);
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif}
+body{color:var(--fg);background:var(--bg);line-height:1.65;letter-spacing:-.01em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+.tabs{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:2px;padding:11px 22px;background:rgba(250,249,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:-.03em;font-size:16px;margin-right:14px;align-self:center}
+.brand .dot{display:inline-block;width:.16em;height:.16em;border-radius:50%;background:var(--green);vertical-align:baseline;margin-left:.05em}
+.tab{padding:6px 13px;border-radius:999px;text-decoration:none;color:var(--mut);font-size:13px;font-weight:700}
+.tab:hover{background:var(--panel2)}
+.tab.active{background:var(--fg);color:#fff}
+.wrap{display:flex;max-width:1440px;margin:0 auto;gap:34px;padding:0 22px}
+.toc{position:sticky;top:60px;align-self:flex-start;flex:0 0 230px;font-size:12.5px;padding:26px 0;max-height:calc(100vh - 60px);overflow:auto}
+.toc .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--green-text);margin-bottom:9px;display:block}
+.toc ul{list-style:none;padding:0;margin:0}
+.toc li{margin:2px 0}
+.toc a{text-decoration:none;color:var(--mut);display:block;padding:4px 9px;border-radius:8px;word-break:break-all}
+.toc a:hover{background:var(--panel2);color:var(--fg)}
+main{flex:1;min-width:0;padding:34px 0 140px}
+section{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--line)}
+.fname{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--green-text);background:var(--panel2);padding:4px 10px;border-radius:999px;margin-bottom:14px;letter-spacing:0}
+main h1{font-size:30px;font-weight:800;letter-spacing:-.038em;line-height:1.12;border-bottom:1px solid var(--line);padding-bottom:10px;margin:.2em 0 .6em}
+main h2{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:1.8em 0 .5em}
+main h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:1.5em 0 .4em}
+main h4{font-size:14px;font-weight:700;color:var(--mut);margin:1.3em 0 .3em}
+main p{margin:.7em 0}
+main a{color:var(--green-text);text-decoration:none;border-bottom:1px solid var(--line2)}
+main strong{font-weight:800}
+main code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;background:var(--panel2);padding:1.5px 6px;border-radius:6px}
+main pre{background:var(--fg);color:#ECEEEC;padding:16px 18px;border-radius:14px;overflow:auto;box-shadow:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06)}
+main pre code{background:none;color:inherit;padding:0;font-size:12.5px}
+main blockquote{margin:1.1em 0;padding:12px 20px;border-left:3px solid var(--green);background:var(--panel);border-radius:0 12px 12px 0;color:var(--mut)}
+main blockquote p{margin:.3em 0}
+main table{border-collapse:collapse;width:100%;margin:1.1em 0;font-size:13.5px;display:block;overflow-x:auto;border-radius:14px}
+main th,main td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+main th{background:var(--panel2);font-weight:800;letter-spacing:-.01em}
+main td{background:var(--panel)}
+main tr:nth-child(even) td{background:#FCFBF7}
+main del{color:var(--mut2)}
+main hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+main ul,main ol{padding-left:22px;margin:.6em 0}
+main li{margin:4px 0}
+main li::marker{color:var(--green-text)}
+main img{max-width:100%;border-radius:12px}
+@media(max-width:860px){.toc{display:none}.wrap{padding:0 15px}.tabs{padding:10px 15px}}
+</style></head><body>
+<div class="tabs"><span class="brand">Concord<span class="dot"></span></span><a class="tab active" href="01-개요.html">개요·현황</a><a class="tab" href="02-사업전략.html">사업전략</a><a class="tab" href="03-리뷰·마케팅.html">리뷰·마케팅</a><a class="tab" href="04-제품·디자인.html">제품·디자인</a><a class="tab" href="05-운영·파일럿.html">운영·파일럿·구현</a><a class="tab" href="06-내부·기술.html">내부·기술</a><a class="tab" href="07-외부·제출.html">외부·제출</a><a class="tab" href="08-전략라운드.html">전략 라운드</a><a class="tab" href="09-아카이브.html">아카이브</a></div>
+<div class="wrap">
+<nav class="toc"><span class="eyebrow">이 묶음 문서 9</span><ul><li><a href="#d-00-현재상태-md">00-현재상태.md</a></li><li><a href="#d-README-md">README.md</a></li><li><a href="#d-CONTENT-AUDIT-2026-07-14-md">CONTENT_AUDIT_2026-07-14.md</a></li><li><a href="#d-CLEANUP-AUDIT-2026-07-14-md">CLEANUP_AUDIT_2026-07-14.md</a></li><li><a href="#d-SECURITY-AUDIT-2026-07-14-md">SECURITY_AUDIT_2026-07-14.md</a></li><li><a href="#d-BUSINESS-DIRECTION-md">BUSINESS_DIRECTION.md</a></li><li><a href="#d-FRONTEND-BUILD-SPEC-md">FRONTEND_BUILD_SPEC.md</a></li><li><a href="#d-HANDOFF-md">HANDOFF.md</a></li><li><a href="#d-README-md">README.md</a></li></ul></nav>
+<main><section id="d-00-현재상태-md"><span class="fname">00-현재상태.md</span><h1>00 — 현재 상태 (한눈에 보기)</h1>
+<blockquote>
+<p>갱신: 2026-07-13 · <strong>이 문서 하나로 제품·사업의 지금 상태를 파악한다.</strong> 상세 근거는 각 절의 링크.
+갱신 책임: 큰 사이클이 끝날 때마다 이 문서를 먼저 갱신한다. 상세 이력은 루트 <code>HANDOFF.md</code> Part 3.</p>
+</blockquote>
+<h2>1. 제품 — 무엇이 돌아가는가</h2>
+<ul>
+<li><strong>서비스</strong>: Concord Private Tutoring — 서울·동탄 방문 1:1 프리미엄 과외. 매니저가 상담·매칭·리텐션을 중개.</li>
+<li><strong>프로덕션</strong>: <code>https://tutormatch-web.vercel.app</code> (Vercel <code>tutormatch-web</code>, main push = 즉시 배포). 07-12 기준 로컬·origin 동기화.</li>
+<li><strong>역할 5종</strong> (07-10 PARENT 신설): 학생 / <strong>학부모</strong> / 선생님 / 매니저(+치프) / 어드민.</li>
+<li><strong>관통 플로우</strong>: 상담 신청·결제 → 치프 자동 배정 → 대면 상담 → 매니저가 선생 배정(미확인 3일 후 자동 확정) → 첫 수업 → 숙제 자동 분배(템플릿) → <strong>수업 확인 제도</strong>(07-13 신설: 자동완료 폐지, 선생님이 완료/사유 확인, 비과실은 마지막 수업으로 이월, 3자 공지) → 월간 AI 리포트 → 빌링키 자동갱신·정산.<ul>
+<li>⚠️ 수락 버튼은 코드상 존재하나 <strong>형식적 절차</strong> — 마케팅·UI에서 강조 금지 (07-08 확정, <code>CLAUDE.md</code>).</li>
+</ul>
+</li>
+<li><strong>모바일</strong>: 통합 4역할 앱 완성 (07-11, Expo). 학생 v2 + 학부모·선생·매니저 탭셋. 스토어 제출은 오너 결정 대기.</li>
+<li><strong>웹 화면</strong>: 신 디자인은 <strong>로그인 후 화면(포털·앱)만</strong> 적용. 공개 페이지(홈·pricing·tutors·reviews·faq·login)는 수정 금지 (07-11 revert로 확정).</li>
+<li><strong>실측 수치 (07-14)</strong>: API 라우트 161 (<code>src/app/api/**/route.ts</code> 파일 카운트) · Prisma 마이그레이션 36 · 구독 일시정지(매니저 전용, 최대 35일) 지원.</li>
+</ul>
+<h2>2. 사업 — 어디까지 왔는가</h2>
+<ul>
+<li><strong>단계</strong>: 출시 전 파일럿 준비. 코드는 결제→정산까지 관통 가능.</li>
+<li><strong>남은 블로커</strong>: ① 사업자 등록(법률 문서 <code>[기재 예정]</code> 8곳) ② 법률 문서 3종 변호사 검토 ③ Toss 웹훅 URL 등록(오너) ④ 커스텀 도메인.</li>
+<li><strong>요금제</strong>: v2 시간제 월정액 8종 (중등·고등 × 주1<del>2회 × 2</del>3h). 선생 정산 시급 30,000원.</li>
+<li><strong>BM 최신판</strong>: v4.1 &quot;결제 이후 플라이휠&quot; — 제안 NX-1<del>53 + EXP-1</del>8. → <a href="10-%EC%82%AC%EC%97%85%EC%A0%84%EB%9E%B5.md">10-사업전략.md</a></li>
+<li><strong>마케팅</strong>: 4트랙(①학생 ②학부모 ③강사 ④매니저), 영상 콘티 V-1<del>13, 제안 AD-1</del>14. → <a href="20-%EB%A7%88%EC%BC%80%ED%8C%85.md">20-마케팅.md</a></li>
+</ul>
+<h2>3. 품질 — 무엇이 검증됐는가</h2>
+<ul>
+<li><p><strong>UX 전수조사 2차 (07-13)</strong>: opus 8팀, 108건 발견 → P0/H 전건+M 대부분 당일 수정 (30-제품·디자인 Part G). 어제 수정 43건 회귀 검증 42건 ✅. 알림 4역할 개방·학부모 팬아웃(결제+핵심)·인증 복구 경로·어드민 confirm 가드·모바일 업로드/정산까지 완료. 방법론은 <code>ux-sweep</code> 스킬화.</p>
+</li>
+<li><p><strong>파일럿 시뮬레이션 2차</strong>: opus 팀 도메인별 정적 분석, <strong>12라운드까지 완료</strong> (07-13 광역: 웹 세션 deletedAt·role 재검증 P1, 환불 시 PAUSED 중단 P1 등 — §12). P0 전건 해소, P2 잔여 관리 중. → 활성 문서 <a href="PILOT_SIM2_2026-07.md">PILOT_SIM2_2026-07.md</a></p>
+</li>
+<li><p><strong>UX 감사</strong>: 3-뷰포트 M-1~M-17 전건 처분 완료 (07-09).</p>
+</li>
+<li><p><strong>보안 라운드</strong>: 로그인 rate-limit, 프로필 PATCH 화이트리스트, 스토리지 버킷 private 전환, 업로드 서버 경유 (07-09).</p>
+</li>
+</ul>
+<h2>4. 다음 할 일 (우선순위)</h2>
+<table>
+<thead>
+<tr>
+<th>순위</th>
+<th>항목</th>
+<th>주체</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Toss 대시보드 웹훅 URL 등록</td>
+<td>오너</td>
+</tr>
+<tr>
+<td>2</td>
+<td>사업자 등록 → 법률 문서 8곳 기재</td>
+<td>오너</td>
+</tr>
+<tr>
+<td>3</td>
+<td>프로덕션 스모크 테스트 (관통 플로우)</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>4</td>
+<td>커스텀 도메인 연결</td>
+<td>오너</td>
+</tr>
+<tr>
+<td>5</td>
+<td>모바일 4역할 앱 스토어 제출 준비</td>
+<td>오너 결정 후 AI</td>
+</tr>
+<tr>
+<td>6</td>
+<td>GA4 결제 퍼널 잔여 이벤트 <code>pricing_viewed</code>·<code>payment_failed</code> (측정 ID·페이지 태그·<code>purchase</code>/<code>begin_checkout</code>/<code>checkout_started</code>/<code>payment_completed</code> dual-emit은 완료)</td>
+<td>AI</td>
+</tr>
+</tbody></table>
+<p>전체 백로그: <code>HANDOFF.md</code> Part 4.</p>
+<h2>5. 문서 지도 (2026-07-12 재편)</h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>이 문서</strong></td>
+<td>현재 상태 요약</td>
+</tr>
+<tr>
+<td><a href="10-%EC%82%AC%EC%97%85%EC%A0%84%EB%9E%B5.md">10-사업전략.md</a></td>
+<td>BM 설계 — v4.1 최신판 + v3 전문 보존</td>
+</tr>
+<tr>
+<td><a href="11-%EC%82%AC%EC%97%85%EB%A6%AC%EB%B7%B0%C2%B7%EC%B7%A8%EC%95%BD%EC%A0%90.md">11-사업리뷰·취약점.md</a></td>
+<td>사업·마케팅·리스크 통합 리뷰 + 취약점 50·개선점 50</td>
+</tr>
+<tr>
+<td><a href="20-%EB%A7%88%EC%BC%80%ED%8C%85.md">20-마케팅.md</a></td>
+<td>마케팅 실행 계획 v3 + 카피 제안 + 설탭 분석 2종</td>
+</tr>
+<tr>
+<td><a href="30-%EC%A0%9C%ED%92%88%C2%B7%EB%94%94%EC%9E%90%EC%9D%B8.md">30-제품·디자인.md</a></td>
+<td>제품·디자인 트래커 + 방향 정의 + CRO 리뷰 + UX 감사 + 홈 개선안</td>
+</tr>
+<tr>
+<td><a href="40-%ED%8C%8C%EC%9D%BC%EB%9F%BF.md">40-파일럿.md</a></td>
+<td>파일럿 1차 기록 (2차는 활성 문서 <code>PILOT_SIM2_2026-07.md</code>)</td>
+</tr>
+<tr>
+<td><code>internal/</code> <code>external/</code></td>
+<td>기술·법률 내부 문서 / 제출용 외부 문서 (기존 체계 유지)</td>
+</tr>
+<tr>
+<td><code>archive/</code></td>
+<td>병합된 원본·구버전 전량 보존</td>
+</tr>
+<tr>
+<td>루트 <code>HANDOFF.md</code></td>
+<td>AI 세션용 마스터 핸드오프 (운영 하네스·상태·백로그)</td>
+</tr>
+</tbody></table>
+</section><section id="d-README-md"><span class="fname">README.md</span><h1>문서 지도 (docs/)</h1>
+<blockquote>
+<p>갱신: 2026-07-14 · <strong>파편 정리(B안)</strong> — superseded PLAN·루트 사업계획서·<code>.hermes</code> 계획 잔재를 <code>archive/</code>로, <code>strategy-rounds/</code>를 캠페인별(<code>improvement/</code>·<code>expansion/</code>) 서브폴더로 분리, 미등재 문서 전량 지도 편입, 정리 안 된 worktree 제거.
+이전 갱신: 2026-07-12 · <strong>주제별 단권화 재편</strong> — 시간순 누적 전략·리뷰 문서 15종을 주제별 단권 6종으로 병합(전문 무손실)하고 원본은 <code>archive/</code>로 이동.
+<strong>기본 원칙 (CLAUDE.md 동급 필독)</strong>: <a href="BUSINESS_DIRECTION.md"><code>BUSINESS_DIRECTION.md</code></a> — 세계관(큐레이션≠플랫폼)·카피 헌법·미학·반복 교정 8패턴의 단일 출처. 모든 세션이 <code>CLAUDE.md</code>와 함께 기본 원칙으로 삼는다.
+<strong>사람이 읽을 때</strong>: <a href="00-%ED%98%84%EC%9E%AC%EC%83%81%ED%83%9C.md"><code>00-현재상태.md</code></a>부터. <strong>AI 세션</strong>: 루트 <a href="../HANDOFF.md"><code>/HANDOFF.md</code></a>부터 (운영 하네스 Part 0 필독).
+⚠️ <strong>수락 버튼 정책 (2026-07-08 개정)</strong>: 학생 수락은 형식적 절차 — 마케팅 카피·UI에서 강조 금지 (<code>CLAUDE.md</code>). 개정 이전 문서의 수락 강조 서술은 구버전 규범.</p>
+</blockquote>
+<h2>주제별 단권 (2026-07-12 재편 — 여기부터 읽는다)</h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>내용</th>
+<th>수록 원본</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="00-%ED%98%84%EC%9E%AC%EC%83%81%ED%83%9C.md">00-현재상태.md</a></td>
+<td><strong>제품·사업 현황 한눈에</strong> — 상태·수치·블로커·다음 할 일</td>
+<td>(신규 작성)</td>
+</tr>
+<tr>
+<td><a href="10-%EC%82%AC%EC%97%85%EC%A0%84%EB%9E%B5.md">10-사업전략.md</a></td>
+<td>BM 설계 통합 — Part A: v4.1 최신판(NX-1<del>53·EXP-1</del>8) / Part B: v3 전문(F-·BM-·M-·W-·RR-)</td>
+<td>BM_EVOLUTION_V4 + BM_EVOLUTION</td>
+</tr>
+<tr>
+<td><a href="11-%EC%82%AC%EC%97%85%EB%A6%AC%EB%B7%B0%C2%B7%EC%B7%A8%EC%95%BD%EC%A0%90.md">11-사업리뷰·취약점.md</a></td>
+<td>Part A: 사업·마케팅·리스크·성장 리뷰(BR-·MK-) / Part B: 취약점 50·개선점 50</td>
+<td>BUSINESS_REVIEW + VULNERABILITY_AUDIT</td>
+</tr>
+<tr>
+<td><a href="20-%EB%A7%88%EC%BC%80%ED%8C%85.md">20-마케팅.md</a></td>
+<td>Part A: 실행 계획 v3(4트랙·V-1<del>13·AD-1</del>14) / B: 카피 제안 / C: 설탭 티어다운 / D: 설탭 벤치마크</td>
+<td>MARKETING_PLAN + copy-proposals + seoltab 2종</td>
+</tr>
+<tr>
+<td><a href="30-%EC%A0%9C%ED%92%88%C2%B7%EB%94%94%EC%9E%90%EC%9D%B8.md">30-제품·디자인.md</a></td>
+<td>Part A: 제품·디자인 트래커(FI-·EC-) / B: 방향 정의서 / C: CRO 리뷰 / D: UX 감사 M-1~17 / E: 홈 개선안 / <strong>F: 사용자 흐름 UX 감사 75건 (07-12)</strong> / <strong>G: 전수조사 2차 108건 (07-13)</strong></td>
+<td>PRODUCT_DESIGN_TRACKER + design 3종 + HOMEPAGE_REDESIGN + 신규</td>
+</tr>
+<tr>
+<td><a href="40-%ED%8C%8C%EC%9D%BC%EB%9F%BF.md">40-파일럿.md</a></td>
+<td>파일럿 1차 기록(종결). 2차는 아래 활성 문서 참조</td>
+<td>PILOT_SIM</td>
+</tr>
+</tbody></table>
+<h2>사업 마스터·원칙·라운드 (전략 실행의 단일 출처)</h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>내용</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="BUSINESS_DIRECTION.md">BUSINESS_DIRECTION.md</a></td>
+<td><strong>기본 원칙 (CLAUDE.md 동급)</strong> — 세계관·카피 헌법·미학·반복 교정 8패턴 §11–14</td>
+<td>상시 필독</td>
+</tr>
+<tr>
+<td><a href="BUSINESS_IMPROVEMENT_MASTER_2026-07.md">BUSINESS_IMPROVEMENT_MASTER_2026-07.md</a></td>
+<td>개선 라운드 통합 마스터 — 발굴 249건, R1~R6 재심 반영 (C·M·P·V·D·X 계열)</td>
+<td>활성</td>
+</tr>
+<tr>
+<td><a href="BUSINESS_EXPANSION_MASTER_2026-07.md">BUSINESS_EXPANSION_MASTER_2026-07.md</a></td>
+<td>확장 라운드 통합 마스터 — 63건 재정 후 생존 4·조건부 47·기각 2·재탕 10, 실행체 39·Top 10</td>
+<td>활성 (<code>biz-rounds</code> 후속)</td>
+</tr>
+<tr>
+<td><a href="OWNER_EXECUTION_QUEUE.md">OWNER_EXECUTION_QUEUE.md</a></td>
+<td>오너 집행 대기 큐 (도메인·보험·법무 콜 등)</td>
+<td>활성</td>
+</tr>
+<tr>
+<td><code>strategy-rounds/improvement/</code></td>
+<td>개선 캠페인 라운드 원본 (R1~R6 — 마스터가 무손실 단권화, 감사 추적용)</td>
+<td>프로세스 잔재</td>
+</tr>
+<tr>
+<td><code>strategy-rounds/expansion/</code></td>
+<td>확장 캠페인 라운드 원본 (R1~R3)</td>
+<td>프로세스 잔재</td>
+</tr>
+<tr>
+<td><a href="session-instructions.md">session-instructions.md</a></td>
+<td>오너 지시 원문 아카이브 (6/16~)</td>
+<td>기록</td>
+</tr>
+<tr>
+<td><a href="COPY_ALTERNATIVES.md">COPY_ALTERNATIVES.md</a></td>
+<td>카피 대안 후보</td>
+<td>참조</td>
+</tr>
+<tr>
+<td><a href="SECURITY_AUDIT_2026-07-14.md">SECURITY_AUDIT_2026-07-14.md</a> · <a href="CLEANUP_AUDIT_2026-07-14.md">CLEANUP_AUDIT_2026-07-14.md</a></td>
+<td>07-14 보안·오버엔지니어링 감사 (1회성 기록)</td>
+<td>기록</td>
+</tr>
+<tr>
+<td><a href="CONTENT_AUDIT_2026-07-14.md">CONTENT_AUDIT_2026-07-14.md</a></td>
+<td>07-14 내용 파편 감사 — 헌법 충돌 격리·삭제 결정 기록</td>
+<td>기록</td>
+</tr>
+</tbody></table>
+<h2>활성 문서 (다른 세션·스킬이 직접 사용 — 이동·구조 변경 금지)</h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>내용</th>
+<th>사용처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="PILOT_SIM2_2026-07.md">PILOT_SIM2_2026-07.md</a></td>
+<td>파일럿 2차 — 11라운드까지 기록, 라운드 계속 append</td>
+<td><code>pilot-verify</code> 스킬이 <code>docs/PILOT_SIM2_*.md</code> 글롭 참조</td>
+</tr>
+<tr>
+<td><a href="IMPLEMENTATION_PLAN_2026-07.md">IMPLEMENTATION_PLAN_2026-07.md</a></td>
+<td>2026-07 구현 계획</td>
+<td>타 세션 활성</td>
+</tr>
+<tr>
+<td><a href="IMPLEMENTATION_SESSIONS_REVISED.md">IMPLEMENTATION_SESSIONS_REVISED.md</a></td>
+<td>세션별 구현 기록</td>
+<td>타 세션 활성</td>
+</tr>
+<tr>
+<td><a href="MANAGER_GUIDELINES.md">MANAGER_GUIDELINES.md</a></td>
+<td>매니저 운영 가이드</td>
+<td>운영</td>
+</tr>
+<tr>
+<td><a href="REFACTORING_PLAN.md">REFACTORING_PLAN.md</a></td>
+<td>리팩토링 제안 R-1<del>16 (P0 보안</del>P2 파일 분할)</td>
+<td>기술 부채 추적</td>
+</tr>
+<tr>
+<td><a href="STORE_SUBMISSION_2026-07.md">STORE_SUBMISSION_2026-07.md</a></td>
+<td>앱 스토어 제출 체크리스트·등록 텍스트 초안 (07-12 오너 제출 결정)</td>
+<td>제출 준비</td>
+</tr>
+<tr>
+<td><a href="PHOTO_SHOOT_LIST.md">PHOTO_SHOOT_LIST.md</a> · <a href="PHOTO_GENERATION_PROMPT.md">PHOTO_GENERATION_PROMPT.md</a></td>
+<td>촬영 리스트 / 이미지 생성 프롬프트(보류)</td>
+<td>콘텐츠</td>
+</tr>
+<tr>
+<td><a href="FRONTEND_BUILD_SPEC.md">FRONTEND_BUILD_SPEC.md</a></td>
+<td>포인터 스텁 → 원본 <code>design handoff/FRONTEND_BUILD_SPEC.md</code></td>
+<td>디자인 패키지</td>
+</tr>
+<tr>
+<td><code>app-guide.html</code> · <code>ceo-proposal.html</code> · <code>proposal-ledger.html</code></td>
+<td>덱 PDF 소스 (headless Chrome <code>--print-to-pdf</code>로 재생성)</td>
+<td><code>docs/branding/*.pdf</code></td>
+</tr>
+<tr>
+<td><code>docs/branding/</code></td>
+<td>생성 PDF·이미지 산출물 (덱·원페이저·가이드라인·아이콘 — HTML 소스서 재생성). <strong>git 미추적 대용량 바이너리</strong></td>
+<td>제출·배포</td>
+</tr>
+</tbody></table>
+<h2>외부 문서 (제출·전달용) — <code>docs/external/</code></h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>용도</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="external/BUSINESS_PLAN_PSST.md">BUSINESS_PLAN_PSST.md</a></td>
+<td>창업지원사업 제출용 사업계획서 (PSST)</td>
+<td>초안 — [기재 필요] 채우면 제출 가능</td>
+</tr>
+<tr>
+<td><a href="external/FINANCIAL_PLAN.md">FINANCIAL_PLAN.md</a></td>
+<td>3개년 재무계획 (V2 요금제 단가, 3시나리오)</td>
+<td>초안 — 파일럿 실측치로 갱신 예정</td>
+</tr>
+<tr>
+<td><a href="external/IR_ONE_PAGER.md">IR_ONE_PAGER.md</a></td>
+<td>IR 원페이저 (PDF: <code>docs/branding/Concord-IR-OnePager.pdf</code>)</td>
+<td>완료 — 대표자 정보 [기재 필요] · ⚠️수락 서술 수정 후 배포</td>
+</tr>
+<tr>
+<td><a href="external/APP_GUIDE.md">APP_GUIDE.md</a></td>
+<td>앱 상세 설명 (PDF: <code>docs/branding/Concord-App-Guide.pdf</code>, 32슬라이드)</td>
+<td>완료 · ⚠️수락 서술 수정 후 배포</td>
+</tr>
+<tr>
+<td><a href="external/CEO_PROPOSAL.md">CEO_PROPOSAL.md</a></td>
+<td>경영자 제안 (PDF: <code>docs/branding/Concord-CEO-Proposal.pdf</code>, 13슬라이드)</td>
+<td>완료 — 대표자 정보 [기재 필요] · ⚠️수락 서술 수정 후 배포</td>
+</tr>
+<tr>
+<td>IR 피치덱 — <code>docs/branding/Concord-IR-Deck.pdf</code> (소스 <code>docs/branding/pitch-deck.html</code>)</td>
+<td>발표·투자 미팅용 13장 덱</td>
+<td>완료 — 대표자 정보 [기재 필요]</td>
+</tr>
+<tr>
+<td>브랜드 가이드라인 — <code>docs/branding/Concord-Brand-Guidelines.pdf</code> (소스 <code>docs/branding/brand-guidelines.html</code>)</td>
+<td>로고·컬러·타이포·보이스 v1.1</td>
+<td>완료</td>
+</tr>
+<tr>
+<td>제안 원장 컴펜디움 — <code>docs/branding/Concord-Proposal-Ledger.pdf</code> (소스 <code>docs/proposal-ledger.html</code>)</td>
+<td>전 제안 ID 단위 집대성 + 확장 제안 X-1~28, 76슬라이드</td>
+<td>완료</td>
+</tr>
+</tbody></table>
+<p><strong>미작성 — 투자·지원사업 대비 권고 (우선순위순)</strong>: ① 대표자 프로필·이력 상세([기재 필요] 원천) ② 데모 시나리오 문서 ③ 정부 양식별 변환본(공고 확정 후) ④ 트랙션 리포트 템플릿(파일럿 후) ⑤ 투자용 데이터룸 체크리스트(Pre-A 전)</p>
+<h2>내부 문서 — <code>docs/internal/</code></h2>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>용도</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="internal/TECH_OVERVIEW.md">TECH_OVERVIEW.md</a></td>
+<td>기술 아키텍처 (스택·인증·DB·결제·배포)</td>
+<td>완료 (07-04 실측 — API 수 등은 <code>HANDOFF.md</code> 3.4가 최신)</td>
+</tr>
+<tr>
+<td><a href="internal/API_REFERENCE.md">API_REFERENCE.md</a></td>
+<td>API 전수 레퍼런스</td>
+<td>⚠️ 07-04 기준 110 라우트 — <strong>07-12 실측 166</strong>, 재실측 필요</td>
+</tr>
+<tr>
+<td><a href="internal/LEGAL_DOCS_STATUS.md">LEGAL_DOCS_STATUS.md</a></td>
+<td>법률 문서 현황 + 필요 7종(L-1~7)</td>
+<td>완료 (체크리스트)</td>
+</tr>
+<tr>
+<td><a href="internal/contracts/TUITION_CONTRACT_DRAFT.md">contracts/TUITION_CONTRACT_DRAFT.md</a></td>
+<td>L-1 수강 계약서</td>
+<td>⚠️ 초안 — 변호사 검토 필수</td>
+</tr>
+<tr>
+<td><a href="internal/contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md">contracts/TUTOR_ENGAGEMENT_CONTRACT_DRAFT.md</a></td>
+<td>L-2 강사 위촉 계약서</td>
+<td>⚠️ 초안 — 변호사·노무 검토 필수</td>
+</tr>
+<tr>
+<td><a href="internal/LEGAL_ADVISORY_MEMO.md">LEGAL_ADVISORY_MEMO.md</a></td>
+<td>임시 법률 자문 메모 (A-1~4)</td>
+<td>⚠️ AI 임시 — 정식 자문 대체 필요</td>
+</tr>
+</tbody></table>
+<p>미작성 (LEGAL_DOCS_STATUS 우선순위): 개인정보 내부관리계획(L-3), 신원확인 동의서(L-4)</p>
+<h2>아카이브 — <code>docs/archive/</code> (전량 보존, 참조용)</h2>
+<p>2026-07-12 재편으로 이동한 원본 15종(위 단권에 전문 수록) + 구버전 사업계획서 산출물(<code>concord_bizplan.*</code>, <code>Concord_사업계획서_2026.docx</code>, <code>Concord_사업계획서_2026.md</code> — PSST가 계승) + <strong>07-14 추가</strong>: <code>BUSINESS_IMPROVEMENT_PLAN_2026-07.md</code>(MASTER가 계승한 superseded 중간본), <code>hermes/</code>(07-01·02 계획·프롬프트 잔재). 아카이브 내 문서 간 상호 참조는 같은 폴더라 유효.</p>
+<h2>다른 위치의 문서</h2>
+<table>
+<thead>
+<tr>
+<th>위치</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>루트 <code>HANDOFF.md</code></td>
+<td><strong>AI 마스터 핸드오프</strong> — 운영 하네스 Part 0 · 상태 스냅샷(3.4 최신) · 백로그</td>
+</tr>
+<tr>
+<td>루트 <code>CLAUDE_HANDOFF.md</code></td>
+<td>과거 세션 로그·이연 스펙 원본 (역사 보존)</td>
+</tr>
+<tr>
+<td>루트 <code>design handoff/</code></td>
+<td>디자인 패키지 — HTML 시안 20종, DESIGN_SYSTEM, ROUTE_MAP, IMPLEMENTATION_CONTRACT, MOBILE_HANDOFF. <strong>신 디자인은 로그인 후 화면만, 공개 페이지 수정 금지</strong></td>
+</tr>
+<tr>
+<td><code>public/docs/</code></td>
+<td>웹 자료실 배포본 (PDF·HTML — <code>DocsLibrary.tsx</code>가 참조, md 이동과 무관)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>PDF 재생성: 소스 HTML 수정 후 headless Chrome <code>--print-to-pdf</code> (원페이저·덱·가이드라인 공통).
+문서 갱신 시 이 지도를 동반 갱신한다 (HANDOFF.md §0.8).</p>
+</blockquote>
+</section><section id="d-CONTENT-AUDIT-2026-07-14-md"><span class="fname">CONTENT_AUDIT_2026-07-14.md</span><h1>문서 내용 파편 감사 — 2026-07-14</h1>
+<p>4팀 서브에이전트(sonnet, 읽기전용) 병렬 감사 종합. 대상: 사업 문서 코퍼스 전권. 목적: 마스터·헌법과 충돌하는 내용 파편 색출.</p>
+<h2>1. 근본 원인</h2>
+<p><code>docs/10-사업전략.md</code>(NX 61건 + BM 26건 = 87건)가 249건 개선 라운드 트리아지를 거치지 않은 채 &quot;현행 최신판(v4.1)&quot;으로 표기 → <code>BUSINESS_IMPROVEMENT_MASTER</code>·<code>BUSINESS_EXPANSION_MASTER</code>와 생사·수치·헌법이 충돌. 파편의 대부분이 이 한 문서에서 파생.</p>
+<h2>2. 오너 결정 (2026-07-14)</h2>
+<table>
+<thead>
+<tr>
+<th>사안</th>
+<th>결정</th>
+<th>처리</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10-사업전략 근본 처방</td>
+<td><strong>헤더 격리</strong></td>
+<td>문서 상단에 &quot;미판정 원안 — 충돌 시 마스터 우선&quot; 격리 헤더 1개 삽입 (라운드 재가동 불요)</td>
+</tr>
+<tr>
+<td>BM Part B 할인 구조</td>
+<td><strong>격리 보존</strong></td>
+<td>삭제 아님 — 격리 헤더가 &quot;확정 요금제·할인 금지 헌법에 따라 비활성&quot;으로 봉쇄, 원안은 보존</td>
+</tr>
+<tr>
+<td>평점(별점) 파이프라인</td>
+<td><strong>삭제</strong></td>
+<td>FI-2·11-리뷰 §5 별점 부분 폐기</td>
+</tr>
+<tr>
+<td>수락 강조 문구</td>
+<td><strong>삭제</strong></td>
+<td>V-7 광고 콘셉트·신뢰바 A안·반박 카피·FI-5 프레이밍 정리</td>
+</tr>
+<tr>
+<td>생사 상반 3쌍</td>
+<td>미선택 = 마스터 판정 유지</td>
+<td>헤더 격리로 자동 해소(마스터 우선). 별도 플립 없음</td>
+</tr>
+</tbody></table>
+<h2>3. 처리 완료 (파일:변경)</h2>
+<ul>
+<li><code>10-사업전략.md</code>: 상단 판정 격리 헤더 추가 — NX/BM 미판정·마스터 우선·할인구조 비활성·시급 프리셋(3.2/3.4/4.0·기본 3.0) 우선·평점 폐기 5개 봉쇄.</li>
+<li><code>30-제품·디자인.md</code>: FI-2(평점 파이프라인) 폐기 + P2 우선순위표 스트라이크. 후기 텍스트 루프는 별건 재론 여지 각주. FI-5 &quot;수락률 좌우&quot; → &quot;매니저 배정 사유&quot; 재프레이밍(matchReason 기능·마이그레이션 보존), 기대효과·P1 근거의 수락률 강조 제거.</li>
+<li><code>11-사업리뷰·취약점.md</code>: §5 후기 자산 루프 — 별점 부분 폐기, 후기 텍스트 루프만 존치.</li>
+<li><code>20-마케팅.md</code>: V-7 「선생님은 학생이 고릅니다」 광고 콘셉트 폐기(재매칭 보장 각도만 살림), 신뢰바 A안 &quot;학생이 수락해야 시작&quot; → &quot;전담 매니저 케어&quot; 교체, 반박 카피(§22-3) 재매칭 프레임으로 교체, 콘텐츠 계획표 V-7 행 폐기, 학생 트랙/신뢰축의 수락 강조 제거. 정책 고지 헤더(§0) 갱신.</li>
+</ul>
+<h2>4. 헌법 위반 격리 근거</h2>
+<ul>
+<li><strong>할인 금지</strong>: BM-B 약정할인·BM-C 번들·BM-I·BM-T 정가 인상·NX-23 조기할인 등 — 확정 요금제(중 38·55·76·106 / 고 43·58·78·112만) 위 할인층. 격리 헤더로 비활성.</li>
+<li><strong>평점 금지(큐레이션 세계관)</strong>: <code>api/mobile/tutors</code>가 평균 평점을 계산하나 UI 노출 대상 아님. 별점 수집·표시 제안 전량 폐기.</li>
+<li><strong>수락 강조 금지(북극성 6)</strong>: 수락 버튼은 형식적 절차. 기능(수락/거절 API·데드락 수정 EC-1·EC-3)은 보존, 마케팅·UI 강조만 삭제.</li>
+<li><strong>시급 프리셋</strong>: BM-A 4.0/5.0만 vs 오너 프리셋 3.2/3.4/4.0·기본 3.0 — 프리셋 우선(격리 헤더 명시).</li>
+</ul>
+<h2>5. 미결 (T1 — 별도 처리)</h2>
+<p>수치 스냅샷 통일(API 라우트 실측·마이그레이션·GA4·파일럿 라운드 수 — 00-현재상태 ↔ HANDOFF), IMPLEMENTATION_PLAN/SESSIONS 완료 항목 현행화, 수락 정책 스테일 본문 갱신.</p>
+<h2>6. T3 — 완료 (2026-07-14, 결론 수정)</h2>
+<p>opus 서브에이전트 전권 매핑 결과 24군집 식별. <strong>원 감사의 &quot;55→45 물리압축&quot; 처방은 위험</strong>으로 판정 — Part F(07-12)·G(07-13)는 날짜 박힌 감사 스냅샷(회귀검증 기록 포함)이라 물리 병합 시 &quot;발견→수정→회귀 통과&quot; 이력이 소실된다. 문서 구조는 <strong>제안(Part 2·3) → 감사 재발견(F) → 회귀검증(G)의 3층 사슬</strong>.</p>
+<ul>
+<li><strong>처리</strong>: 물리 병합 대신 <code>30-제품·디자인.md</code> 상단에 <strong>무손실 교차참조 색인 1장</strong> 삽입(군집 1~24, 각 이슈의 최신 상태 = Part G 기준 명시).</li>
+<li><strong>물리 병합 안전 건수 = 0</strong> — 유일 후보였던 군집22(B↔C 설계규칙 이중화)에 <strong>긴급성 정책 상충</strong>(B §3 &quot;긴급성 연출 허용&quot; ↔ C §4 원칙2 &quot;근거 없는 긴급성 금지&quot;)이 내장돼 자율 병합 불가.</li>
+<li><strong>상충 5건 오너 정본 확정 (2026-07-14)</strong>: #15 환불 배지=노출 유지(E), #20 히어로=단일 사진(B), #21 요금 CTA=상담 수렴(B), #22 긴급성=금지(C, B §3 본문 반영). #19 선생님 이미지만 결정대기(양안 병존). 정본은 색인 하단 표.</li>
+<li>액션 단일화(A안)는 파일럿 후로 유지.</li>
+</ul>
+</section><section id="d-CLEANUP-AUDIT-2026-07-14-md"><span class="fname">CLEANUP_AUDIT_2026-07-14.md</span><h1>오버엔지니어링 감사·정리 (2026-07-14)</h1>
+<p>레포 전량 감사(웹+모바일) 후 죽은 코드·미사용 export·중복을 항목별 커밋으로 정리.
+검증: <code>tsc --noEmit</code>(웹·모바일)·<code>next lint</code>·<code>next build</code> 전부 통과. 디자인에 닿을 수 있는 항목은 오너 확인 대기로 revert 보류.</p>
+<h2>적용 완료 (main 로컬, push 대기)</h2>
+<table>
+<thead>
+<tr>
+<th>커밋</th>
+<th>내용</th>
+<th>규모</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>779cb19</td>
+<td>미사용 lib 4종 삭제 — public-teachers-cache·manager-student-stats·faq-defaults·slot-times (참조 0)</td>
+<td>~230줄</td>
+</tr>
+<tr>
+<td>f009075</td>
+<td>미사용 컴포넌트 18종 삭제 — landing 구버전(Hero·HowItWorks·Philosophy·TrustBar·FinalCTA·TutorShowcase·ServiceCompareSection·HomeConsultationCtaSection), teacher-portal 사장 탭(TeacherStudentPlanTab·TeacherStudentQuestionsTab·TeacherDashboardContent), FloatingConsultationCue·PricingTierToggle·TestimonialCard·KakaoConsultButton·PaymentsPageHeader·DefaultAvatar·SuccessPageActions</td>
+<td>~1,700줄</td>
+</tr>
+<tr>
+<td>8961af3</td>
+<td>모바일 Expo 템플릿 잔재 App.tsx·index.ts 삭제 (main은 expo-router/entry)</td>
+<td>28줄</td>
+</tr>
+<tr>
+<td>4f5e091</td>
+<td>미사용 export 정리 — deprecated v1 pricing exports, CMS 중복 alias, analytics-journey→analytics 통합, 내부 전용 함수 unexport, orderId <code>crypto.randomUUID</code>, formatKRW <code>toLocaleString(&quot;ko-KR&quot;)</code></td>
+<td>~340줄</td>
+</tr>
+<tr>
+<td>8f6dad7</td>
+<td>auth 가드 공통화 — <code>src/lib/require-role.ts</code> 신설, 6개 auth 헬퍼(admin·student·teacher·parent-page·manager·manager-page)는 동작 동일 래퍼로. 상태코드·리다이렉트 대상·deletedAt/role 재검증 정책 불변</td>
+<td>~130줄</td>
+</tr>
+<tr>
+<td>81f7681</td>
+<td>모바일 죽은 코드 — 미참조 UI 4종(Button·Card·Avatar·SectionTitle), subscription-label.ts, app-styles 사장 블록 9종, onboarding 핸드오프 주석</td>
+<td>~530줄</td>
+</tr>
+<tr>
+<td>03c014c</td>
+<td>docx 의존성 제거 (소스 참조 0)</td>
+<td>dep 1</td>
+</tr>
+<tr>
+<td>a4a6e56</td>
+<td>모바일 비시각 재적용 — api.ts 401 갱신 블록 공통화·디버그 로그 제거, 미사용 blue 테마 플러밍 제거</td>
+<td>~80줄</td>
+</tr>
+</tbody></table>
+<p>순 삭제 약 −3,300줄 (lockfile 제외).</p>
+<h2>보류 — 디자인 영향 가능, 오너 눈확인 후 재적용</h2>
+<p>revert로 되돌려 놓음. 재적용 = 아래 원본 커밋을 다시 revert(revert-of-revert)하거나 cherry-pick.</p>
+<table>
+<thead>
+<tr>
+<th>원본 커밋</th>
+<th>내용</th>
+<th>보류 사유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>9f48207</td>
+<td>NEXT_PUBLIC_PORTAL_DESIGN legacy 플래그 제거 (~520줄). Vercel prod env 미설정 확인 완료</td>
+<td>layout.tsx 인라인 스크립트(테마 초기화) 수정 — 포털 화면 렌더 경로</td>
+</tr>
+<tr>
+<td>fe45a90</td>
+<td>PortalShell로 대체된 사장 셸 4종 삭제 (411줄, 참조 0)</td>
+<td>9f48207에 종속 (같이 재적용)</td>
+</tr>
+<tr>
+<td>8410a59 중 아이콘·won</td>
+<td>모바일 아이콘 중복 통합(Parent 아이콘을 Manager 변형으로 교체, 12개 화면), won() 공통 헬퍼</td>
+<td>아이콘 시각 차이 가능성 — 화면 확인 필요</td>
+</tr>
+</tbody></table>
+<p>확인 절차: 관리자 패널·강사 포털·학생 대시보드·모바일 학부모 탭 눈확인 → 이상 없으면 재적용.</p>
+<h2>의도적 제외 (수정 안 함)</h2>
+<ul>
+<li><code>ENABLE_AUTO_HOMEWORK_DISTRIBUTION</code> 플래그 — 제품 노스스타 기능(숙제 자동 배분), 플래그 활성화는 제품 결정</li>
+<li><code>mobile/app/checkout.tsx</code> — 외부 딥링크 대상 가능성</li>
+<li><code>mobile/lib/student-journey.ts</code> — 웹 서버 파일과 동일 유지 필수(주석 명시), 통합은 API 응답 전환 필요한 별도 과제</li>
+<li><code>TEACHER_HOURLY_RATE_PRESETS_KRW</code> — 차등시급 기능(32/34/40k)의 선언 상수</li>
+<li>RN peer deps(reanimated·worklets·screens·expo-constants·expo-linking) — import 0이지만 expo-router 런타임 peer</li>
+<li><code>expo-status-bar</code> — 미사용이나 npm ERESOLVE 충돌, 제거 실익 없음</li>
+<li><code>scripts/</code> 수동 원오프 5종(enrich-demo·update-marketing-copy 등) — npm script 미연결, 의도 불명</li>
+</ul>
+<h2>남은 관찰 사항 (작업 아님, 기록만)</h2>
+<ul>
+<li>웹↔모바일 최대 drift 위험: <code>student-journey.ts</code> 스테이지 카피 수동 복제 — 서버가 stageCopy를 이미 반환하므로 장기적으로 API 일원화 검토 가치</li>
+<li><code>portal-design.css</code>·<code>dark-mode-bridge.css</code>의 legacy 셀렉터 — 9f48207 재적용 시 함께 정리 가능</li>
+</ul>
+<h2>2차 감사 (같은 날)</h2>
+<h3>적용 (4커밋)</h3>
+<table>
+<thead>
+<tr>
+<th>커밋</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>25315df</td>
+<td>사장 미러 API 라우트 13종 삭제 — /api/mobile/tutors(+[id]·slots)·mobile/lessons·mobile/manager/consultations/[id]/visit-confirmed·mobile/manager/monitoring/stats·mobile/payments/complete·admin/cms 베이스·manager/monitoring 베이스·parent/{children,children/[studentId]/reports,payments,register}(웹 미러 — 모바일은 /api/mobile/parent/* 사용). 자식 라이브 라우트(admin/cms/*, manager/monitoring/stats, parent/children/[studentId]/consultation)는 보존. 호출처 0 검증(웹 fetch·모바일 apiFetch·vercel.json cron·웹훅 대조)</td>
+</tr>
+<tr>
+<td>4471587</td>
+<td>미참조 정적 자산 — og-image-0/1/2.png, 미임포트 concord-site.css(17K)</td>
+</tr>
+<tr>
+<td>(prop 2커밋)</td>
+<td>미사용 prop 제거 — NotificationsPageClient.studentName, TeacherProfilePreview.teacherId + TeacherProfileEditor.teacherId 연쇄</td>
+</tr>
+</tbody></table>
+<h3>보류 (오너 판단 대기)</h3>
+<ul>
+<li>/api/teacher/homework-templates/[templateId] (PATCH·DELETE, 113줄) — 호출처 0이나 숙제 템플릿 기능(노스스타) UI 연결 예정 가능</li>
+<li>CMS-UNSURE 에셋 ~2.0MB — public/images/photos/{interviews 1–10, profiles tutor-1–6, selfies 4–6}, placeholders 4종. 코드 참조 0이나 CMS가 DB에 URL 저장하므로 admin 선택 이미지일 수 있음. DB 확인 후 정리 가능</li>
+<li>SVG 아이콘 중복(PortalShell 문·해 인라인 = ConcordMoonIcon과 동일 path 등) — 통합 시 마크업 변경, 디자인 확인 후</li>
+</ul>
+<h3>보고만 (prod DB — 오너 승인 사안, 수정 안 함)</h3>
+<ul>
+<li>Prisma 사장 모델: OnboardingSurvey(참조 0 완전 사장), Question(스키마에 DEPRECATED·DROP 예정 명시, 롤백 대비 유지 중)</li>
+<li>쓰기 고아 모델: TutorReview·TutorAvailability — 읽던 유일한 라우트(mobile/tutors)가 이번에 삭제되어 완전 고아화. 평점 노출은 큐레이션 세계관과도 상충 — 스키마 정리 후보</li>
+<li>StudyPlan.source — &quot;AUTO_DISTRIBUTION&quot; 값 코드 0회, 사실상 상수 컬럼</li>
+<li>HomeworkTemplate.isDefault — 데모 시드만 기록, 프로덕션 쓰기 경로 없음</li>
+</ul>
+<h3>미발견 확인</h3>
+<ul>
+<li>파일 내부 죽은 코드: 상위 15개 웹·8개 모바일 대형 파일에서 no-unused-vars 클린, 상수-false 분기 0 — 레포 상태 양호</li>
+<li>tools/team-office — 의도적 수동 유틸(워룸 대시보드), 생존</li>
+<li>미사용 enum 값 없음, src/types 전부 생존</li>
+</ul>
+<h3>검증</h3>
+<p>tsc(웹·모바일)·next lint·프로덕션 build 통과.</p>
+</section><section id="d-SECURITY-AUDIT-2026-07-14-md"><span class="fname">SECURITY_AUDIT_2026-07-14.md</span><h1>전량 보안 감사 (2026-07-14)</h1>
+<p>4개 도메인(인증/인가, 결제, 입력/XSS, 시크릿/설정) 감사. 도구: ecc security-review 스킬 + opus 서브에이전트. 검증: tsc(웹·모바일)·lint·프로덕션 빌드 전부 통과.</p>
+<h2>수정 완료 (7커밋, push 대기)</h2>
+<table>
+<thead>
+<tr>
+<th>커밋</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2189693</td>
+<td>범용 rate limiter src/lib/rate-limit.ts 신설(인스턴스 메모리) — AI 질답(유저당 1분 5회)·회원가입 4종·관리자 복구(IP당 10분 5회)·이벤트 수집(IP당 1분 30회) 적용</td>
+</tr>
+<tr>
+<td>90c0a6d</td>
+<td>입력 상한 — /api/events body 10KB(413), /api/questions content 5,000자(400)</td>
+</tr>
+<tr>
+<td>3b5d9c4</td>
+<td>사진 업로드 3곳 error.message 노출 제거 — 일반 메시지 + 서버 로그</td>
+</tr>
+<tr>
+<td>1ffa8b7</td>
+<td>Toss ALREADY_PROCESSED_PAYMENT 재시도 시 fetchTossPayment 재조회로 orderId·status·amount 3중 검증 — FAILED 재시도 금액 부풀리기로 상위 플랜 취득 경로 차단</td>
+</tr>
+<tr>
+<td>c36aa16</td>
+<td>전역 보안 헤더 5종 — X-Frame-Options DENY·nosniff·Referrer-Policy·HSTS 2년·Permissions-Policy (CSP는 인라인 테마 스크립트 때문에 보류)</td>
+</tr>
+<tr>
+<td>bffa33d</td>
+<td>CLAUDE_HANDOFF.md 평문 비밀번호 플레이스홀더화 + 시드 스크립트 SEED_PORTAL_PASSWORD/SEED_STAFF_PASSWORD env 필수화</td>
+</tr>
+<tr>
+<td>5906c62</td>
+<td>모바일 토큰 AsyncStorage 평문 → expo-secure-store (기존 사용자 무손실 이관 폴백 포함)</td>
+</tr>
+</tbody></table>
+<h2>통과 판정 (수정 불요)</h2>
+<ul>
+<li>결제: 금액 무결성(Toss confirm + planIdFromAmount 서버 도출), orderId 멱등성(unique + 상태 가드), 웹훅(본문 불신·Toss 서버 재조회 검증), 환불(역할 가드·Toss 선취소·원자 전환·감사로그), 빌링키 customerKey 세션 학생 바인딩, TOSS_SECRET_KEY 서버 전용</li>
+<li>인증: 160개 라우트 중 150 가드·10 의도적 공개, SQL 인젝션 0(전부 Prisma), dangerouslySetInnerHTML 전부 정적, SSRF 없음, 오픈 리다이렉트 없음, cron Bearer 인증</li>
+</ul>
+<h2>오너 결정 대기 (코드 미수정)</h2>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>위험</th>
+<th>필요 조치</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>프로덕션 실 비밀번호 회전</td>
+<td>HIGH — &quot;11111111&quot;/&quot;Sample1234!&quot;가 git 히스토리에 잔존, 레포 GitHub 존재</td>
+<td>오너가 prod DB 계정 비밀번호 변경. 히스토리 정리(BFG)는 선택</td>
+</tr>
+<tr>
+<td>모바일 refresh 토큰 무회전·무폐기</td>
+<td>HIGH — 60일 stateless, 로그아웃해도 서버측 무효화 없음</td>
+<td>스키마 변경(tokenVersion 등) 필요 — 설계 결정</td>
+</tr>
+<tr>
+<td>next 14 취약점 6건(high 4)</td>
+<td>HIGH — 캐시 포이즈닝·DoS 등, 패치판 없음(14.2.35가 마지막)</td>
+<td>next 15/16 업그레이드 결정 필요(브레이킹)</td>
+</tr>
+<tr>
+<td>웹·모바일 AUTH_SECRET 공유</td>
+<td>LOW</td>
+<td>키 분리 시 모바일 전원 재로그인 발생 — 트레이드오프 판단</td>
+</tr>
+<tr>
+<td>액세스 토큰 7일 + 비밀번호 변경 시 미무효화</td>
+<td>MEDIUM</td>
+<td>refresh 회전과 같은 설계 건으로 묶어 처리 권장</td>
+</tr>
+<tr>
+<td>CSP 도입</td>
+<td>MEDIUM</td>
+<td>인라인 스크립트 정리 필요 — 디자인 영향, 눈확인 사안</td>
+</tr>
+<tr>
+<td>시드 스크립트 실행 절차 변화</td>
+<td>참고</td>
+<td>이제 SEED_PORTAL_PASSWORD·SEED_STAFF_PASSWORD env 필요</td>
+</tr>
+</tbody></table>
+<h2>잔여 LOW (기록만)</h2>
+<ul>
+<li>/api/events 비인증 쓰기(rate limit로 완화됨), imageUrl 임의 문자열 허용, question-images MIME 클라이언트 신뢰, db-check가 CHIEF_MANAGER에 정보 노출</li>
+</ul>
+</section><section id="d-BUSINESS-DIRECTION-md"><span class="fname">BUSINESS_DIRECTION.md</span><h1>Concord 사업 방향·원칙 정리</h1>
+<blockquote>
+<p>출처: 2026-06-16 ~ 07-13 세션 지시문 467건(docs/session-instructions.md) + 오너 확정 메모리.
+오너(대표)가 직접 지시한 내용에서 추출한 사업 목표·이상·원칙의 종합본.</p>
+</blockquote>
+<hr>
+<h2>1. 사업 정체성</h2>
+<ul>
+<li><strong>Concord</strong> — 프리미엄 1:1 방문(대면) 과외 매칭·관리 플랫폼.</li>
+<li>핵심 슬로건 방향: <strong>&quot;선생님이 다릅니다&quot;</strong> (히어로 카피, 한 줄).</li>
+<li>단순 매칭 중개가 아니라 <strong>매니저가 상담→배정→사후관리까지 밀착 운영</strong>하는 관리형 과외.</li>
+<li>서비스 지역: <strong>서울(구·법정동·인접 지하철역), 동탄(행정동 단위)</strong>.</li>
+<li>대상: 중·고등학생. 이해관계자 4역할 — 학생 / 학부모 / 선생님 / 매니저(+치프매니저).</li>
+</ul>
+<h2>2. 사업의 이상 (오너가 명시한 목표)</h2>
+<blockquote>
+<p>&quot;학생의 공부 스타일과 맞는 교육 철학의 선생님을 추천해준다는 게 제일 핵심 포인트.&quot; (07-06)</p>
+</blockquote>
+<ul>
+<li><strong>성향 매칭 철학</strong>:<ul>
+<li>활발한 학생 → 카리스마 있는 선생님</li>
+<li>롤모델이 필요한 외동 학생 → 존경할 만한 인품의 선생님</li>
+<li>게으른 학생 → 성실한 선생님이 본보기</li>
+<li>여린 학생 → 친절하고 착한 선생님</li>
+</ul>
+</li>
+<li><strong>안전·신뢰</strong>: &quot;안전하고 믿을만한 선생님이 배정된다&quot;가 두 번째 축.<ul>
+<li>대표가 <strong>전원 직접 대면 면접</strong> — 인품·학력·신원·수업 실력 4가지 검증.</li>
+<li>단, 검증은 마케팅의 <strong>메인이 아니라 &#39;요소&#39; 중 하나</strong>로 배치 (07-07 결정 — 타사와 검증 수준이 크게 다르지 않다는 자기인식, 공포마케팅 과잉 경계).</li>
+</ul>
+</li>
+<li><strong>수업 밖 관리가 성적을 가른다</strong>: &quot;수업보다도 수업 이후 학생의 공부가 성적을 가릅니다.&quot;<ul>
+<li>매 수업 숙제·공부계획을 시스템에 등록, 학생이 매일 체크.</li>
+<li>질문은 최고성능 전용 AI가 즉시 답변 + 이어서 선생님 답변.</li>
+<li>매월 선생님이 직접 리포트 작성, 학생·학부모와 숨김 없이 공유.</li>
+</ul>
+</li>
+<li><strong>불만족 리스크 제거</strong>: 첫 수업이 맞지 않으면 100% 환불, 선생님 교체 비용 0원, 배정 후에도 매니저 상시 관리·언제든 상담 요청 가능.</li>
+</ul>
+<h2>3. 서비스 흐름 (North Star)</h2>
+<ol>
+<li>학생 신청 또는 결제.</li>
+<li>신청만 한 학생 → 매니저 배정 대기 상태.</li>
+<li>결제한 학생 → <strong>치프매니저에게 자동 배정</strong>.</li>
+<li>매니저가 배정받아 <strong>방문 상담</strong> 일정 조율 — 상담에서 학생 성향 파악 + 학습 진단 제공.</li>
+<li>상담 중 매니저가 <strong>적합한 선생님을 자유 배정</strong>. (앱 내 학생 수락 버튼은 <strong>형식</strong> — 마케팅·UI에서 절대 강조 금지. 거절/재배정 플로우는 학생 측에 만들지 않음. 재배정은 매니저 권한.)</li>
+<li>선생님이 첫 수업일 지정 → 수업 시작.</li>
+<li>숙제: 선생님이 1주(또는 4일) 분량을 <strong>한 번에 입력하면 요일별 가중 자동 분배</strong>. 반복 패턴은 템플릿으로 재사용.</li>
+<li>수업 확인: 자동완료 폐지 — 선생님이 완료/사유 선택. 학생 과실=정산 포함, 비과실=마지막 수업으로 이월, 3자(학생·학부모·매니저) 알림.</li>
+<li>구독 일시정지(paused): 학부모에게 <strong>노출하지 않는</strong> 제도. 불가피한 요청 시 매니저가 수동 처리, 이후 마찰 없이 재개.</li>
+</ol>
+<h2>4. 제품 우선순위</h2>
+<ul>
+<li><strong>앱이 우선, 웹은 보조</strong> (07-12 명시).</li>
+<li>역할기반 단일 앱: 학생·학부모·선생님·매니저 모두 앱 사용.</li>
+<li>학부모 모드가 최대 갭 → 1단계: PARENT 계정, 자녀 연결은 <strong>코드/QR 2옵션 + 매니저 수동 연결</strong>, 결제는 학부모·학생 양측 가능, 학부모 권한은 액션도 가능.</li>
+<li>학부모 <strong>웹</strong>은 리포트·결제·상담만 (진도/숙제 불가).</li>
+<li>학부모 앱 = 수업·숙제·진도 열람용이라는 점을 홈에서 소개.</li>
+</ul>
+<h2>5. 요금 철학</h2>
+<ul>
+<li><strong>할인 구조·요금 공식 없음.</strong> &quot;소비자 심리에 최적화된 금액으로 내가 골랐다&quot; — 오너 직접 설정, AI의 구조 제안·금액 변경 금지.</li>
+<li>확정가(중등|고등, 만원): 주1회 2h <strong>38|43</strong>, 주1회 3h <strong>55|58</strong>, 주2회 2h <strong>76|78</strong>, 주2회 3h <strong>106|112</strong> — <strong>코드값이 진실.</strong></li>
+<li>표기: &quot;월&quot;이 아니라 <strong>&quot;(4주)&quot;</strong> 단위. &quot;주 1회·3시간&quot;처럼 간결하게. 총 시간 환산 계산 금지.</li>
+<li>요금제 카드: 한 줄 배치(절대 두 줄 금지), 황금비율, 할인률 뱃지 없음.</li>
+<li>부제 방향: &quot;첫 수업이 맞지 않으면 100% 환불 / 선생님 교체 비용 0원&quot; + 각주 &quot;*환불정책 참고&quot;.</li>
+</ul>
+<h2>6. 마케팅·카피 원칙</h2>
+<ul>
+<li><strong>톤: 수능선배(suneungsunbae.com) 스타일</strong> — 헤드라인은 확언체, CTA는 해요체 투트랙.</li>
+<li><strong>절제가 최우선</strong>: &quot;최소한 쓰고 절제된 톤으로. 왜 자꾸 말이 길어지고 모든 내용을 다 적으려고 하냐&quot; (07-08). 문장은 삭제 우선, 조건·단서는 본문이 아닌 각주로.</li>
+<li><strong>&quot;짜침&quot;(싸구려 느낌) 절대 배제</strong> — 검정 배너, 설명식 문구, 과한 뱃지 등 제거 대상.</li>
+<li>공포 마케팅(과외 사고 뉴스 스크롤텔링)은 사용하되:<ul>
+<li>뉴스 헤드라인은 <strong>원문 그대로</strong>, 3개만, 실명 마스킹.</li>
+<li>&quot;이런 일들이 실제로 있었습니다&quot; 같은 설명 문구 금지 — 담백한 공감 문구만.</li>
+<li>스킵 허용, 세션당 1회 재생, 총 7초대로 압축 — 임팩트와 사용자 통제감 균형.</li>
+</ul>
+</li>
+<li><strong>후기</strong>: 전부 다른 사람이 쓴 것처럼 말투 각각 다르게. 반말체 금지. &quot;기존 과외는 ~이 불만 → 지금은 ~이 좋다&quot; 구조 활용. 성향 매칭·안전 가치가 스며들게. 실제 학원 후기 말투 학습 후 작성. (파일럿 전까지 임시, 실 후기로 교체 예정.)</li>
+<li><strong>신뢰 요소</strong>: 실사 수준 인물 사진(직접 촬영분 우선), 대학 합격 로고(설카포·연고·서성한·중앙·경희·외대·이대), 인터뷰 카드.</li>
+<li>참고 사이트: index.seoltab.com (구조·모객), class.qanda.ai, suneungsunbae.com (톤·UI 점잖음).</li>
+<li>마케팅 우선순위: <strong>1. 학생 2. 학부모 3. 선생님 채용 4. 매니저 채용</strong>.</li>
+<li>상담 전환 최우선: 신청 폼은 화면 위 가벼운 카드, <strong>버튼까지 한 눈에</strong> 들어와야 함(이탈 방지). &quot;상담 신청만 해도 학습 전문가의 1:1 학습진단 제공.&quot;</li>
+<li>채널: 카카오톡 채널(pf.kakao.com/_xlxcjwX) 상담 연동, 알림톡 도입 예정.</li>
+</ul>
+<h2>7. 디자인 원칙</h2>
+<ul>
+<li><strong>디자인을 다시 만들지 말 것</strong> — 디자이너 핸드오프 CSS를 한 글자도 안 고치고 그대로 import. 값 눈대중 이식 금지, 토큰 변수만 사용, 아이콘은 icons.js 단일 소스, Pretendard 1.3.9 고정, word-break:keep-all·tabular-nums 필수.</li>
+<li><strong>신 디자인 적용 범위 = 로그인 후 화면(포털·앱)만.</strong> 공개 페이지(홈·pricing·tutors·reviews·faq·login) 수정 절대 금지.</li>
+<li><strong>신규 화면은 기능+뼈대만</strong> 구현 — 폴리시는 디자인 AI에 핸드오프.</li>
+<li><strong>기능 축소 절대 금지</strong>: 시안이 기존 기능보다 단순하면 축소 구현하지 말고 기능 보존형 재시안 요청.</li>
+<li>사진: 원본 비율 유지(크롭·비율 왜곡 금지), 리사이징만 허용, 카드용은 1:1, 성별-이름 일치.</li>
+<li>캐러셀은 좌우 이동만. 테마: 그린/블루 × 라이트/다크 4조합.</li>
+<li>기존 디자인은 삭제·덮어쓰기 금지 — 언제든 롤백 가능하게 보존.</li>
+</ul>
+<h2>8. 법률·리스크 스탠스</h2>
+<ul>
+<li>법률 문서는 <strong>플레이스홀더 + 추후 실제 자문</strong> — AI가 법률 조항 창작 금지.</li>
+<li>학부모 동의는 <strong>&quot;동의 간주&quot; 고지 문구</strong>로만 — 보호자 SMS 인증·전자서명·복잡한 미성년 분기 등 무거운 동의 플로우 금지.</li>
+<li>앱 내 후기/평점 직접 수집 기능 금지.</li>
+<li>학부모 연락처는 가입/결제/상담 후 매니저에게 전달되는 최소 구조.</li>
+<li>결제는 서버측 Toss confirm·금액 검증·멱등성 필수 — 프로덕션에서 가짜 결제 완료 절대 불가.</li>
+</ul>
+<h2>9. 운영·개발 방식 (오너의 일하는 원칙)</h2>
+<ul>
+<li><strong>작게 자르고 검증</strong>: 슬라이스 단위 구현 → lint/tsc/build → 커밋. &quot;Do not push&quot; 기본, 푸시는 명시 지시.</li>
+<li><strong>파일럿 반복 검증</strong>: 서브에이전트로 학생·학부모·매니저 가상 가입/민원 → 오류 0까지 반복. API 직접 호출이 아니라 <strong>실제 버튼 클릭 순회</strong>로 UX 마찰 확인.</li>
+<li><strong>위임 원칙</strong>: 설계·중요 판단은 메인, 단순 코딩은 opus 서브에이전트·codex(토큰 여유)에 적극 위임, diff로 검증.</li>
+<li><strong>문서화 집착</strong>: 핸드오프(다른 AI가 언제든 인계 가능한 수준), IR 덱·브랜드 가이드라인·원페이저, 사업계획서·재무계획(창업지원사업 제출용), 기각된 제안도 요약 보존. 문서 통합 시 <strong>내용 축약 금지</strong>.</li>
+<li>사업 분석 요구 패턴: &quot;성공할 수밖에 없는 사업&quot; 목표로 리스크·고도화 방안 수십 개 단위 발굴 → 실행 분담(AI가 할 것 / 경영자가 할 것 구분).</li>
+<li>오버엔지니어링 경계: 유지보수를 위한 유지보수 금지, 기능 개발 속도와 안정성 균형 (07-05 진단 지시).</li>
+</ul>
+<h2>10. 대외 목표</h2>
+<ul>
+<li><strong>투자 유치·창업지원사업 지원</strong>이 문서화의 목표 (IR 덱, 사업계획서, 재무계획).</li>
+<li>아직 정식 출시 전 — 더미 데이터 존재 인지, 출시 전 오너가 직접 최종 점검(법률·후기·더미 교체).</li>
+</ul>
+<h2>11. 심층: 지시가 추구하는 것 — AI와의 반복 갭 분석</h2>
+<blockquote>
+<p>교정 지시 패턴에서 역추론한 오너 세계관. AI 협업자는 이 절을 기본값 보정표로 사용할 것.</p>
+</blockquote>
+<h3>관통 논제: &quot;판단의 위임&quot;을 파는 사업</h3>
+<p>상품은 과외가 아니라 <strong>&quot;학부모가 더 이상 비교·검증·선택하지 않아도 된다&quot;는 안도감</strong>.
+매니저가 정해주고 대표가 걸러준다 — 선택 피로의 제거가 상품.
+AI의 학습 기반은 마켓플레이스 문법(선택지·수락/거절·평점·비교·할인)이라 <strong>선택권을 주는 UX를 무의식적으로 재삽입</strong>하는 경향이 있고, 오너는 이를 반복 삭제해 왔다(수락 버튼 강조 금지, 거절/재배정 플로우 금지, 할인 구조 금지, 평점 수집 금지, 검증 배지 나열 제거).
+<strong>이곳은 플랫폼이 아니라 큐레이션 서비스다.</strong></p>
+<h3>반복 교정 8패턴 (AI 기본값 → 오너 원칙)</h3>
+<ol>
+<li><strong>완결성 → 절제</strong>: 정보 많음≠품질. 프리미엄은 확언하고 침묵한다. 부연·조건 나열은 브랜드 훼손. &quot;문장은 삭제 우선.&quot;</li>
+<li><strong>리터럴 → 의도 추출</strong>: 오너는 예시·참고 사이트·&quot;이 느낌&quot;으로 소통한다. 예시를 스펙으로 복사하지 말고 미학 규칙을 추상화해 적용할 것.</li>
+<li><strong>재해석 → 재현</strong>: 핸드오프는 영감이 아니라 사양. 취향 결정은 이미 끝났고 AI 역할은 충실한 이식. 창의 구간(신규 설계)과 복제 구간(핸드오프 구현)을 혼동하지 말 것.</li>
+<li><strong>논리 정합성 → 심리 최적화</strong>: 요금·카피에 수식적 일관성을 만들려 하지 말 것. 가격은 심리 신호이며 설명되지 않아도 된다.</li>
+<li><strong>일회 지시 → 영속 헌법</strong>: 오너의 결정은 세션이 바뀌어도 유효하다. 같은 교정을 두 번 받게 하지 말 것 (예: 요금제 카드 한 줄 배치 3회 재지시).</li>
+<li><strong>자율성 비대칭</strong>: 실행·과정 자율 100%(&quot;묻지 말고 끝까지&quot;), 제품 취향 판단 자율 0%. 의견 제시는 환영하되 결정은 오너. 지시받은 범위 밖 &quot;개선&quot;을 실행에 끼워넣지 말 것.</li>
+<li><strong>균질 출력 → 인간의 결</strong>: 후기·카피는 각기 다른 사람의 질감이 필수. 평균 회귀한 매끈한 출력은 신뢰를 깎는다.</li>
+<li><strong>자산 존중</strong>: 레이아웃이 사진에 맞춘다(역 아님). 시안(스킨)이 기능(원본)을 깎을 수 없다. 원본 훼손(크롭·비율 왜곡·기능 축소·내용 축약) 금지.</li>
+</ol>
+<h3>메타 구조 둘</h3>
+<ul>
+<li><strong>조직 설계 = 제품 설계 (동형)</strong>: 학부모에게 &quot;매니저가 정해준다&quot;를 팔 듯, AI에게도 &quot;오너가 정해준다&quot;를 적용한다. AI의 판단 침범은 제품에서 수락 버튼을 강조하는 것과 같은 위반.</li>
+<li><strong>스펙이 아니라 반응으로 설계</strong>: 오너는 살아있는 배포물에 반응하며 디자인한다. AI의 최적 역할은 빠르고·되돌릴 수 있고·충실한 초안 생산. &quot;완성·확정&quot;하려 들지 말 것.</li>
+</ul>
+<h2>12. 카피 말투 스펙 — 오너가 직접 쓴 문장의 역공학</h2>
+<blockquote>
+<p>오너가 지시문에 직접 받아쓴 카피가 말투의 정답 표본이다. 아래는 그 원문들에서 추출한 규칙.</p>
+</blockquote>
+<h3>정답 표본 (오너 원문)</h3>
+<ul>
+<li>&quot;선생님이 다릅니다&quot; (히어로, 한 줄)</li>
+<li>&quot;우리는 직접 만나고, 학생에게 맞춥니다&quot; — AI가 쓴 &quot;그래서 Concord는 모든 선생님을 대표가 직접 만나 고릅니다&quot;를 이것으로 교체시킴</li>
+<li>&quot;부담 없이 수업에만 집중할 수 있도록, 우리는 최고의 선생님만 배정합니다.&quot;</li>
+<li>&quot;여전히 검증은 학생의 몫입니다&quot;</li>
+<li>&quot;이렇게 진행됩니다&quot; — AI의 긴 프로세스 제목을 이 네 글자로 교체시킴</li>
+<li>&quot;매니저가 방문 상담하며 학생 성향을 파악하고 학습 진단을 제공합니다.&quot;</li>
+<li>&quot;학습 진단을 바탕으로 함께 고민하여 적합한 선생님을 배정합니다&quot;</li>
+<li>&quot;첫 수업 날짜를 확정하고 선생님이 방문하여 수업이 시작됩니다.&quot;</li>
+<li>&quot;상담 신청만 해도 학습 전문가의 1:1 학습진단 제공&quot;</li>
+<li>&quot;첫 수업이 맞지 않으면 100% 환불 / 선생님 교체 비용 0원 / *환불정책 참고&quot;</li>
+</ul>
+<h3>추출 규칙</h3>
+<ol>
+<li><strong>평서 확언 &quot;~합니다&quot; 종결.</strong> 느낌표 0회(오너 카피 전체에서 단 한 번도 없음), 의문문 0회, 이모지 0회. 확신은 어조가 아니라 단정문 자체에서 나온다.</li>
+<li><strong>주어 &quot;우리는&quot;</strong> — 1인칭 복수 선언체. 회사명 3인칭(&quot;Concord는 ~합니다&quot;)보다 &quot;우리는&quot;을 선호 (직접 교체 사례 존재).</li>
+<li><strong>최상급은 클라이맥스 1회만.</strong> &quot;최고의 선생님만&quot;은 스크롤텔링 정점 단 한 곳. 평소 문장은 사실 서술(&quot;대표가 직접 만나 면접합니다&quot;) — 형용사가 아니라 <strong>절차의 사실</strong>로 신뢰를 만든다.</li>
+<li><strong>한 줄 원칙.</strong> &quot;한 줄로 줄바꿈 없애줘&quot; 반복 지시. 헤드라인은 반드시 한 줄, 줄바꿈은 의미 단위가 두 개일 때만.</li>
+<li><strong>대구(對句)와 리듬.</strong> &quot;우리는 직접 만나고, 학생에게 맞춥니다&quot; — 짧은 절 두 개의 병렬. 오너의 문장은 거의 항상 2박자.</li>
+<li><strong>숫자는 구체·최소.</strong> &quot;주 1회·3시간&quot; — 환산·합산·할인율 계산 절대 금지. &quot;(4주)&quot; 단서는 최소 표기.</li>
+<li><strong>조건·단서는 각주로 격리.</strong> &quot;*환불정책 참고&quot; — 본문의 확언을 흐리는 모든 조건은 작은 글씨로 분리.</li>
+<li><strong>인용은 원문 그대로.</strong> 뉴스 헤드라인 &quot;최대한 그대로 갖다 써&quot; — 패러프레이즈는 진정성을 깎는다. 자기 목소리(공감·선언)와 인용(사실)을 섞지 않는다.</li>
+<li><strong>도입·설명 문장 금지.</strong> &quot;&#39;이런 일들이 실제로 있었습니다&#39; 빼. 두번째 문장만 있어도 되잖아&quot; — 무대 안내 멘트 없이 본문이 바로 등장.</li>
+<li><strong>CTA만 해요체/명사형.</strong> 버튼: &quot;선생님 추천받기&quot;. 헤드라인 확언체 + CTA 해요체 투트랙.</li>
+<li><strong>후기는 정반대 문법</strong>: 브랜드 목소리와 달리 후기는 생말투·개인 질감·각기 다른 문체. 단 반말체 금지. &quot;기존 과외는 ~불만 → 지금은 ~좋다&quot; 구조. 브랜드는 균질하게, 목소리 빌린 것(후기·인용)은 불균질하게.</li>
+</ol>
+<h2>13. 추구하는 &#39;느낌&#39; — 미학 사전</h2>
+<blockquote>
+<p>&quot;짜친다&quot;가 최다 빈도 부정어. 그 반대말이 오너가 추구하는 느낌: <strong>점잖고, 담백하고, 비싸 보이는.</strong></p>
+</blockquote>
+<h3>짜침 판정 목록 (오너가 실제 제거시킨 것)</h3>
+<ul>
+<li>맨 위 검정 프로모션 배너</li>
+<li>할인률 뱃지, 검증 3종 뱃지 나열(&quot;서류·학력인증·수업시연&quot;)</li>
+<li>화살표 아이콘 2개 (1개로), 버튼 뒤 화살표 아이콘</li>
+<li>흰색 박스로 감싼 문구 (박스 없이 카피로 직접)</li>
+<li>요일별 잔뜩 나뉜 작은 박스들 (&quot;지렁이같이 생겨서&quot;)</li>
+<li>총 시간 환산 계산, 설명식 도입부, 원문 기사 링크 버튼</li>
+<li>과한 페이드/라운드 처리 (페이드는 5%만, 라운드 제거)</li>
+</ul>
+<h3>미학 원칙</h3>
+<ol>
+<li><strong>요소는 지면 위에 직접 놓인다.</strong> 박스-안-박스, 카드-안-카드 금지. 문구는 배경 위에 바로.</li>
+<li><strong>효과는 지각의 문턱값에서.</strong> 페이드 5%, 소프트 섀도우, 색 절제는 &quot;소극적으로&quot; — 효과가 보이면 이미 과한 것.</li>
+<li><strong>템포 = 위계.</strong> 애니메이션 속도를 영화 편집처럼 지시(사례 나열=빠르게 1.2초, 강조 카피=느리게, 캐러셀 50% 감속, 채팅 1.5배 가속). 중요한 것은 느리게, 배경 정보는 빠르게. 균일한 타이밍은 위계 부재.</li>
+<li><strong>모션은 &quot;스르륵&quot;.</strong> &quot;삐걱거림&quot; 혐오. 스크롤 연동보다 자동 진행 선호, 등장은 아래→위 부드럽게, 덜덜 떨림 즉시 수정 대상.</li>
+<li><strong>몰입 구간엔 전부 걸어라.</strong> 다크 전환 시 네비게이션·플로팅 버튼까지 숨김 — 연출 순간엔 UI 크롬 전체가 비켜준다. 단 스킵 허용·세션 1회로 통제감 보존.</li>
+<li><strong>광학 정렬 민감.</strong> 퍼센트 링 중심 틀어짐, 목업 상단 정렬(→중앙 정렬로), 버튼 크기 짝 맞춤 — 수치 정렬이 아니라 눈 정렬.</li>
+<li><strong>비례 감각.</strong> 요금제 카드 황금비, &quot;글씨에 비해 카드가 너무 큼&quot;(밀도), 확대는 밀도 유지하며 글씨와 함께. 크기는 절대값이 아니라 관계.</li>
+<li><strong>위계는 투명도로.</strong> 대학 로고 투명도 70% 배경 + 원색 텍스트 — 강조를 키우는 게 아니라 주변을 가라앉힘.</li>
+<li><strong>한 눈 원칙.</strong> 상담 폼은 신청 버튼까지 스크롤 없이 한 화면. 전환 지점에서 마찰 0.</li>
+<li><strong>닫힘의 예의.</strong> 아코디언 외부 클릭 시 닫힘, 기본값 &quot;없음&quot;에서 눌러 열기 — 인터페이스는 사용자를 가두면 안 됨 (&quot;답답해&quot;).</li>
+</ol>
+<h2>14. 추가 교정 패턴 (§11의 8가지에 더해)</h2>
+<ol start="9">
+<li><strong>뺄셈 교정이 덧셈 교정의 수 배.</strong> 오너 교정의 다수가 &quot;빼/없애/삭제/숨겨&quot;. AI 초안은 항상 오너 기준보다 요소가 많다. → 초안 완성 후 스스로 1회 감산 패스를 돌린 뒤 제출할 것.</li>
+<li><strong>&quot;확인해봐&quot; = 실제로 봐라.</strong> &quot;로컬에서 확인해봐&quot;, &quot;직접 순회하면서&quot;, &quot;API 주소로 접속하지 말고 직접 버튼 눌러가면서&quot;(07-12) — 코드가 컴파일됨 ≠ 화면이 의도대로임. 오너는 AI의 &#39;완료&#39; 주장과 실제 화면의 불일치를 반복 경험함. → 눈으로 검증 전엔 완료 선언 금지.</li>
+<li><strong>감싸기 본능 억제.</strong> AI는 콘텐츠를 카드·박스·배지로 포장하려 함. 오너는 반복적으로 포장을 벗김. → 새 요소 추가 시 기본값은 &#39;포장 없음&#39;.</li>
+<li><strong>계산해서 보여주기 본능 억제.</strong> 총시간·할인율·환산값 등 파생 수치를 친절히 계산해 노출하는 AI 습관 → 오너는 전부 삭제. 원 수치만, 최소로.</li>
+<li><strong>오타·표기 실수에도 맥락 우선.</strong> &quot;cheif&quot;(오타)로 지시받아도 의도는 &quot;chief&quot; — 그러나 임의 판단 말고 확인. 단, 문구를 바꾸라는 지시가 아닌데 문구까지 바꾸는 것(07-08 &quot;찾아오기나 해&quot;)이 더 큰 위반.</li>
+<li><strong>롤백 가능성은 신성.</strong> &quot;기존 디자인 삭제하지 말고 언제든 돌아갈 수 있게&quot;, 커밋 분리 지시, 홈 화면만 선별 롤백 요청 — 모든 변경은 부분 되돌림이 가능해야 함. 광범위 변경을 한 커밋에 뭉치는 것이 실질 피해를 만든 전력 있음.</li>
+<li><strong>결정 브리핑 워크플로.</strong> &quot;내가 결정해줄 사안 브리핑해&quot;(07-12), &quot;오너 결정사항 있으면 알려줘&quot;, &quot;있으면 질문하고 없으면 바로 진행해&quot; — 진행 중 잔질문 금지. 오너 결정이 필요한 사안만 모아서 한 번에 브리핑하고, 나머지는 진행. 질문은 흐름을 끊는 비용이므로 배치(batch)로.</li>
+<li><strong>대기 혐오 — 병렬이 기본값.</strong> &quot;병렬로 다음 작업 진행해 너무 기다리지 말고&quot;(07-06), &quot;너무 오래걸리는데 점검해봐&quot;(3회 이상), &quot;에이전트들 잘 진행되고 있나 수시로 확인해&quot; — 블로킹 대기는 위반. 독립 작업은 병렬로, 위임한 서브에이전트는 방치하지 말고 주기 점검.</li>
+<li><strong>파악→플랜→실행 프로토콜.</strong> 거의 모든 세션 첫 지시가 &quot;프로젝트 파악해봐&quot;이고 &quot;플랜 잡고 진행해&quot;가 수십 회 — 컨텍스트 없는 즉시 실행을 불신함. 큰 작업 전 플랜 제시가 기본 의례. (단 플랜 승인 후에는 &quot;묻지 말고 끝까지&quot;.)</li>
+<li><strong>매몰비용 제로 — 즉시 폐기.</strong> &quot;이거 롤백해 별로다&quot;(07-07), &quot;폐기&quot;(07-06) — 만든 것에 애착 없음. 오너가 &quot;별로&quot;라 하면 방어·절충·부분수정 제안 말고 깨끗한 롤백이 정답. 작업량은 폐기 판단의 변수가 아님.</li>
+<li><strong>세션 연속성은 AI 책임.</strong> &quot;기존에 작업하던거 기억 해?&quot;, &quot;어디까지 했어? 이어서 진행해&quot;, &quot;멈춘 것 있으면 다시 시작해줘&quot;, 핸드오프 문서 반복 요구 — 오너는 세션 경계를 인식하지 않고 하나의 연속 작업으로 취급. 세션 시작 시 이전 상태 복원, 종료 시 인계 기록은 AI의 기본 의무.</li>
+</ol>
+</section><section id="d-FRONTEND-BUILD-SPEC-md"><span class="fname">FRONTEND_BUILD_SPEC.md</span><h1>Concord 프론트엔드 재구축 명세 (FRONTEND BUILD SPEC)</h1>
+<blockquote>
+<p><strong>⚠️ 이 파일은 포인터 스텁이다 (2026-07-12 중복 단일화).</strong></p>
+<p>원본은 <a href="../design%20handoff/FRONTEND_BUILD_SPEC.md"><code>design handoff/FRONTEND_BUILD_SPEC.md</code></a> — 디자인 핸드오프 패키지의 일부로 그쪽이 유일한 진실의 원천이다.</p>
+<p>배경: 07-10~07-11에 <code>docs/</code>와 <code>design handoff/</code> 양쪽에 바이트 단위 동일한 사본이 존재했다. 한쪽만 수정되면 어긋나므로 07-12 문서 정비에서 <code>design handoff/</code> 쪽을 원본으로 확정하고 이 파일을 스텁으로 교체했다. 내용 손실 없음(교체 시점에 두 파일이 완전 동일함을 diff로 확인).</p>
+<p>함께 볼 것: <code>design handoff/IMPLEMENTATION_CONTRACT.md</code>(구현 계약), <code>design handoff/ROUTE_MAP.md</code>(시안↔라우트 매핑), <code>design handoff/DESIGN_SYSTEM.md</code>(토큰·타이포).</p>
+</blockquote>
+</section><section id="d-HANDOFF-md"><span class="fname">HANDOFF.md</span><h1>HANDOFF.md — Concord Private Tutoring 마스터 핸드오프</h1>
+<blockquote>
+<p>이 문서는 <strong>모든 후속 AI 세션의 진입점</strong>이다. 다른 문서로 가기 전에 Part 0을 반드시 통독한다.<br><strong>기본 원칙</strong>: <code>CLAUDE.md</code> + <a href="docs/BUSINESS_DIRECTION.md"><code>docs/BUSINESS_DIRECTION.md</code></a>를 동급 필독 원칙으로 삼는다 (세계관·카피 헌법·미학·반복 교정 8패턴의 단일 출처).<br>갱신: <strong>2026-07-12 · main</strong> (07-04 원본 작성, 07-12 정정·추록 — Part 3.4에 07-05<del>07-12 사이클 143커밋 반영)<br>원격 <code>https://github.com/prosj04/tutormatchWEB.git</code><br>상세 히스토리 원본: <code>CLAUDE_HANDOFF.md</code> (1,425줄, §1</del>26 세션 로그·이연 스펙 보존)<br>문서 지도: <code>docs/README.md</code></p>
+</blockquote>
+<hr>
+<h2>⚡ 2026-07-13 세션 마감 요약 (다음 세션은 여기부터)</h2>
+<p><strong>완료 (로컬 16커밋, 전부 tsc·lint·prod build 검증 — push 대기)</strong></p>
+<ol>
+<li><strong>UX 전수조사 2차</strong>: opus 8팀, 108건 발견 → P0/H 전건+M 대부분 당일 수정. 상세는 <code>docs/30-제품·디자인.md</code> Part G. 방법론 재사용: &quot;전수조사&quot; → <code>ux-sweep</code> 스킬.</li>
+<li><strong>수업 확인 제도 신설</strong> (오너 스펙, 메모리 <code>project_lesson_confirm</code>): 자동완료 폐지 → 선생님 확인(완료/사유, 비과실=마지막 수업 이월) → 3자 공지. 마이그레이션 <code>20260713090000_lesson_confirm</code> <strong>배포 시 자동 적용됨</strong>.</li>
+<li>알림 4역할 개방+학부모 팬아웃(결제+핵심만), 미수락 매칭 3일 자동 확정, 만료 구독 D+3 마감, 인증 복구 경로+모바일 rate-limit(보안), 어드민 confirm 가드+치프 서류 열람, 모바일 정산·업로드 UI(expo-picker 설치됨), 감사로그 실명화+반려 SMS, API_REFERENCE 173 라우트.</li>
+</ol>
+<p><strong>다음 세션 할 일 (순서대로)</strong></p>
+<ol>
+<li>🔴 <strong>오너 PAT <code>workflow</code> scope 갱신 확인 → <code>git push origin main</code></strong> — 16커밋 배포+마이그레이션+hourly 크론이 전부 이것에 걸려 있음. push 성공 시 GitHub Secrets <code>CRON_SECRET</code> 등록도 확인.</li>
+<li>배포 후 <strong>프로덕션 스모크</strong>: 수업 확인 제도(확인 알림→완료/이월), 학부모 알림 팬아웃, PARENT 자녀 선택 결제, 모바일 업로드. 테스트 데이터는 pilot- 접두사 후 정리 (07-12 스모크 절차 참조).</li>
+<li>잔여 소소: 매니저 내부 화면 용어 통일(선택), D+7 무응답 자동완료 폴백 값 오너 재확인, 앱스토어 제출(개발자 계정 등록되면 <code>docs/STORE_SUBMISSION_2026-07.md</code>부터).</li>
+</ol>
+<p><strong>주의</strong>: 동시 세션이 같은 트리에서 작업하는 패턴 지속 — §0.2 준수(명시적 경로 add). 요금·수락·PAUSED 정책은 메모리·§0.1 참조.</p>
+<hr>
+<h2>목차</h2>
+<ul>
+<li><a href="#part-0">Part 0 — AI 운영 하네스 (필독)</a></li>
+<li><a href="#part-1">Part 1 — 5분 온보딩</a></li>
+<li><a href="#part-2">Part 2 — 시스템 상세 (요약 + 참조)</a></li>
+<li><a href="#part-3">Part 3 — 현재 상태 스냅샷 (07-04 원본 + 07-12 추록)</a></li>
+<li><a href="#part-4">Part 4 — 다음 작업 백로그</a></li>
+<li><a href="#part-5">Part 5 — 문서 지도 · 세션 로그</a></li>
+</ul>
+<hr>
+<p><a id="part-0"></a></p>
+<h2>Part 0 — AI 운영 하네스 (이 저장소에서 작업하는 모든 AI에게 적용)</h2>
+<blockquote>
+<p>이 절은 시스템 프롬프트 또는 <code>AGENTS.md</code>로 그대로 복사·확장 가능한 규범 집합이다. 기존 <code>AGENTS.md</code> / <code>CLAUDE.md</code>가 규정하지 않은 조건은 이 절이 우선한다.</p>
+</blockquote>
+<h3>0.1 제품 북극성 — 프리미엄 과외 9단계</h3>
+<p><code>CLAUDE.md</code>의 원문을 그대로 승계한다. 모든 구현·리팩터·문서 결정은 이 순서를 배반하지 않아야 한다.</p>
+<ol>
+<li>학생이 상담을 신청하거나 결제한다.</li>
+<li>신청만 한 학생은 <strong>매니저 배정 대기 상태</strong>로 남는다.</li>
+<li>결제한 학생은 <strong>치프 매니저에게 자동 배정</strong>된다.</li>
+<li>매니저는 배정된 학생을 받아 대면 상담 일정을 조율한다.</li>
+<li>대면 상담 중 매니저가 적합한 선생님을 자유롭게 배정한다.</li>
+<li>배정 확정을 위한 인앱 <strong>수락 버튼</strong>이 존재하지만 이는 <strong>형식적 절차</strong>다 — <strong>마케팅 카피나 UI에서 학생 수락을 절대 강조하지 않는다</strong>.</li>
+<li>배정 이후 담당 선생님이 첫 수업 날짜를 정하고 수업을 시작한다.</li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>2026-07-08 개정</strong>: 구버전 6단계(&quot;학생이 수락 버튼으로 명시적으로 수락해야 수업이 활성화된다&quot;)는 폐기되었다. <code>CLAUDE.md</code>(2026-07-08 갱신)가 진실의 원천 — 수락 버튼은 코드상 존재하나 형식이며, 마케팅·UI에서 강조 금지. 코드의 <code>matchStatus: PENDING_STUDENT_ACCEPT → ACTIVE</code> 플로우 자체는 유효하다. 이 개정 이전 문서(<code>docs/20-마케팅.md</code>(구 MARKETING_PLAN)의 수락 버튼 소재화, <code>docs/external/*</code>의 &quot;동의 기반 매칭&quot; 강조 등)를 참조할 때는 이 규범이 우선한다.</p>
+</blockquote>
+<ol start="8">
+<li>대면 수업은 선생님이 1주(또는 4일)치 숙제를 한 번에 입력하면 시스템이 <strong>가중치 기반으로 자동 분배</strong>한다.</li>
+<li>매주 반복되는 숙제 패턴은 <strong>템플릿으로 재사용</strong> 가능해야 한다.</li>
+</ol>
+<p><code>resolveStudentJourneyStage()</code> (<code>src/lib/student-journey.ts</code>) 및 <code>mobile/lib/student-journey.ts</code>의 stage enum이 이 9단계의 코드 반영이다. 두 곳의 enum이 어긋나면 반드시 웹을 기준으로 모바일을 갱신한다.</p>
+<h3>0.2 멀티 세션 프로토콜 (중요)</h3>
+<p><strong>이 저장소는 복수 AI 세션이 동시에 작업 중이다.</strong> 다음 규칙을 무조건 지킨다.</p>
+<ul>
+<li><strong>세션 시작 시</strong> <code>git status &amp;&amp; git log --oneline -10 &amp;&amp; git rev-list --count origin/main..HEAD</code>을 먼저 실행해 <strong>타 세션의 미커밋 파일·최근 커밋·push 대기 수</strong>를 확인한다.</li>
+<li><strong>타 세션의 미커밋 파일은 절대 수정·스테이징하지 않는다.</strong> 특히 <code>prisma/schema.prisma</code> 및 <code>prisma/migrations/**</code>은 <strong>현재 결제/정산 세션이 소유</strong>하고 있는 것으로 간주한다. 다른 세션에서 스키마를 만져야 할 필요가 생기면 오너에게 조율 요청.</li>
+<li>자신의 변경분만 <strong>명시적 경로</strong>로 <code>git add</code>한다. <code>git add -A</code>, <code>git add .</code> 금지.</li>
+<li>세션 간 통신은 이 파일의 <a href="#part-5">Part 5 · 세션 로그</a>에 append 한다.</li>
+</ul>
+<h3>0.3 DB는 프로덕션이다 — 데이터 파괴 금지</h3>
+<ul>
+<li><code>.env</code>의 <code>DATABASE_URL</code>은 <strong>실서비스 Supabase 인스턴스</strong>(pgbouncer 6543, DIRECT_URL 5432)이며 실사용자 데이터가 존재한다.</li>
+<li>다음 작업은 <strong>오너 승인 없이 실행 금지</strong>:<ul>
+<li>시드 스크립트 (<code>npm run seed:sample</code> 등) — 이미 실행된 이력이 있어 재실행 시 [sample] 접두사 데모 계정이 중복될 수 있다. 공개 노출은 코드 필터(<code>src/app/api/tutors</code> 등)로 차단되어 있으나 사이드이펙트 있음.</li>
+<li><code>prisma migrate reset</code>, <code>prisma db push --force-reset</code>, 직접 <code>DELETE FROM</code> 실행.</li>
+<li>새 마이그레이션의 프로덕션 적용 (<code>prisma migrate deploy</code>) — 스키마 세션 소유자와 조율 후 실행.</li>
+</ul>
+</li>
+<li><strong>CMS 테이블(<code>SiteContent</code>, <code>Testimonial</code>, <code>FaqItem</code>)이 비어 있는 것은 의도된 상태다.</strong> 사이트는 <code>cms-page-defaults.ts</code> / <code>cms-seed.ts</code>의 <strong>코드 fallback</strong>으로 렌더링 중이며, CMS 시딩(<code>POST /api/admin/cms/init</code>)은 오너 승인이 있어야 실행한다.</li>
+<li><strong>DB에 <code>[sample]</code> 접두사 데모 계정이 존재</strong>한다. 공개 강사 목록 등은 코드 레벨에서 이 접두사를 필터링한다(<code>src/app/tutors</code>, <code>src/lib/public-teachers-cache.ts</code>). 필터 제거 금지.</li>
+</ul>
+<h3>0.4 배포 규칙 — main push = 프로덕션</h3>
+<ul>
+<li><code>origin/main</code>에 push하면 Vercel(<code>tutormatch-web</code>)이 <strong>즉시 프로덕션에 배포</strong>한다.</li>
+<li><strong>오너의 명시 승인 없이는 push하지 않는다.</strong> <del>현재 로컬 <code>main</code>은 <code>origin/main</code>보다 <strong>29 커밋 앞서</strong> 있으며 다수의 미배포 변경이 대기 중이다.</del> <strong>(2026-07-12 갱신: push 완료 — 로컬과 origin/main 동기화 상태, 대기 커밋 0개.)</strong> 새 커밋은 오너 승인 전까지 로컬에만 쌓는다는 원칙은 유지.</li>
+<li>배포 시 빌드는 <code>prisma migrate deploy &amp;&amp; next build</code>. 미적용 마이그레이션이 있으면 배포가 스키마를 자동 반영한다 — 이는 스키마 세션의 결정 사항이므로 임의로 트리거하지 않는다.</li>
+</ul>
+<h3>0.5 검증 프로토콜</h3>
+<ul>
+<li><strong>타입 검사</strong>: <code>npx tsc --noEmit &amp;&amp; echo OK</code> 사용. 파이프로 <code>tail</code> 등을 붙이면 <code>$?</code>가 파이프 마지막 명령의 종료코드가 되어 실패가 은폐된다.</li>
+<li><strong>린트</strong>: 파일 단위 실행이 빠르다. <code>npx next lint --file &lt;상대경로&gt;</code>.</li>
+<li><strong>UI 스모크</strong>: dev 서버는 3000 포트를 타 세션이 쓸 수 있으니 <strong>여유 포트(예: 3987)</strong> 로 띄운다. <code>PORT=3987 npm run dev</code>, 스모크 후 반드시 프로세스 종료.</li>
+<li><strong>API 스모크</strong>: 로컬 <code>curl</code> — cron/알림 계열은 <code>Authorization: Bearer $CRON_SECRET</code>이 필요.</li>
+<li><strong>모바일 tsc</strong>: <code>mobile/</code> 워크스페이스에서 별도로 <code>npx tsc --noEmit</code>.</li>
+</ul>
+<h3>0.6 커밋 규칙</h3>
+<ul>
+<li><strong>논리 단위가 완료되면 항상 커밋한다</strong> (2026-07-13 오너 확정 — 구 &quot;요청 시에만&quot; 규칙 폐지). push는 여전히 오너 승인 필요(§0.4).</li>
+<li>동시 세션 주의: 스테이징은 반드시 명시적 경로로 — 다른 세션의 미커밋 파일을 쓸어 담지 않는다.</li>
+<li>Conventional Commits + <code>(scope)</code> 형태를 유지한다. 최근 로그 스타일 참조:<pre><code>feat(consultations): allow consultation history per student
+fix(security): require session ownership for teacher document uploads
+docs(handoff): record phase 3 completion state (§25.1d)
+</code></pre>
+</li>
+<li>논리 단위별로 커밋을 분리한다. 서로 무관한 변경을 한 커밋에 묶지 않는다.</li>
+<li><strong><code>--no-verify</code> 금지.</strong> 훅이 실패하면 원인을 고치고 새 커밋을 만든다 (amend 금지 — 실제 커밋되지 않은 상태에서 amend하면 이전 커밋을 덮어쓴다).</li>
+<li>시크릿·생성물(<code>cookies.txt</code> 류) 절대 커밋 금지. <code>.gitignore</code> 확인.</li>
+</ul>
+<h3>0.7 디자인 규칙</h3>
+<ul>
+<li><strong>홈 랜딩(<code>/</code>)</strong>: <code>landing-v2.css</code>, 클래스 접두사 <code>.lp2-</code>. <code>LandingRoot</code> → <code>LandingPageV2</code> 트리에서만 사용.</li>
+<li><strong>서브페이지(요금·강사·FAQ·후기·법률 등)</strong>: <code>concord.css</code>.</li>
+<li><strong>색상은 반드시 CSS 변수 토큰</strong>을 통해서만 사용한다 (<code>--bg</code>, <code>--fg</code>, <code>--acc</code>, <code>--acc-text</code>, <code>--panel</code>, <code>--line</code> 등). 하드코딩 색은 자동으로 다크모드가 깨진다. 세부는 <code>design handoff/DESIGN_SYSTEM.md</code>.</li>
+<li><strong>타이포</strong>: Pretendard, 전역 <code>word-break: keep-all</code> (한글 어절 줄바꿈).</li>
+<li>디스플레이 800 / 제목 700 / 본문 400. 굵기 남발 금지, 크기와 색으로 위계.</li>
+<li>새 스타일은 <code>.lp2-</code> 또는 <code>concord.css</code> 어느 쪽에 속하는지 판단하고 해당 파일에만 추가한다.</li>
+</ul>
+<h3>0.8 문서 규칙</h3>
+<ul>
+<li>모든 산출 문서는 <strong>한국어</strong>. 갱신 시 <code>docs/README.md</code> 인덱스 동반 갱신.</li>
+<li><strong>검증 불가한 수치를 창작하지 않는다.</strong> 확신 없는 값은 <code>[확인 필요]</code> 표기.</li>
+<li><strong>법률 문서는 초안 표시를 유지</strong>한다. <code>docs/internal/contracts/**</code> 및 <code>docs/internal/LEGAL_ADVISORY_MEMO.md</code>는 AI 임시 자문이며 <strong>정식 자문 전 대외 사용 금지</strong>.</li>
+<li><code>docs/IMPLEMENTATION_PLAN_2026-07.md</code>, <code>docs/IMPLEMENTATION_SESSIONS_REVISED.md</code>, <code>docs/MANAGER_GUIDELINES.md</code>는 <strong>다른 세션이 활성 사용 중</strong> — 구조 변경 금지, 내용 추가만.</li>
+<li>세션 종료 시 이 파일 <a href="#part-5">Part 5 · 세션 로그</a>에 엔트리 append (<code>CLAUDE_HANDOFF.md §25</code> 스타일 승계).</li>
+</ul>
+<h3>0.9 금지 사항</h3>
+<ul>
+<li><code>git commit --no-verify</code>, <code>git push --force</code>, <code>git reset --hard</code>, <code>git clean -f</code> — 오너 명시 지시 없이는 절대 실행 금지.</li>
+<li><code>/api/dev/*</code> 류의 개발용/우회 라우트를 프로덕션 코드에 추가하고 방치하는 것. 과거 <code>POST /api/dev/skip-payment-enroll</code>은 이미 제거되었다.</li>
+<li><strong>AI 인물 사진을 실존 인물처럼 보이도록 프로필에 무단 적용</strong>. 사진 작업은 오너 보류 중(<code>docs/PHOTO_GENERATION_PROMPT.md</code>).</li>
+<li>CMS 테이블 임의 시딩, 시드 스크립트 임의 실행.</li>
+<li>마이그레이션의 로컬 실행/프로덕션 적용을 스키마 세션과 조율 없이 진행.</li>
+<li>Toss 시크릿 키·Supabase Service Role·Anthropic 키를 로그·응답·문서에 노출.</li>
+</ul>
+<h3>0.10 작업 종료 시 체크리스트</h3>
+<ol>
+<li><code>npx tsc --noEmit &amp;&amp; echo OK</code> 통과 확인.</li>
+<li>변경 파일에 <code>npx next lint --file</code> 실행.</li>
+<li>dev 서버 프로세스 종료(백그라운드 잔존 금지).</li>
+<li><strong><a href="#part-5">Part 5 · 세션 로그</a>에 오늘 작업·핵심 파일·커밋 해시·미해결 항목을 append.</strong> (<code>CLAUDE_HANDOFF.md §25.1x</code> 형식.)</li>
+<li>오너 미승인 push·커밋 없음 확인.</li>
+</ol>
+<hr>
+<p><a id="part-1"></a></p>
+<h2>Part 1 — 5분 온보딩</h2>
+<h3>제품 한 줄</h3>
+<p><strong>Concord Private Tutoring</strong> — 1:1 프리미엄 과외 매칭·학습관리 플랫폼. 학부모(결제자) 대상, 매니저가 상담·매칭·리텐션을 중개.</p>
+<h3>역할 5개와 진입점 (07-10 PARENT 역할 신설로 4→5)</h3>
+<table>
+<thead>
+<tr>
+<th>역할</th>
+<th>로그인 후 홈</th>
+<th>핵심 UI</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STUDENT</td>
+<td><code>/dashboard</code> (active match 필요) / <code>/dashboard/consultation</code></td>
+<td>캘린더·플래너·QnA·상담·결제내역</td>
+</tr>
+<tr>
+<td>PARENT (07-10 신설)</td>
+<td><code>/parent</code> (웹 포털) / 모바일 <code>(parent)</code> 탭</td>
+<td>자녀 연결(코드/QR)·리포트·결제·상담 신청</td>
+</tr>
+<tr>
+<td>TEACHER</td>
+<td><code>/teacher-portal/dashboard</code></td>
+<td>담당 학생·플랜·질문 답변·프로필</td>
+</tr>
+<tr>
+<td>MANAGER (+ CHIEF_MANAGER)</td>
+<td><code>/teacher-portal/dashboard</code></td>
+<td>위 + 상담·매칭·모니터링·케어로그·상담 리포트·구독 일시정지</td>
+</tr>
+<tr>
+<td>ADMIN</td>
+<td><code>/admin</code></td>
+<td>전 CRUD·CMS·지표·정산·감사로그·환불</td>
+</tr>
+</tbody></table>
+<p>역할 상세 정책은 <code>CLAUDE_HANDOFF.md §2</code>. <code>CHIEF_MANAGER</code>는 결제 자동 배정 대상이며 <code>requireAdmin</code> / <code>requireManager</code> 통과. PARENT는 <code>1403bb2</code>(백엔드)·<code>5600f0b</code>(웹 스켈레톤)·<code>b8ea0f7</code>(모바일 탭셋)로 구축.</p>
+<h3>현재 단계</h3>
+<p><strong>출시 전, 파일럿 준비 단계.</strong> 코드는 결제→매칭→첫 수업→숙제 자동 분배→월간 리포트→정산까지 관통 가능. 다음 블로커는 (1) 사업자 등록, (2) 법률 문서 변호사 검토. <del>(3) <code>origin/main</code>에 대기 중인 29 커밋의 배포 승인</del> (07-12 갱신: push 완료, 동기화 상태).
+<strong>07-12 기준 추가된 큰 축</strong>: PARENT 4번째 사용자 역할(백엔드+웹 포털+앱), 모바일 통합 4역할 앱(학생·학부모·선생·매니저), 디자인 핸드오프 기반 로그인 후 화면 전면 재디자인, 구독 일시정지(매니저 전용). 상세는 <a href="#part-3">Part 3.4</a>.</p>
+<h3>라이브 URL / 저장소</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>프로덕션 URL</td>
+<td><code>https://tutormatch-web.vercel.app</code></td>
+</tr>
+<tr>
+<td>Vercel 프로젝트</td>
+<td><code>tutormatch-web</code></td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td><code>prosj04/tutormatchWEB</code></td>
+</tr>
+<tr>
+<td>브랜치</td>
+<td><code>main</code> (07-12 기준 origin과 동기화 — 구버전 표기 &quot;29 커밋 앞섬&quot;은 해소)</td>
+</tr>
+</tbody></table>
+<h3>기술 스택 한 줄</h3>
+<p><strong>Next.js 14.2 App Router · TypeScript · NextAuth v5 (JWT/Credentials) · Prisma 5.22 + Supabase PostgreSQL · Toss Payments (위젯 + 서버 confirm + 웹훅 + 빌링키) · Anthropic Claude · React Native (Expo, <code>mobile/</code>) · Vercel + Cron.</strong></p>
+<h3>&quot;지금 이어서 할 일&quot; 후보</h3>
+<p>우선순위와 참조는 <a href="#part-4">Part 4 · 백로그</a>. 상위 5개는:</p>
+<ol>
+<li>Toss 대시보드에 웹훅 URL 등록 (오너 액션).</li>
+<li>사업자 등록 후 법률 문서 <code>[기재 예정]</code> 8곳 채우기 (오너 액션).</li>
+<li><del><code>origin/main</code>에 대기 중인 29 커밋의 배포 승인</del> ✅ 07-12 기준 push 완료.</li>
+<li>프로덕션 스모크 테스트 (로컬 스모크는 §25.1f에서 9/10 통과 확인됨).</li>
+<li>커스텀 도메인 연결 (GA4 태그는 07-05 env-gated로 추가 완료 <code>13916e4</code>, 비밀번호 변경·매니저 리셋은 07-10 완료 <code>c1fab4d</code>).</li>
+<li>모바일 4역할 앱 스토어 제출 준비 (07-11 통합 앱 완성 <code>b8ea0f7</code>) — 오너 결정.</li>
+</ol>
+<hr>
+<p><a id="part-2"></a></p>
+<h2>Part 2 — 시스템 상세 (요약 + 참조)</h2>
+<blockquote>
+<p>이 절은 &quot;<strong>어디에 무엇이 있는지</strong>&quot;의 지도다. 상세 서술은 원본 문서로 이동한다.</p>
+</blockquote>
+<h3>2.1 아키텍처 개요 (참조 원본: <code>docs/internal/TECH_OVERVIEW.md</code>)</h3>
+<pre><code>[마케팅] 홈(landing-v2) · 요금 · 강사 · FAQ · 후기 · 법률
+    ↓ 상담 CTA / 결제
+[가입] 학생(전화번호) / 선생(3단계 지원)
+    ↓
+[결제] Toss 위젯 → confirm 서버 검증 → 웹훅 재검증 → 구독 ACTIVE + 치프 배정
+    ↓
+[상담] ConsultationBooking (WAITING → ASSIGNED → COMPLETED, 이력 다행)
+    ↓ 상담 리포트(목표·수준·추천 플랜)
+[매칭] TeacherStudent matchStatus (PENDING_STUDENT_ACCEPT → ACTIVE)
+    ↓ 학생 수락
+[수업] 첫 수업 API + 자동 숙제 분배(템플릿) + Lesson 자동 COMPLETED 전이
+    ↓
+[운영] 매니저 케어 로그 · 만족도 D+7 · 월간 AI 리포트 · 어드민 지표 · 감사로그
+    ↓
+[수익] 빌링키 자동 갱신 · 셀프 해지 · dunning · 선생 시급 3만원 월별 정산
+</code></pre>
+<ul>
+<li><strong>상세 아키텍처</strong>: <code>docs/internal/TECH_OVERVIEW.md</code></li>
+<li><strong>아키텍처 원본(구버전 포함)</strong>: <code>CLAUDE_HANDOFF.md §1, §3, §5, §6</code></li>
+</ul>
+<h3>2.2 역할·권한 (참조 원본: <code>CLAUDE_HANDOFF.md §2, §8</code>)</h3>
+<ul>
+<li><del>4 역할</del> <strong>5 역할 (07-10 갱신)</strong>: <code>STUDENT</code> / <code>PARENT</code> / <code>TEACHER</code> / <code>MANAGER</code> / <code>ADMIN</code> + 사실상 6번째 <code>CHIEF_MANAGER</code>. PARENT는 <code>20260710160000_parent_role</code> 마이그레이션으로 enum 추가, 자녀 연결은 코드/QR (<code>/api/mobile/parent/link</code>).</li>
+<li>API 가드 헬퍼(<code>src/lib/</code>): <code>admin-auth</code>, <code>student-auth</code>, <code>teacher-auth</code>, <code>manager-auth</code>, <code>manager-page-auth</code>, <code>notification-auth</code>, <code>teacher-student-match</code>.</li>
+<li><code>requireAdmin</code> → ADMIN <strong>또는</strong> CHIEF_MANAGER. <code>requireTeacher</code> → TEACHER/MANAGER/CHIEF_MANAGER. <code>requireManager</code> → MANAGER/CHIEF_MANAGER.</li>
+<li>미들웨어 매칭·마케팅 공개 경로 목록은 <code>middleware.ts</code>, <code>src/lib/public-routes.ts</code>.</li>
+</ul>
+<h3>2.3 핵심 비즈니스 플로우 (승계 + 갱신)</h3>
+<p><code>CLAUDE_HANDOFF.md §3</code>을 기준으로 하되 아래 사항은 세션 후 갱신됨:</p>
+<ul>
+<li><strong>§3.5 선생님 매칭</strong>은 이제 즉시 active가 아니라 <code>PENDING_STUDENT_ACCEPT</code> → 학생 수락 시 <code>ACTIVE</code>. <code>matchStatus</code> 컬럼과 <code>POST /api/matches/[matchId]/accept</code>, 매니저가 입력한 <code>matchReason</code> 표시 포함.</li>
+<li><strong>§3.3 결제 플로우</strong>는 v1 세션 기반이 아니라 <strong>v2 시간제 월정액 8종</strong> 기준. <code>src/lib/pricing-plans.ts</code>의 <code>PRICING_PLANS_V2</code> (중등·고등 × 주1회 2h / 주1회 3h / 주2회 2h / 주2회 3h). v1 금액은 <code>planIdFromAmount</code> 역매핑에서 계속 인식.</li>
+<li><strong>결제 완료</strong>는 서버 confirm(<code>src/lib/toss-payments.ts</code>) + 웹훅(<code>/api/webhooks/toss</code>)로 검증됨. 과거 &quot;orderId만으로 완료&quot;의 우회 지점은 해소.</li>
+<li><strong>상담 이력화</strong>: <code>ConsultationBooking.studentId @unique</code> 해제 완료 — 학생당 여러 상담 로우 존재 가능. <code>open</code> 상담은 <code>WAITING</code>/<code>ASSIGNED</code> 1건으로 앱 레벨 강제. 헬퍼: <code>src/lib/consultation-current.ts</code>.</li>
+</ul>
+<h3>2.4 인증·미들웨어</h3>
+<ul>
+<li><code>auth.ts</code>: NextAuth v5 JWT + Credentials. <code>basePath: /api/auth</code>. <code>NEXTAUTH_URL</code>에 절대 path 붙이지 않음 (붙이면 전원 로그인 실패).</li>
+<li>로그인 식별자는 이메일 또는 전화번호 (<code>src/lib/phone-login.ts</code>). 합성 이메일: <code>student+{digits}@concord.local</code> / <code>teacher+{digits}@concord.local</code>.</li>
+<li><code>deletedAt</code> non-null 계정은 로그인 차단.</li>
+<li>세부는 <code>CLAUDE_HANDOFF.md §8</code>.</li>
+</ul>
+<h3>2.5 DB 모델 관계 (참조 원본: <code>prisma/schema.prisma</code>, <code>CLAUDE_HANDOFF.md §9</code>)</h3>
+<ul>
+<li>핵심 관계 그래프는 §9 참조. 그 후 추가된 모델(반드시 인지):<ul>
+<li><code>AuditLog</code> — 계정삭제/환불/역할변경/일시정지 기록 (<code>/admin/audit-logs</code>).</li>
+<li><code>HomeworkTemplate</code> — title, defaultDays, isDefault, tasks JSON. 첫 수업 설정 시 자동 적용.</li>
+<li><code>ConsultationReport</code> — 매니저 상담 후 정량/정성 목표·수준·추천 플랜.</li>
+<li><code>ManagerCareLog</code> — 매니저의 상담/개입/점검 로그. 학생 대시보드에 공개 항목 노출.</li>
+<li><code>SatisfactionCheckin</code> — 첫 수업 D+7 만족도 1~5점.</li>
+<li><code>Subscription</code> <code>PAUSED</code> 상태 + <code>pausedAt</code>/<code>pausedUntil</code> (매니저 전용, 최대 35일, 만료일 자동 연장).</li>
+<li><code>BillingProfile</code> — 토스 빌링키(카드) 자동결제 프로필. <code>autoRenew</code> 셀프 토글.</li>
+<li><code>QuestionMessage</code> — QnA 통합 후 <strong>단일 저장소</strong>. <code>replyToId</code> 스레드, <code>date</code>, <code>isResolved</code>. 기존 <code>Question</code> 테이블은 DEPRECATED로 존치.</li>
+<li>Prisma <strong>enum 전환</strong> 완료: <code>UserRole</code>, <code>ConsultationStatus</code>, <code>LessonStatus</code>, <code>SubscriptionStatus</code>, <code>MatchStatus</code>, <code>PaymentStatus</code> (수기 in-place 캐스트 SQL로 데이터 보존).</li>
+</ul>
+</li>
+<li><strong><code>ConsultationBooking.studentId</code>는 @unique가 아니다</strong> (이력화 이후). <code>findUnique</code> 사용 금지 — <code>consultation-current.ts</code>의 헬퍼 사용.</li>
+<li><strong>07-05~07-12 사이클 추가분 (반드시 인지)</strong>:<ul>
+<li><code>ConsultationLead</code> — 공개 상담 리드 폼(비로그인) 수집 모델. gender·region 컬럼 후속 추가.</li>
+<li><code>Testimonial</code>에 grade/category/tags 컬럼 추가 — DB 기반 성적 배지 렌더링.</li>
+<li><code>SatisfactionCheckin</code> unique 제약 추가 (<code>20260705120000</code>).</li>
+<li><code>UserRole</code>에 <strong><code>PARENT</code></strong> 추가 (<code>20260710160000_parent_role</code>) — 자녀 연결·리포트 열람·결제 주체.</li>
+</ul>
+</li>
+</ul>
+<h3>2.6 API 개요</h3>
+<ul>
+<li><del>총 110 라우트</del> → <strong>2026-07-12 실측 166 라우트</strong> (<code>find src/app/api -name route.ts</code> 카운트. 07-04의 110 표기와 <code>CLAUDE_HANDOFF.md §10</code>의 58 표기는 <strong>구버전</strong>. <code>docs/internal/API_REFERENCE.md</code>도 110 시점 기준이므로 재실측 필요 — 증가분은 parent/mobile-teacher/mobile-manager/consultation-lead/password 계열).</li>
+<li>그룹: <code>account</code>, <code>admin</code> (30), <code>auth</code>, <code>billing</code> (2), <code>chief-manager</code>, <code>consultation</code>, <code>cron</code> (2), <code>events</code>, <code>manager</code> (13), <code>matches</code>, <code>mobile</code> (20), <code>notifications</code>, <code>payments</code>, <code>plans</code>, <code>questions</code>, <code>register</code>, <code>student</code>, <code>teacher</code>, <code>webhooks</code>.</li>
+<li><strong>상세 목록·권한·파라미터는 <code>docs/internal/API_REFERENCE.md</code> 하나로 통일</strong>. 여기서는 중복 서술하지 않는다.</li>
+<li>신규/최근 라우트 하이라이트:<ul>
+<li><code>POST /api/webhooks/toss</code> — 결제 웹훅 (멱등, Toss 재검증).</li>
+<li><code>POST /api/matches/[matchId]/accept</code> — 학생 매칭 수락.</li>
+<li><code>POST /api/manager/subscriptions/[id]/pause</code> — 매니저 전용 일시정지.</li>
+<li><code>POST /api/admin/payments/[id]/refund</code> — 환불 마킹 + 구독 취소.</li>
+<li><code>POST /api/student/teacher-change-request</code> — 선생 교체 요청.</li>
+<li><code>PATCH /api/teacher/lessons/[id]/cancel</code> — 선생 취소 + 보강 자동 생성.</li>
+<li><code>GET /api/admin/metrics</code>, <code>/admin/settlements</code>, <code>/admin/audit-logs</code>.</li>
+<li><code>POST /api/student/question-images</code>, <code>POST /api/teacher/profile/photo</code> — 스토리지 서버 경유.</li>
+<li><code>POST /api/billing/register-success</code> — 빌링키 등록 완료.</li>
+<li><code>POST /api/account/delete</code>, <code>DELETE /api/mobile/me</code> — 계정 삭제(앱스토어 5.1.1(v)).</li>
+</ul>
+</li>
+</ul>
+<h3>2.7 CMS 시스템 (참조: <code>CLAUDE_HANDOFF.md §11</code>)</h3>
+<ul>
+<li>소스: <code>SiteContent</code>(section+key→value) / <code>Testimonial</code> / <code>FaqItem</code>.</li>
+<li><strong>현재 DB 3 테이블 모두 비어 있다.</strong> 사이트는 <code>src/lib/cms-page-defaults.ts</code> / <code>cms-seed.ts</code> / <code>landing-data.ts</code> 폴백으로 렌더링 중.</li>
+<li>캐시: revalidate 300s + 태그 무효화(<code>revalidatePublicCms</code>).</li>
+<li>시딩(<code>POST /api/admin/cms/init</code> → <code>seedDefaultCmsContent</code>)은 <strong>오너 승인 후 실행</strong>한다. 시딩 후에도 <code>skipDuplicates: true</code>.</li>
+<li>인라인 편집: ADMIN + <code>?cms_edit=1</code> → <code>CmsEditOverlay</code>.</li>
+</ul>
+<h3>2.8 결제·정산·빌링·알림·cron</h3>
+<ul>
+<li><strong>결제 (v2)</strong>: <code>src/lib/pricing-plans.ts</code> (<code>PRICING_PLANS_V2</code> 8종, priceKrw 유니크) → <code>/checkout?plan=&lt;id&gt;</code> → Toss 위젯 → <code>success</code> → 서버 confirm(<code>toss-payments.ts</code>) → 웹훅 재검증 → 구독 ACTIVE + 치프 배정.</li>
+<li><strong>빌링키 자동갱신</strong>: <code>BillingProfile</code> + 갱신 cron. 실패 시 D+1/D+3 재시도 → D+7 자동 해지. <code>autoRenew</code> 셀프 토글로 &quot;언제든 해지&quot; 지원.</li>
+<li><strong>선생 정산</strong>: <code>/admin/settlements</code> — 월별(KST) 완료 수업 × durationMin × 시급 30,000원. PG 지급대행은 외부 계약 후.</li>
+<li><strong>알림</strong>: <code>src/lib/notifications.ts</code> 타입 다수. <code>src/lib/run-alert-checks.ts</code>에 D-5/D-1 만료, D+7 만족도, 매칭 24h 방치, 첫 수업 SLA 7일, 미결제 리드 3일 팔로업, 미답변 질문 24h 등 통합.</li>
+<li><strong>SMS/알림톡</strong>: <code>src/lib/sms.ts</code> — env-gated 알림톡 우선 + SMS 폴백. <code>SOLAPI_KAKAO_PF_ID</code> / <code>SOLAPI_KAKAO_TEMPLATE_*</code> 미설정 시 SMS로 자동 폴백.</li>
+<li><strong>Cron</strong>: <code>vercel.json</code> 매일 UTC 00:00 <code>/api/cron/check-alerts</code>. Hourly는 GitHub Actions로 옮겼다가 PAT scope 문제로 제거됨 — 현재 daily만. 라우트에 <code>x-vercel-cron</code> 헤더 우회 지원.</li>
+</ul>
+<h3>2.9 환경변수 (참조: <code>.env.example</code>, <code>scripts/check-env.ts</code>, <code>CLAUDE_HANDOFF.md §14</code>)</h3>
+<p>로컬 <code>.env</code> 실측 필수 키: <code>DATABASE_URL</code>, <code>DIRECT_URL</code>, <code>AUTH_SECRET</code>, <code>NEXTAUTH_SECRET</code>, <code>NEXTAUTH_URL</code>, <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code>, <code>CRON_SECRET</code>. 추가 권장: <code>ADMIN_SETUP_SECRET</code>, <code>ANTHROPIC_API_KEY</code>, <code>CHIEF_MANAGER_EMAIL</code>, <code>NEXT_PUBLIC_TOSS_WIDGET_CLIENT_KEY</code>, <code>TOSS_SECRET_KEY</code>, <code>SOLAPI_*</code>, <code>SOLAPI_KAKAO_*</code>, <code>ENABLE_AUTO_HOMEWORK_DISTRIBUTION</code>.</p>
+<h3>2.10 폴더 구조 (요약)</h3>
+<pre><code>premium-tutoring/
+├─ auth.ts, middleware.ts, next.config.mjs, vercel.json
+├─ prisma/
+│  ├─ schema.prisma
+│  └─ migrations/               # 25개 (§2.11)
+├─ public/
+├─ scripts/                     # check-env, setup-storage, seed-sample
+├─ src/
+│  ├─ app/                      # 161 API 라우트 + 페이지
+│  ├─ components/
+│  ├─ hooks/
+│  ├─ lib/                      # 도메인 로직 (약 80개, CLAUDE_HANDOFF §16)
+│  └─ types/
+├─ mobile/                      # Expo 56 React Native 워크스페이스
+├─ docs/                        # 문서 (외부·내부·전략·실행)
+├─ design handoff/              # 디자인 원본 (HTML 시안, DESIGN_SYSTEM.md)
+├─ HANDOFF.md                   # ← 이 문서
+└─ CLAUDE_HANDOFF.md            # 세션 로그·이연 스펙 원본
+</code></pre>
+<h3>2.11 마이그레이션 목록 (07-04: 25개 → 07-12: 31개 → <strong>07-14 실측 36개</strong> — 아래 목록은 07-12 스냅샷 31개, 이후 +5는 <code>prisma/migrations/</code> 실측)</h3>
+<pre><code>20260514190000_supabase_init
+20260516000000_baseline_missing_tables
+20260517000000_add_indexes
+20260518081500_add_teacher_documents
+20260520120000_visit_consultation_times
+20260520180000_teacher_gender
+20260521120000_student_gender
+20260521130000_cms_tables
+20260527120000_faq_reviews_surface_flags
+20260625143525_mobile_app_models
+20260630120000_analytics_events
+20260702140000_payment_completion_idempotency
+20260702160000_student_guardian_phone
+20260702210000_study_task_source
+20260702220000_homework_templates
+20260703014634_soft_delete_and_match_reason
+20260703031301_phase2_core_loop
+20260703071300_phase3_retention
+20260703092239_leftover_batch
+20260703120000_teacher_student_match_status
+20260703140210_consultation_history
+20260703141527_status_enums
+20260703143003_audit_log
+20260703152558_qna_unification
+20260703164930_billing_key
+20260705120000_satisfaction_checkin_unique
+20260706120000_add_consultation_lead
+20260706130000_testimonial_grade_category
+20260707120000_consultation_lead_gender
+20260707150000_consultation_lead_region
+20260710160000_parent_role
+</code></pre>
+<p>(마지막 6개는 07-05~07-10 사이클 추가분.) <code>CLAUDE_HANDOFF.md §9</code>의 9개 리스트는 <strong>구버전 표기</strong>.</p>
+<hr>
+<p><a id="part-3"></a></p>
+<h2>Part 3 — 현재 상태 스냅샷 (3.1~3.3: 07-04 원본 보존 · 3.4: 07-12 추록)</h2>
+<h3>3.1 이번 사이클(2026-07-02 ~ 07-04) 최근 30 커밋으로 파악한 완료 항목</h3>
+<p>git log 실측 요약. 상세 세션 로그는 <code>CLAUDE_HANDOFF.md §25.1a~h</code>.</p>
+<table>
+<thead>
+<tr>
+<th>영역</th>
+<th>완료 내용</th>
+<th>대표 커밋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>디자인 개선</td>
+<td>공개 페이지 스크롤 리빌·홈 신뢰 배지·지역 안내</td>
+<td><code>7cfc553</code>, <code>706ef07</code>, <code>5a7cf17</code>, <code>dfa6b86</code></td>
+</tr>
+<tr>
+<td>문서 체계</td>
+<td>외부(사업계획서 PSST·재무) + 내부(TECH·API·법률·계약 초안) + 문서 지도 신설</td>
+<td><code>40a6f65</code>, <code>33519d6</code>, <code>4695b6a</code>, <code>5669cd6</code>, <code>30ed748</code></td>
+</tr>
+<tr>
+<td>보안 수정</td>
+<td>선생 서류 업로드 세션 소유권 검증 · <code>requireAdmin</code> 축소 · 스토리지 서버 경유 · qna 미답변 알림 통합</td>
+<td><code>a83c392</code>, <code>17e3619</code></td>
+</tr>
+<tr>
+<td>결제 v2</td>
+<td>시간 기반 v2 요금제(8종) · 요금 페이지·홈 티저 반영 · 모바일 정합</td>
+<td><code>9f578ac</code>, <code>603824c</code> 등, <code>3bbddd7</code></td>
+</tr>
+<tr>
+<td>빌링·정산</td>
+<td>Toss 빌링키 자동갱신·dunning·셀프 해지 (Q2=A) · 시급 3만원 월별 정산 리포트 (Q3)</td>
+<td><code>831979b</code>, <code>c986a90</code></td>
+</tr>
+<tr>
+<td>QnA 통합</td>
+<td><code>QuestionMessage</code> 단일 저장소, <code>Question</code> DEPRECATED</td>
+<td><code>92b19a4</code></td>
+</tr>
+<tr>
+<td>상담 이력화</td>
+<td><code>ConsultationBooking.studentId</code> @unique 해제, <code>consultation-current.ts</code> 헬퍼</td>
+<td><code>4a0875b</code></td>
+</tr>
+<tr>
+<td>Prisma enum</td>
+<td>UserRole/ConsultationStatus/LessonStatus/SubscriptionStatus/MatchStatus/PaymentStatus 전환</td>
+<td><code>f819b2d</code></td>
+</tr>
+<tr>
+<td>감사·지표</td>
+<td>AuditLog, 매니저 성과 지표(전환율·수락률·중앙값·케어 30일)</td>
+<td><code>4490285</code>, <code>e51e9e2</code></td>
+</tr>
+<tr>
+<td>부팅·데이터</td>
+<td>치프 매니저 계정 시드, cron 카운터 스프레드 버그 픽스</td>
+<td><code>5f6568b</code></td>
+</tr>
+<tr>
+<td>미성년 동의</td>
+<td>ConsultationSignupForm에 보호자 동의 수집 + <code>Student.guardianConsentAt</code></td>
+<td>(Phase 3 잔여 배치)</td>
+</tr>
+<tr>
+<td>페이지 정정</td>
+<td><code>/login</code> 역할 탭 제거, 법률 목차, 강사 목록 role 필터·[sample] 제외</td>
+<td><code>a3fa1eb</code>, <code>0eefa8c</code></td>
+</tr>
+</tbody></table>
+<p><del><strong>로컬 <code>main</code>은 <code>origin/main</code>보다 29 커밋 앞선다</strong></del> (07-12 갱신: push 완료, <code>git rev-list --count origin/main..HEAD</code> = 0. 프로덕션 배포 반영됨.)</p>
+<h3>3.2 상세 세션별 기록 (원본)</h3>
+<p><code>CLAUDE_HANDOFF.md §25.1a~h</code>에 시간대별 완료·검증·주의사항 기록 있음. 이 파일은 <strong>원본을 그대로 보존</strong>하며 요약본을 여기 두지 않는다.</p>
+<h3>3.3 미해결·보류 항목 (수집 원본: <code>CLAUDE_HANDOFF.md §22, §26</code>, <code>docs/30-제품·디자인.md</code>(구 PRODUCT_DESIGN_TRACKER), <code>docs/11-사업리뷰·취약점.md</code>(구 BUSINESS_REVIEW))</h3>
+<table>
+<thead>
+<tr>
+<th>카테고리</th>
+<th>항목</th>
+<th>상태 · 참조</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>콘텐츠</td>
+<td>인물 사진 6종 × 5장</td>
+<td>보류 (<code>docs/PHOTO_GENERATION_PROMPT.md</code>)</td>
+</tr>
+<tr>
+<td>CMS</td>
+<td>SiteContent/Testimonial/FaqItem 시딩</td>
+<td>오너 승인 대기 (§0.3)</td>
+</tr>
+<tr>
+<td>법률</td>
+<td>terms/privacy/refund <code>[기재 예정]</code> <strong>8곳</strong> (실측 grep 결과) — 대표자명·사업자등록번호·통신판매업신고·주소·시행일 등</td>
+<td>사업자 등록 후 (Q4)</td>
+</tr>
+<tr>
+<td>법률</td>
+<td>3종 초안의 변호사 검토 반영</td>
+<td>Q1, 오너 진행 중</td>
+</tr>
+<tr>
+<td>계약</td>
+<td><code>TUITION_CONTRACT_DRAFT</code>, <code>TUTOR_ENGAGEMENT_CONTRACT_DRAFT</code> 변호사·노무 검토</td>
+<td><code>docs/internal/contracts/</code></td>
+</tr>
+<tr>
+<td>인프라</td>
+<td>커스텀 도메인</td>
+<td>미확보</td>
+</tr>
+<tr>
+<td>계측</td>
+<td>GA4 이벤트 계측 부재</td>
+<td>✅ 07-05 env-gated GA4 태그 추가 (<code>13916e4</code>) — 이벤트 세분화는 잔여</td>
+</tr>
+<tr>
+<td>인증</td>
+<td>비밀번호 재설정 플로우 부재</td>
+<td>✅ 07-10 셀프 변경 + 매니저 리셋 구현 (<code>c1fab4d</code>)</td>
+</tr>
+<tr>
+<td>콘텐츠 정책</td>
+<td>리뷰 별점 정책 미정</td>
+<td><code>docs/30-제품·디자인.md</code>(구 PRODUCT_DESIGN_TRACKER)</td>
+</tr>
+<tr>
+<td>보안</td>
+<td>Supabase Storage RLS 정책 재점검 (서버 경유 전환 후 anon INSERT 제거)</td>
+<td><code>docs/11-사업리뷰·취약점.md</code>(구 BUSINESS_REVIEW) BR-14 잔여</td>
+</tr>
+<tr>
+<td>결제</td>
+<td>Toss 대시보드 웹훅 URL 등록 · 현금영수증 자동발급 설정</td>
+<td>오너 액션</td>
+</tr>
+<tr>
+<td>알림</td>
+<td>Hourly cron 복원(GitHub PAT workflow scope) 또는 Vercel Pro cron 전환</td>
+<td><code>CLAUDE_HANDOFF.md §26.2</code></td>
+</tr>
+<tr>
+<td>요금</td>
+<td>번들 할인(#17) 할인율 결정</td>
+<td>Q1 미결</td>
+</tr>
+<tr>
+<td>정산</td>
+<td>PG 지급대행 연동, 선생 등급·인센티브(#3)</td>
+<td>외부 계약 후</td>
+</tr>
+<tr>
+<td>모바일</td>
+<td>스토어 제출 (계정 삭제 UI 완료)</td>
+<td>오너 결정</td>
+</tr>
+<tr>
+<td>UX</td>
+<td><code>Lesson.cancelledBy</code>/<code>StudyPlan.source</code>/<code>ManagerCareLog.type</code>/<code>SatisfactionCheckin.trigger</code> enum 2차 전환</td>
+<td>소소한 부채</td>
+</tr>
+<tr>
+<td>정보</td>
+<td>이력 UX에서 매니저 상담 목록 이력 표시 개선 (현재 최신/open 위주)</td>
+<td>소소한 부채</td>
+</tr>
+</tbody></table>
+<h3>3.4 — 2026-07-12 추록: 07-05 ~ 07-12 사이클 (git log 실측 143 커밋)</h3>
+<blockquote>
+<p>3.1~3.3은 07-04 시점 원본을 보존한다. 이 절이 07-12 기준 최신 상태다.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>날짜</th>
+<th>영역</th>
+<th>완료 내용</th>
+<th>대표 커밋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>07-05</td>
+<td>무결성</td>
+<td>파일럿 검증 라운드 1~4 (auth·matching·payments·homework·mobile) 일괄 수정</td>
+<td><code>c2bf847</code></td>
+</tr>
+<tr>
+<td>07-05</td>
+<td>Sprint 1</td>
+<td>환불 정책 결제 전 노출(S1-7) · GA4 env-gated 태그(S1-6) · RLS/스토리지 정책 SQL 준비(S1-5, 승인 후 적용) · 보호자 동의 서버 강제(S1-4) · 환불 시 Toss cancel API + 웹훅 외부취소 동기화(S1-3)</td>
+<td><code>410258c</code>, <code>13916e4</code>, <code>98d5715</code>, <code>4a39da8</code>, <code>f80ced4</code></td>
+</tr>
+<tr>
+<td>07-05</td>
+<td>전략 문서</td>
+<td>BM v4.1(NX-1<del>53·EXP-1</del>8) · 마케팅 v3(§22<del>28, V-1</del>13, AD-1<del>14) · 리팩토링 R-12</del>16 등록</td>
+<td><code>ae8a0b2</code>, <code>f8ad0c0</code>, <code>b6c8bda</code>, <code>4cde3c5</code></td>
+</tr>
+<tr>
+<td>07-06</td>
+<td>공개 페이지</td>
+<td>설탭 벤치마크 기반 홈·강사·후기 페이지 재구축 · 공개 상담 리드 폼(<code>ConsultationLead</code>) · 긴급성 배너·스티키 CTA·카운트업 · 내부 웹 자료실 뷰어</td>
+<td><code>a309848</code>, <code>ea6f50d</code>, <code>94a6089</code>, <code>0ea690f</code>, <code>990ed11</code>, <code>a144b1e</code></td>
+</tr>
+<tr>
+<td>07-06</td>
+<td>후기</td>
+<td>Testimonial grade/category/tags 컬럼 + DB 기반 성적 배지</td>
+<td><code>3831325</code>, <code>456911f</code></td>
+</tr>
+<tr>
+<td>07-07</td>
+<td>사진·스토리</td>
+<td>실사 촬영 사진 전면 교체(레거시/스톡 전량 제거) · 매칭 철학 스크롤텔링 스토리 · 강사 뉴스 근거 카드 · CMS 키 정합</td>
+<td><code>3cbca14</code>, <code>fb8cde8</code>, <code>8662bb9</code>, (CMS reconcile)</td>
+</tr>
+<tr>
+<td>07-08</td>
+<td>CRO·브랜드</td>
+<td>CRO 사이클 2(카피 중복 제거·팩트 배너·환불 각주) · 대학 엠블럼 세트 · 명예의 전당 카드 · 단일 컬럼 상담 폼 · 매칭 preselect/재배정 UI · 치프 매니저 admin 접근 정정 · UX 감사 문서(17건)</td>
+<td><code>adefd5f</code>, <code>d2a2a4c</code>, <code>f30bdb7</code>, <code>abcecb8</code>, <code>234a352</code>, <code>e1af183</code>, <code>6659c05</code></td>
+</tr>
+<tr>
+<td>07-09</td>
+<td>UX·보안</td>
+<td>UX 감사 M-1~M-17 처분 완료 · 로그인 rate-limit · 프로필 PATCH 화이트리스트 · question-images 버킷 private 전환 + 프록시 오류 은닉 · P2 결함 16건 일괄 해소 · 히어로 지역 각주(서울·동탄)</td>
+<td><code>7b71832</code>, <code>264fe47</code>, <code>7f1949f</code>, <code>bcee87b</code>, <code>b6153d5</code></td>
+</tr>
+<tr>
+<td>07-10</td>
+<td>PARENT 역할</td>
+<td>PARENT 백엔드(auth·자녀 연결·데이터/액션 API, 웹+모바일) · <code>/parent</code> 웹 포털 스켈레톤 · 선생·매니저 모바일 API · 비밀번호 셀프 변경+매니저 리셋 · 선생 프로필 사진/서류 업로드</td>
+<td><code>1403bb2</code>, <code>5600f0b</code>, <code>5a55ee0</code>, <code>c1fab4d</code>, <code>d60848c</code></td>
+</tr>
+<tr>
+<td>07-11</td>
+<td>디자인 적용</td>
+<td>디자인 핸드오프 CSS/아이콘 verbatim 도입 → 공개 페이지 적용 후 <strong>전면 revert</strong>(공개 페이지 수정 금지 규칙 확립) · 로그인 후 화면만 적용: 포털(학부모·선생·매니저) · 매니저 4화면+어드민 도구 · 학생 4p·어드민 13p·포털 v2·헤더 세션</td>
+<td><code>596afc9</code>, <code>8e23546</code>, <code>1639383</code>, <code>820f259</code>, <code>a0d6bfa</code>, <code>7a103e9</code></td>
+</tr>
+<tr>
+<td>07-11</td>
+<td>모바일</td>
+<td><strong>통합 4역할 앱</strong> — parent/teacher/manager 탭셋 신설 + student v2 (51파일, +6,866줄)</td>
+<td><code>b8ea0f7</code></td>
+</tr>
+<tr>
+<td>07-12</td>
+<td>구독·무결성</td>
+<td>매니저 전용 구독 일시정지/재개(<code>PAUSED</code>, 최대 35일) + 모바일 린트 정리 · 파일럿 11R: 학부모 PAUSED 노출 + P2 4건</td>
+<td><code>8aedcbc</code>, <code>b54c04e</code></td>
+</tr>
+</tbody></table>
+<p><strong>07-14 실측 수치</strong>: API 라우트 161 (07-04: 110 → 07-12: 166 → 07-14: 161) · 마이그레이션 36 (07-04: 25 → 07-12: 31 → 07-14: 36). 파일럿 시뮬레이션 2차 기록은 <code>docs/PILOT_SIM2_2026-07.md</code> (<strong>12라운드까지</strong> — §12 광역 재검증 07-13).</p>
+<p><strong>이 사이클에서 확립된 규칙 (Part 0에 반영됨)</strong>:</p>
+<ul>
+<li>공개 페이지(홈·pricing·tutors·reviews·faq·login)는 <strong>신 디자인 적용 금지</strong> — 07-11 revert(<code>1639383</code>)로 확정. 신 디자인은 로그인 후 화면(포털·앱)만.</li>
+<li>수락 버튼은 형식적 절차 — 마케팅·UI 강조 금지 (§0.1 개정 참조).</li>
+</ul>
+<hr>
+<p><a id="part-4"></a></p>
+<h2>Part 4 — 다음 작업 백로그 (우선순위)</h2>
+<blockquote>
+<p>각 항목: <strong>선행조건 / 참조 문서 / 예상 난이도(S·M·L)</strong>. 오너 결정 필요 항목은 <code>Q#</code>로 표기.</p>
+</blockquote>
+<h3>4.1 P0 — 파일럿 오픈 전 반드시</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>항목</th>
+<th>선행</th>
+<th>참조</th>
+<th>난이도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P0-1</td>
+<td>Toss 대시보드에 웹훅 URL 등록 <code>https://tutormatch-web.vercel.app/api/webhooks/toss</code></td>
+<td>오너 액션</td>
+<td><code>CLAUDE_HANDOFF.md §25.2</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P0-2</td>
+<td>사업자 등록 → terms/privacy/refund <code>[기재 예정]</code> <strong>8곳</strong> 채우기 + 푸터 CMS <code>company_*</code> 키 반영</td>
+<td>Q4</td>
+<td><code>CLAUDE_HANDOFF.md §25.1b</code>, <code>docs/internal/LEGAL_DOCS_STATUS.md</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P0-3</td>
+<td>법률 문서 3종 변호사 검토 결과 반영</td>
+<td>Q1</td>
+<td><code>docs/internal/LEGAL_ADVISORY_MEMO.md</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>P0-4</td>
+<td><del>29 커밋 배포 승인 → <code>git push origin main</code></del> ✅ 07-12 기준 push·배포 완료</td>
+<td>—</td>
+<td>(n/a)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>P0-5</td>
+<td>프로덕션 스모크: 가입(보호자 동의)→상담→매칭(matchReason)→수락→첫 수업→숙제 자동 분배→수업 자동 완료→월간 리포트 관통. 결제는 Toss 테스트 키로 confirm+웹훅 경로 확인</td>
+<td>P0-4</td>
+<td><code>CLAUDE_HANDOFF.md §26.3 #4</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>P0-6</td>
+<td>Supabase 대시보드에서 <code>question-images</code> 등 버킷의 anon INSERT 정책 제거</td>
+<td>스토리지 서버 경유 완료(§25.1f)</td>
+<td><code>CLAUDE_HANDOFF.md §26.3</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P0-7</td>
+<td><del>비밀번호 재설정 플로우</del> ✅ 07-10 셀프 변경 + 매니저 리셋 구현 (<code>c1fab4d</code>, 웹+모바일)</td>
+<td>—</td>
+<td><code>docs/30-제품·디자인.md</code>(구 PRODUCT_DESIGN_TRACKER)</td>
+<td>✅</td>
+</tr>
+</tbody></table>
+<h3>4.2 P1 — 파일럿 중 데이터·전환</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>항목</th>
+<th>선행</th>
+<th>참조</th>
+<th>난이도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P1-1</td>
+<td>GA4 이벤트 계측 — ⏳ 부분 완료: env-gated 페이지 태그는 07-05 추가(<code>13916e4</code>), 이벤트 세분화(<code>AnalyticsEvent</code> 이중 계측 or 대체) 잔여</td>
+<td>—</td>
+<td><code>src/lib</code> 이벤트 로직</td>
+<td>M</td>
+</tr>
+<tr>
+<td>P1-2</td>
+<td>카카오 비즈니스 채널 개설 → (a) 알림톡 템플릿 심사 후 env 설정 (b) 카카오 로그인 KakaoProvider (c) 채널 플로팅 버튼</td>
+<td>Q4 (사업자)</td>
+<td><code>CLAUDE_HANDOFF.md §26.2 #1</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>P1-3</td>
+<td>Hourly 알림 복원 — ✅ 07-12 오너 결정(PAT 방식): 워크플로 파일 복원 완료. <strong>잔여 오너 액션 2가지</strong>: ① <code>workflow</code> scope 있는 PAT로 push 자격 갱신 ② GitHub 저장소 Settings→Secrets에 <code>CRON_SECRET</code> 등록</td>
+<td>오너 액션</td>
+<td><code>.github/workflows/hourly-alerts.yml</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P1-4</td>
+<td><del>번들 할인(#17) 할인율 결정</del> ❌ <strong>폐기 (2026-07-12 오너 확정)</strong>: 요금은 일관된 할인 규칙이 아니라 오너가 소비자 심리 최적가로 직접 설정한 금액 — 코드값(38|43·55|58·76|78·106|112만)이 진실. 할인 구조 제안·금액 변경 금지</td>
+<td>—</td>
+<td>—</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>P1-5</td>
+<td><del>리뷰 별점 정책</del> ✅ <strong>종결 (2026-07-12 오너 확정)</strong>: 별점 미도입 — 텍스트 후기 + 성적 배지 현행 유지 (별점은 조작 시비 여지). UI 변경 없음</td>
+<td>—</td>
+<td>—</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>P1-6</td>
+<td>커스텀 도메인 연결</td>
+<td>도메인 확보</td>
+<td>—</td>
+<td>S</td>
+</tr>
+</tbody></table>
+<h3>4.3 P2 — 확장·성숙</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>항목</th>
+<th>선행</th>
+<th>참조</th>
+<th>난이도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P2-1</td>
+<td>모바일 앱 스토어 제출 (계정 삭제 UI 완료, journey MATCH_PENDING_ACCEPT 반영 완료. <strong>07-11 통합 4역할 앱 완성 <code>b8ea0f7</code>으로 제출 대상이 대폭 커짐</strong>)</td>
+<td>오너 결정</td>
+<td><code>CLAUDE_HANDOFF.md §23 Phase 4</code></td>
+<td>L</td>
+</tr>
+<tr>
+<td>P2-2</td>
+<td>선생 정산 PG 지급대행 연동</td>
+<td>외부 계약</td>
+<td><code>CLAUDE_HANDOFF.md §26.1 Q3</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>P2-3</td>
+<td>선생 등급·인센티브(#3) — Teacher 활동 통계, 계약서 등급 조항</td>
+<td>Q3</td>
+<td><code>CLAUDE_HANDOFF.md §24.3 #3</code></td>
+<td>M</td>
+</tr>
+<tr>
+<td>P2-4</td>
+<td><del>웹/앱 채널 역할(#29) — 학부모 앱 여부 결정</del> ✅ 결정·구현 완료: PARENT 역할 신설(07-10) + 모바일 학부모 탭셋(07-11). 웹은 리포트·결제·상담만</td>
+<td>—</td>
+<td><code>CLAUDE_HANDOFF.md §24.3 #29</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>P2-5</td>
+<td>소소한 enum 2차 전환 (<code>Lesson.cancelledBy</code> 등)</td>
+<td>—</td>
+<td><code>CLAUDE_HANDOFF.md §26.3</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P2-6</td>
+<td>매니저 상담 목록 이력 UX 개선</td>
+<td>—</td>
+<td><code>CLAUDE_HANDOFF.md §26.3</code></td>
+<td>S</td>
+</tr>
+<tr>
+<td>P2-7</td>
+<td><code>Question</code> DEPRECATED 테이블 실제 제거(검증 후)</td>
+<td>관측 기간 후</td>
+<td><code>CLAUDE_HANDOFF.md §25.1f</code></td>
+<td>S</td>
+</tr>
+</tbody></table>
+<h3>4.4 오너 미결 질문 승계</h3>
+<p><code>CLAUDE_HANDOFF.md §23</code>의 Q1(변호사 진행중), Q2(✅ A안 확정 완료), Q3(✅ 시급 3만 확정, PG 지급대행 잔여), Q4(사업자 정보 미확보 — 상호만 &quot;콘코드&quot;), Q5(✅ 해소), Q6(서비스 지역 명시 여부 미결).</p>
+<hr>
+<p><a id="part-5"></a></p>
+<h2>Part 5 — 문서 지도 · 세션 로그</h2>
+<h3>5.1 문서 지도 (원본: <code>docs/README.md</code> — <strong>2026-07-12 주제별 단권화 재편 반영</strong>)</h3>
+<blockquote>
+<p><strong>07-12 재편</strong>: 시간순 누적 문서 15종을 주제별 단권 6종으로 병합(전문 무손실), 원본은 <code>docs/archive/</code> 보존. 구 파일명 ↔ 새 위치 매핑은 <code>docs/README.md</code> 아카이브 절 참조.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>계층</th>
+<th>문서</th>
+<th>위치</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>마스터 진입점 (AI)</td>
+<td>이 파일 (<code>HANDOFF.md</code>)</td>
+<td>루트</td>
+</tr>
+<tr>
+<td><strong>현재 상태 요약 (사람)</strong></td>
+<td><code>docs/00-현재상태.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>사업전략 (BM v4.1+v3 통합)</td>
+<td><code>docs/10-사업전략.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>사업 리뷰·취약점 통합</td>
+<td><code>docs/11-사업리뷰·취약점.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>마케팅 통합 (계획 v3+카피+설탭 2종)</td>
+<td><code>docs/20-마케팅.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>제품·디자인 통합 (트래커+방향+CRO+UX 감사+홈 개선)</td>
+<td><code>docs/30-제품·디자인.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>파일럿 1차 기록 (2차는 활성 문서)</td>
+<td><code>docs/40-파일럿.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>파일럿 2차 (활성 — pilot-verify 스킬 참조, 이동 금지)</td>
+<td><code>docs/PILOT_SIM2_2026-07.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>세션 로그·이연 스펙 원본</td>
+<td><code>CLAUDE_HANDOFF.md</code> (§25~§26)</td>
+<td>루트</td>
+</tr>
+<tr>
+<td>하네스 원본</td>
+<td><code>CLAUDE.md</code>, <code>AGENTS.md</code></td>
+<td>루트</td>
+</tr>
+<tr>
+<td>문서 지도</td>
+<td><code>docs/README.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>기술 개요</td>
+<td><code>docs/internal/TECH_OVERVIEW.md</code></td>
+<td><code>docs/internal/</code></td>
+</tr>
+<tr>
+<td>API 레퍼런스</td>
+<td><code>docs/internal/API_REFERENCE.md</code> (07-04 기준 110 — 07-12 실측 166, 재실측 필요)</td>
+<td><code>docs/internal/</code></td>
+</tr>
+<tr>
+<td>법률 현황</td>
+<td><code>docs/internal/LEGAL_DOCS_STATUS.md</code></td>
+<td><code>docs/internal/</code></td>
+</tr>
+<tr>
+<td>계약 초안</td>
+<td><code>docs/internal/contracts/*.md</code></td>
+<td><code>docs/internal/contracts/</code></td>
+</tr>
+<tr>
+<td>법률 자문 메모</td>
+<td><code>docs/internal/LEGAL_ADVISORY_MEMO.md</code> (AI 임시)</td>
+<td><code>docs/internal/</code></td>
+</tr>
+<tr>
+<td>사업계획서 (PSST)</td>
+<td><code>docs/external/BUSINESS_PLAN_PSST.md</code></td>
+<td><code>docs/external/</code></td>
+</tr>
+<tr>
+<td>재무계획</td>
+<td><code>docs/external/FINANCIAL_PLAN.md</code></td>
+<td><code>docs/external/</code></td>
+</tr>
+<tr>
+<td>구현 계획 (활성)</td>
+<td><code>docs/IMPLEMENTATION_PLAN_2026-07.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>세션별 구현 기록 (활성)</td>
+<td><code>docs/IMPLEMENTATION_SESSIONS_REVISED.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>매니저 운영 가이드</td>
+<td><code>docs/MANAGER_GUIDELINES.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>리팩토링 제안 R-1~16</td>
+<td><code>docs/REFACTORING_PLAN.md</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>사진 프롬프트</td>
+<td><code>docs/PHOTO_GENERATION_PROMPT.md</code> (작업 보류)</td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td>디자인 시스템 원본</td>
+<td><code>design handoff/DESIGN_SYSTEM.md</code> (+ HTML 시안, <code>tokens-reference.css</code>)</td>
+<td><code>design handoff/</code></td>
+</tr>
+<tr>
+<td>아카이브 (병합 원본 15종 + 구버전 사업계획서 4종)</td>
+<td><code>docs/archive/</code></td>
+<td><code>docs/archive/</code></td>
+</tr>
+</tbody></table>
+<p><strong>루트 정리 (07-12 실행, 07-14 완결)</strong>: <code>concord_bizplan.*</code> 3종·<code>Concord_사업계획서_2026.docx</code>·<code>Concord_사업계획서_2026.md</code>(원본 소스) 전부 <code>docs/archive/</code>로 이동됨. PSST 버전(<code>docs/external/BUSINESS_PLAN_PSST.md</code>)이 계승. <code>.hermes/</code>(07-01·02 계획 잔재)도 <code>docs/archive/hermes/</code>로 이동.</p>
+<h3>5.2 세션 로그</h3>
+<blockquote>
+<p>세션 종료 시 이 절에 <strong>append</strong>한다. 형식은 <code>CLAUDE_HANDOFF.md §25.1x</code>를 승계 — 헤더 <code>### 세션 로그 · YYYY-MM-DD (제목)</code> + 완료 항목 · 검증 · 미해결.</p>
+</blockquote>
+<h3>세션 로그 · 2026-07-04 (핸드오프 재정비)</h3>
+<ul>
+<li>✅ <strong><code>HANDOFF.md</code> 신설</strong> (루트) — Part 0(AI 운영 하네스) · Part 1(온보딩) · Part 2(시스템 지도, 원본 참조) · Part 3(스냅샷) · Part 4(백로그) · Part 5(문서 지도 + 세션 로그 자리) 구조로 작성.</li>
+<li>✅ <strong><code>CLAUDE_HANDOFF.md</code> 최상단 5줄 안내 블록만 추가</strong> — 기존 §0~§26 내용은 일절 수정하지 않았음.</li>
+<li>✅ <strong>CLAUDE_HANDOFF 대비 갱신된 사실 (구버전 표기 병기)</strong>:<ul>
+<li>API 라우트 수: 58 → <strong>110</strong> (<code>docs/internal/API_REFERENCE.md</code> 실측, <code>src/app/api/**/route.ts</code> 파일 카운트 일치).</li>
+<li>마이그레이션: 9개 → <strong>25개</strong> 실측 리스트로 대체 (<code>prisma/migrations/</code> 실측).</li>
+<li>요금제: v1(회당/과목) → <strong>v2(시간제 월정액 8종)</strong>. <code>PRICING_PLANS_V2</code> 진실의 원천, v1은 <code>planIdFromAmount</code> 역매핑에서만 존재.</li>
+<li>결제 검증: &quot;orderId만&quot; → <strong>Toss confirm 서버 검증 + 웹훅 재검증</strong>.</li>
+<li>매칭 상태: 즉시 active → <strong><code>matchStatus: PENDING_STUDENT_ACCEPT</code> → 학생 수락 시 ACTIVE</strong>, <code>matchReason</code> 필드.</li>
+<li>상담: 학생 1건 → <strong>이력 다행</strong>(<code>consultation-current.ts</code> 헬퍼).</li>
+<li>QnA: <code>Question</code> + <code>QuestionMessage</code> 이원화 → <strong><code>QuestionMessage</code> 단일 저장소</strong>. <code>Question</code>은 DEPRECATED로 존치.</li>
+<li>CHIEF_MANAGER: Prisma 주석 누락 → <strong><code>UserRole</code> enum에 정식 반영</strong>.</li>
+<li>Storage: 브라우저 anon 업로드 → <strong>서버 라우트 경유</strong> (<code>/api/student/question-images</code> 등).</li>
+<li>Cron: hourly GitHub Actions → <strong>daily만</strong> (hourly는 PAT scope 문제로 제거, 라우트는 <code>x-vercel-cron</code> 지원).</li>
+<li>정산·빌링·계정삭제·감사로그·환불·일시정지·만족도·케어로그·상담 리포트 전부 <strong>구현 완료</strong> — 원본 §18의 &quot;❌ 미구현&quot;·§22의 &quot;부분&quot; 서술은 구버전 표기로 남기고 이 문서에서 재분류.</li>
+</ul>
+</li>
+<li>✅ <strong>실측한 사실</strong>: 로컬 <code>main</code>이 <code>origin/main</code>보다 <strong>29 커밋 앞섬</strong>. 법률 페이지 <code>[기재 예정]</code> <strong>8곳</strong> (terms/privacy/refund 각 파일에서 grep). 프로젝트 총 마이그레이션 25개, API 라우트 110개.</li>
+<li>✅ <strong>검증</strong>: 새 문서 2건(신규 + 5줄 프리앰블). 코드 변경 없음이므로 <code>tsc/lint</code> 실행 대상 없음. <code>git status</code> 클린 유지.</li>
+<li>⚠️ 미해결(다음 세션): <a href="#part-4">Part 4 · 백로그</a> 참조. 특히 P0-1~P0-7이 파일럿 오픈 전 필수.</li>
+</ul>
+<h3>세션 로그 · 2026-07-12 (문서 통합·최신화)</h3>
+<ul>
+<li>✅ <strong>HANDOFF.md 07-12 정정·추록</strong> (내용 삭제 없이 취소선+갱신 주석 방식):<ul>
+<li>§0.1 6단계 규범 정정 — 수락 버튼은 <strong>형식적 절차</strong>, 마케팅·UI 강조 금지 (<code>CLAUDE.md</code> 07-08 개정 반영). 구 문구는 취소선 보존.</li>
+<li>§0.4·Part 1·§3.1·P0-4: &quot;29 커밋 미배포&quot; → <strong>push·배포 완료(대기 0)</strong> 로 정정.</li>
+<li>Part 1 역할 표 4→<strong>5역할</strong> (PARENT 07-10 신설), §2.2 동반 갱신.</li>
+<li>§2.5 모델 추가분(ConsultationLead·Testimonial 확장·PARENT enum), §2.6 API <strong>110→166</strong>, §2.11 마이그레이션 <strong>25→31</strong> 실측 갱신.</li>
+<li><strong>§3.4 신설</strong> — 07-05<del>07-12 사이클 143커밋 날짜·영역별 추록 (Sprint 1, 설탭 벤치마크 개편, 실사 사진 교체, CRO, UX 감사 M-1</del>17, 보안 라운드, PARENT 역할, 디자인 핸드오프 적용+공개 페이지 revert, 통합 4역할 모바일 앱, 구독 일시정지, 파일럿 11R).</li>
+<li>Part 4: P0-4·P0-7·P2-4 완료 처리(취소선), P1-1 부분 완료 주석, P2-1 범위 확대 주석.</li>
+</ul>
+</li>
+<li>✅ <strong>docs/README.md 문서 지도 갱신</strong> — 07-04 이후 신규 문서 8종 인덱싱 (seoltab-teardown, benchmark-seoltab, copy-proposals, design-direction, design-review, ux-audit-handoff, VULNERABILITY_AUDIT, FRONTEND_BUILD_SPEC).</li>
+<li>✅ <strong>FRONTEND_BUILD_SPEC 중복 단일화</strong> — <code>design handoff/FRONTEND_BUILD_SPEC.md</code>를 원본으로 확정, 바이트 동일 사본이던 <code>docs/FRONTEND_BUILD_SPEC.md</code>는 포인터 스텁으로 교체.</li>
+<li>✅ <strong>루트 구버전 사업계획서 아카이브</strong> — <code>concord_bizplan.docx</code>(.bak과 바이트 동일)·<code>.bak</code>·<code>.rtf</code>·<code>Concord_사업계획서_2026.docx</code> → <code>docs/archive/</code> 이동 (삭제 아님). <code>Concord_사업계획서_2026.md</code>는 원본 소스로 루트 유지.</li>
+<li>✅ <strong>수락 버튼 정책 고지 전파</strong> — 수락을 강조하는 기존 문서들(MARKETING_PLAN, copy-proposals, design-direction, project-goals, external/APP_GUIDE·CEO_PROPOSAL·IR_ONE_PAGER, IMPLEMENTATION_SESSIONS_REVISED) 상단에 07-08 정책 변경 고지 추가. 본문은 수정하지 않음(기록 보존).</li>
+<li>검증: 문서만 변경 — 코드 변경 없음. 커밋은 오너 요청 대기.</li>
+<li>⚠️ 미해결: <code>docs/internal/API_REFERENCE.md</code> 재실측(110→166 증가분 반영), 6월 16일자 stale worktree 2개(<code>.claude/worktrees/agent-*</code>, 미커밋 cms 컴포넌트 잔존) 처분, <code>photos/</code> 116MB gitignore 여부 — 오너 결정 필요.</li>
+</ul>
+<h3>세션 로그 · 2026-07-12 (2차 — 주제별 단권화 재편)</h3>
+<ul>
+<li>✅ <strong>docs/ 주제별 단권화</strong> (오너 지시: 시간순·분산 구조로 파악이 어려움 → 주제별 재편, 내용 무손실):<ul>
+<li>신설 6종: <code>00-현재상태.md</code>(신규 요약) · <code>10-사업전략.md</code>(BM v4.1+v3 전문 병합) · <code>11-사업리뷰·취약점.md</code>(BUSINESS_REVIEW+VULNERABILITY_AUDIT) · <code>20-마케팅.md</code>(MARKETING_PLAN+copy-proposals+설탭 2종) · <code>30-제품·디자인.md</code>(TRACKER+direction+CRO리뷰+UX감사+홈개선) · <code>40-파일럿.md</code>(SIM 1차).</li>
+<li>병합 방식: 원본 전문을 Part A/B/C…로 그대로 수록 + 상단에 현행 우선순위·수록표 헤더. 바이트 합산으로 무손실 확인.</li>
+<li>원본 15종은 <code>git mv</code>로 <code>docs/archive/</code> 이동 (히스토리 보존). 아카이브 내 상호 참조는 동일 폴더라 유효.</li>
+<li><strong>의도적으로 유지한 파일</strong>: <code>PILOT_SIM2_2026-07.md</code>(pilot-verify 스킬이 <code>docs/PILOT_SIM2_*.md</code> 글롭 참조 — <strong>이동 금지</strong>), IMPLEMENTATION 2종·MANAGER_GUIDELINES(§0.8 활성), REFACTORING_PLAN, PHOTO 2종, FRONTEND_BUILD_SPEC(스텁), 덱 소스 HTML 3종.</li>
+<li>웹 자료실(<code>DocsLibrary.tsx</code>)은 <code>public/docs/*.html</code>만 참조 — md 이동 영향 없음 확인.</li>
+<li><code>docs/README.md</code> 전면 재작성(새 지도), 이 파일 §5.1 갱신, 활성 문서 3종(IMPLEMENTATION 2종·REFACTORING_PLAN)에 경로 이동 고지 1줄씩 추가.</li>
+</ul>
+</li>
+<li>검증: 문서만 변경, 코드 무변경. 커밋은 오너 요청 대기.</li>
+<li>⚠️ 규칙: 이후 세션은 전략·리뷰류 신규 문서를 만들지 말고 <strong>해당 주제 단권에 Part 추가/갱신</strong>할 것. 새 시점 스냅샷이 필요하면 단권 안에 날짜 절로 append.</li>
+</ul>
+<h3>세션 로그 · 2026-07-12 (3차 — UX 감사·수정 + 오너 결정 반영 + 프로덕션 정비)</h3>
+<ul>
+<li>✅ <strong>오너 결정 반영</strong>: 요금제 = 오너 심리 최적가 확정(중|고: 38|43·55|58·76|78·106|112만, 코드값이 진실) — 할인 구조 제안·금액 변경 금지, P1-4 폐기. 문서 요금 감사에서 &quot;38~108만&quot; 오기 5곳 → 112만으로 정정.</li>
+<li>✅ <strong>RLS/스토리지 정책 프로덕션 적용</strong> — <code>prisma/manual/20260705_...sql</code>을 question-images private 현행에 맞게 정정 후 적용. RLS 37테이블, anon 권한 0, 레거시 anon INSERT/UPDATE 정책 6개 제거(P0-6 종결). CMS 시딩 완료(SiteContent 1→1,184 · FAQ 4 · 후기 30 보존, <code>scripts/seed-cms.ts</code>).</li>
+<li>✅ <strong>프로덕션 스모크</strong> — 가입→상담(자동생성)→치프 배정→매칭→수락→첫수업→숙제분배→이미지 업로드/프록시 접근제어(익명 401)까지 관통. 테스트 데이터(pilot3-smoke) 전량 삭제.</li>
+<li>✅ <strong>GA4 이중 계측</strong> — <code>trackEvent</code>가 gtag 동시 전송, purchase/begin_checkout 표준 이벤트 매핑. <code>API_REFERENCE.md</code> 166 라우트 재실측(서브에이전트).</li>
+<li>✅ <strong>UX 어색 지점 감사</strong> — opus 5팀 병렬, 75건(§30-제품·디자인 Part F). P0: 첫 수업 시각 UTC 저장 버그(두 팀 교차 발견).</li>
+<li>✅ <strong>UX 수정 구현</strong> — opus 5팀 병렬(파일 소유권 분할): P0 KST 픽스(직접), 앱 학생(알림 딥링크·오늘 할 일·QnA 갱신), 학부모(학생 앱 연결 코드 발급 UI 신설·결제 컨텍스트), 결제(PARENT 체크아웃 분기+<code>/api/parent/payments/complete</code> 신설·success 재시도·PAUSED 무마찰 투영 — <strong>정지 신청 가능성 노출 금지가 오너 정책</strong>), 가입·상담(자동 접수 배너·리드→가입 이관), 공급자(matchReason &quot;학생 공개&quot; 명시·분배 미리보기·케어로그 기본 비공개·강사 정산 탭 신설). 전체 tsc·lint 클린.</li>
+<li>✅ <strong>외부 PDF 5종 재생성</strong> — 수락 강조 제거(매니저 직접 배정 중심) + 요금 정정, <code>public/docs/</code> 동기화.</li>
+<li>⚠️ 코드 변경분은 동시 세션의 <code>06cbcd7</code>(feat/reports)에 함께 커밋·push됨 — 커밋 귀속 혼재, 내용은 검증 완료.</li>
+<li>⚠️ 미해결: 환불정책 v1 요금 예시 v2 갱신(공제 기준 오너 결정 필요), 웹/앱 QnA 모델 통일·학생 웹 리포트 라우트(설계 결정), L급 폴리시 잔여(Part F 참조).</li>
+</ul>
+<h3>세션 로그 · 2026-07-13 (UX 전수조사 2차 + 대규모 수정 + 수업 확인 제도)</h3>
+<ul>
+<li>✅ <strong>UX 전수조사 2차</strong> — opus 8팀(5도메인 회귀+확장, 신규: 어드민·알림시스템·크로스커팅), 신규 108건. <code>docs/30-제품·디자인.md</code> Part G. 방법론은 <code>.claude/skills/ux-sweep</code> 스킬로 저장(트리거: &quot;전수조사&quot;).</li>
+<li>✅ <strong>회귀 검증</strong>: 07-12 수정 43건 중 42건 정상. 실회귀 1건(케어로그 기본 공개 리셋) 즉시 수정.</li>
+<li>✅ <strong>오너 결정 3건 반영</strong>: ① 미수락 매칭 3일 자동 확정 ② 학부모 알림 = 결제+핵심만 팬아웃 ③ <strong>수업 확인 제도</strong>(자동완료 폐지 — 오너 직접 설계 스펙, 메모리 <code>project_lesson_confirm</code> 참조): 종료 시각→강사 확인 알림→완료/사유(학생 과실=정산 포함, 비과실=&quot;마지막 수업으로 변경&quot; 이월)→3자 공지, D+7 무응답 자동완료(잠정). 마이그레이션 <code>20260713090000_lesson_confirm</code>(nullable 3컬럼).</li>
+<li>✅ <strong>수정 8커밋</strong> (<code>ad60145</code>~`11ef9ea`): 4역할 앱 알림 개방+학부모 팬아웃+딥링크, 학부모 미납 인지·앱 비대칭 해소·탈퇴, 수업 확인 제도, 인증 잠금 안내·모바일 rate-limit(보안), 어드민 confirm 가드·치프 서류 열람·CMS 검색, QnA 배지 회귀, 크로스커팅(다크 토큰·테이블 overflow·a11y·용어), 모바일 정산 화면·보강 실날짜·nextStep.</li>
+<li>✅ expo-image-picker·document-picker 설치, 강사 모바일 업로드 UI 연결(진행).</li>
+<li>⚠️ <strong>push 차단 중</strong>: 로컬 히스토리의 hourly 워크플로 커밋(3f89879) 때문에 PAT workflow scope 없이는 전체 push 거부. 동시 세션 활동으로 rebase는 회피. <strong>오너 PAT 갱신이 배포+hourly cron+향후 push 모두의 유일 해소책.</strong></li>
+<li>✅ (같은 날 후속 완주) E-UPLOAD 업로드 UI 연결(<code>00671f1</code>), 만료 구독 D+3 자동 마감(<code>9d15fea</code>), 감사로그 이름 표시+반려 사유·SMS(<code>e532a53</code>), API_REFERENCE 173 라우트(<code>49ff10b</code>), 로컬 프로덕션 빌드 통과 확인. 잔여: 매니저 내부 화면 용어 통일(선택), 배포 후 프로덕션 스모크.</li>
+</ul>
+<h3>세션 로그 · 2026-07-13 (오너 결정 12건 확정 + 즉시 반영 + biz-rounds 스킬)</h3>
+<ul>
+<li><strong>오너 결정 1~12 확정</strong> (MASTER §5 확정 블록·메모리 <code>project_decisions_2026-07-13</code>): D+7=이월(기구현 확인, 수정 0) · 서사 B(대면·밀도·큐레이션) · 스토어 연기 · AI 질답 키 활성 방침 · PARENT 결제 기본화 · 강사 집중 배치 · 총량 수치 실측 교체(적용 시점 별도) · 차등시급 수동 프리셋 · 검증 요소 강조. 강사 계약·크레딧 상한 보류.</li>
+<li><strong>코드</strong>: <code>Teacher.hourlyRateKrw</code>(프리셋 32/34/40k, 정산 3경로+어드민 UI) · <code>PaymentCompletion.paidByUserId</code> 결제자 귀속(학생/학부모 라우트, 웹훅 무수정) · ai-answer 모델 claude-sonnet-4-6. 마이그레이션 SQL 2건 준비만(<code>20260713150000_teacher_hourly_rate</code>, <code>20260713160500_payment_paid_by_user</code>) — <strong>프로덕션 선적용 후 배포</strong>(추가 전용, 선적용 무해).</li>
+<li><strong>검증</strong>: tsc·lint·prisma validate 클린, 회귀 테스트 2종 PASS(신규 학생 단독 결제 6 + 정산·환불 8).</li>
+<li><strong>문서</strong>: MANAGER_GUIDELINES §6(검증 요소 능동 안내+서사 B) 신설. <code>.claude/skills/biz-rounds</code> 스킬 신설(R0~R6 라운드 루프 방법론+개선 10종).</li>
+<li><strong>오너 대기</strong>: ANTHROPIC_API_KEY 발급·env 등록, 마이그레이션 적용 지시, 결정 13~16. 잔여 AI 작업: IR·외부 문서 서사 B 스윕, 로그인 후 화면 검증 카피 실물 적용, 학부모 빌링키 등록 신설 여부(오너 결정 사안으로 이월).</li>
+</ul>
+<h3>세션 로그 · 2026-07-14 (확장 라운드 통합 마스터)</h3>
+<ul>
+<li>✅ <strong>확장 라운드 통합</strong> — 발굴 63건(ES·EI) → R2 판정 → 반박 재정 4건(ES-23·ES-11 수용, EI-18 유지, EI-2 증거 분해) → 최종 생존 4·조건부 47·기각 2·재탕 10, 실행체 39. 산출: <code>docs/BUSINESS_EXPANSION_MASTER_2026-07.md</code>(8절). 유일한 즉시 오너 결정 = EI-27 파일럿 단핵 집중.</li>
+</ul>
+<hr>
+<p><strong>끝.</strong> 이 문서를 갱신했다면 <a href="#part-5">세션 로그</a>에 엔트리를 append하고, 논리 단위로 항상 커밋한다 (push는 오너 승인).</p>
+</section><section id="d-README-md"><span class="fname">README.md</span><p>This is a <a href="https://nextjs.org">Next.js</a> project bootstrapped with <a href="https://nextjs.org/docs/app/api-reference/cli/create-next-app"><code>create-next-app</code></a>.</p>
+<h2>Getting Started</h2>
+<p>First, run the development server:</p>
+<pre><code class="language-bash">npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+</code></pre>
+<p>Open <a href="http://localhost:3000">http://localhost:3000</a> with your browser to see the result.</p>
+<p>You can start editing the page by modifying <code>app/page.tsx</code>. The page auto-updates as you edit the file.</p>
+<p>This project uses <a href="https://nextjs.org/docs/app/building-your-application/optimizing/fonts"><code>next/font</code></a> to automatically optimize and load <a href="https://vercel.com/font">Geist</a>, a new font family for Vercel.</p>
+<h2>Learn More</h2>
+<p>To learn more about Next.js, take a look at the following resources:</p>
+<ul>
+<li><a href="https://nextjs.org/docs">Next.js Documentation</a> - learn about Next.js features and API.</li>
+<li><a href="https://nextjs.org/learn">Learn Next.js</a> - an interactive Next.js tutorial.</li>
+</ul>
+<p>You can check out <a href="https://github.com/vercel/next.js">the Next.js GitHub repository</a> - your feedback and contributions are welcome!</p>
+<h2>Deploy on Vercel</h2>
+<p>The easiest way to deploy your Next.js app is to use the <a href="https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme">Vercel Platform</a> from the creators of Next.js.</p>
+<p>Check out our <a href="https://nextjs.org/docs/app/building-your-application/deploying">Next.js deployment documentation</a> for more details.</p>
+<h1>tutormatchWEB</h1>
+<h1>tutormatchWEB</h1>
+<h1>tutormatchWEB</h1>
+<h1>tutormatchWEB</h1>
+<h1>tutormatchWEB</h1>
+</section></main>
+</div></body></html>
