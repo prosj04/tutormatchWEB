@@ -25,31 +25,39 @@ function walkMd(dir) {
 
 // 그룹 정의: files = 명시 순서(경로는 DOCS/ROOT 기준), dir = 재귀 수집
 const groups = [
-  { out: '00-결정.html', title: '① 결정 대기', files: [ '결정대기.md' ] },
-  { out: '00b-개선책.html', title: '② 개선책', files: [ '개선책.md' ] },
-  { out: '01-개요.html', title: '원문·개요', files: [
-    '00-현재상태.md', 'README.md', 'CONTENT_AUDIT_2026-07-14.md',
-    'CLEANUP_AUDIT_2026-07-14.md', 'SECURITY_AUDIT_2026-07-14.md',
-    'BUSINESS_DIRECTION.md', 'FRONTEND_BUILD_SPEC.md', '../HANDOFF.md', '../README.md',
+  // 단권화(합성) — 대시보드 진입점
+  { out: '00-결정.html', title: '① 결정 대기', files: [ '결정대기.md' ],
+    lead: '지금 정해야 할 것만. 발굴·라운드 이력은 뺐다.' },
+  { out: '00b-개선책.html', title: '② 개선책', files: [ '개선책.md' ],
+    lead: '살아남은 실행 항목을 유형별로 압축. 시기 태그 P·A·B·C.' },
+  // 원문 — 주제별 큐레이션(읽는 순서 지정). 역사·아카이브·감사 문서는 나열에서 제외(레포에 보존).
+  { out: '10-방향.html', title: '방향·현황', lead: '세계관·카피 헌법 → 현재 상태 → 저장소 지도.', files: [
+    'BUSINESS_DIRECTION.md', '00-현재상태.md', 'README.md',
   ] },
-  { out: '02-사업전략.html', title: '사업전략', files: [
+  { out: '20-전략.html', title: '전략', lead: '전략 골격 → 개선 마스터 → 확장 마스터 → 리뷰·취약점.', files: [
     '10-사업전략.md', 'BUSINESS_IMPROVEMENT_MASTER_2026-07.md',
-    'BUSINESS_EXPANSION_MASTER_2026-07.md',
+    'BUSINESS_EXPANSION_MASTER_2026-07.md', '11-사업리뷰·취약점.md',
   ] },
-  { out: '03-리뷰·마케팅.html', title: '리뷰·마케팅', files: [
-    '11-사업리뷰·취약점.md', '20-마케팅.md', 'COPY_ALTERNATIVES.md',
+  { out: '30-마케팅.html', title: '마케팅·카피', lead: '마케팅 계획 → 카피 대안.', files: [
+    '20-마케팅.md', 'COPY_ALTERNATIVES.md',
   ] },
-  { out: '04-제품·디자인.html', title: '제품·디자인', files: [ '30-제품·디자인.md' ] },
-  { out: '05-운영·파일럿.html', title: '운영·파일럿·구현', files: [
-    '40-파일럿.md', 'PILOT_SIM2_2026-07.md', 'IMPLEMENTATION_PLAN_2026-07.md',
-    'IMPLEMENTATION_SESSIONS_REVISED.md', 'REFACTORING_PLAN.md',
-    'MANAGER_GUIDELINES.md', 'OWNER_EXECUTION_QUEUE.md', 'STORE_SUBMISSION_2026-07.md',
-    'PHOTO_GENERATION_PROMPT.md', 'PHOTO_SHOOT_LIST.md', 'session-instructions.md',
+  { out: '40-제품.html', title: '제품·디자인', lead: '제품·디자인 원칙 → 프론트 빌드 사양.', files: [
+    '30-제품·디자인.md', 'FRONTEND_BUILD_SPEC.md',
   ] },
-  { out: '06-내부·기술.html', title: '내부·기술', dir: 'internal' },
-  { out: '07-외부·제출.html', title: '외부·제출', dir: 'external' },
-  { out: '08-전략라운드.html', title: '전략 라운드', dir: 'strategy-rounds' },
-  { out: '09-아카이브.html', title: '아카이브', dir: 'archive' },
+  { out: '50-운영.html', title: '운영·파일럿', lead: '파일럿 계획·시뮬 → 매니저 지침 → 집행 큐 → 구현·촬영·스토어.', files: [
+    '40-파일럿.md', 'PILOT_SIM2_2026-07.md', 'MANAGER_GUIDELINES.md',
+    'OWNER_EXECUTION_QUEUE.md', 'IMPLEMENTATION_PLAN_2026-07.md',
+    'session-instructions.md', 'STORE_SUBMISSION_2026-07.md',
+    'PHOTO_SHOOT_LIST.md', 'PHOTO_GENERATION_PROMPT.md',
+  ] },
+  { out: '60-법무·기술.html', title: '법무·기술', lead: '기술 개요 → API → 법무 자문·문서 현황.', files: [
+    'internal/TECH_OVERVIEW.md', 'internal/API_REFERENCE.md',
+    'internal/LEGAL_ADVISORY_MEMO.md', 'internal/LEGAL_DOCS_STATUS.md',
+  ] },
+  { out: '70-대외·IR.html', title: '대외·IR', lead: '사업계획(PSST) → 원페이저 → 재무 → 대표 제안 → 앱 안내.', files: [
+    'external/BUSINESS_PLAN_PSST.md', 'external/IR_ONE_PAGER.md',
+    'external/FINANCIAL_PLAN.md', 'external/CEO_PROPOSAL.md', 'external/APP_GUIDE.md',
+  ] },
 ];
 
 function resolveFiles(g) {
@@ -89,7 +97,9 @@ body{color:var(--fg);background:var(--bg);line-height:1.65;letter-spacing:-.01em
 .toc a:hover{background:var(--panel2);color:var(--fg)}
 main{flex:1;min-width:0;padding:34px 0 140px}
 section{margin-bottom:64px;padding-bottom:44px;border-bottom:1px solid var(--line)}
-.fname{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--green-text);background:var(--panel2);padding:4px 10px;border-radius:999px;margin-bottom:14px;letter-spacing:0}
+.lead{font-size:14px;color:var(--mut);margin:2px 0 30px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.docsep{border:0;border-top:1px solid var(--line);margin:0 0 40px}
+section:first-child .docsep{display:none}
 main h1{font-size:30px;font-weight:800;letter-spacing:-.038em;line-height:1.12;border-bottom:1px solid var(--line);padding-bottom:10px;margin:.2em 0 .6em}
 main h2{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:1.8em 0 .5em}
 main h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:1.5em 0 .4em}
@@ -116,17 +126,29 @@ main img{max-width:100%;border-radius:12px}
 @media(max-width:860px){.toc{display:none}.wrap{padding:0 15px}.tabs{padding:10px 15px}}
 `;
 
+const docTitle = (md, fallback) => {
+  const m = md.match(/^#\s+(.+?)\s*$/m);
+  return (m ? m[1] : fallback).replace(/[*`_]/g, '').trim();
+};
+
 function pageHtml(g) {
   const files = resolveFiles(g);
+  const multi = files.length > 1;
   let body = '', toc = '';
   for (const rel of files) {
     const abs = path.join(DOCS, rel);
     const md = fs.readFileSync(abs, 'utf8');
     const id = slug(rel);
-    const label = rel.replace(/^\.\.\//, '');
-    body += `<section id="${id}"><span class="fname">${esc(label)}</span>${marked.parse(md)}</section>`;
-    toc += `<li><a href="#${id}">${esc(label)}</a></li>`;
+    const title = docTitle(md, rel.replace(/^\.\.\//, '').replace(/\.md$/, ''));
+    // 여러 문서를 한 탭에 이을 때만 문서 경계 표시(단권화 단일 문서는 경계 없음)
+    const rule = multi ? '<hr class="docsep">' : '';
+    body += `<section id="${id}">${rule}${marked.parse(md)}</section>`;
+    toc += `<li><a href="#${id}">${esc(title)}</a></li>`;
   }
+  const tocBlock = multi
+    ? `<nav class="toc"><span class="eyebrow">이 탭의 문서</span><ul>${toc}</ul></nav>`
+    : '';
+  const lead = g.lead ? `<p class="lead">${esc(g.lead)}</p>` : '';
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(g.title)} — Concord 문서</title>
@@ -134,8 +156,8 @@ function pageHtml(g) {
 <style>${CSS}</style></head><body>
 <div class="tabs"><span class="brand">Concord<span class="dot"></span></span>${tabs(g.out)}</div>
 <div class="wrap">
-<nav class="toc"><span class="eyebrow">이 묶음 문서 ${files.length}</span><ul>${toc}</ul></nav>
-<main>${body}</main>
+${tocBlock}
+<main>${lead}${body}</main>
 </div></body></html>`;
 }
 
