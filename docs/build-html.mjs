@@ -25,7 +25,9 @@ function walkMd(dir) {
 
 // 그룹 정의: files = 명시 순서(경로는 DOCS/ROOT 기준), dir = 재귀 수집
 const groups = [
-  { out: '01-개요.html', title: '개요·현황', files: [
+  { out: '00-결정.html', title: '① 결정 대기', files: [ '결정대기.md' ] },
+  { out: '00b-개선책.html', title: '② 개선책', files: [ '개선책.md' ] },
+  { out: '01-개요.html', title: '원문·개요', files: [
     '00-현재상태.md', 'README.md', 'CONTENT_AUDIT_2026-07-14.md',
     'CLEANUP_AUDIT_2026-07-14.md', 'SECURITY_AUDIT_2026-07-14.md',
     'BUSINESS_DIRECTION.md', 'FRONTEND_BUILD_SPEC.md', '../HANDOFF.md', '../README.md',
@@ -147,5 +149,5 @@ for (const g of groups) {
   console.log(`built ${g.out.padEnd(22)} (${n} docs)`);
 }
 fs.writeFileSync(path.join(OUT, 'index.html'),
-  `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=01-개요.html"><a href="01-개요.html">개요로 이동</a>`);
+  `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=00-결정.html"><a href="00-결정.html">결정 대기로 이동</a>`);
 console.log(`\ntotal ${total} docs -> ${groups.length} html files in ${path.relative(ROOT, OUT)}/`);
