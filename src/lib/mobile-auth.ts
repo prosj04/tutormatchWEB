@@ -20,14 +20,29 @@ export type MobileTokenPayload = {
   exp: number; // epoch seconds
 };
 
+/**
+ * 모바일 JWT 전용 시크릿. NextAuth(AUTH_SECRET)와 키를 분리해
+ * 한쪽 유출이 다른 쪽 토큰 위조로 번지지 않게 한다.
+ * MOBILE_JWT_SECRET 미설정 시 기존 AUTH_SECRET으로 폴백(배포 순서 안전).
+ */
 function getSecret(): string {
   const secret =
+    process.env.MOBILE_JWT_SECRET?.trim() ||
     process.env.AUTH_SECRET?.trim() ||
     process.env.NEXTAUTH_SECRET?.trim();
   if (!secret) {
-    throw new Error("AUTH_SECRET/NEXTAUTH_SECRET is not configured");
+    throw new Error("MOBILE_JWT_SECRET/AUTH_SECRET is not configured");
   }
   return secret;
+}
+
+/** 시크릿 전환 유예용 레거시 시크릿(현 시크릿과 다를 때만 검증에 사용). */
+function getLegacySecret(): string | null {
+  const legacy =
+    process.env.AUTH_SECRET?.trim() ||
+    process.env.NEXTAUTH_SECRET?.trim() ||
+    null;
+  return legacy && legacy !== getSecret() ? legacy : null;
 }
 
 function base64url(input: Buffer | string): string {
@@ -43,10 +58,8 @@ function base64urlDecode(input: string): Buffer {
   return Buffer.from(input.replace(/-/g, "+").replace(/_/g, "/") + pad, "base64");
 }
 
-function sign(data: string): string {
-  return base64url(
-    crypto.createHmac("sha256", getSecret()).update(data).digest(),
-  );
+function sign(data: string, secret: string = getSecret()): string {
+  return base64url(crypto.createHmac("sha256", secret).update(data).digest());
 }
 
 function signToken(
@@ -80,10 +93,17 @@ export function verifyMobileToken(token: string): MobileTokenPayload | null {
   if (parts.length !== 3) return null;
   const [header, body, signature] = parts;
 
-  const expected = sign(`${header}.${body}`);
+  // 현 시크릿 → 레거시 시크릿(AUTH_SECRET, 전환 유예) 순으로 검증.
+  // 기발급 refresh 토큰(60d)이 시크릿 분리 배포로 무효화되지 않게 한다.
   const a = Buffer.from(signature);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  const candidates = [getSecret(), getLegacySecret()].filter(
+    (s): s is string => s !== null,
+  );
+  const valid = candidates.some((secret) => {
+    const b = Buffer.from(sign(`${header}.${body}`, secret));
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  });
+  if (!valid) return null;
 
   let payload: MobileTokenPayload;
   try {
