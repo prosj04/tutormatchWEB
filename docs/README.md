@@ -30,6 +30,7 @@
 | [session-instructions.md](session-instructions.md) | 오너 지시 원문 아카이브 (6/16~) | 기록 |
 | [COPY_ALTERNATIVES.md](COPY_ALTERNATIVES.md) | 카피 대안 후보 | 참조 |
 | [SECURITY_AUDIT_2026-07-14.md](SECURITY_AUDIT_2026-07-14.md) · [CLEANUP_AUDIT_2026-07-14.md](CLEANUP_AUDIT_2026-07-14.md) | 07-14 보안·오버엔지니어링 감사 (1회성 기록) | 기록 |
+| [CONTENT_AUDIT_2026-07-14.md](CONTENT_AUDIT_2026-07-14.md) | 07-14 내용 파편 감사 — 헌법 충돌 격리·삭제 결정 기록 | 기록 |
 
 ## 활성 문서 (다른 세션·스킬이 직접 사용 — 이동·구조 변경 금지)
 

@@ -18,6 +18,7 @@
 
 - `TeacherStudent`는 `isActive: Boolean` 하나로 상태를 표현한다. 매니저가 `POST /api/manager/matches`를 호출하면 **즉시 active 매칭**이 생성되고 학생은 곧바로 `/dashboard`에 진입한다.
 - CLAUDE.md 북극성 6번: *"Student must explicitly accept the assigned teacher with an acceptance button before classes are considered active"* — **학생 수락 단계가 표현 불가능**하다. (핸드오프 §22.2는 "선생님 수락"으로 기술했으나 북극성 기준은 **학생 수락**이다. 아래 설계는 북극성을 따른다.)
+  > ⚠️ **정책 갱신 (2026-07-08, `CLAUDE.md` 현행)**: 수락 버튼은 **형식적 절차**이며 마케팅·UI에서 강조하지 않는다. 아래 상태 머신(`matchStatus`·거절·재배정)은 데드락 방지용 **기능**으로 유효 — 구현은 그대로 두되, "학생 수락"을 관문·마일스톤으로 **강조하는 서술은 폐기**한다.
 
 ### 문제 3 — QnA 데이터 모델 이원화
 
