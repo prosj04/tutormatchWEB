@@ -75,6 +75,18 @@ export function apiUpload<T>(path: string, form: FormData): Promise<T> {
   );
 }
 
+/**
+ * 서버 측 토큰 폐기(tokenVersion +1 — 전 기기 로그아웃).
+ * 실패해도 무시 — 로컬 토큰 삭제는 호출부(useAuth.logout)가 항상 수행한다.
+ */
+export async function apiLogout(): Promise<void> {
+  try {
+    await apiFetch("/api/mobile/auth/logout", { method: "POST" });
+  } catch {
+    // 오프라인·만료 등 — 로컬 로그아웃은 그대로 진행
+  }
+}
+
 export async function apiLogin(identifier: string, password: string) {
   const res = await fetch(`${API_BASE}/api/mobile/auth/login`, {
     method: "POST",

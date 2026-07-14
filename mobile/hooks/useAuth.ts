@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 
-import { apiLogin } from "../lib/api";
+import { apiLogin, apiLogout } from "../lib/api";
 import {
   clearTokens,
   getAccessToken,
@@ -30,6 +30,8 @@ export function useAuth() {
   }, [router]);
 
   const logout = useCallback(async () => {
+    // 서버 토큰 폐기(실패 무시) 후 로컬 토큰 삭제
+    await apiLogout();
     await clearTokens();
     setIsLoggedIn(false);
     router.replace("/(auth)/onboarding");
