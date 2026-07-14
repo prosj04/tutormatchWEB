@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const DOCS = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DOCS, '..');
-const OUT = path.join(DOCS, '_html');
+const OUT = process.env.OUT_DIR ? path.resolve(process.env.OUT_DIR) : path.join(DOCS, '_html');
 
 marked.setOptions({ gfm: true, breaks: false });
 
