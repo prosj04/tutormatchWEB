@@ -57,13 +57,20 @@
 .tp-card-subjects span { background: rgba(var(--acc-rgb), .1); color: var(--acc-text); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); }
 .tp-career-badge { font-size: 12px; font-weight: 700; color: var(--mut); border: 1px solid var(--line2); padding: 4px 10px; border-radius: var(--r-pill); }
 
-/* ── Q&A 3종 ── */
+/* ── Q&A 3종 (문답 구조) ── */
 .tp-why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.tp-why-card { position: relative; padding: 26px 24px 30px; display: flex; flex-direction: column; gap: 10px; }
-.tp-why-q { color: var(--mut-2); font-size: 14px; font-weight: 600; }
-.tp-why-card h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--acc-text); }
-.tp-why-card p { color: var(--mut); font-size: 14px; line-height: 1.6; }
-.tp-why-n { position: absolute; top: 20px; right: 22px; font-size: 13px; font-weight: 800; color: var(--mut-2); }
+.tp-why-card { position: relative; padding: 28px 26px 30px; display: flex; flex-direction: column; gap: 16px; }
+.tp-why-mark { font-weight: 900; font-size: 16px; color: var(--acc-text); margin-right: 8px; flex: none; }
+.tp-why-mark-a { color: var(--mut-2); }
+.tp-why-q {
+  display: flex; align-items: baseline;
+  font-size: 16px; font-weight: 700; letter-spacing: -.02em; line-height: 1.45;
+  color: var(--fg); padding: 0 28px 15px 0; border-bottom: 1px solid var(--line);
+}
+.tp-why-a { display: flex; align-items: baseline; }
+.tp-why-card h3 { font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1.35; color: var(--acc-text); }
+.tp-why-a p { margin-top: 9px; color: var(--fg); font-size: 15.5px; line-height: 1.68; opacity: .84; }
+.tp-why-n { position: absolute; top: 22px; right: 24px; font-size: 13px; font-weight: 800; color: var(--mut-2); }
 
 /* ── 성적 인증 그리드 ── */
 .tp-proof-sec { background: var(--panel-2); }

@@ -216,9 +216,6 @@ export function FeaturedTutors({
           <p className="tp-hero-sub">
             {edit("hero_subtext", get("hero_subtext", "학습 조건부터 학생 성향까지 정밀하게 맞추는 1:1 매칭"))}
           </p>
-          <a href="#featured" className="btn btn-acc btn-lg tp-hero-btn">
-            {get("hero_cta", "만나보기")} ↓
-          </a>
         </ConcordReveal>
       </section>
 
@@ -238,9 +235,17 @@ export function FeaturedTutors({
             <div className="tp-why-grid">
               {whys.map((w, i) => (
                 <ConcordReveal key={w.q} className="card tp-why-card" as="article">
-                  <span className="tp-why-q">{w.q}</span>
-                  <h3>{w.a}</h3>
-                  <p>{w.desc}</p>
+                  <p className="tp-why-q">
+                    <span className="tp-why-mark" aria-hidden="true">Q.</span>
+                    {w.q}
+                  </p>
+                  <div className="tp-why-a">
+                    <span className="tp-why-mark tp-why-mark-a" aria-hidden="true">A.</span>
+                    <div>
+                      <h3>{w.a}</h3>
+                      <p>{w.desc}</p>
+                    </div>
+                  </div>
                   <span className="tp-why-n">0{i + 1}</span>
                 </ConcordReveal>
               ))}
