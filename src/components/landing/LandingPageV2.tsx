@@ -160,7 +160,7 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
     LandingCmsContent["testimonials"][number] & { title?: string }
   > =
     cms && cms.testimonials.length > 0
-      ? cms.testimonials.slice(0, 3)
+      ? cms.testimonials.slice(0, 4)
       : [
           {
             title: "시간만 보내던 아이가,\n계획을 세우는 아이로",

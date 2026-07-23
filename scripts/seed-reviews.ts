@@ -26,8 +26,8 @@ type ReviewContent = {
   body: string;
 };
 
-// 홈 노출용(성적 변화가 뚜렷한 대표 후기 3건, 과목 분산)
-const HOME_AUTHORS = new Set(["박*진", "이*서", "윤*아"]);
+// 홈 노출용(성적 변화가 뚜렷한 대표 후기 4건, 과목 분산: 수학·국어·물리·영어)
+const HOME_AUTHORS = new Set(["박*진", "이*서", "윤*아", "김*현"]);
 
 function loadReviews(): ReviewContent[] {
   const file = path.join(__dirname, "reviews-content.json");
