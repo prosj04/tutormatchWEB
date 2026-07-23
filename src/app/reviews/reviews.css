@@ -13,18 +13,34 @@
 .rp-hero-inner h1 em { font-style: normal; color: var(--acc); }
 .rp-hero-sub { margin-top: 16px; font-size: clamp(14px, 1.4vw, 17px); color: var(--bg); opacity: .75; }
 
-/* ── 성공사례 캐러셀 ── */
-.rp-carousel {
-  display: flex; gap: 20px; overflow-x: auto; padding: 8px 20px 18px;
-  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+/* ── 성공사례 마퀴 (hall-marquee와 동일 방식: 트랙 복제 + CSS keyframes) ── */
+.rp-marquee { overflow: hidden; width: 100%; padding: 8px 0 18px; }
+.rp-marquee-track {
+  display: flex; gap: 20px; width: max-content;
+  animation: rp-marquee-scroll 80s linear infinite;
 }
-.rp-success-card { flex: 0 0 clamp(260px, 28vw, 330px); scroll-snap-align: center; padding: 26px 24px; display: flex; flex-direction: column; gap: 12px; }
+@keyframes rp-marquee-scroll { to { transform: translateX(-50%); } }
+.rp-success-card { flex: none; width: clamp(260px, 28vw, 330px); padding: 26px 24px; display: flex; flex-direction: column; gap: 12px; }
 .rp-success-delta { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-weight: 900; letter-spacing: -.03em; }
 .rp-success-from { font-size: clamp(19px, 2vw, 24px); color: var(--mut-2); text-decoration: line-through; text-decoration-thickness: 2px; }
 .rp-success-arrow { font-size: clamp(19px, 2vw, 24px); color: var(--mut); }
 .rp-success-to { font-size: clamp(26px, 2.8vw, 34px); color: var(--acc-text); }
 .rp-success-result { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
 .rp-success-student { color: var(--mut); font-size: 13px; }
+/* 터치 기기: 마퀴 대신 가로 스크롤 + 카드 스냅 (hall과 동일) */
+@media (hover: none) {
+  .rp-marquee-track { animation: none; width: auto; }
+  .rp-marquee {
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .rp-marquee::-webkit-scrollbar { display: none; }
+  .rp-success-card { scroll-snap-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rp-marquee-track { animation: none; }
+}
 
 /* ── 통계 밴드 (다크) ── */
 .rp-band { background: var(--fg); color: var(--bg); }

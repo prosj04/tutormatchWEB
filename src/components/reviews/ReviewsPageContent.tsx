@@ -210,27 +210,34 @@ export function ReviewsPageContent({
               </CmsEdit>
             </h2>
           </div>
-          <div className="rp-carousel" role="list" aria-label="성적 변화 사례">
-            {successCards.map((card) => (
-              <ConcordReveal key={card.n} as="article" className="card rp-success-card" role="listitem">
-                <div className="rp-success-delta" aria-label={`${card.from}에서 ${card.to}로 향상`}>
-                  <span className="rp-success-from">{card.from}</span>
-                  <span className="rp-success-arrow" aria-hidden="true">→</span>
-                  <span className="rp-success-to">{card.to}</span>
-                </div>
-                <p className="rp-success-result">{card.result}</p>
-                <p className="rp-success-student">{card.student}</p>
-                {card.tags.length > 0 ? (
-                  <div className="tag-chip-row">
-                    {card.tags.map((tag) => (
-                      <span key={tag} className="tag-chip">
-                        {tag}
-                      </span>
-                    ))}
+          <div className="rp-marquee" aria-label="성적 변화 사례">
+            <div className="rp-marquee-track" role="list">
+              {[...successCards, ...successCards].map((card, i) => (
+                <article
+                  key={`${card.n}-${i}`}
+                  className="card rp-success-card"
+                  role="listitem"
+                  aria-hidden={i >= successCards.length}
+                >
+                  <div className="rp-success-delta" aria-label={`${card.from}에서 ${card.to}로 향상`}>
+                    <span className="rp-success-from">{card.from}</span>
+                    <span className="rp-success-arrow" aria-hidden="true">→</span>
+                    <span className="rp-success-to">{card.to}</span>
                   </div>
-                ) : null}
-              </ConcordReveal>
-            ))}
+                  <p className="rp-success-result">{card.result}</p>
+                  <p className="rp-success-student">{card.student}</p>
+                  {card.tags.length > 0 ? (
+                    <div className="tag-chip-row">
+                      {card.tags.map((tag) => (
+                        <span key={tag} className="tag-chip">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
           </div>
           <p className="rp-footnote">
             <CmsEdit active={isEditMode} section="reviews_success" cmsKey="section_footnote" type="text">
