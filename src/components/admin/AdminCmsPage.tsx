@@ -861,6 +861,9 @@ export function AdminCmsPage() {
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const splitRef = useRef<HTMLDivElement>(null);
+  const [previewPct, setPreviewPct] = useState(30);
+  const [dragging, setDragging] = useState(false);
   const iframeSrc = getIframeSrc(activePage);
 
   const hasNoContent =
@@ -921,6 +924,23 @@ export function AdminCmsPage() {
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, []);
+
+  useEffect(() => {
+    if (!dragging) return;
+    const move = (e: PointerEvent) => {
+      const rect = splitRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const pct = ((e.clientX - rect.left) / rect.width) * 100;
+      setPreviewPct(Math.min(70, Math.max(15, pct)));
+    };
+    const up = () => setDragging(false);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+  }, [dragging]);
 
   const reloadIframe = useCallback(() => {
     iframeRef.current?.contentWindow?.location.reload();
@@ -1136,19 +1156,36 @@ export function AdminCmsPage() {
         </div>
       </div>
 
-      {/* 좌: 미리보기 / 우: 편집 패널 */}
+      {/* 좌: 미리보기 / 우: 편집 패널 (가운데 핸들로 폭 조절, 기본 미리보기 30%) */}
       <div
-        className="mt-4 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(400px,560px)]"
-        style={{ height: "calc(100vh - 230px)", minHeight: "560px" }}
+        ref={splitRef}
+        className={`mt-4 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:[grid-template-columns:var(--cms-cols)] ${dragging ? "select-none" : ""}`}
+        style={{
+          height: "calc(100vh - 230px)",
+          minHeight: "560px",
+          ["--cms-cols" as string]: `${previewPct}% 6px 1fr`,
+        }}
       >
-        <div className="min-h-[320px] border-b border-gray-200 bg-neutral-10 lg:min-h-0 lg:border-b-0 lg:border-r">
+        <div className="min-h-[320px] border-b border-gray-200 bg-neutral-10 lg:min-h-0 lg:border-b-0">
           <iframe
             ref={iframeRef}
             key={activePage}
             title={`${CMS_PAGES.find((page) => page.id === activePage)?.label ?? "페이지"} 미리보기`}
             src={iframeSrc}
-            className="h-full w-full border-0 bg-white"
+            className={`h-full w-full border-0 bg-white ${dragging ? "pointer-events-none" : ""}`}
           />
+        </div>
+
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          className="hidden cursor-col-resize items-center justify-center border-x border-gray-200 bg-gray-100 hover:bg-gray-200 lg:flex"
+        >
+          <span className="h-8 w-0.5 rounded bg-gray-300" />
         </div>
 
         <div className="min-h-0 overflow-y-auto bg-background p-4">
