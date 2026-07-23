@@ -21,3 +21,6 @@
 .kv{ padding:18px 20px; display:flex; flex-direction:column; gap:9px; }
 .kv div{ display:flex; justify-content:space-between; font-size:13px; }
 .kv span{ color:var(--mut); } .kv b{ font-variant-numeric:tabular-nums; }
+
+/* 관리자 작업 화면은 좌우 폭을 최대로 — 포털 기본 max-width:1060px 해제 */
+.main{ max-width:none; padding-left:28px; padding-right:28px; }
