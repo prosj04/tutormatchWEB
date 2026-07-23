@@ -40,6 +40,14 @@ export const HALL_DEFAULT_CARDS = [
   { logo: "/images/logos/univ/snu.png", color: "#003E7E", title: "서울대학교 합격", dept: "수의예과", student: "진*우", course: "2년간 과학 수강" },
 ] as const;
 
+/** 수강기간 표시: 선두 "N개월" 토큰만 변환 — 12개월 미만은 그대로, 12개월 이상은 만 나이 기준 "N년"(내림). "13개월간 수학 수강"→"1년간 수학 수강". */
+export function formatHallCourse(course: string): string {
+  return course.replace(/^(\d+)개월/, (whole, n) => {
+    const m = parseInt(n, 10);
+    return m >= 12 ? `${Math.floor(m / 12)}년` : whole;
+  });
+}
+
 export type HallCardItem = {
   image: string;
   color: string;
@@ -61,6 +69,6 @@ export function buildHallItem(
     title: get(`hall${n}_title`, d.title),
     dept: get(`hall${n}_dept`, d.dept),
     student: get(`hall${n}_student`, d.student),
-    course: get(`hall${n}_course`, d.course),
+    course: formatHallCourse(get(`hall${n}_course`, d.course)),
   };
 }

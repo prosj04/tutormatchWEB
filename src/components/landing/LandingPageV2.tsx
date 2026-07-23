@@ -40,6 +40,13 @@ const steps = [
   { number: "05", title: "매니저 사후 관리", desc: "배정 이후에도 매니저가 상시 관리합니다.\n선생님이 맞지 않는다면 언제든 비용 없이 재매칭하고, 언제든 매니저 상담을 요청하실 수 있습니다." },
 ];
 
+/** 수강기간 표시: 만 12개월 미만은 "N개월", 12개월 이상은 만 나이 기준 "N년"(내림). 15개월→1년, 22개월→1년. */
+function formatResultDuration(raw: string): string {
+  const m = parseInt(String(raw).replace(/[^0-9]/g, ""), 10);
+  if (!Number.isFinite(m) || m <= 0) return raw;
+  return m >= 12 ? `${Math.floor(m / 12)}년` : `${m}개월`;
+}
+
 /** CMS pricing_title may be two lines; avoid repeating "1:1 맞춤 과외," in the highlight. */
 function heroHeadlineWithHl(text: string) {
   const lines = formatCmsMultiline(text).split("\n");
@@ -514,10 +521,23 @@ export function LandingPageV2({
       <div className="lp2-proc-mock-note">방문 진단으로 성향까지 맞춘 선생님을 배정합니다</div>
     </>,
     <>
-      <div className="lp2-shot">
-        <Image src="/images/landing/app-qna.png" alt="" width={632} height={600} sizes="380px" />
+      <div className="lp2-mock-hw lp2-mock-bare">
+        <div className="lp2-hw-head">
+          <strong>오늘의 숙제</strong>
+          <span className="t">요일별 자동 배분</span>
+        </div>
+        <div className="lp2-hw-list">
+          <div className="lp2-hw-row done"><span className="d">월</span><span className="v">유형 3 · 8문항</span><span className="c">✓</span></div>
+          <div className="lp2-hw-row done"><span className="d">화</span><span className="v">오답 정리 · 5문항</span><span className="c">✓</span></div>
+          <div className="lp2-hw-row todo"><span className="d">수</span><span className="v">유형 4 · 8문항</span><span className="c" /></div>
+        </div>
+        <div className="lp2-qna-body lp2-mock-bare">
+          <div className="lp2-qmsg q"><span className="who">학생 질문</span><p>꼭짓점 구하는 게 자꾸 헷갈려요.</p></div>
+          <div className="lp2-qmsg a"><span className="chip ai">AI · 즉시 답변</span><p>표준형으로 바꾸면 꼭짓점은 (p, q)예요.</p></div>
+          <div className="lp2-qmsg a"><span className="chip tc">김서연 선생님</span><p>부호만 조심하면 돼요. 다음 수업에 유형 더 풀어봐요.</p></div>
+        </div>
       </div>
-      <div className="lp2-proc-mock-note">실제 학생 화면 — 매일 체크하는 숙제 + AI·선생님 2단 답변</div>
+      <div className="lp2-proc-mock-note">숙제는 요일별 자동 배분, 질문은 AI·선생님 2단 답변</div>
     </>,
     <>
       <div className="lp2-report-card lp2-mock-parent">
@@ -616,20 +636,43 @@ export function LandingPageV2({
     </div>
   );
   const parentAppMock = (
-    <div className="lp2-shot">
-      <Image src="/images/landing/app-parent.png" alt="" width={652} height={296} sizes="460px" />
+    <div className="lp2-mock-parent lp2-mock-bare">
+      <div className="lp2-parent-gauge">
+        <div className="lp2-gauge-top">
+          <span className="lbl">이번 주 진도</span>
+          <span className="pct">82%</span>
+        </div>
+        <div className="lp2-gauge-bar"><span style={{ width: "82%" }} /></div>
+      </div>
+      <div className="lp2-parent-list">
+        <div className="lp2-parent-row"><span className="ic">📄</span><span>수업 리포트 · 3/15</span></div>
+        <div className="lp2-parent-row"><span className="ic">✅</span><span>숙제 완료 5/6</span></div>
+        <div className="lp2-parent-row"><span className="ic">📈</span><span>이번 달 성취도 상승</span></div>
+      </div>
+      <button type="button" className="lp2-parent-btn" tabIndex={-1}>월간 리포트 보기 →</button>
     </div>
   );
 
-  /* 수업 관리 목업 — 실제 학생 앱 화면. 박스-안-박스 금지: 스크린샷 단일 프레임만. */
+  /* 수업 관리 목업 — 실제 학생 앱 화면을 코드로 재현(테두리 없는 편안한 배치). */
   const homeworkMock = (
-    <div className="lp2-shot">
-      <Image src="/images/landing/app-homework.png" alt="" width={844} height={1116} sizes="460px" />
+    <div className="lp2-mock-hw lp2-mock-bare">
+      <div className="lp2-hw-head">
+        <strong>이번 주 숙제</strong>
+        <span className="t">요일별 자동 배분</span>
+      </div>
+      <div className="lp2-hw-list">
+        <div className="lp2-hw-row done"><span className="d">월</span><span className="v">유형 3 · 8문항</span><span className="c">✓</span></div>
+        <div className="lp2-hw-row done"><span className="d">화</span><span className="v">오답 정리 · 5문항</span><span className="c">✓</span></div>
+        <div className="lp2-hw-row todo"><span className="d">수</span><span className="v">유형 4 · 8문항</span><span className="c" /></div>
+        <div className="lp2-hw-row todo"><span className="d">목</span><span className="v">복습 · 6문항</span><span className="c" /></div>
+      </div>
     </div>
   );
   const careQnaMock = (
-    <div className="lp2-shot">
-      <Image src="/images/landing/app-qna.png" alt="" width={632} height={600} sizes="460px" />
+    <div className="lp2-qna-body lp2-mock-bare">
+      <div className="lp2-qmsg q"><span className="who">학생 질문</span><p>꼭짓점 구하는 게 자꾸 헷갈려요.</p></div>
+      <div className="lp2-qmsg a"><span className="chip ai">AI · 즉시 답변</span><p>표준형으로 바꾸면 꼭짓점은 (p, q)예요.</p></div>
+      <div className="lp2-qmsg a"><span className="chip tc">김서연 선생님</span><p>부호만 조심하면 돼요. 다음 수업에 유형 더 풀어봐요.</p></div>
     </div>
   );
 
@@ -876,9 +919,9 @@ export function LandingPageV2({
                         <span className="lp2-result-months">
                           {isOriginal ? (
                             <CmsEdit active={isEditMode} section="results" cmsKey={`result${n}_months`} type="text">
-                              {item.months} {uiLabels.resultMonthsSuffix}
+                              {formatResultDuration(item.months)} {uiLabels.resultMonthsSuffix}
                             </CmsEdit>
-                          ) : `${item.months} ${uiLabels.resultMonthsSuffix}`}
+                          ) : `${formatResultDuration(item.months)} ${uiLabels.resultMonthsSuffix}`}
                         </span>
                       </div>
                       <p className="lp2-result-text">
@@ -967,7 +1010,13 @@ export function LandingPageV2({
       </section>
 
       {/* ══ 7. LEARNING CARE (리포트·학부모 페이지 + 숙제·질문 관리 통합) ══ */}
-      <section id="management" className="lp2-sec" style={{ scrollMarginTop: "80px" }}>
+      {/* 프로세스 섹션과 동일: 좌우 여백 포함 전폭에서 커서 y좌표로 항목 활성화 (오너 지시) */}
+      <section
+        id="management"
+        className="lp2-sec"
+        style={{ scrollMarginTop: "80px" }}
+        onMouseMove={makeRowHoverMove(setActiveCare, undefined, careListRef)}
+      >
         <div className="lp2-wrap">
           <div className="lp2-care-cols">
             <div className="lp2-care-left">
@@ -985,11 +1034,7 @@ export function LandingPageV2({
                 </p>
               </div>
 
-              <div
-                className="lp2-care-list"
-                ref={careListRef}
-                onMouseMove={makeRowHoverMove(setActiveCare)}
-              >
+              <div className="lp2-care-list" ref={careListRef}>
                 {learningCareRows.map((item, index) => (
                   <div
                     key={item.key}
@@ -1186,7 +1231,7 @@ export function LandingPageV2({
                 {getCmsValue(
                   "cta",
                   "subtext",
-                  "결정은 천천히 하셔도 돼요. 첫 수업이 맞지 않으면 100% 환불해 드립니다. 신청은 30초면 충분해요.",
+                  "첫 수업이 맞지 않으면 100% 환불해 드립니다.",
                 )}
               </p>
               <Link href="/refund" className="lp2-cta-band-note">

@@ -440,6 +440,13 @@ body:has(.lp2-root) footer.site .logo span {
 }
 .lp2-mock-hw .lp2-hw-row.done .c { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
 .lp2-mock-hw .lp2-hw-row.todo .c { background: var(--panel-2); }
+
+/* 예시화면 테두리 제거(오너 지시): 스크린샷 프레임 없이 요소만 편안히 배치 */
+.lp2-mock-bare { background: transparent; border: none; box-shadow: none; }
+.lp2-hw-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.lp2-hw-head strong { font-size: 14px; font-weight: 700; color: var(--fg); }
+.lp2-hw-head .t { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--mut-2); }
+.lp2-mock-hw .lp2-qna-body.lp2-mock-bare { padding: 12px 0 0; margin-top: 8px; border-top: 1px solid var(--line); }
 .lp2-mock-qna {
   border: 1px solid var(--line); border-radius: 14px;
   background: var(--panel); box-shadow: var(--shadow-sm);
