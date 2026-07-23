@@ -206,6 +206,35 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .assure{ display:flex; align-items:center; gap:12px; margin-top:24px; max-width:860px; padding:18px 22px; background:rgba(var(--acc-rgb),.08); border-radius:var(--r-control); font-size:15px; }
 .assure svg{ width:22px; height:22px; color:var(--acc-text); flex:0 0 auto; }
 
+/* ---- /pricing 전용: 고정 4열 그리드(캐러셀 아님), 전량 노출, 그리드 폭 기준 중앙 정렬 ---- */
+.pricing-plans{ --pricing-grid-w:1262px; }
+.pricing-plans > .tier-tabs{ display:flex; justify-content:center; }
+.pricing-plans > .assure{ margin-left:auto; margin-right:auto; max-width:var(--pricing-grid-w); justify-content:center; }
+.pricing-plans .lp2-pcard-grid{
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px;
+  max-width:var(--pricing-grid-w); margin:0 auto;
+  overflow:visible; scroll-snap-type:none; padding-bottom:0;
+}
+.pricing-plans .lp2-pcard{
+  flex:none; scroll-snap-align:none;
+  padding:clamp(20px,1.85vw,27px);
+}
+.pricing-plans .lp2-pcard-name{ font-size:clamp(19px,1.45vw,22px); }
+.pricing-plans .lp2-pcard-sub{ font-size:14px; }
+.pricing-plans .lp2-pcard-price{ font-size:clamp(28px,2.25vw,34px); }
+.pricing-plans .lp2-pcard-feat li{ font-size:14px; }
+@media (max-width:820px){
+  .pricing-plans .lp2-pcard-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); max-width:640px; }
+}
+@media (max-width:640px){
+  /* 기존 공용 640 규칙의 음수마진/overflow 스와이프를 pricing에선 무력화 */
+  .pricing-plans .lp2-pcard-grid{ margin:0 auto; padding-bottom:0; overflow:visible; scroll-snap-type:none; justify-content:center; }
+  .pricing-plans .lp2-pcard{ flex:none; }
+}
+@media (max-width:480px){
+  .pricing-plans .lp2-pcard-grid{ grid-template-columns:1fr; max-width:340px; }
+}
+
 /* =========================================================
    TUTORS
    ========================================================= */
@@ -295,14 +324,14 @@ html:not(.js-hydrated) .reveal{ animation:reveal-failsafe 0s linear 2.5s forward
 .faq-list{ max-width:820px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
 .faq-item{ border:1px solid var(--line); border-radius:var(--r-card); background:var(--panel); box-shadow:var(--shadow-sm); overflow:hidden; transition:border-color .2s; }
 .faq-item.open{ border-color:var(--line-2); }
-.faq-q{ width:100%; min-height:44px; display:flex; align-items:center; gap:16px; padding:24px 26px; cursor:pointer; background:transparent; border:0; text-align:left; color:var(--fg); }
+.faq-q{ width:100%; min-height:44px; display:flex; align-items:center; gap:16px; padding:26px; cursor:pointer; background:transparent; border:0; text-align:left; color:var(--fg); }
 .faq-q h3{ font-size:18px; font-weight:700; letter-spacing:-.02em; flex:1; }
 .faq-q .ico{ width:26px; height:26px; flex:0 0 auto; display:grid; place-items:center; color:var(--acc-text); transition:transform .2s var(--ease); }
 .faq-item.open .faq-q .ico{ transform:rotate(45deg); }
 /* M-12: grid 0fr→1fr 트릭으로 높이 트랜지션 (JS 없이) */
 .faq-a{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s var(--ease); }
 .faq-item.open .faq-a{ grid-template-rows:1fr; }
-.faq-a > .faq-a-inner{ min-height:0; overflow:hidden; }
+.faq-a > .faq-a-clip{ min-height:0; overflow:hidden; }
 .faq-a-inner{ padding:0 26px 26px; color:var(--mut); font-size:15.5px; line-height:1.7; text-wrap:pretty; }
 @media (prefers-reduced-motion:reduce){
   .faq-a{ transition:none; }
@@ -669,6 +698,13 @@ header.site.menu-open .nav-hamburger{ border-color:var(--acc); background:rgba(v
   list-style: none; margin: 8px 0 0; padding: 4px;
   max-height: 190px; overflow-y: auto;
   border: 1px solid var(--line); border-radius: 12px; background: var(--panel);
+  scrollbar-gutter: stable; scrollbar-width: thin;
+}
+/* 스크롤바를 둥근 모서리 안쪽으로: 얇게·라운드 처리하고 트랙에 상하 여백 */
+.region-options::-webkit-scrollbar { width: 6px; }
+.region-options::-webkit-scrollbar-track { background: transparent; margin: 6px 0; }
+.region-options::-webkit-scrollbar-thumb {
+  background: var(--line-2, var(--line)); border-radius: 999px;
 }
 /* M-11: 모바일 키보드와 충돌 방지 — 목록 높이를 뷰포트 비율로 제한 */
 @media (max-width: 480px) {

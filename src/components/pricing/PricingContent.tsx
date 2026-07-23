@@ -81,7 +81,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
       />
 
       <section className="sec" style={{ paddingTop: 0 }}>
-        <div className="wrap">
+        <div className="wrap pricing-plans">
           <ConcordReveal className="tier-tabs" role="group" aria-label="학년 선택">
             <button
               type="button"
