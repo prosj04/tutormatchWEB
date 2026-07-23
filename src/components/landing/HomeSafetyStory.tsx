@@ -27,7 +27,7 @@ const AUTO_STEP_MS = 1800; // 자동 전진 간격(데스크톱 기본) — 읽�
 const AUTO_STEP_MS_TOUCH = 2200; // 모바일/터치: 매칭 문구가 2~3줄 래핑되므로 더 여유 있게
 const DARK_START = 1; // unit 1(첫 매칭)부터 검정
 
-const STEP_VH = 55; // 절차 01·02 별도 화면의 스크롤 길이 단위
+const STEP_VH = 12; // 절차 01·02는 짧게 순차 등장 후 곧바로 다음 섹션으로 (스크롤텔링 끝)
 
 export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   const pinRef = useRef<HTMLDivElement | null>(null);
@@ -253,7 +253,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         <div
           ref={stepsPinRef}
           className="lp2-story-steps-pin"
-          style={{ height: `${pivotSteps.length * STEP_VH + 130}svh` }}
+          style={{ height: `${pivotSteps.length * STEP_VH + 100}svh` }}
         >
           <div className="lp2-story-steps-vp">
             <ol className="lp2-story-steps lp2-story-pivot-steps">
