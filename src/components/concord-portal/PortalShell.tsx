@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { useDesignTheme } from "@/hooks/useDesignTheme";
 
@@ -43,9 +43,10 @@ export function PortalShell({
 }) {
   const pathname = usePathname();
   const { color, setColor, toggleMode } = useDesignTheme();
+  const [sideCollapsed, setSideCollapsed] = useState(false);
 
   return (
-    <div className="shell">
+    <div className={sideCollapsed ? "shell side-collapsed" : "shell"}>
       <aside className="side">
         {/* 공개 페이지로는 풀 로드 이동(포털 CSS가 공개 페이지를 오염하지 않도록) */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
@@ -88,6 +89,15 @@ export function PortalShell({
 
       <main className="main">
         <div className="topbar">
+          <button
+            type="button"
+            className="tog side-tog"
+            aria-label={sideCollapsed ? "메뉴 펼치기" : "메뉴 접기"}
+            aria-pressed={sideCollapsed}
+            onClick={() => setSideCollapsed((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+          </button>
           <div className="seg" role="group" aria-label="색 테마">
             <button
               type="button"
