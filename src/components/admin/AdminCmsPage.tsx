@@ -554,10 +554,6 @@ const BENCHMARK_FIELD_LABELS: Record<string, Record<string, string>> = {
     section_title: "섹션 제목",
     section_footnote: "섹션 각주",
   },
-  home_problem: {
-    headline: "문제 제기 헤드라인",
-    subtext: "문제 제기 설명",
-  },
   tutors_featured: {
     home_title: "홈 선생님 섹션 제목",
     home_subtext: "홈 선생님 섹션 설명",
@@ -1235,31 +1231,6 @@ export function AdminCmsPage() {
                   onSave={saveContent}
                 />
               </div>
-            </div>
-          </EditorSection>
-
-          <EditorSection eyebrow="PROBLEM" title="문제 제기 섹션">
-            <div className="grid gap-4 lg:grid-cols-2">
-              {buildFieldsFromDefaults(
-                [
-                  { section: "home_problem", key: "headline", value: "선생님을 잘못 만나면\n1~2달을 잃습니다", type: "text" },
-                  {
-                    section: "home_problem",
-                    key: "subtext",
-                    value:
-                      "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
-                    type: "text",
-                  },
-                ],
-                "home_problem",
-              ).map((field) => (
-                <ContentField
-                  key={`${field.section}-${field.keyName}`}
-                  field={field}
-                  value={getValue(field.section, field.keyName, field.defaultValue)}
-                  onSave={saveContent}
-                />
-              ))}
             </div>
           </EditorSection>
 

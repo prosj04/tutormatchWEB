@@ -208,16 +208,6 @@ function buildLandingCmsView(cms?: LandingCmsContent) {
   };
 
   const sectionTitles = {
-    problem: getCmsMultiline(
-      "home_problem",
-      "headline",
-      "선생님을 잘못 만나면\n1~2달을 잃습니다",
-    ),
-    problemSubtext: getCmsValue(
-      "home_problem",
-      "subtext",
-      "핏이 맞지 않는 수업은 성적보다 시간을 먼저 갉아먹습니다. Concord는 처음부터 학생에게 맞는 선생님을 찾는 데 집중합니다.",
-    ),
     management: getCmsMultiline("management", "headline", "아이가 말해주지 않아도,\n알게 되실 겁니다"),
     process: getCmsValue("features", "section_title", "이렇게 진행됩니다"),
     processSubtext: getCmsValue("features", "section_subtext", "상담과 배정부터 수업 관리, 사후 관리까지 전담 매니저가 처음부터 끝까지 책임집니다."),

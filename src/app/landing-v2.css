@@ -36,9 +36,9 @@ body:has(.lp2-root) footer.site .logo span {
 .lp2-sec-head { max-width: min(820px, 72%); margin-bottom: clamp(48px, 5vw, 80px); }
 .lp2-sec-head h2 {
   font-size: clamp(32px, 4.4vw, 66px); font-weight: 700; letter-spacing: -.03em;
-  line-height: 1.08; margin-top: 18px; color: var(--fg);
+  line-height: 1.08; margin-top: 18px; color: var(--fg); white-space: pre-line;
 }
-.lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; text-wrap: pretty; }
+.lp2-sec-head p { color: var(--mut); font-size: clamp(17px,1.3vw,20px); margin-top: 20px; max-width: 600px; text-wrap: pretty; white-space: pre-line; }
 
 /* ── typography helpers ── */
 .lp2-eyebrow {
@@ -113,13 +113,6 @@ body:has(.lp2-root) footer.site .logo span {
   font-weight: 600;
   backdrop-filter: blur(8px);
 }
-
-/* ── problem statement ── */
-.lp2-problem-sec .lp2-sec-head {
-  max-width: 760px; margin-left: auto; margin-right: auto;
-  text-align: center; margin-bottom: 0;
-}
-.lp2-problem-sec .lp2-sec-head p { margin-left: auto; margin-right: auto; }
 
 /* ── pricing section (home) ── */
 .lp2-price-sec .price-grid { margin-top: 0; }
