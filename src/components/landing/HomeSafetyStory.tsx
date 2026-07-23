@@ -10,7 +10,7 @@ export type SafetyStoryData = {
   steps: { title: string; desc: string }[];
 };
 
-const UNIT_VH = 40;
+const UNIT_VH = 18;
 
 function clamp01(v: number) {
   return v < 0 ? 0 : v > 1 ? 1 : v;
@@ -72,8 +72,8 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
           const progress = total > 0 ? clamp01(-rect.top / total) : 0;
-          // 클로저·피벗(큰 카피 2장)은 가중치 2.5 — 스크롤을 더 오래 머물게 해 강조
-          const weights = [1, ...Array<number>(matchCount).fill(1), 2.5, 2.5];
+          // 클로저·피벗(큰 카피 2장)은 살짝만 더 머물게 (과한 데드 스크롤 방지)
+          const weights = [1, ...Array<number>(matchCount).fill(1), 1.4, 1.4];
           const totalWeight = weights.reduce((a, b) => a + b, 0);
           const pr = progress * totalWeight;
           let su = totalUnits - 1;
@@ -218,7 +218,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   return (
     <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
       {/* 클로저·피벗 가중치(+1.5×2)만큼 스크롤 길이 확장 */}
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 3) * UNIT_VH + 100}svh` }}>
+      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 1) * UNIT_VH + 40}svh` }}>
         <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
           <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
