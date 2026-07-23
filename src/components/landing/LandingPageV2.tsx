@@ -505,7 +505,6 @@ export function LandingPageV2({
         </div>
         <div className="lp2-match-accept">
           <button type="button" className="lp2-accept-btn" tabIndex={-1}>이 선생님으로 수락하기</button>
-          <span className="lp2-accept-note">수락해야 수업이 시작됩니다</span>
         </div>
       </div>
       <div className="lp2-proc-mock-note">방문 진단으로 성향까지 맞춘 선생님을 배정합니다</div>
