@@ -46,6 +46,12 @@ Product north star — premium tutoring flow:
 
 If requirements are unclear, ask for clarification instead of making assumptions.
 
+## 문서 체계
+
+- **실행 규칙**: 이 파일 + [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)(세계관·카피·미학 단일 출처) + `.claude/rules/`(경로 조건부, 빌드·커밋 규칙).
+- **결정 이력**: [`docs/adr/`](docs/adr/) — 번복된 결정은 여기서 추적. 기존 문서를 고치지 말고 새 번호로 대체.
+- **과거 기록(수동 참조, 규칙 아님)**: `docs/session-instructions.md`(세션 지시문 원본), `CLAUDE_HANDOFF.md`·`HANDOFF.md`(2026-07-14 시점 핸드오프). 분량이 커서 자동 로드되지 않는다 — 특정 구현의 배경을 찾을 때만 grep해 볼 것. 여기 적힌 내용이 위 실행 규칙과 어긋나면 **실행 규칙이 우선**한다.
+
 ## 오너 원칙 (매 세션 필수 적용 — 상세: docs/BUSINESS_DIRECTION.md §11–14)
 
 세계관: Concord는 플랫폼이 아니라 **큐레이션 서비스** — 상품은 "학부모가 비교·선택하지 않아도 된다"는 판단의 위임. 선택권을 주는 UX(수락/거절 강조·평점·비교·할인)를 추가하지 말 것.
