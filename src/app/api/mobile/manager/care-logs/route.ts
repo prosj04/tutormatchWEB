@@ -18,22 +18,13 @@ async function managerOwnsStudent(
   return booking !== null;
 }
 
-/** Resolve the caller's user role for authority checks (mirrors web session.user.role). */
-async function callerRole(userId: string): Promise<string> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  });
-  return user?.role ?? "MANAGER";
-}
-
 /** POST /api/mobile/manager/care-logs
  *  body: { studentId, type: "CONSULT"|"INTERVENTION"|"CHECK", note, visibleToStudent? }
  */
 export async function POST(request: Request) {
   const authResult = await requireMobileManager(request);
   if ("error" in authResult) return authResult.error;
-  const { teacher, userId } = authResult;
+  const { teacher, role } = authResult;
 
   let body: Record<string, unknown>;
   try {
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
   const visibleToStudent =
     body["visibleToStudent"] === false ? false : true;
 
-  const owns = await managerOwnsStudent(teacher.id, await callerRole(userId), studentId);
+  const owns = await managerOwnsStudent(teacher.id, role, studentId);
   if (!owns) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -88,7 +79,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const authResult = await requireMobileManager(request);
   if ("error" in authResult) return authResult.error;
-  const { teacher, userId } = authResult;
+  const { teacher, role } = authResult;
 
   const { searchParams } = new URL(request.url);
   const studentId = searchParams.get("studentId")?.trim() ?? "";
@@ -96,7 +87,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "studentId query param required" }, { status: 400 });
   }
 
-  const owns = await managerOwnsStudent(teacher.id, await callerRole(userId), studentId);
+  const owns = await managerOwnsStudent(teacher.id, role, studentId);
   if (!owns) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

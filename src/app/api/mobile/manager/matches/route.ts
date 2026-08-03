@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const authResult = await requireMobileManager(request);
   if ("error" in authResult) return authResult.error;
-  const { teacher, userId } = authResult;
+  const { teacher, role } = authResult;
 
   let body: {
     teacherId?: unknown;
@@ -80,11 +80,7 @@ export async function POST(request: Request) {
   // 담당 매니저(booking.managerId 일치)의 진행 중(ASSIGNED)·완료(COMPLETED) 상담이 있어야 매칭 가능.
   // 플로우 개편: 선생님 배정이 완료 처리보다 먼저다 — 배정이 끝나야 완료 처리가 열린다.
   // 치프는 담당 제약 우회. (결제 여부는 게이트하지 않음)
-  const caller = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  });
-  const isChief = caller?.role === "CHIEF_MANAGER";
+  const isChief = role === "CHIEF_MANAGER";
   const eligibleBooking = await prisma.consultationBooking.findFirst({
     where: {
       studentId,

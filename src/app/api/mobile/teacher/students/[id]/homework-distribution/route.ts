@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { addDays, distributeTasks } from "@/lib/homework-distribution";
+import { addDays, distributeTasks, parseTasks } from "@/lib/homework-distribution-core";
 import { requireMobileTeacher } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { requireTeacherStudentMatch } from "@/lib/teacher-student-match";
@@ -18,19 +18,6 @@ function isValidDateString(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T12:00:00`);
   return !Number.isNaN(date.getTime()) && value === date.toISOString().slice(0, 10);
-}
-
-function parseTasks(raw: unknown) {
-  if (Array.isArray(raw)) {
-    return raw
-      .map((item) => (typeof item === "string" ? item.trim() : ""))
-      .filter(Boolean);
-  }
-  if (typeof raw !== "string") return [];
-  return raw
-    .split("\n")
-    .map((line) => line.replace(/^[-*•\d.)\s]+/, "").trim())
-    .filter(Boolean);
 }
 
 export async function POST(request: Request, context: RouteContext) {

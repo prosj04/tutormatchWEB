@@ -9,14 +9,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function POST(request: Request, context: RouteContext) {
   const authResult = await requireMobileManager(request);
   if ("error" in authResult) return authResult.error;
-  const { teacher, userId } = authResult;
+  const { teacher, userId, role: callerRole } = authResult;
 
-  // Resolve caller role (mirrors web session.user.role).
-  const caller = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  });
-  const callerRole = caller?.role ?? "MANAGER";
   const isChief = callerRole === "CHIEF_MANAGER";
 
   const { id: subscriptionId } = await context.params;
