@@ -8,8 +8,11 @@ export default auth((req) => {
   const session = req.auth;
   const role = session?.user?.role;
 
+  // 어드민 패널은 ADMIN·CHIEF_MANAGER 공용 — layout.tsx·admin API 가드
+  // (requireChiefManagerOrAdmin)와 동일 범위. 치프 전용 제한이 필요한 동작은
+  // 라우트별 requireAdmin이 막는다(예: 강사 역할 변경).
   if (pathname.startsWith("/admin")) {
-    if (!session || role !== "ADMIN") {
+    if (!session || (role !== "ADMIN" && role !== "CHIEF_MANAGER")) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     return NextResponse.next();
