@@ -33,14 +33,6 @@ type MeData = {
   enrollmentStatus: string;
 };
 
-// Legacy fallback features for old plan IDs
-const LEGACY_FEATURES: Record<string, string[]> = {
-  "4-1": ["주 1회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 이용 가능", "수시 강사 첨삭·질답"],
-  "8-1": ["주 2회 수업 (50분)", "학습 진도 관리", "과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답", "복수 과목 선택 가능"],
-  "4-2": ["과목별 주 1회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 이용 가능"],
-  "8-2": ["과목별 주 2회 수업 (50분)", "선생님 2명 배정", "학습 진도·과제 관리", "AI 질답 횟수 2배 제공", "수시 강사 첨삭·질답"],
-};
-
 const DEFAULT_FEATURES = [
   "1:1 맞춤 과외",
   "AI 질답",
@@ -60,7 +52,7 @@ function getFeaturesForPlan(planId: string): string[] {
       "숙제 관리 · 수시 강사 첨삭",
     ];
   }
-  return LEGACY_FEATURES[planId] ?? DEFAULT_FEATURES;
+  return DEFAULT_FEATURES;
 }
 
 function formatPrice(n: number): string {
