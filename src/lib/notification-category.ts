@@ -11,6 +11,7 @@ export function getNotificationCategory(type: string): string {
     case "LESSON_NOT_HELD":
       return "수업";
     case "TEACHER_COMMENT":
+    case "MONTHLY_REPORT_READY":
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":
       return "리포트 · 학습";

@@ -85,7 +85,7 @@ const PARENT_FANOUT_TYPES = new Set<string>([
   // 수업 확인 결과 3자 공지(정상 완료 / 미완료+사유) — 인앱만.
   "LESSON_COMPLETED_CONFIRMED",
   "LESSON_NOT_HELD",
-  // 월간 리포트 생성(인앱만) — 해당 타입 발화 시 자동 복제. 현재 미발화(후속).
+  // 월간 리포트 생성(인앱만) — 매월 cron(generate-monthly-report)이 최초 생성 시 발화.
   "MONTHLY_REPORT_READY",
 ]);
 
@@ -350,6 +350,8 @@ export function resolveNotificationHref(
       return role === "STUDENT"
         ? "/dashboard"
         : "/teacher-portal/dashboard/students";
+    case "MONTHLY_REPORT_READY":
+      return role === "PARENT" ? "/parent/reports" : "/dashboard/reports";
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":
       return "/teacher-portal/dashboard/monitoring";

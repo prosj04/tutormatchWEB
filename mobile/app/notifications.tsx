@@ -63,6 +63,7 @@ function routeForType(type: string, role: UserRole | null): string | null {
 
     // 리포트·학습 진도
     case "TEACHER_COMMENT":
+    case "MONTHLY_REPORT_READY":
       return role === "PARENT" ? "/(parent)/reports" : "/(tabs)/learning";
     case "PROGRESS_WARNING":
     case "PROGRESS_DANGER":

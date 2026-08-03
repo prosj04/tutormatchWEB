@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { prisma } from "@/lib/prisma";
 import { parseGoals, hasNonEmptyGoals } from "@/lib/consultation-report";
 import { isAiAnswerEnabled } from "@/lib/ai-answer";
+import { createNotification } from "@/lib/notifications";
 
 function getMonthBounds(month: string): {
   start: string;
@@ -232,7 +233,13 @@ async function generateReportForStudent(
     `질문 등록: ${questionCount}건`,
   ].join("\n");
 
-  await prisma.monthlyReport.upsert({
+  // 재실행(수동 ?month=) 시 중복 알림을 막기 위해 upsert 전에 기존 여부를 본다.
+  const existing = await prisma.monthlyReport.findUnique({
+    where: { studentId_month: { studentId, month } },
+    select: { id: true },
+  });
+
+  const report = await prisma.monthlyReport.upsert({
     where: { studentId_month: { studentId, month } },
     create: {
       studentId,
@@ -256,6 +263,23 @@ async function generateReportForStudent(
       managerComment,
       updatedAt: new Date(),
     },
+  });
+
+  if (existing) return;
+
+  // 최초 생성 때만 학생에게 알림 — 학부모 복제는 createNotification의 팬아웃이 처리한다.
+  const student = await prisma.student.findUnique({
+    where: { id: studentId },
+    select: { userId: true },
+  });
+  if (!student) return;
+
+  await createNotification({
+    userId: student.userId,
+    type: "MONTHLY_REPORT_READY",
+    title: `${monthLabel(month)} 학습 리포트`,
+    body: `${monthLabel(month)} 학습 리포트가 나왔습니다.`,
+    relatedId: report.id,
   });
 }
 
