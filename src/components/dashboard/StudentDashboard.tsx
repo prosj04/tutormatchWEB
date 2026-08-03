@@ -97,10 +97,6 @@ export function StudentDashboard({
   const skipInitialSnapshotFetchRef = useRef(true);
 
   // Teacher change request state
-  const [changeReqOpen, setChangeReqOpen] = useState(false);
-  const [changeReqReason, setChangeReqReason] = useState("");
-  const [changeReqLoading, setChangeReqLoading] = useState(false);
-  const [changeReqDone, setChangeReqDone] = useState(false);
 
   // Satisfaction checkin state
   const [checkinDismissed, setCheckinDismissed] = useState(false);
@@ -308,31 +304,6 @@ export function StudentDashboard({
     }
   }
 
-  async function handleTeacherChangeRequest() {
-    if (!activeMatch) return;
-    setChangeReqLoading(true);
-    try {
-      const res = await fetch("/api/student/teacher-change-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matchId: activeMatch.matchId, reason: changeReqReason || undefined }),
-      });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) {
-        showToast(data.error ?? "요청에 실패했습니다.");
-        return;
-      }
-      setChangeReqDone(true);
-      setChangeReqOpen(false);
-      setChangeReqReason("");
-      showToast("교체 상담 요청이 접수되었습니다.", "ok");
-    } catch {
-      showToast("요청에 실패했습니다. 다시 시도해주세요.");
-    } finally {
-      setChangeReqLoading(false);
-    }
-  }
-
   return (
     <>
     <div className="min-h-screen bg-background" data-portal-content>
@@ -377,17 +348,6 @@ export function StudentDashboard({
               </ul>
             </div>
           )}
-          {!changeReqDone ? (
-                <button
-                  type="button"
-                  onClick={() => setChangeReqOpen(true)}
-                  className="mt-2 w-full rounded-lg border border-primary/40 px-2 py-1.5 text-xs font-medium text-primary transition hover:bg-primary/5"
-                >
-                  선생님 교체 상담 요청
-                </button>
-              ) : (
-                <p className="mt-2 text-xs text-green-700">교체 요청 접수됨</p>
-              )}
             </div>
           ) : null}
           <nav className="mt-4 space-y-1 border-t border-gray-100 pt-4">
@@ -522,53 +482,6 @@ export function StudentDashboard({
         {toast.msg}
       </p>
     )}
-    {changeReqOpen && activeMatch ? (
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-        onClick={() => { if (!changeReqLoading) setChangeReqOpen(false); }}
-      >
-        <div
-          className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h2 className="text-base font-bold text-text-primary">선생님 교체 상담 요청</h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            {activeMatch.teacherName} 선생님 교체를 매니저에게 요청합니다.
-          </p>
-          <label className="mt-4 block text-xs font-semibold text-text-secondary">
-            사유 (선택)
-            <textarea
-              value={changeReqReason}
-              onChange={(e) => setChangeReqReason(e.target.value)}
-              maxLength={500}
-              rows={4}
-              placeholder="교체를 원하는 이유를 간단히 적어주세요."
-              className="mt-1.5 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm text-text-primary outline-none focus:border-primary"
-            />
-          </label>
-          <div className="mt-4 flex gap-3">
-            <button
-              type="button"
-              disabled={changeReqLoading}
-              onClick={() => setChangeReqOpen(false)}
-              className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-text-secondary"
-            >
-              취소
-            </button>
-            <button
-              type="button"
-              disabled={changeReqLoading}
-              onClick={() => void handleTeacherChangeRequest()}
-              className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-            >
-              {changeReqLoading ? "요청 중…" : "요청 접수"}
-            </button>
-          </div>
-        </div>
-      </div>
-    ) : null}
     </>
   );
 }

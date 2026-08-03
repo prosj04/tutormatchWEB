@@ -141,10 +141,6 @@ function routeForType(type: string, role: UserRole | null): string | null {
     case "SATISFACTION_LOW_SCORE":
       return role === "MANAGER" ? "/(manager)/monitoring" : home;
 
-    // 강사 변경 요청 — 매니저 매칭
-    case "TEACHER_CHANGE_REQUEST":
-      return role === "MANAGER" ? "/(manager)/matching" : null;
-
     default:
       return null;
   }

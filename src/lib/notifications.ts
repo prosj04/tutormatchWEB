@@ -22,7 +22,6 @@ export type NotificationType =
   | "STALE_MATCH_ACCEPTANCE"
   | "FIRST_LESSON_SLA_BREACH"
   | "POST_CONSULTATION_FOLLOWUP"
-  | "TEACHER_CHANGE_REQUEST"
   | "LESSON_CANCELLED_BY_TEACHER"
   | "FIRST_LESSON_SET"
   // 수업 확인 제도
@@ -267,8 +266,6 @@ export function getNotificationIcon(type: string): string {
       return "👤";
     case "POST_CONSULTATION_FOLLOWUP":
       return "💬";
-    case "TEACHER_CHANGE_REQUEST":
-      return "🔄";
     case "LESSON_CANCELLED_BY_TEACHER":
     case "FIRST_LESSON_SET":
       return "📅";
@@ -331,10 +328,6 @@ export function resolveNotificationHref(
     case "NEW_STUDENT_ASSIGNED":
     case "POST_CONSULTATION_FOLLOWUP":
       return "/teacher-portal/dashboard/students";
-    case "TEACHER_CHANGE_REQUEST":
-      return role === "MANAGER" || role === "CHIEF_MANAGER"
-        ? "/teacher-portal/dashboard/matching"
-        : null;
     case "LESSON_CANCELLED_BY_TEACHER":
       return role === "STUDENT"
         ? "/dashboard"
