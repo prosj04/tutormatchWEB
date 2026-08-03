@@ -45,13 +45,26 @@ export function ManagerApprovalPage() {
   }, []);
 
   async function handleApproval(teacherId: string, approve: boolean) {
+    let reason = "";
+    if (!approve) {
+      const teacher = pendingTeachers.find((t) => t.id === teacherId);
+      const label = teacher ? `${teacher.name} 선생님` : "이 지원서";
+      const ok = confirm(
+        `${label}을(를) 반려하시겠습니까?\n\n반려하면 계정이 비활성화되며 같은 연락처로 재지원이 불가할 수 있습니다. 되돌릴 수 없습니다.`,
+      );
+      if (!ok) return;
+      // 반려 사유 입력 — 내부 기록용(감사 로그). SMS 통지에는 포함되지 않는다.
+      reason = prompt("반려 사유를 입력하세요 (기록용, 선택):", "") ?? "";
+    }
     setSubmittingId(teacherId);
     setError(null);
     try {
       const res = await fetch("/api/manager/teacher-approval", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teacherId, approve }),
+        body: JSON.stringify(
+          approve ? { teacherId, approve } : { teacherId, approve, reason },
+        ),
       });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) {

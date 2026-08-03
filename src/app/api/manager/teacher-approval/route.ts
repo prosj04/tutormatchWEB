@@ -4,10 +4,12 @@ import { requireManagerOrAbove } from "@/lib/admin-auth";
 import { softDeleteUser } from "@/lib/account-deletion";
 import { PUBLIC_TEACHERS_CACHE_TAG, revalidatePublicCms } from "@/lib/public-cms-cache";
 import { prisma } from "@/lib/prisma";
+import { recordTeacherRejection } from "@/lib/teacher-rejection";
 
 type TeacherApprovalBody = {
   teacherId?: unknown;
   approve?: unknown;
+  reason?: unknown;
 };
 
 export async function GET() {
@@ -55,6 +57,8 @@ export async function POST(request: Request) {
 
   const teacherId = typeof body.teacherId === "string" ? body.teacherId : "";
   const approve = body.approve;
+  // E-REJ-1: 반려 사유(내부 기록용) — 선택 입력. 없으면 undefined 유지.
+  const reason = typeof body.reason === "string" ? body.reason.trim() || undefined : undefined;
 
   if (!teacherId || typeof approve !== "boolean") {
     return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
@@ -62,7 +66,14 @@ export async function POST(request: Request) {
 
   const teacher = await prisma.teacher.findUnique({
     where: { id: teacherId },
-    select: { id: true, userId: true, approved: true, user: { select: { role: true, deletedAt: true } } },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      phone: true,
+      approved: true,
+      user: { select: { role: true, deletedAt: true } },
+    },
   });
   if (!teacher || teacher.user.deletedAt) {
     return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
@@ -83,6 +94,15 @@ export async function POST(request: Request) {
       data: { approved: true },
     });
   } else {
+    // E-REJ-1: 반려 사유 감사 기록 + 강사 통지(소프트 삭제로 phone 익명화되기 전에).
+    await recordTeacherRejection({
+      actorUserId: authResult.userId,
+      actorRole: authResult.session.user.role ?? "MANAGER",
+      teacherId: teacher.id,
+      teacherName: teacher.name,
+      teacherPhone: teacher.phone,
+      reason,
+    });
     // 거절 = 소프트 삭제(감사/복구 가능). 하드 delete는 연관 데이터가 함께 사라짐.
     await softDeleteUser(teacher.userId);
   }
