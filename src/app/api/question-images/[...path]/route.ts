@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { getMobileUser } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { QUESTION_IMAGE_BUCKET } from "@/lib/supabase-client";
@@ -75,11 +76,20 @@ async function canAccessQuestionImage(userId: string, role: string, studentId: s
   return false;
 }
 
-export async function GET(_request: Request, props: RouteContext) {
+export async function GET(request: Request, props: RouteContext) {
   const params = await props.params;
+
+  // 웹은 쿠키 세션, 앱은 Bearer — 이미지 URL이 두 클라이언트에 공통으로 저장되므로
+  // 한 라우트에서 둘 다 받는다.
   const session = await auth();
-  const userId = session?.user?.id;
-  const role = session?.user?.role;
+  let userId = session?.user?.id;
+  let role = session?.user?.role;
+
+  if (!userId || !role) {
+    const mobileUser = await getMobileUser(request);
+    userId = mobileUser?.sub;
+    role = mobileUser?.role;
+  }
 
   if (!userId || !role) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

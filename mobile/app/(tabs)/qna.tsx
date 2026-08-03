@@ -1,8 +1,11 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
+  Image,
+  type ImageSourcePropType,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,6 +16,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 import {
   chat as chatS,
@@ -20,7 +24,9 @@ import {
 } from "../../styles/app-styles";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { ErrorState } from "../../components/ui/ErrorState";
-import { apiFetch } from "../../lib/api";
+import { API_BASE, apiFetch, apiUpload } from "../../lib/api";
+import { getAccessToken } from "../../lib/auth";
+import { filePart } from "../../lib/upload";
 import { ANALYTICS_EVENTS, trackEvent } from "../../lib/analytics";
 import { EMPTY_STATE_COPY } from "../../lib/student-journey";
 import { useTheme } from "../../theme/ThemeProvider";
@@ -44,11 +50,13 @@ function formatMsgTime(iso: string): string {
 }
 
 // ─── 메시지 말풍선 ─────────────────────────────────────────────────────────────
-function MsgBubble({ type, text, aiTag, time }: {
+function MsgBubble({ type, text, aiTag, time, imageUri }: {
   type: "me" | "them" | "ai";
   text: string;
   aiTag?: string;
   time?: string;
+  /** 첨부 이미지(인증 헤더 포함 완성 source). 없으면 미표시. */
+  imageUri?: ImageSourcePropType;
 }) {
   const { t } = useTheme();
 
@@ -70,6 +78,9 @@ function MsgBubble({ type, text, aiTag, time }: {
             <Text style={{ color: t.accText, fontSize: 10 }}>✨</Text>
             <Text style={[styles.aiTagText, { color: t.accText }]}>{aiTag}</Text>
           </View>
+        )}
+        {imageUri && (
+          <Image source={imageUri} style={styles.msgImage} resizeMode="cover" />
         )}
         <Text style={[styles.msgText, {
           color: type === "me" ? t.onAcc : t.fg,
@@ -127,6 +138,22 @@ export default function QnAScreen() {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [aiRequesting, setAiRequesting] = useState(false);
+  const [pendingImageUrl, setPendingImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  // 첨부 이미지는 인증이 필요한 앱 내부 URL이라 <Image>에 Bearer를 실어야 한다.
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    void getAccessToken().then(setToken);
+  }, []);
+
+  const imageSource = useCallback(
+    (url: string): ImageSourcePropType => ({
+      uri: `${API_BASE}${url}`,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    }),
+    [token],
+  );
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -163,10 +190,12 @@ export default function QnAScreen() {
     }
     setSending(true);
     setText("");
+    const imageUrl = pendingImageUrl;
+    setPendingImageUrl(null);
     try {
       const res = await apiFetch<{ message: QnaMessage; aiMessage: QnaMessage | null; wallet: Wallet }>(
         `/api/mobile/qna/${data.teacher.id}`,
-        { method: "POST", body: JSON.stringify({ content: trimmed }) },
+        { method: "POST", body: JSON.stringify({ content: trimmed, imageUrl }) },
       );
       setData((prev) =>
         prev
@@ -182,10 +211,40 @@ export default function QnAScreen() {
           : prev,
       );
     } catch {
-      // 전송 실패 시 입력 복원
+      // 전송 실패 시 입력·첨부 복원
       setText(trimmed);
+      setPendingImageUrl(imageUrl);
     } finally {
       setSending(false);
+    }
+  }
+
+  // 사진 첨부 — 선택 즉시 업로드하고, 전송 때 URL만 함께 보낸다.
+  async function handlePickImage() {
+    if (uploading || sending) return;
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert("사진 접근 권한 필요", "설정에서 사진 보관함 접근을 허용해 주세요.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 0.7,
+    });
+    if (result.canceled) return;
+    const asset = result.assets[0];
+    if (!asset) return;
+
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", filePart(asset.uri, asset.fileName, asset.mimeType));
+      const res = await apiUpload<{ url: string }>("/api/mobile/question-images", form);
+      setPendingImageUrl(res.url);
+    } catch {
+      Alert.alert("업로드 실패", "사진 업로드에 실패했어요. 다시 시도해 주세요.");
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -295,6 +354,7 @@ export default function QnAScreen() {
                 text={m.body}
                 time={m.createdAt ? formatMsgTime(m.createdAt) : undefined}
                 aiTag={m.sender === "ai" ? `AI 즉답${m.tokenCost ? ` · 토큰 ${m.tokenCost} 사용` : ""}` : undefined}
+                imageUri={m.imageUrl ? imageSource(m.imageUrl) : undefined}
               />
             ))
           )}
@@ -324,8 +384,27 @@ export default function QnAScreen() {
           </View>
         )}
 
+        {/* 첨부 대기 중인 사진 — 전송 전 취소 가능 */}
+        {pendingImageUrl && (
+          <View style={[styles.attachBar, { backgroundColor: t.bg }]}>
+            <Image source={imageSource(pendingImageUrl)} style={styles.attachThumb} />
+            <Pressable onPress={() => setPendingImageUrl(null)}>
+              <Text style={[styles.attachRemove, { color: t.mut }]}>첨부 취소</Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* Composer */}
         <View style={[chatS.composer, { borderTopColor: t.line, backgroundColor: t.bg }]}>
+          <Pressable
+            style={[styles.attachBtn, { borderColor: t.line2 }]}
+            onPress={() => void handlePickImage()}
+            disabled={uploading || sending}
+            accessibilityRole="button"
+            accessibilityLabel="사진 첨부"
+          >
+            <Text style={{ color: t.mut, fontSize: 16 }}>{uploading ? "…" : "＋"}</Text>
+          </Pressable>
           <TextInput
             style={[chatS.composerIn, { backgroundColor: t.panel, borderColor: t.line2, color: t.fg, flex: 1 }]}
             placeholder="메시지 입력…"
@@ -367,6 +446,25 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   aiRetryText: { fontFamily: font.medium, fontSize: 13 },
+
+  msgImage: { width: "100%", height: 160, borderRadius: 10, marginBottom: 6 },
+  attachBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 18,
+    paddingBottom: 8,
+  },
+  attachThumb: { width: 44, height: 44, borderRadius: 8 },
+  attachRemove: { fontFamily: font.medium, fontSize: 12 },
+  attachBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   aiTagText: { fontSize: 10, fontFamily: font.extrabold, letterSpacing: 0.6, textTransform: "uppercase" },
   msgText: { fontSize: 13.5, lineHeight: 20 },
   bubbleWrapMe: { alignItems: "flex-end" },

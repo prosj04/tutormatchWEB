@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 
+import { requireMobileStudent } from "@/lib/mobile-auth";
 import { uploadQuestionImage } from "@/lib/question-image-upload";
-import { requireStudent } from "@/lib/student-auth";
 
-/** POST /api/student/question-images
- *  multipart/form-data의 "file" 필드를 받아 질문 첨부 이미지로 업로드(웹).
- *  반환 { url }은 인증이 필요한 앱 내부 이미지 URL이다.
+/** POST /api/mobile/question-images
+ *  웹 /api/student/question-images와 동일 검증·업로드(uploadQuestionImage 공용)를
+ *  Bearer 인증으로. 반환 url은 /api/question-images/... 앱 내부 경로다.
  */
 export async function POST(request: Request) {
-  const authResult = await requireStudent();
+  const authResult = await requireMobileStudent(request);
   if ("error" in authResult) return authResult.error;
   const { student } = authResult;
 
