@@ -126,6 +126,7 @@ export default function QnAScreen() {
   const [data, setData] = useState<QnaData | null>(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [aiRequesting, setAiRequesting] = useState(false);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -185,6 +186,20 @@ export default function QnAScreen() {
       setText(trimmed);
     } finally {
       setSending(false);
+    }
+  }
+
+  // 질문 등록 시 토큰 부족·AI 비활성으로 즉답이 안 붙은 경우의 재요청.
+  async function handleAiAnswer(questionId: string) {
+    if (aiRequesting) return;
+    setAiRequesting(true);
+    try {
+      await apiFetch(`/api/mobile/questions/${questionId}/ai-answer`, { method: "POST" });
+      await load(true);
+    } catch {
+      // 토큰 부족(402) 등 — 상태 갱신 없이 조용히 종료
+    } finally {
+      setAiRequesting(false);
     }
   }
 
@@ -284,6 +299,19 @@ export default function QnAScreen() {
             ))
           )}
 
+          {/* 마지막 질문에 AI 즉답이 붙지 않은 경우에만 재요청 경로를 연다. */}
+          {messages.length > 0 && messages[messages.length - 1].sender === "me" && (
+            <Pressable
+              onPress={() => void handleAiAnswer(messages[messages.length - 1].id)}
+              disabled={aiRequesting}
+              style={[styles.aiRetry, { borderColor: t.line2 }]}
+            >
+              <Text style={[styles.aiRetryText, { color: t.accText }]}>
+                {aiRequesting ? "AI 답변 받는 중…" : "AI 답변 받기"}
+              </Text>
+            </Pressable>
+          )}
+
           <View style={{ height: 6 }} />
         </ScrollView>
 
@@ -329,6 +357,16 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: 18, paddingBottom: 8 },
 
   headAvText: { fontFamily: font.bold, fontSize: 15 },
+
+  aiRetry: {
+    alignSelf: "flex-start",
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 8,
+  },
+  aiRetryText: { fontFamily: font.medium, fontSize: 13 },
   aiTagText: { fontSize: 10, fontFamily: font.extrabold, letterSpacing: 0.6, textTransform: "uppercase" },
   msgText: { fontSize: 13.5, lineHeight: 20 },
   bubbleWrapMe: { alignItems: "flex-end" },
