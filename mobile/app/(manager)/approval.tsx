@@ -10,8 +10,8 @@ import { SubHead } from "../../components/ui/SubHead";
 import { apiFetch } from "../../lib/api";
 import { font, scroll as scrollS } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { PendingTeacher, TeacherApprovalResponse } from "./_shared";
-import { Bst, MCard } from "./_ui";
+import type { PendingTeacher, TeacherApprovalResponse } from "../../components/manager/shared";
+import { Bst, MCard } from "../../components/manager/ManagerUi";
 
 export default function ApprovalScreen() {
   const { t } = useTheme();

@@ -8,9 +8,9 @@ import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";
 import { appbar as appbarS, font, scroll as scrollS, sectT as sectTS } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { MonitoringResponse, MonitoringStudentRow } from "./_shared";
-import { badgeToneFromClassName, studentLabel } from "./_shared";
-import { Bst, MCard } from "./_ui";
+import type { MonitoringResponse, MonitoringStudentRow } from "../../components/manager/shared";
+import { badgeToneFromClassName, studentLabel } from "../../components/manager/shared";
+import { Bst, MCard } from "../../components/manager/ManagerUi";
 
 export default function MonitoringScreen() {
   const { t } = useTheme();

@@ -28,8 +28,8 @@ import { InfoIcon } from "../../components/parent/ParentIcons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
-import type { Child, ChildrenResponse } from "./_shared";
-import { useSelectedChildId } from "./_selectedChild";
+import type { Child, ChildrenResponse } from "../../components/parent/shared";
+import { useSelectedChildId } from "../../components/parent/selectedChild";
 
 interface ConsultResult {
   ok: boolean;

@@ -9,9 +9,9 @@ import { ErrorState } from "../../components/ui/ErrorState";
 import { apiFetch } from "../../lib/api";
 import { appbar as appbarS, font, scroll as scrollS } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { MatchingResponse, ManagerMatchingStudent } from "./_shared";
-import { studentLabel } from "./_shared";
-import { Bst, MCard } from "./_ui";
+import type { MatchingResponse, ManagerMatchingStudent } from "../../components/manager/shared";
+import { studentLabel } from "../../components/manager/shared";
+import { Bst, MCard } from "../../components/manager/ManagerUi";
 
 export default function MatchingScreen() {
   const { t } = useTheme();

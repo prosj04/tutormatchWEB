@@ -25,7 +25,7 @@ import { PlusIcon } from "../../components/parent/ParentIcons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
-import type { Child, ChildrenResponse } from "./_shared";
+import type { Child, ChildrenResponse } from "../../components/parent/shared";
 
 interface NotifSummary {
   unreadCount: number;

@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { font } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
-import type { BadgeTone } from "./_shared";
+import type { BadgeTone } from "./shared";
 
 /** 시안 .bst — tone별 색. warn은 라이트/다크 분기(CSS와 동일). */
 export function Bst({ tone, label }: { tone: BadgeTone; label: string }) {

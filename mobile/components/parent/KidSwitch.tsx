@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { font } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { Child } from "./_shared";
+import type { Child } from "./shared";
 
 /**
  * 자녀 전환 칩 (.kid-switch / .kid) — 시안 인라인 <style> 값 1:1.

@@ -25,9 +25,9 @@ import { InfoIcon } from "../../components/parent/ParentIcons";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
 import { accTint } from "../../theme/tokens";
-import type { Child, ChildrenResponse, Report, ReportsResponse } from "./_shared";
-import { KidSwitch } from "./_KidSwitch";
-import { useSelectedChildId } from "./_selectedChild";
+import type { Child, ChildrenResponse, Report, ReportsResponse } from "../../components/parent/shared";
+import { KidSwitch } from "../../components/parent/KidSwitch";
+import { useSelectedChildId } from "../../components/parent/selectedChild";
 
 export default function ReportsTab() {
   const { t } = useTheme();

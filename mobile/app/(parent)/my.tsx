@@ -29,8 +29,8 @@ import { PlusIcon } from "../../components/parent/ParentIcons";
 import { useAuth } from "../../hooks/useAuth";
 import { apiFetch } from "../../lib/api";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { Child, ChildrenResponse } from "./_shared";
-import { linkedViaLabel } from "./_shared";
+import type { Child, ChildrenResponse } from "../../components/parent/shared";
+import { linkedViaLabel } from "../../components/parent/shared";
 
 const SUPPORT_EMAIL = "mailto:hello@concord.school";
 const TERMS_URL = "https://concord.school/terms";

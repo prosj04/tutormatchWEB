@@ -22,9 +22,9 @@ import {
   scroll as scrollS,
 } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import type { BookingsResponse, ManagerConsultationBooking } from "./_shared";
-import { studentLabel } from "./_shared";
-import { Bst, MCard } from "./_ui";
+import type { BookingsResponse, ManagerConsultationBooking } from "../../components/manager/shared";
+import { studentLabel } from "../../components/manager/shared";
+import { Bst, MCard } from "../../components/manager/ManagerUi";
 
 type Tab = "waiting" | "mine";
 

@@ -26,7 +26,7 @@ import {
   sectT as sectTS,
 } from "../../styles/app-styles";
 import { useTheme } from "../../theme/ThemeProvider";
-import { MCard } from "./_ui";
+import { MCard } from "../../components/manager/ManagerUi";
 
 export default function ToolsScreen() {
   const { t } = useTheme();

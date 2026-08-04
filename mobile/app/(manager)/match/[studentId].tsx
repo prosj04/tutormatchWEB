@@ -31,9 +31,9 @@ import type {
   ManagerMatchingStudent,
   ManagerMatchingTeacher,
   MatchingResponse,
-} from "../_shared";
-import { studentLabel } from "../_shared";
-import { Bst, MCard } from "../_ui";
+} from "../../../components/manager/shared";
+import { studentLabel } from "../../../components/manager/shared";
+import { Bst, MCard } from "../../../components/manager/ManagerUi";
 
 export default function MatchDetailScreen() {
   const { t } = useTheme();
