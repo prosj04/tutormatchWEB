@@ -1,6 +1,10 @@
 # Concord
 
-Concord is a tutoring **curation** service for Korean middle/high school students and their parents — not a marketplace where parents browse and compare tutors themselves. A manager interviews the family, runs an in-person consultation, and hand-matches a teacher. The product is not having to choose.
+Concord는 전담 매니저가 학생에게 맞는 선생님을 배정하고, 수업 이후의 학습까지 관리하는 **프리미엄 1:1 방문 과외 큐레이션·학습관리 서비스**입니다. 서울·동탄의 중·고등학생과 학부모를 대상으로 합니다.
+
+대표가 선생님을 직접 면접하고, 매니저가 방문 상담에서 학생의 성향과 공부 방식을 파악해 선생님을 배정합니다. 숙제·질문 답변·리포트·상담으로 관리가 이어집니다. 앱과 웹은 이 서비스를 운영하는 도구이며, 핵심 가치는 학부모가 선생님 탐색·검증·선택의 부담을 맡길 수 있다는 데 있습니다.
+
+사업 정의·서비스 흐름·요금 원칙은 [사업 방향](docs/BUSINESS_DIRECTION.md), 문서별 적용 기준은 [문서 지도](docs/README.md)를 따릅니다.
 
 Live: https://tutormatch-web.vercel.app
 
