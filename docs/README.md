@@ -14,6 +14,21 @@
 
 아래 문서 지도는 기존 기록을 보존한다. 상태·완료 표시는 각 문서의 작성 시점 기준이다.
 
+### 파생 문서 갱신 (2026-09-17)
+
+문서집은 `chapters/*.md`에서 `build-html.mjs`로 생성한다. 이번 검증 출력은 `/tmp/concord-docs-review-20260917/`이며, 방향·현황과 대외·IR 탭의 실제 이동·렌더를 확인했다. 독립 HTML은 사업 소개·배정·가격 표기를 정합화했다. CEO 제안 HTML과 제안 원장은 과거 원안임을 표지에서 구분한다.
+
+| 원천 HTML | PDF 경로 |
+|---|---|
+| `branding/ir-one-pager.html` | `branding/Concord-IR-OnePager.pdf` · `external/dist/Concord-IR-OnePager.pdf` · `../public/docs/Concord-IR-OnePager.pdf` |
+| `branding/pitch-deck.html` | `branding/Concord-IR-Deck.pdf` · `external/dist/Concord-IR-Deck.pdf` · `../public/docs/Concord-IR-Deck.pdf` |
+| `branding/brand-guidelines.html` | `branding/Concord-Brand-Guidelines.pdf` · `../public/docs/Concord-Brand-Guidelines.pdf` |
+| `app-guide.html` · `ceo-proposal.html` · `proposal-ledger.html` | `branding/Concord-App-Guide.pdf` · `branding/Concord-CEO-Proposal.pdf` · `branding/Concord-Proposal-Ledger.pdf` 및 동명 `../public/docs/` 미러 |
+| `external/business-plan-psst.html` · `external/consult-guide.html` | `external/dist/Concord-Business-Plan-PSST.pdf` · `external/dist/Concord-Consult-Guide.pdf` |
+
+PDF는 로컬에서 재생성하며 생성물 커밋 금지 원칙에 따라 원본만 버전 관리한다. 따라서 이번 원본 커밋만으로 원격 PDF가 갱신된 것은 아니다. 기존 월·연 재무 전망은 12개월 모델 가정을 보존하며 4주 고객 요금의 연 13주기 환산은 별도 재검증 대상이다.
+
+
 > 갱신: 2026-07-14 · **파편 정리(B안)** — superseded PLAN·루트 사업계획서·`.hermes` 계획 잔재를 `archive/`로, `strategy-rounds/`를 캠페인별(`improvement/`·`expansion/`) 서브폴더로 분리, 미등재 문서 전량 지도 편입, 정리 안 된 worktree 제거.
 > 이전 갱신: 2026-07-12 · **주제별 단권화 재편** — 시간순 누적 전략·리뷰 문서 15종을 주제별 단권 6종으로 병합(전문 무손실)하고 원본은 `archive/`로 이동.
 > **기본 원칙 (CLAUDE.md 동급 필독)**: [`BUSINESS_DIRECTION.md`](BUSINESS_DIRECTION.md) — 세계관(큐레이션≠플랫폼)·카피 헌법·미학·반복 교정 8패턴의 단일 출처. 모든 세션이 `CLAUDE.md`와 함께 기본 원칙으로 삼는다.
