@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
 
 import { PortalShell, type PortalNavItem } from "@/components/concord-portal/PortalShell";
 import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";
@@ -134,7 +132,7 @@ export default async function TeacherDashboardLayout({
   return (
     <PortalSiteContentProvider value={siteContent}>
       <PortalShell
-        roleBadge={isManager ? "Manager · /teacher-portal" : "Teacher · /teacher-portal"}
+        roleBadge={isManager ? "Manager" : "Teacher"}
         nav={nav}
         userName={teacher.name}
         userMeta={userMeta}

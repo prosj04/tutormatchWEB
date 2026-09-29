@@ -85,21 +85,17 @@ export function TeacherQuestionsClient({ initialStudents }: TeacherQuestionsClie
 
   return (
     <section className="page on" id="pg-questions">
-      <div className="crumb">/teacher-portal/dashboard/questions</div>
+      <div className="crumb">질문</div>
       <h1>질문</h1>
       <p className="sub">담당 학생 질문에 답변합니다. 사진 첨부를 함께 확인하세요.</p>
 
       {students.length === 0 ? (
-        <div className="sec card">
-          <div className="row">
-            <div className="g">
-              <p>배정된 학생이 없습니다.</p>
-            </div>
-          </div>
+        <div className="sec">
+          <p className="sf-sub">배정된 학생이 없습니다.</p>
         </div>
       ) : (
         <>
-          <div className="sec card" style={{ padding: "20px" }}>
+          <div className="sec">
             <TeacherStudentPicker
               students={students}
               selectedId={selectedId}
@@ -107,126 +103,107 @@ export function TeacherQuestionsClient({ initialStudents }: TeacherQuestionsClie
             />
           </div>
 
-          <div className="sec grid2">
-            <div className="card">
+          <div className="sec sf-split">
+            <div className="sf-block">
               {loading ? (
-                <div className="row">
-                  <div className="g">
-                    <p>질문을 불러오는 중…</p>
-                  </div>
-                </div>
+                <p className="sf-sub">질문을 불러오는 중…</p>
               ) : questions.length === 0 ? (
-                <div className="row">
-                  <div className="g">
-                    <p>등록된 질문이 없습니다.</p>
-                  </div>
-                </div>
+                <p className="sf-sub">등록된 질문이 없습니다.</p>
               ) : (
-                questions.map((q) => {
-                  const answered = Boolean(q.teacherAnswer);
-                  const isActive = q.id === activeId;
-                  return (
-                    <button
-                      key={q.id}
-                      type="button"
-                      className="row"
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        background: isActive ? "rgba(var(--acc-rgb),.05)" : undefined,
-                      }}
-                      onClick={() => handleSelect(q)}
-                    >
-                      <span className="av">{selected ? initial(selected.name) : "?"}</span>
-                      <div className="g">
-                        <b>{q.content.split("\n")[0].slice(0, 30) || "질문"}</b>
-                        <p>
-                          {selected?.name ?? ""} · {q.imageUrl ? "사진 1장 · " : ""}
-                          {formatCalendarDayLabel(q.date)}
-                          {q.aiAnswer ? "" : " · AI 미해결"}
-                          {isActive ? " · 선택됨" : ""}
-                        </p>
-                      </div>
-                      {answered ? (
-                        <span className="bst acc">완료</span>
-                      ) : (
-                        <span className="bst warn">대기</span>
-                      )}
-                    </button>
-                  );
-                })
+                <div className="sf-rows">
+                  {questions.map((q) => {
+                    const answered = Boolean(q.teacherAnswer);
+                    const isActive = q.id === activeId;
+                    return (
+                      <button
+                        key={q.id}
+                        type="button"
+                        className={isActive ? "sf-r on" : "sf-r"}
+                        onClick={() => handleSelect(q)}
+                      >
+                        <span className="av">{selected ? initial(selected.name) : "?"}</span>
+                        <span className="sf-g">
+                          <b>{q.content.split("\n")[0].slice(0, 30) || "질문"}</b>
+                          <p>
+                            {selected?.name ?? ""} · {q.imageUrl ? "사진 1장 · " : ""}
+                            {formatCalendarDayLabel(q.date)}
+                            {q.aiAnswer ? "" : " · AI 미해결"}
+                            {isActive ? " · 선택됨" : ""}
+                          </p>
+                        </span>
+                        {answered ? (
+                          <span className="bst acc">완료</span>
+                        ) : (
+                          <span className="bst warn">대기</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
-            <div className="card" style={{ padding: "20px" }}>
+            <div className="sf-chat">
               {active ? (
-                <>
-                  <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>
-                    답변 작성 — {selected?.name ?? ""}
-                  </h2>
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "var(--mut)",
-                      padding: "12px 14px",
-                      borderRadius: "11px",
-                      background: "var(--panel-2)",
-                      marginBottom: "12px",
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {active.content}
-                  </p>
-                  {active.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={active.imageUrl}
-                      alt="질문 첨부"
-                      style={{
-                        maxWidth: "100%",
-                        borderRadius: "11px",
-                        marginBottom: "12px",
-                        display: "block",
-                      }}
-                    />
-                  ) : null}
-                  {active.aiAnswer ? (
-                    <div className="field">
-                      <label>AI 답변</label>
-                      <div className="inp filled" style={{ whiteSpace: "pre-wrap" }}>
-                        {active.aiAnswer}
+                <div className="chat">
+                  <div className="chat-head">
+                    <span className="av">{selected ? initial(selected.name) : "?"}</span>
+                    <span>
+                      <b>{selected?.name ?? ""}</b>
+                      <p>{formatCalendarDayLabel(active.date)}</p>
+                    </span>
+                  </div>
+                  <div className="chat-scroll">
+                    <div className="bwrap them">
+                      <span className="sndr">{selected?.name ?? ""}</span>
+                      <div className="msg them">
+                        {active.content}
+                        {active.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img className="sf-q-att" src={active.imageUrl} alt="질문 첨부" />
+                        ) : null}
                       </div>
                     </div>
-                  ) : null}
-                  <div className="field">
+                    {active.aiAnswer ? (
+                      <div className="bwrap them">
+                        <div className="msg ai">
+                          <span className="ai-tag">AI 답변</span>
+                          {active.aiAnswer}
+                        </div>
+                      </div>
+                    ) : null}
+                    {active.teacherAnswer ? (
+                      <div className="bwrap me">
+                        <div className="msg me">{active.teacherAnswer}</div>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="composer">
                     <textarea
-                      className="inp area filled"
                       value={draft}
                       onChange={(e) => setDraft(e.target.value)}
                       placeholder="답변을 입력하세요"
                     />
-                  </div>
-                  <div style={{ display: "flex", gap: "8px" }}>
                     <button
                       type="button"
-                      className="btn pri"
+                      className="send"
+                      aria-label={saving ? "보내는 중…" : "답변 보내기"}
                       disabled={saving || !draft.trim()}
                       onClick={() => void handleSend()}
                     >
-                      {saving ? "보내는 중…" : "답변 보내기"}
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z" /></svg>
                     </button>
                   </div>
                   {message ? (
-                    <p
-                      role="status"
-                      style={{ marginTop: "12px", fontSize: "12.5px", color: "var(--acc-text)" }}
-                    >
-                      {message}
-                    </p>
+                    <div className="chat-note">
+                      <p role="status" style={{ color: "var(--acc-text)" }}>
+                        {message}
+                      </p>
+                    </div>
                   ) : null}
-                </>
+                </div>
               ) : (
-                <p style={{ fontSize: "13px", color: "var(--mut)" }}>
+                <p className="sf-sub" style={{ paddingTop: 18 }}>
                   왼쪽에서 질문을 선택하면 답변을 작성할 수 있습니다.
                 </p>
               )}

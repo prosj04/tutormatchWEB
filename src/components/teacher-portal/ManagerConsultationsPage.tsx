@@ -322,17 +322,17 @@ export function ManagerConsultationsPage({
     <section className="page on" id="pg-consult">
       <div className={toast ? "toast on" : "toast"}>{toast}</div>
 
-      <div className="crumb">/teacher-portal/dashboard/consultations</div>
+      <div className="crumb">상담 관리</div>
       <h1>상담 관리</h1>
       <p className="sub">대기 중 상담을 배정받고, 담당 상담을 진행·완료합니다.</p>
 
       <div className="sec">
-        <div className="opts">
+        <div className="seg-tabs sm">
           {(["waiting", "mine"] as const).map((key) => (
             <button
               key={key}
               type="button"
-              className="opt"
+              className={tab === key ? "on" : undefined}
               aria-pressed={tab === key}
               onClick={() => setTab(key)}
             >
@@ -342,69 +342,63 @@ export function ManagerConsultationsPage({
         </div>
       </div>
 
-      <div className="sec card">
+      <div className="sec">
         {loading ? (
-          <div className="row">
-            <div className="g">
-              <p>불러오는 중…</p>
-            </div>
-          </div>
+          <p className="sf-sub">불러오는 중…</p>
         ) : rows.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <p>
-                {tab === "waiting"
-                  ? "현재 대기 중인 학생이 없습니다."
-                  : "담당 중인 상담이 없습니다."}
-              </p>
-            </div>
-          </div>
+          <p className="sf-sub">
+            {tab === "waiting"
+              ? "현재 대기 중인 학생이 없습니다."
+              : "담당 중인 상담이 없습니다."}
+          </p>
         ) : (
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>학생</th>
-                <th>요청</th>
-                <th>상태</th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tab === "waiting"
-                ? waiting.map((booking) => (
-                    <WaitingRow
-                      key={booking.id}
-                      booking={booking}
-                      loading={actionLoading === booking.id}
-                      onAssign={() => void assignBooking(booking)}
-                    />
-                  ))
-                : mine.map((booking) => (
-                    <MineRow
-                      key={booking.id}
-                      booking={booking}
-                      loading={actionLoading === booking.id}
-                      visitConfirmedValue={getVisitConfirmedValue(booking)}
-                      visitConfirmedSaving={visitConfirmedSaving === booking.id}
-                      onVisitConfirmedChange={(v) =>
-                        setVisitConfirmedInputs((prev) => ({ ...prev, [booking.id]: v }))
-                      }
-                      onVisitConfirmedSave={() =>
-                        void saveVisitConfirmed(
-                          booking.id,
-                          visitConfirmedInputs[booking.id] ?? getVisitConfirmedValue(booking),
-                        )
-                      }
-                      onComplete={() => {
-                        setCompleteTarget(booking);
-                        setManagerNote("");
-                      }}
-                      onCancel={() => void cancelBooking(booking)}
-                      onReport={() => void openReportModal(booking)}
-                    />
-                  ))}
-            </tbody>
-          </table>
+          <div className="sf-tbl-wrap">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>학생</th>
+                  <th>요청</th>
+                  <th>상태</th>
+                  <th>액션</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tab === "waiting"
+                  ? waiting.map((booking) => (
+                      <WaitingRow
+                        key={booking.id}
+                        booking={booking}
+                        loading={actionLoading === booking.id}
+                        onAssign={() => void assignBooking(booking)}
+                      />
+                    ))
+                  : mine.map((booking) => (
+                      <MineRow
+                        key={booking.id}
+                        booking={booking}
+                        loading={actionLoading === booking.id}
+                        visitConfirmedValue={getVisitConfirmedValue(booking)}
+                        visitConfirmedSaving={visitConfirmedSaving === booking.id}
+                        onVisitConfirmedChange={(v) =>
+                          setVisitConfirmedInputs((prev) => ({ ...prev, [booking.id]: v }))
+                        }
+                        onVisitConfirmedSave={() =>
+                          void saveVisitConfirmed(
+                            booking.id,
+                            visitConfirmedInputs[booking.id] ?? getVisitConfirmedValue(booking),
+                          )
+                        }
+                        onComplete={() => {
+                          setCompleteTarget(booking);
+                          setManagerNote("");
+                        }}
+                        onCancel={() => void cancelBooking(booking)}
+                        onReport={() => void openReportModal(booking)}
+                      />
+                    ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -584,13 +578,13 @@ function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
   const entries = Object.entries(times).filter(([, slots]) => slots.length > 0);
   if (entries.length === 0) {
     return (
-      <span className="bst warn" style={{ display: "inline-block", marginTop: "6px" }}>
-        방문 희망 시간 미입력
+      <span className="sf-inline">
+        <span className="bst warn">방문 희망 시간 미입력</span>
       </span>
     );
   }
   return (
-    <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+    <span className="sf-meta">
       방문 희망:{" "}
       {entries
         .map(([date, slots]) => `${formatDateWithWeekday(date)} ${slots.join(", ")}`)
@@ -601,7 +595,7 @@ function VisitPreferredBlock({ times }: { times: VisitTimesByDate }) {
 
 function ContactLine({ booking }: { booking: ConsultationBooking }) {
   return (
-    <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
+    <span className="sf-meta">
       연락처: {booking.student.phone}
       {booking.student.guardianPhone ? ` · 부모 ${booking.student.guardianPhone}` : ""}
     </span>
@@ -630,24 +624,17 @@ function WaitingRow({
         {booking.student.subjects}
         {booking.timeAgo ? ` · ${booking.timeAgo}` : ""}
         <VisitPreferredBlock times={booking.visitPreferredTimes} />
-        {booking.note ? (
-          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
-            메모: {booking.note}
-          </span>
-        ) : null}
+        {booking.note ? <span className="sf-meta">메모: {booking.note}</span> : null}
       </td>
       <td>
         <span className="bst warn">대기</span>
       </td>
-      <td>
-        <button
-          type="button"
-          className="btn pri sm"
-          disabled={loading}
-          onClick={onAssign}
-        >
-          {loading ? "처리 중…" : "내가 배정"}
-        </button>
+      <td className="sf-acts-cell">
+        <span className="sf-acts">
+          <button type="button" className="btn pri sm" disabled={loading} onClick={onAssign}>
+            {loading ? "처리 중…" : "내가 배정"}
+          </button>
+        </span>
       </td>
     </tr>
   );
@@ -690,15 +677,13 @@ function MineRow({
         </b>
         <ContactLine booking={booking} />
         {booking.match ? (
-          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--acc-text)" }}>
-            배정 선생님: {booking.match.teacherName}
-          </span>
+          <span className="sf-meta acc">배정 선생님: {booking.match.teacherName}</span>
         ) : null}
       </td>
       <td>
         {booking.student.subjects}
         {booking.visitConfirmedAt ? (
-          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--acc-text)" }}>
+          <span className="sf-meta acc">
             방문 확정: {formatDateWithWeekday(new Date(booking.visitConfirmedAt))}{" "}
             {new Date(booking.visitConfirmedAt).toLocaleTimeString("ko-KR", {
               timeZone: "Asia/Seoul",
@@ -710,16 +695,13 @@ function MineRow({
           <VisitPreferredBlock times={booking.visitPreferredTimes} />
         )}
         {booking.managerNote ? (
-          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
-            상담 메모: {booking.managerNote}
-          </span>
+          <span className="sf-meta">상담 메모: {booking.managerNote}</span>
         ) : null}
         {booking.status === "ASSIGNED" ? (
-          <span style={{ display: "flex", gap: "6px", alignItems: "center", marginTop: "8px" }}>
+          <span className="sf-inline">
             <input
               type="datetime-local"
-              className="inp filled"
-              style={{ width: "auto", padding: "8px 10px", fontSize: "12.5px" }}
+              className="inp filled sf-inp-sm"
               value={visitConfirmedValue}
               onChange={(e) => onVisitConfirmedChange(e.target.value)}
             />
@@ -737,50 +719,48 @@ function MineRow({
       <td>
         <span className={badge.className}>{badge.label}</span>
       </td>
-      <td>
-        {booking.status === "ASSIGNED" ? (
-          <>
-            <Link
-              className="btn pri sm"
-              href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
-            >
-              {hasMatch ? "선생님 재배정" : "선생님 배정"}
-            </Link>{" "}
-            <button
-              type="button"
-              className="btn sec sm"
-              disabled={loading || !hasMatch}
-              onClick={onComplete}
-            >
-              완료 처리
-            </button>{" "}
-            {!hasMatch ? (
-              <span className="muted" style={{ fontSize: "11.5px" }}>
-                선생님 배정 후 완료할 수 있어요
-              </span>
-            ) : null}{" "}
-            <button
-              type="button"
-              className="btn ghost sm"
-              disabled={loading}
-              onClick={onCancel}
-            >
-              취소
-            </button>{" "}
-          </>
-        ) : booking.status === "COMPLETED" ? (
-          <>
+      <td className="sf-acts-cell">
+        <span className="sf-acts">
+          {booking.status === "ASSIGNED" ? (
+            <>
+              <Link
+                className="btn pri sm"
+                href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
+              >
+                {hasMatch ? "선생님 재배정" : "선생님 배정"}
+              </Link>
+              <button
+                type="button"
+                className="btn sec sm"
+                disabled={loading || !hasMatch}
+                onClick={onComplete}
+              >
+                완료 처리
+              </button>
+              {!hasMatch ? (
+                <span className="footnote">선생님 배정 후 완료할 수 있어요</span>
+              ) : null}
+              <button
+                type="button"
+                className="btn ghost sm"
+                disabled={loading}
+                onClick={onCancel}
+              >
+                취소
+              </button>
+            </>
+          ) : booking.status === "COMPLETED" ? (
             <Link
               className="btn sec sm"
               href={`/teacher-portal/dashboard/matching?student=${booking.student.id}`}
             >
               선생님 재배정
-            </Link>{" "}
-          </>
-        ) : null}
-        <button type="button" className="btn ghost sm" onClick={onReport}>
-          리포트
-        </button>
+            </Link>
+          ) : null}
+          <button type="button" className="btn ghost sm" onClick={onReport}>
+            리포트
+          </button>
+        </span>
       </td>
     </tr>
   );

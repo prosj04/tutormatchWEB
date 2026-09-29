@@ -101,21 +101,20 @@ export function TeacherSettlementsClient() {
 
   return (
     <section className="page on" id="pg-settlements">
-      <div className="crumb">/teacher-portal/dashboard/settlements</div>
+      <div className="crumb">정산</div>
       <h1>정산</h1>
       <p className="sub">
         완료된 수업 기준 월별 정산 내역입니다. 시급 {data ? formatKrw(data.hourlyRateKrw) : "30,000원"} ×
         수업 시간으로 계산되며, 조회 전용입니다.
       </p>
 
-      <div className="sec" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <label htmlFor="settlement-month" style={{ fontSize: "13px", fontWeight: 600 }}>
+      <div className="sec sf-filters">
+        <label className="sf-flabel" htmlFor="settlement-month">
           정산 월
         </label>
         <select
           id="settlement-month"
           className="inp filled"
-          style={{ width: "auto", padding: "8px 10px" }}
           value={month}
           disabled={months.length === 0}
           onChange={(e) => setMonth(e.target.value)}
@@ -130,8 +129,8 @@ export function TeacherSettlementsClient() {
       </div>
 
       {loading ? (
-        <div className="sec card" style={{ padding: "18px 20px" }}>
-          <p>불러오는 중…</p>
+        <div className="sec">
+          <p className="sf-sub">불러오는 중…</p>
         </div>
       ) : error ? (
         <div className="sec banner warn">
@@ -140,16 +139,16 @@ export function TeacherSettlementsClient() {
         </div>
       ) : !data ? null : (
         <>
-          <div className="sec grid3">
-            <div className="card kpi">
+          <div className="sec kpis">
+            <div className="kpi">
               <b>{data.lessonCount}</b>
               <span>완료 수업</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{data.totalHours}<em>시간</em></b>
               <span>총 수업 시간</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{formatKrw(data.payoutKrw)}</b>
               <span>정산 합계</span>
             </div>
@@ -168,29 +167,42 @@ export function TeacherSettlementsClient() {
           <div className="sec">
             <h2>완료 수업 내역</h2>
             {data.lessons.length === 0 ? (
-              <div className="card" style={{ padding: "18px 20px" }}>
-                <p>이 달에 완료된 수업이 없습니다.</p>
-              </div>
+              <p className="sf-sub">이 달에 완료된 수업이 없습니다.</p>
             ) : (
-              <div className="card">
-                {data.lessons.map((lesson) => (
-                  <div className="row" key={lesson.id}>
-                    <div className="g">
-                      <b>{formatLessonDate(lesson.date)}</b>
-                      <p>
-                        {lesson.studentName} · {lesson.subject}
-                        {lesson.needsReview ? (
-                          <span className="bst warn" style={{ marginLeft: 8 }}>
-                            검토 필요
-                          </span>
-                        ) : null}
-                      </p>
-                    </div>
-                    <span className="r num" style={{ fontWeight: 800, color: "var(--fg)" }}>
-                      {lesson.durationMin}분
-                    </span>
-                  </div>
-                ))}
+              <div className="sf-tbl-wrap">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>수업 일시</th>
+                      <th>학생 · 과목</th>
+                      <th>수업 시간</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.lessons.map((lesson) => (
+                      <tr key={lesson.id}>
+                        <td className="num">{formatLessonDate(lesson.date)}</td>
+                        <td>
+                          {lesson.studentName} · {lesson.subject}
+                          {lesson.needsReview ? (
+                            <span className="sf-inline">
+                              <span className="bst warn">검토 필요</span>
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="num">{lesson.durationMin}분</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td className="sf-sum-label" colSpan={2}>
+                        정산 합계
+                      </td>
+                      <td className="sf-sum">{formatKrw(data.payoutKrw)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
               </div>
             )}
           </div>

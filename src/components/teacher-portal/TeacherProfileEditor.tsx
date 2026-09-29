@@ -15,9 +15,6 @@ import {
 
 import { TeacherProfilePreview } from "./TeacherProfilePreview";
 
-const inputClass =
-  "mt-1 w-full rounded-xl border border-gray-200 bg-background px-3 py-2 text-sm text-text-primary outline-none focus:border-primary";
-const labelClass = "text-xs font-semibold uppercase tracking-wider text-text-muted";
 const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
 
 type DocumentType = "resume" | "document";
@@ -233,251 +230,230 @@ export function TeacherProfileEditor({
 
   return (
     <>
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
-        <div className="lg:sticky lg:top-[7.5rem] lg:self-start">
-          <TeacherProfilePreview
-            name={teacherName}
-            subjects={subjects}
-            gender={gender}
-            form={form}
-          />
-        </div>
-
-        <div className="space-y-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
-          <section>
-            <h2 className="text-sm font-bold text-text-primary">프로필 사진</h2>
-            <div className="mt-4 flex items-center gap-4">
-              <div className="relative h-20 w-20 overflow-hidden rounded-full bg-gray-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={displayPhoto}
-                  alt="프로필"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+      <div className="sf-split-form">
+        <div className="sf-stack">
+          <div className="sf-block">
+            <div className="sf-block-h">프로필 사진</div>
+            <div className="sf-photo-pick">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={displayPhoto} alt="프로필" />
               <div>
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  className="hidden"
+                  className="sr-only"
                   onChange={(e) => handlePhotoSelect(e.target.files?.[0])}
                 />
                 <button
                   type="button"
+                  className="btn sec sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-text-secondary hover:border-primary hover:text-primary"
                 >
                   사진 변경
                 </button>
               </div>
             </div>
-          </section>
+          </div>
 
-          <section>
-            <label className={labelClass}>자기소개</label>
-            <textarea
-              value={form.intro}
-              onChange={(e) => setForm((f) => ({ ...f, intro: e.target.value }))}
-              rows={5}
-              className={`${inputClass} mt-2 resize-none`}
-              placeholder="학생과 학부모에게 보여질 소개를 작성해 주세요."
-            />
-          </section>
+          <div className="sf-block">
+            <div className="sf-block-h">자기소개</div>
+            <div className="field" style={{ marginTop: 0 }}>
+              <textarea
+                className="inp area"
+                aria-label="자기소개"
+                value={form.intro}
+                onChange={(e) => setForm((f) => ({ ...f, intro: e.target.value }))}
+                rows={5}
+                placeholder="학생과 학부모에게 보여질 소개를 작성해 주세요."
+              />
+            </div>
+          </div>
 
-          <section>
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-primary">학력</h2>
+          <div className="sf-block">
+            <div className="sf-block-h">
+              학력
               <button
                 type="button"
+                className="sf-link-btn"
+                style={{ marginLeft: "auto" }}
                 onClick={() =>
                   setForm((f) => ({
                     ...f,
                     education: [...f.education, emptyEducation()],
                   }))
                 }
-                className="text-xs font-semibold text-primary hover:underline"
               >
                 항목 추가
               </button>
             </div>
-            <ul className="mt-4 space-y-4">
-              {form.education.length === 0 ? (
-                <li className="text-sm text-text-muted">학력 항목이 없습니다.</li>
-              ) : (
-                form.education.map((entry, i) => (
-                  <li
-                    key={i}
-                    className="rounded-xl border border-gray-100 bg-background p-4 space-y-2"
-                  >
-                    <input
-                      value={entry.school}
-                      onChange={(e) => updateEducation(i, { school: e.target.value })}
-                      placeholder="학교명"
-                      className={inputClass}
-                    />
-                    <input
-                      value={entry.major}
-                      onChange={(e) => updateEducation(i, { major: e.target.value })}
-                      placeholder="전공"
-                      className={inputClass}
-                    />
-                    <input
-                      value={entry.year}
-                      onChange={(e) => updateEducation(i, { year: e.target.value })}
-                      placeholder="졸업년도"
-                      className={inputClass}
-                    />
+            {form.education.length === 0 ? (
+              <p className="sf-empty-line">학력 항목이 없습니다.</p>
+            ) : (
+              form.education.map((entry, i) => (
+                <div className="sf-entry" key={i}>
+                  <input
+                    className="inp"
+                    value={entry.school}
+                    onChange={(e) => updateEducation(i, { school: e.target.value })}
+                    placeholder="학교명"
+                  />
+                  <input
+                    className="inp"
+                    value={entry.major}
+                    onChange={(e) => updateEducation(i, { major: e.target.value })}
+                    placeholder="전공"
+                  />
+                  <input
+                    className="inp"
+                    value={entry.year}
+                    onChange={(e) => updateEducation(i, { year: e.target.value })}
+                    placeholder="졸업년도"
+                  />
+                  <div className="sf-entry-f">
                     <button
                       type="button"
+                      className="sf-link-btn sf-del"
                       onClick={() =>
                         setForm((f) => ({
                           ...f,
                           education: f.education.filter((_, j) => j !== i),
                         }))
                       }
-                      className="text-xs text-accent hover:underline"
                     >
                       삭제
                     </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </section>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
-          <section>
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-primary">경력</h2>
+          <div className="sf-block">
+            <div className="sf-block-h">
+              경력
               <button
                 type="button"
-                onClick={() =>
-                  setForm((f) => ({ ...f, career: [...f.career, emptyCareer()] }))
-                }
-                className="text-xs font-semibold text-primary hover:underline"
+                className="sf-link-btn"
+                style={{ marginLeft: "auto" }}
+                onClick={() => setForm((f) => ({ ...f, career: [...f.career, emptyCareer()] }))}
               >
                 항목 추가
               </button>
             </div>
-            <ul className="mt-4 space-y-4">
-              {form.career.length === 0 ? (
-                <li className="text-sm text-text-muted">경력 항목이 없습니다.</li>
-              ) : (
-                form.career.map((entry, i) => (
-                  <li
-                    key={i}
-                    className="rounded-xl border border-gray-100 bg-background p-4 space-y-2"
-                  >
-                    <input
-                      value={entry.org}
-                      onChange={(e) => updateCareer(i, { org: e.target.value })}
-                      placeholder="기관명"
-                      className={inputClass}
-                    />
-                    <input
-                      value={entry.role}
-                      onChange={(e) => updateCareer(i, { role: e.target.value })}
-                      placeholder="역할"
-                      className={inputClass}
-                    />
-                    <input
-                      value={entry.period}
-                      onChange={(e) => updateCareer(i, { period: e.target.value })}
-                      placeholder="기간 (예: 2020-2023)"
-                      className={inputClass}
-                    />
+            {form.career.length === 0 ? (
+              <p className="sf-empty-line">경력 항목이 없습니다.</p>
+            ) : (
+              form.career.map((entry, i) => (
+                <div className="sf-entry" key={i}>
+                  <input
+                    className="inp"
+                    value={entry.org}
+                    onChange={(e) => updateCareer(i, { org: e.target.value })}
+                    placeholder="기관명"
+                  />
+                  <input
+                    className="inp"
+                    value={entry.role}
+                    onChange={(e) => updateCareer(i, { role: e.target.value })}
+                    placeholder="역할"
+                  />
+                  <input
+                    className="inp"
+                    value={entry.period}
+                    onChange={(e) => updateCareer(i, { period: e.target.value })}
+                    placeholder="기간 (예: 2020-2023)"
+                  />
+                  <div className="sf-entry-f">
                     <button
                       type="button"
+                      className="sf-link-btn sf-del"
                       onClick={() =>
                         setForm((f) => ({
                           ...f,
                           career: f.career.filter((_, j) => j !== i),
                         }))
                       }
-                      className="text-xs text-accent hover:underline"
                     >
                       삭제
                     </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </section>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
-          <section>
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-text-primary">자격증</h2>
+          <div className="sf-block">
+            <div className="sf-block-h">
+              자격증
               <button
                 type="button"
+                className="sf-link-btn"
+                style={{ marginLeft: "auto" }}
                 onClick={() =>
                   setForm((f) => ({
                     ...f,
                     certificates: [...f.certificates, emptyCertificate()],
                   }))
                 }
-                className="text-xs font-semibold text-primary hover:underline"
               >
                 항목 추가
               </button>
             </div>
-            <ul className="mt-4 space-y-4">
-              {form.certificates.length === 0 ? (
-                <li className="text-sm text-text-muted">자격증 항목이 없습니다.</li>
-              ) : (
-                form.certificates.map((entry, i) => (
-                  <li
-                    key={i}
-                    className="rounded-xl border border-gray-100 bg-background p-4 space-y-2"
-                  >
-                    <input
-                      value={entry.name}
-                      onChange={(e) => updateCertificate(i, { name: e.target.value })}
-                      placeholder="자격증명"
-                      className={inputClass}
-                    />
-                    <input
-                      value={entry.year}
-                      onChange={(e) => updateCertificate(i, { year: e.target.value })}
-                      placeholder="취득년도"
-                      className={inputClass}
-                    />
+            {form.certificates.length === 0 ? (
+              <p className="sf-empty-line">자격증 항목이 없습니다.</p>
+            ) : (
+              form.certificates.map((entry, i) => (
+                <div className="sf-entry" key={i}>
+                  <input
+                    className="inp"
+                    value={entry.name}
+                    onChange={(e) => updateCertificate(i, { name: e.target.value })}
+                    placeholder="자격증명"
+                  />
+                  <input
+                    className="inp"
+                    value={entry.year}
+                    onChange={(e) => updateCertificate(i, { year: e.target.value })}
+                    placeholder="취득년도"
+                  />
+                  <div className="sf-entry-f">
                     <button
                       type="button"
+                      className="sf-link-btn sf-del"
                       onClick={() =>
                         setForm((f) => ({
                           ...f,
                           certificates: f.certificates.filter((_, j) => j !== i),
                         }))
                       }
-                      className="text-xs text-accent hover:underline"
                     >
                       삭제
                     </button>
-                  </li>
-                ))
-              )}
-            </ul>
-          </section>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
-          <section>
-            <div>
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-sm font-bold text-text-primary">서류 업로드</h2>
-                <button
-                  type="button"
-                  onClick={() => setDocumentsOpen((prev) => !prev)}
-                  className="text-xs font-semibold text-primary hover:underline"
-                >
-                  {documentsOpen ? "접기" : "불러오기"}
-                </button>
-              </div>
-              <p className="mt-1 text-xs leading-relaxed text-text-secondary">
-                PDF 또는 이미지 파일을 업로드할 수 있습니다. 파일당 최대 10MB까지 허용됩니다.
-              </p>
+          <div className="sf-block">
+            <div className="sf-block-h">
+              서류 업로드
+              <button
+                type="button"
+                className="sf-link-btn"
+                style={{ marginLeft: "auto" }}
+                onClick={() => setDocumentsOpen((prev) => !prev)}
+              >
+                {documentsOpen ? "접기" : "불러오기"}
+              </button>
             </div>
+            <p className="sf-sub" style={{ marginTop: 0 }}>
+              PDF 또는 이미지 파일을 업로드할 수 있습니다. 파일당 최대 10MB까지 허용됩니다.
+            </p>
 
             {documentsOpen ? (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="sf-docs">
                 {[
                   {
                     type: "resume" as const,
@@ -492,18 +468,15 @@ export function TeacherProfileEditor({
                     empty: "업로드된 인증서류가 없습니다.",
                   },
                 ].map((group) => (
-                  <div
-                    key={group.type}
-                    className="rounded-xl border border-gray-100 bg-background p-4"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-sm font-bold text-text-primary">{group.title}</h3>
-                      <label className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-text-secondary hover:border-primary hover:text-primary">
+                  <div key={group.type}>
+                    <div className="sf-doc-h">
+                      <b>{group.title}</b>
+                      <label className="sf-file-btn">
                         {documentUploading === group.type ? "업로드 중…" : "파일 추가"}
                         <input
                           type="file"
                           accept="application/pdf,image/*"
-                          className="hidden"
+                          className="sr-only"
                           disabled={documentUploading !== null}
                           onChange={(e) => {
                             void uploadDocument(e.target.files?.[0], group.type);
@@ -513,70 +486,69 @@ export function TeacherProfileEditor({
                       </label>
                     </div>
 
-                    <ul className="mt-3 space-y-2">
-                      {documentLoading ? (
-                        <li className="text-xs text-text-muted">서류를 불러오는 중…</li>
-                      ) : group.files.length === 0 ? (
-                        <li className="text-xs text-text-muted">{group.empty}</li>
-                      ) : (
-                        group.files.map((file) => (
-                          <li
-                            key={file.url}
-                            className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs"
-                          >
-                            <span className="min-w-0 truncate text-text-secondary">
-                              {file.name}
-                            </span>
-                            <span className="flex shrink-0 gap-2">
+                    {documentLoading ? (
+                      <p className="sf-empty-line">서류를 불러오는 중…</p>
+                    ) : group.files.length === 0 ? (
+                      <p className="sf-empty-line">{group.empty}</p>
+                    ) : (
+                      <ul className="sf-doc-list">
+                        {group.files.map((file) => (
+                          <li key={file.url}>
+                            <span className="sf-doc-name">{file.name}</span>
+                            <span className="sf-doc-acts">
                               <a
+                                className="sf-link-btn"
                                 href={file.signedUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="font-semibold text-primary hover:underline"
                               >
                                 열기
                               </a>
                               <button
                                 type="button"
+                                className="sf-link-btn sf-del"
                                 onClick={() => void deleteDocument(file.url, group.type)}
-                                className="font-semibold text-accent hover:underline"
                               >
                                 삭제
                               </button>
                             </span>
                           </li>
-                        ))
-                      )}
-                    </ul>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="mt-4 rounded-xl border border-dashed border-gray-200 bg-background px-4 py-5 text-sm text-text-secondary">
+              <p className="sf-empty-line">
                 필요할 때만 서류 목록과 다운로드 링크를 불러옵니다.
-              </div>
+              </p>
             )}
-          </section>
+          </div>
 
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => void handleSave()}
-            className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {saving ? "저장 중…" : "저장하기"}
-          </button>
+          <div className="sf-actions">
+            <button
+              type="button"
+              className="btn pri btn-block"
+              disabled={saving}
+              onClick={() => void handleSave()}
+            >
+              {saving ? "저장 중…" : "저장하기"}
+            </button>
+          </div>
         </div>
+
+        <TeacherProfilePreview
+          name={teacherName}
+          subjects={subjects}
+          gender={gender}
+          form={form}
+        />
       </div>
 
-      {toast && (
-        <div
-          role="status"
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-text-primary px-6 py-3 text-sm font-medium text-white shadow-lg"
-        >
-          프로필이 저장되었습니다
-        </div>
-      )}
+      <div className={toast ? "toast on" : "toast"} role="status">
+        프로필이 저장되었습니다
+      </div>
     </>
   );
 }

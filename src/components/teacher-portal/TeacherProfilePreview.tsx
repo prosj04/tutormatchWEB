@@ -75,14 +75,12 @@ export function TeacherProfilePreview({
     .filter(Boolean);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-      <p className="border-b border-gray-100 bg-background px-4 py-2 text-xs font-medium text-text-secondary">
-        미리보기 · 선생님 프로필
-      </p>
+    <div className="sf-prev">
+      <p className="sf-prev-cap">미리보기 · 선생님 프로필</p>
 
-      <div className="border-b border-gray-100 bg-background p-4">
-        <div className="flex gap-4">
-          <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+      <div className="sf-prev-card">
+        <div className="sf-prev-head">
+          <div className="sf-prev-photo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photoSrc}
@@ -91,68 +89,55 @@ export function TeacherProfilePreview({
               height={112}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
             />
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">
-              Tutor profile
-            </p>
-            <h2 className="mt-1 text-xl font-black text-text-primary">{name}</h2>
-            <p className="mt-1 text-sm text-text-secondary">
+          <div className="sf-prev-id">
+            <p className="sf-prev-eyebrow">Tutor profile</p>
+            <p className="sf-prev-name">{name}</p>
+            <p className="sf-prev-subjects">
               {subjects.length > 0 ? subjects.join(" · ") : "담당 과목"}
             </p>
-            {headlineCred ? (
-              <p className="mt-2 text-xs text-text-muted">{headlineCred}</p>
-            ) : null}
+            {headlineCred ? <p className="sf-prev-cred-line">{headlineCred}</p> : null}
           </div>
         </div>
+
+        {introParagraphs.length > 0 && (
+          <section className="sf-prev-body">
+            <h3>Teaching approach</h3>
+            <div className="sf-prev-intro">
+              {introParagraphs.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {credentials.length > 0 && (
+          <section className="sf-prev-body">
+            <h3>Credentials</h3>
+            <ol className="sf-prev-cred">
+              {credentials.map((c, i) => (
+                <li key={`${c.category}-${i}`}>
+                  <span className="sf-prev-cat">{categoryLabel(c.category)}</span>
+                  <span className="sf-prev-title">{c.title}</span>
+                  <span className="sf-prev-year">{c.year}</span>
+                  {c.detail ? <span className="sf-prev-detail">{c.detail}</span> : null}
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {subjects.length > 0 && (
+          <section className="sf-prev-body">
+            <div className="tag-line">
+              {subjects.map((s) => (
+                <span key={s}>{s}</span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-
-      {introParagraphs.length > 0 && (
-        <section className="border-b border-gray-100 p-4">
-          <h3 className="text-sm font-bold text-text-primary">Teaching approach</h3>
-          <div className="mt-3 space-y-2 text-xs leading-relaxed text-text-secondary">
-            {introParagraphs.map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {credentials.length > 0 && (
-        <section className="p-4">
-          <h3 className="text-sm font-bold text-text-primary">Credentials</h3>
-          <ol className="relative mt-4 space-y-0 border-l border-primary/30 pl-6">
-            {credentials.map((c, i) => (
-              <li key={`${c.category}-${i}`} className="relative pb-6 last:pb-0">
-                <span className="absolute -left-6 top-1 h-2 w-2 -translate-x-[3px] rounded-full border border-primary bg-white" />
-                <p className="text-[10px] font-semibold uppercase text-primary">
-                  {categoryLabel(c.category)}
-                </p>
-                <p className="mt-1 text-sm font-bold text-text-primary">{c.title}</p>
-                {c.detail ? <p className="mt-0.5 text-xs text-text-secondary">{c.detail}</p> : null}
-                <p className="mt-1 text-[10px] uppercase text-text-muted">{c.year}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-
-      {subjects.length > 0 && (
-        <section className="border-t border-gray-100 p-4">
-          <div className="flex flex-wrap gap-1.5">
-            {subjects.map((s) => (
-              <span
-                key={s}
-                className="rounded-full bg-accent px-2.5 py-1 text-[10px] font-semibold text-white"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

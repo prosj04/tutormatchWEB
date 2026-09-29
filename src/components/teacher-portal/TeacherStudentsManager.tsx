@@ -219,19 +219,15 @@ export function TeacherStudentsManager({
 
   return (
     <section className="page on" id="pg-students">
-      <div className="crumb">/teacher-portal/dashboard/students</div>
+      <div className="crumb">학생</div>
       <h1>담당 학생</h1>
       <p className="sub">매칭된 학생만 표시됩니다. 행을 누르면 상세(첫 수업일·예정 수업)로 이동합니다.</p>
 
-      <div className="sec card">
+      <div className="sec">
         {loading ? (
-          <div className="row">
-            <div className="g">
-              <p>불러오는 중…</p>
-            </div>
-          </div>
+          <p className="sf-sub">불러오는 중…</p>
         ) : loadError ? (
-          <div className="banner warn" style={{ margin: "12px 20px 16px" }} role="alert">
+          <div className="banner warn" role="alert">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
             <span>
               담당 학생을 불러오지 못했습니다.{" "}
@@ -245,64 +241,60 @@ export function TeacherStudentsManager({
             </span>
           </div>
         ) : students.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <p>배정된 학생이 없습니다.</p>
-            </div>
-          </div>
+          <p className="sf-sub">배정된 학생이 없습니다.</p>
         ) : (
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>학생</th>
-                <th>과목·횟수</th>
-                <th>다음 수업</th>
-                <th>상태</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => {
-                const hasFirst = Boolean(student.firstLessonAt);
-                return (
-                  <tr key={student.id}>
-                    <td>
-                      <b>
-                        {student.name} · {student.grade}
-                      </b>
-                    </td>
-                    <td>{formatSubjects(student.subjects) || "—"}</td>
-                    <td className="num">{formatNextLesson(student.firstLessonAt)}</td>
-                    <td>
-                      {hasFirst ? (
-                        <span className="bst acc">수업 중</span>
-                      ) : (
-                        <span className="bst warn">첫 수업일 미정</span>
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className={hasFirst ? "btn sec sm" : "btn pri sm"}
-                        onClick={() => setSelectedId(student.id)}
-                      >
-                        {hasFirst ? "상세" : "첫 수업일 설정"}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="sf-tbl-wrap">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>학생</th>
+                  <th>과목·횟수</th>
+                  <th>다음 수업</th>
+                  <th>상태</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) => {
+                  const hasFirst = Boolean(student.firstLessonAt);
+                  return (
+                    <tr key={student.id}>
+                      <td>
+                        <b>
+                          {student.name} · {student.grade}
+                        </b>
+                      </td>
+                      <td>{formatSubjects(student.subjects) || "—"}</td>
+                      <td className="num">{formatNextLesson(student.firstLessonAt)}</td>
+                      <td>
+                        {hasFirst ? (
+                          <span className="bst acc">수업 중</span>
+                        ) : (
+                          <span className="bst warn">첫 수업일 미정</span>
+                        )}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={hasFirst ? "btn sec sm" : "btn pri sm"}
+                          onClick={() => setSelectedId(student.id)}
+                        >
+                          {hasFirst ? "상세" : "첫 수업일 설정"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {selected ? (
-        <div className="sec grid2">
-          <div className="card" style={{ padding: "20px" }}>
-            <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>
-              {selected.name} · 첫 수업일 설정
-            </h2>
+        <div className="sec sf-split">
+          <div className="sf-block">
+            <div className="sf-block-h">{selected.name} · 첫 수업일 설정</div>
             <div className="field">
               <label>날짜</label>
               <input
@@ -321,77 +313,65 @@ export function TeacherStudentsManager({
                 onChange={(e) => setLessonTime(e.target.value)}
               />
             </div>
-            <button
-              type="button"
-              className="btn pri"
-              style={{ marginTop: "2px" }}
-              disabled={savingLesson || !lessonDate || !lessonTime}
-              onClick={() => void saveFirstLesson()}
-            >
-              {savingLesson ? "저장 중…" : "첫 수업일 확정"}
-            </button>
-            {lessonMessage ? (
-              <p
-                role="status"
-                style={{ marginTop: "12px", fontSize: "12.5px", color: "var(--acc-text)" }}
+            <div className="sf-actions">
+              <button
+                type="button"
+                className="btn pri"
+                disabled={savingLesson || !lessonDate || !lessonTime}
+                onClick={() => void saveFirstLesson()}
               >
+                {savingLesson ? "저장 중…" : "첫 수업일 확정"}
+              </button>
+            </div>
+            {lessonMessage ? (
+              <p role="status" className="sf-ok">
                 {lessonMessage}
               </p>
             ) : null}
           </div>
 
-          <div className="card">
+          <div className="sf-block">
             {upcomingLoading ? (
-              <div className="row">
-                <div className="g">
-                  <p>불러오는 중…</p>
-                </div>
-              </div>
+              <p className="sf-sub">불러오는 중…</p>
             ) : upcomingLessons.length === 0 ? (
-              <div className="row">
-                <div className="g">
-                  <p>예정된 수업이 없습니다.</p>
-                </div>
-              </div>
+              <p className="sf-sub">예정된 수업이 없습니다.</p>
             ) : (
-              upcomingLessons.map((lesson) => {
-                const d = new Date(lesson.startAt);
-                return (
-                  <div className="row" key={lesson.id}>
-                    <span className="av" style={{ borderRadius: "10px" }}>
-                      {initial(selected.name)}
-                    </span>
-                    <div className="g">
-                      <b>
-                        {selected.name} · {lesson.subject}
-                      </b>
-                      <p>
-                        {d.getMonth() + 1}월 {d.getDate()}일 (
-                        {["일", "월", "화", "수", "목", "금", "토"][d.getDay()]}){" "}
-                        {String(d.getHours()).padStart(2, "0")}:
-                        {String(d.getMinutes()).padStart(2, "0")} · {lesson.durationMin}분
-                      </p>
+              <div className="sf-rows">
+                {upcomingLessons.map((lesson) => {
+                  const d = new Date(lesson.startAt);
+                  return (
+                    <div className="sf-r" key={lesson.id}>
+                      <span className="av">{initial(selected.name)}</span>
+                      <div className="sf-g">
+                        <b>
+                          {selected.name} · {lesson.subject}
+                        </b>
+                        <p>
+                          {d.getMonth() + 1}월 {d.getDate()}일 (
+                          {["일", "월", "화", "수", "목", "금", "토"][d.getDay()]}){" "}
+                          {String(d.getHours()).padStart(2, "0")}:
+                          {String(d.getMinutes()).padStart(2, "0")} · {lesson.durationMin}분
+                        </p>
+                      </div>
+                      <span className="sf-acts">
+                        <button
+                          type="button"
+                          className="btn ghost sm"
+                          onClick={() => {
+                            setCancelTarget(lesson);
+                            setCancelReason("");
+                          }}
+                        >
+                          취소
+                        </button>
+                      </span>
                     </div>
-                    <button
-                      type="button"
-                      className="btn ghost sm"
-                      onClick={() => {
-                        setCancelTarget(lesson);
-                        setCancelReason("");
-                      }}
-                    >
-                      취소
-                    </button>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             )}
             {cancelMessage ? (
-              <div
-                className="banner warn"
-                style={{ margin: "12px 20px 16px" }}
-                role="status"
-              >
+              <div className="banner warn" style={{ marginTop: 14 }} role="status">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
                 <span>{cancelMessage}</span>
               </div>

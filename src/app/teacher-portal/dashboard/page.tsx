@@ -85,7 +85,7 @@ export default async function TeacherDashboardPage() {
 
   return (
     <section className="page on" id="pg-dash">
-      <div className="crumb">/teacher-portal/dashboard</div>
+      <div className="crumb">대시보드</div>
       <h1>대시보드</h1>
       <p className="sub">오늘 수업과 이번 주 할 일을 확인하세요.</p>
 
@@ -102,19 +102,19 @@ export default async function TeacherDashboardPage() {
 
       {teacher.approved ? <TeacherLessonConfirmCard /> : null}
 
-      <div className="sec grid3">
-        <div className="card kpi">
+      <div className="sec kpis">
+        <div className="kpi">
           <b>{todayLessons.length}</b>
           <span>오늘 수업</span>
         </div>
-        <div className="card kpi">
+        <div className="kpi">
           <b>
             {pendingQuestions}
             <em>답변 대기</em>
           </b>
           <span>학생 질문</span>
         </div>
-        <div className="card kpi">
+        <div className="kpi">
           <b>{noFirstLesson.length}</b>
           <span>첫 수업일 미정</span>
         </div>
@@ -122,18 +122,14 @@ export default async function TeacherDashboardPage() {
 
       <div className="sec">
         <h2>오늘 수업 · {dateStr}</h2>
-        <div className="card">
-          {todayLessons.length === 0 ? (
-            <div className="row">
-              <div className="g">
-                <p>오늘 예정된 수업이 없습니다.</p>
-              </div>
-            </div>
-          ) : (
-            todayLessons.map((lesson) => (
-              <div className="row" key={lesson.id}>
+        {todayLessons.length === 0 ? (
+          <p className="sf-sub">오늘 예정된 수업이 없습니다.</p>
+        ) : (
+          <div className="sf-rows">
+            {todayLessons.map((lesson) => (
+              <div className="sf-r" key={lesson.id}>
                 <span className="av">{initial(lesson.student.name)}</span>
-                <div className="g">
+                <div className="sf-g">
                   <b>
                     {lesson.student.name} · {lesson.student.grade}
                   </b>
@@ -141,13 +137,11 @@ export default async function TeacherDashboardPage() {
                     {lesson.subject} · {lesson.durationMin}분
                   </p>
                 </div>
-                <span className="r num" style={{ fontWeight: 800, color: "var(--fg)" }}>
-                  {formatTime(lesson.startAt)}
-                </span>
+                <span className="sf-t">{formatTime(lesson.startAt)}</span>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {teacher.approved && noFirstLesson.length > 0 ? (

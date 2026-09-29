@@ -28,6 +28,13 @@ function distributeCounts(total: number, days: number): number[] {
   return counts.map((c) => Math.max(1, c));
 }
 
+/** selectedDate(YYYY-MM-DD)에서 offset일 뒤 날짜의 "M/D" 라벨 — 분배 미리보기 행용 */
+function dayLabel(startKey: string, offset: number): string {
+  const [y, m, d] = startKey.split("-").map(Number);
+  const dt = new Date(y, m - 1, d + offset);
+  return `${dt.getMonth() + 1}/${dt.getDate()}`;
+}
+
 export function TeacherPlanClient({ initialStudents }: TeacherPlanClientProps) {
   const [students] = useState<StudentListItem[]>(initialStudents);
   const [selectedId, setSelectedId] = useState<string | null>(
@@ -195,22 +202,18 @@ export function TeacherPlanClient({ initialStudents }: TeacherPlanClientProps) {
 
   return (
     <section className="page on" id="pg-plan">
-      <div className="crumb">/teacher-portal/dashboard/plans</div>
+      <div className="crumb">진도·숙제</div>
       <h1>진도·숙제{selected ? ` — ${selected.name}` : ""}</h1>
       <p className="sub">주간 숙제를 한 번에 입력하면 요일별로 자동 분배됩니다.</p>
 
       {students.length === 0 ? (
-        <div className="sec card">
-          <div className="row">
-            <div className="g">
-              <p>배정된 학생이 없습니다.</p>
-            </div>
-          </div>
+        <div className="sec">
+          <p className="sf-sub">배정된 학생이 없습니다.</p>
         </div>
       ) : (
         <>
-          <div className="sec grid2">
-            <div className="card" style={{ padding: "20px" }}>
+          <div className="sec sf-split-form">
+            <div className="sf-block">
               <TeacherStudentPicker
                 students={students}
                 selectedId={selectedId}
@@ -262,7 +265,16 @@ export function TeacherPlanClient({ initialStudents }: TeacherPlanClientProps) {
                   ))}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div className="field">
+                <input
+                  type="text"
+                  className="inp filled"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="템플릿 이름"
+                />
+              </div>
+              <div className="sf-actions">
                 <button
                   type="button"
                   className="btn pri"
@@ -297,120 +309,70 @@ export function TeacherPlanClient({ initialStudents }: TeacherPlanClientProps) {
                   </select>
                 ) : null}
               </div>
-              <div className="field" style={{ marginTop: "12px", marginBottom: 0 }}>
-                <input
-                  type="text"
-                  className="inp filled"
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
-                  placeholder="템플릿 이름"
-                />
-              </div>
               {homeworkMessage ? (
-                <p
-                  role="status"
-                  style={{ marginTop: "12px", fontSize: "12.5px", color: "var(--acc-text)" }}
-                >
+                <p role="status" className="sf-ok">
                   {homeworkMessage}
                 </p>
               ) : null}
             </div>
 
-            <div className="card">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-end",
-                  gap: "10px",
-                  height: "90px",
-                  padding: "16px 20px 0",
-                }}
-              >
-                {previewCounts.counts.map((count, i) => {
-                  const heightPct = Math.round((count / previewCounts.max) * 100);
-                  const wd = weekdayShort[(startWeekday + i) % 7];
-                  return (
-                    <div
-                      key={i}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "6px",
-                        height: "100%",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <i
-                        style={{
-                          width: "100%",
-                          height: `${heightPct}%`,
-                          borderRadius: "5px 5px 2px 2px",
-                          background: "var(--acc)",
-                          display: "block",
-                        }}
-                      />
-                      <span style={{ fontSize: "10.5px", color: "var(--mut)" }}>
-                        {wd} {count}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <p
-                style={{
-                  padding: "12px 20px 16px",
-                  fontSize: "12.5px",
-                  color: "var(--mut)",
-                  borderTop: "1px solid var(--line)",
-                }}
-              >
-                총 {previewCounts.total}개 → 앞쪽 요일 우선 · 단조 감소 · 하루 최소 1개
-              </p>
+            <div className="sf-block">
+              <table className="sf-dist">
+                <tbody>
+                  {previewCounts.counts.map((count, i) => {
+                    const wd = weekdayShort[(startWeekday + i) % 7];
+                    return (
+                      <tr key={i}>
+                        <td className="sf-dist-day">{wd}</td>
+                        <td className="sf-dist-date">{dayLabel(selectedDate, i)}</td>
+                        <td className="sf-dist-n">{count}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan={3}>
+                      총 {previewCounts.total}개 → 앞쪽 요일 우선 · 단조 감소 · 하루 최소 1개
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
 
           <div className="sec">
             <h2>주간 코멘트</h2>
-            <div className="card" style={{ padding: "20px" }}>
+            <div className="sf-block">
               {plan ? (
                 <>
-                  <p
-                    style={{
-                      fontSize: "12.5px",
-                      color: "var(--mut)",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {formatPlanHeader(selectedDate)}
-                  </p>
-                  <textarea
-                    className="inp area filled"
-                    style={{ marginBottom: "12px" }}
-                    value={commentDraft}
-                    onChange={(e) => setCommentDraft(e.target.value)}
-                    placeholder="이 날의 학습 계획에 코멘트를 남겨주세요"
-                  />
-                  <button
-                    type="button"
-                    className="btn sec"
-                    disabled={savingComment || !commentDraft.trim()}
-                    onClick={() => void handleSaveComment()}
-                  >
-                    {savingComment ? "저장 중…" : "코멘트 저장 (리포트에 반영)"}
-                  </button>
-                  {commentMessage ? (
-                    <p
-                      role="status"
-                      style={{ marginTop: "12px", fontSize: "12.5px", color: "var(--acc-text)" }}
+                  <div className="sf-block-h">{formatPlanHeader(selectedDate)}</div>
+                  <div className="field">
+                    <textarea
+                      className="inp area filled"
+                      value={commentDraft}
+                      onChange={(e) => setCommentDraft(e.target.value)}
+                      placeholder="이 날의 학습 계획에 코멘트를 남겨주세요"
+                    />
+                  </div>
+                  <div className="sf-actions">
+                    <button
+                      type="button"
+                      className="btn sec"
+                      disabled={savingComment || !commentDraft.trim()}
+                      onClick={() => void handleSaveComment()}
                     >
+                      {savingComment ? "저장 중…" : "코멘트 저장 (리포트에 반영)"}
+                    </button>
+                  </div>
+                  {commentMessage ? (
+                    <p role="status" className="sf-ok">
                       {commentMessage}
                     </p>
                   ) : null}
                 </>
               ) : (
-                <p style={{ fontSize: "13px", color: "var(--mut)" }}>
+                <p className="sf-sub">
                   오늘 날짜에 등록된 학습 계획이 없습니다. 숙제를 분배하면 코멘트를 남길 수 있습니다.
                 </p>
               )}

@@ -44,7 +44,7 @@ export default async function TeacherProfilePage() {
 
   const page = (
     <section className="page on" id="pg-profile">
-      <div className="crumb">/teacher-portal/dashboard/profile</div>
+      <div className="crumb">프로필</div>
       <h1>프로필</h1>
       <p className="sub">학생·학부모에게 보여질 프로필과 제출 서류를 관리합니다.</p>
       <div className="sec">

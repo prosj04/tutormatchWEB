@@ -1,6 +1,3 @@
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
-import "@/app/concord-admin.css";
 
 import { redirect } from "next/navigation";
 
@@ -137,7 +134,7 @@ export default async function ChiefManagerLayout({
 
   return (
     <PortalShell
-      roleBadge="Admin · /admin"
+      roleBadge="Admin"
       nav={NAV}
       userName={session.user.name ?? session.user.email ?? "관리자"}
       userMeta={session.user.role === "CHIEF_MANAGER" ? "CHIEF_MANAGER" : "ADMIN"}

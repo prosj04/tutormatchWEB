@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 type PendingTeacher = {
   id: string;
@@ -127,7 +127,7 @@ export default function ChiefManagerTeacherApprovalPage() {
 
   return (
     <section className="page on" data-screen-label="치프 승인">
-      <div className="crumb">/chief-manager/teacher-approval</div>
+      <div className="crumb">치프 승인</div>
       <h1>치프 최종 승인</h1>
       <p className="sub">매니저 승인을 거친 선생님의 최종 승인 큐입니다.</p>
 
@@ -138,89 +138,102 @@ export default function ChiefManagerTeacherApprovalPage() {
         </div>
       ) : null}
 
-      <div className="sec card">
+      <div className="sec">
         {loading ? (
-          <div className="row"><div className="g"><p>불러오는 중…</p></div></div>
+          <p className="sf-sub">불러오는 중…</p>
         ) : pendingTeachers.length === 0 ? (
           <div className="empty">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
             <b>승인 대기 중인 선생님이 없습니다.</b>
           </div>
         ) : (
-          pendingTeachers.map((teacher) => (
-            <div key={teacher.id}>
-              <div className="row">
-                <span className="av">{teacher.name.slice(0, 1)}</span>
-                <div className="g">
-                  <b>{teacher.name} · {teacher.subjects}</b>
-                  <p>{teacher.email} · {teacher.phone}</p>
+          <div className="sf-rows">
+            {pendingTeachers.map((teacher) => (
+              <Fragment key={teacher.id}>
+                <div className="sf-r">
+                  <span className="av">{teacher.name.slice(0, 1)}</span>
+                  <div className="sf-g">
+                    <b>{teacher.name} · {teacher.subjects}</b>
+                    <p>{teacher.email} · {teacher.phone}</p>
+                  </div>
+                  <span className="sf-acts">
+                    <span className="bst warn">최종 대기</span>
+                    <button
+                      type="button"
+                      className="btn ghost sm"
+                      disabled={submittingId === teacher.id}
+                      onClick={() => void toggleDocuments(teacher.id)}
+                    >
+                      {docsTeacherId === teacher.id ? "서류 닫기" : "서류 열람"}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn sec sm"
+                      disabled={submittingId === teacher.id}
+                      onClick={() => void handleApproval(teacher.id, false)}
+                    >
+                      반려
+                    </button>
+                    <button
+                      type="button"
+                      className="btn pri sm"
+                      disabled={submittingId === teacher.id}
+                      onClick={() => void handleApproval(teacher.id, true)}
+                    >
+                      최종 승인
+                    </button>
+                  </span>
                 </div>
-                <span className="bst warn">최종 대기</span>
-                <button
-                  type="button"
-                  className="btn ghost sm"
-                  disabled={submittingId === teacher.id}
-                  onClick={() => void toggleDocuments(teacher.id)}
-                >
-                  {docsTeacherId === teacher.id ? "서류 닫기" : "서류 열람"}
-                </button>
-                <button
-                  type="button"
-                  className="btn sec sm"
-                  disabled={submittingId === teacher.id}
-                  onClick={() => void handleApproval(teacher.id, false)}
-                >
-                  반려
-                </button>
-                <button
-                  type="button"
-                  className="btn pri sm"
-                  disabled={submittingId === teacher.id}
-                  onClick={() => void handleApproval(teacher.id, true)}
-                >
-                  최종 승인
-                </button>
-              </div>
-              {docsTeacherId === teacher.id ? (
-                <div className="card" style={{ margin: "0 0 8px", padding: "12px" }}>
-                  <p className="f-hint" style={{ marginBottom: "10px" }}>
-                    열람 링크는 10분 후 만료됩니다. 만료되면 서류 열람을 다시 눌러 재발급하세요.
-                  </p>
-                  {docsLoading ? (
-                    <p>서류를 불러오는 중…</p>
-                  ) : docs && (docs.resumeFiles.length > 0 || docs.documentFiles.length > 0) ? (
-                    [
-                      { title: "이력서", files: docs.resumeFiles },
-                      { title: "인증서류", files: docs.documentFiles },
-                    ].map((group) => (
-                      <div key={group.title} style={{ marginBottom: "8px" }}>
-                        <b style={{ fontSize: "13px" }}>{group.title}</b>
-                        {group.files.length === 0 ? (
-                          <p className="f-hint">등록된 파일이 없습니다.</p>
-                        ) : (
-                          group.files.map((file) => (
-                            <div key={file.url} className="row" style={{ padding: "6px 0" }}>
-                              <div className="g"><span>{file.name}</span></div>
-                              <a
-                                href={file.signedUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                title="열람 링크는 10분 후 만료됩니다."
-                              >
-                                열기
-                              </a>
+                {docsTeacherId === teacher.id ? (
+                  <div className="sf-disc">
+                    <p className="f-hint">
+                      열람 링크는 10분 후 만료됩니다. 만료되면 서류 열람을 다시 눌러 재발급하세요.
+                    </p>
+                    {docsLoading ? (
+                      <p className="sf-empty-line">서류를 불러오는 중…</p>
+                    ) : docs && (docs.resumeFiles.length > 0 || docs.documentFiles.length > 0) ? (
+                      <div className="sf-docs">
+                        {[
+                          { title: "이력서", files: docs.resumeFiles },
+                          { title: "인증서류", files: docs.documentFiles },
+                        ].map((group) => (
+                          <div key={group.title}>
+                            <div className="sf-doc-h">
+                              <b>{group.title}</b>
                             </div>
-                          ))
-                        )}
+                            {group.files.length === 0 ? (
+                              <p className="sf-empty-line">등록된 파일이 없습니다.</p>
+                            ) : (
+                              <ul className="sf-doc-list">
+                                {group.files.map((file) => (
+                                  <li key={file.url}>
+                                    <span className="sf-doc-name">{file.name}</span>
+                                    <span className="sf-doc-acts">
+                                      <a
+                                        className="sf-link-btn"
+                                        href={file.signedUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="열람 링크는 10분 후 만료됩니다."
+                                      >
+                                        열기
+                                      </a>
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))
-                  ) : (
-                    <p className="f-hint">등록된 서류가 없습니다.</p>
-                  )}
-                </div>
-              ) : null}
-            </div>
-          ))
+                    ) : (
+                      <p className="sf-empty-line">등록된 서류가 없습니다.</p>
+                    )}
+                  </div>
+                ) : null}
+              </Fragment>
+            ))}
+          </div>
         )}
       </div>
 

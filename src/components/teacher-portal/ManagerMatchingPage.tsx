@@ -135,103 +135,101 @@ export function ManagerMatchingPage({
 
   return (
     <section className="page on" id="pg-matching">
-      <div className="crumb">/teacher-portal/dashboard/matching</div>
+      <div className="crumb">매칭</div>
       <h1>매칭</h1>
       <p className="sub">
         학생↔선생님 매칭을 생성합니다. 매칭 사유는 학생·학부모에게 전달됩니다.
       </p>
 
-      <div className="sec grid2">
-        <div>
+      <div className="sec sf-split-form">
+        <div className="sf-block">
+          <div className="sf-block-h">
+            매칭 대기 학생
+            {!loading && students.length > 0 ? (
+              <span className="sf-note">{students.length}명 · 행을 눌러 선택</span>
+            ) : null}
+          </div>
           {loading ? (
-            <div className="card" style={{ padding: "18px 20px" }}>
-              <p>불러오는 중…</p>
-            </div>
+            <p className="sf-sub">불러오는 중…</p>
           ) : students.length === 0 ? (
-            <div className="card" style={{ padding: "18px 20px" }}>
-              <p>매칭 대기 학생이 없습니다.</p>
-            </div>
+            <p className="sf-sub">매칭 대기 학생이 없습니다.</p>
           ) : (
-            students.map((s, i) => {
-              const isSelected = selectedId === s.id;
-              return (
-                <div
-                  key={s.id}
-                  className="card"
-                  style={{
-                    padding: "18px 20px",
-                    cursor: "pointer",
-                    marginTop: i === 0 ? undefined : "12px",
-                    ...(isSelected ? { borderColor: "var(--acc)" } : {}),
-                  }}
-                  onClick={() => setSelectedId(s.id)}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <b style={{ fontSize: "14px", fontWeight: 800 }}>
-                      {[s.name, s.grade, s.subjects].filter(Boolean).join(" · ")}
-                    </b>
-                    {s.currentTeacherName ? (
-                      <span className="bst warn">재매칭</span>
-                    ) : (
-                      <span className="bst mut">미매칭</span>
-                    )}
-                  </div>
-                  {s.currentTeacherName ? (
-                    <p style={{ fontSize: "12.5px", color: "var(--mut)", marginTop: "6px" }}>
-                      현재 배정: {s.currentTeacherName} · 재배정 시 이력 유지
-                    </p>
-                  ) : s.consultationNote ? (
-                    <p style={{ fontSize: "12.5px", color: "var(--mut)", marginTop: "6px" }}>
-                      {s.consultationNote}
-                    </p>
-                  ) : null}
-                </div>
-              );
-            })
+            <div className="sf-rows">
+              {students.map((s) => {
+                const isSelected = selectedId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={isSelected ? "sf-r sf-top on" : "sf-r sf-top"}
+                    aria-pressed={isSelected}
+                    onClick={() => setSelectedId(s.id)}
+                  >
+                    <div className="sf-g">
+                      <b>{[s.name, s.grade, s.subjects].filter(Boolean).join(" · ")}</b>
+                      {s.currentTeacherName ? (
+                        <p>현재 배정: {s.currentTeacherName} · 재배정 시 이력 유지</p>
+                      ) : s.consultationNote ? (
+                        <p>{s.consultationNote}</p>
+                      ) : null}
+                    </div>
+                    <div className="sf-acts">
+                      {s.currentTeacherName ? (
+                        <span className="bst warn">재매칭</span>
+                      ) : (
+                        <span className="bst mut">미매칭</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
 
-        <div className="card" style={{ padding: "20px" }}>
+        <div className="sf-block">
           {!selected ? (
-            <p>학생을 선택해주세요.</p>
+            <>
+              <div className="sf-block-h">선생님 배정</div>
+              <p className="sf-sub">학생을 선택해주세요.</p>
+            </>
           ) : (
             <>
-              <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>
-                {selected.name} → 선생님 선택
-              </h2>
+              <div className="sf-block-h">{selected.name} → 선생님 선택</div>
               {filteredTeachers.length === 0 ? (
-                <div style={{ marginBottom: "14px" }}>
-                  <p style={{ fontSize: "13px", color: "var(--mut)" }}>
+                <div>
+                  <p className="sf-sub">
                     {showAllTeachers
                       ? "등록된 선생님이 없습니다."
                       : "학생 과목과 일치하는 선생님이 없습니다."}
                   </p>
                   {!showAllTeachers && teachers.length > 0 ? (
-                    <button
-                      type="button"
-                      className="btn sec sm"
-                      style={{ marginTop: "8px" }}
-                      onClick={() => setShowAllTeachers(true)}
-                    >
-                      과목 필터 해제 · 전체 선생님 보기 ({teachers.length}명)
-                    </button>
+                    <div className="sf-actions">
+                      <button
+                        type="button"
+                        className="btn sec sm"
+                        onClick={() => setShowAllTeachers(true)}
+                      >
+                        과목 필터 해제 · 전체 선생님 보기 ({teachers.length}명)
+                      </button>
+                    </div>
                   ) : null}
                 </div>
               ) : (
                 <>
                   {showAllTeachers ? (
-                    <p style={{ fontSize: "12px", color: "var(--mut)", marginBottom: "8px" }}>
+                    <p className="sf-sub">
                       과목 필터 해제됨 — 전체 선생님 표시 중{" "}
                       <button
                         type="button"
-                        className="btn ghost sm"
+                        className="sf-link-btn"
                         onClick={() => setShowAllTeachers(false)}
                       >
                         과목 맞춤만 보기
                       </button>
                     </p>
                   ) : null}
-                  <div className="opts" style={{ marginBottom: "14px" }}>
+                  <div className="opts" style={{ marginTop: "12px" }}>
                     {filteredTeachers.map((t) => (
                       <button
                         key={t.id}
@@ -250,7 +248,7 @@ export function ManagerMatchingPage({
               <div className="field">
                 <label>담당 과목</label>
                 {studentSubjectList.length === 0 ? (
-                  <p className="sub">
+                  <p className="sf-sub">
                     학생의 과목 정보가 없습니다. 학생 정보에 과목을 입력한 뒤 매칭할 수 있어요.
                   </p>
                 ) : (
@@ -273,7 +271,7 @@ export function ManagerMatchingPage({
               <div className="field">
                 <label>
                   매칭 사유{" "}
-                  <span style={{ color: "var(--mut-2)", fontWeight: 400 }}>
+                  <span className="mut-2" style={{ fontWeight: 400 }}>
                     · 학생·학부모에게 그대로 전달돼요
                   </span>{" "}
                   <span className="bst acc">학생 공개</span>
@@ -288,28 +286,29 @@ export function ManagerMatchingPage({
               </div>
 
               {error ? (
-                <div className="banner warn" style={{ marginBottom: "12px" }} role="alert">
+                <div className="banner warn" style={{ marginTop: "16px" }} role="alert">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
                   <span>{error}</span>
                 </div>
               ) : null}
 
-              <button
-                type="button"
-                className="btn pri"
-                style={{ width: "100%" }}
-                disabled={!teacherId || matchSubjects.length === 0 || submitting}
-                title={
-                  !teacherId
-                    ? "선생님을 먼저 선택하세요"
-                    : matchSubjects.length === 0
-                      ? "담당 과목을 1개 이상 선택해야 보낼 수 있습니다"
-                      : undefined
-                }
-                onClick={() => void handleMatch()}
-              >
-                {submitting ? "등록 중…" : "매칭 제안 보내기"}
-              </button>
+              <div className="sf-actions">
+                <button
+                  type="button"
+                  className="btn pri btn-block"
+                  disabled={!teacherId || matchSubjects.length === 0 || submitting}
+                  title={
+                    !teacherId
+                      ? "선생님을 먼저 선택하세요"
+                      : matchSubjects.length === 0
+                        ? "담당 과목을 1개 이상 선택해야 보낼 수 있습니다"
+                        : undefined
+                  }
+                  onClick={() => void handleMatch()}
+                >
+                  {submitting ? "등록 중…" : "매칭 제안 보내기"}
+                </button>
+              </div>
             </>
           )}
         </div>

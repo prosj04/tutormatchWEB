@@ -132,50 +132,53 @@ export function TeacherLessonConfirmCard() {
   return (
     <div className="sec">
       <h2>확인 대기 수업</h2>
-      <div className="card">
+      <div className="sf-rows">
         {lessons.map((l) => (
-          <div className="row" key={l.id}>
+          <div className="sf-r" key={l.id}>
             <span className="av">{initial(l.studentName)}</span>
-            <div className="g">
+            <div className="sf-g">
               <b>{l.studentName}</b>
               <p>
                 {l.subject} · {formatWhen(l.startAt)}
               </p>
             </div>
-            <button
-              type="button"
-              className="btn sm pri"
-              disabled={submitting}
-              onClick={() => void submitCompleted(l)}
-            >
-              수업 완료
-            </button>
-            <button
-              type="button"
-              className="btn sm ghost"
-              disabled={submitting}
-              onClick={() => {
-                resetDialog();
-                setTarget(l);
-              }}
-            >
-              수업을 하지 못했어요
-            </button>
+            <span className="sf-acts">
+              <button
+                type="button"
+                className="btn sm pri"
+                disabled={submitting}
+                onClick={() => void submitCompleted(l)}
+              >
+                수업 완료
+              </button>
+              <button
+                type="button"
+                className="btn sm ghost"
+                disabled={submitting}
+                onClick={() => {
+                  resetDialog();
+                  setTarget(l);
+                }}
+              >
+                수업을 하지 못했어요
+              </button>
+            </span>
           </div>
         ))}
       </div>
 
       {target ? (
-        <div className="card" style={{ marginTop: 12 }}>
-          <p style={{ fontWeight: 700 }}>
+        <div className="sf-block" style={{ marginTop: 20 }}>
+          <div className="sf-block-h">
             {target.studentName} · {formatWhen(target.startAt)} 수업
-          </p>
+          </div>
 
           {/* 과실 구분 */}
-          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+          <div className="opts">
             <button
               type="button"
-              className={`btn sm ${fault === "STUDENT" ? "sec" : "ghost"}`}
+              className="opt"
+              aria-pressed={fault === "STUDENT"}
               onClick={() => {
                 setFault("STUDENT");
                 setReason("");
@@ -186,7 +189,8 @@ export function TeacherLessonConfirmCard() {
             </button>
             <button
               type="button"
-              className={`btn sm ${fault === "NOT_STUDENT" ? "sec" : "ghost"}`}
+              className="opt"
+              aria-pressed={fault === "NOT_STUDENT"}
               onClick={() => {
                 setFault("NOT_STUDENT");
                 setReason("");
@@ -198,31 +202,35 @@ export function TeacherLessonConfirmCard() {
           </div>
 
           {fault ? (
-            <div style={{ marginTop: 12 }}>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {[...reasons, "기타"].map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    className={`btn sm ${reason === r ? "sec" : "ghost"}`}
-                    onClick={() => setReason(r)}
-                  >
-                    {r}
-                  </button>
-                ))}
+            <>
+              <div className="field" style={{ marginTop: 16 }}>
+                <div className="opts">
+                  {[...reasons, "기타"].map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      className="opt"
+                      aria-pressed={reason === r}
+                      onClick={() => setReason(r)}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
               </div>
               {reason === "기타" ? (
-                <input
-                  type="text"
-                  className="inp"
-                  placeholder="사유를 입력해 주세요"
-                  value={customReason}
-                  onChange={(e) => setCustomReason(e.target.value)}
-                  style={{ marginTop: 10, width: "100%" }}
-                />
+                <div className="field">
+                  <input
+                    type="text"
+                    className="inp"
+                    placeholder="사유를 입력해 주세요"
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                  />
+                </div>
               ) : null}
 
-              <div style={{ marginTop: 12 }}>
+              <div className="sf-actions">
                 <button
                   type="button"
                   className="btn pri"
@@ -234,19 +242,16 @@ export function TeacherLessonConfirmCard() {
                 <button
                   type="button"
                   className="btn ghost"
-                  style={{ marginLeft: 8 }}
                   disabled={submitting}
                   onClick={resetDialog}
                 >
                   취소
                 </button>
               </div>
-            </div>
+            </>
           ) : null}
 
-          {message ? (
-            <p style={{ marginTop: 10, color: "var(--fg)" }}>{message}</p>
-          ) : null}
+          {message ? <p className="sf-ok">{message}</p> : null}
         </div>
       ) : null}
     </div>

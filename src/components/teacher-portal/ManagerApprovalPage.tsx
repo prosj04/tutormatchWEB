@@ -81,7 +81,7 @@ export function ManagerApprovalPage() {
 
   return (
     <section className="page on" id="pg-approval">
-      <div className="crumb">/manager/teacher-approval</div>
+      <div className="crumb">선생님 승인</div>
       <h1>선생님 승인</h1>
       <p className="sub">
         지원 서류를 검토하고 승인·반려합니다. 치프 승인 라인은 별도(/chief-manager).
@@ -96,66 +96,60 @@ export function ManagerApprovalPage() {
         </div>
       ) : null}
 
-      <div className="sec card">
+      <div className="sec">
         {loading ? (
-          <div className="row">
-            <div className="g">
-              <p>불러오는 중…</p>
-            </div>
-          </div>
+          <p className="sf-sub">불러오는 중…</p>
         ) : pendingTeachers.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <p>승인 대기 중인 선생님이 없습니다.</p>
-            </div>
-          </div>
+          <p className="sf-sub">승인 대기 중인 선생님이 없습니다.</p>
         ) : (
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>지원자</th>
-                <th>과목</th>
-                <th>연락처</th>
-                <th>상태</th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pendingTeachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td>
-                    <b>{teacher.name}</b>
-                    <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "var(--mut)" }}>
-                      {teacher.email}
-                    </span>
-                  </td>
-                  <td>{teacher.subjects}</td>
-                  <td>{teacher.phone}</td>
-                  <td>
-                    <span className="bst warn">검토 대기</span>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn pri sm"
-                      disabled={submittingId === teacher.id}
-                      onClick={() => void handleApproval(teacher.id, true)}
-                    >
-                      승인
-                    </button>{" "}
-                    <button
-                      type="button"
-                      className="btn ghost sm"
-                      disabled={submittingId === teacher.id}
-                      onClick={() => void handleApproval(teacher.id, false)}
-                    >
-                      반려
-                    </button>
-                  </td>
+          <div className="sf-tbl-wrap">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>지원자</th>
+                  <th>과목</th>
+                  <th>연락처</th>
+                  <th>상태</th>
+                  <th>액션</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {pendingTeachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>
+                      <b>{teacher.name}</b>
+                      <span className="sf-meta">{teacher.email}</span>
+                    </td>
+                    <td>{teacher.subjects}</td>
+                    <td className="num">{teacher.phone}</td>
+                    <td>
+                      <span className="bst warn">검토 대기</span>
+                    </td>
+                    <td className="sf-acts-cell">
+                      <span className="sf-acts">
+                        <button
+                          type="button"
+                          className="btn pri sm"
+                          disabled={submittingId === teacher.id}
+                          onClick={() => void handleApproval(teacher.id, true)}
+                        >
+                          승인
+                        </button>
+                        <button
+                          type="button"
+                          className="btn ghost sm"
+                          disabled={submittingId === teacher.id}
+                          onClick={() => void handleApproval(teacher.id, false)}
+                        >
+                          반려
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -253,9 +247,9 @@ function ManagerAdminTools() {
   }
 
   return (
-    <div className="sec grid2">
-      <form className="card" style={{ padding: "20px" }} onSubmit={submitLink}>
-        <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>학부모↔학생 수동 연결</h2>
+    <div className="sec sf-split">
+      <form className="sf-block" onSubmit={submitLink}>
+        <div className="sf-block-h">학부모↔학생 수동 연결</div>
         <div className="field">
           <label>학부모 전화번호</label>
           <input
@@ -277,9 +271,11 @@ function ManagerAdminTools() {
             ))}
           </select>
         </div>
-        <button type="submit" className="btn pri" disabled={linkBusy || !studentId || !parentPhone.trim()}>
-          {linkBusy ? "연결 중…" : "연결 (linkedVia: MANAGER)"}
-        </button>
+        <div className="sf-actions">
+          <button type="submit" className="btn pri" disabled={linkBusy || !studentId || !parentPhone.trim()}>
+            {linkBusy ? "연결 중…" : "연결 (linkedVia: MANAGER)"}
+          </button>
+        </div>
         {linkMsg ? (
           <div className={linkOk ? "banner ok" : "banner err"} role="status" style={{ marginTop: "12px" }}>
             {linkOk ? (
@@ -292,8 +288,8 @@ function ManagerAdminTools() {
         ) : null}
       </form>
 
-      <form className="card" style={{ padding: "20px" }} onSubmit={submitReset}>
-        <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px" }}>비밀번호 재설정 (학생·학부모)</h2>
+      <form className="sf-block" onSubmit={submitReset}>
+        <div className="sf-block-h">비밀번호 재설정 (학생·학부모)</div>
         <div className="field">
           <label>대상 (전화번호 또는 이메일)</label>
           <input
@@ -320,9 +316,11 @@ function ManagerAdminTools() {
             <span className="f-err">비밀번호는 8자 이상이어야 합니다.</span>
           ) : null}
         </div>
-        <button type="submit" className="btn sec" disabled={resetBusy || !resetId.trim() || resetPw.length < 8}>
-          {resetBusy ? "재설정 중…" : "재설정 (감사 로그 기록)"}
-        </button>
+        <div className="sf-actions">
+          <button type="submit" className="btn sec" disabled={resetBusy || !resetId.trim() || resetPw.length < 8}>
+            {resetBusy ? "재설정 중…" : "재설정 (감사 로그 기록)"}
+          </button>
+        </div>
         {resetMsg ? (
           <div className={resetOk ? "banner ok" : "banner err"} role="status" style={{ marginTop: "12px" }}>
             {resetOk ? (

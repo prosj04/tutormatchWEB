@@ -221,91 +221,85 @@ export function ManagerMonitoringPage({
 
   return (
     <section className="page on" id="pg-monitor">
-      <div className="crumb">/teacher-portal/dashboard/monitoring</div>
+      <div className="crumb">모니터링</div>
       <h1>모니터링</h1>
       <p className="sub">담당 학생의 진행 현황을 드릴다운하고 케어로그를 남깁니다.</p>
 
-      <div className="sec grid3">
-        <div className="card kpi">
+      <div className="sec kpis">
+        <div className="kpi">
           <b>{overview?.studentCount ?? "—"}</b>
           <span>담당 학생</span>
         </div>
-        <div className="card kpi">
+        <div className="kpi">
           <b>
             {overview ? overview.avgCompletionRate : "—"}
             <em>%</em>
           </b>
           <span>이번 주 평균 완료율</span>
         </div>
-        <div className="card kpi">
+        <div className="kpi">
           <b>{overview?.staleQuestions ?? "—"}</b>
           <span>미답변 질문 (24h+)</span>
         </div>
       </div>
 
-      <div className="sec card">
+      <div className="sec">
         {loading ? (
-          <div className="row">
-            <div className="g">
-              <p>불러오는 중…</p>
-            </div>
-          </div>
+          <p className="sf-sub">불러오는 중…</p>
         ) : students.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <p>담당 학생이 없습니다.</p>
-            </div>
-          </div>
+          <p className="sf-sub">담당 학생이 없습니다.</p>
         ) : (
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>학생</th>
-                <th>신호</th>
-                <th>담당 선생님</th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((s) => (
-                <tr key={s.id}>
-                  <td>
-                    <b>
-                      {s.name} · {s.grade}
-                    </b>
-                  </td>
-                  <td>
-                    완료율 {s.completionRate}% · 미답변 {s.unansweredStale}
-                    <span className={statusBadgeClass(s.statusLabel)} style={{ marginLeft: "8px" }}>
-                      {s.statusLabel}
-                    </span>
-                    {s.subscription?.status === "PAUSED" ? (
-                      <span className="bst mut" style={{ marginLeft: "6px" }}>
-                        일시정지
-                      </span>
-                    ) : null}
-                  </td>
-                  <td>{s.teacherName}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn pri sm"
-                      onClick={() => void openDrawer(s.id)}
-                    >
-                      케어로그
-                    </button>{" "}
-                    <button
-                      type="button"
-                      className="btn sec sm"
-                      onClick={() => void openDrawer(s.id)}
-                    >
-                      상세
-                    </button>
-                  </td>
+          <div className="sf-tbl-wrap">
+            <table className="tbl">
+              <thead>
+                <tr>
+                  <th>학생</th>
+                  <th>신호</th>
+                  <th>담당 선생님</th>
+                  <th>액션</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {students.map((s) => (
+                  <tr key={s.id}>
+                    <td>
+                      <b>
+                        {s.name} · {s.grade}
+                      </b>
+                    </td>
+                    <td>
+                      완료율 {s.completionRate}% · 미답변 {s.unansweredStale}
+                      <span className="sf-inline">
+                        <span className={statusBadgeClass(s.statusLabel)}>{s.statusLabel}</span>
+                        {s.subscription?.status === "PAUSED" ? (
+                          <span className="bst mut">일시정지</span>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td>{s.teacherName}</td>
+                    <td className="sf-acts-cell">
+                      <span className="sf-acts">
+                        <button
+                          type="button"
+                          className="btn pri sm"
+                          onClick={() => void openDrawer(s.id)}
+                        >
+                          케어로그
+                        </button>
+                        <button
+                          type="button"
+                          className="btn sec sm"
+                          onClick={() => void openDrawer(s.id)}
+                        >
+                          상세
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -318,10 +312,10 @@ export function ManagerMonitoringPage({
         </div>
         <div className="d-b">
           {detailLoading ? (
-            <p className="sub">불러오는 중…</p>
+            <p className="sf-sub">불러오는 중…</p>
           ) : detail ? (
             <>
-              <div className="kv" style={{ padding: "0 0 14px" }}>
+              <div className="kv">
                 <div>
                   <span>이번 주 학습계획</span>
                   <b>{detail.plans.length}일치</b>
@@ -336,15 +330,13 @@ export function ManagerMonitoringPage({
                 </div>
               </div>
 
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "4px 0 8px" }}>
-                구독 일시정지
-              </h4>
+              <h4 className="sf-drawer-h">구독 일시정지</h4>
               {!drawerSub ? (
-                <p className="sub">활성 구독이 없습니다.</p>
+                <p className="sf-sub">활성 구독이 없습니다.</p>
               ) : drawerSub.status === "PAUSED" ? (
-                <div className="card">
-                  <div className="row">
-                    <div className="g">
+                <div className="sf-rows">
+                  <div className="sf-r">
+                    <div className="sf-g">
                       <b>
                         <span className="bst mut">일시정지 중</span>
                         {drawerSub.pausedUntil
@@ -353,13 +345,15 @@ export function ManagerMonitoringPage({
                       </b>
                       <p>재개하면 다음 결제일이 정지 기간만큼 뒤로 밀립니다.</p>
                     </div>
-                    <button
-                      type="button"
-                      className="btn pri sm"
-                      onClick={() => openSubModal("RESUME")}
-                    >
-                      재개
-                    </button>
+                    <div className="sf-acts">
+                      <button
+                        type="button"
+                        className="btn pri sm"
+                        onClick={() => openSubModal("RESUME")}
+                      >
+                        재개
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -385,25 +379,25 @@ export function ManagerMonitoringPage({
                       placeholder="일시정지 사유 (내부용)"
                     />
                   </div>
-                  <button
-                    type="button"
-                    className="btn sec sm"
-                    onClick={() => openSubModal("PAUSE")}
-                  >
-                    일시정지
-                  </button>
+                  <div className="sf-actions">
+                    <button
+                      type="button"
+                      className="btn sec sm"
+                      onClick={() => openSubModal("PAUSE")}
+                    >
+                      일시정지
+                    </button>
+                  </div>
                 </>
               )}
 
               {detail.plans.length > 0 ? (
                 <>
-                  <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "10px 0 8px" }}>
-                    이번 주 학습계획
-                  </h4>
-                  <div className="card">
+                  <h4 className="sf-drawer-h">이번 주 학습계획</h4>
+                  <div className="sf-rows sf-tight">
                     {detail.plans.map((plan) => (
-                      <div className="row" key={plan.id}>
-                        <div className="g">
+                      <div className="sf-r sf-top" key={plan.id}>
+                        <div className="sf-g">
                           <b>{formatConsultationDateLabel(plan.date)}</b>
                           <p>
                             {plan.tasks.map((t) => (t.isDone ? `✓ ${t.title}` : t.title)).join(" · ")}
@@ -417,13 +411,11 @@ export function ManagerMonitoringPage({
 
               {detail.unansweredQuestions.length > 0 ? (
                 <>
-                  <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "14px 0 8px" }}>
-                    미답변 질문 (24h+)
-                  </h4>
-                  <div className="card">
+                  <h4 className="sf-drawer-h">미답변 질문 (24h+)</h4>
+                  <div className="sf-rows sf-tight">
                     {detail.unansweredQuestions.map((q) => (
-                      <div className="row" key={q.id}>
-                        <div className="g">
+                      <div className="sf-r sf-top" key={q.id}>
+                        <div className="sf-g">
                           <b>{q.date}</b>
                           <p>{q.content}</p>
                         </div>
@@ -435,13 +427,11 @@ export function ManagerMonitoringPage({
 
               {detail.recentComments.length > 0 ? (
                 <>
-                  <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "14px 0 8px" }}>
-                    최근 선생님 코멘트
-                  </h4>
-                  <div className="card">
+                  <h4 className="sf-drawer-h">최근 선생님 코멘트</h4>
+                  <div className="sf-rows sf-tight">
                     {detail.recentComments.map((c) => (
-                      <div className="row" key={c.date}>
-                        <div className="g">
+                      <div className="sf-r sf-top" key={c.date}>
+                        <div className="sf-g">
                           <b>{c.date}</b>
                           <p>{c.comment}</p>
                         </div>
@@ -451,12 +441,8 @@ export function ManagerMonitoringPage({
                 </>
               ) : null}
 
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "14px 0 8px" }}>
-                케어로그 작성
-              </h4>
-              {careLogToast ? (
-                <p className="sub" style={{ color: "var(--acc-text)" }}>{careLogToast}</p>
-              ) : null}
+              <h4 className="sf-drawer-h">케어로그 작성</h4>
+              {careLogToast ? <p className="sf-ok">{careLogToast}</p> : null}
               <div className="field">
                 <label>유형</label>
                 <div className="opts">
@@ -474,13 +460,13 @@ export function ManagerMonitoringPage({
                 </div>
               </div>
               <div className="field">
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 700 }}>
+                <label className="sf-label-row">
                   케어로그
                   <span className={careLogVisible ? "bst acc" : "bst mut"}>
                     {careLogVisible ? "학생 공개" : "내부용"}
                   </span>
                 </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600, fontSize: "12.5px" }}>
+                <label className="check-row">
                   <input
                     type="checkbox"
                     checked={careLogVisible}
@@ -489,32 +475,29 @@ export function ManagerMonitoringPage({
                   학생에게 공개
                 </label>
                 {careLogVisible ? (
-                  <p className="sub" style={{ color: "var(--acc-text)", fontWeight: 700 }}>
-                    이 케어로그는 학생에게 보입니다.
-                  </p>
+                  <p className="sf-ok">이 케어로그는 학생에게 보입니다.</p>
                 ) : (
-                  <p className="sub">기본은 비공개(내부용)입니다.</p>
+                  <p className="sf-sub">기본은 비공개(내부용)입니다.</p>
                 )}
                 <textarea
                   className="inp area"
+                  style={{ marginTop: "12px" }}
                   value={careLogNote}
                   onChange={(e) => setCareLogNote(e.target.value.slice(0, 1000))}
                   placeholder="조치 내용을 기록하세요 (최대 1000자)"
                 />
               </div>
 
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "14px 0 8px" }}>
-                최근 케어로그
-              </h4>
+              <h4 className="sf-drawer-h">최근 케어로그</h4>
               {careLogsLoading ? (
-                <p className="sub">불러오는 중…</p>
+                <p className="sf-sub">불러오는 중…</p>
               ) : careLogs.length === 0 ? (
-                <p className="sub">아직 케어 로그가 없습니다.</p>
+                <p className="sf-sub">아직 케어 로그가 없습니다.</p>
               ) : (
-                <div className="card">
+                <div className="sf-rows sf-tight">
                   {careLogs.map((log) => (
-                    <div className="row" key={log.id}>
-                      <div className="g">
+                    <div className="sf-r sf-top" key={log.id}>
+                      <div className="sf-g">
                         <b>
                           {CARE_LOG_TYPE_LABELS[log.type]}
                           {!log.visibleToStudent ? " · 비공개" : ""}
