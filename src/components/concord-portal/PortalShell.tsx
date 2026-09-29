@@ -8,9 +8,8 @@ import { useState, type ReactNode } from "react";
 import { useDesignTheme } from "@/hooks/useDesignTheme";
 
 /**
- * Concord 웹 포털 공용 셸 — 시안 "Concord - 웹 포털.html"/"웹 학부모.html"의
- * .shell > aside.side + main.main 구조 그대로 (concord-portal.css).
- * 시안의 역할 미리보기 seg는 쇼케이스 크롬이므로 버리고 실제 세션 역할을 쓴다.
+ * Concord 웹 포털 공용 사이드바 셸 (디자인 시스템 v3 — ds.css §7-1).
+ * .shell > aside.side + main.main. 역할 라벨·메뉴·사용자·로그아웃·테마 제어.
  */
 
 export type PortalNavItem = {
@@ -76,13 +75,13 @@ export function PortalShell({
               <p>{userMeta}</p>
             </span>
           </div>
-          {/* 시안에 없는 프로덕션 필수 기능 — 포털 어휘(.btn ghost sm)로만 표현 */}
           <button
             type="button"
-            className="btn ghost sm"
+            className="logout"
             onClick={() => void signOut({ redirectTo: "/" })}
           >
-            로그아웃
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+            <span>로그아웃</span>
           </button>
         </div>
       </aside>
@@ -96,7 +95,7 @@ export function PortalShell({
             aria-pressed={sideCollapsed}
             onClick={() => setSideCollapsed((v) => !v)}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M4 8h16M4 16h16" /></svg>
           </button>
           <div className="seg" role="group" aria-label="색 테마">
             <button

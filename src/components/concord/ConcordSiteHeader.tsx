@@ -24,7 +24,8 @@ const BASE_NAV: NavItem[] = [
 
 function isActive(pathname: string, href: string) {
   if (href === "/tutors") return pathname === "/tutors" || pathname.startsWith("/tutors/");
-  if (href.startsWith("/#")) return pathname === "/";
+  // 홈 안 앵커(비교하기 등)는 현재 위치 표시 대상이 아니다 — 홈에서 항상 활성으로 보이는 오표시 방지
+  if (href.startsWith("/#")) return false;
   return pathname === href;
 }
 
@@ -84,8 +85,8 @@ export function ConcordSiteHeader({
         : role === "PARENT"
           ? "학부모"
           : "학생";
-  // 시안: 학생·학부모·관리자 포털은 primary(acc), 선생님 포털은 secondary(ghost)
-  const portalBtnClass = isStaff ? "btn btn-ghost btn-sm" : "btn btn-acc btn-sm";
+  // v3: 로그인 후 포털 이동은 보조 버튼 하나로 통일 — 헤더의 액센트 면은 비로그인 상담 CTA 한 곳만
+  const portalBtnClass = "btn btn-ghost btn-sm";
   const avatarInitial = name ? Array.from(name)[0] ?? "회" : "회";
 
   const links = [
@@ -182,7 +183,7 @@ export function ConcordSiteHeader({
 
             <div className="nav-session-desktop">
               {status === "loading" ? (
-                <span style={{ width: 72, height: 36, borderRadius: 999, background: "var(--panel-2)", display: "inline-block" }} />
+                <span className="skel" style={{ width: 88, height: 34, borderRadius: 999, display: "inline-block" }} />
               ) : status === "authenticated" && session?.user ? (
                 <>
                   <span className="sess">
@@ -206,7 +207,7 @@ export function ConcordSiteHeader({
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-ghost btn-sm">
+                  <Link href="/login" className="btn btn-text btn-sm">
                     {c("btn_login", "로그인")}
                   </Link>
                   <button type="button" className="btn btn-acc btn-sm" onClick={() => void goConsultation("header")}>
@@ -224,12 +225,10 @@ export function ConcordSiteHeader({
               onClick={() => setOpen((v) => !v)}
             >
               {open ? (
-                <span style={{ fontSize: 22, lineHeight: 1 }}>×</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden><path d="M1 1l12 12M13 1L1 13" /></svg>
               ) : (
-                <svg width="20" height="16" viewBox="0 0 20 16" fill="currentColor" aria-hidden>
-                  <rect x="0" y="0" width="20" height="2" rx="1" />
-                  <rect x="0" y="7" width="20" height="2" rx="1" />
-                  <rect x="0" y="14" width="20" height="2" rx="1" />
+                <svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+                  <path d="M0 1h18M0 9h18" />
                 </svg>
               )}
             </button>

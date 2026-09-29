@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
+import { Noto_Serif_KR } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 
 import "./globals.css";
+import "./ds.css";
 import "./concord.css";
-import "./dark-mode-bridge.css";
-import "./responsive.css";
+import "./marketing.css";
+import "./forms.css";
+import "./portal-student.css";
+import "./portal-parent.css";
+import "./portal-staff.css";
+import "./portal-admin.css";
 
 import { HydrationMarker } from "@/components/layout/HydrationMarker";
 import { getPortalDesign } from "@/lib/portal-design";
@@ -46,6 +52,15 @@ const pretendard = localFont({
   ],
   display: "swap",
   variable: "--font-pretendard",
+});
+
+/** 디자인 시스템 v3 디스플레이 서체 — 헤드라인·숫자·인용 전용 (본문은 Pretendard) */
+const serif = Noto_Serif_KR({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  preload: false,
+  display: "swap",
+  variable: "--font-serif",
 });
 
 const SITE_DESCRIPTION =
@@ -105,14 +120,14 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="ko" className={pretendard.variable} data-portal-design={getPortalDesign()} suppressHydrationWarning>
+    <html lang="ko" className={`${pretendard.variable} ${serif.variable}`} data-portal-design={getPortalDesign()} suppressHydrationWarning>
       {/* Prevent flash-of-wrong-theme: read localStorage before first paint */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var c=localStorage.getItem('concord-color');document.documentElement.setAttribute('data-color',c==='blue'?'blue':'green');var m=localStorage.getItem('concord-mode');if(m==='dark')document.documentElement.setAttribute('data-theme','dark');var po=localStorage.getItem('portal-design-override');var pd=po==='legacy'?'legacy':po==='concord'?'concord':'${getPortalDesign()}';document.documentElement.setAttribute('data-portal-design',pd);}catch(e){document.documentElement.setAttribute('data-portal-design','${getPortalDesign()}');}})();` }} />
         {/* No-JS safeguard: reveal elements stay visible if scripts are disabled */}
         <noscript><style>{`.reveal{opacity:1!important;transform:none!important;}`}</style></noscript>
       </head>
-      <body className="min-h-screen [word-break:keep-all]">
+      <body className="min-h-screen">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

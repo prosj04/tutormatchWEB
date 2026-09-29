@@ -2,118 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ════════════════════════════════════════════════════
-   DESIGN THEME V2 — 4-combination tokens
-   data-color = "green"(default) | "blue"
-   data-theme = absent(light)    | "dark"
-   ════════════════════════════════════════════════════ */
-
-/* Green + Light (default) */
-:root {
-  --bg:#FAF9F4; --panel:#FFFFFF; --panel-2:#F0EFE7;
-  --line:rgba(34,38,30,.085); --line-2:rgba(34,38,30,.15);
-  --fg:#161A16; --mut:#585C53; --mut-2:#9AA095;
-  --stripe-a:#EEEDE3; --stripe-b:#F6F5EE;
-  --header-bg:rgba(250,249,244,.85);
-  --acc:#10B981; --acc-press:#0CA372; --acc-rgb:16,185,129; --on-acc:#FFFFFF; --acc-text:#07875A;
-  --shadow-sm:0 1px 2px rgba(34,38,30,.05),0 3px 10px rgba(34,38,30,.06);
-  --shadow-md:0 10px 24px rgba(34,38,30,.09),0 22px 50px rgba(34,38,30,.09);
-  --wrap:1280px; --ease:cubic-bezier(.2,.7,.3,1);
-  --r-card:18px; --r-card-lg:22px; --r-wrap:20px; --r-control:12px; --r-pill:999px;
-}
-/* Blue + Light */
-[data-color="blue"] {
-  --bg:#F5F8FE; --panel:#FFFFFF; --panel-2:#EAF0FB;
-  --line:rgba(20,38,74,.085); --line-2:rgba(20,38,74,.15);
-  --fg:#0F1A2E; --mut:#54627A; --mut-2:#93A1B8;
-  --stripe-a:#E8EFFA; --stripe-b:#F2F6FD;
-  --header-bg:rgba(245,248,254,.85);
-  --acc:#2563EB; --acc-press:#1d54cf; --acc-rgb:37,99,235; --on-acc:#FFFFFF; --acc-text:#1D4ED8;
-  --shadow-sm:0 1px 2px rgba(20,38,74,.05),0 3px 10px rgba(20,38,74,.06);
-  --shadow-md:0 10px 24px rgba(20,38,74,.09),0 22px 50px rgba(20,38,74,.09);
-}
-/* Green + Dark */
-[data-color="green"][data-theme="dark"] {
-  --bg:#181A1B; --panel:#202325; --panel-2:#282B2D;
-  --line:rgba(200,206,202,.11); --line-2:rgba(200,206,202,.18);
-  --fg:#ECEEEC; --mut:#AEB4B0; --mut-2:#7C817E;
-  --stripe-a:#282B2D; --stripe-b:#202325;
-  --header-bg:rgba(24,26,27,.82);
-  --acc:#2EA46E; --acc-press:#38B97E; --acc-rgb:46,164,110; --on-acc:#06150D; --acc-text:#64C699;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.24),0 2px 10px rgba(0,0,0,.28);
-  --shadow-md:0 14px 32px rgba(0,0,0,.4),0 26px 52px rgba(0,0,0,.34);
-}
-/* Blue + Dark */
-[data-color="blue"][data-theme="dark"] {
-  --bg:#0A1120; --panel:#101D32; --panel-2:#16273F;
-  --line:rgba(140,175,230,.13); --line-2:rgba(140,175,230,.22);
-  --fg:#EAF1FB; --mut:#9DABC4; --mut-2:#6A7894;
-  --stripe-a:#16273F; --stripe-b:#101D32;
-  --header-bg:rgba(10,17,32,.80);
-  --acc:#3B82F6; --acc-press:#5B9CFF; --acc-rgb:59,130,246; --on-acc:#06122A; --acc-text:#85B5FF;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.3),0 2px 10px rgba(0,0,0,.35);
-  --shadow-md:0 16px 36px rgba(0,0,0,.5),0 30px 60px rgba(0,0,0,.42);
-}
-/* Responsive wrap expansion — capped in responsive.css on large viewports */
-@media (min-width:1500px) { :root { --wrap:1320px; } }
-
-/* Dark-mode table fix (color-agnostic) */
-[data-theme="dark"] .lp2-cmp .lp2-col-c { background:rgba(var(--acc-rgb),.12); }
-[data-theme="dark"] .lp2-cmp thead .lp2-col-c { background:rgba(var(--acc-rgb),.2); }
-/* Compare Concord column header — HTML 시안(.cmp thead th.cc)과 동일하게 흰색 */
-.lp2-cmp thead th.lp2-cc { color:#fff; }
-
-/* KakaoTalk 채널 상담 버튼 — 브랜드 컬러는 카카오 가이드 고정값(테마 무관) */
-.kakao-btn {
-  --kakao-bg: #fee500;
-  --kakao-fg: #191919;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--kakao-bg); color: var(--kakao-fg);
-  font-weight: 700; font-size: 15px; border: 0; border-radius: 999px;
-  padding: 13px 24px; min-height: 44px; cursor: pointer; white-space: nowrap;
-  transition: transform .18s var(--ease), filter .18s;
-}
-.kakao-btn:hover { filter: brightness(.95); transform: translateY(-2px); }
-.kakao-btn svg { flex-shrink: 0; }
-.kakao-btn--sm { padding: 10px 16px; font-size: 13.5px; min-height: 38px; }
-@media (prefers-reduced-motion:reduce) { .kakao-btn { transition: none; } }
-
-/* V2 scroll-reveal */
-.reveal {
-  opacity:0; transform:translateY(22px);
-  transition:opacity .8s var(--ease),transform .8s var(--ease);
-}
-.reveal.in { opacity:1; transform:none; }
-
+/* 토큰·컴포넌트는 ds.css(디자인 시스템 v3)가 단일 출처. 여기에는 Tailwind 레이어 보정만 둔다. */
 
 @layer base {
   html {
-    @apply scroll-smooth;
     overflow-x: clip;
     max-width: 100%;
-  }
-
-  body {
-    background-color: var(--bg, #F5F5F5);
-    color: var(--fg, #111111);
-    font-family: var(--font-pretendard), "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    overflow-x: clip;
-    letter-spacing: -.01em;
-    word-break: keep-all;
-    font-feature-settings: "ss03","cv01";
-    transition: background .4s var(--ease, cubic-bezier(.2,.7,.3,1)), color .4s var(--ease, cubic-bezier(.2,.7,.3,1));
-    @apply text-base font-normal leading-relaxed antialiased;
-  }
-
-  button:not(:disabled),
-  input:where([type="button"], [type="submit"], [type="reset"]) {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  a:where(.inline-flex, .flex) {
-    min-height: 44px;
   }
 
   h1,
@@ -122,77 +16,29 @@
   h4,
   h5,
   h6 {
-    @apply font-sans font-extrabold;
     color: var(--fg);
   }
 }
 
-@keyframes fadeIn { 0%{opacity:0} to{opacity:1} }
-@keyframes slide-left { 0%{transform:translate(0)} to{transform:translate(-50%)} }
-@keyframes floatUpDown { 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} to{transform:translateY(0)} }
-@keyframes slide { 0%{transform:translate(0)} to{transform:translate(-25%)} }
-@keyframes marquee-loop { 0%{transform:translateX(0)} to{transform:translateX(calc(-50% - var(--marquee-gap-half, 0px)))} }
-
-@layer components {
-  /* 요금제 카드 — 310×600 비율 고정, 좁은 화면은 카드·폰트만 축소(줄바꿈 없음) */
-  .pricing-plan-card {
-    container-type: inline-size;
-    width: min(310px, calc(100vw - 2rem));
-    aspect-ratio: 310 / 600;
-  }
-
-  .pricing-plan-card__top {
-    height: 7.14%;
-    min-height: 2rem;
-  }
-
-  .pricing-plan-card__body {
-    padding: clamp(1.25rem, 6cqi, 2rem);
-    padding-bottom: clamp(1.5rem, 7cqi, 2.5rem);
-  }
-
-  .pricing-plan-card__line {
-    @apply truncate whitespace-nowrap;
-  }
-
-  .pricing-plan-card__kicker {
-    font-size: clamp(0.625rem, 3.2cqi, 0.75rem);
-  }
-
-  .pricing-plan-card__title {
-    font-size: clamp(1.125rem, 7cqi, 1.5rem);
-  }
-
-  .pricing-plan-card__price {
-    font-size: clamp(1.75rem, 12cqi, 3rem);
-  }
-
-  .pricing-plan-card__subtitle,
-  .pricing-plan-card__feature,
-  .pricing-plan-card__cta {
-    font-size: clamp(0.75rem, 4cqi, 0.875rem);
+/* 터치 기기에서만 최소 히트 영역 보장 (M-9) — 데스크톱의 컴팩트 컨트롤은 건드리지 않는다 */
+@media (pointer: coarse) {
+  button:not(:disabled):not(.seg button),
+  input:where([type="button"], [type="submit"], [type="reset"]) {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 
-@layer utilities {
-  .animate-slide {
-    animation: slide var(--speed, 28s) linear infinite;
-  }
+@keyframes fadeIn { 0% { opacity: 0 } to { opacity: 1 } }
+@keyframes marquee-loop { 0% { transform: translateX(0) } to { transform: translateX(calc(-50% - var(--marquee-gap-half, 0px))) } }
 
+@layer utilities {
   .animate-marquee-loop {
     animation: marquee-loop var(--speed, 34s) linear infinite;
   }
 
-  .animate-slide-left {
-    animation: slide-left var(--speed, 24s) linear infinite;
-  }
-
   .animate-fade-in {
     animation: fadeIn 0.45s ease-out both;
-  }
-
-  .animate-float-up-down {
-    animation: floatUpDown 3s ease-in-out infinite;
   }
 
   .scrollbar-hide {
@@ -202,22 +48,5 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-
-  .faq-toggle:checked ~ .faq-header .chevron-icon {
-    transform: rotate(180deg);
-  }
-
-  .content-wrapper {
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease-in-out;
-  }
-
-  .faq-toggle:checked ~ .content-wrapper {
-    grid-template-rows: 1fr;
-  }
-
-  .faq-content {
-    min-height: 0;
   }
 }
