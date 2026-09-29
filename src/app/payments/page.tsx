@@ -113,12 +113,12 @@ export default async function PaymentsPage(
 
   return (
     <section className="page on" id="pg-payments" data-screen-label="결제 내역">
-      <div className="crumb">/payments</div>
+      <div className="crumb">결제 내역</div>
       <h1>결제 내역</h1>
       <p className="sub">결제·환불 이력과 구독 상태를 확인하세요.</p>
 
       {/* 현재 구독 */}
-      <div className="sec card">
+      <div className="st-block card">
         {currentSubscription ? (
           (() => {
             const info = getPlanInfo(currentSubscription.plan);
@@ -149,14 +149,14 @@ export default async function PaymentsPage(
                     </p>
                   ) : null}
                   {isPastDue ? (
-                    <p style={{ color: "var(--warn, #b45309)", fontWeight: 600 }}>
+                    <p className="st-warn" style={{ fontWeight: 600 }}>
                       카드 승인에 실패했습니다. 카드를 확인하고 재결제해 주세요.
                     </p>
                   ) : null}
                 </div>
                 <span className={badge.cls}>{badge.label}</span>
                 {isPastDue ? (
-                  <a className="btn sec sm" href="#pg-payments-billing">
+                  <a className="btn btn-ghost btn-sm" href="#pg-payments-billing">
                     카드 확인·재결제
                   </a>
                 ) : (
@@ -173,7 +173,7 @@ export default async function PaymentsPage(
               <b>현재 활성 구독이 없습니다</b>
               <p>수업을 신청하면 여기에 구독 상태가 표시됩니다.</p>
             </div>
-            <Link className="btn sec sm" href="/checkout">
+            <Link className="btn btn-ghost btn-sm" href="/checkout">
               수업 신청
             </Link>
           </div>
@@ -181,7 +181,7 @@ export default async function PaymentsPage(
       </div>
 
       {/* 자동결제 관리 (Toss 위젯 — 기존 로직 유지) */}
-      <div className="sec" data-portal-content id="pg-payments-billing">
+      <div className="st-block" data-portal-content id="pg-payments-billing">
         <BillingManageSection
           customerKey={`student-${student.id}`}
           profile={billingProfile}
@@ -191,7 +191,7 @@ export default async function PaymentsPage(
 
       {/* 결제·환불 내역 */}
       {paymentCompletions.length > 0 ? (
-        <div className="sec card" style={{ overflow: "hidden" }}>
+        <div className="st-block card">
           <table className="tbl">
             <thead>
               <tr>
@@ -231,7 +231,7 @@ export default async function PaymentsPage(
                           현금영수증
                         </a>
                       ) : (
-                        <span style={{ color: "var(--mut-2)" }}>-</span>
+                        <span className="st-dim">-</span>
                       )}
                     </td>
                   </tr>
@@ -244,21 +244,23 @@ export default async function PaymentsPage(
 
       {/* 구독 이력 */}
       {subscriptions.length > 0 ? (
-        <div className="sec card">
-          <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>구독 이력</h2>
-          {subscriptions.map((s) => {
-            const info = getPlanInfo(s.plan);
-            const badge = STATUS_LABEL[s.status] ?? { label: s.status, cls: "bst mut" };
-            return (
-              <div key={s.id} className="row">
-                <div className="g">
-                  <b>{info.title}</b>
-                  <p>{formatDate(s.periodStart)}</p>
+        <div className="st-block">
+          <h2>구독 이력</h2>
+          <div className="card">
+            {subscriptions.map((s) => {
+              const info = getPlanInfo(s.plan);
+              const badge = STATUS_LABEL[s.status] ?? { label: s.status, cls: "bst mut" };
+              return (
+                <div key={s.id} className="row">
+                  <div className="g">
+                    <b>{info.title}</b>
+                    <p>{formatDate(s.periodStart)}</p>
+                  </div>
+                  <span className={badge.cls}>{badge.label}</span>
                 </div>
-                <span className={badge.cls}>{badge.label}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       ) : null}
     </section>

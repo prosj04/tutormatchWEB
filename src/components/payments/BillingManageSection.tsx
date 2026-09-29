@@ -150,87 +150,65 @@ export function BillingManageSection({
 
   return (
     <section>
-      <h2 className="mb-4 text-lg font-bold text-text-primary">자동결제 관리</h2>
+      <h2 className="st-sec-title">자동결제 관리</h2>
 
       {banner && (
-        <div className="mb-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {banner}
+        <div className="banner info" style={{ marginBottom: "16px" }}>
+          <span>{banner}</span>
         </div>
       )}
       {error && (
-        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
+        <div className="banner err" style={{ marginBottom: "16px" }} role="alert">
+          <span>{error}</span>
         </div>
       )}
 
       {!profile ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-surface px-6 py-6 text-center">
-          <p className="text-sm text-text-secondary">
+        <>
+          <p className="st-lead" style={{ margin: 0 }}>
             아직 자동결제 카드가 등록되어 있지 않습니다.
           </p>
-          <button
-            type="button"
-            onClick={openRegister}
-            disabled={busy}
-            className="mt-4 inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-60"
-          >
-            {busy ? "이동 중…" : "자동결제 카드 등록"}
-          </button>
-          <p className="mt-4 text-xs text-text-muted">
+          <div className="st-actions">
+            <button type="button" onClick={openRegister} disabled={busy} className="btn pri">
+              {busy ? "이동 중…" : "자동결제 카드 등록"}
+            </button>
+          </div>
+          <p className="footnote" style={{ marginTop: "16px", maxWidth: "38em" }}>
             자동결제는 언제든 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지
             않습니다.
           </p>
-        </div>
+        </>
       ) : (
-        <div className="rounded-2xl border border-gray-100 bg-surface p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-text-primary">
-                {profile.cardCompany ?? "등록된 카드"}
-              </p>
-              <p className="mt-1 text-xs text-text-muted">
-                {profile.cardNumberMasked ?? "**** **** **** ****"}
-              </p>
+        <>
+          <div className="st-billing-card">
+            <div className="st-card-meta">
+              <b>{profile.cardCompany ?? "등록된 카드"}</b>
+              <p>{profile.cardNumberMasked ?? "**** **** **** ****"}</p>
             </div>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                autoRenew
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
+            <span className={autoRenew ? "bst acc" : "bst mut"}>
               {autoRenew ? "자동결제 사용 중" : "자동결제 해지됨"}
             </span>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="st-actions">
             <button
               type="button"
               onClick={() => toggleAutoRenew(!autoRenew)}
               disabled={busy}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold transition disabled:opacity-60 ${
-                autoRenew
-                  ? "border border-gray-300 bg-white text-text-primary hover:bg-gray-50"
-                  : "bg-primary text-white hover:bg-primary/90"
-              }`}
+              className={autoRenew ? "btn btn-ghost" : "btn pri"}
             >
               {autoRenew ? "자동결제 해지" : "자동결제 다시 사용"}
             </button>
-            <button
-              type="button"
-              onClick={openRegister}
-              disabled={busy}
-              className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-gray-50 disabled:opacity-60"
-            >
+            <button type="button" onClick={openRegister} disabled={busy} className="btn btn-ghost">
               카드 변경
             </button>
           </div>
 
-          <p className="mt-4 text-xs text-text-muted">
+          <p className="footnote" style={{ marginTop: "16px", maxWidth: "38em" }}>
             자동결제는 언제든 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지
             않습니다.
           </p>
-        </div>
+        </>
       )}
     </section>
   );

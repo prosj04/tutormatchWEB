@@ -91,90 +91,79 @@ export function AddQuestionModal({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-question-title"
-    >
-      <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-6 shadow-xl sm:max-w-lg sm:rounded-2xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="add-question-title" className="text-lg font-bold text-text-primary">
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={submitting}
-            className="text-sm text-text-secondary hover:text-text-primary disabled:opacity-50"
-          >
-            {closeLabel}
-          </button>
-        </div>
+    <div className="scrim on">
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="add-question-title">
+        <div className="m-b">
+          <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+            <h3 id="add-question-title">{title}</h3>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={submitting}
+              className="btn ghost sm"
+              style={{ marginLeft: "auto" }}
+            >
+              {closeLabel}
+            </button>
+          </div>
 
-        <label htmlFor="add-question-content" className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
-          {labelContent}
-        </label>
-        <textarea
-          id="add-question-content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder={placeholderContent}
-          rows={5}
-          disabled={submitting}
-          className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-background px-4 py-3 text-sm text-text-primary outline-none focus:border-primary"
-        />
+          <div className="field" style={{ marginTop: "18px" }}>
+            <label htmlFor="add-question-content">{labelContent}</label>
+            <textarea
+              id="add-question-content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={placeholderContent}
+              rows={5}
+              disabled={submitting}
+              className="inp area"
+            />
+          </div>
 
-        <div className="mt-4">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/heic,image/heif,.heic"
-            className="hidden"
-            onChange={(e) => handleFileChange(e.target.files?.[0])}
-          />
-          <button
-            type="button"
-            disabled={submitting}
-            onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl border border-dashed border-gray-200 px-4 py-2.5 text-sm font-medium text-text-secondary hover:border-primary hover:text-primary disabled:opacity-50"
-          >
-            {btnAttach}
-          </button>
-          {previewUrl && (
-            <div className="mt-3 inline-block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewUrl}
-                alt={previewAlt}
-                className="h-24 rounded-lg border border-gray-100 object-cover"
-              />
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={() => setImageFile(null)}
-                className="mt-1 block text-xs text-text-muted hover:text-accent"
-              >
-                {btnRemoveImage}
-              </button>
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/heic,image/heif,.heic"
+              className="hidden"
+              style={{ display: "none" }}
+              onChange={(e) => handleFileChange(e.target.files?.[0])}
+            />
+            <button
+              type="button"
+              disabled={submitting}
+              onClick={() => fileInputRef.current?.click()}
+              className="btn btn-ghost btn-sm"
+            >
+              {btnAttach}
+            </button>
+            {previewUrl && (
+              <div className="st-thumb">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={previewUrl} alt={previewAlt} />
+                <button type="button" disabled={submitting} onClick={() => setImageFile(null)}>
+                  {btnRemoveImage}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <div className="banner err" style={{ marginTop: "16px" }} role="alert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              <span>{error}</span>
             </div>
           )}
         </div>
 
-        {error && (
-          <p className="mt-3 text-sm text-accent" role="alert">
-            {error}
-          </p>
-        )}
-
-        <button
-          type="button"
-          disabled={submitting}
-          onClick={handleSubmit}
-          className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-        >
-          {submitting ? btnSubmitting : btnSubmit}
-        </button>
+        <div className="m-f">
+          <button type="button" disabled={submitting} onClick={handleSubmit} className="btn pri">
+            {submitting ? btnSubmitting : btnSubmit}
+          </button>
+        </div>
       </div>
     </div>
   );

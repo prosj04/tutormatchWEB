@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { parseDateKey } from "@/lib/study-plan-dates";
+import { formatConsultationDateLabel, parseDateKey } from "@/lib/study-plan-dates";
 import { ANALYTICS_EVENTS } from "@/lib/analytics-events";
 import { trackEvent } from "@/lib/analytics-client";
 import type { ConsultationGoals } from "@/lib/consultation-report";
@@ -38,12 +38,6 @@ const CARE_TYPE_LABELS: Record<string, string> = {
   CHECK: "점검",
 };
 
-const CARE_TYPE_CLASSES: Record<string, string> = {
-  CONSULT: "bg-blue-50 text-blue-700",
-  INTERVENTION: "bg-orange-50 text-orange-700",
-  CHECK: "bg-green-50 text-green-700",
-};
-
 type StudentDashboardProps = {
   studentName: string;
   studentId: string;
@@ -57,6 +51,8 @@ type StudentDashboardProps = {
   activeMatch?: ActiveMatch | null;
   careLogs?: CareLogItem[];
   satisfactionCheckin?: SatisfactionCheckin | null;
+  /** 선생님이 첫 수업 날짜를 정하는 중(FIRST_LESSON_PENDING) 안내 노출 여부 */
+  firstLessonPending?: boolean;
 };
 
 export function StudentDashboard({
@@ -72,6 +68,7 @@ export function StudentDashboard({
   activeMatch = null,
   careLogs = [],
   satisfactionCheckin = null,
+  firstLessonPending = false,
 }: StudentDashboardProps) {
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -306,182 +303,176 @@ export function StudentDashboard({
 
   return (
     <>
-    <div className="min-h-screen bg-background" data-portal-content>
-      <DashboardTopBar studentName={studentName} isEditMode={isEditMode} />
+      <div className="portal-shell st-dash" data-portal-content>
+        <DashboardTopBar studentName={studentName} isEditMode={isEditMode} />
 
-      <div className="flex pt-[var(--portal-header-h,3.5rem)]">
-        <aside className="fixed left-0 top-[var(--portal-header-h,3.5rem)] z-30 hidden h-[calc(100vh-var(--portal-header-h,3.5rem))] w-56 shrink-0 overflow-y-auto border-r border-gray-200 bg-surface p-3 sm:p-4 lg:block xl:w-60">
-          <DashboardCalendar
-            year={calendarYear}
-            month={calendarMonth}
-            selectedDate={selectedDate}
-            planDates={planDates}
-            onSelectDate={handleSelectDate}
-            onMonthChange={handleMonthChange}
-          />
-          {activeMatch ? (
-            <div className="mt-4 rounded-xl border border-gray-100 bg-background p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-                담당 선생님
-              </p>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {activeMatch.teacherName} 선생님
-              </p>
-              <p className="mt-0.5 truncate text-xs text-text-muted">{activeMatch.subjects}</p>
-              {careLogs.length > 0 && (
-            <div className="mt-4 rounded-xl border border-gray-100 bg-background p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-                매니저 케어 기록
-              </p>
-              <ul className="mt-2 space-y-2">
-                {careLogs.map((log) => (
-                  <li key={log.id}>
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${CARE_TYPE_CLASSES[log.type] ?? "bg-gray-100 text-gray-700"}`}>
-                      {CARE_TYPE_LABELS[log.type] ?? log.type}
-                    </span>
-                    <p className="mt-1 text-xs text-text-primary">{log.note}</p>
-                    <p className="mt-0.5 text-[10px] text-text-muted">
-                      {new Date(log.createdAt).toLocaleDateString("ko-KR")}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        <div className="portal-main portal-main--topbar-only">
+          {firstLessonPending ? (
+            <div className="banner warn" style={{ marginBottom: "28px" }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              <span>선생님이 첫 수업 날짜를 정하는 중이에요. 곧 학습 일정이 채워질 거예요.</span>
             </div>
           ) : null}
-          <nav className="mt-4 space-y-1 border-t border-gray-100 pt-4">
-            <Link
-              href="/questions"
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary"
-            >
-              <span className="text-base">❓</span>
-              내 질문 목록
-            </Link>
-            <Link
-              href="/payments"
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-background hover:text-text-primary"
-            >
-              <span className="text-base">💳</span>
-              결제·구독 내역
-            </Link>
-          </nav>
-        </aside>
 
-        <main className="min-w-0 flex-1 lg:ml-56 xl:ml-60">
-          <div className="border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                  학습 일정
-                </p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">{selectedDate}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCalendarOpen((prev) => !prev)}
-                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-primary"
-              >
-                {calendarOpen ? "달력 닫기" : "날짜 선택"}
-              </button>
-            </div>
-            {calendarOpen ? (
-              <div className="mt-4">
-                <DashboardCalendar
-                  year={calendarYear}
-                  month={calendarMonth}
-                  selectedDate={selectedDate}
-                  planDates={planDates}
-                  onSelectDate={handleSelectDate}
-                  onMonthChange={handleMonthChange}
-                />
-              </div>
-            ) : null}
-          </div>
-          {satisfactionCheckin && !checkinDismissed ? (
-            <div className="border-b border-primary/20 bg-primary/5 px-4 py-4">
-              <div className="mx-auto max-w-2xl">
-                <p className="text-sm font-semibold text-text-primary">
-                  첫 수업은 어떠셨나요?
-                </p>
-                <p className="mt-1 text-xs text-text-secondary">
-                  솔직한 피드백이 더 나은 수업을 만듭니다.
-                </p>
-                <div className="mt-3 flex gap-2">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setCheckinScore(s)}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition ${
-                        checkinScore === s
-                          ? "border-primary bg-primary text-white"
-                          : "border-gray-200 bg-white text-text-secondary hover:border-primary/50"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+          <div className="st-dash-grid">
+            <aside className="st-aside">
+              <DashboardCalendar
+                year={calendarYear}
+                month={calendarMonth}
+                selectedDate={selectedDate}
+                planDates={planDates}
+                onSelectDate={handleSelectDate}
+                onMonthChange={handleMonthChange}
+              />
+
+              {activeMatch ? (
+                <div className="st-teacher">
+                  <span className="st-label">담당 선생님</span>
+                  <b>{activeMatch.teacherName} 선생님</b>
+                  <p>{activeMatch.subjects}</p>
                 </div>
-                {checkinScore !== null ? (
-                  <>
-                    <textarea
-                      value={checkinComment}
-                      onChange={(e) => setCheckinComment(e.target.value.slice(0, 500))}
-                      rows={2}
-                      placeholder="코멘트 (선택)"
-                      className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary"
+              ) : null}
+
+              {careLogs.length > 0 ? (
+                <div>
+                  <span className="st-label">매니저 케어 기록</span>
+                  <ul className="st-care">
+                    {careLogs.map((log) => (
+                      <li key={log.id}>
+                        <span className="t">{CARE_TYPE_LABELS[log.type] ?? log.type}</span>
+                        <p>{log.note}</p>
+                        <time dateTime={log.createdAt}>
+                          {new Date(log.createdAt).toLocaleDateString("ko-KR")}
+                        </time>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              <nav className="st-quick" aria-label="바로가기">
+                <Link href="/questions">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  내 질문 목록
+                </Link>
+                <Link href="/payments">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <path d="M2 10h20" />
+                  </svg>
+                  결제·구독 내역
+                </Link>
+              </nav>
+            </aside>
+
+            <div className="st-body">
+              <div className="st-datebar">
+                <div className="st-datebar-row">
+                  <div>
+                    <span className="st-label">학습 일정</span>
+                    <p className="d">{formatConsultationDateLabel(selectedDate)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCalendarOpen((prev) => !prev)}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    {calendarOpen ? "달력 닫기" : "날짜 선택"}
+                  </button>
+                </div>
+                {calendarOpen ? (
+                  <div style={{ marginTop: "18px" }}>
+                    <DashboardCalendar
+                      year={calendarYear}
+                      month={calendarMonth}
+                      selectedDate={selectedDate}
+                      planDates={planDates}
+                      onSelectDate={handleSelectDate}
+                      onMonthChange={handleMonthChange}
                     />
-                    <button
-                      type="button"
-                      disabled={checkinSubmitting}
-                      onClick={() => void handleCheckinSubmit()}
-                      className="mt-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                    >
-                      {checkinSubmitting ? "제출 중…" : "제출하기"}
-                    </button>
-                  </>
+                  </div>
                 ) : null}
               </div>
+
+              {satisfactionCheckin && !checkinDismissed ? (
+                <div className="st-checkin">
+                  <b>첫 수업은 어떠셨나요?</b>
+                  <p>솔직한 피드백이 더 나은 수업을 만듭니다.</p>
+                  <div className="opts">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className="opt"
+                        aria-pressed={checkinScore === s}
+                        onClick={() => setCheckinScore(s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                  {checkinScore !== null ? (
+                    <>
+                      <textarea
+                        value={checkinComment}
+                        onChange={(e) => setCheckinComment(e.target.value.slice(0, 500))}
+                        rows={2}
+                        placeholder="코멘트 (선택)"
+                        className="inp area"
+                        style={{ marginTop: "14px" }}
+                      />
+                      <button
+                        type="button"
+                        disabled={checkinSubmitting}
+                        onClick={() => void handleCheckinSubmit()}
+                        className="btn btn-ghost btn-sm"
+                        style={{ marginTop: "10px" }}
+                      >
+                        {checkinSubmitting ? "제출 중…" : "제출하기"}
+                      </button>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+
+              <DailyPlanView
+                selectedDate={selectedDate}
+                studentId={studentId}
+                aiAnswerEnabled={aiAnswerEnabled}
+                plan={plan}
+                loading={loading}
+                initialQuestions={initialQuestions}
+                copyModalOpen={copyModalOpen}
+                copyOptions={copyOptions}
+                copyLoading={copyLoading}
+                copySource={copySource}
+                isEditMode={isEditMode}
+                learningGoals={learningGoals}
+                onCreatePlan={handleCreatePlan}
+                onToggle={handleToggle}
+                onTitleChange={handleTitleChange}
+                onDelete={handleDelete}
+                onAddTask={handleAddTask}
+                onReorder={handleReorder}
+                onOpenCopyModal={handleOpenCopyModal}
+                onCloseCopyModal={() => setCopyModalOpen(false)}
+                onSelectCopySource={setCopySource}
+                onConfirmCopy={handleConfirmCopy}
+              />
             </div>
-          ) : null}
-          <DailyPlanView
-            selectedDate={selectedDate}
-            studentId={studentId}
-            aiAnswerEnabled={aiAnswerEnabled}
-            plan={plan}
-            loading={loading}
-            initialQuestions={initialQuestions}
-            copyModalOpen={copyModalOpen}
-            copyOptions={copyOptions}
-            copyLoading={copyLoading}
-            copySource={copySource}
-            isEditMode={isEditMode}
-            learningGoals={learningGoals}
-            onCreatePlan={handleCreatePlan}
-            onToggle={handleToggle}
-            onTitleChange={handleTitleChange}
-            onDelete={handleDelete}
-            onAddTask={handleAddTask}
-            onReorder={handleReorder}
-            onOpenCopyModal={handleOpenCopyModal}
-            onCloseCopyModal={() => setCopyModalOpen(false)}
-            onSelectCopySource={setCopySource}
-            onConfirmCopy={handleConfirmCopy}
-          />
-        </main>
+          </div>
+        </div>
       </div>
-    </div>
-    {toast && (
-      <p
-        role="status"
-        className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-5 py-2.5 text-sm text-white shadow-lg transition-opacity${
-          toast.type === "err" ? " bg-red-600" : " bg-gray-900"
-        }`}
-      >
-        {toast.msg}
-      </p>
-    )}
+      {toast && (
+        <p role="status" className={`toast on${toast.type === "err" ? " st-toast-err" : ""}`}>
+          {toast.msg}
+        </p>
+      )}
     </>
   );
 }

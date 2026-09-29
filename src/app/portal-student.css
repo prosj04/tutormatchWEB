@@ -1,0 +1,432 @@
+/* ============================================================
+   학생 포털 (/dashboard · /questions · /notifications · /payments) — 접두사 .st-
+   전역으로 로드된다 — 모든 선택자는 접두사 클래스로 스코프할 것.
+   토큰·프리미티브·셸은 ds.css.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. 학습 플래너 홈 — 상단바 셸 + 좌 캘린더 / 우 일일 계획
+   ------------------------------------------------------------ */
+.st-dash{ min-height:100dvh; background:var(--bg); }
+
+.st-dash-grid{
+  display:grid; grid-template-columns:252px minmax(0,1fr);
+  gap:clamp(24px, 3vw, 52px); align-items:start;
+}
+.st-aside{
+  position:sticky; top:calc(var(--portal-header-h) + 28px);
+  display:flex; flex-direction:column; gap:30px;
+  padding-right:clamp(18px, 2vw, 32px); border-right:1px solid var(--line);
+}
+.st-body{ min-width:0; }
+@media (max-width:1023px){
+  .st-dash-grid{ grid-template-columns:minmax(0,1fr); gap:0; }
+  .st-aside{ display:none; }
+}
+
+.st-label{
+  display:block; font-family:var(--sans);
+  font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--mut-2);
+}
+
+/* 담당 선생님 */
+.st-teacher b{
+  display:block; margin-top:9px;
+  font-family:var(--serif); font-size:17px; font-weight:500; letter-spacing:-.025em;
+}
+.st-teacher p{ margin-top:3px; font-size:12.5px; color:var(--mut-2); }
+
+/* 매니저 케어 기록 */
+.st-care{ list-style:none; margin-top:10px; border-top:1px solid var(--line); }
+.st-care li{ padding:11px 0; border-bottom:1px solid var(--line); }
+.st-care .t{ font-size:11.5px; font-weight:600; letter-spacing:.06em; color:var(--mut-2); }
+.st-care p{ margin-top:4px; font-size:13px; line-height:1.6; color:var(--fg); }
+.st-care time{ display:block; margin-top:4px; font-size:11.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+
+/* 바로가기 */
+.st-quick{ display:flex; flex-direction:column; border-top:1px solid var(--line); }
+.st-quick a{
+  display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--line);
+  font-size:13.5px; font-weight:500; color:var(--mut); transition:color .18s var(--ease);
+}
+.st-quick a:hover{ color:var(--fg); }
+.st-quick svg{ width:15px; height:15px; flex:0 0 auto; opacity:.75; }
+
+/* ------------------------------------------------------------
+   2. 캘린더 — 헤어라인 행 그리드, 선택일 잉크/액센트 원, 오늘은 테두리 원
+   ------------------------------------------------------------ */
+.st-cal-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
+.st-cal-head p{
+  font-family:var(--serif); font-size:15.5px; font-weight:500; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums lining-nums;
+}
+.st-cal-nav{
+  width:28px; height:28px; display:grid; place-items:center; flex:0 0 auto;
+  border:1px solid transparent; border-radius:50%; background:none; color:var(--mut-2);
+  transition:color .18s, border-color .18s;
+}
+.st-cal-nav:hover{ color:var(--fg); border-color:var(--line-2); }
+.st-cal-nav svg{ width:13px; height:13px; }
+
+.st-cal-grid{ display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); }
+.st-cal-wd{
+  padding:0 0 8px; text-align:center;
+  font-size:10px; font-weight:600; letter-spacing:.1em; color:var(--mut-2);
+}
+.st-cal-cell{
+  position:relative; display:grid; place-items:center; aspect-ratio:1;
+  padding:0; border:0; border-top:1px solid var(--line); background:none;
+  color:var(--fg); font-size:12.5px; font-variant-numeric:tabular-nums lining-nums;
+}
+.st-cal-cell.void{ pointer-events:none; }
+.st-cal-cell .n{
+  width:26px; height:26px; display:grid; place-items:center; border-radius:50%;
+  transition:background-color .18s var(--ease), color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.st-cal-cell:hover .n{ box-shadow:inset 0 0 0 1px var(--line-2); }
+.st-cal-cell.today .n{ box-shadow:inset 0 0 0 1px var(--line-2); }
+.st-cal-cell.sel .n,.st-cal-cell.sel:hover .n{ background:var(--acc); color:var(--on-acc); box-shadow:none; }
+.st-cal-cell .pd{
+  position:absolute; bottom:3px; left:50%; margin-left:-1.5px;
+  width:3px; height:3px; border-radius:50%; background:var(--acc-text);
+}
+.st-cal-cell.sel .pd{ background:var(--on-acc); }
+
+/* 모바일 날짜 바 */
+.st-datebar{ display:none; }
+@media (max-width:1023px){
+  .st-datebar{ display:block; margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+}
+.st-datebar-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+.st-datebar-row p.d{ margin-top:5px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+/* ------------------------------------------------------------
+   3. 일일 계획 — 헤어라인 목록(.chk 행)
+   ------------------------------------------------------------ */
+.st-plan-head{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:14px; }
+.st-plan-head h1{
+  font-family:var(--serif); font-size:clamp(25px, 2.3vw, 34px); font-weight:500;
+  letter-spacing:-.033em; line-height:1.22;
+}
+.st-sec{ margin-top:clamp(28px, 3vw, 42px); }
+.st-sec > h2,.st-sec-title{
+  display:flex; align-items:baseline; gap:12px; margin-bottom:14px;
+  font-family:var(--serif); font-size:19px; font-weight:500; letter-spacing:-.02em;
+}
+.st-sec-title .sp{ margin-left:auto; }
+
+.st-list{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.st-list > .chk{ padding-left:0; padding-right:0; }
+
+.st-task{ list-style:none; }
+.st-task input[type="checkbox"]{
+  width:18px; height:18px; flex:0 0 auto; border-radius:4px; accent-color:var(--acc); cursor:pointer;
+}
+.st-task .g{ min-width:0; flex:1; }
+.st-task .ti{
+  width:100%; padding:2px 0; border:0; border-bottom:1px solid var(--line-2); background:none;
+  color:var(--fg); font-family:var(--sans); font-size:14px;
+}
+.st-task .ti:focus{ outline:0; border-bottom-color:var(--fg); }
+.st-task .tt{
+  display:block; width:100%; padding:0; border:0; background:none; text-align:left;
+  font-size:14px; font-weight:500; color:var(--fg); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.st-task.on .tt{ color:var(--mut-2); text-decoration:line-through; text-decoration-color:var(--line-2); }
+.st-task .dn{ display:block; margin-top:3px; font-size:11.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-task .grip,.st-task .del{
+  width:26px; height:26px; display:grid; place-items:center; flex:0 0 auto;
+  border:0; border-radius:var(--r-xs); background:none; color:var(--mut-2);
+  transition:color .18s var(--ease), opacity .18s var(--ease);
+}
+.st-task .grip{ cursor:grab; touch-action:none; }
+.st-task .grip:active{ cursor:grabbing; }
+.st-task .grip:hover{ color:var(--fg); }
+.st-task .del{ opacity:0; }
+.st-task:hover .del,.st-task:focus-within .del{ opacity:1; }
+.st-task .del:hover{ color:var(--danger); }
+@media (hover:none){ .st-task .del{ opacity:1; } }
+
+.st-add{
+  display:flex; align-items:center; gap:9px; width:100%; padding:13px 0;
+  border:0; background:none; text-align:left;
+  font-size:13.5px; font-weight:600; color:var(--mut); transition:color .18s var(--ease);
+}
+.st-add:hover{ color:var(--fg); }
+.st-add svg{ width:14px; height:14px; }
+
+/* 선생님 코멘트 — 인용 지면 */
+.st-note{ padding-left:20px; border-left:2px solid var(--line-2); }
+.st-note p{ margin-top:11px; max-width:38em; font-size:14.5px; line-height:1.78; color:var(--fg); white-space:pre-wrap; }
+.st-note time{ display:block; margin-top:12px; font-size:12px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+
+/* 학습 목표 */
+.st-goals{ border-top:1px solid var(--line); }
+.st-goals > div{ padding:14px 0; border-bottom:1px solid var(--line); }
+.st-goals dt{ font-size:12px; font-weight:600; letter-spacing:.06em; color:var(--mut-2); }
+.st-goals dd{ margin-top:7px; }
+.st-goals li{ list-style:none; font-size:14px; line-height:1.7; color:var(--fg); }
+.st-goals li + li{ margin-top:3px; }
+
+/* 만족도 체크인 */
+.st-checkin{ margin-bottom:clamp(24px, 3vw, 36px); padding-bottom:24px; border-bottom:1px solid var(--line); }
+.st-checkin b{ display:block; font-family:var(--serif); font-size:18px; font-weight:500; letter-spacing:-.02em; }
+.st-checkin p{ margin-top:6px; font-size:13.5px; color:var(--mut); }
+.st-checkin .opts{ margin-top:14px; }
+.st-checkin .opt{ min-width:38px; padding:0 12px; font-variant-numeric:tabular-nums; }
+
+/* ------------------------------------------------------------
+   4. 질문 — 스레드 목록·말풍선
+   ------------------------------------------------------------ */
+.st-qlist{ list-style:none; border-top:1px solid var(--line); }
+.st-qlist > li{ padding:22px 0; border-bottom:1px solid var(--line); }
+.st-thread{ display:flex; flex-direction:column; }
+.st-thread .msg.wait{ color:var(--mut); }
+/* AI 라벨은 본문 위 한 줄로 */
+.st-thread .msg .ai-tag,.st-chat .msg .ai-tag{ display:flex; }
+.st-spin-row{ display:inline-flex; align-items:center; gap:8px; }
+.st-spin{
+  width:13px; height:13px; flex:0 0 auto; border-radius:50%;
+  border:1.5px solid var(--line-2); border-top-color:var(--acc-text);
+  animation:st-spin .8s linear infinite;
+}
+@keyframes st-spin{ to{ transform:rotate(360deg); } }
+.composer .send .st-spin{ border-color:rgba(var(--acc-rgb),.3); border-top-color:var(--on-acc); }
+.st-att{ display:block; margin-top:9px; padding:0; border:1px solid var(--line); border-radius:var(--r-xs); background:none; overflow:hidden; }
+.st-att img{ max-height:200px; width:auto; max-width:100%; cursor:zoom-in; }
+
+/* ------------------------------------------------------------
+   5. 오버레이
+   ------------------------------------------------------------ */
+.st-modal-list{ list-style:none; max-height:15rem; overflow-y:auto; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.st-modal-list li + li > button{ border-top:1px solid var(--line); }
+.st-modal-list button{
+  display:flex; align-items:baseline; gap:10px; width:100%; padding:13px 2px;
+  border:0; background:none; text-align:left; font-size:14px; color:var(--fg);
+  transition:color .18s var(--ease);
+}
+.st-modal-list button span.c{ margin-left:auto; font-size:12.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-modal-list button:hover{ color:var(--fg); }
+.st-modal-list button[aria-pressed="true"]{ font-weight:600; }
+.st-modal-list button[aria-pressed="true"]::before{
+  content:""; width:5px; height:5px; margin-right:2px; border-radius:50%; background:var(--acc-text); align-self:center;
+}
+.st-modal-empty{ padding:26px 2px; text-align:center; font-size:13.5px; color:var(--mut); }
+
+.st-thumb{ margin-top:12px; display:inline-block; }
+.st-thumb img{ max-height:96px; width:auto; border:1px solid var(--line); border-radius:var(--r-xs); }
+.st-thumb button{ margin-top:7px; border:0; background:none; padding:0; font-size:12.5px; color:var(--mut-2); }
+.st-thumb button:hover{ color:var(--fg); }
+
+.st-lightbox{ z-index:95; background:rgba(12,12,10,.9); }
+.st-lightbox img{ max-height:88vh; max-width:100%; width:auto; border-radius:var(--r-xs); }
+.st-lightbox .x{ position:absolute; top:18px; right:18px; border-color:rgba(255,255,255,.28); color:rgba(255,255,255,.9); }
+.st-lightbox .x:hover{ color:#fff; border-color:rgba(255,255,255,.6); }
+
+/* ------------------------------------------------------------
+   6. 알림 벨 드롭다운
+   ------------------------------------------------------------ */
+.st-bell{ position:relative; }
+.st-bell-dot{
+  position:absolute; top:7px; right:7px; width:6px; height:6px; border-radius:50%;
+  background:var(--acc-text); box-shadow:0 0 0 2px var(--header-bg);
+}
+.st-bell-panel{
+  position:absolute; right:0; top:100%; z-index:70; margin-top:8px;
+  width:min(22rem, calc(100vw - 1.5rem));
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card-lg);
+  box-shadow:var(--shadow-md); overflow:hidden;
+}
+.st-bell-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:13px 16px; border-bottom:1px solid var(--line);
+}
+.st-bell-head b{ font-size:13.5px; font-weight:600; }
+.st-bell-list{ list-style:none; max-height:24rem; overflow-y:auto; }
+.st-bell-list > li + li{ border-top:1px solid var(--line); }
+.st-bell-list button{
+  display:flex; gap:11px; width:100%; padding:13px 16px; border:0; background:none; text-align:left;
+  transition:background-color .15s var(--ease);
+}
+.st-bell-list button:hover{ background:rgba(var(--acc-rgb),.04); }
+.st-bell-list .av{
+  width:30px; height:30px; flex:0 0 auto; display:grid; place-items:center; margin-top:1px;
+  border-radius:50%; background:var(--panel-2); color:var(--acc-text);
+}
+.st-bell-list .av svg{ width:15px; height:15px; }
+.st-bell-list .g{ min-width:0; flex:1; }
+.st-bell-list .g b{ display:block; font-size:13.5px; font-weight:600; color:var(--fg); }
+.st-bell-list li.read .g b{ font-weight:500; color:var(--mut); }
+.st-bell-list .g .bd{
+  margin-top:3px; font-size:12.5px; line-height:1.5; color:var(--mut);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.st-bell-list .g time{ display:block; margin-top:4px; font-size:11.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-bell-msg{ padding:30px 16px; text-align:center; font-size:13.5px; color:var(--mut); }
+.st-bell-foot{ padding:11px 16px; border-top:1px solid var(--line); text-align:center; }
+.st-bell-foot a{ font-size:12.5px; font-weight:600; color:var(--mut); }
+.st-bell-foot a:hover{ color:var(--fg); }
+
+/* ------------------------------------------------------------
+   7. 리포트 지면
+   ------------------------------------------------------------ */
+.st-rmonth{ font-family:var(--serif); font-size:17px; font-weight:500; letter-spacing:-.025em; font-variant-numeric:tabular-nums lining-nums; }
+.st-rscore{ font-family:var(--serif); font-size:20px; font-weight:500; letter-spacing:-.03em; font-variant-numeric:tabular-nums lining-nums; }
+.st-delta{ margin-left:6px; font-family:var(--sans); font-size:12px; font-weight:600; color:var(--acc-text); letter-spacing:0; }
+.st-report{ max-width:44rem; }
+.st-report > h2{ font-size:clamp(21px, 1.9vw, 26px); }
+.st-score{
+  display:inline-block; margin-top:8px;
+  font-family:var(--serif); font-weight:500; font-size:clamp(34px, 3.4vw, 46px);
+  letter-spacing:-.04em; line-height:1.1; font-variant-numeric:tabular-nums lining-nums;
+}
+.st-report-body{ max-width:34em; }
+.st-report-body p{ font-size:15px; line-height:1.8; color:var(--fg); }
+.st-bars{ border-top:1px solid var(--line); }
+.st-bars > div{
+  display:grid; grid-template-columns:72px minmax(0,1fr) 84px; align-items:center; gap:14px;
+  padding:13px 0; border-bottom:1px solid var(--line);
+}
+.st-bars b{ font-size:13.5px; font-weight:600; }
+.st-bars .tr{ display:block; height:6px; border-radius:2px; background:var(--panel-2); overflow:hidden; }
+.st-bars .tr i{ display:block; height:100%; background:var(--acc); border-radius:2px; }
+.st-bars .n{ text-align:right; font-size:13px; color:var(--mut); font-variant-numeric:tabular-nums; }
+.st-cmt{ border-top:1px solid var(--line); }
+.st-cmt > div{ padding:18px 0; border-bottom:1px solid var(--line); }
+.st-cmt .st-label{ margin-bottom:8px; }
+.st-cmt p{ max-width:34em; font-size:14.5px; line-height:1.78; color:var(--fg); }
+
+/* ------------------------------------------------------------
+   8. 상담 예약
+   ------------------------------------------------------------ */
+.st-narrow{ max-width:46rem; margin:0 auto; }
+.st-consult-head h1{
+  font-family:var(--serif); font-size:clamp(28px, 3vw, 44px); font-weight:500;
+  letter-spacing:-.035em; line-height:1.2; text-wrap:balance;
+}
+.st-consult-head p{ margin-top:14px; max-width:36em; font-size:16px; line-height:1.75; color:var(--mut); }
+.st-status{ display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.st-status h2{ font-family:var(--serif); font-size:20px; font-weight:500; letter-spacing:-.025em; }
+.st-status .sp{ margin-left:auto; }
+.st-kv{ border-top:1px solid var(--line); }
+.st-kv > div{ display:flex; flex-wrap:wrap; gap:6px 16px; padding:12px 0; border-bottom:1px solid var(--line); font-size:14px; }
+.st-kv dt{ min-width:8.5em; color:var(--mut); font-variant-numeric:tabular-nums; }
+.st-kv dd{ color:var(--fg); }
+.st-manager{ display:flex; align-items:center; gap:13px; margin-top:22px; }
+.st-manager .ph{ position:relative; width:48px; height:48px; flex:0 0 auto; overflow:hidden; border-radius:50%; background:var(--panel-2); }
+.st-manager .ph span{ display:grid; place-items:center; width:100%; height:100%; font-family:var(--serif); font-size:17px; font-weight:600; color:var(--mut-2); }
+.st-manager b{ display:block; font-size:14.5px; font-weight:600; }
+.st-manager p{ margin-top:2px; font-size:12.5px; color:var(--mut-2); }
+.st-quote{ margin-top:16px; padding-left:18px; border-left:2px solid var(--line-2); }
+.st-quote .st-label{ margin-bottom:7px; }
+.st-quote p{ max-width:34em; font-size:14.5px; line-height:1.76; color:var(--fg); }
+
+/* 방문 희망 시간 — 헤어라인 그리드, 선택은 잉크 채움 */
+.st-vp-cols{ display:flex; flex-direction:column; gap:22px; }
+@media (min-width:1024px){ .st-vp-cols{ flex-direction:row; align-items:flex-start; gap:28px; } .st-vp-mini{ width:216px; flex:0 0 auto; } }
+.st-vp-scroll{ min-width:0; flex:1; overflow-x:auto; }
+.st-vp-grid{
+  display:grid; grid-template-columns:56px repeat(7, minmax(0,1fr));
+  min-width:540px; border-top:1px solid var(--line); border-left:1px solid var(--line);
+}
+.st-vp-grid > *{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
+.st-vp-head{ padding:8px 3px; text-align:center; }
+.st-vp-head b{ display:block; font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; }
+.st-vp-head span{ display:block; margin-top:1px; font-size:10.5px; color:var(--mut-2); }
+.st-vp-slot{ display:flex; align-items:center; justify-content:flex-end; padding:0 8px; font-size:11px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-vp-cell{
+  min-height:34px; padding:0; background:transparent; color:var(--mut-2); font-size:11px;
+  border:0; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+  transition:background-color .15s var(--ease), color .15s var(--ease);
+}
+.st-vp-cell:hover{ background:rgba(var(--acc-rgb),.07); }
+.st-vp-cell[aria-pressed="true"]{ background:var(--ink); color:var(--on-ink); }
+.st-vp-foot{ margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+.st-vp-foot .c{ font-size:12.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+
+.st-mini{ display:flex; flex-direction:column; gap:18px; }
+.st-mini p.m{ text-align:center; font-family:var(--serif); font-size:14px; font-weight:500; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+.st-mini-grid{ display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); margin-top:8px; text-align:center; }
+.st-mini-grid .wd{ padding-bottom:5px; font-size:10px; font-weight:600; letter-spacing:.08em; color:var(--mut-2); }
+.st-mini-grid span.d{ padding:4px 0; font-size:11px; line-height:1.5; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-mini-grid span.d.in{ background:rgba(var(--acc-rgb),.08); color:var(--fg); font-weight:600; }
+.st-mini-grid span.d.lead{ border-top-left-radius:var(--r-sm); border-bottom-left-radius:var(--r-sm); }
+.st-mini-grid span.d.tail{ border-top-right-radius:var(--r-sm); border-bottom-right-radius:var(--r-sm); }
+.st-mini-grid span.d.now{ box-shadow:inset 0 -1px 0 var(--acc-text); }
+.st-mini-legend{ margin-top:10px; display:flex; align-items:center; justify-content:center; gap:7px; font-size:11px; color:var(--mut-2); }
+.st-mini-legend i{ width:11px; height:11px; border-radius:2px; background:rgba(var(--acc-rgb),.14); }
+
+/* ------------------------------------------------------------
+   9. 결제·자동결제
+   ------------------------------------------------------------ */
+.st-card-meta b{ display:block; font-size:14.5px; font-weight:600; }
+.st-card-meta p{ margin-top:3px; font-size:12.5px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.st-billing-card{
+  display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px;
+  padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+}
+.st-billing-card .st-card-meta{ flex:1; min-width:0; }
+
+/* ------------------------------------------------------------
+   10. 토스트 — 실패 알림
+   ------------------------------------------------------------ */
+/* 실패 알림 — 면은 danger, 글자는 ds.css `.btn.danger.solid` 와 같은 처리 */
+.st-toast-err{ background:var(--danger); color:#fff; }
+
+/* ------------------------------------------------------------
+   11. 지면 공통 — 헤어라인으로 나눈 블록·툴바·빈 상태
+   ------------------------------------------------------------ */
+.st-block{
+  margin-top:clamp(30px, 3.2vw, 46px);
+  padding-top:clamp(24px, 2.6vw, 34px);
+  border-top:1px solid var(--line);
+}
+.st-block.bare{ padding-top:0; border-top:0; }
+/* .card 면을 블록 간격으로 띄울 때 — 원장 헤어라인·상단 여백이 카드 보더와 겹치지 않게 */
+.st-block.card{ padding-top:0; border-top:1px solid var(--line); }
+.st-block > h2{
+  display:flex; align-items:baseline; flex-wrap:wrap; gap:10px 14px; margin-bottom:16px;
+  font-family:var(--serif); font-size:19px; font-weight:500; letter-spacing:-.02em;
+}
+.st-block > h2 .sp{ margin-left:auto; }
+.st-block > .st-lead{ margin:-6px 0 18px; max-width:38em; font-size:14px; line-height:1.7; color:var(--mut); }
+
+.st-cols{ display:grid; gap:clamp(24px, 3vw, 44px); }
+@media (min-width:860px){ .st-cols{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+
+.st-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:clamp(22px, 2.4vw, 30px); }
+.st-toolbar.end{ justify-content:flex-end; }
+.st-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+
+.st-warn{ color:var(--warn); }
+.st-dim{ color:var(--mut-2); }
+
+/* 빈 상태 — 세리프 한 줄 + 보조 문장 */
+.st-none{ padding:clamp(40px, 5vw, 64px) 0; border-top:1px solid var(--line); }
+.st-none b{ display:block; font-family:var(--serif); font-size:clamp(19px, 1.8vw, 24px); font-weight:500; letter-spacing:-.028em; }
+.st-none p{ margin-top:9px; max-width:32em; font-size:14px; line-height:1.7; color:var(--mut); }
+.st-none .btn{ margin-top:20px; }
+
+/* 닫기 버튼을 오른쪽에 두는 배너 */
+.st-banner-x{ align-items:center; }
+.st-banner-x .x{ margin-left:auto; flex:0 0 auto; }
+
+/* 알림 센터 — .card 안 .row 목록 */
+.st-notif > .row{ transition:background-color .15s var(--ease); }
+.st-notif > .row:hover{ background:rgba(var(--acc-rgb),.04); }
+.st-notif > .row:focus-visible{ outline:0; background:rgba(var(--acc-rgb),.06); }
+.st-notif > .row .g p{ margin-top:4px; line-height:1.55; }
+.st-notif > .row .r{ align-self:flex-start; padding-top:2px; white-space:nowrap; }
+/* 390 폭: 제목이 잘게 끊기지 않도록 메타(점·아이콘·시각)를 윗줄로 */
+@media (max-width:640px){
+  .st-notif > .row{ flex-wrap:wrap; gap:9px 10px; padding:15px 16px; }
+  .st-notif > .row .nd{ order:1; }
+  .st-notif > .row .av{ order:2; width:28px; height:28px; }
+  .st-notif > .row .av svg{ width:14px; height:14px; }
+  .st-notif > .row .r{ order:3; margin-left:auto; padding-top:0; align-self:center; }
+  .st-notif > .row .g{ order:4; flex:1 1 100%; }
+}
+
+/* 태그를 텍스트로 나열(컬러 배지 금지) */
+.st-tags{ display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:9px; font-size:13.5px; color:var(--mut); }
+.st-tags > span{ white-space:nowrap; }

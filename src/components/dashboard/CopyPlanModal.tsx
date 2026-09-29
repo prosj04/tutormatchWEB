@@ -47,59 +47,46 @@ export function CopyPlanModal({
   const desc = descTpl.replace(/\{date\}/g, formatPlanHeader(targetDate));
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="copy-plan-title"
-    >
-      <div className="w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl">
-        <h2 id="copy-plan-title" className="text-lg font-bold text-text-primary">
-          {title}
-        </h2>
-        <p className="mt-1 text-sm text-text-secondary">{desc}</p>
+    <div className="scrim on">
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="copy-plan-title"
+      >
+        <div className="m-b">
+          <h3 id="copy-plan-title">{title}</h3>
+          <p className="m-p">{desc}</p>
 
-        <ul className="mt-4 max-h-56 space-y-2 overflow-y-auto">
-          {loading ? (
-            <li className="py-4 text-center text-sm text-text-muted">{loadingLabel}</li>
-          ) : options.length === 0 ? (
-            <li className="py-4 text-center text-sm text-text-muted">{emptyLabel}</li>
-          ) : (
-            options.map((opt) => (
-              <li key={opt.date}>
-                <button
-                  type="button"
-                  onClick={() => onSelectSource(opt.date)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition ${
-                    selectedSource === opt.date
-                      ? "border-primary bg-primary/5 font-medium text-primary"
-                      : "border-gray-100 hover:border-gray-200"
-                  }`}
-                >
-                  <span className="text-text-primary">{formatCalendarDayLabel(opt.date)}</span>
-                  <span className="ml-2 text-text-muted">
-                    {taskCountTpl.replace(/\{count\}/g, String(opt.taskCount))}
-                  </span>
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+          <ul className="st-modal-list" style={{ marginTop: "20px" }}>
+            {loading ? (
+              <li className="st-modal-empty">{loadingLabel}</li>
+            ) : options.length === 0 ? (
+              <li className="st-modal-empty">{emptyLabel}</li>
+            ) : (
+              options.map((opt) => (
+                <li key={opt.date}>
+                  <button
+                    type="button"
+                    aria-pressed={selectedSource === opt.date}
+                    onClick={() => onSelectSource(opt.date)}
+                  >
+                    <span>{formatCalendarDayLabel(opt.date)}</span>
+                    <span className="c">
+                      {taskCountTpl.replace(/\{count\}/g, String(opt.taskCount))}
+                    </span>
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
 
-        <div className="mt-6 flex gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-text-secondary hover:bg-background"
-          >
+        <div className="m-f">
+          <button type="button" className="btn btn-ghost" onClick={onClose}>
             {cancelLabel}
           </button>
-          <button
-            type="button"
-            disabled={!selectedSource}
-            onClick={onConfirm}
-            className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-40"
-          >
+          <button type="button" className="btn pri" disabled={!selectedSource} onClick={onConfirm}>
             {applyLabel}
           </button>
         </div>

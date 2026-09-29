@@ -1,5 +1,3 @@
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
 
 import { StudentPortalShell } from "@/components/concord-portal/StudentPortalShell";
 

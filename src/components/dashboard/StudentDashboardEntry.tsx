@@ -11,8 +11,8 @@ const StudentDashboardLazy = dynamic(
   () => import("./StudentDashboard").then((mod) => mod.StudentDashboard),
   {
     loading: () => (
-      <div className="flex min-h-screen items-center justify-center bg-background pt-14 text-sm text-text-muted">
-        학습 플래너 불러오는 중…
+      <div className="portal-shell" style={{ display: "grid", placeItems: "center", paddingTop: "56px" }}>
+        <p className="caption">학습 플래너 불러오는 중…</p>
       </div>
     ),
   },

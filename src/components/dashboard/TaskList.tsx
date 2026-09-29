@@ -64,7 +64,7 @@ export function TaskList({
     <div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          <ul className="space-y-1">
+          <ul className="st-list">
             {tasks.map((task) => (
               <SortableTaskItem
                 key={task.id}
@@ -78,11 +78,10 @@ export function TaskList({
         </SortableContext>
       </DndContext>
 
-      <button
-        type="button"
-        onClick={onAddTask}
-        className="mt-3 w-full rounded-xl border border-dashed border-gray-200 py-3 text-sm font-medium text-text-secondary transition hover:border-primary hover:text-primary"
-      >
+      <button type="button" onClick={onAddTask} className="st-add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+          <path d="M12 5v14M5 12h14" />
+        </svg>
         {btnAddTask}
       </button>
     </div>

@@ -16,7 +16,9 @@ const TaskList = dynamic(
   () => import("./TaskList").then((mod) => mod.TaskList),
   {
     loading: () => (
-      <p className="py-4 text-center text-sm text-text-muted">할 일 목록 불러오는 중…</p>
+      <p className="caption" style={{ padding: "18px 0" }}>
+        할 일 목록 불러오는 중…
+      </p>
     ),
   },
 );
@@ -85,158 +87,129 @@ export function DailyPlanView({
   const emptyComment = usePortalCopy("student_dashboard", "empty_comment", "아직 코멘트가 없습니다");
 
   return (
-    <div className="min-h-[calc(100vh-var(--portal-header-h,3.5rem))] flex-1 overflow-y-auto bg-background p-3 sm:p-6 md:p-8">
-      <div className="mx-auto max-w-2xl">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-lg font-bold text-text-primary sm:text-xl lg:text-2xl">
-            {formatPlanHeader(selectedDate)}
-          </h1>
-          {!plan && (
-            <button
-              type="button"
-              onClick={onCreatePlan}
-              disabled={loading}
-              className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-            >
-              <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_add_plan" type="text">
-                {btnAddPlan}
-              </CmsEdit>
-            </button>
-          )}
-        </div>
-
-        {loading ? (
-          <p className="mt-12 text-center text-sm text-text-muted">
-            <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="loading" type="text">
-              {loadingLabel}
+    <>
+      <div className="st-plan-head">
+        <h1>{formatPlanHeader(selectedDate)}</h1>
+        {plan ? (
+          <button type="button" onClick={onOpenCopyModal} className="btn ghost sm">
+            <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_copy_prev" type="text">
+              {btnCopyPrev}
             </CmsEdit>
-          </p>
-        ) : !plan ? (
-          <div className="mt-12 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center sm:p-10">
-            <p className="text-sm text-text-secondary">
+          </button>
+        ) : (
+          <button type="button" onClick={onCreatePlan} disabled={loading} className="btn pri sm">
+            <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_add_plan" type="text">
+              {btnAddPlan}
+            </CmsEdit>
+          </button>
+        )}
+      </div>
+
+      {loading ? (
+        <p className="caption" style={{ marginTop: "32px" }}>
+          <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="loading" type="text">
+            {loadingLabel}
+          </CmsEdit>
+        </p>
+      ) : !plan ? (
+        <div className="st-sec">
+          <div className="st-none">
+            <b>
               <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_no_plan" type="text">
                 {emptyNoPlan}
               </CmsEdit>
-            </p>
-            <p className="mt-1 text-xs text-text-muted">
+            </b>
+            <p>
               <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_hint" type="text">
                 {emptyHint}
               </CmsEdit>
             </p>
-            <button
-              type="button"
-              onClick={onOpenCopyModal}
-              className="mt-4 text-sm font-medium text-primary hover:underline"
-            >
+            <button type="button" onClick={onOpenCopyModal} className="btn btn-ghost btn-sm">
               <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_copy_prev" type="text">
                 {btnCopyPrev}
               </CmsEdit>
             </button>
           </div>
-        ) : (
-          <>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={onOpenCopyModal}
-                className="rounded-lg border border-gray-200 bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary hover:border-gray-300"
-              >
-                <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="btn_copy_prev" type="text">
-                  {btnCopyPrev}
+        </div>
+      ) : (
+        <>
+          <div className="st-sec">
+            <TaskList
+              tasks={tasks}
+              onReorder={onReorder}
+              onToggle={onToggle}
+              onTitleChange={onTitleChange}
+              onDelete={onDelete}
+              onAddTask={onAddTask}
+            />
+          </div>
+
+          <section className="st-sec">
+            {plan.comment ? (
+              <div className="st-note">
+                <span className="st-label">
+                  <CmsEdit
+                    active={isEditMode}
+                    section="student_dashboard"
+                    cmsKey="label_teacher_comment"
+                    type="text"
+                  >
+                    {labelTeacherComment}
+                  </CmsEdit>
+                </span>
+                <p>{plan.comment}</p>
+                {plan.commentAt && <time>{formatCommentDate(plan.commentAt)}</time>}
+              </div>
+            ) : (
+              <p className="caption">
+                <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_comment" type="text">
+                  {emptyComment}
                 </CmsEdit>
-              </button>
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-gray-100 bg-surface p-4 shadow-sm sm:p-6">
-              <TaskList
-                tasks={tasks}
-                onReorder={onReorder}
-                onToggle={onToggle}
-                onTitleChange={onTitleChange}
-                onDelete={onDelete}
-                onAddTask={onAddTask}
-              />
-            </div>
-
-            <section className="mt-8">
-              {plan.comment ? (
-                <div className="rounded-2xl border-2 border-primary/60 bg-primary/5 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-                    <CmsEdit
-                      active={isEditMode}
-                      section="student_dashboard"
-                      cmsKey="label_teacher_comment"
-                      type="text"
-                    >
-                      {labelTeacherComment}
-                    </CmsEdit>
-                  </p>
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text-primary">
-                    {plan.comment}
-                  </p>
-                  {plan.commentAt && (
-                    <p className="mt-3 text-xs text-text-muted">
-                      {formatCommentDate(plan.commentAt)}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-gray-100 bg-surface p-5 text-center">
-                  <p className="text-sm text-text-muted">
-                    <CmsEdit active={isEditMode} section="student_dashboard" cmsKey="empty_comment" type="text">
-                      {emptyComment}
-                    </CmsEdit>
-                  </p>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-
-        {learningGoals ? (
-          <section className="mt-8">
-            <div className="rounded-2xl border border-gray-100 bg-surface p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                학습 목표
               </p>
-              {learningGoals.quantitative.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-xs font-medium text-text-secondary">정량 목표</p>
-                  <ul className="mt-1.5 space-y-1">
-                    {learningGoals.quantitative.map((goal, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-text-primary">
-                        <span className="mt-0.5 shrink-0 text-primary">•</span>
-                        <span>{goal}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {learningGoals.qualitative.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-xs font-medium text-text-secondary">정성 목표</p>
-                  <ul className="mt-1.5 space-y-1">
-                    {learningGoals.qualitative.map((goal, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-text-primary">
-                        <span className="mt-0.5 shrink-0 text-primary">•</span>
-                        <span>{goal}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            )}
           </section>
-        ) : null}
+        </>
+      )}
 
-        <QuestionSection
-          selectedDate={selectedDate}
-          studentId={studentId}
-          aiAnswerEnabled={aiAnswerEnabled}
-          initialQuestions={initialQuestions}
-          isEditMode={isEditMode}
-        />
-      </div>
+      {learningGoals ? (
+        <section className="st-sec">
+          <span className="st-label">학습 목표</span>
+          <dl className="st-goals" style={{ marginTop: "12px" }}>
+            {learningGoals.quantitative.length > 0 && (
+              <div>
+                <dt>정량 목표</dt>
+                <dd>
+                  <ul>
+                    {learningGoals.quantitative.map((goal, idx) => (
+                      <li key={idx}>{goal}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {learningGoals.qualitative.length > 0 && (
+              <div>
+                <dt>정성 목표</dt>
+                <dd>
+                  <ul>
+                    {learningGoals.qualitative.map((goal, idx) => (
+                      <li key={idx}>{goal}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      ) : null}
+
+      <QuestionSection
+        selectedDate={selectedDate}
+        studentId={studentId}
+        aiAnswerEnabled={aiAnswerEnabled}
+        initialQuestions={initialQuestions}
+        isEditMode={isEditMode}
+      />
 
       <CopyPlanModal
         open={copyModalOpen}
@@ -248,6 +221,6 @@ export function DailyPlanView({
         onConfirm={onConfirmCopy}
         onClose={onCloseCopyModal}
       />
-    </div>
+    </>
   );
 }

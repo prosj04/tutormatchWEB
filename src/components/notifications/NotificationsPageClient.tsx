@@ -75,28 +75,26 @@ export function NotificationsPageClient({ initialItems, initialUnreadCount }: Pr
 
   return (
     <section className="page on" id="pg-notif" data-screen-label="알림 센터">
-      <div className="crumb">/notifications</div>
+      <div className="crumb">알림</div>
       <h1>알림</h1>
       <p className="sub">수업·리포트·결제·질문 소식을 한곳에서 확인하세요.</p>
 
       {unreadCount > 0 ? (
-        <div className="sec" style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="st-toolbar end">
           <button type="button" className="btn ghost sm" onClick={() => void markAllRead()}>
             전체 읽음 표시
           </button>
         </div>
       ) : null}
 
-      <div className="sec card">
-        {items.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <b>아직 알림이 없습니다</b>
-              <p>수업·리포트·결제 소식이 도착하면 여기에 표시됩니다.</p>
-            </div>
-          </div>
-        ) : (
-          items.map((item) => (
+      {items.length === 0 ? (
+        <div className="st-none">
+          <b>아직 알림이 없습니다</b>
+          <p>수업·리포트·결제 소식이 도착하면 여기에 표시됩니다.</p>
+        </div>
+      ) : (
+        <div className="st-block card st-notif">
+          {items.map((item) => (
             <div
               key={item.id}
               className={item.isRead ? "row" : "row unread"}
@@ -112,7 +110,7 @@ export function NotificationsPageClient({ initialItems, initialUnreadCount }: Pr
               style={{ cursor: item.href ? "pointer" : "default" }}
             >
               <span className="nd" style={item.isRead ? { visibility: "hidden" } : undefined}></span>
-              <span className="av" style={{ background: "var(--panel-2)", color: "var(--acc-text)" }}>
+              <span className="av">
                 <NotifIcon type={item.type} />
               </span>
               <div className="g">
@@ -121,9 +119,9 @@ export function NotificationsPageClient({ initialItems, initialUnreadCount }: Pr
               </div>
               <span className="r">{item.timeAgo}</span>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

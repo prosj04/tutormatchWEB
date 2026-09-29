@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VisitTimesPicker } from "@/components/dashboard/VisitTimesPicker";
@@ -269,242 +268,249 @@ export function ConsultationBookingPage({
   const welcomeText = welcomeTpl.replace(/\{name\}/g, studentName);
 
   return (
-    <div className="min-h-screen bg-background" data-portal-content>
-      <header className="sticky top-0 z-40 border-b border-text-primary/10 bg-surface px-4 py-3 shadow-md">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
-          <Link href="/dashboard" className="font-sans text-lg font-bold italic text-primary">
+    <div className="portal-shell" data-portal-content>
+      <header className="portal-topbar">
+        <div className="portal-topbar-inner">
+          <Link href="/dashboard" className="portal-topbar-brand">
             <CmsEdit active={isEditMode} section="student_consultation" cmsKey="brand" type="text">
-              {brand}
+              {brand.endsWith(".") ? brand.slice(0, -1) : brand}
+              <span>.</span>
             </CmsEdit>
           </Link>
-          <p className="truncate text-sm font-medium text-text-secondary">
+          <p className="portal-topbar-title">
             <CmsEdit active={isEditMode} section="student_consultation" cmsKey="welcome_template" type="text">
               {welcomeText}
             </CmsEdit>
           </p>
-          <button
-            type="button"
-            onClick={() => signOut({ redirectTo: "/" })}
-            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-primary transition hover:bg-background"
-          >
-            <CmsEdit active={isEditMode} section="student_consultation" cmsKey="logout" type="text">
-              {logoutLabel}
-            </CmsEdit>
-          </button>
+          <div className="portal-topbar-actions">
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => signOut({ redirectTo: "/" })}
+            >
+              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="logout" type="text">
+                {logoutLabel}
+              </CmsEdit>
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8">
-        <AnimatePresence>
-          {assignedToast ? (
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              className="mb-5 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-center font-semibold text-green-800 shadow-sm"
-            >
-              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="toast_assigned" type="text">
-                {toastAssigned}
-              </CmsEdit>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-
-        {showAppliedBanner ? (
-          <div className="mb-5 flex items-start justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4">
-            <p className="text-sm font-semibold leading-relaxed text-text-primary">
-              <CmsEdit active={isEditMode} section="student_consultation" cmsKey="applied_banner" type="text">
-                {appliedBannerText}
-              </CmsEdit>
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowAppliedBanner(false)}
-              aria-label="닫기"
-              className="shrink-0 rounded-lg px-2 py-1 text-text-muted transition hover:text-text-primary"
-            >
-              ×
-            </button>
-          </div>
-        ) : null}
-
-        {!activeBooking ? (
-          <>
-            <section className="rounded-2xl border-2 border-primary bg-surface p-6 shadow-sm">
-              <h1 className="text-lg font-bold text-text-primary">
-                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_title" type="text">
-                  {noBookingTitle}
+      <main className="portal-main portal-main--topbar-only">
+        <div className="st-narrow">
+          {showAppliedBanner ? (
+            <div className="banner info st-banner-x" style={{ marginBottom: "30px" }}>
+              <span>
+                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="applied_banner" type="text">
+                  {appliedBannerText}
                 </CmsEdit>
-              </h1>
-              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_desc" type="text">
-                  {noBookingDesc}
-                </CmsEdit>
-              </p>
-            </section>
-
-            <section className="mt-8 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm">
-              <label htmlFor="consultation-note" className="block text-sm font-semibold text-text-primary">
-                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="note_label" type="text">
-                  {noteLabel}
-                </CmsEdit>
-              </label>
-              <textarea
-                id="consultation-note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                rows={5}
-                className="mt-3 w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-primary"
-                placeholder={notePlaceholder}
-              />
-              <p className="panel-note">
-                미성년 학생의 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며, 입력하신
-                연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
-              </p>
-              {error ? (
-                <p className="mt-3 text-sm text-accent" role="alert">
-                  {error}
-                </p>
-              ) : null}
+              </span>
               <button
                 type="button"
-                disabled={submitting}
-                onClick={() => void submitRequest()}
-                className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
+                className="x"
+                onClick={() => setShowAppliedBanner(false)}
+                aria-label="닫기"
               >
-                <CmsEdit
-                  active={isEditMode}
-                  section="student_consultation"
-                  cmsKey={submitting ? "btn_submitting" : "btn_submit"}
-                  type="text"
-                >
-                  {submitting ? btnSubmitting : btnSubmit}
-                </CmsEdit>
+                ×
               </button>
-            </section>
-          </>
-        ) : (
-          <>
-            {success ? (
-              <motion.section
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mb-8 rounded-2xl border-2 border-primary bg-surface p-8 text-center shadow-sm"
-              >
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
-                  ✓
-                </div>
-                <h1 className="text-xl font-bold text-text-primary">
-                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_title" type="text">
-                    {successTitle}
+            </div>
+          ) : null}
+
+          {!activeBooking ? (
+            <>
+              <header className="st-consult-head">
+                <h1>
+                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_title" type="text">
+                    {noBookingTitle}
                   </CmsEdit>
                 </h1>
-                <p className="mt-4 text-sm leading-relaxed text-text-secondary">
-                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_desc" type="text">
-                    {successDesc}
+                <p>
+                  <CmsEdit active={isEditMode} section="student_consultation" cmsKey="no_booking_desc" type="text">
+                    {noBookingDesc}
                   </CmsEdit>
                 </p>
-              </motion.section>
-            ) : null}
+              </header>
 
-            <div ref={statusCardRef}>
-              <BookingStatusCard booking={activeBooking} hasVisitTimes={!!hasVisitTimes} isEditMode={isEditMode} />
-            </div>
-
-            {pendingMatch ? (
-              <section className="mt-6 rounded-2xl border-2 border-primary bg-primary/5 p-6 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                  선생님 배정
+              <section className="st-block">
+                <div className="field" style={{ marginTop: 0 }}>
+                  <label htmlFor="consultation-note">
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="note_label" type="text">
+                      {noteLabel}
+                    </CmsEdit>
+                  </label>
+                  <textarea
+                    id="consultation-note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows={5}
+                    className="inp area"
+                    placeholder={notePlaceholder}
+                  />
+                </div>
+                <p className="panel-note" style={{ maxWidth: "38em" }}>
+                  미성년 학생의 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며, 입력하신
+                  연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
                 </p>
-                <h2 className="mt-2 text-lg font-bold text-text-primary">
-                  {pendingMatch.teacherName} 선생님을 수락해 주세요
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                  배정 과목: {pendingMatch.subjects}. 수락 후 선생님이 첫 수업 일정을 설정합니다.
-                </p>
-                {pendingMatch.matchReason ? (
-                  <blockquote className="mt-4 border-l-4 border-primary/30 bg-white px-4 py-3 text-sm text-text-secondary italic">
-                    <p className="font-medium text-text-primary">매니저의 추천 이유</p>
-                    <p className="mt-1">{pendingMatch.matchReason}</p>
-                  </blockquote>
+                {error ? (
+                  <span className="f-err" role="alert">
+                    {error}
+                  </span>
                 ) : null}
-                {acceptError ? (
-                  <p className="mt-3 text-sm text-accent" role="alert">
-                    {acceptError}
-                  </p>
-                ) : null}
-                <button
-                  type="button"
-                  disabled={acceptingMatch}
-                  onClick={() => void acceptMatch()}
-                  className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50"
-                >
-                  {acceptingMatch ? "수락 중..." : "이 선생님으로 시작하기"}
-                </button>
-              </section>
-            ) : acceptedMatch ? (
-              <section className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5 text-sm text-green-800">
-                {acceptedMatch.teacherName} 선생님을 수락했습니다. 선생님이 첫 수업 일정을 설정하면 알려드릴게요.
-              </section>
-            ) : null}
-
-            {!showVisitPicker && !hasVisitTimes ? (
-              <button
-                type="button"
-                onClick={() => setShowVisitPicker(true)}
-                className="mt-6 w-full rounded-xl border-2 border-primary bg-primary/5 py-4 text-sm font-black text-primary transition hover:bg-primary/10"
-              >
-                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_input" type="text">
-                  {btnVisitInput}
-                </CmsEdit>
-              </button>
-            ) : null}
-
-            {showVisitPicker ? (
-              <div className="mt-6">
-                <p className="panel-note">
-                  미성년 학생의 방문 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며,
-                  입력하신 연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
-                </p>
-                <VisitTimesPicker
-                  initial={activeBooking.visitPreferredTimes}
-                  onSubmit={saveVisitTimes}
-                  submitting={visitSubmitting}
-                />
-                {hasVisitTimes ? (
+                <div className="st-actions">
                   <button
                     type="button"
-                    onClick={() => setShowVisitPicker(false)}
-                    className="mt-3 w-full text-center text-sm font-medium text-text-muted hover:text-text-primary"
+                    disabled={submitting}
+                    onClick={() => void submitRequest()}
+                    className="btn pri"
                   >
-                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_close" type="text">
-                      {btnClose}
+                    <CmsEdit
+                      active={isEditMode}
+                      section="student_consultation"
+                      cmsKey={submitting ? "btn_submitting" : "btn_submit"}
+                      type="text"
+                    >
+                      {submitting ? btnSubmitting : btnSubmit}
                     </CmsEdit>
                   </button>
-                ) : null}
+                </div>
+              </section>
+            </>
+          ) : (
+            <>
+              {success ? (
+                <header className="st-consult-head">
+                  <h1>
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_title" type="text">
+                      {successTitle}
+                    </CmsEdit>
+                  </h1>
+                  <p>
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="success_desc" type="text">
+                      {successDesc}
+                    </CmsEdit>
+                  </p>
+                </header>
+              ) : null}
+
+              <div ref={statusCardRef}>
+                <BookingStatusCard
+                  booking={activeBooking}
+                  hasVisitTimes={!!hasVisitTimes}
+                  isEditMode={isEditMode}
+                />
               </div>
-            ) : null}
 
-            {hasVisitTimes && !showVisitPicker ? (
-              <button
-                type="button"
-                onClick={() => setShowVisitPicker(true)}
-                className="mt-4 w-full text-center text-sm font-semibold text-primary underline-offset-4 hover:underline"
-              >
-                <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_edit" type="text">
-                  {btnVisitEdit}
-                </CmsEdit>
-              </button>
-            ) : null}
+              {pendingMatch ? (
+                <section className="st-block">
+                  <span className="st-label">선생님 배정</span>
+                  <h2 className="st-sec-title" style={{ marginTop: "10px" }}>
+                    {pendingMatch.teacherName} 선생님을 수락해 주세요
+                  </h2>
+                  <p className="st-lead" style={{ marginTop: 0 }}>
+                    배정 과목: {pendingMatch.subjects}. 수락 후 선생님이 첫 수업 일정을 설정합니다.
+                  </p>
+                  {pendingMatch.matchReason ? (
+                    <blockquote className="st-quote">
+                      <span className="st-label">매니저의 추천 이유</span>
+                      <p>{pendingMatch.matchReason}</p>
+                    </blockquote>
+                  ) : null}
+                  {acceptError ? (
+                    <span className="f-err" role="alert">
+                      {acceptError}
+                    </span>
+                  ) : null}
+                  <div className="st-actions">
+                    <button
+                      type="button"
+                      disabled={acceptingMatch}
+                      onClick={() => void acceptMatch()}
+                      className="btn btn-ghost"
+                    >
+                      {acceptingMatch ? "수락 중..." : "이 선생님으로 시작하기"}
+                    </button>
+                  </div>
+                </section>
+              ) : acceptedMatch ? (
+                <div className="banner info" style={{ marginTop: "30px" }}>
+                  <span>
+                    {acceptedMatch.teacherName} 선생님을 수락했습니다. 선생님이 첫 수업 일정을 설정하면 알려드릴게요.
+                  </span>
+                </div>
+              ) : null}
 
-            {error ? (
-              <p className="mt-4 text-sm text-accent" role="alert">
-                {error}
-              </p>
-            ) : null}
-          </>
-        )}
+              {!showVisitPicker && !hasVisitTimes ? (
+                <div className="st-toolbar">
+                  <button
+                    type="button"
+                    onClick={() => setShowVisitPicker(true)}
+                    className="btn pri"
+                  >
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_input" type="text">
+                      {btnVisitInput}
+                    </CmsEdit>
+                  </button>
+                </div>
+              ) : null}
+
+              {showVisitPicker ? (
+                <section className="st-block">
+                  <p className="panel-note" style={{ marginTop: 0, maxWidth: "38em" }}>
+                    미성년 학생의 방문 상담 신청은 학부모(법정대리인) 동의가 된 것으로 간주하며,
+                    입력하신 연락처는 배정된 담당 매니저가 상담 진행 목적으로만 사용합니다.
+                  </p>
+                  <VisitTimesPicker
+                    initial={activeBooking.visitPreferredTimes}
+                    onSubmit={saveVisitTimes}
+                    submitting={visitSubmitting}
+                  />
+                  {hasVisitTimes ? (
+                    <div className="st-toolbar">
+                      <button
+                        type="button"
+                        onClick={() => setShowVisitPicker(false)}
+                        className="btn ghost sm"
+                      >
+                        <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_close" type="text">
+                          {btnClose}
+                        </CmsEdit>
+                      </button>
+                    </div>
+                  ) : null}
+                </section>
+              ) : null}
+
+              {hasVisitTimes && !showVisitPicker ? (
+                <div className="st-toolbar">
+                  <button
+                    type="button"
+                    onClick={() => setShowVisitPicker(true)}
+                    className="btn ghost sm"
+                  >
+                    <CmsEdit active={isEditMode} section="student_consultation" cmsKey="btn_visit_edit" type="text">
+                      {btnVisitEdit}
+                    </CmsEdit>
+                  </button>
+                </div>
+              ) : null}
+
+              {error ? (
+                <span className="f-err" role="alert">
+                  {error}
+                </span>
+              ) : null}
+            </>
+          )}
+        </div>
       </main>
+
+      {assignedToast ? (
+        <p role="status" className="toast on">
+          <CmsEdit active={isEditMode} section="student_consultation" cmsKey="toast_assigned" type="text">
+            {toastAssigned}
+          </CmsEdit>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -546,55 +552,49 @@ function BookingStatusCard({
   const badgeClass = STATUS_BADGE_CLASS[booking.status];
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-10 rounded-2xl border border-gray-200 bg-surface p-6 shadow-sm"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-text-primary">
+    <section className="st-block">
+      <div className="st-status">
+        <h2>
           <CmsEdit active={isEditMode} section="student_consultation" cmsKey="card_status_title" type="text">
             {cardTitle}
           </CmsEdit>
         </h2>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}`}>
+        <span className={`sp ${badgeClass}`}>
           <CmsEdit active={isEditMode} section="student_consultation" cmsKey={keys.label} type="text">
             {label}
           </CmsEdit>
         </span>
       </div>
 
-      <p className="mt-4 text-sm text-text-secondary">
+      <p className="st-lead" style={{ marginTop: "14px" }}>
         <CmsEdit active={isEditMode} section="student_consultation" cmsKey={keys.body} type="text">
           {body}
         </CmsEdit>
       </p>
 
       {booking.status === "ASSIGNED" && booking.manager ? (
-        <div className="mt-5 flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3">
-          <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white">
+        <div className="st-manager">
+          <span className="ph">
             {booking.manager.photoUrl ? (
               <Image
                 src={booking.manager.photoUrl}
                 alt=""
                 fill
-                className="object-cover"
                 sizes="48px"
+                style={{ objectFit: "cover" }}
               />
             ) : (
-              <span className="flex h-full w-full items-center justify-center font-bold text-text-primary/40">
-                {booking.manager.name.charAt(0)}
-              </span>
+              <span>{booking.manager.name.charAt(0)}</span>
             )}
-          </div>
+          </span>
           <div>
-            <p className="text-sm font-semibold text-text-primary">
+            <b>
               {booking.manager.name}
               <CmsEdit active={isEditMode} section="student_consultation" cmsKey="manager_suffix" type="text">
                 {managerSuffix}
               </CmsEdit>
-            </p>
-            <p className="text-xs text-text-secondary">
+            </b>
+            <p>
               <CmsEdit active={isEditMode} section="student_consultation" cmsKey="manager_role" type="text">
                 {managerRole}
               </CmsEdit>
@@ -604,36 +604,36 @@ function BookingStatusCard({
       ) : null}
 
       {booking.note ? (
-        <p className="mt-5 rounded-xl bg-background px-4 py-3 text-sm text-text-secondary">
-          {booking.note}
-        </p>
+        <blockquote className="st-quote">
+          <p>{booking.note}</p>
+        </blockquote>
       ) : null}
 
       {hasVisitTimes ? (
-        <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+        <div style={{ marginTop: "24px" }}>
+          <span className="st-label">
             <CmsEdit active={isEditMode} section="student_consultation" cmsKey="visit_section_title" type="text">
               {visitSectionTitle}
             </CmsEdit>
-          </p>
-          <div className="mt-2 space-y-2">
+          </span>
+          <dl className="st-kv" style={{ marginTop: "10px" }}>
             {Object.entries(booking.visitPreferredTimes).map(([date, slots]) =>
               slots.length > 0 ? (
-                <div key={date} className="rounded-lg bg-background px-3 py-2 text-sm">
-                  <span className="font-semibold text-text-primary">{date}</span>
-                  <span className="ml-2 text-text-secondary">{slots.join(", ")}</span>
+                <div key={date}>
+                  <dt>{date}</dt>
+                  <dd>{slots.join(", ")}</dd>
                 </div>
               ) : null,
             )}
-          </div>
+          </dl>
         </div>
       ) : (
-        <p className="mt-5 text-sm text-amber-700">
+        <p className="st-warn" style={{ marginTop: "20px", fontSize: "14px" }}>
           <CmsEdit active={isEditMode} section="student_consultation" cmsKey="visit_prompt" type="text">
             {visitPrompt}
           </CmsEdit>
         </p>
       )}
-    </motion.section>
+    </section>
   );
 }

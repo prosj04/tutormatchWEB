@@ -17,6 +17,12 @@ type DashboardCalendarProps = {
   onMonthChange: (year: number, month: number) => void;
 };
 
+/** 오늘 날짜 키(로컬 기준) — 오늘 칸 표시에만 쓴다. */
+function todayKey(): string {
+  const now = new Date();
+  return formatDateKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
+}
+
 export function DashboardCalendar({
   year,
   month,
@@ -26,6 +32,7 @@ export function DashboardCalendar({
   onMonthChange,
 }: DashboardCalendarProps) {
   const cells = getCalendarCells(year, month);
+  const today = todayKey();
 
   function goPrev() {
     const next = shiftMonth(year, month, -1);
@@ -38,71 +45,49 @@ export function DashboardCalendar({
   }
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-surface p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={goPrev}
-          className="rounded-lg px-2 py-1 text-sm text-text-secondary hover:bg-background"
-          aria-label="이전 달"
-        >
-          ‹
+    <div>
+      <div className="st-cal-head">
+        <button type="button" className="st-cal-nav" onClick={goPrev} aria-label="이전 달">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
         </button>
-        <p className="text-sm font-semibold text-text-primary">
+        <p>
           {year}년 {month}월
         </p>
-        <button
-          type="button"
-          onClick={goNext}
-          className="rounded-lg px-2 py-1 text-sm text-text-secondary hover:bg-background"
-          aria-label="다음 달"
-        >
-          ›
+        <button type="button" className="st-cal-nav" onClick={goNext} aria-label="다음 달">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
 
-      <div className="mb-1 grid grid-cols-7 gap-0.5 text-center">
-        {WEEKDAY_LABELS.map((label, i) => (
-          <span
-            key={label}
-            className={`py-1.5 text-xs font-medium sm:text-sm ${
-              i === 0 ? "text-accent" : i === 6 ? "text-primary" : "text-text-muted"
-            }`}
-          >
+      <div className="st-cal-grid">
+        {WEEKDAY_LABELS.map((label) => (
+          <span key={label} className="st-cal-wd">
             {label}
           </span>
         ))}
-      </div>
-
-      <div className="grid grid-cols-7 gap-0.5">
         {cells.map((day, index) => {
           if (day === null) {
-            return <div key={`empty-${index}`} className="aspect-square" />;
+            return <span key={`empty-${index}`} className="st-cal-cell void" aria-hidden />;
           }
 
           const dateKey = formatDateKey(year, month, day);
           const isSelected = dateKey === selectedDate;
           const hasPlan = planDates.has(dateKey);
+          const isToday = dateKey === today;
 
           return (
             <button
               key={dateKey}
               type="button"
               onClick={() => onSelectDate(dateKey)}
-              className={`relative flex min-h-[2.25rem] flex-col items-center justify-center rounded-lg text-xs sm:min-h-[2.5rem] sm:text-sm transition ${
-                isSelected
-                  ? "bg-primary font-semibold text-white"
-                  : "text-text-primary hover:bg-background"
-              }`}
+              aria-current={isSelected ? "date" : undefined}
+              className={`st-cal-cell${isSelected ? " sel" : ""}${isToday ? " today" : ""}`}
             >
-              {day}
-              {hasPlan && (
-                <span
-                  className={`absolute bottom-1 h-1 w-1 rounded-full ${
-                    isSelected ? "bg-white" : "bg-primary"
-                  }`}
-                />
-              )}
+              <span className="n">{day}</span>
+              {hasPlan && <span className="pd" aria-hidden />}
             </button>
           );
         })}

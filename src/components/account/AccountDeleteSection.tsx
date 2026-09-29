@@ -27,67 +27,55 @@ export function AccountDeleteSection() {
   }
 
   return (
-    <section
-      aria-labelledby="account-delete-title"
-      style={{
-        marginTop: 48,
-        padding: "20px 22px",
-        border: "1px solid var(--line, #e5e5e0)",
-        borderRadius: 18,
-      }}
-    >
-      <h2 id="account-delete-title" className="text-base font-bold" style={{ color: "var(--fg, #1a1a18)" }}>
-        계정 삭제
-      </h2>
-      <p className="mt-2 text-sm" style={{ color: "var(--mut, #6b6b64)" }}>
+    <section aria-labelledby="account-delete-title" className="st-block">
+      <h2 id="account-delete-title">계정 삭제</h2>
+      <p className="st-lead">
         계정을 삭제하면 더 이상 로그인할 수 없으며, 관련 법령에 따라 보관이 필요한 정보를 제외한
         개인정보는 개인정보처리방침에 따라 파기됩니다. 진행 중인 수업·결제가 있다면 삭제 전에
         먼저 문의해 주세요.
       </p>
       {!open ? (
-        <button
-          type="button"
-          className="btn btn-ghost btn-sm"
-          style={{ marginTop: 14 }}
-          onClick={() => setOpen(true)}
-        >
-          계정 삭제 진행
-        </button>
+        <div className="st-actions" style={{ marginTop: 0 }}>
+          <button type="button" className="btn danger" onClick={() => setOpen(true)}>
+            계정 삭제 진행
+          </button>
+        </div>
       ) : (
-        <div style={{ marginTop: 14 }}>
-          <label htmlFor="account-delete-confirm" className="text-sm" style={{ color: "var(--mut, #6b6b64)" }}>
+        <div className="field" style={{ maxWidth: "26rem" }}>
+          <label htmlFor="account-delete-confirm">
             계속하려면 아래에 <strong>{CONFIRM_WORD}</strong>를 입력하세요.
           </label>
-          <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input
-              id="account-delete-confirm"
-              type="text"
-              value={confirmText}
-              onChange={(e) => setConfirmText(e.target.value)}
-              style={{
-                padding: "8px 12px",
-                border: "1px solid var(--line, #e5e5e0)",
-                borderRadius: 10,
-                fontSize: 14,
-              }}
-            />
+          <input
+            id="account-delete-confirm"
+            type="text"
+            className="inp"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+          />
+          <div className="st-actions">
             <button
               type="button"
-              className="btn btn-sm"
+              className="btn danger solid sm"
               disabled={confirmText.trim() !== CONFIRM_WORD || loading}
               onClick={() => void handleDelete()}
-              style={{ background: "#c0392b", color: "#fff", opacity: confirmText.trim() === CONFIRM_WORD ? 1 : 0.5 }}
             >
               {loading ? "삭제 중…" : "영구 삭제"}
             </button>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setOpen(false); setConfirmText(""); }}>
+            <button
+              type="button"
+              className="btn ghost sm"
+              onClick={() => {
+                setOpen(false);
+                setConfirmText("");
+              }}
+            >
               취소
             </button>
           </div>
           {error ? (
-            <p className="mt-2 text-sm" role="alert" style={{ color: "#c0392b" }}>
+            <span className="f-err" role="alert">
               {error}
-            </p>
+            </span>
           ) : null}
         </div>
       )}

@@ -129,18 +129,14 @@ export function QuestionSection({
   }
 
   return (
-    <section className="mt-10 border-t border-gray-200 pt-10">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-text-primary">
+    <section className="st-sec st-qsec">
+      <div className="st-plan-head" style={{ marginBottom: "14px" }}>
+        <h2 className="st-sec-title" style={{ marginBottom: 0 }}>
           <CmsEdit active={isEditMode} section="student_questions" cmsKey="section_title" type="text">
             {sectionTitle}
           </CmsEdit>
         </h2>
-        <button
-          type="button"
-          onClick={() => setModalOpen(true)}
-          className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90"
-        >
+        <button type="button" onClick={() => setModalOpen(true)} className="btn btn-ghost btn-sm">
           <CmsEdit active={isEditMode} section="student_questions" cmsKey="btn_add" type="text">
             {btnAdd}
           </CmsEdit>
@@ -148,26 +144,26 @@ export function QuestionSection({
       </div>
 
       {loading ? (
-        <p className="mt-8 text-center text-sm text-text-muted">
+        <p className="caption">
           <CmsEdit active={isEditMode} section="student_questions" cmsKey="loading" type="text">
             {loadingQuestions}
           </CmsEdit>
         </p>
       ) : questions.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-surface p-8 text-center">
-          <p className="text-sm text-text-secondary">
+        <div className="st-none">
+          <b>
             <CmsEdit active={isEditMode} section="student_questions" cmsKey="empty_title" type="text">
               {emptyTitle}
             </CmsEdit>
-          </p>
-          <p className="mt-1 text-xs text-text-muted">
+          </b>
+          <p>
             <CmsEdit active={isEditMode} section="student_questions" cmsKey="empty_hint" type="text">
               {emptyHint}
             </CmsEdit>
           </p>
         </div>
       ) : (
-        <ul className="mt-6 space-y-8">
+        <ul className="st-qlist">
           {questions.map((q) => (
             <li key={q.id}>
               <QuestionCard

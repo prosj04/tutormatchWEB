@@ -1,5 +1,3 @@
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
 
 import { redirect } from "next/navigation";
 
@@ -35,7 +33,7 @@ export default async function AccountPage() {
   return (
     <StudentPortalShell>
       <section className="page on" id="pg-account" data-screen-label="계정">
-        <div className="crumb">/dashboard/account</div>
+        <div className="crumb">계정</div>
         <h1>계정</h1>
         <p className="sub">프로필과 보안, 학부모 연결을 관리하세요.</p>
         <AccountClient

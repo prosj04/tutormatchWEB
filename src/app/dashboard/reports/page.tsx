@@ -1,5 +1,3 @@
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
 
 import { redirect } from "next/navigation";
 
@@ -38,7 +36,7 @@ export default async function StudentReportsPage() {
   return (
     <StudentPortalShell>
       <section className="page on" id="pg-reports" data-screen-label="월간 리포트">
-        <div className="crumb">/dashboard/reports</div>
+        <div className="crumb">리포트</div>
         <h1>월간 리포트</h1>
         <p className="sub">선생님·매니저가 매달 요약한 나의 학습 리포트예요.</p>
         <StudentReportsView reports={reports} studentName={student.name} />

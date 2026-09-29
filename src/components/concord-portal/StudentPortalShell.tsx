@@ -123,7 +123,7 @@ export async function StudentPortalShell({
 
   return (
     <PortalShell
-      roleBadge="Student · /dashboard"
+      roleBadge="Student"
       nav={nav}
       userName={student.name}
       userMeta={student.grade ? `${student.grade} · 수업중` : "수업중"}

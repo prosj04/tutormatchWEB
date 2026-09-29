@@ -66,7 +66,6 @@ function MsgBubble({
       <div className={`msg ${tone}`}>
         {msg.sender === "ai" && (
           <span className="ai-tag">
-            <span aria-hidden>✨</span>
             AI 즉답{msg.tokenCost ? ` · 토큰 ${msg.tokenCost} 사용` : ""}
           </span>
         )}
@@ -236,18 +235,20 @@ export function QuestionsPageClient({
 
   return (
     <section className="page on" id="pg-questions" data-screen-label="질문">
-      <div className="crumb">/questions</div>
+      <div className="crumb">질문</div>
       <h1>질문</h1>
       <p className="sub">
         사진과 함께 질문하면 AI가 먼저 풀이를 안내하고, 선생님이 이어서 확인해 드려요.
       </p>
 
-      <div className="card sec" style={{ overflow: "hidden" }}>
-        <div className="chat">
+      <div className="st-block card" style={{ overflow: "hidden" }}>
+        <div className="chat st-chat">
           <div className="chat-head">
-            <div className="av" aria-hidden>
-              💬
-            </div>
+            <span className="av" aria-hidden>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </span>
             <div>
               <b>내 질문</b>
               <p>질문하면 AI가 먼저 답하고, 선생님이 이어서 확인해요.</p>
@@ -274,7 +275,7 @@ export function QuestionsPageClient({
 
           {error && (
             <div className="chat-note">
-              <p style={{ color: "#A93636" }} role="alert">
+              <p className="f-err" role="alert">
                 {error}
               </p>
             </div>
@@ -310,7 +311,9 @@ export function QuestionsPageClient({
                 disabled={sending}
                 onClick={() => fileInputRef.current?.click()}
               >
-                +
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
               </button>
             )}
             <textarea
@@ -333,7 +336,13 @@ export function QuestionsPageClient({
               disabled={!canSend}
               onClick={() => void handleSend()}
             >
-              {sending ? "…" : "↑"}
+              {sending ? (
+                <span className="st-spin" aria-hidden />
+              ) : (
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+              )}
             </button>
           </div>
         </div>

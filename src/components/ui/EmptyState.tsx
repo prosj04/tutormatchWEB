@@ -12,6 +12,7 @@ type EmptyStateProps = {
 /**
  * 빈 값(초기 상태) 공통 표시.
  * 원칙: "아직 없음 + 이유 + 다음 행동(CTA)"
+ * v3: ds.css `.empty` — 세리프 한 줄 + 보조 문장, 박스 없음.
  */
 export function EmptyState({
   title,
@@ -22,26 +23,12 @@ export function EmptyState({
   className = "",
 }: EmptyStateProps) {
   return (
-    <div
-      className={`flex flex-col items-center justify-center px-6 py-10 text-center ${className}`}
-    >
-      {icon && (
-        <div className="mb-3.5 flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-accent/10 text-2xl">
-          {icon}
-        </div>
-      )}
-      <p className="text-[15px] font-bold text-text">{title}</p>
-      {description && (
-        <p className="mt-1.5 max-w-[280px] text-[13px] leading-5 text-text-muted">
-          {description}
-        </p>
-      )}
+    <div className={`empty ${className}`.trim()}>
+      {icon}
+      <b>{title}</b>
+      {description && <p>{description}</p>}
       {ctaLabel && onCta && (
-        <button
-          type="button"
-          onClick={onCta}
-          className="mt-4 rounded-xl bg-accent/12 px-[18px] py-2.5 text-[13.5px] font-bold text-accent-text"
-        >
+        <button type="button" onClick={onCta} className="btn btn-ghost btn-sm" style={{ marginTop: "18px" }}>
           {ctaLabel}
         </button>
       )}

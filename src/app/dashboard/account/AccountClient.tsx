@@ -5,18 +5,24 @@ import { useEffect, useState } from "react";
 
 type Banner = { text: string; error: boolean } | null;
 
+function InfoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </svg>
+  );
+}
+
 function BannerBox({ banner }: { banner: Banner }) {
   if (!banner) return null;
   return (
     <div
       className={banner.error ? "banner warn" : "banner info"}
-      style={{ marginTop: "14px" }}
+      style={{ marginTop: "16px" }}
       role={banner.error ? "alert" : undefined}
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 16v-4M12 8h.01" />
-      </svg>
+      <InfoIcon />
       <span>{banner.text}</span>
     </div>
   );
@@ -24,7 +30,7 @@ function BannerBox({ banner }: { banner: Banner }) {
 
 /**
  * 학생 계정 — 프로필(읽기 전용), 비밀번호 변경, 학부모 연결 코드/QR, 회원 탈퇴.
- * 시안 pg-account. 데이터·API는 기존 로직 유지:
+ * 데이터·API는 기존 로직 유지:
  *  - POST /api/account/password
  *  - GET/POST /api/student/parent-link-code
  *  - POST /api/account/delete
@@ -142,9 +148,9 @@ export function AccountClient({
 
   return (
     <>
-      <div className="sec grid2">
-        <div className="card" style={{ padding: "22px" }}>
-          <h2 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "14px" }}>프로필</h2>
+      <div className="st-block st-cols">
+        <section>
+          <h2 className="st-sec-title">프로필</h2>
           <div className="field">
             <label>이름</label>
             <div className="inp filled">{name}</div>
@@ -157,18 +163,15 @@ export function AccountClient({
             <label>연락처</label>
             <div className="inp filled">{phone}</div>
           </div>
-          <div className="banner info" style={{ marginTop: "14px" }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
-            </svg>
+          <div className="banner info" style={{ marginTop: "16px" }}>
+            <InfoIcon />
             <span>정보 수정이 필요하면 담당 매니저 또는 help@concordedu.kr 로 문의해 주세요.</span>
           </div>
-        </div>
+        </section>
 
-        <div className="card" style={{ padding: "22px" }}>
+        <section>
           <form onSubmit={changePassword}>
-            <h2 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "14px" }}>비밀번호 변경</h2>
+            <h2 className="st-sec-title">비밀번호 변경</h2>
             <div className="field">
               <label htmlFor="account-current-password">현재 비밀번호</label>
               <input
@@ -206,55 +209,56 @@ export function AccountClient({
                 autoComplete="new-password"
               />
             </div>
-            <button type="submit" className="btn sec" disabled={pwBusy}>
-              {pwBusy ? "변경 중…" : "비밀번호 변경"}
-            </button>
+            <div className="st-actions">
+              <button type="submit" className="btn btn-ghost" disabled={pwBusy}>
+                {pwBusy ? "변경 중…" : "비밀번호 변경"}
+              </button>
+            </div>
             <BannerBox banner={pwMsg} />
           </form>
-        </div>
+        </section>
       </div>
 
-      <div className="sec grid2">
-        <div className="card">
-          <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 0" }}>학부모 연결</h2>
-          <div className="codebox">
-            <span className="qr" aria-label="연결 QR 코드">
-              <svg viewBox="0 0 64 64" fill="currentColor">
-                <path d="M4 4h20v20H4zM9 9v10h10V9zM40 4h20v20H40zM45 9v10h10V9zM4 40h20v20H4zM9 45v10h10V45zM40 40h6v6h-6zM52 40h8v6h-8zM40 52h6v8h-6zM52 52h8v8h-8zM28 4h6v10h-6zM28 22h6v12h-6zM28 40h6v6h-6zM28 52h6v8h-6zM4 28h10v6H4zM22 28h12v6H22zM40 28h10v6h-10zM56 28h4v6h-4z" />
-              </svg>
-            </span>
-            <div>
-              <b className="code">{linkCode ?? "코드 없음"}</b>
-              <p>학부모 앱에서 이 코드를 입력하면 자녀 계정과 연결됩니다. 유효기간 24시간.</p>
+      <section className="st-block">
+        <h2>학부모 연결</h2>
+        <div className="codebox" style={{ padding: "4px 0 0" }}>
+          <span className="qr" aria-label="연결 QR 코드">
+            <svg viewBox="0 0 64 64" fill="currentColor">
+              <path d="M4 4h20v20H4zM9 9v10h10V9zM40 4h20v20H40zM45 9v10h10V9zM4 40h20v20H4zM9 45v10h10V45zM40 40h6v6h-6zM52 40h8v6h-8zM40 52h6v8h-6zM52 52h8v8h-8zM28 4h6v10h-6zM28 22h6v12h-6zM28 40h6v6h-6zM28 52h6v8h-6zM4 28h10v6H4zM22 28h12v6H22zM40 28h10v6h-10zM56 28h4v6h-4z" />
+            </svg>
+          </span>
+          <div>
+            <b className="code">{linkCode ?? "코드 없음"}</b>
+            <p>학부모 앱에서 이 코드를 입력하면 자녀 계정과 연결됩니다. 유효기간 24시간.</p>
+            <div className="st-actions">
               <button
                 type="button"
-                className="btn ghost sm"
-                style={{ marginTop: "10px" }}
+                className="btn btn-ghost btn-sm"
                 onClick={reissueCode}
                 disabled={codeBusy}
               >
                 {codeBusy ? "발급 중…" : linkCode ? "코드 재발급" : "코드 발급"}
               </button>
-              <BannerBox banner={codeMsg} />
             </div>
+            <BannerBox banner={codeMsg} />
           </div>
         </div>
+      </section>
 
-        <div className="card" style={{ padding: "22px" }}>
-          <h2 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "6px" }}>계정 관리</h2>
-          <p style={{ fontSize: "13px", color: "var(--mut)", marginBottom: "14px" }}>
-            탈퇴 시 학습 기록과 리포트가 모두 삭제되며 복구할 수 없습니다.
-          </p>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button type="button" className="btn sec" onClick={() => void signOut({ redirectTo: "/" })}>
-              로그아웃
-            </button>
-            <button type="button" className="btn danger" onClick={() => setQuitOpen(true)}>
-              회원 탈퇴
-            </button>
-          </div>
+      <section className="st-block">
+        <h2>계정 관리</h2>
+        <p className="st-lead">
+          탈퇴 시 학습 기록과 리포트가 모두 삭제되며 복구할 수 없습니다.
+        </p>
+        <div className="st-actions" style={{ marginTop: 0 }}>
+          <button type="button" className="btn btn-ghost" onClick={() => void signOut({ redirectTo: "/" })}>
+            로그아웃
+          </button>
+          <button type="button" className="btn danger" onClick={() => setQuitOpen(true)}>
+            회원 탈퇴
+          </button>
         </div>
-      </div>
+      </section>
 
       <div className={`scrim${quitOpen ? " on" : ""}`} onClick={(e) => { if (e.target === e.currentTarget && !quitBusy) setQuitOpen(false); }}>
         <div className="modal" role="dialog" aria-modal="true" aria-label="회원 탈퇴 확인">
@@ -263,7 +267,7 @@ export function AccountClient({
             <p className="m-p">
               학습 기록·리포트·질문 내역이 모두 삭제되며 복구할 수 없습니다. 진행 중인 구독은 말일까지 유지 후 종료됩니다.
             </p>
-            <div className="field" style={{ marginTop: "14px" }}>
+            <div className="field">
               <label htmlFor="account-quit-confirm">확인을 위해 ‘탈퇴합니다’를 입력하세요</label>
               <input
                 id="account-quit-confirm"
@@ -274,8 +278,8 @@ export function AccountClient({
               />
             </div>
             {quitError ? (
-              <div className="banner warn" style={{ marginTop: "12px" }} role="alert">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="banner err" style={{ marginTop: "14px" }} role="alert">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 8v4M12 16h.01" />
                 </svg>
@@ -284,7 +288,7 @@ export function AccountClient({
             ) : null}
           </div>
           <div className="m-f">
-            <button type="button" className="btn sec" onClick={() => setQuitOpen(false)} disabled={quitBusy}>
+            <button type="button" className="btn btn-ghost" onClick={() => setQuitOpen(false)} disabled={quitBusy}>
               취소
             </button>
             <button

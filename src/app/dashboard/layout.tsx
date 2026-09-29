@@ -1,4 +1,3 @@
-import "../portal-design.css";
 
 import { PortalDesignProvider } from "@/components/providers/PortalDesignProvider";
 import { PortalSiteContentProvider } from "@/components/providers/PortalSiteContentProvider";

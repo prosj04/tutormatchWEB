@@ -29,15 +29,6 @@ function formatMsgTime(iso: string): string {
   return `${kst.getUTCMonth() + 1}/${kst.getUTCDate()}`;
 }
 
-function AiSpinner() {
-  return (
-    <span
-      className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
-      aria-hidden
-    />
-  );
-}
-
 /**
  * 하나의 질문 스레드를 채팅형 말풍선으로 렌더한다.
  * 학생 질문(오른쪽) → AI 즉답 → 선생님 답변(왼쪽)이 시간순으로 이어지는 멘탈모델.
@@ -49,67 +40,57 @@ export function QuestionCard({ question, aiAnswerEnabled, aiLoading }: QuestionC
   const hasTeacherAnswer = Boolean(question.teacherAnswer);
   const showAiContent = aiAnswerEnabled && !aiLoading && Boolean(question.aiAnswer);
   const showMockAiMessage = !aiAnswerEnabled && !aiLoading && Boolean(question.aiAnswer);
+  const hasAiBody = showAiContent || showMockAiMessage;
   const time = formatMsgTime(question.createdAt);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="st-thread">
       {/* 학생 질문 — 오른쪽 */}
-      <div className="flex flex-col items-end">
-        <div className="max-w-[80%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm leading-relaxed text-white">
-          <p className="whitespace-pre-wrap">{question.content}</p>
+      <div className="bwrap me">
+        <div className="msg me">
+          {question.content}
           {question.imageUrl && (
             <button
               type="button"
+              className="st-att"
               onClick={() => setLightboxOpen(true)}
-              className="mt-2 block overflow-hidden rounded-xl border border-white/20"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={question.imageUrl}
-                alt="질문 첨부 이미지"
-                className="max-h-48 w-auto max-w-full object-cover transition hover:opacity-90"
-              />
+              <img src={question.imageUrl} alt="질문 첨부 이미지" />
             </button>
           )}
         </div>
-        {time && <span className="mt-1 text-xs text-text-muted">{time}</span>}
+        {time && <span className="time">{time}</span>}
       </div>
 
-      {/* AI 즉답 — 왼쪽 */}
-      <div className="flex flex-col items-start">
-        <span className="mb-1 text-xs font-semibold text-text-muted">AI 즉답</span>
-        <div className="max-w-[80%] rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 px-4 py-2.5 text-sm leading-relaxed text-text-primary">
+      {/* AI 즉답 — 왼쪽, 보더형 + 작은 AI 라벨 */}
+      <div className="bwrap them">
+        <div className={`msg ai${hasAiBody ? "" : " wait"}`}>
+          <span className="ai-tag">AI 즉답</span>
           {aiLoading ? (
-            <div className="flex items-center gap-2 text-text-secondary">
-              <AiSpinner />
-              <span>AI가 답변을 생성중이에요…</span>
-            </div>
-          ) : showAiContent || showMockAiMessage ? (
-            <p className="whitespace-pre-wrap">{question.aiAnswer}</p>
+            <span className="st-spin-row">
+              <span className="st-spin" aria-hidden />
+              AI가 답변을 생성중이에요…
+            </span>
+          ) : hasAiBody ? (
+            question.aiAnswer
           ) : !aiAnswerEnabled ? (
-            <p className="text-text-secondary">AI 답변 준비중이에요. 선생님이 답변해 드려요.</p>
+            "AI 답변 준비중이에요. 선생님이 답변해 드려요."
           ) : (
-            <p className="text-text-muted">답변을 기다리는 중이에요.</p>
+            "답변을 기다리는 중이에요."
           )}
         </div>
       </div>
 
-      {/* 선생님 답변 — 왼쪽 (있을 때만) */}
-      {hasTeacherAnswer ? (
-        <div className="flex flex-col items-start">
-          <span className="mb-1 text-xs font-semibold text-text-muted">선생님</span>
-          <div className="max-w-[80%] rounded-2xl rounded-bl-md border border-gray-200 bg-surface px-4 py-2.5 text-sm leading-relaxed text-text-primary">
-            <p className="whitespace-pre-wrap">{question.teacherAnswer}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-start">
-          <span className="mb-1 text-xs font-semibold text-text-muted">선생님</span>
-          <div className="max-w-[80%] rounded-2xl rounded-bl-md border border-dashed border-gray-200 bg-background px-4 py-2.5 text-sm text-text-secondary">
-            선생님이 이어서 확인하고 있어요.
-          </div>
-        </div>
-      )}
+      {/* 선생님 답변 — 왼쪽 */}
+      <div className="bwrap them">
+        <span className="sndr">선생님</span>
+        {hasTeacherAnswer ? (
+          <div className="msg them">{question.teacherAnswer}</div>
+        ) : (
+          <div className="msg them wait">선생님이 이어서 확인하고 있어요.</div>
+        )}
+      </div>
 
       {lightboxOpen && question.imageUrl && (
         <ImageLightbox
