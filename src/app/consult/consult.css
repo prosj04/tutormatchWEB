@@ -1,326 +1,77 @@
-.consult-main {
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 48px 20px 96px;
-}
+/* ============================================================
+   /consult — 상담 신청 폼 (에디토리얼 2열의 오른쪽 지면)
+   레이아웃(.cv-consult-*)·프리미티브는 forms.css / ds.css.
+   여기는 폼 내부 필드만 둔다. 컴팩트 규칙(신청 버튼까지 한 화면) 유지.
+   ============================================================ */
 
-.consult-benefit {
-  border-radius: var(--r-card, 16px);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  margin-bottom: 28px;
-  background: var(--panel);
-}
+.consult-form { display: flex; flex-direction: column; gap: 15px; }
 
-.consult-benefit-img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 7;
-  background: var(--line);
-}
-
-.consult-benefit-items {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 14px;
-}
-
-.consult-benefit-item {
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  padding: 10px 6px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--acc) 8%, transparent);
-  color: var(--fg);
-}
-
-.consult-head h1 {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 0 0 6px;
-}
-
-.consult-head p {
-  color: var(--fg-sub, #6b7280);
-  font-size: 14px;
-  margin: 0 0 24px;
-}
-
-.consult-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 24px;
-}
-
-.consult-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.consult-field label,
-.consult-label {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.consult-field select,
-.consult-field input {
-  height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0 12px;
-  font-size: 15px;
-  background: var(--bg);
-  color: var(--fg);
-}
-
-.consult-field select:focus,
-.consult-field input:focus {
-  outline: 2px solid var(--acc);
-  outline-offset: 0;
-  border-color: transparent;
-}
-
-.consult-notice {
-  font-size: 12px;
-  color: var(--acc);
-  margin: 0;
-}
-
-.consult-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.consult-chip {
-  padding: 10px 18px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.consult-chip.on {
-  border-color: var(--acc);
-  background: color-mix(in srgb, var(--acc) 12%, transparent);
-  color: var(--acc);
-}
-
-.consult-agree {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-  font-size: 14px;
-}
-
-.consult-agree-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.consult-agree-row input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--acc);
-}
-
-.consult-agree-all {
-  font-weight: 700;
-}
-
-.consult-agree-link {
-  font-size: 12px;
-  color: var(--fg-sub, #6b7280);
-  text-decoration: underline;
-}
-
-.consult-error {
-  color: #dc2626;
-  font-size: 14px;
-  margin: 0;
-}
-
-.consult-submit {
-  height: 52px;
-  font-size: 16px;
-}
-
-.consult-done {
-  padding: 48px 28px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.consult-done-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 26px;
-  font-weight: 800;
-  color: #fff;
-  background: var(--acc);
-  margin-bottom: 6px;
-}
-
-.consult-done h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.consult-done p {
-  color: var(--fg-sub, #6b7280);
-  font-size: 14px;
-  margin: 0;
-}
-
-.consult-done-label {
-  margin-top: 18px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.02em;
-  color: var(--acc, #10b981) !important;
-}
-
-.consult-done-list {
-  list-style: none;
-  margin: 8px auto 0;
-  padding: 0;
-  max-width: 340px;
-  text-align: left;
-  display: grid;
-  gap: 8px;
-}
-
-.consult-done-list li {
-  position: relative;
-  padding-left: 22px;
-  font-size: 14px;
-  color: var(--fg, #1a2b23);
-  line-height: 1.5;
-}
-
-.consult-done-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--acc, #10b981);
-  font-weight: 800;
-}
-
-.consult-done-sub {
-  margin-top: 12px;
-}
-
-.consult-done-note {
-  margin-top: 8px;
-  font-size: 12.5px;
-  opacity: 0.72;
-}
-
-.consult-done-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 18px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* ── 컴팩트 레이아웃: 첫 화면 안에 제출 버튼까지 ── */
-.consult-main { padding-top: 28px !important; }
-.consult-benefit { margin-bottom: 14px !important; }
-.consult-benefit-items { display: flex !important; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.consult-benefit-item { padding: 7px 14px !important; font-size: 12.5px !important; }
-.consult-head { margin-bottom: 16px !important; }
-.consult-head h1 { font-size: clamp(21px, 2.4vw, 27px) !important; }
-.consult-form { gap: 14px !important; }
-.consult-form label, .consult-field-label { font-size: 13px !important; }
-.consult-form input, .consult-form select { padding: 10px 12px !important; }
-.consult-subject-chips { gap: 6px !important; }
-.consult-agree { gap: 6px !important; font-size: 12.5px !important; }
-
-/* 두 필드를 한 줄에 */
-.consult-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-}
+/* 두 필드를 한 줄에 — 첫 화면 안에 제출 버튼까지 들어가게 하는 컴팩트 규칙 */
+.consult-row { display: flex; gap: 12px; align-items: flex-end; }
 .consult-row .consult-field { flex: 0 0 auto; }
 .consult-row .consult-field-grow { flex: 1 1 auto; min-width: 0; }
 
-/* 성별 세그먼트 탭 (이름 옆 작게) */
-.consult-gender {
-  display: inline-flex;
-  gap: 6px;
+.consult-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.consult-field label,
+.consult-label {
+  font-size: 13px; font-weight: 600; color: var(--mut); letter-spacing: .005em;
 }
-.consult-gender-btn {
-  height: 46px;
-  min-width: 46px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--fg);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
+.consult-field input,
+.consult-field select {
+  width: 100%; min-height: 46px; padding: 11px 15px;
+  border: 1px solid var(--line-2); border-radius: var(--r-control);
+  background: var(--panel); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.4;
+  transition: border-color .18s var(--ease);
+  -webkit-appearance: none; appearance: none;
 }
-.consult-gender-btn.on {
-  border-color: var(--acc);
-  background: color-mix(in srgb, var(--acc) 12%, transparent);
-  color: var(--acc);
+.consult-field input::placeholder { color: var(--mut-2); }
+.consult-field select {
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238C877C' stroke-width='1.4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
 }
+.consult-field input:focus,
+.consult-field select:focus { outline: none; border-color: var(--fg); }
 
-/* 과목 칩 한 줄 배치 */
-.consult-chips-row {
-  flex-wrap: nowrap;
-}
-.consult-chips-row .consult-chip {
-  flex: 1 1 0;
-  padding: 10px 4px;
-  text-align: center;
-}
+/* 성별·과목 토글은 ds.css .opts/.opt 사용 — 과목은 한 줄로 균등 분할 */
+.consult-opts-row { flex-wrap: nowrap; }
+.consult-opts-row .opt { flex: 1 1 0; padding: 0 6px; text-align: center; justify-content: center; display: inline-flex; align-items: center; }
+.consult-gender .opt { min-width: 46px; }
 
-/* 카카오톡 상담 안내 (폼 하단) */
-.consult-kakao {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
+.consult-notice { margin: 0; font-size: 12.5px; color: var(--mut-2); }
+
+/* 동의 — 헤어라인 위 작은 행 */
+.consult-agree {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 4px; padding-top: 15px; border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--mut);
 }
-.consult-kakao p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--mut, var(--fg));
+.consult-agree-row { display: flex; align-items: center; gap: 9px; cursor: pointer; line-height: 1.5; }
+.consult-agree-row input { width: 16px; height: 16px; flex: 0 0 auto; }
+.consult-agree-all { color: var(--fg); font-weight: 600; }
+.consult-agree-link {
+  color: var(--mut-2); text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: var(--line-2);
 }
+.consult-agree-link:hover { color: var(--fg); }
+
+.consult-error { margin: 0; font-size: 13px; font-weight: 500; color: var(--danger); }
+.consult-submit { margin-top: 4px; }
 
 /* M-9: 모바일 터치 타깃 보정 */
 @media (max-width: 640px) {
   .consult-agree-link { display: inline-flex; align-items: center; min-height: 40px; }
+  .consult-opts-row { flex-wrap: wrap; }
+  .consult-opts-row .opt { flex: 0 1 auto; padding: 0 14px; }
+}
+
+/* 좁은 화면: 학년·연락처 한 줄을 유지하면서(신청 버튼이 첫 화면 안에 들어와야 함)
+   연락처 플레이스홀더가 잘리지 않도록 좌우 여백과 글자만 줄인다. */
+@media (max-width: 420px) {
+  .consult-row { gap: 10px; }
+  .consult-row .consult-field input,
+  .consult-row .consult-field select { padding-left: 11px; font-size: 14px; }
+  .consult-row .consult-field input { padding-right: 11px; }
+  .consult-row .consult-field select { padding-right: 30px; background-position: right 11px center; }
 }

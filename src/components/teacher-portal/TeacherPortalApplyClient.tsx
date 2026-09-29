@@ -12,35 +12,6 @@ import type { ProfileGender } from "@/lib/profile-gender";
 
 const SUBJECTS = ["국어", "영어", "수학", "사회탐구", "과학탐구"] as const;
 
-function SuccessCheckLarge() {
-  return (
-    <div
-      style={{
-        margin: "0 auto",
-        width: 80,
-        height: 80,
-        display: "grid",
-        placeItems: "center",
-        borderRadius: "50%",
-        border: "2px solid rgba(var(--acc-rgb),.3)",
-        background: "rgba(var(--acc-rgb),.1)",
-      }}
-      aria-hidden
-    >
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M10 20l7 7 13-14"
-          stroke="currentColor"
-          style={{ color: "var(--acc-text)" }}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  );
-}
-
 export function TeacherPortalApplyClient() {
   const router = useRouter();
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -132,9 +103,9 @@ export function TeacherPortalApplyClient() {
         description="제출 후 관리자 검토를 거쳐 안내드립니다."
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="sec cv-sec-tight">
         <div className="wrap">
-          <article className="card panel-card" style={{ maxWidth: 560, margin: "0 auto" }}>
+          <div className="cv-narrow-sm">
             {!registerSuccess ? (
               <>
                 <Field label="이름" htmlFor="apply-name" error={fieldErrors.name}>
@@ -172,8 +143,8 @@ export function TeacherPortalApplyClient() {
                   />
                 </Field>
                 <div className="field">
-                  <label>담당 과목</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                  <span className="field-label">담당 과목</span>
+                  <div className="opts" role="group" aria-label="담당 과목 선택">
                     {SUBJECTS.map((s) => {
                       const on = subjects.includes(s);
                       return (
@@ -181,7 +152,8 @@ export function TeacherPortalApplyClient() {
                           key={s}
                           type="button"
                           onClick={() => toggleSubject(s)}
-                          className={`chip-f${on ? " on" : ""}`}
+                          aria-pressed={on}
+                          className={`opt${on ? " on" : ""}`}
                         >
                           {s}
                         </button>
@@ -189,7 +161,7 @@ export function TeacherPortalApplyClient() {
                     })}
                   </div>
                   {fieldErrors.subjects ? (
-                    <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.subjects}</p>
+                    <p className="field-error">{fieldErrors.subjects}</p>
                   ) : null}
                 </div>
                 <Field label="최종 학력" htmlFor="apply-edu" error={fieldErrors.education}>
@@ -223,13 +195,12 @@ export function TeacherPortalApplyClient() {
                   type="button"
                   disabled={registerLoading}
                   onClick={() => void handleRegister()}
-                  className="btn btn-acc btn-block"
-                  style={{ marginTop: 8 }}
+                  className="btn btn-acc btn-block btn-lg"
                 >
                   {registerLoading ? "처리 중…" : "가입 신청하기"}
                 </button>
                 {registerConflict ? (
-                  <p style={{ marginTop: 16, fontSize: 14, color: "var(--acc-text)", textAlign: "center" }} role="alert">
+                  <p className="field-error cv-msg center" role="alert">
                     {registerConflict}
                   </p>
                 ) : null}
@@ -239,20 +210,19 @@ export function TeacherPortalApplyClient() {
                 </p>
               </>
             ) : (
-              <div style={{ textAlign: "center", padding: "24px 0" }}>
-                <SuccessCheckLarge />
-                <h2 className="panel-title" style={{ marginTop: 24, fontSize: 24 }}>
-                  신청이 완료되었습니다
-                </h2>
-                <p className="panel-note" style={{ marginTop: 12 }}>
+              <div className="cv-done" role="status">
+                <h2 className="cv-done-title">신청이 완료되었습니다</h2>
+                <p className="cv-done-lede">
                   선생님 등록 심사 위하여 곧 개별 연락드리겠습니다. 승인 후 로그인하시면 포털을 이용하실 수 있습니다.
                 </p>
-                <Link href="/teacher-portal" className="btn btn-acc" style={{ marginTop: 28 }}>
-                  로그인하러 가기
-                </Link>
+                <div className="cv-done-actions">
+                  <Link href="/teacher-portal" className="btn btn-acc">
+                    로그인하러 가기
+                  </Link>
+                </div>
               </div>
             )}
-          </article>
+          </div>
         </div>
       </section>
     </main>
@@ -274,9 +244,7 @@ function Field({
     <div className="field">
       <label htmlFor={htmlFor}>{label}</label>
       {children}
-      {error ? (
-        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{error}</p>
-      ) : null}
+      {error ? <p className="field-error">{error}</p> : null}
     </div>
   );
 }

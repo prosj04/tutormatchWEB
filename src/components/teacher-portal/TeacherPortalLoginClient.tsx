@@ -52,9 +52,9 @@ export function TeacherPortalLoginClient() {
         description="전화번호와 비밀번호로 로그인해 주세요."
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="sec cv-sec-tight">
         <div className="wrap">
-          <article className="card panel-card" style={{ maxWidth: 480, margin: "0 auto" }}>
+          <div className="cv-narrow-sm">
             <div className="field">
               <label htmlFor="tp-login-id">이메일 또는 전화번호</label>
               <input
@@ -82,13 +82,12 @@ export function TeacherPortalLoginClient() {
               type="button"
               disabled={loading}
               onClick={() => void handleLogin()}
-              className="btn btn-acc btn-block"
-              style={{ marginTop: 8 }}
+              className="btn btn-acc btn-block btn-lg"
             >
               {loading ? "처리 중…" : "로그인"}
             </button>
             {error ? (
-              <p style={{ marginTop: 16, fontSize: 14, color: "var(--acc-text)", textAlign: "center" }} role="alert">
+              <p className="field-error cv-msg center" role="alert">
                 {error}
               </p>
             ) : null}
@@ -97,7 +96,7 @@ export function TeacherPortalLoginClient() {
               아직 계정이 없으신가요?{" "}
               <Link href="/teacher-portal/apply">가입 신청</Link>
             </p>
-          </article>
+          </div>
         </div>
       </section>
     </main>

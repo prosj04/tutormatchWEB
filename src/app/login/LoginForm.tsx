@@ -53,11 +53,11 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
 
   if (success) {
     return (
-      <div style={{ marginTop: 24, textAlign: "center" }}>
-        <p style={{ fontSize: 14, color: "var(--acc-text)" }} role="status">
+      <div className="cv-auth-tools-body">
+        <p className="cv-msg ok center" role="status">
           관리자 계정이 생성되었습니다.
         </p>
-        <button type="button" onClick={onSuccess} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
+        <button type="button" onClick={onSuccess} className="btn btn-text btn-sm btn-block">
           이 안내 닫기
         </button>
       </div>
@@ -65,7 +65,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="cv-auth-tools-body">
       <div className="field">
         <label htmlFor="admin-email">관리자 이메일</label>
         <input id="admin-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -98,7 +98,7 @@ function AdminSetupSection({ onSuccess }: { onSuccess: () => void }) {
         {loading ? "생성 중…" : "생성하기"}
       </button>
       {error ? (
-        <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
+        <p className="field-error cv-msg center" role="alert">
           {error}
         </p>
       ) : null}
@@ -145,11 +145,11 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
 
   if (success) {
     return (
-      <div style={{ marginTop: 24, textAlign: "center" }}>
-        <p style={{ fontSize: 14, color: "var(--acc-text)" }} role="status">
+      <div className="cv-auth-tools-body">
+        <p className="cv-msg ok center" role="status">
           비밀번호가 변경되었습니다.
         </p>
-        <button type="button" onClick={onSuccess} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
+        <button type="button" onClick={onSuccess} className="btn btn-text btn-sm btn-block">
           이 안내 닫기
         </button>
       </div>
@@ -157,7 +157,7 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div className="cv-auth-tools-body">
       <div className="field">
         <label htmlFor="admin-recover-email">관리자 이메일</label>
         <input
@@ -202,7 +202,7 @@ function AdminRecoverSection({ onSuccess }: { onSuccess: () => void }) {
         {loading ? "처리 중…" : "비밀번호 재설정"}
       </button>
       {error ? (
-        <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
+        <p className="field-error cv-msg center" role="alert">
           {error}
         </p>
       ) : null}
@@ -214,7 +214,7 @@ function AdminToolsSection({ onDismiss }: { onDismiss: () => void }) {
   const [tab, setTab] = useState<"recover" | "create">("recover");
 
   return (
-    <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+    <div className="cv-auth-tools">
       <div className="seg-tabs">
         <button type="button" className={tab === "recover" ? "on" : undefined} onClick={() => setTab("recover")}>
           비밀번호 재설정
@@ -347,7 +347,6 @@ export function LoginForm({
   return (
     <main>
       <div className="auth-wrap">
-        <div className="auth-bg" />
         {/* 로그인 카드는 JS 리빌에 의존하지 않음 — 스크립트 로드 실패 시에도 보여야 하는 핵심 UI */}
         <div className="auth-card">
           <div className="brand">
@@ -365,18 +364,7 @@ export function LoginForm({
           </p>
 
           {justRegistered ? (
-            <p
-              role="status"
-              style={{
-                marginBottom: 16,
-                padding: "10px 12px",
-                borderRadius: 10,
-                background: "var(--acc-weak, rgba(0,0,0,0.04))",
-                color: "var(--acc-text)",
-                fontSize: 13.5,
-                lineHeight: 1.5,
-              }}
-            >
+            <p role="status" className="banner info cv-auth-notice">
               상담이 접수되었어요. 방금 만든 계정으로 로그인해 주세요.
             </p>
           ) : null}
@@ -416,31 +404,23 @@ export function LoginForm({
           </button>
 
           {error ? (
-            <p className="field-error" style={{ marginTop: 12, textAlign: "center", fontSize: 14 }} role="alert">
+            <p className="field-error cv-msg center" role="alert">
               {error}
             </p>
           ) : null}
 
           {/* 비밀번호 찾기 — 로그인 전 셀프 리셋 불가, 담당 매니저 재설정 안내 (A2-1/A2-4) */}
-          <div style={{ marginTop: 14, textAlign: "center" }}>
+          <div className="cv-auth-recover">
             <button
               type="button"
-              className="btn btn-ghost btn-sm"
-              style={{ fontSize: 13 }}
+              className="btn btn-text btn-sm"
               aria-expanded={showRecover}
               onClick={() => setShowRecover((v) => !v)}
             >
               비밀번호를 잊으셨나요?
             </button>
             {showRecover ? (
-              <p
-                style={{
-                  marginTop: 10,
-                  fontSize: 13,
-                  lineHeight: 1.6,
-                  color: "var(--mut, #666)",
-                }}
-              >
+              <p className="cv-auth-recover-body">
                 로그인 전에는 직접 재설정할 수 없어요.
                 <br />
                 담당 매니저에게 재설정을 요청할 수 있어요.

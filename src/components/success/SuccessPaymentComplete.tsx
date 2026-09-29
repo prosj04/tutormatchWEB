@@ -202,33 +202,27 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center gap-2 py-4 text-sm text-text-secondary">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      <p className="cv-status" role="status">
         처리 중입니다…
-      </div>
+      </p>
     );
   }
 
   if (status === "error") {
     // D2: dead-end 금지 — 결제는 접수되었고 웹훅 백업으로 자동 처리됨을 안심시키고 재시도 제공.
     return (
-      <div className="rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 text-center text-sm text-yellow-800 mb-6">
-        결제는 정상적으로 접수되었으며 자동으로 처리됩니다. 잠시 후 결제 내역에서 확인하실 수 있습니다.
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setAttempt((n) => n + 1)}
-            className="rounded-lg border border-yellow-300 bg-white px-4 py-1.5 text-xs font-semibold text-yellow-800 transition hover:bg-yellow-100"
-          >
-            다시 확인
-          </button>
-          <a
-            href={`tel:${phone.replace(/[^0-9]/g, "")}`}
-            className="rounded-lg px-4 py-1.5 text-xs font-semibold text-yellow-800 underline"
-          >
-            {phone}
-          </a>
-        </div>
+      <div className="banner warn cv-status-banner" role="status">
+        <span>
+          결제는 정상적으로 접수되었으며 자동으로 처리됩니다. 잠시 후 결제 내역에서 확인하실 수 있습니다.
+          <span className="cv-status-actions">
+            <button type="button" onClick={() => setAttempt((n) => n + 1)} className="btn btn-ghost btn-sm">
+              다시 확인
+            </button>
+            <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} className="btn btn-text btn-sm">
+              {phone}
+            </a>
+          </span>
+        </span>
       </div>
     );
   }
@@ -236,23 +230,18 @@ export function SuccessPaymentComplete({ orderId, paymentKey, amount, siteConten
   if (status === "no-data") {
     // D12: 로그인 세션이 없어 자동 처리 불가한 경우에도 접수 사실을 안내하고 재시도 제공.
     return (
-      <div className="rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 text-center text-sm text-yellow-800 mb-6">
-        결제가 정상 접수되었는지 확인 중입니다. 로그인 후 결제 내역에서 확인하실 수 있으며, 자동으로도 처리됩니다.
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setAttempt((n) => n + 1)}
-            className="rounded-lg border border-yellow-300 bg-white px-4 py-1.5 text-xs font-semibold text-yellow-800 transition hover:bg-yellow-100"
-          >
-            다시 확인
-          </button>
-          <a
-            href={`tel:${phone.replace(/[^0-9]/g, "")}`}
-            className="rounded-lg px-4 py-1.5 text-xs font-semibold text-yellow-800 underline"
-          >
-            {phone}
-          </a>
-        </div>
+      <div className="banner warn cv-status-banner" role="status">
+        <span>
+          결제가 정상 접수되었는지 확인 중입니다. 로그인 후 결제 내역에서 확인하실 수 있으며, 자동으로도 처리됩니다.
+          <span className="cv-status-actions">
+            <button type="button" onClick={() => setAttempt((n) => n + 1)} className="btn btn-ghost btn-sm">
+              다시 확인
+            </button>
+            <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} className="btn btn-text btn-sm">
+              {phone}
+            </a>
+          </span>
+        </span>
       </div>
     );
   }

@@ -13,8 +13,8 @@ type GenderSelectProps = {
 export function GenderSelect({ value, onChange, error, className = "", size = "md" }: GenderSelectProps) {
   return (
     <div className={`field${className ? ` ${className}` : ""}`}>
-      <label>성별</label>
-      <div className={size === "sm" ? "seg-tabs sm" : "seg-tabs"} style={{ marginTop: 8 }}>
+      <span className="field-label">성별</span>
+      <div className={`opts cv-gender-opts${size === "sm" ? " cv-opts-sm" : ""}`} role="group" aria-label="성별 선택">
         {(
           [
             { id: "MALE" as const, label: "남" },
@@ -24,7 +24,8 @@ export function GenderSelect({ value, onChange, error, className = "", size = "m
           <button
             key={opt.id}
             type="button"
-            className={value === opt.id ? "on" : undefined}
+            className={`opt${value === opt.id ? " on" : ""}`}
+            aria-pressed={value === opt.id}
             onClick={() => onChange(opt.id)}
           >
             {opt.label}

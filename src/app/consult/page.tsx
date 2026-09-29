@@ -42,28 +42,27 @@ export default async function ConsultPage(
 
   return (
     <PublicShell hideStickyCta>
-      <main className="consult-main">
-        <div className="consult-benefit">
-          <div className="consult-benefit-items">
-            {benefits.map((b) => (
-              <div key={b} className="consult-benefit-item">
-                {b}
-              </div>
-            ))}
+      <main className="cv-consult">
+        <div className="wrap cv-consult-grid">
+          <div className="cv-consult-intro">
+            <h1 className="h1">{headline}</h1>
+            <p className="lede">{subtext}</p>
           </div>
+
+          <div className="cv-consult-form">
+            <ConsultRequestForm
+              source={first(searchParams?.source)}
+              phoneNotice={phoneNotice}
+              copy={siteContent["consult_page"] ?? {}}
+            />
+          </div>
+
+          <ul className="cv-trust">
+            {benefits.map((b) => (
+              <li key={b}>{b}</li>
+            ))}
+          </ul>
         </div>
-
-        <div className="consult-head">
-          <h1>{headline}</h1>
-          <p>{subtext}</p>
-        </div>
-
-        <ConsultRequestForm
-          source={first(searchParams?.source)}
-          phoneNotice={phoneNotice}
-          copy={siteContent["consult_page"] ?? {}}
-        />
-
       </main>
     </PublicShell>
   );

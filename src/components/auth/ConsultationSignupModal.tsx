@@ -34,29 +34,25 @@ export function ConsultationSignupModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+    <div className="scrim on">
       <button
         type="button"
         aria-label="닫기"
-        className="absolute inset-0 border-0 bg-black/45 p-0 backdrop-blur-md"
+        className="cv-modal-backdrop"
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="consultation-signup-title"
-        className="concord-surface auth-card relative z-10 max-h-[min(94vh,880px)] w-full max-w-2xl overflow-y-auto p-6 sm:p-7"
-        style={{ margin: 0, maxWidth: "min(640px, calc(100vw - 32px))" }}
+        className="modal cv-modal"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="theme-toggle absolute right-4 top-4"
-          aria-label="닫기"
-        >
-          <span style={{ fontSize: 18, lineHeight: 1 }}>×</span>
+        <button type="button" onClick={onClose} className="x cv-modal-x" aria-label="닫기">
+          <span aria-hidden>×</span>
         </button>
-        <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} copy={copy} />
+        <div className="m-b">
+          <ConsultationSignupForm onSuccess={onClose} instantEnroll={instantEnroll} copy={copy} />
+        </div>
       </div>
     </div>
   );

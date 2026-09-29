@@ -49,8 +49,10 @@ export function ConsultationSignupForm({
   const [gender, setGender] = useState<ProfileGender | "">("");
   const [region, setRegion] = useState<string>("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [termsAgreed, setTermsAgreed] = useState(false);
-  const [guardianConsent, setGuardianConsent] = useState(false);
+  // 동의 간주(오너 확정): 체크박스 대신 고지 문구만 노출하고, 신청 버튼을 누른 시점에 동의로 본다.
+  // 서버로 보내는 guardianConsent 값·검증 경로는 그대로 유지한다.
+  const termsAgreed = true;
+  const guardianConsent = true;
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldKey, string>>>({});
   const [conflictError, setConflictError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -200,25 +202,21 @@ export function ConsultationSignupForm({
   if (step === 2) {
     return (
       <div className="signup-form">
-        <div className="signup-form-head mb-6" style={{ paddingRight: 36 }}>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700"
-          >
-            <span aria-hidden>✓</span>
-            {c("step2_badge", "상담 접수 완료")}
+        <div className="cv-steps cv-modal-steps wide">
+          <span className="cv-steps-track" role="progressbar" aria-label="가입 단계" aria-valuemin={1} aria-valuemax={2} aria-valuenow={2}>
+            <i style={{ "--cv-progress": "100%" } as React.CSSProperties} />
           </span>
-          <h2
-            id="consultation-signup-title"
-            className="mt-3 text-xl font-black"
-            style={{ color: "var(--fg)" }}
-          >
+        </div>
+        <div className="signup-form-head cv-form-head">
+          <span className="bst">{c("step2_badge", "상담 접수 완료")}</span>
+          <h2 id="consultation-signup-title" className="cv-sec-title">
             {c("step2_title", "더 정확한 상담을 위한 추가 정보")}
           </h2>
-          <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
+          <p className="cv-sec-note">
             {c("step2_subtext", "아래 정보는 선택이에요. 남겨 주시면 매니저가 더 정확하게 준비해서 연락드려요.")}
           </p>
         </div>
-        <div className="space-y-5">
+        <div>
           <div className="field">
             <label htmlFor="reg-guardian-phone">{c("label_guardian_phone", "학부모 연락처")}</label>
             <input
@@ -230,29 +228,25 @@ export function ConsultationSignupForm({
               onChange={(e) => setGuardianPhone(e.target.value)}
             />
           </div>
-          <div className="flex items-end gap-4">
-            <GenderSelect value={gender} onChange={setGender} size="sm" className="shrink-0" />
-            <div className="field" style={{ flex: 1 }}>
-              <label htmlFor="reg-grade">{c("step2_label_grade", "학년")}</label>
-              <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
-                <option value="">{c("step2_ph_grade", "학년 선택")}</option>
-                {STUDENT_GRADES.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="field">
+            <label htmlFor="reg-grade">{c("step2_label_grade", "학년")}</label>
+            <select id="reg-grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
+              <option value="">{c("step2_ph_grade", "학년 선택")}</option>
+              {STUDENT_GRADES.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+          <GenderSelect value={gender} onChange={setGender} />
+          <div className="field">
+            <span className="field-label">{c("step2_label_region", "거주 지역")}</span>
+            <RegionPicker value={region} onChange={setRegion} labels={copy} />
           </div>
           <div className="field">
-            <span>{c("step2_label_region", "거주 지역")}</span>
-            <div style={{ marginTop: 8 }}>
-              <RegionPicker value={region} onChange={setRegion} labels={copy} />
-            </div>
-          </div>
-          <div className="field">
-            <span>{c("step2_label_subjects", "희망 과목")}</span>
-            <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <span className="field-label">{c("step2_label_subjects", "희망 과목")}</span>
+            <div className="opts">
               {SUBJECTS.map((s) => {
                 const on = selectedSubjects.includes(s);
                 return (
@@ -260,7 +254,8 @@ export function ConsultationSignupForm({
                     key={s}
                     type="button"
                     onClick={() => toggleSubject(s)}
-                    className={on ? "chip-f on" : "chip-f"}
+                    aria-pressed={on}
+                    className={on ? "opt on" : "opt"}
                   >
                     {s}
                   </button>
@@ -282,8 +277,7 @@ export function ConsultationSignupForm({
             type="button"
             disabled={loading}
             onClick={goNext}
-            className="btn btn-ghost btn-block"
-            style={{ marginTop: 10 }}
+            className="btn btn-text btn-block cv-skip"
           >
             {c("step2_btn_skip", "건너뛰기")}
           </button>
@@ -294,18 +288,23 @@ export function ConsultationSignupForm({
 
   return (
     <div className="signup-form">
-      <div className="signup-form-head mb-5" style={{ paddingRight: 36 }}>
+      <div className="cv-steps cv-modal-steps">
+        <span className="cv-steps-track" role="progressbar" aria-label="가입 단계" aria-valuemin={1} aria-valuemax={2} aria-valuenow={1}>
+          <i style={{ "--cv-progress": "50%" } as React.CSSProperties} />
+        </span>
+      </div>
+      <div className="signup-form-head cv-form-head">
         <p className="eyebrow">Consultation</p>
-        <h2 id="consultation-signup-title" className="mt-2 text-2xl font-black" style={{ color: "var(--fg)" }}>
+        <h2 id="consultation-signup-title" className="cv-sec-title lg">
           {c("title", "상담 신청")}
         </h2>
-        <p className="sub" style={{ marginTop: 8, textAlign: "left" }}>
+        <p className="cv-sec-note">
           {instantEnroll
             ? c("subtext_instant", "등록 후 담당 매니저가 배정되며, 방문 상담 가능 시간을 바로 입력할 수 있습니다.")
             : c("subtext", "이름과 연락처만 남기면 매니저가 연락드립니다.")}
         </p>
       </div>
-      <div className="space-y-4">
+      <div>
         <div className="field">
           <label htmlFor="reg-name">{c("label_name", "이름")}</label>
           <input
@@ -313,6 +312,7 @@ export function ConsultationSignupForm({
             type="text"
             autoComplete="name"
             value={name}
+            aria-invalid={fieldErrors.name ? true : undefined}
             onChange={(e) => {
               setName(e.target.value);
               clearError("name");
@@ -329,6 +329,7 @@ export function ConsultationSignupForm({
             autoComplete="tel"
             placeholder="010-0000-0000"
             value={phone}
+            aria-invalid={fieldErrors.phone ? true : undefined}
             onChange={(e) => {
               setPhone(e.target.value);
               clearError("phone");
@@ -344,6 +345,7 @@ export function ConsultationSignupForm({
             type="password"
             autoComplete="new-password"
             value={password}
+            aria-invalid={fieldErrors.password ? true : undefined}
             onChange={(e) => {
               setPassword(e.target.value);
               clearError("password");
@@ -359,6 +361,7 @@ export function ConsultationSignupForm({
             type="password"
             autoComplete="new-password"
             value={passwordConfirm}
+            aria-invalid={fieldErrors.passwordConfirm ? true : undefined}
             onChange={(e) => {
               setPasswordConfirm(e.target.value);
               clearError("passwordConfirm");
@@ -369,46 +372,23 @@ export function ConsultationSignupForm({
             <p className="field-error">{fieldErrors.passwordConfirm}</p>
           ) : null}
         </div>
-        <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
-          <input
-            type="checkbox"
-            checked={termsAgreed}
-            onChange={(e) => {
-              setTermsAgreed(e.target.checked);
-              if (e.target.checked) clearError("terms");
-            }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
-          />
-          <span>
-            상담 신청을 위해{" "}
-            <Link href="/terms" target="_blank" rel="noopener" className="font-semibold text-primary underline">
-              이용약관
-            </Link>
-            과{" "}
-            <Link href="/privacy" target="_blank" rel="noopener" className="font-semibold text-primary underline">
-              개인정보처리방침
-            </Link>
-            에 동의합니다.
-            {fieldErrors.terms ? <span className="field-error block">{fieldErrors.terms}</span> : null}
-          </span>
-        </label>
-        <label className="flex items-start gap-3 rounded-xl border border-gray-100 bg-background/60 p-3 text-sm text-text-secondary">
-          <input
-            type="checkbox"
-            checked={guardianConsent}
-            onChange={(e) => {
-              setGuardianConsent(e.target.checked);
-              if (e.target.checked) clearError("guardianConsent");
-            }}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-primary"
-          />
-          <span>
-            {c("guardian_consent_text", "만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.")}
-            {fieldErrors.guardianConsent ? (
-              <span className="field-error block">{fieldErrors.guardianConsent}</span>
-            ) : null}
-          </span>
-        </label>
+      </div>
+      {/* 동의 간주 고지 — 체크박스 대신 각주로 알린다(오너 확정). 서버로 보내는 동의 값은 그대로 true. */}
+      <div className="cv-consent">
+        <p>
+          상담 신청을 위해{" "}
+          <Link href="/terms" target="_blank" rel="noopener">
+            이용약관
+          </Link>
+          과{" "}
+          <Link href="/privacy" target="_blank" rel="noopener">
+            개인정보처리방침
+          </Link>
+          에 동의합니다.
+        </p>
+        <p>
+          {c("guardian_consent_text", "만 14세 미만 학생은 법정대리인(보호자)의 동의가 필요합니다. 보호자로서 가입 및 개인정보 수집·이용에 동의합니다.")}
+        </p>
       </div>
       <div className="signup-form-actions">
         <button
@@ -420,7 +400,7 @@ export function ConsultationSignupForm({
           {loading ? (
             <>
               <span
-                className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                className="cv-spin"
                 aria-hidden
               />
               <span>{c("btn_submitting", "처리 중…")}</span>
@@ -430,12 +410,12 @@ export function ConsultationSignupForm({
           )}
         </button>
         {conflictError ? (
-          <p className="field-error mt-4 text-center text-sm" role="alert">
+          <p className="field-error cv-center-note" role="alert">
             {conflictError}
           </p>
         ) : null}
         {showLoginLink ? (
-          <p className="auth-alt">
+          <p className="auth-alt cv-auth-alt-gap">
             {c("login_hint", "이미 계정이 있으신가요?")}{" "}
             <Link href="/login">{c("login_link", "로그인")}</Link>
           </p>

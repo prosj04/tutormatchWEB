@@ -1,0 +1,361 @@
+/* ============================================================
+   전환·인증 화면 — 상담 신청 · 로그인/가입 · 선생님 지원 · 결제 · 완료
+   소유: 전환·인증 작업. 토큰·프리미티브(.field .inp .btn .opt .kv-row .modal)는 ds.css.
+   새 클래스는 .cv- 접두사, 지역 선택은 기존 .region-* 유지(마크업 호환).
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. 지역 선택 (서울 지하철역 / 동탄 동 · 실시간 필터)
+   동작·스크롤 규칙은 유지하고 형태만 v3(헤어라인·라운드 6px)로 교체.
+   ------------------------------------------------------------ */
+.region-picker { display: flex; flex-direction: column; gap: 12px; }
+.region-picker-tabs { display: flex; gap: 8px; }
+.region-tab {
+  flex: 1; min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--line-2); border-radius: var(--r-pill);
+  background: transparent; color: var(--mut);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: color .18s var(--ease), border-color .18s var(--ease), background-color .18s var(--ease);
+}
+.region-tab:hover { color: var(--fg); border-color: var(--fg); }
+.region-tab.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+.region-picker-body { display: flex; flex-direction: column; gap: 14px; }
+.region-combo { position: relative; }
+.region-combo-label {
+  display: block; margin-bottom: 8px;
+  font-size: 13px; font-weight: 600; color: var(--mut); letter-spacing: .005em;
+}
+.region-combo.open .region-combo-label { color: var(--fg); }
+.region-picker-body input {
+  width: 100%; min-height: 50px; padding: 13px 40px 13px 15px;
+  border: 1px solid var(--line-2); border-radius: var(--r-control);
+  background: var(--panel); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.4;
+  transition: border-color .18s var(--ease);
+  -webkit-appearance: none; appearance: none;
+}
+.region-picker-body input::placeholder { color: var(--mut-2); }
+.region-picker-body input:focus { outline: none; border-color: var(--fg); }
+.region-combo-caret {
+  position: absolute; right: 15px; bottom: 17px;
+  font-size: 11px; color: var(--mut-2); pointer-events: none;
+  transition: transform .18s var(--ease), color .18s var(--ease);
+}
+.region-combo.open .region-combo-caret { transform: rotate(180deg); color: var(--fg); }
+.region-combo.open input {
+  border-color: var(--fg);
+  border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+}
+.region-combo.open .region-options {
+  margin-top: -1px; border-color: var(--fg);
+  border-top-left-radius: 0; border-top-right-radius: 0;
+}
+.region-options {
+  list-style: none; margin: 6px 0 0; padding: 4px;
+  max-height: 200px; overflow-y: auto;
+  border: 1px solid var(--line-2); border-radius: var(--r-control);
+  background: var(--panel);
+  scrollbar-gutter: stable; scrollbar-width: thin;
+}
+/* 스크롤바를 모서리 안쪽으로 — 얇게·라운드, 트랙 상하 여백 */
+.region-options::-webkit-scrollbar { width: 6px; }
+.region-options::-webkit-scrollbar-track { background: transparent; margin: 6px 0; }
+.region-options::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; }
+/* M-11: 모바일 키보드와 충돌 방지 — 목록 높이를 뷰포트 비율로 제한 */
+@media (max-width: 480px) {
+  .region-options { max-height: min(200px, 32dvh); }
+}
+.region-options li button {
+  display: block; width: 100%; min-height: 40px; padding: 9px 11px;
+  border: 0; border-radius: var(--r-sm); background: none; text-align: left;
+  font-size: 14.5px; color: var(--fg); cursor: pointer;
+  transition: background-color .15s var(--ease);
+}
+.region-options li button:hover { background: var(--panel-2); }
+.region-option-none {
+  color: var(--mut) !important;
+  border-bottom: 1px solid var(--line); border-radius: 0 !important;
+}
+.region-empty { padding: 14px; font-size: 13.5px; color: var(--mut-2); text-align: center; }
+.region-selected { margin: 2px 0 0; font-size: 13px; color: var(--mut); }
+.region-selected b { font-weight: 600; color: var(--fg); }
+
+/* ------------------------------------------------------------
+   2. 공통 — 폼 지면 · 스텝 진행선 · 고지 문구
+   ------------------------------------------------------------ */
+/* 가벼운 종이 패널(폼 1개만 담는다 — 안에 카드를 또 두지 않는다) */
+.cv-paper {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-card);
+  padding: clamp(22px, 2.2vw, 34px);
+}
+.cv-stack { display: flex; flex-direction: column; gap: clamp(28px, 3vw, 44px); }
+
+/* 얇은 진행선 + 단계 표시 */
+.cv-steps { display: flex; align-items: center; gap: 14px; }
+.cv-steps-track {
+  flex: 1; height: 1px; background: var(--line-2); position: relative; overflow: hidden;
+}
+.cv-steps-track i {
+  position: absolute; inset: 0 auto 0 0; display: block;
+  width: var(--cv-progress, 0%); background: var(--fg);
+  transition: width .4s var(--ease-out);
+}
+.cv-steps-label {
+  flex: 0 0 auto; font-family: var(--serif); font-size: 13px; font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums; letter-spacing: .02em; color: var(--mut);
+}
+
+/* 섹션 제목(세리프) + 헤어라인 구획 */
+.cv-sec + .cv-sec { margin-top: clamp(30px, 3vw, 46px); padding-top: clamp(30px, 3vw, 46px); border-top: 1px solid var(--line); }
+.cv-sec-title { font-family: var(--serif); font-weight: 500; font-size: 21px; letter-spacing: -.025em; line-height: 1.3; }
+.cv-sec-note { margin-top: 8px; font-size: 13.5px; line-height: 1.65; color: var(--mut); }
+.cv-sec > .field:first-of-type { margin-top: 18px; }
+
+/* 동의 간주 고지 — 체크박스가 아니라 각주 */
+.cv-consent {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+  font-size: 12.5px; line-height: 1.7; color: var(--mut-2);
+}
+.cv-consent a { color: var(--mut); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+.cv-consent a:hover { color: var(--fg); }
+.cv-consent p + p { margin-top: 6px; }
+
+/* 폼 하단 보조 안내 */
+.cv-note { font-size: 13px; line-height: 1.7; color: var(--mut); }
+.cv-note a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+
+/* 조용한 완료 화면 */
+.cv-done { max-width: 620px; }.cv-done-title { font-family: var(--serif); font-weight: 500; font-size: clamp(27px, 3vw, 40px); letter-spacing: -.032em; line-height: 1.22; }
+.cv-done-lede { margin-top: 16px; font-size: 16.5px; line-height: 1.75; color: var(--mut); }
+.cv-done-label { margin-top: clamp(30px, 3.4vw, 48px); font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--mut-2); }
+.cv-ledger { list-style: none; margin-top: 14px; border-bottom: 1px solid var(--line); }
+.cv-ledger li {
+  border-top: 1px solid var(--line); padding: 15px 0;
+  font-size: 15px; line-height: 1.65; color: var(--fg);
+}
+.cv-done-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+/* 결제 완료 후 처리 상태 — 배너 한 줄 + 보조 동작 */
+.cv-status { padding: 14px 0; font-size: 14px; color: var(--mut); }
+.cv-status-banner { margin-bottom: 26px; }
+.cv-status-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+/* 주문번호·결제키 — 등폭, 줄바꿈 허용 */
+.cv-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-weight: 400; word-break: break-all; }
+
+/* 좁은 단일 지면(선생님 가입·지원 등)
+   — 페이지 헤드 h1 과 같은 왼쪽 기준선에서 시작한다(가운데 정렬 금지).
+   .wrap 과 겸용될 때 .wrap 의 auto 마진을 덮어써야 한다. */
+.cv-narrow { max-width: 720px; margin-left: 0; margin-right: auto; }
+.cv-narrow-sm { max-width: 560px; margin-left: 0; margin-right: auto; }
+.cv-narrow > .btn-block,
+.cv-narrow-sm > .btn-block { margin-top: 26px; }
+.cv-form-body { margin-top: clamp(22px, 2.4vw, 32px); }
+
+/* 오류·상태 메시지 — 인라인 스타일 대신 */
+.cv-msg { margin-top: 14px; font-size: 13.5px; line-height: 1.6; color: var(--danger); }
+.cv-msg.center { text-align: center; }
+.cv-msg.ok { color: var(--acc-text); }
+
+/* 페이지 헤드 바로 아래 섹션 — 상단 패딩을 줄여 헤드와 한 지면으로 붙인다 */
+.cv-sec-tight { padding-top: clamp(26px, 2.6vw, 40px); }
+
+/* 보조 각주·안내의 간격 (인라인 margin 대신) */
+.cv-hint { margin-top: 8px; }
+.cv-hint-tight { margin-top: -2px; margin-bottom: 10px; }
+.cv-note-gap { margin-top: 22px; }
+.cv-banner-gap { margin-bottom: 24px; }
+.cv-list-gap { margin-top: 14px; }
+.cv-loading-note { margin-top: 20px; }
+.cv-center-note { margin-top: 12px; text-align: center; }
+
+/* 이전/다음처럼 폭을 나눠 갖는 단계 버튼 */
+.cv-actions-split > .btn { flex: 1 1 0; }
+
+/* 파일 입력은 라벨(.cv-files-pick)이 대신 받는다 */
+.cv-file-input { display: none; }
+
+/* 목록 안쪽 삭제 링크 — 위 여백 없이 행에 붙인다 */
+.cv-row-del.inline { margin-top: 0; }
+.cv-label-inline { margin-bottom: 0; }
+
+/* ------------------------------------------------------------
+   2-1. 상담 가입 모달 — .scrim/.modal 위에 얹는 형태 보정
+   ------------------------------------------------------------ */
+.cv-modal-backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  border: 0; padding: 0; background: transparent; cursor: default;
+}
+.cv-modal {
+  position: relative; z-index: 1;
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(94dvh, 880px);
+}
+.cv-modal > .m-b { padding: clamp(22px, 2.4vw, 32px); }
+.cv-modal-x { position: absolute; top: 16px; right: 16px; z-index: 2; }
+
+/* 모달 안 폼 머리말 — 닫기 버튼 자리를 비워 둔다 */
+.cv-form-head { padding-right: 40px; }
+.cv-form-head .cv-sec-title { margin-top: 14px; }
+.cv-form-head .cv-sec-title.lg { font-size: 26px; }
+.cv-modal-steps { margin-bottom: 20px; padding-right: 40px; }
+/* 스텝2는 제목이 배지 아래에 오므로 조금 더 띈다 */
+.cv-modal-steps.wide { margin-bottom: 22px; }
+.cv-skip { margin-top: 6px; }
+.cv-auth-alt-gap { margin-top: 18px; padding-top: 16px; }
+
+/* 제출 중 스피너 — 버튼의 글자색을 따른다(하드코딩 흰색 금지) */
+.cv-spin {
+  display: inline-block; width: 15px; height: 15px; flex: 0 0 auto;
+  border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%;
+  opacity: .75; animation: cv-spin .7s linear infinite;
+}
+@keyframes cv-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .cv-spin { animation: none; } }
+
+/* ------------------------------------------------------------
+   2-2. 로그인 지면 보조 — 비밀번호 안내 · 관리자 도구
+   ------------------------------------------------------------ */
+.cv-auth-notice { margin-top: 22px; }
+.cv-auth-recover { margin-top: 16px; text-align: center; }
+.cv-auth-recover-body {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: 13px; line-height: 1.75; color: var(--mut);
+}
+.cv-auth-recover-body a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+.cv-auth-tools { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
+.cv-auth-tools-body { margin-top: 6px; }
+.cv-auth-alt-more { margin-top: 10px; }
+
+/* 성별 토글 — 한 글자 라벨이라 최소 폭을 준다 */
+.cv-gender-opts .opt { min-width: 52px; justify-content: center; display: inline-flex; align-items: center; }
+.cv-opts-sm .opt { min-height: 34px; padding: 0 13px; font-size: 13px; }
+
+/* ------------------------------------------------------------
+   2-3. 경력 항목 · 파일 선택 — 카드 안 카드 대신 헤어라인 행
+   ------------------------------------------------------------ */
+.cv-rows-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.cv-rows-add {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--mut);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2);
+}
+.cv-rows-add:hover { color: var(--fg); }
+.cv-rows { list-style: none; margin-top: 10px; border-bottom: 1px solid var(--line); }
+.cv-rows > li { border-top: 1px solid var(--line); padding: 16px 0; }
+.cv-row-grid { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .cv-row-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+.cv-row-del {
+  margin-top: 10px; border: 0; background: none; padding: 0; cursor: pointer;
+  font-size: 12.5px; color: var(--mut-2);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2);
+}
+.cv-row-del:hover { color: var(--danger); }
+
+.cv-files { margin-top: clamp(24px, 2.6vw, 34px); }
+.cv-files + .cv-files { margin-top: clamp(24px, 2.6vw, 34px); }
+.cv-files-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cv-files-title { font-size: 14px; font-weight: 600; color: var(--fg); }
+.cv-files-pick { cursor: pointer; }
+.cv-files-list { list-style: none; margin-top: 12px; border-bottom: 1px solid var(--line); }
+.cv-files-list > li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border-top: 1px solid var(--line); padding: 13px 0;
+  font-size: 14px; color: var(--fg);
+}
+.cv-files-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); }
+.cv-files-empty { color: var(--mut-2); font-size: 13.5px; }
+
+/* ------------------------------------------------------------
+   3. /consult — 에디토리얼 2열
+   ------------------------------------------------------------ */
+.cv-consult { padding: clamp(48px, 6vw, 104px) 0 clamp(72px, 8vw, 132px); }
+.cv-consult-grid {
+  display: grid;
+  row-gap: clamp(26px, 4vw, 40px); column-gap: clamp(28px, 3.4vw, 64px);
+  align-items: start;
+}
+.cv-consult-intro .h1 { max-width: 20em; }
+.cv-consult-intro .lede { margin-top: 18px; max-width: 34em; }
+.cv-trust { list-style: none; border-bottom: 1px solid var(--line); }
+.cv-trust li {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 15px 0; border-top: 1px solid var(--line);
+  font-size: 15px; line-height: 1.6; color: var(--mut);
+}
+.cv-trust li::before { content: ""; flex: 0 0 auto; width: 18px; height: 1px; background: var(--line-2); transform: translateY(-5px); }
+@media (min-width: 1000px) {
+  .cv-consult-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 512px);
+    grid-template-areas: "intro form" "trust form" ".     form";
+    grid-template-rows: auto auto 1fr;
+    align-content: start;
+  }
+  .cv-consult-intro { grid-area: intro; }
+  .cv-trust { grid-area: trust; margin-top: 0; }
+  .cv-consult-form { grid-area: form; }
+}
+@media (max-width: 999px) {
+  .cv-trust { margin-top: clamp(26px, 4vw, 40px); }
+}
+
+/* ------------------------------------------------------------
+   4. /checkout — 좌측 폼·결제수단 / 우측 요약 영수증
+   ------------------------------------------------------------ */
+.cv-co { padding: clamp(36px, 4vw, 64px) 0 clamp(72px, 8vw, 128px); }
+.cv-co-grid { display: grid; gap: clamp(32px, 3.4vw, 56px); align-items: start; }
+@media (min-width: 1000px) {
+  .cv-co-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 384px); }
+  .cv-co-aside { position: sticky; top: calc(var(--site-header-h) + 28px); }
+}
+.cv-co-main { min-width: 0; }
+.cv-fail-banner { padding-top: 22px; }
+/* 영수증 안쪽 제목은 카드 안 카드가 되지 않도록 살짝 작게 */
+.cv-receipt .cv-sec-title { font-size: 19px; }
+.cv-strike { text-decoration: line-through; color: var(--mut-2); }
+.cv-receipt { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-card); padding: clamp(22px, 2vw, 30px); }
+.cv-receipt .kv-row { font-size: 14.5px; }
+.cv-receipt dl { margin-top: 10px; }
+.cv-includes { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.cv-includes-label { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--mut-2); }
+.cv-includes ul { list-style: none; margin-top: 12px; }
+.cv-includes li { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.7; color: var(--mut); }
+.cv-includes li::before { content: ""; flex: 0 0 auto; width: 12px; height: 1px; margin-top: 11px; background: var(--line-2); }
+.cv-refund { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.7; color: var(--mut-2); }
+.cv-refund a { color: var(--mut); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-2); }
+.cv-refund a:hover { color: var(--fg); }
+.cv-refund ul { list-style: none; margin-top: 8px; }
+.cv-refund li { display: flex; gap: 10px; }
+.cv-refund li::before { content: ""; flex: 0 0 auto; width: 10px; height: 1px; margin-top: 10px; background: var(--line-2); }
+.cv-pay { margin-top: 22px; }
+.cv-pay .btn { margin-top: 0; }
+.cv-radio-list { display: flex; flex-direction: column; }
+.cv-radio-list label {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 0; border-top: 1px solid var(--line);
+  font-size: 14.5px; line-height: 1.6; color: var(--fg); cursor: pointer;
+}
+.cv-radio-list label:last-child { border-bottom: 1px solid var(--line); }
+.cv-radio-list input { margin-top: 4px; }
+.cv-radio-list b { font-weight: 600; }
+.cv-radio-list .mini { color: var(--mut-2); }
+/* Toss 위젯 컨테이너 — 위젯 내부 스타일은 건드리지 않는다 */
+.cv-widget { margin-top: 18px; }
+/* 위젯이 그려질 빈 슬롯(결제수단·약관) — 자리만 잡아 준다 */
+.cv-widget-slot { width: 100%; margin-top: 24px; }
+.cv-widget-slot.methods { min-height: 120px; }
+
+/* ------------------------------------------------------------
+   5. 전역 에러 화면
+   ------------------------------------------------------------ */
+.cv-error-wrap { min-height: 70vh; display: grid; place-items: center; padding: clamp(56px, 8vw, 120px) var(--gutter); }
+.cv-error { max-width: 34em; text-align: center; }
+.cv-error h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(27px, 3vw, 40px); letter-spacing: -.032em; }
+.cv-error p { margin-top: 16px; font-size: 16px; line-height: 1.75; color: var(--mut); }
+.cv-error pre {
+  margin-top: 22px; max-height: 180px; overflow: auto;
+  padding: 14px; border: 1px solid var(--line); border-radius: var(--r-card);
+  background: var(--panel); color: var(--mut);
+  font-size: 12px; line-height: 1.6; text-align: left; white-space: pre-wrap;
+}
+.cv-error .btn { margin-top: 30px; }

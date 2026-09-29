@@ -114,28 +114,14 @@ export default async function CheckoutPage(props: PageProps) {
   return (
     <>
       {showFailBanner ? (
-        <div style={{ padding: "16px 24px 0" }}>
+        <div className="wrap cv-fail-banner">
           <CmsEdit active={isEditMode} section="checkout_page" cmsKey="fail_banner" type="text">
-            <div
-              role="alert"
-              style={{
-                maxWidth: 960,
-                margin: "0 auto",
-                border: "1px solid rgba(var(--acc-rgb),.35)",
-                borderLeft: "4px solid rgba(var(--acc-rgb),1)",
-                borderRadius: 12,
-                background: "rgba(var(--acc-rgb),.08)",
-                padding: "16px 20px",
-                fontSize: 14,
-                lineHeight: 1.6,
-                color: "var(--fg)",
-                boxShadow: "0 1px 3px rgba(0,0,0,.06)",
-              }}
-            >
-              <strong style={{ display: "block", marginBottom: 4, fontSize: 15 }}>
-                결제가 완료되지 않았습니다
-              </strong>
-              {failBannerText}
+            <div role="alert" className="banner err">
+              <span>
+                <b>결제가 완료되지 않았습니다</b>
+                <br />
+                {failBannerText}
+              </span>
             </div>
           </CmsEdit>
         </div>

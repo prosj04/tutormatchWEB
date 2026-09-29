@@ -9,7 +9,6 @@ function LoginFallback() {
   return (
     <main>
       <div className="auth-wrap">
-        <div className="auth-bg" />
         <div className="auth-card">
           <div className="brand">
             Concord<span>.</span>

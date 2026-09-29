@@ -35,15 +35,6 @@ export default async function SuccessPage(props: PageProps) {
 
   return (
     <main>
-      {orderId ? (
-        <SuccessPaymentComplete
-          orderId={orderId}
-          paymentKey={paymentKey}
-          amount={Number.isFinite(amount) ? amount : undefined}
-          siteContent={siteContent}
-        />
-      ) : null}
-
       <ConcordPageHead
         eyebrow={s("kicker", "Payment")}
         title={s("title", "결제가 완료되었습니다")}
@@ -53,22 +44,31 @@ export default async function SuccessPage(props: PageProps) {
         )}
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="sec cv-sec-tight">
         <div className="wrap">
-          <article className="card panel-card" style={{ maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+          <div className="cv-narrow">
+            {orderId ? (
+              <SuccessPaymentComplete
+                orderId={orderId}
+                paymentKey={paymentKey}
+                amount={Number.isFinite(amount) ? amount : undefined}
+                siteContent={siteContent}
+              />
+            ) : null}
+
             {paymentKey && orderId && Number.isFinite(amount) ? (
-              <dl style={{ marginTop: 8, textAlign: "left" }}>
+              <dl className="cv-receipt">
                 <div className="kv-row">
                   <CmsEdit active={isEditMode} section="success_page" cmsKey="label_order" type="text">
                     <dt>{s("label_order", "주문번호")}</dt>
                   </CmsEdit>
-                  <dd style={{ fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>{orderId}</dd>
+                  <dd className="cv-code">{orderId}</dd>
                 </div>
                 <div className="kv-row">
                   <CmsEdit active={isEditMode} section="success_page" cmsKey="label_payment_key" type="text">
                     <dt>{s("label_payment_key", "결제키")}</dt>
                   </CmsEdit>
-                  <dd style={{ fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>{paymentKey}</dd>
+                  <dd className="cv-code">{paymentKey}</dd>
                 </div>
                 <div className="kv-row total">
                   <CmsEdit active={isEditMode} section="success_page" cmsKey="label_amount" type="text">
@@ -79,7 +79,7 @@ export default async function SuccessPage(props: PageProps) {
               </dl>
             ) : (
               <CmsEdit active={isEditMode} section="success_page" cmsKey="missing_payment_info" type="text">
-                <p className="panel-note" style={{ marginTop: 8 }}>
+                <p className="cv-note">
                   {s(
                     "missing_payment_info",
                     "결제가 정상 접수되었는지 확인 중입니다. 잠시 후 결제 내역에서 확인해 주세요.",
@@ -88,19 +88,19 @@ export default async function SuccessPage(props: PageProps) {
               </CmsEdit>
             )}
 
-            <div className="form-actions" style={{ justifyContent: "center", marginTop: 32 }}>
-              <CmsEdit active={isEditMode} section="success_page" cmsKey="link_home" type="text">
-                <Link href="/" className="btn btn-ghost">
-                  {s("link_home", "홈으로")}
-                </Link>
-              </CmsEdit>
+            <div className="cv-done-actions">
               <CmsEdit active={isEditMode} section="success_page" cmsKey="link_consultation" type="text">
                 <ConsultationApplyButton className="btn btn-acc">
                   {s("link_consultation", "상담 신청")}
                 </ConsultationApplyButton>
               </CmsEdit>
+              <CmsEdit active={isEditMode} section="success_page" cmsKey="link_home" type="text">
+                <Link href="/" className="btn btn-text">
+                  {s("link_home", "홈으로")}
+                </Link>
+              </CmsEdit>
             </div>
-          </article>
+          </div>
         </div>
       </section>
     </main>

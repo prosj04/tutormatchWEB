@@ -75,8 +75,8 @@ export function CheckoutTossWidget({
 
   return (
     <>
-      <div id="concord-payment-methods" style={{ marginTop: 24, minHeight: 120, width: "100%" }} />
-      <div id="concord-agreement" style={{ marginTop: 24, width: "100%" }} />
+      <div id="concord-payment-methods" className="cv-widget-slot methods" />
+      <div id="concord-agreement" className="cv-widget-slot" />
     </>
   );
 }

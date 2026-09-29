@@ -234,41 +234,15 @@ export default function TeacherRegisterPage() {
       <main>
         <section className="sec">
           <div className="wrap">
-            <article className="card panel-card" style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-              <div
-                style={{
-                  margin: "0 auto",
-                  width: 80,
-                  height: 80,
-                  display: "grid",
-                  placeItems: "center",
-                  borderRadius: "50%",
-                  border: "2px solid rgba(var(--acc-rgb),.3)",
-                  background: "rgba(var(--acc-rgb),.1)",
-                  color: "var(--acc-text)",
-                }}
-                aria-hidden
-              >
-                <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
-                  <path
-                    d="M10 20l7 7 13-14"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+            <div className="cv-narrow-sm cv-done" role="status">
+              <h1 className="cv-done-title">신청이 완료되었습니다.</h1>
+              <p className="cv-done-lede">선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.</p>
+              <div className="cv-done-actions">
+                <Link href="/teacher-portal/dashboard" className="btn btn-acc">
+                  선생님 포털로 이동
+                </Link>
               </div>
-              <h1 className="panel-title" style={{ marginTop: 24, fontSize: 28 }}>
-                신청이 완료되었습니다.
-              </h1>
-              <p className="panel-note" style={{ marginTop: 12 }}>
-                선생님 등록 심사 위하여 곧 개별 연락드리겠습니다.
-              </p>
-              <Link href="/teacher-portal/dashboard" className="btn btn-acc" style={{ marginTop: 28 }}>
-                선생님 포털로 이동
-              </Link>
-            </article>
+            </div>
           </div>
         </section>
       </main>
@@ -283,17 +257,23 @@ export default function TeacherRegisterPage() {
         description="3단계 신청서를 작성해 주세요. 서류는 선택사항이며 나중에 선생님 포털에서도 수정할 수 있습니다."
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
-        <div className="wrap" style={{ maxWidth: 720, margin: "0 auto" }}>
-          <div className="seg-tabs" style={{ marginBottom: 24 }}>
-            {[1, 2, 3].map((item) => (
-              <button key={item} type="button" className={step === item ? "on" : undefined} disabled>
-                {item}/3
-              </button>
-            ))}
+      <section className="sec cv-sec-tight">
+        <div className="wrap cv-narrow">
+          <div className="cv-steps">
+            <span
+              className="cv-steps-track"
+              role="progressbar"
+              aria-label="가입 신청 단계"
+              aria-valuemin={1}
+              aria-valuemax={3}
+              aria-valuenow={step}
+            >
+              <i style={{ "--cv-progress": `${(step / 3) * 100}%` } as React.CSSProperties} />
+            </span>
+            <span className="cv-steps-label">{step}/3</span>
           </div>
 
-          <article className="card panel-card">
+          <div className="cv-form-body">
           {step === 1 ? (
             <StepOne
               name={name}
@@ -339,19 +319,19 @@ export default function TeacherRegisterPage() {
           ) : null}
 
           {error ? (
-            <p style={{ marginTop: 24, fontSize: 14, color: "var(--acc-text)" }} role="alert">
+            <p className="field-error cv-msg" role="alert">
               {error}
             </p>
           ) : null}
 
-          <div className="form-actions" style={{ marginTop: 32 }}>
+          <div className="form-actions cv-actions-split">
             {step > 1 ? (
-              <button type="button" onClick={() => setStep((current) => current - 1)} className="btn btn-ghost" style={{ flex: 1 }}>
+              <button type="button" onClick={() => setStep((current) => current - 1)} className="btn btn-ghost">
                 이전
               </button>
             ) : null}
             {step < 3 ? (
-              <button type="button" onClick={goNext} className="btn btn-acc" style={{ flex: 1 }}>
+              <button type="button" onClick={goNext} className="btn btn-acc">
                 다음
               </button>
             ) : (
@@ -360,13 +340,12 @@ export default function TeacherRegisterPage() {
                 disabled={submitting}
                 onClick={() => void handleSubmit()}
                 className="btn btn-acc"
-                style={{ flex: 1 }}
               >
                 {submitting ? "처리 중…" : "가입 완료"}
               </button>
             )}
           </div>
-          </article>
+          </div>
         </div>
       </section>
     </main>
@@ -427,8 +406,8 @@ function StepOne({
         />
       </Field>
       <div className="field">
-        <label>담당 과목</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+        <span className="field-label">담당 과목</span>
+        <div className="opts" role="group" aria-label="담당 과목 선택">
           {SUBJECTS.map((subject) => {
             const selected = subjects.includes(subject);
             return (
@@ -436,16 +415,15 @@ function StepOne({
                 key={subject}
                 type="button"
                 onClick={() => onToggleSubject(subject)}
-                className={`chip-f${selected ? " on" : ""}`}
+                aria-pressed={selected}
+                className={`opt${selected ? " on" : ""}`}
               >
                 {subject}
               </button>
             );
           })}
         </div>
-        {fieldErrors.subjects ? (
-          <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.subjects}</p>
-        ) : null}
+        {fieldErrors.subjects ? <p className="field-error">{fieldErrors.subjects}</p> : null}
       </div>
     </div>
   );
@@ -475,55 +453,58 @@ function StepTwo({
       </Field>
 
       <div className="field">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <label>주요 경력</label>
+        <div className="cv-rows-head">
+          <span className="field-label cv-label-inline">주요 경력</span>
           <button
             type="button"
+            className="cv-rows-add"
             onClick={() => onCareers([...careers, { org: "", period: "" }])}
-            style={{ fontSize: 13, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
           >
             항목 추가
           </button>
         </div>
-        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+        <ul className="cv-rows">
           {careers.map((career, index) => (
-            <div key={index} className="card panel-card" style={{ padding: 16 }}>
-              <input
-                value={career.org}
-                onChange={(e) =>
-                  onCareers(
-                    careers.map((item, i) =>
-                      i === index ? { ...item, org: e.target.value } : item,
-                    ),
-                  )
-                }
-                placeholder="기관명"
-              />
-              <input
-                value={career.period}
-                onChange={(e) =>
-                  onCareers(
-                    careers.map((item, i) =>
-                      i === index ? { ...item, period: e.target.value } : item,
-                    ),
-                  )
-                }
-                placeholder="기간"
-                style={{ marginTop: 8 }}
-              />
+            <li key={index}>
+              <div className="cv-row-grid">
+                <input
+                  className="inp"
+                  value={career.org}
+                  onChange={(e) =>
+                    onCareers(
+                      careers.map((item, i) =>
+                        i === index ? { ...item, org: e.target.value } : item,
+                      ),
+                    )
+                  }
+                  placeholder="기관명"
+                  aria-label={`경력 ${index + 1} 기관명`}
+                />
+                <input
+                  className="inp"
+                  value={career.period}
+                  onChange={(e) =>
+                    onCareers(
+                      careers.map((item, i) =>
+                        i === index ? { ...item, period: e.target.value } : item,
+                      ),
+                    )
+                  }
+                  placeholder="기간"
+                  aria-label={`경력 ${index + 1} 기간`}
+                />
+              </div>
               <button
                 type="button"
+                className="cv-row-del"
                 onClick={() => onCareers(careers.filter((_, i) => i !== index))}
-                style={{ marginTop: 8, fontSize: 12, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
               >
                 삭제
               </button>
-            </div>
+            </li>
           ))}
-        </div>
-        {fieldErrors.career ? (
-          <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{fieldErrors.career}</p>
-        ) : null}
+        </ul>
+        {fieldErrors.career ? <p className="field-error">{fieldErrors.career}</p> : null}
       </div>
 
       <Field label="자기소개" error={fieldErrors.bio}>
@@ -548,7 +529,7 @@ function StepThree({
 }) {
   return (
     <div>
-      <p className="panel-note" style={{ padding: 16, borderRadius: "var(--r-card)", background: "rgba(var(--acc-rgb),.08)" }}>
+      <p className="cv-note">
         서류는 선택사항입니다. 서류는 나중에 선생님 포털에서도 수정할 수 있습니다.
       </p>
       <FilePicker
@@ -583,16 +564,16 @@ function FilePicker({
   onRemove: (id: string) => void;
 }) {
   return (
-    <section className="card panel-card" style={{ marginTop: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h2 className="panel-title" style={{ fontSize: 15 }}>{title}</h2>
-        <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
+    <section className="cv-files">
+      <div className="cv-files-head">
+        <h2 className="cv-files-title">{title}</h2>
+        <label className="btn btn-ghost btn-sm cv-files-pick">
           파일 선택
           <input
             type="file"
             accept="application/pdf,image/*"
             multiple={multiple}
-            style={{ display: "none" }}
+            className="cv-file-input"
             onChange={(e) => {
               onAdd(e.target.files);
               e.currentTarget.value = "";
@@ -600,33 +581,14 @@ function FilePicker({
           />
         </label>
       </div>
-      <ul style={{ marginTop: 12, listStyle: "none", padding: 0 }}>
+      <ul className="cv-files-list">
         {files.length === 0 ? (
-          <li className="panel-note">선택된 파일이 없습니다.</li>
+          <li className="cv-files-empty">선택된 파일이 없습니다.</li>
         ) : (
           files.map((item) => (
-            <li
-              key={item.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-                padding: "10px 12px",
-                borderRadius: "var(--r-control)",
-                background: "var(--panel-2)",
-                marginTop: 8,
-                fontSize: 14,
-              }}
-            >
-              <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--mut)" }}>
-                {item.file.name}
-              </span>
-              <button
-                type="button"
-                onClick={() => onRemove(item.id)}
-                style={{ flexShrink: 0, fontSize: 12, fontWeight: 700, color: "var(--acc-text)", background: "none", border: 0, cursor: "pointer" }}
-              >
+            <li key={item.id}>
+              <span className="cv-files-name">{item.file.name}</span>
+              <button type="button" onClick={() => onRemove(item.id)} className="cv-row-del inline">
                 삭제
               </button>
             </li>
@@ -650,9 +612,7 @@ function Field({
     <div className="field">
       <label>{label}</label>
       {children}
-      {error ? (
-        <p style={{ marginTop: 8, fontSize: 13, color: "var(--acc-text)" }}>{error}</p>
-      ) : null}
+      {error ? <p className="field-error">{error}</p> : null}
     </div>
   );
 }

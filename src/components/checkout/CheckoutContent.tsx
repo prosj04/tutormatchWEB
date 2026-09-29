@@ -27,7 +27,7 @@ const CheckoutTossWidget = dynamic(
   {
     ssr: false,
     loading: () => (
-      <p className="panel-note" style={{ marginTop: 24 }}>
+      <p className="footnote cv-loading-note">
         결제 수단 불러오는 중…
       </p>
     ),
@@ -304,22 +304,19 @@ export function CheckoutContent({
           title={c("header_title", "결제")}
           description="자녀를 먼저 연결하면 자녀 명의로 결제를 진행할 수 있습니다."
         />
-        <section className="sec" style={{ paddingTop: 0 }}>
+        <section className="sec cv-sec-tight">
           <div className="wrap">
-            <article
-              className="card panel-card"
-              style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}
-            >
-              <h2 className="panel-title">연결된 자녀가 없습니다</h2>
-              <p className="panel-note" style={{ marginTop: 8 }}>
+            <div className="cv-narrow-sm cv-done">
+              <h2 className="cv-done-title">연결된 자녀가 없습니다</h2>
+              <p className="cv-done-lede">
                 자녀 계정을 연결한 뒤 자녀 명의로 결제를 진행할 수 있습니다.
               </p>
-              <div className="form-actions" style={{ justifyContent: "center", marginTop: 24 }}>
+              <div className="cv-done-actions">
                 <Link href="/parent/link" className="btn btn-acc">
                   자녀 연결하기
                 </Link>
               </div>
-            </article>
+            </div>
           </div>
         </section>
       </main>
@@ -334,7 +331,7 @@ export function CheckoutContent({
         description="선택하신 플랜으로 결제를 진행합니다. 주문 정보를 확인한 뒤 결제를 완료해 주세요."
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="cv-co">
         <div className="wrap">
           <div className="back-links">
             <CmsText active={isEditMode} cmsKey="link_pricing">
@@ -348,22 +345,244 @@ export function CheckoutContent({
           </div>
 
           {studentHasLinkedParent ? (
-            <article className="card panel-card" style={{ marginBottom: 20 }}>
-              <h2 className="panel-title">학부모 계정에서 결제하실 수 있습니다</h2>
-              <p className="panel-note" style={{ marginTop: 8 }}>
+            <div className="banner info cv-banner-gap">
+              <span>
+                <b>학부모 계정에서 결제하실 수 있습니다</b>
+                <br />
                 연결된 학부모 계정으로 로그인하면 학부모 결제 페이지에서 이 플랜을 바로
                 결제합니다. 아래에서 학생 명의로 직접 결제하는 것도 가능합니다.
-              </p>
-            </article>
+              </span>
+            </div>
           ) : null}
 
-          <div className="checkout-layout">
-            <div className="panel-stack">
-              <article className="card panel-card">
-                <CmsText active={isEditMode} cmsKey="section_order_title">
-                  <h2 className="panel-title">{c("section_order_title", "주문 요약")}</h2>
+          <div className="cv-co-grid">
+            <div className="cv-co-main">
+              {isParentCheckout && parentChildren ? (
+                <section className="cv-sec">
+                  <h2 className="cv-sec-title">결제할 자녀</h2>
+                  <p className="cv-sec-note">선택한 자녀 명의로 플랜이 시작됩니다.</p>
+                  <div className="cv-radio-list cv-list-gap">
+                    {parentChildren.map((child) => (
+                      <label key={child.id}>
+                        <input
+                          type="radio"
+                          name="checkout-child"
+                          value={child.id}
+                          checked={selectedChildId === child.id}
+                          onChange={() => setSelectedChildId(child.id)}
+                        />
+                        <span>
+                          <b>{child.name}</b>
+                          {child.grade ? ` · ${child.grade}` : ""}
+                          {child.hasActiveSubscription ? (
+                            <span className="mini"> (진행 중인 플랜 있음 · 플랜 변경으로 처리됩니다)</span>
+                          ) : null}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+
+              <section className="cv-sec">
+                <CmsText active={isEditMode} cmsKey="section_customer_title">
+                  <h2 className="cv-sec-title">
+                    {c(
+                      "section_customer_title",
+                      isParentCheckout
+                        ? "결제자 정보"
+                        : needsSignup
+                          ? "주문자 · 가입 정보"
+                          : "주문자 정보",
+                    )}
+                  </h2>
                 </CmsText>
-                <dl style={{ marginTop: 8 }}>
+                <div className="field">
+                  <CmsText active={isEditMode} cmsKey="label_name">
+                    <label htmlFor="checkout-name">{c("label_name", "이름")}</label>
+                  </CmsText>
+                  <input
+                    id="checkout-name"
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <CmsText active={isEditMode} cmsKey="label_phone">
+                    <label htmlFor="checkout-phone">{c("label_phone", "연락처")}</label>
+                  </CmsText>
+                  <input
+                    id="checkout-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    inputMode="numeric"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <CmsText active={isEditMode} cmsKey="label_email">
+                    <label htmlFor="checkout-email">{c("label_email", "이메일")}</label>
+                  </CmsText>
+                  <input
+                    id="checkout-email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                {needsSignup ? (
+                  <>
+                    <GenderSelect value={gender} onChange={setGender} error={error?.includes("성별") ? error : undefined} />
+                    <div className="field">
+                      <label htmlFor="checkout-grade">학년</label>
+                      <select
+                        id="checkout-grade"
+                        value={grade}
+                        onChange={(e) => setGrade(e.target.value)}
+                      >
+                        {STUDENT_GRADES.map((item) => (
+                          <option key={item} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label htmlFor="checkout-guardian-phone">부모님 연락처 (선택)</label>
+                      <input
+                        id="checkout-guardian-phone"
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="numeric"
+                        value={guardianPhone}
+                        onChange={(e) => setGuardianPhone(e.target.value)}
+                      />
+                      <p className="footnote cv-hint">
+                        미성년 학생의 서비스 이용은 학부모 동의가 된 것으로 간주하며,
+                        입력하신 연락처는 상담 매니저에게만 전달됩니다.
+                      </p>
+                    </div>
+                    <div className="field">
+                      <span className="field-label">희망 과목 (선택)</span>
+                      <p className="footnote cv-hint-tight">
+                        상담 시 담당 매니저와 조율됩니다. 원하시는 과목을 자유롭게 선택해 주세요.
+                      </p>
+                      <div className="opts" role="group" aria-label="희망 과목 선택">
+                        {SUBJECT_OPTIONS.map((subject) => {
+                          const active = selectedSubjects.includes(subject);
+                          return (
+                            <button
+                              key={subject}
+                              type="button"
+                              onClick={() => toggleSubject(subject)}
+                              aria-pressed={active}
+                              className={`opt${active ? " on" : ""}`}
+                            >
+                              {subject}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="field">
+                      <label htmlFor="checkout-password">비밀번호</label>
+                      <input
+                        id="checkout-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="checkout-password-confirm">비밀번호 확인</label>
+                      <input
+                        id="checkout-password-confirm"
+                        type="password"
+                        autoComplete="new-password"
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                      />
+                    </div>
+                  </>
+                ) : null}
+              </section>
+
+              <section className="cv-sec">
+                <CmsText active={isEditMode} cmsKey="section_payment_title">
+                  <h2 className="cv-sec-title">{c("section_payment_title", "결제 수단")}</h2>
+                </CmsText>
+                <CmsText active={isEditMode} cmsKey="payment_note">
+                  <p className="cv-sec-note">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
+                </CmsText>
+                <div className="cv-widget">
+                  <CheckoutTossWidget
+                    total={total}
+                    onReadyChange={setWidgetReady}
+                    onError={handleWidgetError}
+                    paymentWidgetRef={paymentWidgetRef}
+                    paymentMethodsRef={paymentMethodsRef}
+                  />
+                </div>
+              </section>
+
+              <section className="cv-sec">
+                <label className="check-row">
+                  <input
+                    type="checkbox"
+                    checked={termsAgreed}
+                    onChange={(e) => setTermsAgreed(e.target.checked)}
+                  />
+                  <span>
+                    전자상거래 및 결제 관련{" "}
+                    <Link href="/terms" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}>
+                      이용약관
+                    </Link>
+                    ,{" "}
+                    <Link href="/privacy" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}>
+                      개인정보처리방침
+                    </Link>
+                    에 동의하며, 미성년 학생의 경우 보호자(법정대리인)로서
+                    개인정보 수집·이용 및 서비스 이용에 동의합니다. (필수)
+                  </span>
+                </label>
+
+                {error ? (
+                  <p className="field-error cv-msg" role="alert">
+                    {error}
+                  </p>
+                ) : null}
+
+                <CmsText active={isEditMode} cmsKey="pay_button">
+                  <button
+                    type="button"
+                    disabled={paying || !widgetReady}
+                    onClick={handlePay}
+                    className="btn btn-acc btn-block btn-lg cv-pay"
+                  >
+                    {paying ? c("paying_label", "처리 중…") : c("pay_button", "결제하기")}
+                  </button>
+                </CmsText>
+                {!widgetReady && !error ? (
+                  <CmsText active={isEditMode} cmsKey="widget_loading">
+                    <p className="footnote cv-center-note">
+                      {c("widget_loading", "결제 UI를 불러오는 중…")}
+                    </p>
+                  </CmsText>
+                ) : null}
+              </section>
+            </div>
+
+            <aside className="cv-co-aside">
+              <div className="cv-receipt">
+                <CmsText active={isEditMode} cmsKey="section_order_title">
+                  <h2 className="cv-sec-title">{c("section_order_title", "주문 요약")}</h2>
+                </CmsText>
+                <dl>
                   <div className="kv-row">
                     <CmsText active={isEditMode} cmsKey="dt_plan">
                       <dt>{c("dt_plan", "플랜")}</dt>
@@ -387,9 +606,7 @@ export function CheckoutContent({
                       <CmsText active={isEditMode} cmsKey="dt_list_price">
                         <dt>{c("dt_list_price", "정가 (시간당 5만원)")}</dt>
                       </CmsText>
-                      <dd style={{ textDecoration: "line-through", opacity: 0.7 }}>
-                        {formatKRW(plan.listPriceKrw)}
-                      </dd>
+                      <dd className="cv-strike">{formatKRW(plan.listPriceKrw)}</dd>
                     </div>
                   ) : null}
                   {plan.discountRate ? (
@@ -397,9 +614,7 @@ export function CheckoutContent({
                       <CmsText active={isEditMode} cmsKey="dt_discount">
                         <dt>{c("dt_discount", "할인")}</dt>
                       </CmsText>
-                      <dd style={{ color: "var(--acc-text, #FF6B6B)", fontWeight: 700 }}>
-                        {plan.discountRate}% ↓
-                      </dd>
+                      <dd>{plan.discountRate}%</dd>
                     </div>
                   ) : null}
                   <div className="kv-row total">
@@ -409,264 +624,35 @@ export function CheckoutContent({
                     <dd>{formatKRW(total)}</dd>
                   </div>
                 </dl>
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
-                  <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg)", marginBottom: 10 }}>
-                    모든 플랜에 포함됨
-                  </p>
-                  <ul style={{ fontSize: "0.875rem", lineHeight: 1.6, color: "var(--mut)" }}>
+                <div className="cv-includes">
+                  <p className="cv-includes-label">모든 플랜에 포함됨</p>
+                  <ul>
                     {PLAN_INCLUDES.map((item) => (
-                      <li key={item} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                        <span style={{ color: "var(--acc-color, #FF6B6B)" }}>·</span>
+                      <li key={item}>
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </article>
-
-              <article className="card panel-card">
-                <CmsText active={isEditMode} cmsKey="section_payment_title">
-                  <h2 className="panel-title">{c("section_payment_title", "결제 수단")}</h2>
-                </CmsText>
-                <CmsText active={isEditMode} cmsKey="payment_note">
-                  <p className="panel-note">{c("payment_note", "테스트 키로 연동되어 실제 결제는 이루어지지 않습니다.")}</p>
-                </CmsText>
-                <CheckoutTossWidget
-                  total={total}
-                  onReadyChange={setWidgetReady}
-                  onError={handleWidgetError}
-                  paymentWidgetRef={paymentWidgetRef}
-                  paymentMethodsRef={paymentMethodsRef}
-                />
-              </article>
-            </div>
-
-            <div className="panel-stack">
-              {isParentCheckout && parentChildren ? (
-                <article className="card panel-card">
-                  <h2 className="panel-title">결제할 자녀</h2>
-                  <p className="panel-note" style={{ marginTop: 4, marginBottom: 12 }}>
-                    선택한 자녀 명의로 플랜이 시작됩니다.
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {parentChildren.map((child) => (
-                      <label
-                        key={child.id}
-                        className="check-row"
-                        style={{ cursor: "pointer" }}
-                      >
-                        <input
-                          type="radio"
-                          name="checkout-child"
-                          value={child.id}
-                          checked={selectedChildId === child.id}
-                          onChange={() => setSelectedChildId(child.id)}
-                        />
-                        <span>
-                          <b>{child.name}</b>
-                          {child.grade ? ` · ${child.grade}` : ""}
-                          {child.hasActiveSubscription ? (
-                            <span style={{ color: "var(--mut)", marginLeft: 6 }}>
-                              (진행 중인 플랜 있음 · 플랜 변경으로 처리됩니다)
-                            </span>
-                          ) : null}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </article>
-              ) : null}
-
-              <article className="card panel-card">
-                <CmsText active={isEditMode} cmsKey="section_customer_title">
-                  <h2 className="panel-title">
-                    {c(
-                      "section_customer_title",
-                      isParentCheckout
-                        ? "결제자 정보"
-                        : needsSignup
-                          ? "주문자 · 가입 정보"
-                          : "주문자 정보",
-                    )}
-                  </h2>
-                </CmsText>
-                <div>
-                  <div className="field">
-                    <CmsText active={isEditMode} cmsKey="label_name">
-                      <label htmlFor="checkout-name">{c("label_name", "이름")}</label>
-                    </CmsText>
-                    <input
-                      id="checkout-name"
-                      type="text"
-                      autoComplete="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  <div className="field">
-                    <CmsText active={isEditMode} cmsKey="label_phone">
-                      <label htmlFor="checkout-phone">{c("label_phone", "연락처")}</label>
-                    </CmsText>
-                    <input
-                      id="checkout-phone"
-                      type="tel"
-                      autoComplete="tel"
-                      inputMode="numeric"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-                  <div className="field">
-                    <CmsText active={isEditMode} cmsKey="label_email">
-                      <label htmlFor="checkout-email">{c("label_email", "이메일")}</label>
-                    </CmsText>
-                    <input
-                      id="checkout-email"
-                      type="email"
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  {needsSignup ? (
-                    <>
-                      <GenderSelect value={gender} onChange={setGender} error={error?.includes("성별") ? error : undefined} />
-                      <div className="field">
-                        <label htmlFor="checkout-grade">학년</label>
-                        <select
-                          id="checkout-grade"
-                          value={grade}
-                          onChange={(e) => setGrade(e.target.value)}
-                        >
-                          {STUDENT_GRADES.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="field">
-                        <label htmlFor="checkout-guardian-phone">부모님 연락처 (선택)</label>
-                        <input
-                          id="checkout-guardian-phone"
-                          type="tel"
-                          autoComplete="tel"
-                          inputMode="numeric"
-                          value={guardianPhone}
-                          onChange={(e) => setGuardianPhone(e.target.value)}
-                        />
-                        <p className="panel-note" style={{ marginTop: 6 }}>
-                          미성년 학생의 서비스 이용은 학부모 동의가 된 것으로 간주하며,
-                          입력하신 연락처는 상담 매니저에게만 전달됩니다.
-                        </p>
-                      </div>
-                      <div className="field">
-                        <label>희망 과목 (선택)</label>
-                        <p className="panel-note" style={{ marginTop: 0, marginBottom: 10 }}>
-                          상담 시 담당 매니저와 조율됩니다. 원하시는 과목을 자유롭게 선택해 주세요.
-                        </p>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                          {SUBJECT_OPTIONS.map((subject) => {
-                            const active = selectedSubjects.includes(subject);
-                            return (
-                              <button
-                                key={subject}
-                                type="button"
-                                onClick={() => toggleSubject(subject)}
-                                className={`chip-f${active ? " on" : ""}`}
-                              >
-                                {subject}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className="field">
-                        <label htmlFor="checkout-password">비밀번호</label>
-                        <input
-                          id="checkout-password"
-                          type="password"
-                          autoComplete="new-password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                      </div>
-                      <div className="field">
-                        <label htmlFor="checkout-password-confirm">비밀번호 확인</label>
-                        <input
-                          id="checkout-password-confirm"
-                          type="password"
-                          autoComplete="new-password"
-                          value={passwordConfirm}
-                          onChange={(e) => setPasswordConfirm(e.target.value)}
-                        />
-                      </div>
-                    </>
-                  ) : null}
-                </div>
-              </article>
-
-              <article className="card panel-card">
-                <label className="check-row">
-                  <input
-                    type="checkbox"
-                    checked={termsAgreed}
-                    onChange={(e) => setTermsAgreed(e.target.checked)}
-                  />
-                  <span>
-                    전자상거래 및 결제 관련{" "}
-                    <Link href="/terms" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
-                      이용약관
-                    </Link>
-                    ,{" "}
-                    <Link href="/privacy" target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()} style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
-                      개인정보처리방침
-                    </Link>
-                    에 동의하며, 미성년 학생의 경우 보호자(법정대리인)로서
-                    개인정보 수집·이용 및 서비스 이용에 동의합니다. (필수)
-                  </span>
-                </label>
-
-                {error ? (
-                  <p className="field-error" style={{ marginTop: 16, fontSize: 14 }} role="alert">
-                    {error}
-                  </p>
-                ) : null}
-
-                <div className="panel-note" style={{ marginTop: 16, fontSize: 13, padding: "12px 14px", backgroundColor: "rgba(var(--acc-rgb), 0.08)", borderRadius: "8px" }}>
-                  <p style={{ textAlign: "center", margin: 0 }}>
+                <div className="cv-refund">
+                  <p>
                     <span>{c("refund_guarantee", "첫 수업 후 불만족 시 100% 환불해 드립니다. ")}</span>
-                    <Link href="/refund" style={{ color: "var(--acc-text)", textDecoration: "underline" }}>
-                      {c("refund_policy_link", "환불정책")}
-                    </Link>
+                    <Link href="/refund">{c("refund_policy_link", "환불정책")}</Link>
                   </p>
-                  <ul style={{ margin: "10px 0 0", paddingLeft: "1.1rem", fontSize: 12, lineHeight: 1.7, color: "var(--mut)" }}>
-                    <li>수업 시작 전: 전액 환불</li>
-                    <li>첫 수업 후 3일 이내: 위약금 없이 100% 환불 (최초 1회)</li>
-                    <li>월 중도 해지: 진행된 회차의 정가만 공제 후 잔액 환불</li>
+                  <ul>
+                    <li>
+                      <span>수업 시작 전: 전액 환불</span>
+                    </li>
+                    <li>
+                      <span>첫 수업 후 3일 이내: 위약금 없이 100% 환불 (최초 1회)</span>
+                    </li>
+                    <li>
+                      <span>월 중도 해지: 진행된 회차의 정가만 공제 후 잔액 환불</span>
+                    </li>
                   </ul>
                 </div>
-
-                <CmsText active={isEditMode} cmsKey="pay_button">
-                  <button
-                    type="button"
-                    disabled={paying || !widgetReady}
-                    onClick={handlePay}
-                    className="btn btn-acc btn-block"
-                    style={{ marginTop: 24 }}
-                  >
-                    {paying ? c("paying_label", "처리 중…") : c("pay_button", "결제하기")}
-                  </button>
-                </CmsText>
-                {!widgetReady && !error ? (
-                  <CmsText active={isEditMode} cmsKey="widget_loading">
-                    <p className="panel-note" style={{ textAlign: "center", marginTop: 12 }}>
-                      {c("widget_loading", "결제 UI를 불러오는 중…")}
-                    </p>
-                  </CmsText>
-                ) : null}
-              </article>
-            </div>
+              </div>
+            </aside>
           </div>
         </div>
       </section>

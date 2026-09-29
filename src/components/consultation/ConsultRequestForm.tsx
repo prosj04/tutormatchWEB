@@ -117,30 +117,29 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
 
   if (done) {
     return (
-      <div className="consult-done card">
-        <div className="consult-done-icon" aria-hidden="true">✓</div>
-        <h2>{c("done_title", "상담 신청이 접수됐어요")}</h2>
-        <p>{phoneNotice}</p>
-        <p className="consult-done-label">{c("done_check_label", "상담에서 확인하실 것")}</p>
-        <ul className="consult-done-list">
+      <div className="cv-done" role="status">
+        <h2 className="cv-done-title">{c("done_title", "상담 신청이 접수됐어요")}</h2>
+        <p className="cv-done-lede">{phoneNotice}</p>
+        <p className="cv-done-label">{c("done_check_label", "상담에서 확인하실 것")}</p>
+        <ul className="cv-ledger">
           <li>{c("done_item_1", "학생의 공부 성향 진단과 그에 맞는 선생님 방향")}</li>
           <li>{c("done_item_2", "과목별 현재 위치와 3개월 학습 계획")}</li>
           <li>{c("done_item_3", "수업·요금 안내와 첫 수업 환불 조건")}</li>
         </ul>
-        <p className="consult-done-sub">
+        <p className="cv-note cv-note-gap">
           {c("done_sub", "계정을 만들면 상담 진행 상황을 바로 확인할 수 있어요.")}
         </p>
-        <p className="consult-done-note">
+        <p className="footnote cv-hint">
           {c(
             "done_no_account",
             "아직 계정은 만들어지지 않았어요 — 진행 상황 확인은 계정 생성 후 가능해요.",
           )}
         </p>
-        <div className="consult-done-actions">
+        <div className="cv-done-actions">
           <Link href="/register" className="btn btn-acc" onClick={savePrefill}>
             {c("done_btn_register", "1분 만에 계정 만들기")}
           </Link>
-          <Link href="/" className="btn btn-ghost">
+          <Link href="/" className="btn btn-text">
             {c("done_btn_home", "홈으로")}
           </Link>
         </div>
@@ -149,7 +148,7 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
   }
 
   return (
-    <form className="consult-form card" onSubmit={handleSubmit} noValidate>
+    <form className="consult-form cv-paper" onSubmit={handleSubmit} noValidate>
       <div className="consult-row">
         <div className="consult-field consult-field-grow">
           <label htmlFor="consult-name">{c("label_name", "이름")}</label>
@@ -163,12 +162,12 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
         </div>
         <div className="consult-field">
           <span className="consult-label">{c("label_gender", "성별")}</span>
-          <div className="consult-gender" role="group" aria-label="성별 선택">
+          <div className="opts consult-gender" role="group" aria-label="성별 선택">
             {LEAD_GENDERS.map((g) => (
               <button
                 key={g}
                 type="button"
-                className={`consult-gender-btn${gender === g ? " on" : ""}`}
+                className={`opt${gender === g ? " on" : ""}`}
                 aria-pressed={gender === g}
                 onClick={() => setGender((prev) => (prev === g ? "" : g))}
               >
@@ -220,14 +219,14 @@ export function ConsultRequestForm({ source, phoneNotice, copy = {} }: Props) {
 
       <div className="consult-field">
         <span className="consult-label">{c("label_subjects", "과목")}</span>
-        <div className="consult-chips consult-chips-row" role="group" aria-label="과목 선택">
+        <div className="opts consult-opts-row" role="group" aria-label="과목 선택">
           {LEAD_SUBJECTS.map((subject) => {
             const active = subjects.includes(subject);
             return (
               <button
                 key={subject}
                 type="button"
-                className={`consult-chip${active ? " on" : ""}`}
+                className={`opt${active ? " on" : ""}`}
                 aria-pressed={active}
                 onClick={() => toggleSubject(subject)}
               >
