@@ -56,7 +56,13 @@ function formatReportMonthLong(month: string): string {
   return `${y}년 ${Number(m)}월`;
 }
 
-/** 자녀 선택 + 선택 자녀의 월간 리포트 테이블. */
+function deltaOf(report: ReportRow): number | null {
+  if (report.overallScore == null || report.prevScore == null) return null;
+  const d = report.overallScore - report.prevScore;
+  return d === 0 ? null : d;
+}
+
+/** 자녀 선택 + 선택 자녀의 월간 리포트 목록·열람 지면. */
 export function ReportsView({ items }: { items: ReportChild[] }) {
   const [selected, setSelected] = useState(items[0]?.id ?? "");
   const [open, setOpen] = useState<string | null>(null);
@@ -64,11 +70,12 @@ export function ReportsView({ items }: { items: ReportChild[] }) {
   const child = items.find((c) => c.id === selected) ?? items[0];
   const reports = child?.reports ?? [];
   const openReport = reports.find((r) => r.month === open) ?? null;
+  const openDelta = openReport ? deltaOf(openReport) : null;
 
   return (
     <div className="sec">
       {items.length > 1 && (
-        <div className="opts" style={{ marginBottom: "16px" }}>
+        <div className="opts pa-pick">
           {items.map((c) => (
             <button
               key={c.id}
@@ -87,273 +94,141 @@ export function ReportsView({ items }: { items: ReportChild[] }) {
         </div>
       )}
 
-      <div className="card">
-        {reports.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <b>아직 등록된 리포트가 없습니다</b>
-              <p>선생님·매니저가 월간 리포트를 등록하면 여기에 표시됩니다.</p>
-            </div>
-          </div>
-        ) : (
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>월</th>
-                <th>종합</th>
-                <th>과목 변화</th>
-                <th>코멘트</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((r) => {
-                const delta =
-                  r.overallScore != null && r.prevScore != null
-                    ? r.overallScore - r.prevScore
-                    : null;
-                return (
-                  <tr key={r.month}>
-                    <td className="num">{formatReportMonth(r.month)}</td>
-                    <td className="num">
-                      {r.overallScore != null ? (
-                        <>
-                          {r.overallScore}
-                          {delta != null && delta !== 0 ? (
-                            <span
-                              style={{
-                                color: "var(--acc-text)",
-                                fontSize: "12px",
-                              }}
-                            >
-                              {" "}
-                              {delta > 0 ? "▲" : "▼"}
-                              {Math.abs(delta)}
-                            </span>
-                          ) : null}
-                        </>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td>{subjectSummary(r.subjectScores)}</td>
-                    <td>{commentText(r)}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn sec sm"
-                        data-month={r.month}
-                        aria-pressed={open === r.month}
-                        onClick={() => setOpen(open === r.month ? null : r.month)}
-                      >
-                        {open === r.month ? "접기" : "열람"}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {reports.length === 0 ? (
+        <div className="pa-empty">
+          <p>아직 등록된 리포트가 없습니다.</p>
+          <p className="pa-note">선생님·매니저가 월간 리포트를 등록하면 여기에 표시됩니다.</p>
+        </div>
+      ) : (
+        <div className="pa-months">
+          {reports.map((r) => {
+            const delta = deltaOf(r);
+            return (
+              <div key={r.month}>
+                <span className="m">{formatReportMonth(r.month)}</span>
+                <span className="s">
+                  {r.overallScore != null ? (
+                    <>
+                      {r.overallScore}
+                      {delta != null ? (
+                        <i>
+                          {delta > 0 ? "▲" : "▼"}
+                          {Math.abs(delta)}
+                        </i>
+                      ) : null}
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </span>
+                <span className="pa-x">
+                  {subjectSummary(r.subjectScores)}
+                  <i>{commentText(r)}</i>
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  data-month={r.month}
+                  aria-pressed={open === r.month}
+                  onClick={() => setOpen(open === r.month ? null : r.month)}
+                >
+                  {open === r.month ? "접기" : "열람"}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {openReport ? (
-        <div className="sec" id="report-detail">
+        <article className="pa-report" id="report-detail">
           <h2>
             {formatReportMonthLong(openReport.month)} 리포트 · {child?.name}
           </h2>
-          <div className="grid2">
-            <div className="card" style={{ padding: "20px" }}>
-              {openReport.overallScore != null ? (
-                <>
-                  <p
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: ".08em",
-                      textTransform: "uppercase",
-                      color: "var(--mut-2)",
-                    }}
-                  >
-                    점수 변화
-                  </p>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "baseline",
-                      gap: "10px",
-                      marginTop: "8px",
-                    }}
-                  >
-                    <b
-                      style={{
-                        fontSize: "36px",
-                        fontWeight: 800,
-                        letterSpacing: "-.02em",
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      {openReport.overallScore}
-                    </b>
-                    {openReport.prevScore != null &&
-                    openReport.overallScore - openReport.prevScore !== 0 ? (
-                      <span
-                        style={{
-                          color: "var(--acc-text)",
-                          fontWeight: 700,
-                          fontSize: "14px",
-                        }}
-                      >
-                        {openReport.overallScore - openReport.prevScore > 0 ? "▲" : "▼"}
-                        {Math.abs(openReport.overallScore - openReport.prevScore)} 지난달 대비
-                      </span>
-                    ) : null}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: ".08em",
-                      textTransform: "uppercase",
-                      color: "var(--mut-2)",
-                    }}
-                  >
-                    종합 코멘트
-                  </p>
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      fontSize: "13px",
-                      color: "var(--fg)",
-                      lineHeight: 1.55,
-                    }}
-                  >
-                    {openReport.summary || "요약 코멘트가 아직 없습니다."}
-                  </div>
-                </>
-              )}
 
-              {openReport.subjectScores.length > 0 ? (
-                <div
-                  style={{
-                    marginTop: "14px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                  }}
-                >
-                  {openReport.subjectScores.map((s) => (
-                    <div
-                      key={s.subject}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "56px 1fr 74px",
-                        alignItems: "center",
-                        gap: "12px",
-                        fontSize: "13px",
-                      }}
-                    >
-                      <b>{s.subject}</b>
-                      <span
-                        style={{
-                          height: "8px",
-                          borderRadius: "5px",
-                          background: "var(--panel-2)",
-                          overflow: "hidden",
-                          display: "block",
-                        }}
-                      >
-                        <i
-                          style={{
-                            display: "block",
-                            height: "100%",
-                            width: `${s.curr}%`,
-                            background: "var(--acc)",
-                            borderRadius: "5px",
-                          }}
-                        />
-                      </span>
-                      <span
-                        className="num"
-                        style={{ textAlign: "right", color: "var(--mut)" }}
-                      >
-                        {s.prev != null ? `${s.prev}→${s.curr}` : `${s.curr}`}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+          {openReport.overallScore != null ? (
+            <div className="pa-figs">
+              <div className="pa-fig">
+                <span className="pa-label">점수 변화</span>
+                <b>
+                  {openReport.overallScore}
+                  {openDelta != null ? (
+                    <i>
+                      {openDelta > 0 ? "▲" : "▼"}
+                      {Math.abs(openDelta)} 지난달 대비
+                    </i>
+                  ) : null}
+                </b>
+              </div>
+            </div>
+          ) : (
+            <div className="pa-figs">
+              <div className="pa-fig">
+                <span className="pa-label">종합 코멘트</span>
+                <p className="pa-summary">
+                  {openReport.summary || "요약 코멘트가 아직 없습니다."}
+                </p>
+              </div>
+            </div>
+          )}
 
-              {openReport.weakTypes.length > 0 ? (
-                <>
-                  <p
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: ".08em",
-                      textTransform: "uppercase",
-                      color: "var(--mut-2)",
-                      marginTop: "18px",
-                    }}
-                  >
-                    취약 유형
-                  </p>
-                  <div className="opts" style={{ marginTop: "10px" }}>
-                    {openReport.weakTypes.map((type) => (
-                      <span key={type} className="opt" style={{ cursor: "default" }}>
-                        {type}
-                      </span>
-                    ))}
-                  </div>
-                </>
-              ) : null}
+          {openReport.subjectScores.length > 0 ? (
+            <div className="pa-subjects">
+              {openReport.subjectScores.map((s) => (
+                <div key={s.subject}>
+                  <b>{s.subject}</b>
+                  <span className="pa-bar">
+                    <i style={{ width: `${s.curr}%` }} />
+                  </span>
+                  <span className="n">
+                    {s.prev != null ? `${s.prev}→${s.curr}` : `${s.curr}`}
+                  </span>
+                </div>
+              ))}
             </div>
-            <div className="card">
-              {openReport.teacherComment ? (
-                <div className="row">
-                  <span className="av">선</span>
-                  <div className="g">
-                    <b>선생님 코멘트</b>
-                    <p>{openReport.teacherComment}</p>
-                  </div>
-                </div>
-              ) : null}
-              {openReport.managerComment ? (
-                <div className="row">
-                  <span className="av">매</span>
-                  <div className="g">
-                    <b>매니저 코멘트</b>
-                    <p>{openReport.managerComment}</p>
-                  </div>
-                </div>
-              ) : null}
-              {!openReport.teacherComment &&
-              !openReport.managerComment &&
-              (openReport.detail || openReport.summary) ? (
-                <div className="row">
-                  <div className="g">
-                    <b>선생님·매니저 코멘트</b>
-                    <p>{openReport.detail || openReport.summary}</p>
-                  </div>
-                </div>
-              ) : null}
-              {!openReport.teacherComment &&
-              !openReport.managerComment &&
-              !openReport.detail &&
-              !openReport.summary ? (
-                <div className="row">
-                  <div className="g">
-                    <b>선생님·매니저 코멘트</b>
-                    <p>코멘트가 아직 없습니다.</p>
-                  </div>
-                </div>
-              ) : null}
+          ) : null}
+
+          {openReport.weakTypes.length > 0 ? (
+            <div className="pa-weak">
+              <span className="pa-label">취약 유형</span>
+              <div className="tag-line">
+                {openReport.weakTypes.map((type) => (
+                  <span key={type}>{type}</span>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
+          ) : null}
+
+          {openReport.teacherComment ? (
+            <div className="pa-quote">
+              <span className="pa-label">선생님 코멘트</span>
+              <p>{openReport.teacherComment}</p>
+            </div>
+          ) : null}
+          {openReport.managerComment ? (
+            <div className="pa-quote">
+              <span className="pa-label">매니저 코멘트</span>
+              <p>{openReport.managerComment}</p>
+            </div>
+          ) : null}
+          {!openReport.teacherComment &&
+          !openReport.managerComment &&
+          (openReport.detail || openReport.summary) ? (
+            <div className="pa-quote">
+              <span className="pa-label">선생님·매니저 코멘트</span>
+              <p>{openReport.detail || openReport.summary}</p>
+            </div>
+          ) : null}
+          {!openReport.teacherComment &&
+          !openReport.managerComment &&
+          !openReport.detail &&
+          !openReport.summary ? (
+            <div className="pa-quote">
+              <span className="pa-label">선생님·매니저 코멘트</span>
+              <p>코멘트가 아직 없습니다.</p>
+            </div>
+          ) : null}
+        </article>
       ) : null}
     </div>
   );

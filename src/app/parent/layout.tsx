@@ -1,5 +1,3 @@
-import "@/app/concord-portal.css";
-import "@/app/concord-bridge.css";
 
 import { PortalShell, type PortalNavItem } from "@/components/concord-portal/PortalShell";
 import { requireParentPage } from "@/lib/parent-page-auth";
@@ -73,7 +71,7 @@ export default async function ParentLayout({
 
   return (
     <PortalShell
-      roleBadge="Parent · /parent"
+      roleBadge="Parent"
       nav={NAV}
       userName={parent.name}
       userMeta="학부모"

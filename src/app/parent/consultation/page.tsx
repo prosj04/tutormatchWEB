@@ -11,17 +11,20 @@ export default async function ParentConsultationPage() {
 
   return (
     <section className="page on" id="pg-consult" data-screen-label="학부모 상담">
-      <div className="crumb">/parent/consultation</div>
-      <h1>상담</h1>
-      <p className="sub">자녀 관련 방문 상담을 신청하고 예약을 관리합니다.</p>
-      <div className="sec grid2">
-        <div className="card" style={{ padding: "20px" }}>
+      <header className="pa-head">
+        <div className="crumb">학부모</div>
+        <h1>상담</h1>
+        <p className="sub">자녀 관련 방문 상담을 신청하고 예약을 관리합니다.</p>
+      </header>
+
+      <div className="pa-cols">
+        <div className="pa-form">
           <ConsultationForm
             students={children.map((c) => ({ id: c.id, name: c.name, grade: c.grade }))}
           />
         </div>
-        <div className="card" style={{ padding: "20px" }}>
-          <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "14px" }}>상담 안내</h2>
+        <aside className="pa-aside">
+          <h2 className="pa-aside-h">상담 안내</h2>
           <div className="banner info">
             <svg
               viewBox="0 0 24 24"
@@ -39,7 +42,7 @@ export default async function ParentConsultationPage() {
               맞는 선생님을 배정합니다.
             </span>
           </div>
-        </div>
+        </aside>
       </div>
     </section>
   );

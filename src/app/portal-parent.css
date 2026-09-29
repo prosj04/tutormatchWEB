@@ -1,0 +1,202 @@
+/* ============================================================
+   학부모 포털 (/parent/*) — 접두사 .pa-
+   전역으로 로드된다 — 모든 선택자는 접두사 클래스로 스코프할 것.
+   토큰·프리미티브·셸은 ds.css.
+   ============================================================ */
+
+/* ── 페이지 헤드 ─────────────────────────────────────────── */
+.pa-head{ padding-bottom:clamp(20px, 2.2vw, 28px); border-bottom:1px solid var(--line); }
+
+/* 섹션 구분: 여백 + 헤어라인(카드 대신) */
+.pa-ruled{ padding-top:clamp(26px, 3vw, 40px); border-top:1px solid var(--line); }
+.pa-label{ font-size:11.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--mut-2); }
+.pa-note{ margin-top:10px; font-size:13.5px; color:var(--mut); line-height:1.7; }
+
+/* 빈 상태 — 세리프 한 줄 + 다음 행동 하나 */
+.pa-empty{ padding-top:clamp(40px, 5vw, 68px); }
+.pa-empty p{
+  max-width:32em;
+  font-family:var(--serif); font-weight:500; font-size:clamp(20px, 1.9vw, 27px);
+  line-height:1.5; letter-spacing:-.03em; color:var(--fg); text-wrap:pretty;
+}
+.pa-empty .btn{ margin-top:clamp(20px, 2.2vw, 28px); }
+.pa-empty .pa-note{
+  font-family:var(--sans); font-weight:400; font-size:13.5px;
+  letter-spacing:-.006em; line-height:1.7; color:var(--mut);
+}
+
+/* ── 대시보드: 자녀 한 명의 지면 ─────────────────────────── */
+.pa-child{ margin-top:clamp(26px, 3.2vw, 44px); }
+.pa-child + .pa-child{ padding-top:clamp(28px, 3.2vw, 44px); border-top:1px solid var(--line); }
+.pa-child-name{
+  font-family:var(--serif); font-weight:500; font-size:clamp(28px, 2.7vw, 42px);
+  line-height:1.18; letter-spacing:-.036em;
+}
+.pa-child-meta{ margin-top:9px; font-size:14px; color:var(--mut); line-height:1.6; }
+.pa-flow{ margin-top:clamp(20px, 2.4vw, 30px); padding:22px 0 26px; border-top:1px solid var(--line); overflow-x:auto; }
+.pa-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+@media (max-width:760px){
+  /* 4단계가 모두 한 화면에 들어오도록 */
+  .pa-flow .st{ width:62px; }
+  .pa-flow .st span{ font-size:11.5px; }
+  /* KPI 는 세로 원장으로 — 세로 구분선 대신 헤어라인 */
+  .pa-child .kpis{ grid-template-columns:minmax(0,1fr); }
+  .pa-child .kpis > .kpi{ padding:18px 0; }
+  .pa-child .kpis > .kpi + .kpi{ border-left:0; border-top:1px solid var(--line); padding-left:0; }
+}
+
+/* ── 헤어라인 원장 목록 ──────────────────────────────────── */
+.pa-rows{ border-bottom:1px solid var(--line); }
+.pa-rows > *{
+  display:flex; align-items:flex-start; gap:clamp(12px, 1.6vw, 22px);
+  padding:16px 0; border-top:1px solid var(--line);
+}
+.pa-rows .pa-ico{ flex:0 0 auto; width:16px; height:16px; margin-top:3px; color:var(--mut-2); }
+.pa-rows .t{ flex:1 1 40%; min-width:0; font-size:14.5px; font-weight:600; letter-spacing:-.012em; line-height:1.5; }
+.pa-rows .d{ flex:1 1 55%; min-width:0; font-size:13.5px; color:var(--mut); line-height:1.65; }
+.pa-rows .r{ margin-left:auto; flex:0 0 auto; font-size:13px; color:var(--mut-2); font-variant-numeric:tabular-nums; }
+.pa-rows .pa-row-act{ margin-left:auto; flex:0 0 auto; }
+@media (max-width:760px){
+  .pa-rows > *{ flex-wrap:wrap; }
+  .pa-rows .t{ flex:1 1 100%; }
+  .pa-rows .d{ flex:1 1 100%; }
+  .pa-rows .r{ margin-left:0; }
+}
+/* 좁은 보조단 안에서는 항상 한 줄씩 */
+.pa-aside .pa-rows .t,.pa-aside .pa-rows .d{ flex-basis:100%; }
+
+/* ── 리포트: 월 목록 + 인쇄물 지면 ───────────────────────── */
+.pa-months{ margin-top:clamp(18px, 2vw, 26px); border-bottom:1px solid var(--line); }
+.pa-months > div{
+  display:grid; grid-template-columns:6.5rem 5.5rem minmax(0,1fr) auto;
+  align-items:baseline; gap:clamp(12px, 1.8vw, 26px);
+  padding:18px 0; border-top:1px solid var(--line);
+}
+.pa-months .m{
+  font-family:var(--serif); font-weight:500; font-size:20px; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums lining-nums;
+}
+.pa-months .s{
+  font-family:var(--serif); font-weight:500; font-size:25px; letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums lining-nums;
+}
+.pa-months .s i{
+  margin-left:5px; font-family:var(--sans); font-style:normal; font-size:12px; font-weight:600;
+  letter-spacing:0; color:var(--acc-text);
+}
+.pa-months .pa-x{ font-size:13.5px; color:var(--mut); line-height:1.6; }
+.pa-months .pa-x i{ display:block; margin-top:3px; font-style:normal; font-size:13px; color:var(--mut-2); }
+.pa-months .btn{ justify-self:end; align-self:center; }
+@media (max-width:760px){
+  .pa-months > div{ grid-template-columns:auto minmax(0,1fr) auto; }
+  .pa-months .m{ grid-area:1 / 1; }
+  .pa-months .s{ grid-area:1 / 2; }
+  .pa-months .btn{ grid-area:1 / 3; }
+  .pa-months .pa-x{ grid-area:2 / 1 / 3 / -1; }
+}
+
+.pa-report{
+  max-width:68ch; margin-top:clamp(32px, 3.6vw, 52px);
+  padding-top:clamp(26px, 3vw, 40px); border-top:1px solid var(--line);
+}
+.pa-report h2{ font-size:clamp(24px, 2.3vw, 34px); letter-spacing:-.034em; }
+.pa-figs{ display:flex; flex-wrap:wrap; gap:clamp(26px, 4vw, 56px); margin-top:clamp(22px, 2.4vw, 32px); }
+.pa-fig .pa-label{ display:block; margin-bottom:10px; }
+.pa-fig b{
+  display:block; font-family:var(--serif); font-weight:500;
+  font-size:clamp(34px, 3.4vw, 52px); line-height:1.04; letter-spacing:-.036em;
+  font-variant-numeric:tabular-nums lining-nums;
+}
+.pa-fig b i{
+  margin-left:10px; font-family:var(--sans); font-style:normal; font-size:13px; font-weight:600;
+  letter-spacing:0; color:var(--acc-text);
+}
+.pa-summary{ margin-top:10px; max-width:68ch; font-size:15.5px; line-height:1.8; color:var(--fg); }
+.pa-subjects{ margin-top:clamp(24px, 2.8vw, 36px); border-bottom:1px solid var(--line); }
+.pa-subjects > div{
+  display:grid; grid-template-columns:5rem minmax(0,1fr) 5rem; align-items:center; gap:clamp(12px, 1.6vw, 20px);
+  padding:13px 0; border-top:1px solid var(--line); font-size:14px;
+}
+.pa-subjects b{ font-weight:600; }
+.pa-bar{ display:block; height:2px; background:var(--line-2); }
+.pa-bar i{ display:block; height:2px; background:var(--acc); }
+.pa-subjects .n{ text-align:right; color:var(--mut); font-variant-numeric:tabular-nums; }
+.pa-weak{ margin-top:clamp(22px, 2.4vw, 30px); }
+.pa-weak .pa-label{ display:block; margin-bottom:10px; }
+.pa-quote{
+  margin-top:clamp(24px, 2.8vw, 36px);
+  padding-left:clamp(18px, 2vw, 28px); border-left:1px solid var(--line-2);
+}
+.pa-quote .pa-label{ display:block; margin-bottom:10px; }
+.pa-quote p{
+  font-family:var(--serif); font-size:clamp(16px, 1.35vw, 19px); line-height:1.85;
+  letter-spacing:-.018em; color:var(--fg); text-wrap:pretty;
+}
+
+/* ── 결제 ────────────────────────────────────────────────── */
+.pa-plan{ margin-top:clamp(24px, 2.8vw, 38px); }
+.pa-plan + .pa-plan{ padding-top:clamp(24px, 2.8vw, 36px); border-top:1px solid var(--line); }
+.pa-plan-name{
+  display:block; margin-top:10px;
+  font-family:var(--serif); font-weight:500; font-size:clamp(23px, 2.1vw, 31px);
+  line-height:1.2; letter-spacing:-.033em;
+}
+.pa-plan-note{ margin-top:9px; max-width:44em; font-size:14px; color:var(--mut); line-height:1.7; }
+.pa-plan.pa-attention .pa-label{ color:var(--warn); }
+.pa-plan-foot{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-top:clamp(16px, 1.8vw, 22px); padding-top:16px; border-top:1px solid var(--line);
+  font-size:14px; color:var(--mut);
+}
+.pa-plan-foot b{ margin-left:auto; color:var(--fg); font-weight:600; font-variant-numeric:tabular-nums; }
+.pa-renew{ display:flex; align-items:center; gap:16px; padding:17px 0; border-top:1px solid var(--line); }
+.pa-renew:last-child{ border-bottom:1px solid var(--line); }
+.pa-renew .g{ flex:1; min-width:0; }
+.pa-renew .g b{ font-size:14px; font-weight:600; }
+.pa-renew .g p{ margin-top:3px; font-size:13px; color:var(--mut); }
+.pa-tbl{ margin-top:clamp(14px, 1.6vw, 20px); overflow-x:auto; }
+.pa-tbl .tbl{ min-width:600px; }
+.pa-dash{ color:var(--mut-2); font-size:12.5px; }
+
+/* ── 2열: 본문 + 좌측 헤어라인 보조단 ────────────────────── */
+.pa-cols{ display:grid; gap:clamp(24px, 3vw, 44px); margin-top:clamp(24px, 3vw, 40px); }
+.pa-form{ max-width:34rem; }
+.pa-aside .pa-label{ display:block; margin-bottom:12px; }
+.pa-aside-h{
+  margin-bottom:14px;
+  font-family:var(--serif); font-weight:500; font-size:17px; letter-spacing:-.02em; line-height:1.4;
+}
+@media (min-width:900px){
+  .pa-cols{ grid-template-columns:minmax(0,1fr) minmax(0,310px); align-items:start; }
+  .pa-cols > .pa-aside{ padding-left:clamp(22px, 2.4vw, 36px); border-left:1px solid var(--line); }
+}
+@media (max-width:899px){
+  .pa-cols > .pa-aside{ padding-top:22px; border-top:1px solid var(--line); }
+}
+
+/* ── 자녀 연결: 코드 입력 ────────────────────────────────── */
+.pa-code input{
+  min-height:60px; text-align:center;
+  font-family:var(--serif); font-weight:500; font-size:26px;
+  letter-spacing:.34em; text-indent:.34em; color:var(--fg);
+  font-variant-numeric:tabular-nums lining-nums;
+}
+.pa-code input::placeholder{ color:var(--mut-2); font-weight:500; }
+.pa-via{
+  display:block; margin-top:4px;
+  font-style:normal; font-size:13px; font-weight:400; color:var(--mut);
+}
+
+/* 결과 메시지 — 폼 아래 헤어라인 배너 */
+.pa-msg{ margin-top:16px; }
+/* 자녀 선택 줄 */
+.pa-pick{ margin-bottom:16px; }
+
+/* ── 계정 ────────────────────────────────────────────────── */
+.pa-acc{ max-width:34rem; }
+.pa-acc .pa-ro{
+  display:flex; align-items:center;
+  color:var(--mut); background:var(--bg); border-style:dashed;
+}
+.pa-acc .pa-act{ margin-top:22px; }
+.pa-acc .pa-note{ max-width:44em; }

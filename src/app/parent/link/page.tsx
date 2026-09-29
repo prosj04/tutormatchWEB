@@ -18,9 +18,11 @@ export default async function ParentLinkPage() {
 
   return (
     <section className="page on" id="pg-link" data-screen-label="자녀 연결">
-      <div className="crumb">/parent/link</div>
-      <h1>자녀 연결</h1>
-      <p className="sub">자녀 앱 MY 탭 → 학부모 연결 또는 웹 대시보드 계정 페이지에서 발급한 코드를 입력하세요. 자녀가 아직 학생 가입을 하지 않았다면 먼저 학생 가입이 필요해요.</p>
+      <header className="pa-head">
+        <div className="crumb">학부모</div>
+        <h1>자녀 연결</h1>
+        <p className="sub">자녀 앱 MY 탭 → 학부모 연결 또는 웹 대시보드 계정 페이지에서 발급한 코드를 입력하세요. 자녀가 아직 학생 가입을 하지 않았다면 먼저 학생 가입이 필요해요.</p>
+      </header>
       <LinkChildForm linked={linked} />
     </section>
   );

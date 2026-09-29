@@ -12,24 +12,37 @@ function formatPhone(digits: string): string {
 
 type Banner = { text: string; error: boolean } | null;
 
+const stroke = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+} as const;
+
+function InfoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </svg>
+  );
+}
+
 function BannerBox({ banner }: { banner: Banner }) {
   if (!banner) return null;
   return (
     <div
-      className={banner.error ? "banner warn" : "banner info"}
-      style={{ marginTop: "14px" }}
+      className={banner.error ? "banner warn pa-msg" : "banner info pa-msg"}
       role={banner.error ? "alert" : undefined}
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 16v-4M12 8h.01" />
-      </svg>
+      <InfoIcon />
       <span>{banner.text}</span>
     </div>
   );
 }
 
-/** 프로필(이름·전화) + 비밀번호 변경. 시안 pg-account. */
+/** 프로필(이름·전화) + 비밀번호 변경 + 탈퇴 — 헤어라인으로 나눈 계정 지면. */
 export function AccountForms({
   initialName,
   initialPhone,
@@ -127,17 +140,22 @@ export function AccountForms({
 
   return (
     <>
-    <div className="sec grid2">
-      <div className="card" style={{ padding: "20px" }}>
+      <div className="sec pa-acc">
+        <h2>프로필</h2>
         <form onSubmit={saveProfile}>
-          <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "14px" }}>프로필</h2>
           <div className="field">
-            <label>이름</label>
-            <input className="inp filled" value={name} onChange={(e) => setName(e.target.value)} />
+            <label htmlFor="pa-acc-name">이름</label>
+            <input
+              id="pa-acc-name"
+              className="inp filled"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="field">
-            <label>전화번호</label>
+            <label htmlFor="pa-acc-phone">전화번호</label>
             <input
+              id="pa-acc-phone"
               className="inp filled"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -145,22 +163,25 @@ export function AccountForms({
             />
           </div>
           <div className="field">
-            <label>이메일</label>
-            <div className="inp filled">{email}</div>
+            <span className="field-label">이메일</span>
+            <div className="inp pa-ro">{email}</div>
           </div>
-          <button type="submit" className="btn sec" disabled={profileBusy}>
-            {profileBusy ? "저장 중…" : "저장"}
-          </button>
+          <div className="pa-act">
+            <button type="submit" className="btn btn-ghost" disabled={profileBusy}>
+              {profileBusy ? "저장 중…" : "저장"}
+            </button>
+          </div>
           <BannerBox banner={profileMsg} />
         </form>
       </div>
 
-      <div className="card" style={{ padding: "20px" }}>
+      <div className="sec pa-acc pa-ruled">
+        <h2>비밀번호 변경</h2>
         <form onSubmit={changePassword}>
-          <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "14px" }}>비밀번호 변경</h2>
           <div className="field">
-            <label>현재 비밀번호</label>
+            <label htmlFor="pa-acc-pw-cur">현재 비밀번호</label>
             <input
+              id="pa-acc-pw-cur"
               className="inp"
               type="password"
               value={currentPassword}
@@ -170,8 +191,9 @@ export function AccountForms({
             />
           </div>
           <div className="field">
-            <label>새 비밀번호 (8자 이상)</label>
+            <label htmlFor="pa-acc-pw-new">새 비밀번호 (8자 이상)</label>
             <input
+              id="pa-acc-pw-new"
               className="inp"
               type="password"
               value={newPassword}
@@ -181,40 +203,37 @@ export function AccountForms({
               autoComplete="new-password"
             />
           </div>
-          <button type="submit" className="btn pri" disabled={pwBusy}>
-            {pwBusy ? "변경 중…" : "변경하기"}
-          </button>
+          <div className="pa-act">
+            <button type="submit" className="btn pri" disabled={pwBusy}>
+              {pwBusy ? "변경 중…" : "변경하기"}
+            </button>
+          </div>
           <BannerBox banner={pwMsg} />
-          <div className="banner info" style={{ marginTop: "14px" }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
-            </svg>
+          <div className="banner info pa-msg">
+            <InfoIcon />
             <span>비밀번호를 잊으셨다면 담당 매니저가 대면 확인 후 재설정해 드립니다.</span>
           </div>
         </form>
       </div>
-    </div>
 
-    <div className="sec">
-      <div className="card" style={{ padding: "20px" }}>
-        <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>회원 탈퇴</h2>
-        <p style={{ fontSize: "13px", color: "var(--mut)", lineHeight: 1.6 }}>
+      <div className="sec pa-acc pa-ruled">
+        <h2>회원 탈퇴</h2>
+        <p className="pa-note">
           탈퇴하면 자녀 연결이 해제되고 개인정보가 익명화됩니다. 되돌릴 수 없으며, 결제
           기록은 관련 법령에 따라 보관됩니다.
         </p>
-        <button
-          type="button"
-          className="btn ghost"
-          style={{ marginTop: "14px", color: "var(--warn, #b45309)" }}
-          onClick={deleteAccount}
-          disabled={deleteBusy}
-        >
-          {deleteBusy ? "탈퇴 처리 중…" : "회원 탈퇴"}
-        </button>
+        <div className="pa-act">
+          <button
+            type="button"
+            className="btn danger"
+            onClick={deleteAccount}
+            disabled={deleteBusy}
+          >
+            {deleteBusy ? "탈퇴 처리 중…" : "회원 탈퇴"}
+          </button>
+        </div>
         <BannerBox banner={deleteMsg} />
       </div>
-    </div>
     </>
   );
 }

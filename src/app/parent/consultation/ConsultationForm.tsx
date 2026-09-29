@@ -43,12 +43,16 @@ export function ConsultationForm({ students }: { students: Child[] }) {
   }
 
   if (students.length === 0) {
-    return <p className="sub">연결된 자녀가 없습니다.</p>;
+    return (
+      <div className="pa-empty">
+        <p>연결된 자녀가 없습니다.</p>
+      </div>
+    );
   }
 
   return (
     <form onSubmit={submit}>
-      <h2 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "14px" }}>새 상담 신청</h2>
+      <h2 className="pa-aside-h">새 상담 신청</h2>
       <div className="field">
         <label>자녀</label>
         <div className="opts">
@@ -76,11 +80,13 @@ export function ConsultationForm({ students }: { students: Child[] }) {
           placeholder="상담에서 다루고 싶은 내용을 적어 주세요."
         />
       </div>
-      <button type="submit" className="btn pri" style={{ width: "100%" }} disabled={busy}>
-        {busy ? "신청 중…" : "상담 신청"}
-      </button>
+      <div className="form-actions">
+        <button type="submit" className="btn pri" disabled={busy}>
+          {busy ? "신청 중…" : "상담 신청"}
+        </button>
+      </div>
       {message && (
-        <div className={error ? "banner warn" : "banner info"} style={{ marginTop: "12px" }}>
+        <div className={error ? "banner warn pa-msg" : "banner info pa-msg"}>
           <svg
             viewBox="0 0 24 24"
             fill="none"

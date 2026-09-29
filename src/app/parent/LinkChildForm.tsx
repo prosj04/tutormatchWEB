@@ -74,30 +74,34 @@ export function LinkChildForm({ linked }: { linked: LinkedChild[] }) {
     }
   }
 
+  const bannerClass = message
+    ? error
+      ? "banner warn pa-msg"
+      : "banner ok pa-msg"
+    : "banner info pa-msg";
+
   return (
-    <div className="sec grid2">
-      <div className="card" style={{ padding: "20px" }}>
+    <div className="pa-cols">
+      <div className="pa-form">
         <form onSubmit={submit}>
-          <div className="field">
-            <label>연결 코드</label>
+          <div className="field pa-code">
+            <label htmlFor="pa-link-code">연결 코드</label>
             <input
+              id="pa-link-code"
               className="inp filled"
-              style={{ textAlign: "center", fontSize: "20px", fontWeight: 800, letterSpacing: ".3em", color: "var(--fg)" }}
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="A2C4E6"
               maxLength={6}
             />
           </div>
-          <button type="submit" className="btn pri" style={{ width: "100%" }} disabled={busy}>
-            {busy ? "연결 중…" : "코드로 연결"}
-          </button>
+          <div className="form-actions">
+            <button type="submit" className="btn pri" disabled={busy}>
+              {busy ? "연결 중…" : "코드로 연결"}
+            </button>
+          </div>
         </form>
-        <div
-          className={`banner ${message && !error ? "ok" : "warn"}`}
-          style={{ marginTop: "12px" }}
-          role={error ? "alert" : undefined}
-        >
+        <div className={bannerClass} role={error ? "alert" : undefined}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 8v4M12 16h.01" />
@@ -110,37 +114,38 @@ export function LinkChildForm({ linked }: { linked: LinkedChild[] }) {
         </div>
       </div>
 
-      <div className="card">
+      <aside className="pa-aside">
         {linked.length === 0 ? (
-          <div className="row">
-            <div className="g">
-              <b>연결된 자녀가 없습니다</b>
-              <p>자녀 앱의 연결 코드를 입력해 연결하세요.</p>
+          <div className="pa-rows">
+            <div>
+              <span className="t">연결된 자녀가 없습니다</span>
+              <span className="d">자녀 앱의 연결 코드를 입력해 연결하세요.</span>
             </div>
           </div>
         ) : (
-          linked.map((c) => (
-            <div key={c.id} className="row">
-              <span className="av">{c.name.slice(0, 1)}</span>
-              <div className="g">
-                <b>
+          <div className="pa-rows">
+            {linked.map((c) => (
+              <div key={c.id}>
+                <span className="t">
                   {c.name}
                   {c.grade ? ` · ${c.grade}` : ""}
-                </b>
-                <p>{linkedViaLabel(c.linkedVia)}</p>
+                  <i className="pa-via">{linkedViaLabel(c.linkedVia)}</i>
+                </span>
+                <span className="pa-row-act">
+                  <button
+                    type="button"
+                    className="btn ghost sm"
+                    onClick={() => unlink(c.id)}
+                    disabled={unlinking === c.id}
+                  >
+                    {unlinking === c.id ? "해제 중…" : "해제"}
+                  </button>
+                </span>
               </div>
-              <button
-                type="button"
-                className="btn ghost sm"
-                onClick={() => unlink(c.id)}
-                disabled={unlinking === c.id}
-              >
-                {unlinking === c.id ? "해제 중…" : "해제"}
-              </button>
-            </div>
-          ))
+            ))}
+          </div>
         )}
-      </div>
+      </aside>
     </div>
   );
 }

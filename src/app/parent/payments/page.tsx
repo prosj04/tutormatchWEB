@@ -35,172 +35,108 @@ export default async function ParentPaymentsPage() {
         new Date(a.completedAt ?? a.createdAt).getTime(),
     );
 
-  // 구독이 있는 자녀는 자녀별 카드로, 없는 자녀는 결제 유도 목록으로 분리(C2-8·B-3).
+  // 구독이 있는 자녀는 자녀별 플랜 지면으로, 없는 자녀는 결제 유도 목록으로 분리(C2-8·B-3).
   const subscribedChildren = children.filter((c) => c.subscription);
   const unsubscribedChildren = children.filter((c) => !c.subscription);
 
   return (
     <section className="page on" id="pg-pay" data-screen-label="학부모 결제">
-      <div className="crumb">/parent/payments</div>
-      <h1>결제</h1>
-      <p className="sub">자녀별 플랜·자동갱신·청구 이력. 결제는 학생·학부모 모두 가능합니다.</p>
+      <header className="pa-head">
+        <div className="crumb">학부모</div>
+        <h1>결제</h1>
+        <p className="sub">자녀별 플랜·자동갱신·청구 이력. 결제는 학생·학부모 모두 가능합니다.</p>
+      </header>
 
-      <div className="sec grid2">
-        {subscribedChildren.length === 0 ? (
-          <div
-            className="card"
-            style={{
-              padding: "20px",
-              background: "linear-gradient(150deg,var(--acc),var(--acc-press))",
-              color: "var(--on-acc)",
-              border: 0,
-            }}
-          >
-            <p
-              style={{
-                fontSize: "11px",
-                fontWeight: 700,
-                letterSpacing: ".08em",
-                textTransform: "uppercase",
-                opacity: 0.85,
-              }}
-            >
-              현재 플랜
-            </p>
-            <b style={{ fontSize: "22px", fontWeight: 800, display: "block", marginTop: "6px" }}>
-              진행 중인 플랜 없음
-            </b>
-            <p style={{ fontSize: "13px", opacity: 0.92, marginTop: "3px" }}>
-              상담 완료 후 플랜이 시작됩니다
-            </p>
-          </div>
-        ) : (
-          subscribedChildren.map((child) => {
-            const sub = child.subscription!;
-            const isPastDue = sub.status === "PAST_DUE";
-            const next = sub.nextPaymentDate;
-            const price = planPriceKrw(sub.plan);
-            return (
-              <div
-                key={child.id}
-                className="card"
-                style={{
-                  padding: "20px",
-                  background: isPastDue
-                    ? "var(--panel)"
-                    : "linear-gradient(150deg,var(--acc),var(--acc-press))",
-                  color: isPastDue ? "var(--fg)" : "var(--on-acc)",
-                  border: isPastDue ? "1px solid var(--warn, #b45309)" : 0,
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: ".08em",
-                    textTransform: "uppercase",
-                    opacity: isPastDue ? 1 : 0.85,
-                    color: isPastDue ? "var(--warn, #b45309)" : undefined,
-                  }}
-                >
-                  {isPastDue ? `${child.name} · 결제 확인 필요` : `${child.name} · 현재 플랜`}
-                </p>
-                <b style={{ fontSize: "22px", fontWeight: 800, display: "block", marginTop: "6px" }}>
-                  {formatSubscriptionPlanLabel(sub.plan)}
-                </b>
-                <p
-                  style={{
-                    fontSize: "13px",
-                    opacity: isPastDue ? 1 : 0.92,
-                    marginTop: "3px",
-                    color: isPastDue ? "var(--mut)" : undefined,
-                  }}
-                >
-                  {isPastDue
-                    ? "카드 승인에 실패했습니다. 카드를 확인하고 재결제해 주세요."
-                    : child.subjects || "상담 완료 후 플랜이 시작됩니다"}
-                </p>
-                <div
-                  style={{
-                    marginTop: "14px",
-                    paddingTop: "12px",
-                    borderTop: isPastDue
-                      ? "1px solid var(--line)"
-                      : "1px solid rgba(255,255,255,.25)",
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "13px",
-                  }}
-                >
-                  {isPastDue ? (
-                    <Link
-                      className="btn pri sm"
-                      href={`/checkout?studentId=${encodeURIComponent(child.id)}`}
-                    >
-                      카드 확인·재결제
-                    </Link>
-                  ) : (
-                    <>
-                      <span style={{ opacity: 0.85 }}>다음 결제</span>
-                      <b style={{ marginLeft: "auto" }}>
-                        {next
-                          ? price
-                            ? `${formatDate(next)} · ${formatAmount(price)}`
-                            : formatDate(next)
-                          : "-"}
-                      </b>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
-
-        <div
-          className="card"
-          style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ flex: 1 }}>
-              <b style={{ fontSize: "14px", fontWeight: 700 }}>자동 갱신</b>
-              <p style={{ fontSize: "12.5px", color: "var(--mut)" }}>
-                {subscribedChildren.length > 0 ? "매월 정기 결제" : "플랜 결제 후 이용 가능"}
-              </p>
-            </div>
-            <button
-              className={subscribedChildren.length > 0 ? "switch on" : "switch"}
-              aria-label="자동 갱신"
-              disabled
-            >
-              <i></i>
-            </button>
-          </div>
-          {unsubscribedChildren.map((c) => (
-            <div key={c.id} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ flex: 1 }}>
-                <b style={{ fontSize: "14px", fontWeight: 700 }}>{c.name} 플랜</b>
-                <p style={{ fontSize: "12.5px", color: "var(--mut)" }}>배정 완료 후 결제 가능</p>
-              </div>
-              <Link className="btn pri sm" href={`/checkout?studentId=${encodeURIComponent(c.id)}`}>
-                플랜 보기
-              </Link>
-            </div>
-          ))}
+      {subscribedChildren.length === 0 ? (
+        <div className="pa-plan">
+          <span className="pa-label">현재 플랜</span>
+          <b className="pa-plan-name">진행 중인 플랜 없음</b>
+          <p className="pa-plan-note">상담 완료 후 플랜이 시작됩니다</p>
         </div>
+      ) : (
+        subscribedChildren.map((child) => {
+          const sub = child.subscription!;
+          const isPastDue = sub.status === "PAST_DUE";
+          const next = sub.nextPaymentDate;
+          const price = planPriceKrw(sub.plan);
+          return (
+            <div
+              key={child.id}
+              className={isPastDue ? "pa-plan pa-attention" : "pa-plan"}
+            >
+              <span className="pa-label">
+                {isPastDue ? `${child.name} · 결제 확인 필요` : `${child.name} · 현재 플랜`}
+              </span>
+              <b className="pa-plan-name">{formatSubscriptionPlanLabel(sub.plan)}</b>
+              <p className="pa-plan-note">
+                {isPastDue
+                  ? "카드 승인에 실패했습니다. 카드를 확인하고 재결제해 주세요."
+                  : child.subjects || "상담 완료 후 플랜이 시작됩니다"}
+              </p>
+              <div className="pa-plan-foot">
+                {isPastDue ? (
+                  <Link
+                    className="btn pri sm"
+                    href={`/checkout?studentId=${encodeURIComponent(child.id)}`}
+                  >
+                    카드 확인·재결제
+                  </Link>
+                ) : (
+                  <>
+                    <span>다음 결제</span>
+                    <b>
+                      {next
+                        ? price
+                          ? `${formatDate(next)} · ${formatAmount(price)}`
+                          : formatDate(next)
+                        : "-"}
+                    </b>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })
+      )}
+
+      <div className="sec pa-ruled">
+        <div className="pa-renew">
+          <div className="g">
+            <b>자동 갱신</b>
+            <p>{subscribedChildren.length > 0 ? "매월 정기 결제" : "플랜 결제 후 이용 가능"}</p>
+          </div>
+          <button
+            className={subscribedChildren.length > 0 ? "switch on" : "switch"}
+            aria-label="자동 갱신"
+            disabled
+          >
+            <i></i>
+          </button>
+        </div>
+        {unsubscribedChildren.map((c) => (
+          <div key={c.id} className="pa-renew">
+            <div className="g">
+              <b>{c.name} 플랜</b>
+              <p>배정 완료 후 결제 가능</p>
+            </div>
+            <Link className="btn pri sm" href={`/checkout?studentId=${encodeURIComponent(c.id)}`}>
+              플랜 보기
+            </Link>
+          </div>
+        ))}
       </div>
 
-      <div className="sec">
+      <div className="sec pa-ruled">
         <h2>청구 이력</h2>
-        <div className="card">
-          {rows.length === 0 ? (
-            <div className="row">
-              <div className="g">
-                <b>청구 이력이 없습니다</b>
-                <p>결제가 완료되면 여기에 영수증과 함께 표시됩니다.</p>
-              </div>
+        {rows.length === 0 ? (
+          <div className="pa-rows">
+            <div>
+              <span className="t">청구 이력이 없습니다</span>
+              <span className="d">결제가 완료되면 여기에 영수증과 함께 표시됩니다.</span>
             </div>
-          ) : (
+          </div>
+        ) : (
+          <div className="pa-tbl">
             <table className="tbl">
               <thead>
                 <tr>
@@ -219,7 +155,11 @@ export default async function ParentPaymentsPage() {
                       {p.studentName} · {formatSubscriptionPlanLabel(p.plan)}
                     </td>
                     <td className="num">{formatAmount(p.amount)}</td>
-                    <td>{statusLabel(p.status)}</td>
+                    <td>
+                      <span className={p.status === "REFUNDED" ? "bst mut" : "bst"}>
+                        {statusLabel(p.status)}
+                      </span>
+                    </td>
                     <td>
                       {p.cashReceiptUrl ? (
                         <a
@@ -231,15 +171,15 @@ export default async function ParentPaymentsPage() {
                           PDF
                         </a>
                       ) : (
-                        <span style={{ color: "var(--mut-2)", fontSize: "12.5px" }}>-</span>
+                        <span className="pa-dash">-</span>
                       )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

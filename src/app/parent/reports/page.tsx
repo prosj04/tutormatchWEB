@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { listChildReports, listParentChildren } from "@/lib/parent-data";
 import { requireParentPage } from "@/lib/parent-page-auth";
 
@@ -20,13 +22,18 @@ export default async function ParentReportsPage() {
 
   return (
     <section className="page on" id="pg-reports" data-screen-label="학부모 리포트">
-      <div className="crumb">/parent/reports</div>
-      <h1>리포트</h1>
-      <p className="sub">자녀별 월간 학습 리포트 — 선생님·매니저가 요약한 결과입니다.</p>
+      <header className="pa-head">
+        <div className="crumb">학부모</div>
+        <h1>리포트</h1>
+        <p className="sub">자녀별 월간 학습 리포트 — 선생님·매니저가 요약한 결과입니다.</p>
+      </header>
 
       {withReports.length === 0 ? (
-        <div className="sec">
-          <p className="sub">연결된 자녀가 없습니다. 자녀 연결에서 코드를 입력해 주세요.</p>
+        <div className="pa-empty">
+          <p>연결된 자녀가 없습니다. 자녀 연결에서 코드를 입력해 주세요.</p>
+          <Link className="btn pri" href="/parent/link">
+            자녀 연결
+          </Link>
         </div>
       ) : (
         <ReportsView items={withReports} />
