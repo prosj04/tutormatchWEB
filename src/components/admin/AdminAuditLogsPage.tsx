@@ -76,8 +76,8 @@ export function AdminAuditLogsPage() {
     : rows;
 
   return (
-    <section className="page on" data-screen-label="감사 로그">
-      <div className="crumb">/admin/audit-logs</div>
+    <section className="page on ad-page" data-screen-label="감사 로그">
+      <div className="crumb">감사 로그</div>
       <h1>감사 로그</h1>
       <p className="sub">BR-15: 개인정보 접근·변경 기록 (1년 보관) · 총 {total.toLocaleString()}건</p>
 
@@ -97,8 +97,8 @@ export function AdminAuditLogsPage() {
         </div>
         {actionOptions.length > 0 && (
           <select
-            className="inp filled"
-            style={{ width: "auto" }}
+            className="inp filled ad-sel"
+            aria-label="액션 유형"
             value={actionFilter}
             onChange={(e) => setActionFilter(e.target.value)}
           >
@@ -110,7 +110,7 @@ export function AdminAuditLogsPage() {
         )}
       </div>
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card">
         <table className="tbl">
           <thead>
             <tr>
@@ -135,7 +135,7 @@ export function AdminAuditLogsPage() {
                     <b>{row.actorName ?? `${row.actorUserId.slice(0, 8)}…`}</b>
                     <span className="mini">{row.actorRole}</span>
                   </td>
-                  <td><span className="bst acc">{row.action}</span></td>
+                  <td><span className="bst mut">{row.action}</span></td>
                   <td>{row.targetType}</td>
                   <td title={row.targetId}>
                     {row.targetName ?? `${row.targetId.slice(0, 8)}…`}
@@ -149,9 +149,9 @@ export function AdminAuditLogsPage() {
       </div>
 
       {totalPages > 1 && (
-        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+        <div className="sec ad-pager">
           <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
-          <span className="sub" style={{ margin: 0 }}>{page} / {totalPages}</span>
+          <span className="ad-pager-n">{page} / {totalPages}</span>
           <button type="button" className="btn ghost sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}

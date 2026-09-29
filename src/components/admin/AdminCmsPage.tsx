@@ -93,10 +93,6 @@ type ImageFieldConfig = {
   defaultValue: string;
 };
 
-const inputClass =
-  "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-primary";
-const textareaClass = `${inputClass} resize-y`;
-
 const heroFields: TextFieldConfig[] = [
   {
     label: "메인 헤드라인",
@@ -1081,94 +1077,78 @@ export function AdminCmsPage() {
 
   return (
     <CmsSearchContext.Provider value={search}>
-    <section className="page on" data-screen-label="CMS">
-      <div className="crumb">/admin/cms</div>
+    <section className="page on ad-page" data-screen-label="CMS">
+      <div className="crumb">CMS</div>
       <h1>CMS</h1>
       <p className="sub">사이트 문구·후기·FAQ·요금 카드를 섹션별로 편집합니다.</p>
 
-      <div className="flex min-h-0 flex-col">
-      <div className="shrink-0">
-
-        <div className="mt-6 flex items-end justify-between gap-2 border-b border-gray-200 pb-1">
-          <div className="flex flex-wrap gap-2">
+      <div className="ad-cms">
+        <div className="ad-cms-side">
+          <nav className="ad-cms-nav" aria-label="편집할 페이지">
             {CMS_PAGES.map((page) => (
               <button
                 key={page.id}
                 type="button"
                 onClick={() => setActivePage(page.id)}
-                className={`border-b-2 px-4 py-2.5 text-sm font-bold transition ${
-                  activePage === page.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-text-muted hover:text-text-secondary"
-                }`}
+                aria-current={activePage === page.id ? "true" : undefined}
               >
                 {page.label}
               </button>
             ))}
+          </nav>
+
+          {/* G-12adm: 문구 검색 — 섹션·키·라벨·현재값 부분 일치 필드만 표시 */}
+          <div className="ad-cms-tools">
+            <span className="ad-cms-tools-h">문구 검색</span>
+            <div className="ad-cms-search">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="섹션·키·라벨·현재값"
+                aria-label="문구 검색 (섹션·키·라벨·현재값)"
+                className="inp"
+              />
+              {search ? (
+                <button type="button" onClick={() => setSearch("")} className="btn btn-ghost btn-sm">
+                  지우기
+                </button>
+              ) : null}
+            </div>
           </div>
-          <div className="mb-1 flex shrink-0 gap-2">
-            <button
-              type="button"
-              onClick={() => void upsertMarketingCopy()}
-              className="rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white"
-            >
+
+          <div className="ad-cms-tools">
+            <span className="ad-cms-tools-h">일괄 작업</span>
+            <button type="button" onClick={() => void upsertMarketingCopy()} className="btn pri sm ad-block">
               마케팅 문구 업데이트
             </button>
-            <button
-              type="button"
-              onClick={() => void initDefaults()}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text-secondary"
-            >
+            <button type="button" onClick={() => void initDefaults()} className="btn btn-ghost btn-sm ad-block">
               기본값으로 초기화
             </button>
           </div>
-        </div>
 
-        {hasNoContent ? (
-          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5">
-            <p className="font-bold text-amber-950">기본 콘텐츠가 없습니다.</p>
-            <p className="mt-1 text-sm text-amber-900">기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</p>
-          </div>
-        ) : null}
-
-        {/* G-12adm: 문구 검색 — 섹션·키·라벨·현재값 부분 일치 필드만 표시 */}
-        <div className="mt-3 flex items-center gap-2">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="문구 검색 (섹션·키·라벨·현재값)"
-            className={inputClass}
-          />
-          {search ? (
-            <button
-              type="button"
-              onClick={() => setSearch("")}
-              className="shrink-0 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-text-secondary"
-            >
-              지우기
-            </button>
+          {hasNoContent ? (
+            <div className="banner warn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+              <span>기본 콘텐츠가 없습니다. 기본값으로 초기화하면 현재 홈페이지 문구와 사진으로 시작합니다.</span>
+            </div>
           ) : null}
         </div>
-      </div>
 
       {/* 좌: 미리보기 / 우: 편집 패널 (가운데 핸들로 폭 조절, 기본 미리보기 30%) */}
       <div
         ref={splitRef}
-        className={`mt-4 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:[grid-template-columns:var(--cms-cols)] ${dragging ? "select-none" : ""}`}
+        className={`ad-cms-split${dragging ? " is-drag" : ""}`}
         style={{
-          height: "calc(100vh - 230px)",
-          minHeight: "560px",
           ["--cms-cols" as string]: `${previewPct}% 6px 1fr`,
         }}
       >
-        <div className="min-h-[320px] border-b border-gray-200 bg-neutral-10 lg:min-h-0 lg:border-b-0">
+        <div className="ad-cms-preview">
           <iframe
             ref={iframeRef}
             key={activePage}
             title={`${CMS_PAGES.find((page) => page.id === activePage)?.label ?? "페이지"} 미리보기`}
             src={iframeSrc}
-            className={`h-full w-full border-0 bg-white ${dragging ? "pointer-events-none" : ""}`}
           />
         </div>
 
@@ -1179,21 +1159,17 @@ export function AdminCmsPage() {
             e.preventDefault();
             setDragging(true);
           }}
-          className="hidden cursor-col-resize items-center justify-center border-x border-gray-200 bg-gray-100 hover:bg-gray-200 lg:flex"
+          className="ad-cms-handle"
         >
-          <span className="h-8 w-0.5 rounded bg-gray-300" />
+          <span />
         </div>
 
-        <div className="min-h-0 overflow-y-auto bg-background p-4">
+        <div className="ad-cms-panel">
           {loading ? (
-            <p className="text-sm text-text-secondary">불러오는 중...</p>
+            <p className="ad-cms-loading">불러오는 중...</p>
           ) : selectedField ? (
-            <div className="space-y-4">
-              <button
-                type="button"
-                onClick={() => setSelectedField(null)}
-                className="text-sm font-bold text-primary hover:underline"
-              >
+            <div className="ad-cms-sel">
+              <button type="button" onClick={() => setSelectedField(null)} className="ad-cms-back">
                 ← 전체 보기
               </button>
               <SelectedFieldEditor
@@ -1203,12 +1179,12 @@ export function AdminCmsPage() {
               />
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="ad-cms-groups">
           {activePage === "home" ? (
             <>
           <EditorSection eyebrow="HERO" title="첫 화면">
-            <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="grid gap-4">
+            <div className="ad-grid two">
+              <div>
                 {heroFields.map((field) => (
                   <AdminTextField
                     key={`${field.section}-${field.keyName}`}
@@ -1219,7 +1195,7 @@ export function AdminCmsPage() {
                   />
                 ))}
               </div>
-              <div className="grid gap-4">
+              <div>
                 <ImageField
                   field={{ label: "히어로 우측 사진 (단일)", section: "hero", keyName: "model_image", defaultValue: "/images/placeholders/hero-thumbnail.png" }}
                   value={getValue("hero", "model_image", "/images/placeholders/hero-thumbnail.png")}
@@ -1235,10 +1211,10 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="SPACING" title="섹션 여백">
-            <p className="mb-5 text-sm text-text-secondary">
+            <p className="ad-note">
               각 섹션의 상·하·좌우 여백(px)입니다. 값을 비우면 기존 Tailwind 여백이 적용됩니다.
             </p>
-            <div className="space-y-4">
+            <div className="ad-grid">
               {CMS_ALL_SPACING_SECTIONS.map((item) => (
                 <CmsSpacingSectionRow
                   key={item.key}
@@ -1252,7 +1228,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="RESULTS" title="결과 카드">
-            <div className="grid gap-4">
+            <div className="ad-grid">
               <ContentField
                 field={{
                   label: "섹션 제목",
@@ -1315,7 +1291,7 @@ export function AdminCmsPage() {
                         value={getValue("results", `result${number}_image`, result.image)}
                         onSave={saveContent}
                       />
-                      <div className="space-y-3">
+                      <div className="ad-grid">
                         {fields.map((field) => (
                           <ContentField
                             key={field.keyName}
@@ -1333,10 +1309,10 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="TEACHERS" title="검증 선생님 카드">
-            <p className="mb-4 text-sm text-text-secondary">
+            <p className="ad-note">
               홈·강사진 페이지에 공통으로 노출되는 큐레이션 카드입니다. 총 {FEATURED_TUTOR_CARD_COUNT}장 중 체크된 카드만 노출되며, 홈에는 앞에서부터 3장이 표시됩니다.
             </p>
-            <div className="grid gap-4">
+            <div className="ad-grid">
               {buildFieldsFromDefaults(homeBenchmarkSectionsDefaults, "tutors_featured").map((field) => (
                 <ContentField
                   key={`${field.section}-${field.keyName}`}
@@ -1359,7 +1335,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="LEARNING CARE" title="학습 관리">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               {managementHeaderFields.map((field) => (
                 <AdminTextField
                   key={`${field.section}-${field.keyName}`}
@@ -1370,7 +1346,7 @@ export function AdminCmsPage() {
                 />
               ))}
             </div>
-            <div className="mt-6">
+            <div className="ad-stack">
               <CmsCardBoxGrid>
                 {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
                   <CmsCardBox
@@ -1397,7 +1373,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="PROCESS" title="진행 방식">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               <ContentField
                 field={{
                   label: "섹션 제목",
@@ -1421,7 +1397,7 @@ export function AdminCmsPage() {
                 onSave={saveContent}
               />
             </div>
-            <div className="mt-6">
+            <div className="ad-stack">
               <CmsCardBoxGrid>
                 {stepDefaults.map((step, index) => (
                   <StepEditor key={index} index={index} defaults={step} getValue={getValue} onSave={saveContent} />
@@ -1431,7 +1407,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="CTA" title="혜택 안내">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               {ctaFields.map((field) => (
                 <AdminTextField
                   key={`${field.section}-${field.keyName}`}
@@ -1442,8 +1418,8 @@ export function AdminCmsPage() {
                 />
               ))}
             </div>
-            <div className="mt-6">
-              <p className="mb-4 text-sm text-text-secondary">
+            <div className="ad-stack">
+              <p className="ad-note">
                 네온 카드 형태 혜택 박스입니다. 필요하면 박스 5~6을 켠 뒤 제목부터 채우면 홈에 반영됩니다.
               </p>
               <CmsCardBoxGrid>
@@ -1472,11 +1448,11 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="VISIBILITY" title="홈 FAQ · 후기 섹션">
-            <p className="mb-4 text-sm text-text-secondary">
+            <p className="ad-note">
               홈에 FAQ·후기 영역만 켜거나 끕니다. 항목
               추가·수정·홈 노출은 FAQ·학습 후기 탭에서만 할 수 있습니다.
             </p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:max-w-2xl">
+            <div className="ad-vis-grid">
               <CmsVisibilityToggle
                 label="홈 화면에 FAQ 섹션 표시"
                 section="home_page"
@@ -1494,18 +1470,18 @@ export function AdminCmsPage() {
                 onToggleVisible={saveContent}
               />
             </div>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="ad-row-gap">
               <button
                 type="button"
                 onClick={() => setActivePage("faq")}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-text-primary transition hover:border-primary hover:text-primary"
+                className="btn btn-ghost btn-sm"
               >
                 FAQ 탭에서 관리 ({faqs.filter((item) => item.isActive && item.showOnHome).length}개 홈 노출)
               </button>
               <button
                 type="button"
                 onClick={() => setActivePage("reviews")}
-                className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-text-primary transition hover:border-primary hover:text-primary"
+                className="btn btn-ghost btn-sm"
               >
                 학습 후기 탭에서 관리 (
                 {testimonials.filter((item) => item.isActive && item.showOnHome).length}개 홈 노출)
@@ -1514,7 +1490,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="HOME PRICING" title="홈 요금제 섹션">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               {homePricingFields.map((field) => (
                 <ContentField
                   key={`${field.section}-${field.keyName}`}
@@ -1527,7 +1503,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="FOOTER" title="푸터">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               {footerFields.map((field) => (
                 <AdminTextField
                   key={`${field.section}-${field.keyName}`}
@@ -1541,7 +1517,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="NAVIGATION LABELS" title="스티키 탭·섹션 라벨">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               {homeLabelsFields.map((field) => (
                 <ContentField
                   key={`${field.section}-${field.keyName}`}
@@ -1554,7 +1530,7 @@ export function AdminCmsPage() {
           </EditorSection>
 
           <EditorSection eyebrow="COMPARISON TABLE" title="서비스 비교 테이블">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="ad-grid two">
               <ContentField
                 field={compareKickerField}
                 value={getValue(compareKickerField.section, compareKickerField.keyName, compareKickerField.defaultValue)}
@@ -1566,7 +1542,7 @@ export function AdminCmsPage() {
                 onSave={saveContent}
               />
             </div>
-            <div className="mt-6">
+            <div className="ad-stack">
               <CmsCardBoxGrid>
                 {Array.from({ length: COMPARE_ROW_COUNT }, (_, idx) => idx + 1).map((slot) => (
                   <CmsCardBox
@@ -1597,11 +1573,11 @@ export function AdminCmsPage() {
 
           {activePage === "pricing" ? (
             <EditorSection eyebrow="PRICING" title="요금제 페이지">
-              <p className="mb-5 text-sm text-text-secondary">
+              <p className="ad-note">
                 카드는 「박스 1~{CMS_MANAGED_CARD_SLOT_COUNT}」로 관리합니다. 「고등」은 pricing_box_ 키, 「중등」은 pricing_middle_box_ 키를 사용합니다.
                 중등 값이 비어 있으면 고등 값을 기본으로 씁니다. 금액은 v2 플랜에서 자동 산출되며 CMS에서 수정할 수 없습니다.
               </p>
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="ad-grid two">
                 {pricingHeaderFields.map((field) => (
                   <AdminTextField
                     key={`${field.section}-${field.keyName}`}
@@ -1612,8 +1588,8 @@ export function AdminCmsPage() {
                   />
                 ))}
               </div>
-              <div className="mt-6">
-                <p className="mb-4 text-xs font-black text-primary">고등 카드 세트</p>
+              <div className="ad-stack">
+                <p className="ad-note-k">고등 카드 세트</p>
                 <CmsCardBoxGrid>
                   {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
                     <CmsCardBox
@@ -1637,8 +1613,8 @@ export function AdminCmsPage() {
                   ))}
                 </CmsCardBoxGrid>
               </div>
-              <div className="mt-10">
-                <p className="mb-4 text-xs font-black text-primary">중등 카드 세트 (고등 기본값의 기준)</p>
+              <div className="ad-stack-lg">
+                <p className="ad-note-k">중등 카드 세트 (고등 기본값의 기준)</p>
                 <CmsCardBoxGrid>
                   {Array.from({ length: CMS_MANAGED_CARD_SLOT_COUNT }, (_, idx) => idx + 1).map((slot) => (
                     <CmsCardBox
@@ -1662,7 +1638,7 @@ export function AdminCmsPage() {
                   ))}
                 </CmsCardBoxGrid>
               </div>
-              <div className="mt-8 grid gap-4 lg:grid-cols-2">
+              <div className="ad-grid two ad-stack-lg">
                 {pricingFaqFields.map((field) => (
                   <ContentField
                     key={`${field.section}-${field.keyName}`}
@@ -1677,7 +1653,7 @@ export function AdminCmsPage() {
 
           {activePage === "tutors" ? (
             <EditorSection eyebrow="TUTORS" title="강사진 페이지">
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="ad-grid two">
                 {tutorsPageFields.map((field) => (
                   <ContentField
                     key={`${field.section}-${field.keyName}`}
@@ -1687,11 +1663,11 @@ export function AdminCmsPage() {
                   />
                 ))}
               </div>
-              <p className="mt-6 text-sm text-text-secondary">
+              <p className="ad-note ad-stack">
                 공개 강사진에는 선생님이 올린 프로필 사진을 우선 표시합니다. 사진이 없으면 아래 성별 기본 이미지를
                 씁니다. 빈 카드 문구·승인·공개 프로필 필드는 아래 목록에서 바로 수정할 수 있습니다.
               </p>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="ad-grid two-sm">
                 <ImageField
                   field={{
                     label: "공개용 기본 사진 (남)",
@@ -1720,10 +1696,10 @@ export function AdminCmsPage() {
           {activePage === "faq" ? (
             <>
               <EditorSection eyebrow="FAQ" title="FAQ 페이지">
-                <p className="mb-4 text-sm text-text-secondary">
+                <p className="ad-note">
                   질문·답변을 추가하고, FAQ 페이지·홈 화면 노출 여부를 각 항목에서 설정합니다.
                 </p>
-                <div className="mb-6 max-w-md">
+                <div className="ad-vis-grid ad-gap-b">
                   <CmsVisibilityToggle
                     label="FAQ 개별 페이지(/faq) 표시"
                     section="faq_page"
@@ -1732,7 +1708,7 @@ export function AdminCmsPage() {
                     onToggleVisible={saveContent}
                   />
                 </div>
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {buildExtraFields("faq_page").map((field) => (
                     <ContentField
                       key={`${field.section}-${field.keyName}`}
@@ -1750,7 +1726,7 @@ export function AdminCmsPage() {
                   <button
                     type="button"
                     onClick={() => void addFaq()}
-                    className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
+                    className="btn pri sm"
                   >
                     FAQ 추가
                   </button>
@@ -1758,7 +1734,7 @@ export function AdminCmsPage() {
               >
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleFaqDragEnd}>
                   <SortableContext items={faqs.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-                    <div className="space-y-4">
+                    <div>
                       {faqs.map((item) => (
                         <SortableFaq
                           key={item.id}
@@ -1777,10 +1753,10 @@ export function AdminCmsPage() {
           {activePage === "reviews" ? (
             <>
               <EditorSection eyebrow="REVIEWS" title="학습 후기 페이지">
-                <p className="mb-4 text-sm text-text-secondary">
+                <p className="ad-note">
                   후기를 추가하고, 후기 페이지·홈 화면 노출 여부를 각 항목에서 설정합니다.
                 </p>
-                <div className="mb-6 max-w-md">
+                <div className="ad-vis-grid ad-gap-b">
                   <CmsVisibilityToggle
                     label="학습 후기 개별 페이지(/reviews) 표시"
                     section="reviews_page"
@@ -1789,7 +1765,7 @@ export function AdminCmsPage() {
                     onToggleVisible={saveContent}
                   />
                 </div>
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {[
                     ...buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_page"),
                     ...buildExtraFields("reviews_page"),
@@ -1804,10 +1780,10 @@ export function AdminCmsPage() {
                 </div>
               </EditorSection>
               <EditorSection eyebrow="REVIEWS · SUCCESS" title="성적 변화 사례 카드">
-                <p className="mb-4 text-sm text-text-secondary">
+                <p className="ad-note">
                   후기 페이지 상단 성적 변화 캐러셀입니다. 카드별 노출은 &quot;노출&quot; 값을 0으로 두면 숨겨집니다.
                 </p>
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_success").map((field) => (
                     <ContentField
                       key={`${field.section}-${field.keyName}`}
@@ -1819,7 +1795,7 @@ export function AdminCmsPage() {
                 </div>
               </EditorSection>
               <EditorSection eyebrow="REVIEWS · PROOF" title="실물 인증 카드">
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {buildFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_proof").map((field) => (
                     <ContentField
                       key={`${field.section}-${field.keyName}`}
@@ -1829,7 +1805,7 @@ export function AdminCmsPage() {
                     />
                   ))}
                 </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="ad-grid two-sm">
                   {buildImageFieldsFromDefaults(reviewsBenchmarkDefaults, "reviews_proof").map((field) => (
                     <ImageField
                       key={`${field.section}-${field.keyName}`}
@@ -1847,7 +1823,7 @@ export function AdminCmsPage() {
                   <button
                     type="button"
                     onClick={() => void addTestimonial()}
-                    className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white"
+                    className="btn pri sm"
                   >
                     후기 추가
                   </button>
@@ -1855,7 +1831,7 @@ export function AdminCmsPage() {
               >
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTestimonialDragEnd}>
                   <SortableContext items={testimonials.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-                    <div className="space-y-4">
+                    <div>
                       {testimonials.map((item) => (
                         <SortableTestimonial
                           key={item.id}
@@ -1873,7 +1849,7 @@ export function AdminCmsPage() {
 
           {activePage === "login" ? (
             <EditorSection eyebrow="LOGIN" title="로그인 페이지">
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="ad-grid two">
                 {buildExtraFields("login_page").map((field) => (
                   <ContentField
                     key={`${field.section}-${field.keyName}`}
@@ -1889,7 +1865,7 @@ export function AdminCmsPage() {
           {activePage === "commerce" ? (
             <>
               <EditorSection eyebrow="CHECKOUT" title="결제 페이지">
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {buildExtraFields("checkout_page").map((field) => (
                     <ContentField
                       key={`${field.section}-${field.keyName}`}
@@ -1901,7 +1877,7 @@ export function AdminCmsPage() {
                 </div>
               </EditorSection>
               <EditorSection eyebrow="SUCCESS" title="결제 완료 페이지">
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="ad-grid two">
                   {buildExtraFields("success_page").map((field) => (
                     <ContentField
                       key={`${field.section}-${field.keyName}`}
@@ -1918,14 +1894,14 @@ export function AdminCmsPage() {
           {activePage === "portal_student" ? (
             <>
               <EditorSection eyebrow="STUDENT" title="대시보드 · 학습 플래너 · 질문">
-                <p className="mb-6 text-sm text-text-secondary">
+                <p className="ad-note">
                   학생 계정의「학습 플래너」화면(/dashboard)과 동일한 문구를 편집합니다. 미리보기는 대시보드 탭을
                   누릅니다.
                 </p>
                 {PORTAL_STUDENT_SUBSECTIONS.map(({ section, title }) => (
-                  <div key={section} className="mb-8 last:mb-0">
-                    <h4 className="mb-3 text-sm font-black text-text-primary">{title}</h4>
-                    <div className="grid gap-4 lg:grid-cols-2">
+                  <div key={section}>
+                    <h4 className="ad-sub-h">{title}</h4>
+                    <div className="ad-grid two">
                       {buildPortalFields(section).map((field) => (
                         <ContentField
                           key={`${field.section}-${field.keyName}`}
@@ -1939,15 +1915,15 @@ export function AdminCmsPage() {
                 ))}
               </EditorSection>
               <EditorSection eyebrow="CONSULTATION" title="상담 예약 · 방문 시간">
-                <p className="mb-6 text-sm text-text-secondary">
+                <p className="ad-note">
                   매칭 전 학생 상담 화면(/dashboard/consultation)과 방문 시간 선택 UI 문구입니다.
                 </p>
                 {(["student_consultation", "visit_picker"] as const).map((section) => (
-                  <div key={section} className="mb-8 last:mb-0">
-                    <h4 className="mb-3 text-sm font-black text-text-primary">
+                  <div key={section}>
+                    <h4 className="ad-sub-h">
                       {section === "student_consultation" ? "상담 페이지" : "방문 시간 피커"}
                     </h4>
-                    <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="ad-grid two">
                       {buildPortalFields(section).map((field) => (
                         <ContentField
                           key={`${field.section}-${field.keyName}`}
@@ -1965,10 +1941,10 @@ export function AdminCmsPage() {
 
           {activePage === "portal_teacher" ? (
             <EditorSection eyebrow="TEACHER" title="선생님 · 매니저 포털">
-              <p className="mb-6 text-sm text-text-secondary">
+              <p className="ad-note">
                 강사·매니저 로그인 후 상단 바·탭 메뉴 문구(/teacher-portal/...)와 맞춥니다.
               </p>
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="ad-grid two">
                 {buildPortalFields("teacher_portal").map((field) => (
                   <ContentField
                     key={`${field.section}-${field.keyName}`}
@@ -2006,17 +1982,15 @@ function SelectedFieldEditor({
     const spacingLabel =
       CMS_ALL_SPACING_SECTIONS.find((item) => item.key === spacingSectionKey)?.label ?? spacingSectionKey;
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-        <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">SPACING</p>
-        <h3 className="text-lg font-black text-text-primary">{spacingLabel} 여백</h3>
-        <div className="mt-4">
-          <CmsSpacingSectionRow
-            sectionKey={spacingSectionKey}
-            label={spacingLabel}
-            getValue={getValue}
-            onSave={onSave}
-          />
-        </div>
+      <div>
+        <p className="ad-sub-h">SPACING</p>
+        <h3 className="h3">{spacingLabel} 여백</h3>
+        <CmsSpacingSectionRow
+          sectionKey={spacingSectionKey}
+          label={spacingLabel}
+          getValue={getValue}
+          onSave={onSave}
+        />
       </div>
     );
   }
@@ -2026,21 +2000,19 @@ function SelectedFieldEditor({
     const styleTarget = getCmsTextStyleTarget(section, baseKey);
     if (styleTarget) {
       return (
-        <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-          <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">FONT</p>
-          <h3 className="text-lg font-black text-text-primary">
+        <div>
+          <p className="ad-sub-h">FONT</p>
+          <h3 className="h3">
             {section}.{baseKey} 폰트 설정
           </h3>
-          <div className="mt-4">
-            <CmsTextStyleControls
-              section={section}
-              keyName={baseKey}
-              defaultSize={styleTarget.defaultSize}
-              defaultBold={styleTarget.defaultBold}
-              getValue={getValue}
-              onSave={onSave}
-            />
-          </div>
+          <CmsTextStyleControls
+            section={section}
+            keyName={baseKey}
+            defaultSize={styleTarget.defaultSize}
+            defaultBold={styleTarget.defaultBold}
+            getValue={getValue}
+            onSave={onSave}
+          />
         </div>
       );
     }
@@ -2055,16 +2027,14 @@ function SelectedFieldEditor({
       defaultValue: known?.defaultValue ?? "",
     };
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-        <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">IMAGE</p>
-        <h3 className="text-lg font-black text-text-primary">{imageField.label}</h3>
-        <div className="mt-4">
-          <ImageField
-            field={imageField}
-            value={getValue(section, key, imageField.defaultValue)}
-            onSave={onSave}
-          />
-        </div>
+      <div>
+        <p className="ad-sub-h">IMAGE</p>
+        <h3 className="h3">{imageField.label}</h3>
+        <ImageField
+          field={imageField}
+          value={getValue(section, key, imageField.defaultValue)}
+          onSave={onSave}
+        />
       </div>
     );
   }
@@ -2082,25 +2052,23 @@ function SelectedFieldEditor({
   const styleTarget = getCmsTextStyleTarget(section, key);
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-      <p className="mb-1 text-xs font-black uppercase tracking-wider text-primary">TEXT</p>
-      <h3 className="text-lg font-black text-text-primary">{textField.label}</h3>
-      <div className="mt-4">
-        {styleTarget ? (
-          <AdminTextField
-            field={textField}
-            value={getValue(section, key, textField.defaultValue)}
-            getValue={getValue}
-            onSave={onSave}
-          />
-        ) : (
-          <ContentField
-            field={textField}
-            value={getValue(section, key, textField.defaultValue)}
-            onSave={onSave}
-          />
-        )}
-      </div>
+    <div>
+      <p className="ad-sub-h">TEXT</p>
+      <h3 className="h3">{textField.label}</h3>
+      {styleTarget ? (
+        <AdminTextField
+          field={textField}
+          value={getValue(section, key, textField.defaultValue)}
+          getValue={getValue}
+          onSave={onSave}
+        />
+      ) : (
+        <ContentField
+          field={textField}
+          value={getValue(section, key, textField.defaultValue)}
+          onSave={onSave}
+        />
+      )}
     </div>
   );
 }
@@ -2117,15 +2085,15 @@ function EditorSection({
   children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-5">
-        <div>
-          <p className="text-xs font-black uppercase tracking-wider text-primary">{eyebrow}</p>
-          <h3 className="mt-1 text-xl font-black text-text-primary">{title}</h3>
+    <section className="ad-group">
+      <div className="ad-group-h">
+        <div className="ad-group-t">
+          <p className="eyebrow bare">{eyebrow}</p>
+          <h3>{title}</h3>
         </div>
         {action}
       </div>
-      <div className="p-6">{children}</div>
+      <div className="ad-group-b">{children}</div>
     </section>
   );
 }
@@ -2149,26 +2117,26 @@ function CmsSpacingSectionRow({
   ] as const;
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-background p-4">
-      <p className="mb-3 text-sm font-black text-text-primary">{label}</p>
-      <div className="grid gap-3 sm:grid-cols-4">
+    <div className="ad-spacing">
+      <p className="ad-spacing-t">{label}</p>
+      <div className="ad-grid four">
         {fields.map((field) => {
           const keyName = `${sectionKey}_${field.suffix}`;
           const value = getValue("spacing", keyName, field.defaultValue);
           return (
-            <label key={keyName} className="block">
-              <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-text-muted">
-                {field.label}
-              </span>
-              <div className="flex items-center gap-2">
+            <label key={keyName} className="ad-fld">
+              <div className="ad-fld-h">
+                <span className="ad-fld-l">{field.label}</span>
+              </div>
+              <div className="ad-spacing-unit">
                 <input
                   type="number"
                   min={0}
                   value={value}
                   onChange={(e) => void onSave("spacing", keyName, e.target.value)}
-                  className={inputClass}
+                  className="inp"
                 />
-                <span className="shrink-0 text-xs font-semibold text-text-muted">px</span>
+                <span>px</span>
               </div>
             </label>
           );
@@ -2219,7 +2187,7 @@ function AdminTextField({
   if (!fieldMatchesQuery(field, value, search)) return null;
 
   return (
-    <div className="rounded-2xl bg-background">
+    <div>
       <ContentField field={field} value={value} onSave={onSave} />
       {styleTarget ? (
         <CmsTextStyleControls
@@ -2257,14 +2225,10 @@ function CmsTextStyleControls({
   const isBold = boldValue !== "0";
 
   return (
-    <div className="flex flex-wrap items-center gap-4 border-t border-gray-100 px-4 pb-4 pt-3">
-      <label className="flex items-center gap-2 text-xs font-semibold text-text-muted">
+    <div className="ad-style">
+      <label>
         <span>크기</span>
-        <select
-          value={sizeValue}
-          onChange={(e) => void onSave(section, sizeKey, e.target.value)}
-          className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-sm text-text-primary outline-none focus:border-primary"
-        >
+        <select value={sizeValue} onChange={(e) => void onSave(section, sizeKey, e.target.value)}>
           {CMS_TEXT_SIZE_OPTIONS.map((size) => (
             <option key={size} value={size}>
               {size}
@@ -2272,12 +2236,11 @@ function CmsTextStyleControls({
           ))}
         </select>
       </label>
-      <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-text-muted">
+      <label>
         <input
           type="checkbox"
           checked={isBold}
           onChange={(e) => void onSave(section, boldKey, e.target.checked ? "1" : "0")}
-          className="size-4 rounded border-gray-300 text-primary focus:ring-primary"
         />
         <span>볼드</span>
       </label>
@@ -2337,9 +2300,9 @@ function AutoSaveInput({
   }, [localValue, save]);
 
   return (
-    <label className="block rounded-2xl bg-background p-4">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</span>
+    <label className="ad-fld">
+      <div className="ad-fld-h">
+        <span className="ad-fld-l">{label}</span>
         <SaveIndicator status={status} />
       </div>
       {kind === "textarea" ? (
@@ -2348,14 +2311,14 @@ function AutoSaveInput({
           rows={rows ?? 2}
           onChange={(e) => setLocalValue(e.target.value)}
           onBlur={() => void save(localValue)}
-          className={textareaClass}
+          className="inp"
         />
       ) : (
         <input
           value={localValue}
           onChange={(e) => setLocalValue(e.target.value)}
           onBlur={() => void save(localValue)}
-          className={inputClass}
+          className="inp"
         />
       )}
     </label>
@@ -2423,26 +2386,26 @@ function ImageUploader({
   }
 
   return (
-    <div className="rounded-2xl bg-background p-4">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">{label}</span>
+    <div className="ad-img">
+      <div className="ad-fld-h">
+        <span className="ad-fld-l">{label}</span>
         <SaveIndicator status={status} />
       </div>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="ad-img-f">
         {localValue ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={localValue} alt={label} className="h-48 w-full object-cover" />
+          <img src={localValue} alt={label} />
         ) : (
-          <div className="flex h-48 items-center justify-center text-sm text-text-muted">이미지 없음</div>
+          <div className="ad-img-none">이미지 없음</div>
         )}
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <label className="cursor-pointer rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
+      <div className="ad-img-acts">
+        <label className="btn pri sm">
           {uploading ? "업로드 중..." : "이미지 업로드"}
           <input
             type="file"
             accept="image/*"
-            className="hidden"
+            hidden
             onChange={(e) => {
               void uploadImage(e.target.files?.[0]);
               e.currentTarget.value = "";
@@ -2451,11 +2414,11 @@ function ImageUploader({
         </label>
         <button
           type="button"
+          className="btn btn-ghost btn-sm"
           onClick={() => {
             setLocalValue("");
             void save("");
           }}
-          className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-text-secondary"
         >
           이미지 삭제
         </button>
@@ -2464,8 +2427,9 @@ function ImageUploader({
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         onBlur={() => void save(localValue)}
-        className={`${inputClass} mt-3`}
+        className="inp"
         placeholder="이미지 URL"
+        aria-label={`${label} 이미지 URL`}
       />
     </div>
   );
@@ -2511,28 +2475,24 @@ function FeaturedTutorCardEditor({
       getValue={getValue}
       onToggleVisible={onSave}
     >
-      <div className="grid gap-4">
-        <ImageField
-          field={{
-            label: "프로필 사진",
-            section: "tutors_featured",
-            keyName: featuredTutorFieldKey(n, "photo"),
-            defaultValue: featuredTutorDefault(n, "photo"),
-          }}
-          value={getValue("tutors_featured", featuredTutorFieldKey(n, "photo"), featuredTutorDefault(n, "photo"))}
+      <ImageField
+        field={{
+          label: "프로필 사진",
+          section: "tutors_featured",
+          keyName: featuredTutorFieldKey(n, "photo"),
+          defaultValue: featuredTutorDefault(n, "photo"),
+        }}
+        value={getValue("tutors_featured", featuredTutorFieldKey(n, "photo"), featuredTutorDefault(n, "photo"))}
+        onSave={onSave}
+      />
+      {textFields.map((field) => (
+        <ContentField
+          key={field.keyName}
+          field={field}
+          value={getValue(field.section, field.keyName, field.defaultValue)}
           onSave={onSave}
         />
-        <div className="space-y-3">
-          {textFields.map((field) => (
-            <ContentField
-              key={field.keyName}
-              field={field}
-              value={getValue(field.section, field.keyName, field.defaultValue)}
-              onSave={onSave}
-            />
-          ))}
-        </div>
-      </div>
+      ))}
     </CmsCardBox>
   );
 }
@@ -2558,42 +2518,38 @@ function StepEditor({
       getValue={getValue}
       onToggleVisible={onSave}
     >
-      <div className="grid gap-4">
-        <ImageField
-          field={{
-            label: "단계 이미지",
-            section: "features",
-            keyName: `step${number}_image`,
-            defaultValue: defaults.image,
-          }}
-          value={getValue("features", `step${number}_image`, defaults.image)}
-          onSave={onSave}
-        />
-        <div className="space-y-3">
-          <ContentField
-            field={{
-              label: "제목",
-              section: "features",
-              keyName: `step${number}_title`,
-              defaultValue: defaults.title,
-            }}
-            value={getValue("features", `step${number}_title`, defaults.title)}
-            onSave={onSave}
-          />
-          <ContentField
-            field={{
-              label: "설명",
-              section: "features",
-              keyName: `step${number}_desc`,
-              defaultValue: defaults.desc,
-              kind: "textarea",
-              rows: 3,
-            }}
-            value={getValue("features", `step${number}_desc`, defaults.desc)}
-            onSave={onSave}
-          />
-        </div>
-      </div>
+      <ImageField
+        field={{
+          label: "단계 이미지",
+          section: "features",
+          keyName: `step${number}_image`,
+          defaultValue: defaults.image,
+        }}
+        value={getValue("features", `step${number}_image`, defaults.image)}
+        onSave={onSave}
+      />
+      <ContentField
+        field={{
+          label: "제목",
+          section: "features",
+          keyName: `step${number}_title`,
+          defaultValue: defaults.title,
+        }}
+        value={getValue("features", `step${number}_title`, defaults.title)}
+        onSave={onSave}
+      />
+      <ContentField
+        field={{
+          label: "설명",
+          section: "features",
+          keyName: `step${number}_desc`,
+          defaultValue: defaults.desc,
+          kind: "textarea",
+          rows: 3,
+        }}
+        value={getValue("features", `step${number}_desc`, defaults.desc)}
+        onSave={onSave}
+      />
     </CmsCardBox>
   );
 }
@@ -2608,13 +2564,7 @@ function SurfaceToggleButton({
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-3 py-1 text-xs font-bold ${
-        active ? "bg-primary/10 text-primary" : "bg-gray-100 text-text-muted"
-      }`}
-    >
+    <button type="button" onClick={onClick} className="opt" aria-pressed={active}>
       {label}
     </button>
   );
@@ -2633,11 +2583,15 @@ function SortableTestimonial({
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
-    <div ref={setNodeRef} style={style} className="grid gap-4 rounded-2xl bg-background p-4 lg:grid-cols-[2rem_1fr_260px]">
-      <button type="button" className="cursor-grab self-start text-xl text-text-muted" {...attributes} {...listeners}>
-        ⋮⋮
+    <div ref={setNodeRef} style={style} className="ad-sort">
+      <button type="button" className="ad-grip" aria-label="순서 변경" {...attributes} {...listeners}>
+        <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+          <circle cx="4" cy="2" r="1" /><circle cx="8" cy="2" r="1" />
+          <circle cx="4" cy="6" r="1" /><circle cx="8" cy="6" r="1" />
+          <circle cx="4" cy="10" r="1" /><circle cx="8" cy="10" r="1" />
+        </svg>
       </button>
-      <div className="grid gap-3">
+      <div>
         <AutoSaveInput
           label="카드 제목 (2줄 권장, 줄바꿈 가능 · 예: 관리는 철저하게, ↵ 공부는 자유롭게)"
           value={item.title ?? ""}
@@ -2647,7 +2601,7 @@ function SortableTestimonial({
         />
         <AutoSaveInput label="후기 문구" value={item.quote} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { quote: value })} />
         <AutoSaveInput label="작성자 (예: 고2 수학 · 학부모)" value={item.author} onSave={(value) => onSave(item.id, { author: value })} />
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="ad-grid two-sm">
           <AutoSaveInput
             label="성적 변화 시작 (예: 3등급 · 비우면 별점 표시)"
             value={item.gradeFrom ?? ""}
@@ -2659,10 +2613,12 @@ function SortableTestimonial({
             onSave={(value) => onSave(item.id, { gradeTo: value || null })}
           />
         </div>
-        <label className="grid gap-1 text-sm">
-          <span className="font-semibold text-text-secondary">고민 카테고리</span>
+        <label className="ad-fld">
+          <div className="ad-fld-h">
+            <span className="ad-fld-l">고민 카테고리</span>
+          </div>
           <select
-            className="rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            className="inp"
             value={item.category ?? ""}
             onChange={(event) => void onSave(item.id, { category: event.target.value || null })}
           >
@@ -2681,7 +2637,7 @@ function SortableTestimonial({
           rows={2}
           onSave={(value) => onSave(item.id, { tags: value || null })}
         />
-        <div className="flex flex-wrap gap-2">
+        <div className="ad-sort-acts">
           <SurfaceToggleButton
             active={item.isActive}
             label={item.isActive ? "사용" : "숨김"}
@@ -2697,7 +2653,7 @@ function SortableTestimonial({
             label="홈 표시"
             onClick={() => void onSave(item.id, { showOnHome: !item.showOnHome })}
           />
-          <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+          <button type="button" onClick={onDelete} className="btn danger sm">
             삭제
           </button>
         </div>
@@ -2720,15 +2676,19 @@ function SortableFaq({
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
-    <div ref={setNodeRef} style={style} className="grid gap-4 rounded-2xl bg-background p-4 lg:grid-cols-[2rem_1fr_auto]">
-      <button type="button" className="cursor-grab self-start text-xl text-text-muted" {...attributes} {...listeners}>
-        ⋮⋮
+    <div ref={setNodeRef} style={style} className="ad-sort faq">
+      <button type="button" className="ad-grip" aria-label="순서 변경" {...attributes} {...listeners}>
+        <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+          <circle cx="4" cy="2" r="1" /><circle cx="8" cy="2" r="1" />
+          <circle cx="4" cy="6" r="1" /><circle cx="8" cy="6" r="1" />
+          <circle cx="4" cy="10" r="1" /><circle cx="8" cy="10" r="1" />
+        </svg>
       </button>
-      <div className="grid gap-3">
+      <div>
         <AutoSaveInput label="질문" value={item.question} kind="textarea" rows={2} onSave={(value) => onSave(item.id, { question: value })} />
         <AutoSaveInput label="답변" value={item.answer} kind="textarea" rows={4} onSave={(value) => onSave(item.id, { answer: value })} />
       </div>
-      <div className="flex flex-wrap gap-2 lg:max-w-[9rem] lg:flex-col">
+      <div className="ad-sort-acts col">
         <SurfaceToggleButton
           active={item.isActive}
           label={item.isActive ? "사용" : "숨김"}
@@ -2744,7 +2704,7 @@ function SortableFaq({
           label="홈 표시"
           onClick={() => void onSave(item.id, { showOnHome: !item.showOnHome })}
         />
-        <button type="button" onClick={onDelete} className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+        <button type="button" onClick={onDelete} className="btn danger sm">
           삭제
         </button>
       </div>
@@ -2753,8 +2713,8 @@ function SortableFaq({
 }
 
 function SaveIndicator({ status }: { status: SaveStatus }) {
-  if (status === "saving") return <span className="text-xs text-text-muted">저장 중...</span>;
-  if (status === "saved") return <span className="text-xs font-semibold text-emerald-700">저장됨 ✓</span>;
-  if (status === "error") return <span className="text-xs font-semibold text-accent">저장 실패</span>;
-  return <span className="text-xs text-text-muted">자동 저장</span>;
+  if (status === "saving") return <span className="ad-save">저장 중...</span>;
+  if (status === "saved") return <span className="ad-save on">저장됨</span>;
+  if (status === "error") return <span className="ad-save err">저장 실패</span>;
+  return <span className="ad-save">자동 저장</span>;
 }

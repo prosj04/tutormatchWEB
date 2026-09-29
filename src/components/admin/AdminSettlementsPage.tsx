@@ -71,18 +71,18 @@ export function AdminSettlementsPage() {
   const monthLabel = `${year}년 ${month}월`;
 
   return (
-    <section className="page on" data-screen-label="정산">
-      <div className="crumb">/admin/settlements</div>
+    <section className="page on ad-page" data-screen-label="정산">
+      <div className="crumb">정산</div>
       <h1>정산</h1>
       <p className="sub">선생님별 {monthLabel} 정산 집계입니다.</p>
 
       <div className="sec filters">
         <button type="button" className="btn ghost sm" onClick={handlePrev} aria-label="이전 달">‹ 이전 달</button>
-        <span className="opt" aria-pressed="true">{monthLabel}</span>
+        <span className="opt on">{monthLabel}</span>
         <button type="button" className="btn ghost sm" onClick={handleNext} aria-label="다음 달">다음 달 ›</button>
       </div>
 
-      <div className="sec banner warn" style={{ marginTop: 0 }}>
+      <div className="sec banner warn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
         <span>지급은 PG 지급대행 연동 전까지 수동 이체로 처리합니다. 시급 기준: 30,000원.</span>
       </div>
@@ -96,23 +96,24 @@ export function AdminSettlementsPage() {
         </div>
       ) : data ? (
         <>
-          <div className="sec grid3">
-            <div className="card kpi">
+          <div className="sec kpis">
+            <div className="kpi">
               <b>{data.totals.lessonCount}</b>
               <span>완료 수업 수 (건)</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{data.totals.totalHours}</b>
               <span>총 수업 시간</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{fmtKrw(data.totals.payoutKrw)}</b>
               <span>총 정산액{data.needsReview > 0 ? ` · 검토 필요 ${data.needsReview}건 포함` : ""}</span>
             </div>
           </div>
 
-          <div className="sec card" style={{ overflowX: "auto" }}>
-            <h2 style={{ fontSize: "15px", fontWeight: 700, padding: "18px 20px 4px" }}>선생님별 정산 내역</h2>
+          <div className="sec">
+            <h2 className="sec-title">선생님별 정산 내역</h2>
+            <div className="card">
             {data.teachers.length === 0 ? (
               <div className="empty">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 6H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6" /></svg>
@@ -148,7 +149,7 @@ export function AdminSettlementsPage() {
                       </td>
                     </tr>
                   ))}
-                  <tr>
+                  <tr className="ad-sum">
                     <td><b>합계</b></td>
                     <td className="num">{data.totals.lessonCount}건</td>
                     <td className="num">{data.totals.totalHours}시간</td>
@@ -158,6 +159,7 @@ export function AdminSettlementsPage() {
                 </tbody>
               </table>
             )}
+            </div>
           </div>
         </>
       ) : null}

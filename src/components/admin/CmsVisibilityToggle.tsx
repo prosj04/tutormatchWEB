@@ -23,14 +23,13 @@ export function CmsVisibilityToggle({
   const checked = parseCmsVisibility(raw.trim() === "" ? undefined : raw, visibilityDefault !== "0");
 
   return (
-    <label className="flex cursor-pointer select-none items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+    <label className="ad-vis">
       <input
         type="checkbox"
-        className="size-4 shrink-0 accent-primary"
         checked={checked}
         onChange={(e) => void onToggleVisible(section, visibilityKey, e.target.checked ? "1" : "0")}
       />
-      <span className="text-sm font-semibold text-text-primary">{label}</span>
+      <span>{label}</span>
     </label>
   );
 }

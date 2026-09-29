@@ -235,8 +235,8 @@ export function AdminTeachersPage() {
   }
 
   return (
-    <section className="page on" data-screen-label="선생님 관리">
-      <div className="crumb">/admin/teachers</div>
+    <section className="page on ad-page" data-screen-label="선생님 관리">
+      <div className="crumb">선생님</div>
       <h1>선생님 관리</h1>
       <p className="sub">서류 확인과 승인 상태를 관리합니다.</p>
 
@@ -251,8 +251,7 @@ export function AdminTeachersPage() {
           placeholder="이름·이메일 검색"
         />
         <select
-          className="inp filled"
-          style={{ width: "auto" }}
+          className="inp filled ad-sel"
           value={status}
           onChange={(e) => {
             setStatus(e.target.value);
@@ -263,10 +262,10 @@ export function AdminTeachersPage() {
           <option value="approved">승인됨</option>
           <option value="pending">대기중</option>
         </select>
-        <button type="button" className="btn sec sm" onClick={() => setDebouncedQ(q)}>검색</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDebouncedQ(q)}>검색</button>
       </div>
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card tbl-wrap">
         <table className="tbl">
           <thead>
             <tr>
@@ -303,7 +302,7 @@ export function AdminTeachersPage() {
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    <div className="ad-acts">
                       <label
                         className={`btn ghost sm${uploadingId === row.id ? " pointer-events-none" : ""}`}
                         title="프로필 사진 업로드"
@@ -320,7 +319,7 @@ export function AdminTeachersPage() {
                           }}
                         />
                       </label>
-                      <button type="button" className="btn sec sm" onClick={() => toggleApprove(row)}>
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => toggleApprove(row)}>
                         {row.approved ? "승인취소" : "승인"}
                       </button>
                       <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>프로필</button>
@@ -334,9 +333,9 @@ export function AdminTeachersPage() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+        <div className="sec ad-pager">
           <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
-          <span className="sub" style={{ margin: 0 }}>{page} / {pagination.totalPages}</span>
+          <span className="ad-pager-n">{page} / {pagination.totalPages}</span>
           <button type="button" className="btn ghost sm" disabled={page >= pagination.totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}
@@ -349,7 +348,7 @@ export function AdminTeachersPage() {
               <button type="button" className="x" onClick={() => setEditRow(null)}>✕</button>
             </div>
             <div className="d-b">
-              <div className="opts" style={{ marginBottom: "14px" }}>
+              <div className="opts ad-drawer-tabs">
                 {[
                   { id: "card" as const, label: "강사 카드 내용" },
                   { id: "documents" as const, label: "서류 확인" },
@@ -368,20 +367,17 @@ export function AdminTeachersPage() {
 
               {editTab === "card" ? (
                 <>
-                  <div className="card" style={{ padding: "16px", marginBottom: "14px" }}>
-                    <div className="row" style={{ padding: 0 }}>
-                      <span className="av" style={{ overflow: "hidden", background: "var(--panel-2)" }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={getEffectivePhotoUrl(editRow.photoUrl, form.gender || editRow.gender)}
-                          alt={`${form.name} 프로필`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      </span>
-                      <div className="g">
-                        <b>{form.name || "선생님 이름"} 선생님</b>
-                        <p>{form.subjects || "담당 과목"} · {form.bio || form.experience || "강사 카드 소개 문구"}</p>
-                      </div>
+                  <div className="ad-prev">
+                    <span className="ad-prev-av">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getEffectivePhotoUrl(editRow.photoUrl, form.gender || editRow.gender)}
+                        alt={`${form.name} 프로필`}
+                      />
+                    </span>
+                    <div className="g">
+                      <b>{form.name || "선생님 이름"} 선생님</b>
+                      <p>{form.subjects || "담당 과목"} · {form.bio || form.experience || "강사 카드 소개 문구"}</p>
                     </div>
                   </div>
                   <div className="field">
@@ -404,10 +400,8 @@ export function AdminTeachersPage() {
                     <label>자기소개</label>
                     <textarea className="inp area filled" value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} placeholder="자기소개" />
                   </div>
-                  <div className="field">
-                    <label>성별</label>
-                    <GenderSelect value={form.gender} onChange={(g) => setForm((f) => ({ ...f, gender: g }))} />
-                  </div>
+                  {/* GenderSelect 가 자체 .field + 라벨을 렌더한다 — 바깥 라벨 중복 제거 */}
+                  <GenderSelect value={form.gender} onChange={(g) => setForm((f) => ({ ...f, gender: g }))} />
                   <div className="field">
                     <label>정산 시급</label>
                     <select
@@ -430,7 +424,7 @@ export function AdminTeachersPage() {
                 </>
               ) : (
                 <>
-                  <p className="f-hint" style={{ marginBottom: "10px" }}>
+                  <p className="f-hint ad-hint-top">
                     열람 링크는 10분 후 만료됩니다. 만료되면 이 서류 탭을 다시 열어 재발급하세요.
                   </p>
                   {[
@@ -447,18 +441,19 @@ export function AdminTeachersPage() {
                       empty: "등록된 인증서류가 없습니다.",
                     },
                   ].map((group) => (
-                    <div key={group.type} style={{ marginBottom: "14px" }}>
-                      <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "0 0 8px" }}>{group.title}</h4>
-                      <div className="card">
+                    <div key={group.type}>
+                      <h4 className="ad-sub-h">{group.title}</h4>
+                      <div className="ad-list">
                         {documentsLoading ? (
-                          <div className="row"><div className="g"><p>서류를 불러오는 중…</p></div></div>
+                          <div className="ad-empty">서류를 불러오는 중…</div>
                         ) : group.files.length === 0 ? (
-                          <div className="row"><div className="g"><p>{group.empty}</p></div></div>
+                          <div className="ad-empty">{group.empty}</div>
                         ) : (
                           group.files.map((file) => (
                             <div key={file.url} className="row">
                               <div className="g"><b>{file.name}</b></div>
                               <a
+                                className="link"
                                 href={file.signedUrl}
                                 target="_blank"
                                 rel="noreferrer"
@@ -468,7 +463,7 @@ export function AdminTeachersPage() {
                               </a>
                               <button
                                 type="button"
-                                className="btn ghost sm"
+                                className="btn danger sm"
                                 disabled={documentDeleting === file.url}
                                 onClick={() => void deleteDocument(file.url, group.type)}
                               >
@@ -483,19 +478,19 @@ export function AdminTeachersPage() {
                 </>
               )}
 
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "16px 0 8px" }}>권한 · 관리</h4>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <h4 className="ad-sub-h">권한 · 관리</h4>
+              <div className="ad-trow-acts">
                 {editRow.role === "TEACHER" ? (
-                  <button type="button" className="btn sec sm" onClick={() => grantManager(editRow)}>매니저 부여</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => grantManager(editRow)}>매니저 부여</button>
                 ) : editRow.role === "MANAGER" ? (
-                  <button type="button" className="btn sec sm" onClick={() => revokeManager(editRow)}>매니저 해제</button>
+                  <button type="button" className="btn danger sm" onClick={() => revokeManager(editRow)}>매니저 해제</button>
                 ) : null}
                 <button type="button" className="btn danger sm" onClick={() => void deleteRow(editRow.id, editRow.name)}>삭제</button>
               </div>
             </div>
             <div className="d-f">
-              <button type="button" className="btn sec" style={{ flex: 1 }} onClick={() => setEditRow(null)}>닫기</button>
-              <button type="button" className="btn pri" style={{ flex: 1 }} disabled={editTab !== "card"} onClick={() => void saveEdit()}>저장</button>
+              <button type="button" className="btn btn-ghost ad-f-btn" onClick={() => setEditRow(null)}>닫기</button>
+              <button type="button" className="btn pri ad-f-btn" disabled={editTab !== "card"} onClick={() => void saveEdit()}>저장</button>
             </div>
           </>
         ) : null}

@@ -105,8 +105,8 @@ export function AdminStudentsPage() {
   }
 
   return (
-    <section className="page on" data-screen-label="학생 관리">
-      <div className="crumb">/admin/students</div>
+    <section className="page on ad-page" data-screen-label="학생 관리">
+      <div className="crumb">학생</div>
       <h1>학생 관리</h1>
       <p className="sub">학생 계정과 구독·수업 이력입니다.</p>
 
@@ -121,8 +121,7 @@ export function AdminStudentsPage() {
           placeholder="이름·전화번호 검색"
         />
         <select
-          className="inp filled"
-          style={{ width: "auto" }}
+          className="inp filled ad-sel"
           value={grade}
           onChange={(e) => {
             setGrade(e.target.value);
@@ -135,8 +134,7 @@ export function AdminStudentsPage() {
           ))}
         </select>
         <select
-          className="inp filled"
-          style={{ width: "auto" }}
+          className="inp filled ad-sel"
           value={subject}
           onChange={(e) => {
             setSubject(e.target.value);
@@ -148,22 +146,18 @@ export function AdminStudentsPage() {
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-        <button type="button" className="btn sec sm" onClick={() => setDebouncedQ(q)}>검색</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDebouncedQ(q)}>검색</button>
       </div>
 
       {loadError && (
-        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
-          <div className="row">
-            <div className="g">
-              <b>불러오지 못했습니다</b>
-              <p>학생 목록을 불러오는 중 문제가 발생했습니다.</p>
-            </div>
-            <button type="button" className="btn sec sm" onClick={() => fetchList()}>다시 시도</button>
-          </div>
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>불러오지 못했습니다 — 학생 목록을 불러오는 중 문제가 발생했습니다.</span>
+          <button type="button" className="btn ghost sm ad-push" onClick={() => fetchList()}>다시 시도</button>
         </div>
       )}
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card tbl-wrap">
         <table className="tbl">
           <thead>
             <tr>
@@ -194,7 +188,9 @@ export function AdminStudentsPage() {
                   <td>{row.managerName ?? "—"}</td>
                   <td>{formatDateKst(row.createdAt)}</td>
                   <td>
-                    <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>상세</button>
+                    <div className="ad-acts">
+                      <button type="button" className="btn ghost sm" onClick={() => openEdit(row)}>상세</button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -204,9 +200,9 @@ export function AdminStudentsPage() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+        <div className="sec ad-pager">
           <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>이전</button>
-          <span className="sub" style={{ margin: 0 }}>{page} / {pagination.totalPages}</span>
+          <span className="ad-pager-n">{page} / {pagination.totalPages}</span>
           <button type="button" className="btn ghost sm" disabled={page >= pagination.totalPages} onClick={() => setPage((p) => p + 1)}>다음</button>
         </div>
       )}
@@ -219,12 +215,12 @@ export function AdminStudentsPage() {
               <button type="button" className="x" onClick={() => setEditRow(null)}>✕</button>
             </div>
             <div className="d-b">
-              <div className="kv" style={{ padding: "0 0 14px" }}>
+              <div className="kv">
                 <div><span>담당 선생님</span><b>{editRow.assignedTeachers || "—"}</b></div>
                 <div><span>담당 매니저</span><b>{editRow.managerName ?? "—"}</b></div>
                 <div><span>가입일</span><b>{formatDateKst(editRow.createdAt)}</b></div>
               </div>
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "10px 0 8px" }}>정보 수정</h4>
+              <h4 className="ad-sub-h">정보 수정</h4>
               <div className="field">
                 <label>이름</label>
                 <input
@@ -264,19 +260,18 @@ export function AdminStudentsPage() {
                   placeholder="전화번호"
                 />
               </div>
-              <h4 style={{ fontSize: "13.5px", fontWeight: 700, margin: "16px 0 8px" }}>관리</h4>
+              <h4 className="ad-sub-h">관리</h4>
               <button
                 type="button"
-                className="btn danger"
-                style={{ width: "100%" }}
+                className="btn danger ad-block"
                 onClick={() => void deleteRow(editRow.id, editRow.name)}
               >
                 학생 삭제
               </button>
             </div>
             <div className="d-f">
-              <button type="button" className="btn sec" style={{ flex: 1 }} onClick={() => setEditRow(null)}>닫기</button>
-              <button type="button" className="btn pri" style={{ flex: 1 }} onClick={() => void saveEdit()}>저장</button>
+              <button type="button" className="btn btn-ghost ad-f-btn" onClick={() => setEditRow(null)}>닫기</button>
+              <button type="button" className="btn pri ad-f-btn" onClick={() => void saveEdit()}>저장</button>
             </div>
           </>
         ) : null}

@@ -1,0 +1,352 @@
+/* ============================================================
+   관리자 (/admin/*) — 접두사 .ad-
+   전역으로 로드된다 — 모든 선택자는 접두사 클래스로 스코프할 것.
+   토큰·프리미티브·셸은 ds.css.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. 공용 — 운영 화면 밀도
+   ------------------------------------------------------------ */
+.ad-page .sub { max-width: 64em; }
+
+/* 우측으로 밀기(필터 줄 끝의 주 액션 등) */
+.ad-push { margin-left: auto; }
+
+/* 표 행의 액션 묶음 */
+.ad-acts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+/* 페이지네이션 */
+.ad-pager { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.ad-pager .ad-pager-n {
+  font-size: 12.5px; color: var(--mut); letter-spacing: .04em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 클릭으로 펼치는 표 행 */
+.ad-rowlink { cursor: pointer; }
+
+/* 표 맨 아래 합계 행 — 세리프 숫자 */
+.ad-page .tbl tr.ad-sum td {
+  border-top: 1px solid var(--line-2); border-bottom: 0;
+  font-family: var(--serif); font-weight: 500; font-size: 16px; letter-spacing: -.02em;
+}
+.ad-page .tbl tr.ad-sum td .bst { font-family: var(--sans); font-size: 12px; }
+.ad-page .tbl tr.ad-sum td b { font-weight: 500; }
+
+/* 표 안에서 펼친 상세 */
+.ad-detail { padding: 2px 0 6px; }
+.ad-detail .ad-tasks {
+  list-style: none; display: flex; flex-direction: column; gap: 4px;
+  font-size: 13.5px; color: var(--fg);
+}
+.ad-detail .ad-tasks i { font-style: normal; display: inline-block; width: 1.1em; color: var(--mut-2); }
+.ad-detail .ad-tasks .done i { color: var(--acc-text); }
+.ad-detail .ad-body { white-space: pre-wrap; font-size: 13.5px; line-height: 1.7; }
+.ad-detail .banner { margin-top: 10px; }
+.ad-detail .ad-note { margin-top: 10px; font-size: 13px; color: var(--mut); }
+
+/* 드로어·패널 소제목 — 헤어라인 위 작은 라벨 */
+.ad-sub-h {
+  margin: 22px 0 10px; padding-top: 14px; border-top: 1px solid var(--line);
+  font-family: var(--sans); font-size: 11.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--mut-2);
+}
+.ad-sub-h:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* 드로어 안 목록 — 카드-안-카드 대신 헤어라인 행 */
+.ad-list { border-top: 1px solid var(--line); }
+.ad-list > * { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.ad-list .row { padding: 12px 0; }
+.ad-list .row + .row { border-top: 0; }
+.ad-list .ad-empty { font-size: 13px; color: var(--mut-2); }
+
+/* 드로어 상단 프로필 프리뷰 */
+.ad-prev {
+  display: flex; align-items: center; gap: 13px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--line);
+}
+.ad-prev .ad-prev-av {
+  width: 42px; height: 42px; flex: 0 0 auto; overflow: hidden;
+  border-radius: 50%; background: var(--panel-2);
+}
+.ad-prev .ad-prev-av img { width: 100%; height: 100%; object-fit: cover; }
+.ad-prev .g { min-width: 0; }
+.ad-prev .g b { display: block; font-size: 14.5px; font-weight: 600; }
+.ad-prev .g p { margin-top: 3px; font-size: 13px; color: var(--mut); }
+
+/* 필터 pill 안의 작은 아바타 */
+.ad-opt-av {
+  width: 17px; height: 17px; border-radius: 50%; object-fit: cover;
+  display: inline-block; vertical-align: middle;
+}
+
+/* 드로어 하단 버튼 균등 분할 */
+.ad-f-btn { flex: 1; }
+.ad-block { width: 100%; }
+.ad-drawer-tabs { margin-bottom: 16px; }
+.ad-hint-top { margin-bottom: 4px; }
+.ad-gap-b { margin-bottom: 22px; }
+
+/* 위험 안내 한 줄 */
+.ad-warn-line { margin-top: 8px; color: var(--danger); font-weight: 600; }
+
+/* 폭 고정 셀렉트(필터) */
+.ad-sel { width: auto; min-width: 9rem; }
+.ad-inp-sm { width: 100%; max-width: 220px; }
+
+/* 표 셀 안의 인라인 편집(메모 등) */
+.ad-cell-edit { display: flex; align-items: center; gap: 8px; min-width: 220px; }
+
+/* 열이 많은 표 — 셀을 접지 않고 좌우 여백을 줄여 한 화면에 담는다.
+   그래도 넘치면 .tbl-wrap 의 가로 스크롤로 넘어간다. */
+.ad-page .tbl.ad-tbl-nw th,
+.ad-page .tbl.ad-tbl-nw td { white-space: nowrap; padding-left: 11px; padding-right: 11px; }
+.ad-page .tbl.ad-tbl-nw .ad-sel { min-width: 8rem; }
+.ad-page .tbl.ad-tbl-nw .ad-cell-edit { min-width: 150px; }
+
+/* 좁은 열에 들어가는 짧은 표 — ds.css 의 min-width:640px 해제 */
+.ad-page .tbl.ad-tbl-narrow { min-width: 0; }
+
+/* 퍼널 — 한글 단계 라벨이 두 줄로 접히지 않게 라벨 열을 넓힌다 */
+.ad-page .funnel .f { grid-template-columns: minmax(150px, auto) minmax(0, 1fr) 128px; }
+@media (max-width: 720px) {
+  .ad-page .funnel .f { grid-template-columns: minmax(0, 1fr) 110px; }
+  .ad-page .funnel .f .tr { grid-column: 1 / -1; }
+}
+
+/* ------------------------------------------------------------
+   2. CMS 편집기 — 좌: 섹션 목록 / 우: 미리보기 + 편집 폼
+   ------------------------------------------------------------ */
+.ad-cms {
+  display: grid; grid-template-columns: 196px minmax(0, 1fr);
+  gap: clamp(18px, 2vw, 32px); align-items: start; margin-top: 30px;
+}
+.ad-cms-side { position: sticky; top: 8px; display: flex; flex-direction: column; gap: 22px; }
+
+.ad-cms-nav { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.ad-cms-nav button {
+  position: relative; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line);
+  background: none; text-align: left;
+  font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--mut);
+  transition: color .15s var(--ease);
+}
+.ad-cms-nav button:hover { color: var(--fg); }
+.ad-cms-nav button[aria-current="true"] { color: var(--fg); font-weight: 600; }
+.ad-cms-nav button[aria-current="true"]::before {
+  content: ""; position: absolute; left: -12px; top: 12px; bottom: 12px;
+  width: 2px; background: var(--acc-text);
+}
+
+.ad-cms-tools { display: flex; flex-direction: column; gap: 8px; }
+.ad-cms-tools .ad-cms-tools-h {
+  font-size: 11px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--mut-2);
+}
+.ad-cms-search { display: flex; gap: 6px; }
+
+.ad-cms-split {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  height: calc(100dvh - 250px); min-height: 560px; overflow: hidden;
+  border: 1px solid var(--line); border-radius: var(--r-card); background: var(--panel);
+}
+.ad-cms-split.is-drag { user-select: none; }
+.ad-cms-preview {
+  min-height: 320px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+}
+.ad-cms-preview iframe { width: 100%; height: 100%; border: 0; background: var(--panel); }
+.ad-cms-split.is-drag .ad-cms-preview iframe { pointer-events: none; }
+.ad-cms-handle {
+  display: none; align-items: center; justify-content: center; cursor: col-resize;
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  background: var(--panel-2);
+}
+.ad-cms-handle span { display: block; width: 1px; height: 26px; background: var(--line-2); }
+.ad-cms-panel { min-height: 0; overflow-y: auto; padding: clamp(14px, 1.5vw, 24px); background: var(--bg); }
+.ad-cms-loading { font-size: 13.5px; color: var(--mut); }
+
+@media (min-width: 1024px) {
+  .ad-cms-split { grid-template-columns: var(--cms-cols); }
+  .ad-cms-preview { min-height: 0; border-bottom: 0; }
+  .ad-cms-handle { display: flex; }
+}
+@media (max-width: 1023px) {
+  .ad-cms { grid-template-columns: minmax(0, 1fr); }
+  .ad-cms-side { position: static; }
+  .ad-cms-nav {
+    flex-direction: row; gap: 18px; overflow-x: auto;
+    border-top: 0; border-bottom: 1px solid var(--line); scrollbar-width: none;
+  }
+  .ad-cms-nav::-webkit-scrollbar { display: none; }
+  .ad-cms-nav button { border-bottom: 0; white-space: nowrap; margin-bottom: -1px; }
+  .ad-cms-nav button[aria-current="true"]::before {
+    left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 2px;
+  }
+  .ad-cms-split { height: auto; }
+  .ad-cms-preview { height: 60vh; }
+}
+
+/* 2-1. 편집 그룹(섹션) */
+.ad-cms-groups > * + * { margin-top: 30px; }
+.ad-cms-sel { display: flex; flex-direction: column; gap: 14px; }
+.ad-cms-back {
+  align-self: flex-start; border: 0; background: none; padding: 0;
+  font-size: 13px; font-weight: 600; color: var(--mut);
+}
+.ad-cms-back:hover { color: var(--fg); }
+
+.ad-group { border-top: 1px solid var(--line-2); }
+.ad-group-h {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 10px; padding: 14px 0 14px;
+}
+.ad-group-h .ad-group-t { min-width: 0; }
+.ad-group-h .eyebrow { font-size: 10.5px; }
+.ad-group-h h3 {
+  margin-top: 7px; font-family: var(--serif); font-weight: 500;
+  font-size: 20px; letter-spacing: -.025em; line-height: 1.3;
+}
+.ad-group-b { padding-bottom: 8px; }
+.ad-note { margin-bottom: 14px; font-size: 13px; line-height: 1.7; color: var(--mut); }
+.ad-note-k {
+  display: block; margin-bottom: 12px; font-size: 11px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--mut-2);
+}
+.ad-stack { margin-top: 24px; }
+/* 제목 없는 열을 옆 열의 .sec-title 기준선에 맞춘다 */
+.ad-hd-offset { margin-top: 41px; }
+.ad-stack-lg { margin-top: 36px; }
+.ad-row-gap { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+/* 2-2. 필드 — 헤어라인으로 나눈 폼 행 */
+.ad-grid { display: grid; gap: 0 clamp(16px, 2vw, 30px); }
+@media (min-width: 1024px) { .ad-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 720px) { .ad-grid.two-sm { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 720px) { .ad-grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.ad-fld { display: block; padding: 13px 0; border-top: 1px solid var(--line); }
+.ad-fld-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.ad-fld-l { font-size: 12px; font-weight: 600; color: var(--mut); letter-spacing: .01em; }
+.ad-fld textarea.inp { min-height: 0; }
+
+.ad-save { font-size: 11.5px; font-weight: 500; color: var(--mut-2); white-space: nowrap; }
+.ad-save.on { color: var(--acc-text); font-weight: 600; }
+.ad-save.err { color: var(--danger); font-weight: 600; }
+
+/* 폰트 크기·볼드 보조 컨트롤 */
+.ad-style { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 0 0 13px; }
+.ad-style label { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--mut); }
+.ad-style select {
+  min-height: 32px; padding: 0 8px; border: 1px solid var(--line-2); border-radius: var(--r-sm);
+  background: var(--panel); color: var(--fg); font-family: var(--sans); font-size: 13px;
+}
+.ad-style select:focus { outline: 0; border-color: var(--fg); }
+.ad-style input[type="checkbox"] { width: 15px; height: 15px; }
+
+/* 여백(spacing) 편집 묶음 */
+.ad-spacing { padding: 14px 0; border-top: 1px solid var(--line); }
+.ad-spacing > .ad-spacing-t { margin-bottom: 10px; font-size: 13px; font-weight: 600; color: var(--fg); }
+.ad-spacing .ad-fld { padding-top: 0; border-top: 0; }
+.ad-spacing-unit { display: flex; align-items: center; gap: 7px; }
+.ad-spacing-unit span { flex: 0 0 auto; font-size: 11.5px; font-weight: 600; color: var(--mut-2); }
+
+/* 2-3. 이미지 필드 — 원본 비율 유지 */
+.ad-img { padding: 13px 0; border-top: 1px solid var(--line); }
+.ad-img-f {
+  overflow: hidden; border: 1px solid var(--line); border-radius: var(--r-xs);
+  background: var(--panel-2);
+}
+.ad-img-f img { width: 100%; max-height: 220px; object-fit: contain; }
+.ad-img-none { height: 148px; display: grid; place-items: center; font-size: 13px; color: var(--mut-2); }
+.ad-img-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ad-img .inp { margin-top: 10px; }
+
+/* 2-4. 카드 박스(노출 토글 + 필드 묶음) */
+.ad-cardbox-grid {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(14px, 1.4vw, 20px); max-width: 1200px; margin: 0 auto;
+}
+.ad-cardbox {
+  width: 100%; max-width: 360px; padding: 0 16px 14px;
+  border: 1px solid var(--line); border-radius: var(--r-card); background: var(--panel);
+}
+.ad-cardbox-h {
+  display: flex; align-items: center; gap: 10px; padding: 12px 0;
+  border-bottom: 1px solid var(--line); cursor: pointer; user-select: none;
+}
+.ad-cardbox-h input { width: 15px; height: 15px; flex: 0 0 auto; accent-color: var(--acc); }
+.ad-cardbox-h .ad-cardbox-l {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--mut-2);
+}
+.ad-cardbox-h .ad-cardbox-s { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--fg); }
+/* 첫 행만 헤어라인 제거 — 카드 헤더의 border-bottom 과 겹치지 않게.
+   내부 래퍼(.ad-grid) 안의 첫 필드는 이미지와 구분선이 필요하므로 건드리지 않는다. */
+.ad-cardbox-b > .ad-fld:first-child,
+.ad-cardbox-b > .ad-img:first-child { border-top: 0; }
+
+/* 노출 토글(단독) */
+.ad-vis {
+  display: flex; align-items: center; gap: 11px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--r-card); background: var(--panel);
+  font-size: 13.5px; font-weight: 500; color: var(--fg); cursor: pointer; user-select: none;
+}
+.ad-vis input { width: 15px; height: 15px; flex: 0 0 auto; accent-color: var(--acc); }
+.ad-vis-grid { display: grid; gap: 10px; max-width: 42rem; }
+@media (min-width: 640px) { .ad-vis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* 2-5. 정렬 가능한 후기·FAQ 행 */
+.ad-sort { display: grid; gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+.ad-sort .ad-fld:first-of-type { border-top: 0; padding-top: 0; }
+@media (min-width: 1024px) {
+  .ad-sort { grid-template-columns: 22px minmax(0, 1fr) 260px; }
+  .ad-sort.faq { grid-template-columns: 22px minmax(0, 1fr) auto; }
+}
+.ad-grip {
+  align-self: start; padding: 6px 0; border: 0; background: none;
+  color: var(--mut-2); line-height: 1; cursor: grab; touch-action: none;
+}
+.ad-grip:hover { color: var(--fg); }
+.ad-grip svg { width: 13px; height: 13px; }
+.ad-sort-acts { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; padding-top: 6px; }
+@media (min-width: 1024px) { .ad-sort-acts.col { flex-direction: column; max-width: 9.5rem; } }
+
+/* 2-6. 공개 강사 프로필 목록 */
+.ad-tlist { margin-top: 22px; border-top: 1px solid var(--line); }
+.ad-trow { border-bottom: 1px solid var(--line); }
+.ad-trow-h {
+  display: flex; width: 100%; align-items: center; gap: 12px; padding: 12px 0;
+  border: 0; background: none; text-align: left;
+}
+.ad-trow-h .ad-tav {
+  position: relative; width: 40px; height: 40px; flex: 0 0 auto; overflow: hidden;
+  border-radius: var(--r-xs); background: var(--panel-2);
+}
+.ad-trow-h .g { flex: 1; min-width: 0; }
+.ad-trow-h .g b { display: block; font-size: 14px; font-weight: 600; }
+.ad-trow-h .g span {
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 12px; color: var(--mut-2);
+}
+.ad-trow-h .r { display: flex; flex-shrink: 0; align-items: center; gap: 10px; }
+.ad-trow-h .r .ad-tog-t { font-size: 12px; color: var(--mut-2); }
+.ad-trow-b { padding: 2px 0 18px; }
+.ad-trow-b > * + * { margin-top: 10px; }
+.ad-trow-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* 2-7. 공개 페이지 편집 오버레이(편집 모드에서 공개 화면 위에 뜬다) */
+.ad-ov { position: relative; }
+.ad-ov-btn {
+  position: absolute; right: 4px; top: 4px; z-index: 20;
+  display: grid; place-items: center; width: 22px; height: 22px;
+  border: 1px solid var(--line-2); border-radius: var(--r-xs);
+  background: var(--panel); color: var(--acc-text);
+  opacity: 0; transition: opacity .18s var(--ease), background-color .18s, color .18s;
+}
+.ad-ov:hover .ad-ov-btn, .ad-ov-btn:focus-visible { opacity: 1; }
+.ad-ov-btn:hover { background: var(--acc); color: var(--on-acc); border-color: var(--acc); }
+.ad-ov-btn svg { width: 12px; height: 12px; }
+.ad-ov-ring {
+  position: absolute; inset: 0; z-index: 10; pointer-events: none;
+  border-radius: inherit; box-shadow: inset 0 0 0 1px var(--acc-text);
+  opacity: 0; transition: opacity .18s var(--ease);
+}
+.ad-ov:hover .ad-ov-ring { opacity: 1; }

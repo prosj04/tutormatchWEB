@@ -16,21 +16,23 @@ type CmsEditOverlayProps = {
 function OverlayIcon({ type }: { type: CmsEditType }) {
   if (type === "image") {
     return (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="size-3.5" aria-hidden>
-        <path
-          fillRule="evenodd"
-          d="M1 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l2 2a1 1 0 01-.083.094L8.5 10.207l1.146-1.147a1 1 0 011.414 0l3.146 3.147A1 1 0 0014.5 12H6a1 1 0 00-.707.293l-2 2a1 1 0 01-1.414-1.414l1.879-1.879L1 5.414V5z"
-          clipRule="evenodd"
-        />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="4" width="18" height="16" rx="1" />
+        <circle cx="8.5" cy="9.5" r="1.5" />
+        <path d="m4 17 5-5 4 4 3-3 4 4" />
       </svg>
     );
   }
   if (type === "spacing") {
-    return <span className="text-[10px] font-black leading-none">↕</span>;
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M12 4v16M12 4 8.5 7.5M12 4l3.5 3.5M12 20l-3.5-3.5M12 20l3.5-3.5" />
+      </svg>
+    );
   }
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="size-3.5" aria-hidden>
-      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
     </svg>
   );
 }
@@ -56,21 +58,17 @@ export function CmsEditOverlay({
   }
 
   return (
-    <div className={`group relative ${className ?? ""}`}>
+    <div className={`ad-ov ${className ?? ""}`}>
       {children}
       <button
         type="button"
         onClick={handleSelect}
-        className="absolute right-1 top-1 z-20 flex size-5 items-center justify-center rounded-md border border-primary/30 text-primary opacity-0 shadow-sm transition group-hover:opacity-100 hover:bg-primary hover:text-[var(--on-acc)]"
-        style={{ background: "var(--panel)" }}
+        className="ad-ov-btn"
         aria-label={`CMS 편집: ${section}.${cmsKey}`}
       >
         <OverlayIcon type={type} />
       </button>
-      <div
-        className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] ring-2 ring-primary opacity-0 transition group-hover:opacity-100"
-        aria-hidden
-      />
+      <div className="ad-ov-ring" aria-hidden />
     </div>
   );
 }

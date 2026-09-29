@@ -82,8 +82,8 @@ export function AdminLeadsPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <section className="page on" data-screen-label="상담 리드">
-      <div className="crumb">/admin/leads</div>
+    <section className="page on ad-page" data-screen-label="상담 리드">
+      <div className="crumb">상담 리드</div>
       <h1>상담 리드</h1>
       <p className="sub">공개 상담신청 폼(/consult)으로 접수된 리드 목록입니다.</p>
 
@@ -113,8 +113,8 @@ export function AdminLeadsPage() {
         </div>
       ) : null}
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
-        <table className="tbl">
+      <div className="sec card tbl-wrap">
+        <table className="tbl ad-tbl-nw">
           <thead>
             <tr>
               <th>신청일</th>
@@ -159,7 +159,7 @@ export function AdminLeadsPage() {
                   <td>{lead.marketingOptIn ? "동의" : "—"}</td>
                   <td>
                     <select
-                      className="inp filled"
+                      className="inp filled ad-sel"
                       value={lead.status}
                       onChange={(e) => void patchLead(lead.id, { status: e.target.value })}
                     >
@@ -171,7 +171,7 @@ export function AdminLeadsPage() {
                     </select>
                   </td>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div className="ad-cell-edit">
                       <input
                         className="inp filled"
                         value={noteDraft[lead.id] ?? lead.note ?? ""}
@@ -199,11 +199,11 @@ export function AdminLeadsPage() {
       </div>
 
       {!loading && totalPages > 1 ? (
-        <div className="sec" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+        <div className="sec ad-pager">
           <button type="button" className="btn ghost sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
             이전
           </button>
-          <span className="sub" style={{ margin: 0 }}>{page} / {totalPages}</span>
+          <span className="ad-pager-n">{page} / {totalPages}</span>
           <button type="button" className="btn ghost sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
             다음
           </button>

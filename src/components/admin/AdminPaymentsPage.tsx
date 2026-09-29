@@ -101,8 +101,8 @@ export function AdminPaymentsPage() {
   const refundingRow = rows.find((r) => r.id === refundingId) ?? null;
 
   return (
-    <section className="page on" data-screen-label="결제 관리">
-      <div className="crumb">/admin/payments</div>
+    <section className="page on ad-page" data-screen-label="결제 관리">
+      <div className="crumb">결제</div>
       <h1>결제 관리</h1>
       <p className="sub">결제 이력과 환불 처리를 관리합니다.</p>
 
@@ -123,18 +123,14 @@ export function AdminPaymentsPage() {
       </div>
 
       {loadError && (
-        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
-          <div className="row">
-            <div className="g">
-              <b>불러오지 못했습니다</b>
-              <p>결제 목록을 불러오는 중 문제가 발생했습니다.</p>
-            </div>
-            <button type="button" className="btn sec sm" onClick={() => fetchList()}>다시 시도</button>
-          </div>
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>결제 목록을 불러오는 중 문제가 발생했습니다.</span>
+          <button type="button" className="btn btn-ghost btn-sm ad-push" onClick={() => fetchList()}>다시 시도</button>
         </div>
       )}
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card">
         <table className="tbl">
           <thead>
             <tr>
@@ -171,7 +167,9 @@ export function AdminPaymentsPage() {
                   <td>{formatDateKst(row.createdAt)}</td>
                   <td>
                     {row.status === "COMPLETED" && (
-                      <button type="button" className="btn ghost sm" onClick={() => openRefundDialog(row.id)}>환불</button>
+                      <div className="ad-acts">
+                        <button type="button" className="btn danger sm" onClick={() => openRefundDialog(row.id)}>환불</button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -190,10 +188,10 @@ export function AdminPaymentsPage() {
                 ? `${refundingRow.orderId} · ${refundingRow.studentName ?? "학생"}${refundingRow.amount != null ? ` · ${refundingRow.amount.toLocaleString()}원` : ""}`
                 : "해당 결제를 환불 처리합니다. 이 작업은 되돌릴 수 없습니다."}
             </p>
-            <p className="m-p" style={{ marginTop: "8px", color: "var(--danger, #d33)", fontWeight: 600 }}>
+            <p className="m-p ad-warn-line">
               카드 결제는 Toss에서 전액 취소됩니다. 부분 환불은 지원하지 않습니다.
             </p>
-            <div className="field" style={{ marginTop: "14px" }}>
+            <div className="field">
               <label>환불 사유 (선택)</label>
               <input
                 className="inp filled"
@@ -204,8 +202,8 @@ export function AdminPaymentsPage() {
             </div>
           </div>
           <div className="m-f">
-            <button type="button" className="btn sec" onClick={closeRefundDialog} disabled={refundPending}>취소</button>
-            <button type="button" className="btn pri" onClick={() => void submitRefund()} disabled={refundPending}>
+            <button type="button" className="btn btn-ghost" onClick={closeRefundDialog} disabled={refundPending}>취소</button>
+            <button type="button" className="btn danger solid" onClick={() => void submitRefund()} disabled={refundPending}>
               {refundPending ? "처리 중…" : "환불 확정"}
             </button>
           </div>

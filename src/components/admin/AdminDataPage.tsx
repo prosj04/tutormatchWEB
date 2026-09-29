@@ -69,8 +69,8 @@ export function AdminDataPage() {
   }, [fetchData]);
 
   return (
-    <section className="page on" data-screen-label="데이터">
-      <div className="crumb">/admin/data</div>
+    <section className="page on ad-page" data-screen-label="데이터">
+      <div className="crumb">데이터</div>
       <h1>데이터</h1>
       <p className="sub">원본 데이터 조회와 내보내기입니다.</p>
 
@@ -99,21 +99,21 @@ export function AdminDataPage() {
         </div>
       </div>
 
-      <div className="sec filters" style={{ marginTop: 0 }}>
-        <input className="inp filled" value={q} onChange={(e) => setQ(e.target.value)} placeholder="학생 이름" />
-        <input type="date" className="inp filled" style={{ width: "auto" }} value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input type="date" className="inp filled" style={{ width: "auto" }} value={to} onChange={(e) => setTo(e.target.value)} />
+      <div className="filters">
+        <input className="inp filled ad-inp-sm" value={q} onChange={(e) => setQ(e.target.value)} placeholder="학생 이름" aria-label="학생 이름" />
+        <input type="date" className="inp filled ad-sel" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="시작일" />
+        <input type="date" className="inp filled ad-sel" value={to} onChange={(e) => setTo(e.target.value)} aria-label="종료일" />
         {tab === "questions" && (
-          <select className="inp filled" style={{ width: "auto" }} value={resolved} onChange={(e) => setResolved(e.target.value)}>
+          <select className="inp filled ad-sel" value={resolved} onChange={(e) => setResolved(e.target.value)} aria-label="해결 여부">
             <option value="">해결 여부 전체</option>
             <option value="true">해결됨</option>
             <option value="false">미해결</option>
           </select>
         )}
-        <button type="button" className="btn sec sm" onClick={() => fetchData()}>조회</button>
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => fetchData()}>조회</button>
       </div>
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card">
         {loading ? (
           <div className="empty"><b>불러오는 중…</b></div>
         ) : tab === "plans" ? (
@@ -134,7 +134,7 @@ export function AdminDataPage() {
                 plans.map((p) => (
                   <Fragment key={p.id}>
                     <tr
-                      style={{ cursor: "pointer" }}
+                      className="ad-rowlink"
                       onClick={() => setExpandedPlan((id) => (id === p.id ? null : p.id))}
                     >
                       <td><b>{p.studentName}</b></td>
@@ -146,12 +146,17 @@ export function AdminDataPage() {
                     {expandedPlan === p.id && (
                       <tr>
                         <td colSpan={5}>
-                          <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
-                            {p.tasks.map((t) => (
-                              <li key={t.id}>{t.isDone ? "✓" : "○"} {t.title}</li>
-                            ))}
-                          </ul>
-                          {p.comment ? <p className="sub" style={{ marginTop: "8px" }}>코멘트: {p.comment}</p> : null}
+                          <div className="ad-detail">
+                            <ul className="ad-tasks">
+                              {p.tasks.map((t) => (
+                                <li key={t.id} className={t.isDone ? "done" : undefined}>
+                                  <i aria-hidden>{t.isDone ? "✓" : "·"}</i>
+                                  {t.title}
+                                </li>
+                              ))}
+                            </ul>
+                            {p.comment ? <p className="ad-note">코멘트: {p.comment}</p> : null}
+                          </div>
                         </td>
                       </tr>
                     )}
@@ -179,7 +184,7 @@ export function AdminDataPage() {
                 questions.map((qrow) => (
                   <Fragment key={qrow.id}>
                     <tr
-                      style={{ cursor: "pointer" }}
+                      className="ad-rowlink"
                       onClick={() => setExpandedQuestion((id) => (id === qrow.id ? null : qrow.id))}
                     >
                       <td><b>{qrow.studentName}</b></td>
@@ -192,17 +197,19 @@ export function AdminDataPage() {
                     {expandedQuestion === qrow.id && (
                       <tr>
                         <td colSpan={6}>
-                          <p style={{ whiteSpace: "pre-wrap" }}>{qrow.content}</p>
-                          {qrow.aiAnswer && (
-                            <div className="banner ok" style={{ marginTop: "10px" }}>
-                              <span><b>AI 답변</b> — {qrow.aiAnswer}</span>
-                            </div>
-                          )}
-                          {qrow.teacherAnswer && (
-                            <div className="banner info" style={{ marginTop: "10px" }}>
-                              <span><b>선생님 답변</b> — {qrow.teacherAnswer}</span>
-                            </div>
-                          )}
+                          <div className="ad-detail">
+                            <p className="ad-body">{qrow.content}</p>
+                            {qrow.aiAnswer && (
+                              <div className="banner ok">
+                                <span><b>AI 답변</b> — {qrow.aiAnswer}</span>
+                              </div>
+                            )}
+                            {qrow.teacherAnswer && (
+                              <div className="banner info">
+                                <span><b>선생님 답변</b> — {qrow.teacherAnswer}</span>
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )}

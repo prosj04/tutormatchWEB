@@ -142,8 +142,8 @@ export function AdminMatchesPage() {
   }
 
   return (
-    <section className="page on" data-screen-label="매칭 관리">
-      <div className="crumb">/admin/matches</div>
+    <section className="page on ad-page" data-screen-label="매칭 관리">
+      <div className="crumb">매칭</div>
       <h1>매칭 관리</h1>
       <p className="sub">진행 중인 매칭 현황입니다.</p>
 
@@ -161,9 +161,9 @@ export function AdminMatchesPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                  className="ad-opt-av"
                   src={getEffectivePhotoUrl(t.photoUrl, t.gender)}
                   alt={`${t.name} 프로필`}
-                  style={{ width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover", marginRight: "6px", verticalAlign: "middle" }}
                 />
                 {t.name} · {count}명
               </button>
@@ -171,25 +171,21 @@ export function AdminMatchesPage() {
           })}
         </div>
         {selectedTeacher ? (
-          <button type="button" className="btn sec sm" style={{ marginLeft: "auto" }} onClick={() => openAddModal()}>
+          <button type="button" className="btn btn-ghost btn-sm ad-push" onClick={() => openAddModal()}>
             학생 추가
           </button>
         ) : null}
       </div>
 
       {loadError && (
-        <div className="sec card" style={{ marginTop: 0, borderColor: "var(--danger, #d33)" }}>
-          <div className="row">
-            <div className="g">
-              <b>불러오지 못했습니다</b>
-              <p>매칭 현황을 불러오는 중 문제가 발생했습니다.</p>
-            </div>
-            <button type="button" className="btn sec sm" onClick={() => loadAll()}>다시 시도</button>
-          </div>
+        <div className="sec banner err">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+          <span>불러오지 못했습니다 — 매칭 현황을 불러오는 중 문제가 발생했습니다.</span>
+          <button type="button" className="btn ghost sm ad-push" onClick={() => loadAll()}>다시 시도</button>
         </div>
       )}
 
-      <div className="sec card" style={{ overflowX: "auto", marginTop: 0 }}>
+      <div className="sec card tbl-wrap">
         <table className="tbl">
           <thead>
             <tr>
@@ -215,7 +211,9 @@ export function AdminMatchesPage() {
                   <td>{m.startDate}</td>
                   <td><span className="bst acc">수업중</span></td>
                   <td>
-                    <button type="button" className="btn ghost sm" onClick={() => setUnmatchId(m.id)}>해제</button>
+                    <div className="ad-acts">
+                      <button type="button" className="btn danger sm" onClick={() => setUnmatchId(m.id)}>해제</button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -229,7 +227,7 @@ export function AdminMatchesPage() {
           <div className="m-b">
             <h3>학생 매칭 등록</h3>
             <p className="m-p">{selectedTeacher?.name ?? "선생님"} 에게 학생을 배정합니다.</p>
-            <div className="field" style={{ marginTop: "14px" }}>
+            <div className="field ad-field-top">
               <label>학생</label>
               <select className="inp filled" value={studentId} onChange={(e) => setStudentId(e.target.value)}>
                 {studentOptions.map((s) => (
@@ -259,7 +257,7 @@ export function AdminMatchesPage() {
             </div>
           </div>
           <div className="m-f">
-            <button type="button" className="btn sec" onClick={() => setModalOpen(false)} disabled={creating}>취소</button>
+            <button type="button" className="btn btn-ghost" onClick={() => setModalOpen(false)} disabled={creating}>취소</button>
             <button type="button" className="btn pri" onClick={() => void createMatch()} disabled={creating}>
               {creating ? "등록 중…" : "매칭 등록"}
             </button>
@@ -274,7 +272,7 @@ export function AdminMatchesPage() {
             <p className="m-p">진행 중인 수업 일정이 모두 취소되고 학생·선생님에게 알림이 발송됩니다.</p>
           </div>
           <div className="m-f">
-            <button type="button" className="btn sec" onClick={() => setUnmatchId(null)}>취소</button>
+            <button type="button" className="btn btn-ghost" onClick={() => setUnmatchId(null)}>취소</button>
             <button
               type="button"
               className="btn danger solid"

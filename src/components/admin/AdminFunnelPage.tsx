@@ -56,8 +56,8 @@ export function AdminFunnelPage() {
   const maxTotal = funnel ? Math.max(...funnel.steps.map((s) => s.total), 1) : 1;
 
   return (
-    <section className="page on" data-screen-label="퍼널">
-      <div className="crumb">/admin/funnel</div>
+    <section className="page on ad-page" data-screen-label="퍼널">
+      <div className="crumb">퍼널</div>
       <h1>전환 퍼널</h1>
       <p className="sub">상담 CTA → 상담 신청 → 가입 → 수업 시작(ACTIVE) 단계별 이벤트 집계</p>
 
@@ -88,16 +88,16 @@ export function AdminFunnelPage() {
         <p className="sub">불러오는 중…</p>
       ) : (
         <>
-          <div className="sec grid3" style={{ marginTop: 0 }}>
-            <div className="card kpi">
+          <div className="sec kpis">
+            <div className="kpi">
               <b>{formatRate(funnel.rates.consultationFromCta)}</b>
               <span>상담 신청 / CTA</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{formatRate(funnel.rates.signupFromConsultation)}</b>
               <span>가입 / 상담 신청</span>
             </div>
-            <div className="card kpi">
+            <div className="kpi">
               <b>{formatRate(funnel.rates.activeFromSignup)}</b>
               <span>ACTIVE / 가입</span>
             </div>
@@ -108,7 +108,7 @@ export function AdminFunnelPage() {
               <div key={step.key} className="f">
                 <b>{index + 1}. {step.label}</b>
                 <span className="tr">
-                  <i style={{ "--w": `${Math.max(4, (step.total / maxTotal) * 100)}%` } as React.CSSProperties}></i>
+                  <i style={{ "--w": `${step.total === 0 ? 0 : Math.max(4, (step.total / maxTotal) * 100)}%` } as React.CSSProperties}></i>
                 </span>
                 <span className="n">
                   <b>{step.total.toLocaleString()}</b> · 고유 {step.uniqueUsers.toLocaleString()}
