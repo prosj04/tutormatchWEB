@@ -1,0 +1,441 @@
+/* ============================================================
+   Concord 홈 랜딩 v3 — "Editorial"
+   landing-v2.css를 대체한다. 모든 선택자는 .lx- 접두사로 스코프한다
+   (예외: body.story-dark 아래의 공개 크롬 은닉 — 스크롤텔링 몰입 구간).
+   토큰·타이포·프리미티브는 src/app/ds.css.
+   스펙: docs/design/DESIGN_SYSTEM_V3.md
+   ============================================================ */
+
+.lx-root{ overflow-x:clip; }
+.lx-root section[id]{ scroll-margin-top:clamp(72px, 8vh, 100px); }
+.lx-mobile-only{ display:none !important; }
+
+/* 템포 = 위계: 핵심 카피는 느리게, 배경 정보는 빠르게 */
+.lx-slow.reveal{ transition-duration:1.1s; }
+.lx-fast.reveal{ transition-duration:.5s; }
+/* 목록 스태거 80ms */
+.lx-stag.reveal{ transition-delay:calc(var(--lx-i, 0) * 80ms); }
+
+.lx-ok{ color:var(--acc-text); margin-right:.5em; }
+.lx-no{ color:var(--mut-2); margin-right:.5em; }
+.lx-note-link{ display:inline-flex; align-items:center; min-height:40px; font-size:12.5px; color:var(--mut-2); text-decoration:underline; text-decoration-color:var(--line-2); text-underline-offset:4px; }
+.lx-note-link:hover{ color:var(--fg); }
+
+/* ------------------------------------------------------------
+   1. HERO — 투명 헤더 아래 종이 바탕, 12열(7 / 5)
+   ------------------------------------------------------------ */
+.lx-hero{ padding:clamp(48px, 6vw, 96px) 0 clamp(72px, 8vw, 132px); }
+.lx-hero-grid{ row-gap:clamp(36px, 4vw, 56px); align-items:center; }
+.lx-hero-copy{ grid-column:1 / span 7; min-width:0; }
+.lx-hero-fig{ grid-column:8 / span 5; min-width:0; margin:0; }
+.lx-hero-copy .eyebrow{ margin-bottom:clamp(24px, 2.6vw, 38px); }
+.lx-hero h1{
+  /* .display + CMS 줄바꿈 의도 존중 — 어절 중간에서 끊기지 않게 */
+  text-wrap:balance; word-break:keep-all;
+}
+.lx-hero-lede{ margin-top:clamp(22px, 2.2vw, 32px); max-width:32em; }
+.lx-hero-cta{
+  display:flex; align-items:center; gap:clamp(14px, 1.8vw, 30px);
+  margin-top:clamp(30px, 3.4vw, 46px); flex-wrap:wrap;
+}
+.lx-hero-note{
+  margin-top:clamp(30px, 3.4vw, 48px); padding-top:16px;
+  border-top:1px solid var(--line); max-width:34em;
+}
+.lx-hero-fig img{ width:100%; height:auto; border-radius:var(--r-xs); }
+.lx-hero-fig figcaption{ margin-top:14px; }
+
+@media (max-width:960px){
+  .lx-hero-copy,.lx-hero-fig{ grid-column:1 / -1; }
+  /* 모바일 순서: 텍스트 → 이미지 (DOM 순서 그대로) */
+  .lx-hero-fig{ max-width:520px; }
+}
+
+/* ------------------------------------------------------------
+   2. SAFETY STORY — 풀블리드 잉크 바탕, 세리프 대형 인용
+   ------------------------------------------------------------ */
+.lx-story{ position:relative; }
+.lx-story-pin{ position:relative; }
+.lx-story-stage{
+  position:sticky; top:0; height:100svh; overflow:hidden;
+  background:var(--bg);
+  transition:background-color .6s var(--ease);
+}
+.lx-story-stage.is-dark{ background:var(--ink); }
+
+.lx-story-item{
+  position:absolute; left:50%; top:50%;
+  width:min(1000px, calc(100% - 2 * var(--gutter)));
+  text-align:center; opacity:0; pointer-events:none;
+  transform:translate(-50%, -50%) translateY(56px);
+  transition:opacity .95s var(--ease-out), transform .95s var(--ease-out);
+  will-change:transform, opacity;
+}
+.lx-story-item.is-active{ opacity:1; transform:translate(-50%, -50%); pointer-events:auto; }
+.lx-story-item.is-passed{ opacity:0; transform:translate(-50%, -50%) translateY(-56px); }
+.lx-story-item h2{
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(27px, 3.6vw, 54px); line-height:1.34; letter-spacing:-.03em;
+  color:var(--fg); text-wrap:balance; transition:color .6s var(--ease);
+}
+.lx-story-stage.is-dark .lx-story-item h2,
+.lx-story-stage.is-dark .lx-story-line{ color:var(--on-ink); }
+
+/* 매칭 인용 — 자동 전진에 따라 하나씩 누적 */
+.lx-story-stack{ display:flex; flex-direction:column; gap:clamp(20px, 3.2vh, 38px); }
+.lx-story-line{
+  margin:0; font-family:var(--serif); font-weight:500;
+  font-size:clamp(20px, 2.5vw, 36px); line-height:1.42; letter-spacing:-.03em;
+  color:var(--fg); text-wrap:balance;
+  opacity:0; transform:translateY(38px);
+  transition:opacity .95s var(--ease-out), transform .95s var(--ease-out);
+}
+.lx-story-line.on{ opacity:1; transform:none; }
+
+/* 피벗(선언) — 한 화면 중앙 대형 세리프 */
+.lx-story-pivot h2{ font-size:clamp(30px, 4.4vw, 68px); line-height:1.2; }
+
+/* 절차 01·02 — 피벗 다음 별도 화면, 2열 */
+.lx-story-steps-pin{ position:relative; }
+.lx-story-steps-vp{
+  position:sticky; top:0; height:100svh;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 var(--gutter);
+}
+.lx-story-steps{
+  list-style:none; width:min(var(--wrap), 100%); margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:clamp(28px, 4vw, 72px); align-items:start; text-align:left;
+}
+.lx-story-step{
+  padding-top:clamp(18px, 2vw, 26px); border-top:1px solid var(--line);
+  opacity:0; transform:translateY(26px);
+  transition:opacity .8s var(--ease-out), transform .8s var(--ease-out);
+}
+.lx-story-step.on{ opacity:1; transform:none; }
+.lx-story-step .idx{ display:block; font-size:clamp(34px, 3.6vw, 56px); line-height:1; }
+.lx-story-step h3{
+  margin-top:clamp(16px, 1.8vw, 26px);
+  font-size:clamp(19px, 1.5vw, 23px); font-weight:600; letter-spacing:-.02em; color:var(--fg);
+}
+.lx-story-step p{ margin-top:10px; font-size:15.5px; line-height:1.75; color:var(--mut); text-wrap:pretty; }
+
+/* 몰입(다크) 구간: 헤더·상단 배너·하단 플로팅 CTA 등 UI 크롬 은닉 */
+body.story-dark header.site{ opacity:0; pointer-events:none; transition:opacity .4s var(--ease); }
+body.story-dark .site-banner{
+  background:var(--ink); color:var(--on-ink); border-color:transparent;
+  transition:background-color .5s var(--ease), color .5s var(--ease);
+}
+body.story-dark .site-banner-text,body.story-dark .site-banner-cta{ color:var(--on-ink); }
+body.story-dark .sticky-cta{
+  opacity:0 !important; pointer-events:none !important; transform:translateY(102%) !important;
+}
+
+@media (max-width:760px){
+  .lx-story-steps{ grid-template-columns:1fr; gap:26px; }
+}
+
+/* ------------------------------------------------------------
+   3. 원장(ledger) 목록 — 번호 + 제목 + 설명, 행 헤어라인
+   ------------------------------------------------------------ */
+.lx-led{ list-style:none; margin:0; padding:0; border-bottom:1px solid var(--line); }
+.lx-led-row{
+  display:grid; grid-template-columns:minmax(52px, auto) minmax(0,1fr);
+  column-gap:clamp(18px, 2.2vw, 36px);
+  padding:clamp(22px, 2.6vw, 34px) 0; border-top:1px solid var(--line);
+}
+.lx-led-row .idx{ font-size:clamp(26px, 2.4vw, 38px); line-height:1.05; }
+.lx-led-row h3{ font-size:clamp(17px, 1.4vw, 21px); font-weight:600; letter-spacing:-.02em; color:var(--fg); }
+.lx-led-row p{ margin-top:8px; font-size:15px; line-height:1.75; color:var(--mut); text-wrap:pretty; }
+.lx-led-row.is-on h3{ color:var(--fg); }
+.lx-led-row.is-on .idx{ color:var(--acc-text); }
+
+/* 아코디언 (프로세스·FAQ) — 기본 닫힘, 외부 클릭 시 닫힘 */
+.lx-acc{ border-top:1px solid var(--line); }
+.lx-acc-item{ border-bottom:1px solid var(--line); }
+.lx-acc-btn{
+  display:flex; align-items:baseline; gap:clamp(16px, 2.2vw, 34px);
+  width:100%; padding:clamp(21px, 2.4vw, 30px) 0;
+  border:0; background:none; text-align:left; color:inherit;
+  transition:padding-left .28s var(--ease);
+}
+.lx-acc-btn:hover{ padding-left:10px; }
+.lx-acc-btn .idx{
+  flex:0 0 auto; min-width:clamp(48px, 4.4vw, 78px);
+  font-size:clamp(26px, 2.5vw, 40px); line-height:1; transition:color .2s;
+}
+.lx-acc-item.is-on .lx-acc-btn .idx,
+.lx-acc-btn[aria-expanded="true"] .idx{ color:var(--acc-text); }
+.lx-acc-t{
+  flex:1; min-width:0;
+  font-size:clamp(16.5px, 1.4vw, 21px); font-weight:600; letter-spacing:-.02em;
+  color:var(--fg); line-height:1.45; text-wrap:pretty;
+}
+.lx-acc-p{
+  padding:0 0 clamp(22px, 2.4vw, 30px);
+  padding-left:calc(clamp(48px, 4.4vw, 78px) + clamp(16px, 2.2vw, 34px));
+  max-width:64ch; font-size:15.5px; line-height:1.78; color:var(--mut); text-wrap:pretty;
+}
+.lx-acc-p.lx-acc-p-flush{ padding-left:0; }
+
+/* +/− 인디케이터 (이모지·아이콘 폰트 없이 1px 선) */
+.lx-ind{ position:relative; flex:0 0 auto; width:14px; height:14px; color:var(--mut-2); align-self:center; }
+.lx-ind::before,.lx-ind::after{
+  content:""; position:absolute; background:currentColor;
+  transition:transform .26s var(--ease), opacity .26s var(--ease);
+}
+.lx-ind::before{ left:0; right:0; top:50%; height:1px; transform:translateY(-.5px); }
+.lx-ind::after{ top:0; bottom:0; left:50%; width:1px; transform:translateX(-.5px); }
+[aria-expanded="true"] .lx-ind{ color:var(--acc-text); }
+[aria-expanded="true"] .lx-ind::after{ transform:translateX(-.5px) scaleY(0); }
+
+/* ------------------------------------------------------------
+   4. 항목 + 고정 목업 2열 (프로세스 · 학습관리)
+   목업은 스크롤을 따라다니지 않는다 — 목록 기준 세로 중앙 고정.
+   ------------------------------------------------------------ */
+.lx-split{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0, clamp(300px, 29vw, 400px));
+  gap:clamp(36px, 4.6vw, 88px); align-items:center;
+}
+.lx-mock{
+  align-self:center; user-select:none;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card);
+  padding:clamp(20px, 1.9vw, 28px);
+}
+.lx-mock-view{ animation:lx-fade .3s var(--ease) both; }
+@keyframes lx-fade{ from{ opacity:0; } to{ opacity:1; } }
+.lx-mock-head{
+  display:flex; align-items:baseline; gap:10px;
+  padding-bottom:12px; border-bottom:1px solid var(--line);
+}
+.lx-mock-head strong{ font-size:13.5px; font-weight:600; color:var(--fg); }
+.lx-mock-head .t{ margin-left:auto; font-size:11.5px; color:var(--mut-2); }
+.lx-mock-lede{ margin-top:12px; font-size:13.5px; line-height:1.65; color:var(--mut); }
+.lx-mock-rows{ display:flex; flex-direction:column; }
+.lx-mock-row{
+  display:grid; grid-template-columns:minmax(58px, auto) minmax(0,1fr); gap:12px;
+  padding:11px 0; border-bottom:1px solid var(--line);
+  font-size:13.5px; line-height:1.6;
+}
+.lx-mock-row:last-child{ border-bottom:0; }
+.lx-mock-row .k{ font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--mut-2); padding-top:2px; }
+.lx-mock-row .v{ color:var(--fg); text-wrap:pretty; }
+.lx-mock-foot{ margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:12px; color:var(--mut-2); }
+.lx-mock-note{ margin-top:12px; font-size:12px; color:var(--mut-2); text-align:center; }
+.lx-mock-btn{
+  display:inline-flex; align-items:center; gap:6px; margin-top:14px;
+  border:0; background:none; padding:0;
+  font-size:13px; font-weight:600; color:var(--acc-text); cursor:default;
+}
+
+/* 숙제 목업 — 요일별 잔 박스 나열 금지, 행 목록 */
+.lx-hw-row{
+  display:grid; grid-template-columns:22px minmax(0,1fr) auto; align-items:baseline; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px;
+}
+.lx-hw-row:last-child{ border-bottom:0; }
+.lx-hw-row .d{ font-family:var(--serif); font-size:13.5px; color:var(--mut-2); }
+.lx-hw-row .v{ color:var(--fg); }
+.lx-hw-row .c{ font-size:12px; color:var(--acc-text); }
+.lx-hw-row.done .v{ color:var(--mut-2); text-decoration:line-through; text-decoration-color:var(--line-2); }
+
+/* 질의응답 목업 */
+.lx-qa{ display:flex; flex-direction:column; gap:14px; }
+.lx-qa + .lx-qa-sep{ margin-top:14px; }
+.lx-qa-msg .who{ display:block; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--mut-2); margin-bottom:5px; }
+.lx-qa-msg.a .who{ color:var(--acc-text); }
+.lx-qa-msg p{ font-size:13.5px; line-height:1.65; color:var(--fg); text-wrap:pretty; }
+.lx-mock-sub{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+
+/* 진도 게이지 */
+.lx-gauge{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+.lx-gauge .lbl{ font-size:12.5px; color:var(--mut); }
+.lx-gauge .pct{ font-family:var(--serif); font-weight:500; font-size:26px; letter-spacing:-.03em; color:var(--fg); font-variant-numeric:tabular-nums; }
+.lx-gauge-bar{ margin-top:10px; height:2px; background:var(--panel-2); }
+.lx-gauge-bar > span{ display:block; height:100%; background:var(--acc); }
+
+@media (max-width:900px){
+  .lx-split{ grid-template-columns:1fr; gap:32px; }
+  .lx-mock{ max-width:460px; }
+}
+
+/* ------------------------------------------------------------
+   5. 성과 마퀴 — 느린 마퀴, 사진 원본 비율
+   ------------------------------------------------------------ */
+.lx-marq{
+  overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:clamp(26px, 3vw, 44px) 0;
+}
+.lx-marq-track{
+  display:flex; align-items:flex-start; gap:clamp(34px, 3.6vw, 64px); width:max-content;
+  animation:lx-marq 72s linear infinite;
+}
+.lx-marq:hover .lx-marq-track{ animation-play-state:paused; }
+@keyframes lx-marq{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+.lx-res{ flex:none; width:clamp(190px, 16vw, 232px); }
+.lx-res img{ width:100%; height:auto; border-radius:var(--r-xs); margin-bottom:14px; }
+.lx-res-cap{
+  display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline;
+  font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--mut-2);
+}
+.lx-res-score{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; margin-top:8px;
+  font-family:var(--serif); font-weight:500; letter-spacing:-.025em; line-height:1.4;
+  font-size:clamp(16px, 1.15vw, 18px); font-variant-numeric:tabular-nums;
+}
+/* 점수 조각은 어절 중간에서 끊지 않는다 — 넘치면 '→ 이후' 가 한 덩어리로 다음 줄 */
+.lx-res-score > *,.lx-res-score .before,.lx-res-score .after{ white-space:nowrap; }
+.lx-res-score .before{ color:var(--mut-2); }
+.lx-res-score .arr{ color:var(--mut-2); font-size:.8em; }
+.lx-res-score .after{ color:var(--fg); }
+@media (hover:none){
+  .lx-marq{ overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .lx-marq::-webkit-scrollbar{ display:none; }
+  .lx-marq-track{ animation:none; }
+}
+@media (prefers-reduced-motion:reduce){ .lx-marq-track{ animation:none; } }
+
+/* ------------------------------------------------------------
+   6. 후기 — 헤어라인으로 나눈 3열 풀쿼트
+   ------------------------------------------------------------ */
+.lx-hall{ margin-bottom:clamp(44px, 5vw, 76px); }
+.lx-quotes{
+  display:grid; grid-template-columns:repeat(3, minmax(0,1fr));
+  border-top:1px solid var(--line);
+}
+.lx-quote{ padding:clamp(26px, 3vw, 44px) clamp(18px, 2.2vw, 34px); border-left:1px solid var(--line); }
+.lx-quote:first-child{ border-left:0; padding-left:0; }
+.lx-quote:last-child{ padding-right:0; }
+.lx-quote-photo{ width:56px; margin-bottom:18px; }
+.lx-quote-photo img{ width:100%; height:auto; border-radius:var(--r-xs); }
+.lx-quote-t{
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(19px, 1.6vw, 24px); line-height:1.4; letter-spacing:-.028em; color:var(--fg);
+  text-wrap:balance;
+}
+.lx-quote-q{
+  margin-top:16px; font-family:var(--serif);
+  font-size:clamp(15.5px, 1.2vw, 17.5px); line-height:1.78; color:var(--mut); text-wrap:pretty;
+}
+.lx-quote-meta{ margin-top:20px; display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px; }
+.lx-quote-by{ font-size:12.5px; color:var(--mut-2); }
+.lx-quote-grade{
+  display:inline-flex; align-items:baseline; gap:7px;
+  font-family:var(--serif); font-weight:500; font-size:15px; letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+}
+.lx-quote-grade .from{ color:var(--mut-2); }
+.lx-quote-grade .arrow{ color:var(--mut-2); font-size:.85em; }
+.lx-quote-grade .to{ color:var(--acc-text); }
+.lx-imgnote{ margin-top:18px; font-size:12px; color:var(--mut-2); }
+@media (max-width:900px){
+  .lx-quotes{ grid-template-columns:1fr; }
+  .lx-quote{ border-left:0; border-top:1px solid var(--line); padding-left:0; padding-right:0; }
+  .lx-quote:first-child{ border-top:0; }
+}
+
+/* ------------------------------------------------------------
+   7. 선생님 — 텍스트 링크형 전체 보기
+   ------------------------------------------------------------ */
+.lx-more{ margin-top:clamp(34px, 3.6vw, 52px); }
+
+/* ------------------------------------------------------------
+   8. 요금 — 왼쪽 제목·보장, 오른쪽 한 줄 카드
+   ------------------------------------------------------------ */
+.lx-price{
+  display:grid; grid-template-columns:minmax(0, .82fr) minmax(0, 1.18fr);
+  gap:clamp(36px, 4.4vw, 80px); align-items:start;
+}
+.lx-price-left .eyebrow{ margin-bottom:clamp(22px, 2.4vw, 34px); }
+.lx-price-guar{ margin-top:clamp(24px, 2.6vw, 36px); border-top:1px solid var(--line); }
+.lx-price-guar p{
+  display:flex; gap:2px; padding:14px 0; border-bottom:1px solid var(--line);
+  font-size:15.5px; color:var(--mut);
+}
+.lx-price-right .tier-tabs{ margin-bottom:clamp(24px, 2.6vw, 34px); }
+@media (max-width:900px){
+  /* minmax(0,…) — 가로 스와이프 카드 줄의 min-content 가 열을 뷰포트 밖으로 밀지 않게 */
+  .lx-price{ grid-template-columns:minmax(0,1fr); }
+}
+
+/* ------------------------------------------------------------
+   9. 비교표 — 헤어라인 표, Concord 열만 옅은 액센트
+   ------------------------------------------------------------ */
+.lx-cmp-wrap{ overflow-x:auto; }
+.lx-cmp{ width:100%; border-collapse:collapse; min-width:600px; }
+.lx-cmp th{
+  padding:14px clamp(14px, 1.4vw, 22px); text-align:left;
+  font-size:11.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mut-2); border-bottom:1px solid var(--line-2); white-space:nowrap;
+}
+.lx-cmp th.lx-cc{ color:var(--acc-text); }
+.lx-cmp td{
+  padding:clamp(15px, 1.6vw, 21px) clamp(14px, 1.4vw, 22px);
+  border-bottom:1px solid var(--line); font-size:15px; line-height:1.6; color:var(--mut); text-wrap:pretty;
+}
+.lx-cmp td:first-child{ color:var(--fg); font-weight:600; }
+.lx-cmp tr:last-child td{ border-bottom:0; }
+.lx-cmp .lx-cc{ background:rgba(var(--acc-rgb), .045); }
+.lx-cmp td.lx-cc{ color:var(--fg); }
+
+/* 모바일: 600px 표를 좌우 스크롤로 밀면 정작 Concord 열이 화면 밖으로 나간다.
+   행 단위 헤어라인 블록으로 쌓아 세 값을 모두 노출한다(문구·✓/× 병기 그대로). */
+@media (max-width:640px){
+  .lx-cmp-wrap{ overflow-x:visible; }
+  .lx-cmp{ min-width:0; display:block; }
+  .lx-cmp thead{ display:none; }
+  .lx-cmp tbody,.lx-cmp tr{ display:block; }
+  .lx-cmp tr{ padding:clamp(16px, 4vw, 20px) 0; border-bottom:1px solid var(--line); }
+  .lx-cmp tr:last-child{ border-bottom:0; }
+  .lx-cmp td{ display:block; padding:0; border:0; font-size:14.5px; }
+  .lx-cmp td:first-child{
+    font-size:16px; font-weight:600; color:var(--fg); letter-spacing:-.02em; margin-bottom:10px;
+  }
+  .lx-cmp td[data-lx-col]{
+    display:flex; align-items:baseline; gap:8px;
+    padding:6px 0;
+  }
+  .lx-cmp td[data-lx-col]::before{
+    content:attr(data-lx-col); flex:0 0 5.2em;
+    font-size:10.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--mut-2);
+  }
+  .lx-cmp td.lx-cc{ padding:6px 10px; margin-top:2px; }
+  .lx-cmp td.lx-cc::before{ color:var(--acc-text); }
+}
+
+/* ------------------------------------------------------------
+   10. FAQ — 왼쪽 제목 / 오른쪽 헤어라인 아코디언 + 기존 CTA 2개
+   ------------------------------------------------------------ */
+.lx-faq{
+  display:grid; grid-template-columns:minmax(0, .78fr) minmax(0, 1.22fr);
+  gap:clamp(32px, 4vw, 76px); align-items:start;
+}
+.lx-faq-head{ position:sticky; top:clamp(88px, 12vh, 132px); }
+.lx-acc-plain .lx-acc-btn{ gap:clamp(18px, 2vw, 28px); }
+.lx-acc-plain .lx-acc-t{ font-size:clamp(16px, 1.25vw, 19px); }
+.lx-faq-cta{ display:flex; flex-wrap:wrap; align-items:center; gap:clamp(8px, 1.2vw, 18px); margin-top:clamp(28px, 3vw, 40px); }
+@media (max-width:900px){
+  .lx-faq{ grid-template-columns:1fr; }
+  .lx-faq-head{ position:static; }
+}
+
+/* ------------------------------------------------------------
+   11. 최종 CTA 밴드 (.cta-band = ds.css) 내부 배치
+   ------------------------------------------------------------ */
+.lx-cta-inner{ max-width:none; }
+/* 헤드라인 한 줄 원칙 — 데스크톱은 한 줄, 좁은 화면에서만 균형 줄바꿈 */
+.lx-cta-inner h2{ max-width:none; font-size:clamp(30px, 3.6vw, 56px); text-wrap:balance; }
+.lx-cta-inner p{ margin-top:clamp(16px, 1.8vw, 24px); max-width:34em; font-size:17px; line-height:1.7; }
+.lx-cta-inner .footnote{ display:inline-flex; align-items:center; min-height:40px; margin-top:6px; text-decoration:underline; text-underline-offset:4px; }
+.lx-cta-inner .btn{ margin-top:clamp(28px, 3vw, 40px); }
+
+/* ------------------------------------------------------------
+   12. 반응형
+   ------------------------------------------------------------ */
+@media (max-width:760px){
+  .lx-mobile-only{ display:block !important; }
+  .lx-desktop-only{ display:none !important; }
+  .lx-acc-p{ padding-left:0; }
+  .lx-acc-btn{ gap:16px; }
+  .lx-acc-btn .idx{ min-width:44px; }
+}

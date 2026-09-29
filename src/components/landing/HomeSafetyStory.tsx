@@ -67,7 +67,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         const pin = pinRef.current;
         if (pin) {
           // 주소창 수축과 무관한 안정 기준: 100svh로 고정된 스테이지 높이 사용
-          const stage = pin.querySelector<HTMLElement>(".lp2-story-stagevp");
+          const stage = pin.querySelector<HTMLElement>(".lx-story-stage");
           const vh = stage?.offsetHeight ?? window.innerHeight;
           const rect = pin.getBoundingClientRect();
           const total = pin.offsetHeight - vh;
@@ -117,7 +117,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
         // 절차 01·02 별도 화면: 핀이 끝난 뒤 스크롤 진행에 따라 하나씩 누적 등장
         const stepsPin = stepsPinRef.current;
         if (stepsPin) {
-          const stage = stepsPin.querySelector<HTMLElement>(".lp2-story-steps-vp");
+          const stage = stepsPin.querySelector<HTMLElement>(".lx-story-steps-vp");
           const vh = stage?.offsetHeight ?? window.innerHeight;
           const rect = stepsPin.getBoundingClientRect();
           const total = stepsPin.offsetHeight - vh;
@@ -148,7 +148,7 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
     const stepsPin = stepsPinRef.current;
     if (!stepsPin) return;
     // 핀은 매우 길어(수 화면 높이) 큰 임계값이 안 잡히므로, 실제 뷰포트 높이의 내부 스테이지를 관찰한다.
-    const target = stepsPin.querySelector<HTMLElement>(".lp2-story-steps-vp") ?? stepsPin;
+    const target = stepsPin.querySelector<HTMLElement>(".lx-story-steps-vp") ?? stepsPin;
     let autoT: ReturnType<typeof setTimeout> | null = null;
     const io = new IntersectionObserver(
       (entries) => {
@@ -216,33 +216,33 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
   }, [isDark]);
 
   return (
-    <section className="lp2-story" aria-label="성향 맞춤 선생님 배정">
+    <section className="lx-story" aria-label="성향 맞춤 선생님 배정">
       {/* 클로저·피벗 가중치(+1.5×2)만큼 스크롤 길이 확장 */}
-      <div ref={pinRef} className="lp2-story-pin" style={{ height: `${(totalUnits + 1) * UNIT_VH + 40}svh` }}>
-        <div className={`lp2-story-stagevp${isDark ? " is-dark" : ""}`}>
+      <div ref={pinRef} className="lx-story-pin" style={{ height: `${(totalUnits + 1) * UNIT_VH + 40}svh` }}>
+        <div className={`lx-story-stage${isDark ? " is-dark" : ""}`}>
           {/* 인트로 */}
-          <div className={`lp2-story-item lp2-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
+          <div className={`lx-story-item lx-story-intro${phase === "intro" ? " is-active" : " is-passed"}`}>
             <h2>{data.intro}</h2>
           </div>
 
           {/* 매칭 3쌍 — 스크롤/자동전진에 따라 하나씩 아래로 누적(쌓임) */}
           <div
-            className={`lp2-story-item lp2-story-newsstack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
+            className={`lx-story-item lx-story-stack${phase === "match" ? " is-active" : phase === "intro" ? "" : " is-passed"}`}
           >
             {data.matches.map((m, i) => (
-              <p key={m} className={`lp2-story-matchline${i < matchShown ? " on" : ""}`}>{m}</p>
+              <p key={m} className={`lx-story-line${i < matchShown ? " on" : ""}`}>{m}</p>
             ))}
           </div>
 
           {/* 클로저 */}
           <div
-            className={`lp2-story-item lp2-story-closer${phase === "closer" ? " is-active" : phase === "pivot" ? " is-passed" : ""}`}
+            className={`lx-story-item lx-story-closer${phase === "closer" ? " is-active" : phase === "pivot" ? " is-passed" : ""}`}
           >
             <h2>{data.closer}</h2>
           </div>
 
           {/* 전환 — 피벗 카피만 (절차 01·02는 핀 다음 별도 화면) */}
-          <div className={`lp2-story-item lp2-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
+          <div className={`lx-story-item lx-story-pivot${phase === "pivot" ? " is-active" : ""}`}>
             <h2>{pivotText}</h2>
           </div>
         </div>
@@ -252,18 +252,16 @@ export function HomeSafetyStory({ data }: { data: SafetyStoryData }) {
       {pivotSteps.length > 0 && (
         <div
           ref={stepsPinRef}
-          className="lp2-story-steps-pin"
+          className="lx-story-steps-pin"
           style={{ height: `${pivotSteps.length * STEP_VH + 100}svh` }}
         >
-          <div className="lp2-story-steps-vp">
-            <ol className="lp2-story-steps lp2-story-pivot-steps">
+          <div className="lx-story-steps-vp">
+            <ol className="lx-story-steps">
               {pivotSteps.map((s, i) => (
-                <li key={s.title} className={`lp2-story-step${i < stepsOn ? " on" : ""}`}>
-                  <span className="num">0{i + 1}</span>
-                  <div>
-                    <h3>{s.title}</h3>
-                    <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
-                  </div>
+                <li key={s.title} className={`lx-story-step${i < stepsOn ? " on" : ""}`}>
+                  <span className="idx">0{i + 1}</span>
+                  <h3>{s.title}</h3>
+                  <p style={{ whiteSpace: "pre-line" }}>{s.desc}</p>
                 </li>
               ))}
             </ol>

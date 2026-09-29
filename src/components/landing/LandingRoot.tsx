@@ -1,7 +1,7 @@
 "use client";
 
 import type { LandingCmsContent } from "@/lib/cms";
-import { LandingPageV2 } from "@/components/landing/LandingPageV2";
+import { LandingEditorial } from "@/components/landing/LandingEditorial";
 
 type Props = {
   cms?: LandingCmsContent;
@@ -9,5 +9,5 @@ type Props = {
 };
 
 export function LandingRoot({ cms, isEditMode = false }: Props) {
-  return <LandingPageV2 cms={cms} isEditMode={isEditMode} />;
+  return <LandingEditorial cms={cms} isEditMode={isEditMode} />;
 }
