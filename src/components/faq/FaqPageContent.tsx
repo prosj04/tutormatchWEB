@@ -51,7 +51,7 @@ export function FaqPageContent({
         }
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="sec">
         <div className="wrap">
           <FaqAccordionList faqs={faqs} />
         </div>

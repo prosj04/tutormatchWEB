@@ -19,7 +19,7 @@ type ConcordSubpageCtaProps = {
   source?: string;
 };
 
-/** 서브페이지 하단 상담 유도 밴드. concord.css의 기존 sec/wrap/card/btn 클래스만 사용. */
+/** 서브페이지 하단 상담 유도 밴드. 풀블리드 `.cta-band`(ds.css) + `.mk-cta-inner`(concord.css). */
 export function ConcordSubpageCta({
   siteContent,
   section,
@@ -53,32 +53,14 @@ export function ConcordSubpageCta({
     );
 
   return (
-    <section className="sec-sm">
+    <section className="cta-band">
       <div className="wrap">
-        <ConcordReveal
-          className="card"
-          style={{
-            textAlign: "center",
-            padding: "clamp(28px, 4vw, 44px)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: "clamp(20px, 2.4vw, 26px)", lineHeight: 1.3 }}>
-            {wrap("title", resolvedTitle)}
-          </h2>
-          {resolvedDescription ? (
-            <p style={{ margin: 0, color: "var(--mut-2)", fontSize: 15, maxWidth: 560 }}>
-              {wrap("subtext", resolvedDescription)}
-            </p>
-          ) : null}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-            <ConsultationApplyButton className="btn btn-acc btn-lg" source={source}>
-              {wrap("button", resolvedButton)}
-            </ConsultationApplyButton>
-          </div>
+        <ConcordReveal className="mk-cta-inner">
+          <h2>{wrap("title", resolvedTitle)}</h2>
+          {resolvedDescription ? <p>{wrap("subtext", resolvedDescription)}</p> : null}
+          <ConsultationApplyButton className="btn btn-on-acc btn-lg" source={source}>
+            {wrap("button", resolvedButton)}
+          </ConsultationApplyButton>
         </ConcordReveal>
       </div>
     </section>

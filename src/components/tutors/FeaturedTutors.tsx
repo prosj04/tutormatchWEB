@@ -28,6 +28,10 @@ const NEWS_REF_FALLBACK: [string, string, string, string][] = [
   ["학원 화장실에 ‘몰래카메라 설치’… 警, 50대 원장 입건", "경인일보", "2020", "https://www.kyeongin.com/article/1523526"],
 ];
 
+/**
+ * 선생님 레일. 한 줄 가로 배치 + 무한 순환(이동 계산은 기존과 동일).
+ * v3: 그림자·블러·확대 없이 농도(투명도)로만 중앙을 가리킨다.
+ */
 function TutorCarousel({
   cards,
   ctaLabel,
@@ -88,7 +92,7 @@ function TutorCarousel({
     setPos((p) => p + dir);
   }, []);
 
-  // 1.5초 자동 오른쪽 순환 (호버·조작 시 일시정지/리셋)
+  // 자동 순환 (호버·조작 시 일시정지/리셋)
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => go(1), 3000);
@@ -97,12 +101,12 @@ function TutorCarousel({
 
   return (
     <div
-      className="tpx-wrap"
+      className="tp-rail"
       ref={wrapRef}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="tpx-track" ref={trackRef}>
+      <div className="tp-rail-track" ref={trackRef}>
         {extended.map((card, i) => (
           <TutorProfileCard
             key={`${card.index}-${i}`}
@@ -113,10 +117,10 @@ function TutorCarousel({
           />
         ))}
       </div>
-      <button type="button" className="tpx-arrow tpx-prev" onClick={() => go(-1)} aria-label="이전 선생님">
+      <button type="button" className="tp-rail-arrow tp-rail-prev" onClick={() => go(-1)} aria-label="이전 선생님">
         ‹
       </button>
-      <button type="button" className="tpx-arrow tpx-next" onClick={() => go(1)} aria-label="다음 선생님">
+      <button type="button" className="tp-rail-arrow tp-rail-next" onClick={() => go(1)} aria-label="다음 선생님">
         ›
       </button>
     </div>
@@ -189,64 +193,56 @@ export function FeaturedTutors({
     }))
     .filter((p) => p.subject && p.before && p.after);
 
-
-
   return (
     <main>
-      {/* ── 다크 히어로 ── */}
-      <section className="tp-hero">
-        <div className="tp-hero-media" aria-hidden="true">
-          {edit(
-            "hero_image",
-            <Image
-              src={get("hero_image", "/images/placeholders/tutors-hero.png")}
-              alt=""
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority
-            />,
-            "image",
-          )}
+      {/* ── 페이지 머리: 제목·리드 + 사진(원본 비율) ── */}
+      <section className="page-head">
+        <div className="wrap inner tp-head-grid">
+          <ConcordReveal className="tp-head-text" as="div">
+            <h1 style={{ whiteSpace: "pre-line" }}>
+              {edit("hero_title", formatCmsMultiline(get("hero_title", "우리 아이와 잘 맞는 선생님,\nConcord에는 있습니다")))}
+            </h1>
+            <p>
+              {edit("hero_subtext", get("hero_subtext", "학습 조건부터 학생 성향까지 정밀하게 맞추는 1:1 매칭"))}
+            </p>
+          </ConcordReveal>
+          <ConcordReveal className="mk-fig tp-head-fig" as="div" delay={80}>
+            <span className="mk-fig-img">
+              {edit(
+                "hero_image",
+                <Image
+                  src={get("hero_image", "/images/placeholders/tutors-hero.png")}
+                  alt=""
+                  fill
+                  className="object-contain"
+                  sizes="(max-width:900px) 100vw, 44vw"
+                  priority
+                />,
+                "image",
+              )}
+            </span>
+          </ConcordReveal>
         </div>
-        <ConcordReveal className="wrap tp-hero-inner" as="div">
-          <h1 style={{ whiteSpace: "pre-line" }}>
-            {edit("hero_title", formatCmsMultiline(get("hero_title", "우리 아이와 잘 맞는 선생님,\nConcord에는 있습니다")))}
-          </h1>
-          <p className="tp-hero-sub">
-            {edit("hero_subtext", get("hero_subtext", "학습 조건부터 학생 성향까지 정밀하게 맞추는 1:1 매칭"))}
-          </p>
-        </ConcordReveal>
       </section>
 
-      
-      
-      
-      
-      {/* ── 특별한 이유 3가지 (Q&A) ── */}
+      {/* ── 특별한 이유 3가지 (문답 원장) ── */}
       {whys.length > 0 && secVisible("why_section_visible") ? (
-        <section className="sec tp-why-sec">
+        <section className="sec tp-why">
           <div className="wrap">
-            <ConcordReveal className="tp-sec-head" as="div">
-              <h2 style={{ whiteSpace: "pre-line" }}>
+            <ConcordReveal className="tp-sec-title" as="div">
+              <h2 className="h2" style={{ whiteSpace: "pre-line" }}>
                 {edit("why_title", formatCmsMultiline(get("why_title", "Concord 선생님이\n특별한 이유 3가지")))}
               </h2>
             </ConcordReveal>
-            <div className="tp-why-grid">
+            <div className="ledger">
               {whys.map((w, i) => (
-                <ConcordReveal key={w.q} className="card tp-why-card" as="article">
-                  <p className="tp-why-q">
-                    <span className="tp-why-mark" aria-hidden="true">Q.</span>
-                    {w.q}
-                  </p>
-                  <div className="tp-why-a">
-                    <span className="tp-why-mark tp-why-mark-a" aria-hidden="true">A.</span>
-                    <div>
-                      <h3>{w.a}</h3>
-                      <p>{w.desc}</p>
-                    </div>
+                <ConcordReveal key={w.q} className="ledger-row" as="div" delay={i * 80}>
+                  <span className="idx">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="ledger-title">{w.q}</div>
+                  <div className="ledger-body">
+                    <b>{w.a}</b>
+                    <p>{w.desc}</p>
                   </div>
-                  <span className="tp-why-n">0{i + 1}</span>
                 </ConcordReveal>
               ))}
             </div>
@@ -256,28 +252,28 @@ export function FeaturedTutors({
 
       {/* ── 이달의 검증 선생님 ── */}
       {secVisible("featured_section_visible") && (
-      <section className="sec tp-featured-sec" id="featured" style={{ scrollMarginTop: "80px" }}>
+      <section className="sec ruled" id="featured" style={{ scrollMarginTop: "80px" }}>
         <div className="wrap">
-          <ConcordReveal className="tp-sec-head" as="div">
+          <ConcordReveal className="sec-head" as="div">
             <span className="eyebrow">{edit("header_kicker", get("header_kicker", "TEACHERS"))}</span>
-            <h2>{edit("header_title", get("header_title", "이달의 검증 선생님"))}</h2>
-            <p>
-              {edit(
-                "header_subtext",
-                get(
+            <div className="sec-head-body">
+              <h2 className="h2">{edit("header_title", get("header_title", "이달의 검증 선생님"))}</h2>
+              <p className="lede">
+                {edit(
                   "header_subtext",
-                  "3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 상담에서 말씀해 주세요. 매니저가 매칭 가능 여부를 확인해 드려요.",
-                ),
-              )}
-            </p>
+                  get(
+                    "header_subtext",
+                    "3단계 검증을 통과한 선생님만 소개합니다. 마음에 드는 선생님이 있다면 상담에서 말씀해 주세요. 매니저가 매칭 가능 여부를 확인해 드려요.",
+                  ),
+                )}
+              </p>
+            </div>
           </ConcordReveal>
 
           {badges.length > 0 ? (
-            <ConcordReveal className="tutor-badge-row" aria-label="보장 안내">
+            <ConcordReveal className="tp-assure tag-line" aria-label="보장 안내">
               {badges.map((b) => (
-                <span key={b} className="tutor-badge">
-                  {b}
-                </span>
+                <span key={b}>{b}</span>
               ))}
             </ConcordReveal>
           ) : null}
@@ -291,15 +287,15 @@ export function FeaturedTutors({
       </section>
       )}
 
-      {/* ── 통계 카운터 ── */}
+      {/* ── 통계 ── */}
       {stats.length > 0 && secVisible("stats_section_visible") ? (
-        <section className="sec-sm tp-stats-sec">
+        <section className="sec-sm">
           <div className="wrap">
-            <ConcordReveal className="tp-stats" as="div">
+            <ConcordReveal className="mk-stats" as="div">
               {stats.map((s) => (
-                <div key={s.label} className="tp-stat">
-                  <CountUpStat value={s.number} className="tp-stat-n" />
-                  <span className="tp-stat-l">{s.label}</span>
+                <div key={s.label} className="mk-stat">
+                  <CountUpStat value={s.number} className="mk-stat-n" />
+                  <span className="mk-stat-l">{s.label}</span>
                 </div>
               ))}
             </ConcordReveal>
@@ -308,14 +304,16 @@ export function FeaturedTutors({
         </section>
       ) : null}
 
-      {/* ── 뉴스 근거: 대형 타이포 스택 (흰 배경) ── */}
+      {/* ── 보도 근거: 인용 스택 ── */}
       {secVisible("news_section_visible") && (
-      <section className="sec tp-newsintro-sec">
+      <section className="sec ruled">
         <div className="wrap">
-          <ConcordReveal className="tp-newsintro-head" as="div">
-            <h2>{getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}</h2>
+          <ConcordReveal className="tp-sec-title" as="div">
+            <h2 className="h2">
+              {getCmsSectionValue(siteContent, "safety_story", "tutors_lead", "대표가 모든 선생님을 직접 만나는 이유")}
+            </h2>
           </ConcordReveal>
-          <div className="tp-newsintro-stack">
+          <div className="tp-news-list">
             {NEWS_REF_FALLBACK.map(([fq, fp, fy], idx) => {
               const n = idx + 1;
               const quote = getCmsSectionValue(siteContent, "safety_story", `news${n}_quote`, fq);
@@ -323,22 +321,18 @@ export function FeaturedTutors({
               const year = getCmsSectionValue(siteContent, "safety_story", `news${n}_year`, fy);
               if (!quote) return null;
               return (
-                <ConcordReveal key={n} as="div">
-                  <div className="tp-newsintro-line">
-                    <span className="q">{quote}</span>
-                    <span className="s">{year} · {press}</span>
-                  </div>
+                <ConcordReveal key={n} className="tp-news-row" as="div" delay={idx * 80}>
+                  <span className="q">{quote}</span>
+                  <span className="s">{year} · {press}</span>
                 </ConcordReveal>
               );
             })}
           </div>
           <ConcordReveal as="div">
-            <p className="tp-newsintro-note">
+            <p className="tp-footnote">
               {getCmsSectionValue(siteContent, "safety_story", "news_note", "실제 보도된 사건입니다")}
             </p>
-          </ConcordReveal>
-          <ConcordReveal as="div">
-            <p className="tp-newsintro-empathy">
+            <p className="tp-news-empathy">
               {getCmsSectionValue(
                 siteContent,
                 "safety_story",
@@ -351,12 +345,12 @@ export function FeaturedTutors({
       </section>
       )}
 
-      {/* ── 성적 인증 그리드 ── */}
+      {/* ── 성적 인증 ── */}
       {proofs.length > 0 && secVisible("proof_section_visible") ? (
-        <section className="sec tp-proof-sec">
+        <section className="sec ruled">
           <div className="wrap">
-            <ConcordReveal className="tp-sec-head" as="div">
-              <h2 style={{ whiteSpace: "pre-line" }}>
+            <ConcordReveal className="tp-sec-title" as="div">
+              <h2 className="h2" style={{ whiteSpace: "pre-line" }}>
                 <CmsEdit active={isEditMode} section={PROOF_SECTION} cmsKey="section_title" type="text">
                   {formatCmsMultiline(
                     getProof("section_title", "학원에서는 성적이 안 올랐다면?\nConcord 학생들은 지금도 오르고 있습니다"),
@@ -365,27 +359,28 @@ export function FeaturedTutors({
               </h2>
             </ConcordReveal>
             <div className="tp-proof-grid">
-              {proofs.map((p) => (
-                <ConcordReveal key={p.n} className="card tp-proof-card" as="article">
-                  <div className="tp-proof-media">
+              {proofs.map((p, i) => (
+                <ConcordReveal key={p.n} className="mk-fig tp-proof-fig" as="article" delay={i * 80}>
+                  <span className="mk-fig-img">
                     <CmsEdit active={isEditMode} section={PROOF_SECTION} cmsKey={`proof${p.n}_image`} type="image">
                       <Image
                         src={p.image}
                         alt={`${p.student} 성적 인증`}
                         fill
-                        className="object-cover"
-                        sizes="(max-width:960px) 100vw, 33vw"
+                        className="object-contain"
+                        sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw"
                       />
                     </CmsEdit>
-                  </div>
-                  <div className="tp-proof-body">
-                    <span className="tp-proof-student">{p.student}</span>
-                    <p className="tp-proof-line">
-                      <strong>{p.subject}</strong> {p.before}
-                      <span className="arr">→</span>
-                      <em>{p.after}</em>
-                    </p>
-                    {p.months ? <span className="tp-proof-months">{p.months} 만에 달성</span> : null}
+                  </span>
+                  <div className="mk-fig-cap">
+                    <span className="who">{p.student}</span>
+                    <span className="shift">
+                      <span>{p.subject}</span>
+                      <span className="sub">{p.before}</span>
+                      <span className="arr" aria-hidden="true">→</span>
+                      <span>{p.after}</span>
+                    </span>
+                    {p.months ? <span className="who">{p.months} 만에 달성</span> : null}
                   </div>
                 </ConcordReveal>
               ))}
@@ -397,33 +392,30 @@ export function FeaturedTutors({
         </section>
       ) : null}
 
-      {/* ── 변경 보장 ── */}
+      {/* ── 재매칭 보장 ── */}
       {secVisible("rematch_section_visible") && (
-      <section className="sec-sm">
-        <div className="wrap">
-          <ConcordReveal className="tp-rematch-band" as="div">
-            <div>
-              <h2>{edit("rematch_title", get("rematch_title", "선생님이 마음에 안 들면 어떡하죠?"))}</h2>
-              <p>
-                {edit(
-                  "rematch_subtext",
-                  get("rematch_subtext", "마음에 들 때까지 선생님을 만나보세요. 변경 비용은 0원입니다."),
-                )}
-              </p>
-            </div>
-            <button
-              type="button"
-              className="btn btn-lg tp-rematch-btn"
-              onClick={() => void goConsultation("tutors_rematch")}
-            >
-              {get("rematch_cta", "맞춤 선생님 제안 받기")}
-            </button>
-          </ConcordReveal>
-        </div>
+      <section className="sec-sm ruled">
+        <ConcordReveal className="wrap tp-rematch" as="div">
+          <div>
+            <h2 className="h2">{edit("rematch_title", get("rematch_title", "선생님이 마음에 안 들면 어떡하죠?"))}</h2>
+            <p className="lede">
+              {edit(
+                "rematch_subtext",
+                get("rematch_subtext", "마음에 들 때까지 선생님을 만나보세요. 변경 비용은 0원입니다."),
+              )}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-ghost btn-lg"
+            onClick={() => void goConsultation("tutors_rematch")}
+          >
+            {get("rematch_cta", "맞춤 선생님 제안 받기")}
+          </button>
+        </ConcordReveal>
       </section>
       )}
 
-      
       <ConcordSubpageCta
         title="원하는 선생님, 무료 상담으로 배정받으세요"
         description="학년·과목·목표에 맞춰 매니저가 최적의 강사진을 추천해 드립니다."

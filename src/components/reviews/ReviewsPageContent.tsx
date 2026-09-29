@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { CmsEdit } from "@/components/admin/CmsEditOverlay";
 import { CountUpStat } from "@/components/common/CountUpStat";
 import { HallOfFameCarousel, type HallItem } from "@/components/common/HallOfFameCarousel";
+import { ConcordPageHead } from "@/components/concord/ConcordPageHead";
 import { ConcordReveal } from "@/components/concord/ConcordReveal";
 import { ConcordSubpageCta } from "@/components/concord/ConcordSubpageCta";
 import { formatCmsMultiline, getCmsSectionValue, parseCmsVisibility } from "@/lib/cms-page-defaults";
@@ -23,6 +24,19 @@ function multilineNodes(text: string) {
   return lines.map((line, i) => (
     <span key={`${i}-${line}`}>
       {line}
+      {i < lines.length - 1 ? <br /> : null}
+    </span>
+  ));
+}
+
+/** CMS 줄바꿈을 살리면서 강조어 하나만 액센트로 표시한다. */
+function highlightedLines(text: string, keyword: string) {
+  const lines = formatCmsMultiline(text).split("\n").filter(Boolean);
+  return lines.map((line, i) => (
+    <span key={`${i}-${line}`}>
+      {line.split(new RegExp(`(${keyword})`)).map((part, j) =>
+        part === keyword ? <em key={j}>{part}</em> : part,
+      )}
       {i < lines.length - 1 ? <br /> : null}
     </span>
   ));
@@ -159,63 +173,52 @@ export function ReviewsPageContent({
 
   return (
     <main>
-      {/* ── 다크 히어로 ── */}
-      <section className="rp-hero">
-        <div className="wrap rp-hero-inner">
-          <div className="rp-hero-kicker">
-            <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_kicker" type="text">
-              {get("hero_kicker", "REVIEWS")}
-            </CmsEdit>
-          </div>
-          <h1>
-            <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_title" type="text">
-              {(() => {
-                const title = formatCmsMultiline(
-                  get("hero_title", "Concord 학생이 직접 경험한\n성적 상승을 그대로 공개합니다"),
-                );
-                const lines = title.split("\n").filter(Boolean);
-                return lines.map((line, i) => (
-                  <span key={`${i}-${line}`}>
-                    {line.split(/(성적 상승)/).map((part, j) =>
-                      part === "성적 상승" ? <em key={j}>{part}</em> : part,
-                    )}
-                    {i < lines.length - 1 ? <br /> : null}
-                  </span>
-                ));
-              })()}
-            </CmsEdit>
-          </h1>
-          <p className="rp-hero-sub">
-            <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_subtext" type="text">
-              {get("hero_subtext", "학부모·학생이 직접 남긴 이야기와 변화의 기록입니다.")}
-            </CmsEdit>
-          </p>
-        </div>
-      </section>
+      <ConcordPageHead
+        eyebrow={
+          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_kicker" type="text">
+            {get("hero_kicker", "REVIEWS")}
+          </CmsEdit>
+        }
+        title={
+          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_title" type="text">
+            {highlightedLines(
+              get("hero_title", "Concord 학생이 직접 경험한\n성적 상승을 그대로 공개합니다"),
+              "성적 상승",
+            )}
+          </CmsEdit>
+        }
+        description={
+          <CmsEdit active={isEditMode} section="reviews_page" cmsKey="hero_subtext" type="text">
+            {get("hero_subtext", "학부모·학생이 직접 남긴 이야기와 변화의 기록입니다.")}
+          </CmsEdit>
+        }
+      />
 
-      {/* ── 합격 인터뷰 카드 무한 캐러셀 ── */}
+      {/* ── 합격 인터뷰 카드 ── */}
       {secVisible("hall_section_visible") && (
       <section className="sec-sm">
         <HallOfFameCarousel items={hallItems} />
       </section>
       )}
 
-      {/* ── 성공사례 캐러셀 ── */}
+      {/* ── 성적 변화 사례 ── */}
       {successCards.length > 0 && secVisible("success_section_visible") ? (
-        <section className="sec">
-          <div className="rp-sec-head">
-            <h2>
-              <CmsEdit active={isEditMode} section="reviews_success" cmsKey="section_title" type="text">
-                {multilineNodes(getSuccess("section_title", "숫자로 확인하는\n성적 변화 사례"))}
-              </CmsEdit>
-            </h2>
+        <section className="sec ruled">
+          <div className="wrap">
+            <ConcordReveal className="rp-sec-title" as="div">
+              <h2 className="h2">
+                <CmsEdit active={isEditMode} section="reviews_success" cmsKey="section_title" type="text">
+                  {multilineNodes(getSuccess("section_title", "숫자로 확인하는\n성적 변화 사례"))}
+                </CmsEdit>
+              </h2>
+            </ConcordReveal>
           </div>
           <div className="rp-marquee" aria-label="성적 변화 사례">
             <div className="rp-marquee-track" role="list">
               {[...successCards, ...successCards].map((card, i) => (
                 <article
                   key={`${card.n}-${i}`}
-                  className="card rp-success-card"
+                  className="rp-success-card"
                   role="listitem"
                   aria-hidden={i >= successCards.length}
                 >
@@ -227,11 +230,9 @@ export function ReviewsPageContent({
                   <p className="rp-success-result">{card.result}</p>
                   <p className="rp-success-student">{card.student}</p>
                   {card.tags.length > 0 ? (
-                    <div className="tag-chip-row">
+                    <div className="tag-line">
                       {card.tags.map((tag) => (
-                        <span key={tag} className="tag-chip">
-                          {tag}
-                        </span>
+                        <span key={tag}>{tag}</span>
                       ))}
                     </div>
                   ) : null}
@@ -239,87 +240,81 @@ export function ReviewsPageContent({
               ))}
             </div>
           </div>
-          <p className="rp-footnote">
-            <CmsEdit active={isEditMode} section="reviews_success" cmsKey="section_footnote" type="text">
-              {getSuccess("section_footnote", "* 학부모·학생 동의를 받아 게재한 사례로, 결과는 학생마다 다를 수 있습니다")}
-            </CmsEdit>
-          </p>
+          <div className="wrap">
+            <p className="rp-footnote">
+              <CmsEdit active={isEditMode} section="reviews_success" cmsKey="section_footnote" type="text">
+                {getSuccess("section_footnote", "* 학부모·학생 동의를 받아 게재한 사례로, 결과는 학생마다 다를 수 있습니다")}
+              </CmsEdit>
+            </p>
+          </div>
         </section>
       ) : null}
 
-      {/* ── 통계 밴드 ── */}
+      {/* ── 통계 선언 밴드 ── */}
       {secVisible("band_section_visible") && (
       <section className="rp-band">
-        <div className="wrap rp-band-inner">
-          <h2>
-            <CmsEdit active={isEditMode} section="reviews_page" cmsKey="band_title" type="text">
-              {(() => {
-                const title = formatCmsMultiline(
+        <div className="wrap">
+          <ConcordReveal className="rp-band-inner" as="div">
+            <h2 className="h2">
+              <CmsEdit active={isEditMode} section="reviews_page" cmsKey="band_title" type="text">
+                {highlightedLines(
                   get("band_title", "Concord 학생 대부분이\n첫 3개월 안에 변화를 경험합니다"),
-                );
-                const lines = title.split("\n").filter(Boolean);
-                return lines.map((line, i) => (
-                  <span key={`${i}-${line}`}>
-                    {line.split(/(변화)/).map((part, j) =>
-                      part === "변화" ? <em key={j}>{part}</em> : part,
-                    )}
-                    {i < lines.length - 1 ? <br /> : null}
+                  "변화",
+                )}
+              </CmsEdit>
+            </h2>
+            <div className="rp-band-stats">
+              {[1, 2].map((n) => (
+                <div key={n} className="rp-band-stat">
+                  <CountUpStat
+                    className="rp-band-n"
+                    value={get(`band_stat${n}_number`, n === 1 ? "98%" : "500+")}
+                  />
+                  <span className="rp-band-l">
+                    <CmsEdit active={isEditMode} section="reviews_page" cmsKey={`band_stat${n}_label`} type="text">
+                      {get(`band_stat${n}_label`, n === 1 ? "학생 만족도" : "매칭 완료")}
+                    </CmsEdit>
                   </span>
-                ));
-              })()}
-            </CmsEdit>
-          </h2>
-          <div className="rp-band-stats">
-            {[1, 2].map((n) => (
-              <div key={n} className="rp-band-stat">
-                <CountUpStat
-                  className="rp-band-n"
-                  value={get(`band_stat${n}_number`, n === 1 ? "98%" : "500+")}
-                />
-                <span className="rp-band-l">
-                  <CmsEdit active={isEditMode} section="reviews_page" cmsKey={`band_stat${n}_label`} type="text">
-                    {get(`band_stat${n}_label`, n === 1 ? "학생 만족도" : "매칭 완료")}
-                  </CmsEdit>
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="rp-footnote">
-            <CmsEdit active={isEditMode} section="reviews_page" cmsKey="band_footnote" type="text">
-              {get("band_footnote", "* Concord 운영 데이터 기준")}
-            </CmsEdit>
-          </p>
+                </div>
+              ))}
+            </div>
+            <p className="rp-footnote">
+              <CmsEdit active={isEditMode} section="reviews_page" cmsKey="band_footnote" type="text">
+                {get("band_footnote", "* Concord 운영 데이터 기준")}
+              </CmsEdit>
+            </p>
+          </ConcordReveal>
         </div>
       </section>
       )}
 
-      {/* ── 실물 인증 카드 ── */}
+      {/* ── 실물 인증 ── */}
       {proofCards.length > 0 && secVisible("proof_section_visible") ? (
-        <section className="sec rp-proof-sec">
+        <section className="sec">
           <div className="wrap">
-            <div className="rp-sec-head">
-              <h2>
+            <ConcordReveal className="rp-sec-title" as="div">
+              <h2 className="h2">
                 <CmsEdit active={isEditMode} section="reviews_proof" cmsKey="section_title" type="text">
                   {multilineNodes(getProof("section_title", "기록으로 남은 변화,\n직접 확인해 보세요"))}
                 </CmsEdit>
               </h2>
-            </div>
+            </ConcordReveal>
             <div className="rp-proof-grid">
-              {proofCards.map((card) => (
-                <ConcordReveal key={card.n} as="article" className="card rp-proof-card">
-                  <div className="rp-proof-media">
+              {proofCards.map((card, i) => (
+                <ConcordReveal key={card.n} as="article" className="mk-fig rp-proof-fig" delay={i * 80}>
+                  <span className="mk-fig-img">
                     <CmsEdit active={isEditMode} section="reviews_proof" cmsKey={`proof${card.n}_image`} type="image">
                       <Image
                         src={card.image}
                         alt={`${card.student} 학습 기록 인증`}
                         fill
-                        className="object-cover"
-                        sizes="(max-width:900px) 100vw, 33vw"
+                        className="object-contain"
+                        sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw"
                       />
                     </CmsEdit>
-                  </div>
-                  <div className="rp-proof-body">
-                    <span className="rp-proof-student">{card.student}</span>
+                  </span>
+                  <div className="mk-fig-cap">
+                    <span className="who">{card.student}</span>
                     <p className="rp-proof-comment">{card.comment}</p>
                   </div>
                 </ConcordReveal>
@@ -336,15 +331,15 @@ export function ReviewsPageContent({
 
       {/* ── 고민 카테고리 후기 ── */}
       {secVisible("list_section_visible") && (
-      <section className="sec">
+      <section className="sec ruled">
         <div className="wrap">
-          <div className="rp-sec-head">
-            <h2>
+          <ConcordReveal className="rp-sec-title" as="div">
+            <h2 className="h2">
               <CmsEdit active={isEditMode} section="reviews_page" cmsKey="list_title" type="text">
                 {multilineNodes(get("list_title", "성적보다 습관이\n먼저 바뀌었어요"))}
               </CmsEdit>
             </h2>
-            <p>
+            <p className="lede">
               <CmsEdit active={isEditMode} section="reviews_page" cmsKey="list_subtext" type="text">
                 {get(
                   "list_subtext",
@@ -352,16 +347,16 @@ export function ReviewsPageContent({
                 )}
               </CmsEdit>
             </p>
-          </div>
+          </ConcordReveal>
 
-          <div className="rp-filter-row" role="tablist" aria-label="고민 카테고리">
+          <div className="opts rp-filter-row" role="tablist" aria-label="고민 카테고리">
             {["전체", ...REVIEW_CATEGORIES].map((cat) => (
               <button
                 key={cat}
                 type="button"
                 role="tab"
                 aria-selected={activeCategory === cat}
-                className={`rp-filter-chip${activeCategory === cat ? " on" : ""}`}
+                className={`opt${activeCategory === cat ? " on" : ""}`}
                 onClick={() => setActiveCategory(cat)}
               >
                 {cat === "전체" ? "전체" : `#${cat}`}
@@ -375,7 +370,7 @@ export function ReviewsPageContent({
                 <ConcordReveal
                   key={`${item.info}-${item.quote.slice(0, 24)}`}
                   as="article"
-                  className="card rev-card"
+                  className="rev-card"
                 >
                   {item.gradeFrom && item.gradeTo ? (
                     <div className="rev-grade" aria-label={`${item.gradeFrom}에서 ${item.gradeTo}로 향상`}>
@@ -388,11 +383,9 @@ export function ReviewsPageContent({
                   )}
                   <p className="qt">{item.quote}</p>
                   {item.tags && item.tags.length > 0 ? (
-                    <div className="rev-tags">
+                    <div className="tag-line">
                       {item.tags.map((tag) => (
-                        <span key={tag} className="rev-tag">
-                          {tag}
-                        </span>
+                        <span key={tag}>{tag}</span>
                       ))}
                     </div>
                   ) : null}

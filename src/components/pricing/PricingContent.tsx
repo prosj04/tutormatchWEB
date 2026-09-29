@@ -12,21 +12,6 @@ import { buildVisiblePricingPlanItems } from "@/lib/pricing-cms";
 import { usePricingSchoolTier } from "@/lib/pricing-tier-preference";
 import type { GroupedSiteContent } from "@/lib/site-content";
 
-function ShieldIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
 function cmsTitleLines(text: string) {
   const lines = formatCmsMultiline(text).split("\n").filter(Boolean);
   if (lines.length <= 1) return text;
@@ -80,7 +65,7 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
         }
       />
 
-      <section className="sec" style={{ paddingTop: 0 }}>
+      <section className="sec">
         <div className="wrap pricing-plans">
           <ConcordReveal className="tier-tabs" role="group" aria-label="학년 선택">
             <button
@@ -101,26 +86,23 @@ export function PricingContent({ siteContent, isEditMode = false }: PricingConte
             </button>
           </ConcordReveal>
 
-          <div data-tier={tier}>
+          <div className="mk-pricing-row" data-tier={tier}>
             <PricingPlanCards items={items} tier={tier} sourcePrefix="pricing_plan" labels={siteContent?.["pricing_page"] ?? {}} />
           </div>
 
           {(assureVisible || isEditMode) && (
-          <ConcordReveal className="assure" as="div">
-            <ShieldIcon />
-            <span>
-              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_pre" type="text">
-                {get("assure_pre", "처음 배정된 선생님이 맞지 않으면 ")}
+          <ConcordReveal className="mk-assure" as="div">
+            <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_pre" type="text">
+              {get("assure_pre", "처음 배정된 선생님이 맞지 않으면 ")}
+            </CmsEdit>
+            <strong className="kw">
+              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_strong" type="text">
+                {get("assure_strong", "추가 비용 없이 다시 매칭")}
               </CmsEdit>
-              <strong>
-                <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_strong" type="text">
-                  {get("assure_strong", "추가 비용 없이 다시 매칭")}
-                </CmsEdit>
-              </strong>
-              <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_post" type="text">
-                {get("assure_post", "해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.")}
-              </CmsEdit>
-            </span>
+            </strong>
+            <CmsEdit active={isEditMode} section="pricing_page" cmsKey="assure_post" type="text">
+              {get("assure_post", "해 드립니다. 수업료는 월 단위, 언제든 조정 가능합니다.")}
+            </CmsEdit>
           </ConcordReveal>
           )}
         </div>

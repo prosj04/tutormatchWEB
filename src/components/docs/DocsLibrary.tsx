@@ -88,130 +88,68 @@ const DOCS: DocItem[] = [
 
 const CATEGORIES = ["제안 · 전략", "IR · 투자", "브랜드 · 앱", "벤치마크 · 리서치"];
 
+/** 자료실 — 에디토리얼 목차(번호·제목·형식) + 오른쪽 미리보기. */
 export function DocsLibrary() {
   const [active, setActive] = useState<DocItem>(DOCS[0]);
 
   return (
-    <section className="wrap" style={{ paddingBottom: "6rem" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.6rem",
-          padding: "0.75rem 1rem",
-          marginBottom: "1.75rem",
-          borderRadius: 12,
-          background: "var(--panel-2)",
-          border: "1px solid var(--line2)",
-          fontSize: 13,
-          color: "var(--mut)",
-        }}
-      >
-        <span aria-hidden>🔒</span>
-        <span>
+    <section className="sec-sm">
+      <div className="wrap">
+        <p className="mk-docs-note">
           내부 검토용 임시 자료실입니다. 링크를 아는 사람은 열람할 수 있으니 외부 공유에 유의하세요. 출시 전 제거 예정.
-        </span>
-      </div>
+        </p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(280px, 340px) 1fr",
-          gap: "1.5rem",
-          alignItems: "start",
-        }}
-        className="docs-grid"
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          {CATEGORIES.map((cat) => (
-            <div key={cat}>
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--acc, #10B981)",
-                  margin: "0 0 0.6rem",
-                }}
-              >
-                {cat}
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {DOCS.filter((d) => d.category === cat).map((doc) => {
-                  const selected = doc.id === active.id;
-                  return (
-                    <button
-                      key={doc.id}
-                      type="button"
-                      onClick={() => setActive(doc)}
-                      style={{
-                        textAlign: "left",
-                        padding: "0.85rem 1rem",
-                        borderRadius: 12,
-                        cursor: "pointer",
-                        background: selected ? "var(--fg)" : "var(--panel)",
-                        color: selected ? "var(--bg)" : "var(--fg)",
-                        border: `1px solid ${selected ? "var(--fg)" : "var(--line2)"}`,
-                        transition: "all .15s ease",
-                      }}
-                    >
-                      <span style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.5rem" }}>
-                        <span style={{ fontWeight: 700, fontSize: 15 }}>{doc.title}</span>
-                        <span style={{ fontSize: 11, opacity: 0.7 }}>{doc.pages}</span>
-                      </span>
-                      <span
-                        style={{
-                          display: "block",
-                          marginTop: "0.35rem",
-                          fontSize: 12,
-                          lineHeight: 1.45,
-                          color: selected ? "rgba(255,255,255,.7)" : "var(--mut)",
-                        }}
-                      >
-                        {doc.desc}
-                      </span>
-                    </button>
-                  );
-                })}
+        <div className="mk-docs-layout">
+          <div>
+            {CATEGORIES.map((cat) => (
+              <div key={cat} className="mk-docs-group">
+                <span className="eyebrow">{cat}</span>
+                <ul className="mk-docs-index">
+                  {DOCS.filter((d) => d.category === cat).map((doc) => {
+                    const selected = doc.id === active.id;
+                    return (
+                      <li key={doc.id} className="mk-docs-row">
+                        <button
+                          type="button"
+                          onClick={() => setActive(doc)}
+                          aria-current={selected ? "true" : undefined}
+                        >
+                          <span className="idx">
+                            {String(DOCS.findIndex((d) => d.id === doc.id) + 1).padStart(2, "0")}
+                          </span>
+                          <span className="t">{doc.title}</span>
+                          <span className="f">{doc.pages}</span>
+                          <span className="d">{doc.desc}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="mk-docs-view">
+            <div className="mk-docs-view-head">
+              <h2>{active.title}</h2>
+              <div className="mk-docs-view-actions">
+                <a href={active.file} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+                  새 탭에서 열기
+                </a>
+                <a href={active.file} download className="btn btn-ink btn-sm">
+                  다운로드
+                </a>
               </div>
             </div>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{active.title}</h2>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <a href={active.file} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                새 탭에서 열기
-              </a>
-              <a href={active.file} download className="btn btn-sm" style={{ background: "var(--fg)", color: "var(--bg)" }}>
-                다운로드
-              </a>
-            </div>
+            <iframe
+              key={active.id}
+              title={active.title}
+              src={`${active.file}#view=FitH`}
+              className="mk-docs-frame"
+            />
           </div>
-          <iframe
-            key={active.id}
-            title={active.title}
-            src={`${active.file}#view=FitH`}
-            style={{
-              width: "100%",
-              height: "80vh",
-              minHeight: 520,
-              border: "1px solid var(--line2)",
-              borderRadius: 12,
-              background: "var(--panel-2)",
-            }}
-          />
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 820px) {
-          .docs-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   );
 }

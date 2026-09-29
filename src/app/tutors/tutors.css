@@ -1,226 +1,155 @@
-/* /tutors 설탭식 재구축 스타일 — concord.css 토큰(--acc, --panel, --fg, --bg 등)만 사용 */
+/* ============================================================
+   /tutors — v3 "Editorial"
+   토큰·프리미티브·크롬은 ds.css, 공통 조각(.mk-)은 concord.css.
+   이 파일은 /tutors 전용 배치만 둔다. 접두사 .tp- (선생님 카드 .tpx-card 는
+   marketing.css 소유 — 여기서는 레일 배치만 잡는다).
+   ============================================================ */
 
-.tp-sec-head { text-align: center; max-width: 720px; margin: 0 auto clamp(28px, 3.4vw, 48px); }
-.tp-sec-head h2 { font-size: clamp(24px, 2.8vw, 38px); font-weight: 800; letter-spacing: -.03em; line-height: 1.22; }
-.tp-sec-head p { margin-top: 14px; color: var(--mut); font-size: 15px; text-wrap: pretty; }
-
-.tp-footnote { margin-top: 18px; text-align: center; color: var(--mut-2); font-size: 12px; }
-
-/* ── 다크 히어로 (--fg 반전, 홈 환불 밴드와 동일 방식) ── */
-.tp-hero { position: relative; overflow: hidden; background: var(--fg); color: var(--bg); }
-.tp-hero-media { position: absolute; inset: 0; opacity: .56; }
-.tp-hero-media img { filter: saturate(.92); }
-.tp-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.28) 45%, rgba(0,0,0,.55)); pointer-events: none; }
-.tp-hero-inner { position: relative; z-index: 1; text-align: center; padding-top: clamp(72px, 9vw, 140px); padding-bottom: clamp(72px, 9vw, 140px); }
-.tp-hero-inner h1 { font-size: clamp(30px, 4.4vw, 56px); font-weight: 900; letter-spacing: -.035em; line-height: 1.16; color: var(--bg); }
-.tp-hero-sub { margin-top: 16px; font-size: clamp(15px, 1.4vw, 18px); color: var(--bg); opacity: .78; }
-.tp-hero-btn { margin-top: 30px; }
-
-/* ── 통계 카운터 ── */
-.tp-stats-sec { border-bottom: 1px solid var(--line); }
-.tp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; text-align: center; }
-.tp-stat { display: flex; flex-direction: column; gap: 6px; }
-.tp-stat-n { font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; letter-spacing: -.03em; color: var(--acc-text); }
-.tp-stat-l { color: var(--mut); font-size: 14px; font-weight: 600; }
-
-/* ── 인터뷰 매칭 ── */
-.tp-interview-sec { background: var(--panel-2); }
-.tp-iv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-.tp-iv-card { overflow: hidden; display: flex; flex-direction: column; }
-.tp-iv-media { position: relative; aspect-ratio: 16/10; background: var(--panel); }
-.tp-iv-body { padding: 24px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
-.tp-iv-label { font-size: 13px; font-weight: 800; color: var(--acc-text); letter-spacing: .04em; }
-.tp-iv-body blockquote { margin: 0; font-size: clamp(17px, 1.7vw, 21px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; }
-
-/* ── 이달의 선생님 캐러셀 (스크롤 스냅) ── */
-.tp-carousel {
-  display: flex; gap: 20px; overflow-x: auto; padding: 8px max(calc((100vw - var(--sub-wrap)) / 2 + var(--page-x, 32px)), 20px) 18px;
-  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+/* ── 페이지 머리: 왼쪽 제목·리드 / 오른쪽 사진(원본 비율) ── */
+.tp-head-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(16px, 2vw, 32px);
+  row-gap: clamp(32px, 4vw, 52px);
+  align-items: end;
 }
-.tp-carousel-card { flex: 0 0 clamp(280px, 30vw, 360px); scroll-snap-align: center; position: relative; }
-.tp-carousel-wrap { position: relative; }
-.tp-carousel-arrow {
-  position: absolute; top: 42%; transform: translateY(-50%); z-index: 3;
-  width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--panel); color: var(--fg); border: 1px solid var(--line2);
-  box-shadow: var(--shadow-md); font-size: 26px; line-height: 1; cursor: pointer;
-  transition: opacity .2s, background .2s;
-}
-.tp-carousel-arrow:hover:not(:disabled) { background: var(--panel-2); }
-.tp-carousel-arrow:disabled { opacity: 0; pointer-events: none; }
-.tp-arrow-prev { left: 10px; }
-.tp-arrow-next { right: 10px; }
-.tp-card-tags { padding: 16px 16px 0; }
-.tp-card-univ { font-size: 13px; font-weight: 600; color: var(--mut); margin-bottom: 4px; }
-.tp-card-foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.tp-card-subjects { display: flex; gap: 6px; flex-wrap: wrap; }
-.tp-card-subjects span { background: rgba(var(--acc-rgb), .1); color: var(--acc-text); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill); }
-.tp-career-badge { font-size: 12px; font-weight: 700; color: var(--mut); border: 1px solid var(--line2); padding: 4px 10px; border-radius: var(--r-pill); }
-
-/* ── Q&A 3종 (문답 구조) ── */
-.tp-why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.tp-why-card { position: relative; padding: 28px 26px 30px; display: flex; flex-direction: column; gap: 16px; }
-.tp-why-mark { font-weight: 900; font-size: 16px; color: var(--acc-text); margin-right: 8px; flex: none; }
-.tp-why-mark-a { color: var(--mut-2); }
-.tp-why-q {
-  display: flex; align-items: baseline;
-  font-size: 16px; font-weight: 700; letter-spacing: -.02em; line-height: 1.45;
-  color: var(--fg); padding: 0 28px 15px 0; border-bottom: 1px solid var(--line);
-}
-.tp-why-a { display: flex; align-items: baseline; }
-.tp-why-card h3 { font-size: 19px; font-weight: 800; letter-spacing: -.02em; line-height: 1.35; color: var(--acc-text); }
-.tp-why-a p { margin-top: 9px; color: var(--fg); font-size: 15.5px; line-height: 1.68; opacity: .84; }
-.tp-why-n { position: absolute; top: 22px; right: 24px; font-size: 13px; font-weight: 800; color: var(--mut-2); }
-
-/* ── 성적 인증 그리드 ── */
-.tp-proof-sec { background: var(--panel-2); }
-.tp-proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.tp-proof-card { overflow: hidden; display: flex; flex-direction: column; }
-.tp-proof-media { position: relative; aspect-ratio: 16/11; background: var(--panel); }
-.tp-proof-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; }
-.tp-proof-student { font-size: 13px; color: var(--mut); font-weight: 600; }
-.tp-proof-line { font-size: 18px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
-.tp-proof-line .arr { color: var(--acc-text); font-weight: 900; }
-.tp-proof-line em { font-style: normal; color: var(--acc-text); font-weight: 900; font-size: 21px; }
-.tp-proof-months { font-size: 13px; color: var(--mut-2); }
-
-/* ── 변경 보장 밴드 ── */
-.tp-rematch-band {
-  background: var(--fg); color: var(--bg); border-radius: 24px;
-  padding: clamp(32px, 4vw, 52px) clamp(24px, 4.5vw, 56px);
-  display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
-}
-.tp-rematch-band h2 { font-size: clamp(22px, 2.6vw, 32px); font-weight: 800; letter-spacing: -.03em; color: var(--bg); }
-.tp-rematch-band p { margin-top: 10px; color: var(--bg); opacity: .72; font-size: 15px; }
-.tp-rematch-btn { background: var(--bg); color: var(--fg); }
-.tp-rematch-btn:hover { background: var(--acc); color: var(--on-acc); }
-
-/* ── 가격 앵커 ── */
-.tp-price { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.tp-price-kicker { font-size: clamp(16px, 1.7vw, 20px); font-weight: 700; color: var(--mut); }
-.tp-price-value { font-size: clamp(38px, 5.4vw, 64px); font-weight: 900; letter-spacing: -.04em; color: var(--acc-text); line-height: 1.05; }
-.tp-price-sub { color: var(--mut); font-size: 15px; }
-.tp-price .btn { margin-top: 10px; }
-
-@media (max-width: 960px) {
-  .tp-iv-grid, .tp-why-grid { grid-template-columns: 1fr; }
-  .tp-proof-grid { grid-template-columns: repeat(2, 1fr); }
-  .tp-carousel-card { flex-basis: min(78vw, 330px); }
-}
-@media (max-width: 640px) {
-  .tp-stats { grid-template-columns: 1fr; gap: 26px; }
-  .tp-proof-grid { grid-template-columns: 1fr; }
-  .tp-rematch-band { text-align: center; justify-content: center; }
+.tp-head-text { grid-column: 1 / span 7; }
+.tp-head-fig { grid-column: 8 / span 5; }
+.tp-head-fig .mk-fig-img { aspect-ratio: 12 / 5; }
+@media (max-width: 900px) {
+  .tp-head-text, .tp-head-fig { grid-column: 1 / -1; }
 }
 
-/* ── 뉴스 근거: 상단 대형 타이포 스택 (흰 배경) ── */
-.tp-newsintro-sec { background: var(--panel); border-bottom: 1px solid var(--line); }
-.tp-newsintro-head { text-align: center; margin-bottom: clamp(36px, 5vh, 60px); }
-.tp-newsintro-head h2 {
-  font-size: clamp(22px, 2.6vw, 32px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--fg);
+/* ── 섹션 제목(단독 h2) ── */
+.tp-sec-title { max-width: 26em; margin-bottom: clamp(40px, 4.6vw, 72px); }
+.tp-sec-title p { margin-top: 20px; max-width: 40em; }
+
+.tp-footnote { margin-top: clamp(22px, 2.4vw, 32px); font-size: 12.5px; line-height: 1.6; color: var(--mut-2); }
+
+/* ── 문답 원장(특별한 이유) ── */
+.tp-why .ledger-body b { display: block; font-weight: 600; color: var(--fg); font-size: 16px; letter-spacing: -.015em; }
+.tp-why .ledger-body p { margin-top: 7px; }
+
+/* ── 보장 문구: 헤어라인 사이 한 줄(배지 나열 금지) ── */
+.tp-assure {
+  gap: 8px clamp(20px, 2.6vw, 36px);
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: clamp(32px, 3.4vw, 52px);
+  font-size: 13.5px;
+  color: var(--mut);
 }
-.tp-newsintro-stack {
+
+/* ── 선생님 레일: 가로 한 줄, 중앙 카드만 온전한 농도 ── */
+.tp-rail {
+  position: relative;
+  overflow: hidden;
+  padding: 2px 0 6px;
+  --tp-card-w: clamp(296px, 27vw, 352px);
+}
+.tp-rail-track {
   display: flex;
-  flex-direction: column;
-  gap: clamp(14px, 2vh, 22px);
-  max-width: 880px;
-  margin: 0 auto;
+  gap: 28px; /* FeaturedTutors 의 이동 계산과 같은 값이어야 한다 */
+  width: max-content;
+  will-change: transform;
 }
-.tp-newsintro-line {
-  display: flex;
+.tp-rail-track .tpx-card {
+  width: var(--tp-card-w);
+  flex: none;
+  opacity: .46;
+  transition: opacity .5s var(--ease);
+}
+.tp-rail-track .tpx-card.is-center { opacity: 1; }
+.tp-rail-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--mut);
+  font-size: 20px;
+  line-height: 1;
+  transition: color .18s var(--ease), border-color .18s var(--ease);
+}
+.tp-rail-arrow:hover { color: var(--fg); border-color: var(--fg); }
+.tp-rail-prev { left: calc(50% - var(--tp-card-w) / 2 - 24px); }
+.tp-rail-next { right: calc(50% - var(--tp-card-w) / 2 - 24px); }
+@media (max-width: 760px) {
+  .tp-rail { --tp-card-w: min(84vw, 340px); }
+  .tp-rail-prev { left: 4px; }
+  .tp-rail-next { right: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tp-rail-track .tpx-card { transition: none; }
+}
+
+/* ── 보도 인용 스택 ── */
+.tp-news-list { border-bottom: 1px solid var(--line); }
+.tp-news-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  text-align: center;
+  gap: 10px clamp(20px, 3vw, 48px);
+  padding: clamp(22px, 2.4vw, 32px) 0;
+  border-top: 1px solid var(--line);
 }
-.tp-newsintro-line .q {
-  font-size: clamp(18px, 2.4vw, 28px);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.35;
-  color: var(--fg);
-}
-.tp-newsintro-line .s {
-  font-size: 13px;
+.tp-news-row .q {
+  font-family: var(--serif);
   font-weight: 500;
-  color: var(--mut);
-  opacity: 0.55;
-  white-space: nowrap;
-}
-.tp-newsintro-note {
-  margin: clamp(28px, 4vh, 44px) 0 0;
-  text-align: center;
-  font-size: 12px;
-  color: var(--mut);
-  opacity: 0.75;
-}
-.tp-newsintro-empathy {
-  margin: clamp(32px, 4.5vh, 52px) 0 0;
-  text-align: center;
-  font-size: clamp(17px, 1.4vw, 21px);
-  font-weight: 600;
+  font-size: clamp(18px, 1.8vw, 26px);
+  line-height: 1.42;
+  letter-spacing: -.028em;
   color: var(--fg);
-  line-height: 1.65;
+  text-wrap: pretty;
+}
+.tp-news-row .s {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mut-2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tp-news-empathy {
+  margin-top: clamp(30px, 3.2vw, 48px);
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(20px, 1.9vw, 27px);
+  line-height: 1.55;
+  letter-spacing: -.028em;
+  color: var(--fg);
+  max-width: 34em;
   white-space: pre-line;
 }
-
-/* ── 카드 최상단 과목 뱃지 + 프로필 사진 칸 보정 ── */
-.tp-card-subject { padding: 16px 16px 0; }
-.tp-subject-chip {
-  background: var(--acc);
-  color: var(--on-acc);
-  border: none;
-  font-weight: 800;
-}
-.tp-card-tags { padding: 10px 16px 0; }
-.tp-carousel-card .tutor-media { aspect-ratio: 4 / 5; }
-
-/* ── 카드 축소 + 1:1 사진 + 태그 한 줄 ── */
-.tp-carousel-card { flex: 0 0 clamp(200px, 21vw, 252px); }
-.tp-carousel-card .tutor-media { aspect-ratio: 1 / 1; }
-.tp-card-subject { padding: 12px 14px 0; }
-.tp-subject-chip { font-size: 12.5px; padding: 5px 12px; }
-.tp-card-tagline {
-  display: flex;
-  gap: 5px;
-  overflow: hidden;
-  white-space: nowrap;
-  margin: 8px 0 2px;
-}
-.tp-card-tagline .tag-chip { font-size: 11px; padding: 3px 8px; flex: none; }
-.tp-carousel-card .tutor-body { padding: 12px 14px 14px; }
-.tp-carousel-card .tutor-name { font-size: 16px; }
-.tp-carousel-card .tutor-line { font-size: 13px; }
-.tp-carousel-card .tutor-items li { font-size: 12px; }
-.tp-carousel-card .tp-card-univ { font-size: 12.5px; }
 @media (max-width: 680px) {
-  .tp-carousel-card { flex-basis: min(62vw, 240px); }
+  .tp-news-row { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* ── 센터 포커스 캐러셀 전용 (카드 스타일은 concord.css 공용) ── */
-.tpx-wrap { position: relative; overflow: hidden; padding: 18px 0 10px; --tpx-w: clamp(300px, 30vw, 400px); }
-.tpx-track { display: flex; gap: 28px; width: max-content; will-change: transform; }
-.tpx-track .tpx-card {
-  width: var(--tpx-w); flex: none;
-  opacity: .38; transform: scale(.94); filter: blur(1px) saturate(.9);
-  transition: opacity .5s ease, transform .55s cubic-bezier(.22, 1, .36, 1), filter .5s ease, box-shadow .5s ease;
+/* ── 성적 인증: 사진 원본 비율 + 사진 밖 캡션 ── */
+.tp-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3vw, 48px) clamp(20px, 2.4vw, 36px);
 }
-.tpx-track .tpx-card.is-center { opacity: 1; transform: none; filter: none; box-shadow: var(--shadow-md); }
-.tpx-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
-  width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--panel); color: var(--fg); border: 1px solid var(--line);
-  box-shadow: var(--shadow-md); font-size: 26px; line-height: 1; cursor: pointer;
+.tp-proof-fig .mk-fig-img { aspect-ratio: 3 / 4; }
+@media (max-width: 900px) { .tp-proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .tp-proof-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── 재매칭 보장: 헤어라인 위 선언 + 보조 버튼 ── */
+.tp-rematch {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(24px, 3vw, 56px);
+  flex-wrap: wrap;
 }
-.tpx-arrow:hover { background: var(--panel-2); }
-.tpx-prev { left: calc(50% - var(--tpx-w) / 2 - 26px); }
-.tpx-next { right: calc(50% - var(--tpx-w) / 2 - 26px); }
-@media (max-width: 760px) {
-  .tpx-wrap { --tpx-w: min(84vw, 340px); }
-  .tpx-prev { left: 6px; }
-  .tpx-next { right: 6px; }
-}
+.tp-rematch > div { max-width: 30em; }
+.tp-rematch p { margin-top: 16px; }
