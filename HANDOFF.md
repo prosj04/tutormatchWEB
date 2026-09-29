@@ -1,27 +1,41 @@
-# HANDOFF.md — Concord Private Tutoring 마스터 핸드오프
+# HANDOFF.md — Concord 마스터 핸드오프
 
-> 이 문서는 **모든 후속 AI 세션의 진입점**이다. 다른 문서로 가기 전에 Part 0을 반드시 통독한다.  
-> **기본 원칙**: `CLAUDE.md` + [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)를 동급 필독 원칙으로 삼는다 (세계관·카피 헌법·미학·반복 교정 8패턴의 단일 출처).  
-> 갱신: **2026-07-12 · main** (07-04 원본 작성, 07-12 정정·추록 — Part 3.4에 07-05~07-12 사이클 143커밋 반영)  
-> 원격 `https://github.com/prosj04/tutormatchWEB.git`  
-> 상세 히스토리 원본: `CLAUDE_HANDOFF.md` (1,425줄, §1~26 세션 로그·이연 스펙 보존)  
-> 문서 지도: `docs/README.md`
+> 이 문서는 **모든 후속 AI 세션의 진입점**이다. 다른 문서로 가기 전에 Part 0을 반드시 통독한다.
+> **기본 원칙**: `CLAUDE.md` + [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)를 동급 필독 원칙으로 삼는다 (세계관·카피 헌법·미학·반복 교정 8패턴의 단일 출처).
+> 갱신: **2026-09-30** (07-04 원본 작성 · 07-12 정정·추록 · 08-03 정합성 검토 흡수 · 09-30 정리·v3 개편 반영)
+> 원격 `https://github.com/prosj04/tutormatchWEB.git`
+> 문서 지도: [`docs/README.md`](docs/README.md) · 현행 상태 요약: [`docs/00-현재상태.md`](docs/00-현재상태.md) · 결정 이력: [`docs/adr/`](docs/adr/README.md)
+> 과거 기록: 2026-07 세션 로그 원문은 [`docs/archive/handoff/session-logs-2026-07.md`](docs/archive/handoff/session-logs-2026-07.md), 그 이전은 `CLAUDE_HANDOFF.md` §25~26.
 
 ---
 
-## ⚡ 2026-07-13 세션 마감 요약 (다음 세션은 여기부터)
+## ⚡ 지금 상태 (2026-09-30 · 다음 세션은 여기부터)
 
-**완료 (로컬 16커밋, 전부 tsc·lint·prod build 검증 — push 대기)**
-1. **UX 전수조사 2차**: opus 8팀, 108건 발견 → P0/H 전건+M 대부분 당일 수정. 상세는 `docs/30-제품·디자인.md` Part G. 방법론 재사용: "전수조사" → `ux-sweep` 스킬.
-2. **수업 확인 제도 신설** (오너 스펙, 메모리 `project_lesson_confirm`): 자동완료 폐지 → 선생님 확인(완료/사유, 비과실=마지막 수업 이월) → 3자 공지. 마이그레이션 `20260713090000_lesson_confirm` **배포 시 자동 적용됨**.
-3. 알림 4역할 개방+학부모 팬아웃(결제+핵심만), 미수락 매칭 3일 자동 확정, 만료 구독 D+3 마감, 인증 복구 경로+모바일 rate-limit(보안), 어드민 confirm 가드+치프 서류 열람, 모바일 정산·업로드 UI(expo-picker 설치됨), 감사로그 실명화+반려 SMS, API_REFERENCE 173 라우트.
+**구현 완료 · 병합 대기 — UI 전면 개편 v3 "Editorial"**
 
-**다음 세션 할 일 (순서대로)**
-1. 🔴 **오너 PAT `workflow` scope 갱신 확인 → `git push origin main`** — 16커밋 배포+마이그레이션+hourly 크론이 전부 이것에 걸려 있음. push 성공 시 GitHub Secrets `CRON_SECRET` 등록도 확인.
-2. 배포 후 **프로덕션 스모크**: 수업 확인 제도(확인 알림→완료/이월), 학부모 알림 팬아웃, PARENT 자녀 선택 결제, 모바일 업로드. 테스트 데이터는 pilot- 접두사 후 정리 (07-12 스모크 절차 참조).
-3. 잔여 소소: 매니저 내부 화면 용어 통일(선택), D+7 무응답 자동완료 폴백 값 오너 재확인, 앱스토어 제출(개발자 계정 등록되면 `docs/STORE_SUBMISSION_2026-07.md`부터).
+오너 지시("UI 전면 개편, 기존 디자인은 싹 갈아엎어")로 디자인 시스템 v2(외주 그린/블루 핸드오프)를 v3 로 교체하는 중이다. 브랜치 `feat/editorial-redesign`, **`main` 미병합 — 프로덕션에는 아직 v2 가 떠 있다.**
 
-**주의**: 동시 세션이 같은 트리에서 작업하는 패턴 지속 — §0.2 준수(명시적 경로 add). 요금·수락·PAUSED 정책은 메모리·§0.1 참조.
+- 사양 [`docs/design/DESIGN_SYSTEM_V3.md`](docs/design/DESIGN_SYSTEM_V3.md) · 구현 정본 `src/app/ds.css`(전역 단일 스타일시트) · 결정 [ADR 0002](docs/adr/0002-editorial-redesign.md)
+- **적용 범위는 공개 페이지 포함 전면**이다. 구 규칙 "공개 페이지 수정 절대 금지"(BUSINESS_DIRECTION §7)는 ADR 0002 로 해제됐다.
+- v2 패키지는 지우지 않고 [`docs/archive/design-handoff-v2/`](docs/archive/design-handoff-v2/) 에 보존 — 롤백 자산.
+- 페이지 54/55 개편(제외 `/tutors/[id]` — 리다이렉트 스텁), `npm run build` 통과, 1440·390 × 라이트·다크 눈 검증. 개편 기록·페이지별 인벤토리·미확인 목록: [`docs/design/REDESIGN_2026-09-30.md`](docs/design/REDESIGN_2026-09-30.md).
+- 🟡 **미확인**: 실기기·Toss 결제 위젯·재현 데이터가 없는 상태(학생 여정 단계, 선생님 전용 화면 등) — 기록 §4.
+
+**다음 할 일**
+
+1. 오너가 브랜치를 확인(로컬 `npm run dev` 또는 Vercel 프리뷰) → 승인 시 `main` 병합·배포. 배포 후 프로덕션 스모크(관통 플로우: 결제→배정→첫 수업→숙제→리포트).
+2. 오너 결정 3건 — 기록 §5(`/pricing` "원 / 월" CMS 표기, 합격 카드 흰 배경, 병합 시점).
+3. `docs/app-screenshots/**` 잔여 24장 재촬영(재현 계정·상태 필요) — 74장은 재촬영 완료.
+4. 파일럿 오픈 블로커는 [`docs/00-현재상태.md`](docs/00-현재상태.md) §3, 전체 백로그는 [Part 4](#part-4).
+
+**최근 사이클 요약**
+
+| 시점 | 내용 |
+|---|---|
+| 2026-09-30 | UI 전면 개편 v3 (구현 완료·병합 대기) · API 전수조사(162 라우트) · 문서 전면 정리 · ADR 0002 |
+| 2026-09-17 | 사업 소개 정합화 — 사업 정의를 큐레이션·학습관리로 전 문서 정합화 (§3.6) |
+| 2026-08-03 | 웹·앱 정합성 검토 — 요금 코드 환원, 치프 `/admin` 차단 해소, 모바일 API 중복 제거, 강사 교체 요청 제거 (§0.11·§2.12·§3.5) |
+| 2026-07-04~14 | 핸드오프 재정비 · 주제별 단권화 · UX 전수조사 1·2차 · 수업 확인 제도 · 보안·정리 감사 · 개선/확장 라운드 (원문: [`docs/archive/handoff/session-logs-2026-07.md`](docs/archive/handoff/session-logs-2026-07.md)) |
 
 ---
 
@@ -30,7 +44,7 @@
 - [Part 0 — AI 운영 하네스 (필독)](#part-0)
 - [Part 1 — 5분 온보딩](#part-1)
 - [Part 2 — 시스템 상세 (요약 + 참조)](#part-2)
-- [Part 3 — 현재 상태 스냅샷 (07-04 원본 + 07-12 추록)](#part-3)
+- [Part 3 — 현재 상태 스냅샷 (07-04·07-12 원본 + 08-03·09-30 추록)](#part-3)
 - [Part 4 — 다음 작업 백로그](#part-4)
 - [Part 5 — 문서 지도 · 세션 로그](#part-5)
 
@@ -106,22 +120,30 @@
 - **`--no-verify` 금지.** 훅이 실패하면 원인을 고치고 새 커밋을 만든다 (amend 금지 — 실제 커밋되지 않은 상태에서 amend하면 이전 커밋을 덮어쓴다).
 - 시크릿·생성물(`cookies.txt` 류) 절대 커밋 금지. `.gitignore` 확인.
 
-### 0.7 디자인 규칙
+### 0.7 디자인 규칙 (2026-09-30 · v3 "Editorial")
 
-- **홈 랜딩(`/`)**: `landing-v2.css`, 클래스 접두사 `.lp2-`. `LandingRoot` → `LandingPageV2` 트리에서만 사용.
-- **서브페이지(요금·강사·FAQ·후기·법률 등)**: `concord.css`.
-- **색상은 반드시 CSS 변수 토큰**을 통해서만 사용한다 (`--bg`, `--fg`, `--acc`, `--acc-text`, `--panel`, `--line` 등). 하드코딩 색은 자동으로 다크모드가 깨진다. 세부는 `design handoff/DESIGN_SYSTEM.md`.
-- **타이포**: Pretendard, 전역 `word-break: keep-all` (한글 어절 줄바꿈).
-- 디스플레이 800 / 제목 700 / 본문 400. 굵기 남발 금지, 크기와 색으로 위계.
-- 새 스타일은 `.lp2-` 또는 `concord.css` 어느 쪽에 속하는지 판단하고 해당 파일에만 추가한다.
+정본은 [`docs/design/DESIGN_SYSTEM_V3.md`](docs/design/DESIGN_SYSTEM_V3.md)(사양)와 `src/app/ds.css`(구현). 헌법은 [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md) §7·§13. 결정 배경은 [ADR 0002](docs/adr/0002-editorial-redesign.md). 아래는 작업 시 최소 준수 사항이다.
+
+- **스타일은 `src/app/ds.css` 전역 단일 스타일시트**다. v2 의 파일 분할(`landing-v2.css`/`.lp2-` 접두사·`concord-portal.css`·`concord-admin.css`·브리지 CSS)은 폐지됐다. 새 스타일은 ds.css 의 컴포넌트 어휘를 먼저 찾아 재사용하고, 없으면 ds.css 에 추가한다.
+- **색은 반드시 CSS 변수 토큰 경유** (`--bg --panel --line --fg --mut --acc --acc-text --ink --brass` 등). 하드코딩 색은 다크모드를 깨뜨린다. Tailwind `gray-*` 는 `--g-*` 채널로 재매핑돼 다크에서 자동 반전된다.
+- **서체 2종**: Noto Serif KR = 목소리(`h1`·`h2`·디스플레이·가격/통계 같은 큰 숫자·인용, 전역 적용), Pretendard = 기능(본문·UI·라벨·버튼·표). 산세리프가 필요한 제목은 `.sans`. 전역 `word-break: keep-all`·`tabular-nums` 유지.
+- **인쇄 지면 문법**: 카드 그리드보다 `.ledger`(헤어라인 행 + 큰 세리프 번호)를 먼저 고려. 카드 안에 카드 금지, 카드 호버 상승 금지, 그림자는 떠 있는 레이어(모달·드로어·드롭다운)만.
+- **액센트는 면 1곳(주 CTA)과 강조어 1곳**에만. 컬러 배지 나열·할인/검증 배지·느낌표·이모지·그라데이션 배경 금지.
+- **적용 범위는 공개 페이지 포함 전면.** 구 규칙 "공개 페이지 수정 절대 금지"는 ADR 0002 로 해제됐다.
+- **새 마케팅 카피를 만들지 않는다** — 문구는 기존 CMS 키·코드 폴백 그대로, 디자인만 바꾼다.
+- **기능 축소 금지·사진 원본 비율 유지**는 버전과 무관한 헌법이다. 시안이 기존 기능보다 단순하면 축소 구현하지 말고 기능 보존형으로 재설계한다.
+- v2 원본(시안 HTML·토큰·아이콘)은 [`docs/archive/design-handoff-v2/`](docs/archive/design-handoff-v2/) 에 보존 — 롤백 자산이므로 지우지 않는다.
 
 ### 0.8 문서 규칙
 
-- 모든 산출 문서는 **한국어**. 갱신 시 `docs/README.md` 인덱스 동반 갱신.
+- 모든 산출 문서는 **한국어**. 갱신 시 [`docs/README.md`](docs/README.md) 지도 동반 갱신.
 - **검증 불가한 수치를 창작하지 않는다.** 확신 없는 값은 `[확인 필요]` 표기.
 - **법률 문서는 초안 표시를 유지**한다. `docs/internal/contracts/**` 및 `docs/internal/LEGAL_ADVISORY_MEMO.md`는 AI 임시 자문이며 **정식 자문 전 대외 사용 금지**.
-- `docs/IMPLEMENTATION_PLAN_2026-07.md`, `docs/IMPLEMENTATION_SESSIONS_REVISED.md`, `docs/MANAGER_GUIDELINES.md`는 **다른 세션이 활성 사용 중** — 구조 변경 금지, 내용 추가만.
-- 세션 종료 시 이 파일 [Part 5 · 세션 로그](#part-5)에 엔트리 append (`CLAUDE_HANDOFF.md §25` 스타일 승계).
+- **경로로 직접 참조되는 문서는 이동하지 않는다.** 고정 목록은 [`docs/README.md`](docs/README.md) §9 "이동 금지 경로" — `.claude/skills/**`·`.claude/agents/**`·`src/**`·`docs/build-html.mjs`·`tools/team-office/server.js` 가 파일명으로 찾는 문서들이다. 옮기면 조용히 깨진다.
+- **과거 문서는 고치거나 지우지 말고** `docs/archive/` 로 옮기고 [`docs/archive/README.md`](docs/archive/README.md) 표에 전·후 경로를 한 줄 남긴다.
+- **통합은 재분류다** — 원문을 탭마다 붙여놓는 나열 금지, 내용 삭제·축약 금지 (BUSINESS_DIRECTION §9).
+- 결정을 뒤집을 때는 [`docs/adr/`](docs/adr/README.md) 에 새 번호. 기존 ADR 은 고치지 않는다.
+- 세션 종료 시 이 파일 [Part 5 · 세션 로그](#part-5)에 엔트리 append.
 
 ### 0.9 금지 사항
 
@@ -131,14 +153,21 @@
 - CMS 테이블 임의 시딩, 시드 스크립트 임의 실행.
 - 마이그레이션의 로컬 실행/프로덕션 적용을 스키마 세션과 조율 없이 진행.
 - Toss 시크릿 키·Supabase Service Role·Anthropic 키를 로그·응답·문서에 노출.
+- **학생이 직접 강사 교체를 요청하는 UI 를 다시 만드는 것** (§0.11).
 
 ### 0.10 작업 종료 시 체크리스트
 
 1. `npx tsc --noEmit && echo OK` 통과 확인.
 2. 변경 파일에 `npx next lint --file` 실행.
 3. dev 서버 프로세스 종료(백그라운드 잔존 금지).
-4. **[Part 5 · 세션 로그](#part-5)에 오늘 작업·핵심 파일·커밋 해시·미해결 항목을 append.** (`CLAUDE_HANDOFF.md §25.1x` 형식.)
+4. **[Part 5 · 세션 로그](#part-5)에 오늘 작업·핵심 파일·커밋 해시·미해결 항목을 append.**
 5. 오너 미승인 push·커밋 없음 확인.
+
+### 0.11 요금·제품 경계 (2026-08-03 오너 결정 — 영속)
+
+1. **요금은 코드가 진실이다.** `src/lib/pricing-plans.ts` 의 `PRICING_PLANS_V2`(중등 38·55·**76**·106 / 고등 43·58·78·**112**만, 4주 단위)가 정본이고 **문서를 코드에 맞춘다.** 문서 수치를 근거로 코드를 고치지 않는다. 2026-07-26 커밋 `815cff9`(문서 기준 코드 변경)은 되돌려졌다. 기존 결제 이력이 없으므로 금액 역매핑·과거 주문 영향도 없다.
+2. **강사 교체 요청은 제품에서 뺀다.** 교체는 매니저 대면 상담에서만 이뤄지고, **학생이 직접 요청하는 UI 는 앱·웹 어디에도 두지 않는다** — 부정적 액션을 표면에 올리지 않는다는 결정이다. 매니저 상담 버튼으로 충분하다. 관련 경로는 `e59bd28` 에서 전면 제거됐다.
+3. 위 둘은 일회 지시가 아니라 영속 규범이다 (BUSINESS_DIRECTION §11-5).
 
 ---
 
@@ -146,7 +175,9 @@
 ## Part 1 — 5분 온보딩
 
 ### 제품 한 줄
-**Concord Private Tutoring** — 1:1 프리미엄 과외 매칭·학습관리 플랫폼. 학부모(결제자) 대상, 매니저가 상담·매칭·리텐션을 중개.
+**Concord** — 전담 매니저가 학생에게 맞는 선생님을 배정하고, 수업 이후의 학습까지 관리하는 **프리미엄 1:1 방문 과외 큐레이션·학습관리 서비스** (서울·동탄, 중·고등학생). 앱·웹은 이 서비스를 운영하는 도구다.
+
+> ⚠️ **"플랫폼"·"매칭 플랫폼"으로 소개하지 않는다.** 상품은 "학부모가 비교·검증·선택하지 않아도 된다"는 판단의 위임이다 (BUSINESS_DIRECTION §1·§11, 2026-09-17 정합화). 기술 문서의 웹·모바일 플랫폼 용어는 사업 유형과 구분한다.
 
 ### 역할 5개와 진입점 (07-10 PARENT 역할 신설로 4→5)
 
@@ -304,21 +335,23 @@ premium-tutoring/
 ├─ auth.ts, middleware.ts, next.config.mjs, vercel.json
 ├─ prisma/
 │  ├─ schema.prisma
-│  └─ migrations/               # 25개 (§2.11)
+│  └─ migrations/               # 36개 (§2.11)
 ├─ public/
 ├─ scripts/                     # check-env, setup-storage, seed-sample
 ├─ src/
-│  ├─ app/                      # 161 API 라우트 + 페이지
+│  ├─ app/                      # 162 API 라우트 + 페이지 + ds.css(디자인 정본)
 │  ├─ components/
 │  ├─ hooks/
-│  ├─ lib/                      # 도메인 로직 (약 80개, CLAUDE_HANDOFF §16)
+│  ├─ lib/                      # 도메인 로직 (CLAUDE_HANDOFF §16)
 │  └─ types/
-├─ mobile/                      # Expo 56 React Native 워크스페이스
-├─ docs/                        # 문서 (외부·내부·전략·실행)
-├─ design handoff/              # 디자인 원본 (HTML 시안, DESIGN_SYSTEM.md)
-├─ HANDOFF.md                   # ← 이 문서
-└─ CLAUDE_HANDOFF.md            # 세션 로그·이연 스펙 원본
+├─ mobile/                      # Expo React Native 워크스페이스
+├─ docs/                        # 문서 — README.md 가 지도, design/·internal/·external/·chapters/·archive/
+├─ tools/team-office/           # 에이전트 활동 모니터 (읽기 전용 워룸)
+├─ HANDOFF.md                   # ← 이 문서 (AI 진입점)
+└─ CLAUDE_HANDOFF.md            # 세션 로그·이연 스펙 원본 (과거 기록)
 ```
+
+> v2 의 루트 `design handoff/` 는 2026-09-30 [ADR 0002](docs/adr/0002-editorial-redesign.md) 로 `docs/archive/design-handoff-v2/` 로 이동했다. 디자인 정본은 `docs/design/DESIGN_SYSTEM_V3.md`(사양) + `src/app/ds.css`(구현).
 
 ### 2.11 마이그레이션 목록 (07-04: 25개 → 07-12: 31개 → **07-14 실측 36개** — 아래 목록은 07-12 스냅샷 31개, 이후 +5는 `prisma/migrations/` 실측)
 
@@ -360,8 +393,20 @@ premium-tutoring/
 
 ---
 
+### 2.12 모바일 API 는 웹 라우트의 사본이다 (2026-08-03 진단)
+
+`/api/mobile/*` 33개 라우트는 웹 라우트를 **파일 통째 복사하고 auth 한 줄만 바꾼** 구조다. 공유 핸들러가 없어 한쪽만 고치면 즉시 갈라진다 — 2026-08-03 에 실제 3건(정산 환불 판정·`parseTasks`·매니저 역할 재조회)이 갈라져 있었고 수정했다.
+
+**새 기능은 이 구조를 따르지 말 것.** `src/lib/qna-ai-answer.ts`·`src/lib/question-image-upload.ts` 처럼 **lib 에 로직을 두고 라우트는 auth + 위임만** 한다. 기존 라우트를 고칠 때는 웹·모바일 양쪽을 함께 본다.
+
+관련 정정: 모바일에도 AI 즉답이 **있다** — 질문 등록 시 토큰 1을 차감하고 즉답을 생성한다(`/api/mobile/qna/[tutorId]`). 2026-08-03 초기 진단의 "모바일에 AI 답변 없음"은 오진이었다. 실제 공백은 토큰 부족·AI 비활성으로 즉답이 안 붙었을 때의 **재요청 경로**였고 그것을 추가했다(신규 생성일 때만 토큰 1 차감 — 토큰 경제 우회 없음).
+
+---
+
 <a id="part-3"></a>
-## Part 3 — 현재 상태 스냅샷 (3.1~3.3: 07-04 원본 보존 · 3.4: 07-12 추록)
+## Part 3 — 현재 상태 스냅샷 (3.1~3.3: 07-04 원본 보존 · 3.4: 07-12 추록 · 3.5: 08-03 · 3.6: 09-17·09-30)
+
+> 아래 3.1~3.4 는 **기록 시점의 스냅샷**이다. 현행 상태 한눈에 보기는 [`docs/00-현재상태.md`](docs/00-현재상태.md), 가장 최신 사이클은 3.5~3.6 과 이 문서 머리말의 "지금 상태".
 
 ### 3.1 이번 사이클(2026-07-02 ~ 07-04) 최근 30 커밋으로 파악한 완료 항목
 
@@ -432,8 +477,56 @@ git log 실측 요약. 상세 세션 로그는 `CLAUDE_HANDOFF.md §25.1a~h`.
 **07-14 실측 수치**: API 라우트 161 (07-04: 110 → 07-12: 166 → 07-14: 161) · 마이그레이션 36 (07-04: 25 → 07-12: 31 → 07-14: 36). 파일럿 시뮬레이션 2차 기록은 `docs/PILOT_SIM2_2026-07.md` (**12라운드까지** — §12 광역 재검증 07-13).
 
 **이 사이클에서 확립된 규칙 (Part 0에 반영됨)**:
-- 공개 페이지(홈·pricing·tutors·reviews·faq·login)는 **신 디자인 적용 금지** — 07-11 revert(`1639383`)로 확정. 신 디자인은 로그인 후 화면(포털·앱)만.
+- 공개 페이지(홈·pricing·tutors·reviews·faq·login)는 **신 디자인 적용 금지** — 07-11 revert(`1639383`)로 확정. 신 디자인은 로그인 후 화면(포털·앱)만. *(⚠️ 2026-09-30 [ADR 0002](docs/adr/0002-editorial-redesign.md) 로 **해제됨** — v3 는 공개 페이지 포함 전면 적용. 위 서술은 v2 시점 기록이다.)*
 - 수락 버튼은 형식적 절차 — 마케팅·UI 강조 금지 (§0.1 개정 참조).
+
+---
+
+### 3.5 — 2026-08-03 추록: 웹·앱 정합성 검토 (커밋 10건)
+
+원본 기록은 [`docs/archive/handoff/HANDOFF_2026-08-03.md`](docs/archive/handoff/HANDOFF_2026-08-03.md). 오너 결정은 §0.11, 구조적 배경은 §2.12 로 승격했다.
+
+검증: `npm run build`(prisma migrate deploy + next build) 통과, 웹·모바일 `tsc --noEmit` 클린. **실기기·브라우저 확인은 미실시.**
+
+| 커밋 | 내용 |
+|---|---|
+| `9bc02d9` | 문서 요금 표기를 코드값으로 환원 (docs 8파일) |
+| `ef7ec44` | CHIEF_MANAGER `/admin` 접근 차단 해소 — 미들웨어만 `role==="ADMIN"`을 요구해 layout·API 가드와 어긋나 있었다 |
+| `fc9b18a` | 웹 매니저 강사 반려에 `recordTeacherRejection`(감사 로그 + SMS 통지) + 사유 입력 UI 복원. 중복이던 구 `/manager/teacher-approval` 페이지는 포털 컴포넌트 재사용으로 정리 |
+| `683d02c` | 월간 리포트 최초 생성 시 `MONTHLY_REPORT_READY` 알림 발화 + 웹/모바일 딥링크·카테고리 |
+| `29fc8d9` | 모바일 API 중복 제거 — 정산 환불 판정, `parseTasks`, 매니저 역할 재조회 3곳 |
+| `611bf0f`·`5be407f` | AI 초안 답변 공용 lib(`resolveAiAnswer`) + 웹 라우트 축약 + 모바일 재요청 라우트·버튼 |
+| `97ee50a` | 모바일 질문 사진 첨부·표시. 업로드 검증을 공용 lib 으로, 이미지 서빙에 Bearer 폴백, RN 파일 파트 헬퍼를 `mobile/lib/upload.ts` 로 |
+| `e59bd28` | 학생 선생님 교체 요청 경로 전면 제거 (§0.11-2) |
+| `7fc94de` | 모바일 구 요금제 폴백 문구 "수업 (50분)" 제거 |
+
+**미검증 (보고만, 수정 안 함)**
+
+- 모바일 결제가 `Linking.openURL("<web>/checkout?plan=…")` 로 외부 브라우저로 이탈한다(`mobile/app/checkout.tsx:54`, `subscribe.tsx:143`). 앱 JWT 가 웹 쿠키로 안 이어져 재로그인을 요구할 가능성 — **실기기 확인 필요.**
+- 모바일 QnA 사진 첨부·표시(권한 요청, 이미지 Bearer 로딩) 시뮬레이터 확인 필요.
+
+### 3.6 — 2026-09 추록: 사업 소개 정합화(09-17) · UI 전면 개편(09-30)
+
+**2026-09-17 · 사업 소개 정합화**
+
+- 정본은 [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md) §1 — 전담 매니저 중심의 프리미엄 1:1 방문 과외 큐레이션·학습관리 서비스. 학생에게 맞는 배정과 수업 이후 관리가 핵심이며 앱·웹은 운영 도구다.
+- 현행 소개·대외 문서·문서집을 이 정의로 정합화했다. 기술 문서의 웹·모바일 플랫폼 용어와 조건부 SaaS 확장 제안은 사업 유형과 구분한다. 과거 전략·감사·세션 원문은 보존하며 현행 정책과 구분한다.
+- 수치 규율: 과거 재무·시장 가정을 실적으로 바꾸지 않는다. 분당 기준 시장 추산을 동탄에 그대로 적용하지 않는다. 4주 고객 요금의 연 13주기 환산은 별도 재검증 대상이다.
+- **검증 문구 이력**: 기존 대외 문서의 "면접·서류·범죄경력조회", 상담 안내의 "대면 면접과 시강"·"범죄경력 회보서 확인 후 배정"은 **과거 표현으로 보존**한다. 현재 소개는 정본의 대표 직접 대면 면접(인품·학력·신원·수업 실력)으로 정합화했다. **범죄경력조회 실행 여부를 확인하지 않았으며, 이를 완료한 절차로 재게시하지 않는다.**
+- 검증: `npm run build` 통과(대기 마이그레이션 없음), `OUT_DIR=… node docs/build-html.mjs` 통과, 브라우저 렌더 확인. 실서비스 운영 상태 재검증 작업은 아니다.
+- PDF 는 HTML 에서 파생되는 생성물이다 — 원본 변경 후 재생성·배포 상태는 [`docs/README.md`](docs/README.md) 부록 A·B 에서 확인한다.
+
+**2026-09-30 · UI 전면 개편 (v3 "Editorial") — 구현 완료, main 미병합**
+
+- 오너 지시로 디자인 시스템 v2(외주 그린/블루 핸드오프)를 v3 로 교체. 결정·대체 조항 대조표·롤백 방법은 [ADR 0002](docs/adr/0002-editorial-redesign.md), 사양은 [`docs/design/DESIGN_SYSTEM_V3.md`](docs/design/DESIGN_SYSTEM_V3.md), 구현 정본은 `src/app/ds.css`.
+- 브랜치 `feat/editorial-redesign`, **`main` 미병합** — 프로덕션에는 아직 v2 가 떠 있다. 커밋은 기반 1 + 영역 7(랜딩·공개·전환·학생·학부모·선생님/매니저·관리자) + 문서로 나뉜다.
+- 랜딩은 `LandingEditorial` + `components/landing/editorial/*` 로 재구축(CMS 키·분석 source·앵커 전부 보존). 데드코드(`LandingPageV2`·`AdminShell*`·`TeacherPortalShell*` 등 14파일) 삭제.
+- 구 CSS 파일(`concord-portal.css`·`concord-admin.css`·브리지·`responsive.css` 등)은 삭제되고 `ds.css` + 화면군별 시트로 재편됐다. 삭제분은 git 히스토리에 있다.
+- **문서 전면 정리 동반**: `docs/README.md` 지도 재작성, `docs/00-현재상태.md` 갱신, `HANDOFF_2026-08-03` 흡수(§0.11·§2.12·§3.5), 2026-07 세션 로그·07-14 감사 3종·07-02 구현 계획 2종·v2 디자인 패키지를 `docs/archive/` 하위로 이동, `docs/archive/README.md`·`docs/design/README.md` 신설.
+- 검증: `npm run build` 통과, 1440·390 × 라이트·다크 눈 검증, 수정 TSX 122개에서 `/api`·`track`·CMS 키 누락 0. 미확인·오너 결정 사안은 [`docs/design/REDESIGN_2026-09-30.md`](docs/design/REDESIGN_2026-09-30.md) §4·§5.
+- `docs/app-screenshots/**` 98장 중 74장 개편 후 화면으로 재촬영.
+- API 전수조사: [`docs/internal/API_REFERENCE.md`](docs/internal/API_REFERENCE.md) 재작성(162 라우트·55 페이지 매트릭스·웹/모바일 쌍 34개). 발견된 이상(가드 불일치·무검증 업로드·데드 라우트·복사본 핸들러)은 같은 문서 §위험·주의 — **고치지 않고 보고만 했다**.
+- **실측 (09-30)**: API 라우트 **162** · 마이그레이션 **36** · 법률 `[기재 예정]` **8곳**.
 
 ---
 
@@ -486,138 +579,48 @@ git log 실측 요약. 상세 세션 로그는 `CLAUDE_HANDOFF.md §25.1a~h`.
 <a id="part-5"></a>
 ## Part 5 — 문서 지도 · 세션 로그
 
-### 5.1 문서 지도 (원본: `docs/README.md` — **2026-07-12 주제별 단권화 재편 반영**)
+### 5.1 문서 지도
 
-> **07-12 재편**: 시간순 누적 문서 15종을 주제별 단권 6종으로 병합(전문 무손실), 원본은 `docs/archive/` 보존. 구 파일명 ↔ 새 위치 매핑은 `docs/README.md` 아카이브 절 참조.
+**정본은 [`docs/README.md`](docs/README.md)** 다 — 읽는 순서·문서별 용도·상태·이동 금지 경로가 거기 한 곳에 있다. 이 절에 지도를 복제하지 않는다 (2026-09-30 정리: 사본이 정본과 어긋나는 사고를 막기 위해 포인터로 대체했다. 2026-07 시점의 계층 스냅샷은 [`docs/archive/handoff/session-logs-2026-07.md`](docs/archive/handoff/session-logs-2026-07.md) 부록 B 에 보존).
 
-| 계층 | 문서 | 위치 |
-|---|---|---|
-| 마스터 진입점 (AI) | 이 파일 (`HANDOFF.md`) | 루트 |
-| **현재 상태 요약 (사람)** | `docs/00-현재상태.md` | `docs/` |
-| 사업전략 (BM v4.1+v3 통합) | `docs/10-사업전략.md` | `docs/` |
-| 사업 리뷰·취약점 통합 | `docs/11-사업리뷰·취약점.md` | `docs/` |
-| 마케팅 통합 (계획 v3+카피+설탭 2종) | `docs/20-마케팅.md` | `docs/` |
-| 제품·디자인 통합 (트래커+방향+CRO+UX 감사+홈 개선) | `docs/30-제품·디자인.md` | `docs/` |
-| 파일럿 1차 기록 (2차는 활성 문서) | `docs/40-파일럿.md` | `docs/` |
-| 파일럿 2차 (활성 — pilot-verify 스킬 참조, 이동 금지) | `docs/PILOT_SIM2_2026-07.md` | `docs/` |
-| 세션 로그·이연 스펙 원본 | `CLAUDE_HANDOFF.md` (§25~§26) | 루트 |
-| 하네스 원본 | `CLAUDE.md`, `AGENTS.md` | 루트 |
-| 문서 지도 | `docs/README.md` | `docs/` |
-| 기술 개요 | `docs/internal/TECH_OVERVIEW.md` | `docs/internal/` |
-| API 레퍼런스 | `docs/internal/API_REFERENCE.md` (07-04 기준 110 — 07-12 실측 166, 재실측 필요) | `docs/internal/` |
-| 법률 현황 | `docs/internal/LEGAL_DOCS_STATUS.md` | `docs/internal/` |
-| 계약 초안 | `docs/internal/contracts/*.md` | `docs/internal/contracts/` |
-| 법률 자문 메모 | `docs/internal/LEGAL_ADVISORY_MEMO.md` (AI 임시) | `docs/internal/` |
-| 사업계획서 (PSST) | `docs/external/BUSINESS_PLAN_PSST.md` | `docs/external/` |
-| 재무계획 | `docs/external/FINANCIAL_PLAN.md` | `docs/external/` |
-| 구현 계획 (활성) | `docs/IMPLEMENTATION_PLAN_2026-07.md` | `docs/` |
-| 세션별 구현 기록 (활성) | `docs/IMPLEMENTATION_SESSIONS_REVISED.md` | `docs/` |
-| 매니저 운영 가이드 | `docs/MANAGER_GUIDELINES.md` | `docs/` |
-| 리팩토링 제안 R-1~16 | `docs/REFACTORING_PLAN.md` | `docs/` |
-| 사진 프롬프트 | `docs/PHOTO_GENERATION_PROMPT.md` (작업 보류) | `docs/` |
-| 디자인 시스템 원본 | `design handoff/DESIGN_SYSTEM.md` (+ HTML 시안, `tokens-reference.css`) | `design handoff/` |
-| 아카이브 (병합 원본 15종 + 구버전 사업계획서 4종) | `docs/archive/` | `docs/archive/` |
+빠른 진입만 여기 둔다.
 
-**루트 정리 (07-12 실행, 07-14 완결)**: `concord_bizplan.*` 3종·`Concord_사업계획서_2026.docx`·`Concord_사업계획서_2026.md`(원본 소스) 전부 `docs/archive/`로 이동됨. PSST 버전(`docs/external/BUSINESS_PLAN_PSST.md`)이 계승. `.hermes/`(07-01·02 계획 잔재)도 `docs/archive/hermes/`로 이동.
+| 목적 | 문서 |
+|---|---|
+| 문서 지도 | [`docs/README.md`](docs/README.md) |
+| 현행 상태 한눈에 | [`docs/00-현재상태.md`](docs/00-현재상태.md) |
+| 규칙 정본 | `CLAUDE.md` · [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md) · `.claude/rules/` |
+| 결정 이력 | [`docs/adr/`](docs/adr/README.md) |
+| 디자인 (v3) | [`docs/design/README.md`](docs/design/README.md) |
+| 과거 기록 | [`docs/archive/README.md`](docs/archive/README.md) · `CLAUDE_HANDOFF.md` §25~26 |
 
 ### 5.2 세션 로그
 
-> 세션 종료 시 이 절에 **append**한다. 형식은 `CLAUDE_HANDOFF.md §25.1x`를 승계 — 헤더 `### 세션 로그 · YYYY-MM-DD (제목)` + 완료 항목 · 검증 · 미해결.
+> 세션 종료 시 이 절에 **append** 한다. 형식: `### 세션 로그 · YYYY-MM-DD (제목)` + 완료 항목 · 검증 · 미해결.
+> **2026-07-04 ~ 07-14 로그 7편은 [`docs/archive/handoff/session-logs-2026-07.md`](docs/archive/handoff/session-logs-2026-07.md) 로 옮겼다** (원문 보존). 그 이전은 `CLAUDE_HANDOFF.md` §25.
+> 2026-08-03 정합성 검토는 §0.11·§2.12·§3.5 로, 2026-09-17 소개 정합화와 09-30 개편은 §3.6 으로 흡수했다 — 요약이 아니라 현행 규범·상태로 승격한 것이다.
 
-### 세션 로그 · 2026-07-04 (핸드오프 재정비)
+### 세션 로그 · 2026-09-30 (문서 전면 정리 + UI 개편 반영)
 
-- ✅ **`HANDOFF.md` 신설** (루트) — Part 0(AI 운영 하네스) · Part 1(온보딩) · Part 2(시스템 지도, 원본 참조) · Part 3(스냅샷) · Part 4(백로그) · Part 5(문서 지도 + 세션 로그 자리) 구조로 작성.
-- ✅ **`CLAUDE_HANDOFF.md` 최상단 5줄 안내 블록만 추가** — 기존 §0~§26 내용은 일절 수정하지 않았음.
-- ✅ **CLAUDE_HANDOFF 대비 갱신된 사실 (구버전 표기 병기)**:
-  - API 라우트 수: 58 → **110** (`docs/internal/API_REFERENCE.md` 실측, `src/app/api/**/route.ts` 파일 카운트 일치).
-  - 마이그레이션: 9개 → **25개** 실측 리스트로 대체 (`prisma/migrations/` 실측).
-  - 요금제: v1(회당/과목) → **v2(시간제 월정액 8종)**. `PRICING_PLANS_V2` 진실의 원천, v1은 `planIdFromAmount` 역매핑에서만 존재.
-  - 결제 검증: "orderId만" → **Toss confirm 서버 검증 + 웹훅 재검증**.
-  - 매칭 상태: 즉시 active → **`matchStatus: PENDING_STUDENT_ACCEPT` → 학생 수락 시 ACTIVE**, `matchReason` 필드.
-  - 상담: 학생 1건 → **이력 다행**(`consultation-current.ts` 헬퍼).
-  - QnA: `Question` + `QuestionMessage` 이원화 → **`QuestionMessage` 단일 저장소**. `Question`은 DEPRECATED로 존치.
-  - CHIEF_MANAGER: Prisma 주석 누락 → **`UserRole` enum에 정식 반영**.
-  - Storage: 브라우저 anon 업로드 → **서버 라우트 경유** (`/api/student/question-images` 등).
-  - Cron: hourly GitHub Actions → **daily만** (hourly는 PAT scope 문제로 제거, 라우트는 `x-vercel-cron` 지원).
-  - 정산·빌링·계정삭제·감사로그·환불·일시정지·만족도·케어로그·상담 리포트 전부 **구현 완료** — 원본 §18의 "❌ 미구현"·§22의 "부분" 서술은 구버전 표기로 남기고 이 문서에서 재분류.
-- ✅ **실측한 사실**: 로컬 `main`이 `origin/main`보다 **29 커밋 앞섬**. 법률 페이지 `[기재 예정]` **8곳** (terms/privacy/refund 각 파일에서 grep). 프로젝트 총 마이그레이션 25개, API 라우트 110개.
-- ✅ **검증**: 새 문서 2건(신규 + 5줄 프리앰블). 코드 변경 없음이므로 `tsc/lint` 실행 대상 없음. `git status` 클린 유지.
-- ⚠️ 미해결(다음 세션): [Part 4 · 백로그](#part-4) 참조. 특히 P0-1~P0-7이 파일럿 오픈 전 필수.
+- ✅ **ADR 0002 신설** — 디자인 시스템 v3 "Editorial" 도입 결정. 대체된 BUSINESS_DIRECTION §7 조항 5건 대조표, 유지되는 헌법 7건, 롤백 3층위.
+- ✅ **BUSINESS_DIRECTION §7 개서** — v3 기준으로 "현행"과 "버전이 바뀌어도 유지(헌법)"를 분리. §7 외 절은 무수정.
+- ✅ **`docs/README.md` 지도 재작성** — 읽는 순서(사람/AI) → 규칙 정본 → 현행 상태·실행 → 주제별 단권 → 디자인 → 기술·법무 → 대외 → 생성 파이프라인 → 아카이브 → **이동 금지 경로** → 문서 고칠 때의 규칙. 구 지도의 생성물 대응표·갱신 기록은 부록 A·B 로 보존.
+- ✅ **`docs/00-현재상태.md` 2026-09-30 기준 갱신** — 실측 재측정(API 라우트 162 · 마이그레이션 36 · 법률 `[기재 예정]` 8곳), 수치 이력표로 07-04/07-12/07-14 값 보존.
+- ✅ **핸드오프 단일화** — `HANDOFF_2026-08-03.md` 를 §0.11(요금·제품 경계)·§2.12(모바일 API 사본 구조)·§3.5(커밋표·미검증)로 흡수, 원본은 `docs/archive/handoff/`. 2026-07 세션 로그는 `docs/archive/handoff/session-logs-2026-07.md` 로 분리. §5.1 중복 지도는 포인터로 대체.
+- ✅ **아카이브 재분류** — `archive/design-handoff-v2/`(v2 디자인 패키지) · `archive/handoff/` · `archive/audits-2026-07/`(07-14 감사 3종) · `archive/implementation-2026-07/`(07-02 계획 2종). 전·후 경로표는 `docs/archive/README.md` 신설.
+- ✅ **`docs/design/README.md` 신설** — v3 정본 + v2 이력 포인터 + app-screenshots 상태(개편 후 재촬영 예정).
+- 검증: 문서만 변경. `src/**`·`public/**`·`mobile/**`·`prisma/**` 무수정. 문서 간 링크는 이동 후 최종 경로 기준으로 작성.
+- ⚠️ 파일 이동은 `git mv` 목록으로 제안됐고 **부모 세션이 실행**한다 — 실행 전까지 이동 대상 경로의 링크는 아직 유효하지 않다.
 
-### 세션 로그 · 2026-07-12 (문서 통합·최신화)
+### 세션 로그 · 2026-09-30 (UI 전면 개편 v3 구현 + API 전수조사)
 
-- ✅ **HANDOFF.md 07-12 정정·추록** (내용 삭제 없이 취소선+갱신 주석 방식):
-  - §0.1 6단계 규범 정정 — 수락 버튼은 **형식적 절차**, 마케팅·UI 강조 금지 (`CLAUDE.md` 07-08 개정 반영). 구 문구는 취소선 보존.
-  - §0.4·Part 1·§3.1·P0-4: "29 커밋 미배포" → **push·배포 완료(대기 0)** 로 정정.
-  - Part 1 역할 표 4→**5역할** (PARENT 07-10 신설), §2.2 동반 갱신.
-  - §2.5 모델 추가분(ConsultationLead·Testimonial 확장·PARENT enum), §2.6 API **110→166**, §2.11 마이그레이션 **25→31** 실측 갱신.
-  - **§3.4 신설** — 07-05~07-12 사이클 143커밋 날짜·영역별 추록 (Sprint 1, 설탭 벤치마크 개편, 실사 사진 교체, CRO, UX 감사 M-1~17, 보안 라운드, PARENT 역할, 디자인 핸드오프 적용+공개 페이지 revert, 통합 4역할 모바일 앱, 구독 일시정지, 파일럿 11R).
-  - Part 4: P0-4·P0-7·P2-4 완료 처리(취소선), P1-1 부분 완료 주석, P2-1 범위 확대 주석.
-- ✅ **docs/README.md 문서 지도 갱신** — 07-04 이후 신규 문서 8종 인덱싱 (seoltab-teardown, benchmark-seoltab, copy-proposals, design-direction, design-review, ux-audit-handoff, VULNERABILITY_AUDIT, FRONTEND_BUILD_SPEC).
-- ✅ **FRONTEND_BUILD_SPEC 중복 단일화** — `design handoff/FRONTEND_BUILD_SPEC.md`를 원본으로 확정, 바이트 동일 사본이던 `docs/FRONTEND_BUILD_SPEC.md`는 포인터 스텁으로 교체.
-- ✅ **루트 구버전 사업계획서 아카이브** — `concord_bizplan.docx`(.bak과 바이트 동일)·`.bak`·`.rtf`·`Concord_사업계획서_2026.docx` → `docs/archive/` 이동 (삭제 아님). `Concord_사업계획서_2026.md`는 원본 소스로 루트 유지.
-- ✅ **수락 버튼 정책 고지 전파** — 수락을 강조하는 기존 문서들(MARKETING_PLAN, copy-proposals, design-direction, project-goals, external/APP_GUIDE·CEO_PROPOSAL·IR_ONE_PAGER, IMPLEMENTATION_SESSIONS_REVISED) 상단에 07-08 정책 변경 고지 추가. 본문은 수정하지 않음(기록 보존).
-- 검증: 문서만 변경 — 코드 변경 없음. 커밋은 오너 요청 대기.
-- ⚠️ 미해결: `docs/internal/API_REFERENCE.md` 재실측(110→166 증가분 반영), 6월 16일자 stale worktree 2개(`.claude/worktrees/agent-*`, 미커밋 cms 컴포넌트 잔존) 처분, `photos/` 116MB gitignore 여부 — 오너 결정 필요.
-
-### 세션 로그 · 2026-07-12 (2차 — 주제별 단권화 재편)
-
-- ✅ **docs/ 주제별 단권화** (오너 지시: 시간순·분산 구조로 파악이 어려움 → 주제별 재편, 내용 무손실):
-  - 신설 6종: `00-현재상태.md`(신규 요약) · `10-사업전략.md`(BM v4.1+v3 전문 병합) · `11-사업리뷰·취약점.md`(BUSINESS_REVIEW+VULNERABILITY_AUDIT) · `20-마케팅.md`(MARKETING_PLAN+copy-proposals+설탭 2종) · `30-제품·디자인.md`(TRACKER+direction+CRO리뷰+UX감사+홈개선) · `40-파일럿.md`(SIM 1차).
-  - 병합 방식: 원본 전문을 Part A/B/C…로 그대로 수록 + 상단에 현행 우선순위·수록표 헤더. 바이트 합산으로 무손실 확인.
-  - 원본 15종은 `git mv`로 `docs/archive/` 이동 (히스토리 보존). 아카이브 내 상호 참조는 동일 폴더라 유효.
-  - **의도적으로 유지한 파일**: `PILOT_SIM2_2026-07.md`(pilot-verify 스킬이 `docs/PILOT_SIM2_*.md` 글롭 참조 — **이동 금지**), IMPLEMENTATION 2종·MANAGER_GUIDELINES(§0.8 활성), REFACTORING_PLAN, PHOTO 2종, FRONTEND_BUILD_SPEC(스텁), 덱 소스 HTML 3종.
-  - 웹 자료실(`DocsLibrary.tsx`)은 `public/docs/*.html`만 참조 — md 이동 영향 없음 확인.
-  - `docs/README.md` 전면 재작성(새 지도), 이 파일 §5.1 갱신, 활성 문서 3종(IMPLEMENTATION 2종·REFACTORING_PLAN)에 경로 이동 고지 1줄씩 추가.
-- 검증: 문서만 변경, 코드 무변경. 커밋은 오너 요청 대기.
-- ⚠️ 규칙: 이후 세션은 전략·리뷰류 신규 문서를 만들지 말고 **해당 주제 단권에 Part 추가/갱신**할 것. 새 시점 스냅샷이 필요하면 단권 안에 날짜 절로 append.
-
-### 세션 로그 · 2026-07-12 (3차 — UX 감사·수정 + 오너 결정 반영 + 프로덕션 정비)
-
-- ✅ **오너 결정 반영**: 요금제 = 오너 심리 최적가 확정(중\|고: 38\|43·55\|58·76\|78·106\|112만, 코드값이 진실) — 할인 구조 제안·금액 변경 금지, P1-4 폐기. 문서 요금 감사에서 "38~108만" 오기 5곳 → 112만으로 정정.
-- ✅ **RLS/스토리지 정책 프로덕션 적용** — `prisma/manual/20260705_...sql`을 question-images private 현행에 맞게 정정 후 적용. RLS 37테이블, anon 권한 0, 레거시 anon INSERT/UPDATE 정책 6개 제거(P0-6 종결). CMS 시딩 완료(SiteContent 1→1,184 · FAQ 4 · 후기 30 보존, `scripts/seed-cms.ts`).
-- ✅ **프로덕션 스모크** — 가입→상담(자동생성)→치프 배정→매칭→수락→첫수업→숙제분배→이미지 업로드/프록시 접근제어(익명 401)까지 관통. 테스트 데이터(pilot3-smoke) 전량 삭제.
-- ✅ **GA4 이중 계측** — `trackEvent`가 gtag 동시 전송, purchase/begin_checkout 표준 이벤트 매핑. `API_REFERENCE.md` 166 라우트 재실측(서브에이전트).
-- ✅ **UX 어색 지점 감사** — opus 5팀 병렬, 75건(§30-제품·디자인 Part F). P0: 첫 수업 시각 UTC 저장 버그(두 팀 교차 발견).
-- ✅ **UX 수정 구현** — opus 5팀 병렬(파일 소유권 분할): P0 KST 픽스(직접), 앱 학생(알림 딥링크·오늘 할 일·QnA 갱신), 학부모(학생 앱 연결 코드 발급 UI 신설·결제 컨텍스트), 결제(PARENT 체크아웃 분기+`/api/parent/payments/complete` 신설·success 재시도·PAUSED 무마찰 투영 — **정지 신청 가능성 노출 금지가 오너 정책**), 가입·상담(자동 접수 배너·리드→가입 이관), 공급자(matchReason "학생 공개" 명시·분배 미리보기·케어로그 기본 비공개·강사 정산 탭 신설). 전체 tsc·lint 클린.
-- ✅ **외부 PDF 5종 재생성** — 수락 강조 제거(매니저 직접 배정 중심) + 요금 정정, `public/docs/` 동기화.
-- ⚠️ 코드 변경분은 동시 세션의 `06cbcd7`(feat/reports)에 함께 커밋·push됨 — 커밋 귀속 혼재, 내용은 검증 완료.
-- ⚠️ 미해결: 환불정책 v1 요금 예시 v2 갱신(공제 기준 오너 결정 필요), 웹/앱 QnA 모델 통일·학생 웹 리포트 라우트(설계 결정), L급 폴리시 잔여(Part F 참조).
-
-### 세션 로그 · 2026-07-13 (UX 전수조사 2차 + 대규모 수정 + 수업 확인 제도)
-
-- ✅ **UX 전수조사 2차** — opus 8팀(5도메인 회귀+확장, 신규: 어드민·알림시스템·크로스커팅), 신규 108건. `docs/30-제품·디자인.md` Part G. 방법론은 `.claude/skills/ux-sweep` 스킬로 저장(트리거: "전수조사").
-- ✅ **회귀 검증**: 07-12 수정 43건 중 42건 정상. 실회귀 1건(케어로그 기본 공개 리셋) 즉시 수정.
-- ✅ **오너 결정 3건 반영**: ① 미수락 매칭 3일 자동 확정 ② 학부모 알림 = 결제+핵심만 팬아웃 ③ **수업 확인 제도**(자동완료 폐지 — 오너 직접 설계 스펙, 메모리 `project_lesson_confirm` 참조): 종료 시각→강사 확인 알림→완료/사유(학생 과실=정산 포함, 비과실="마지막 수업으로 변경" 이월)→3자 공지, D+7 무응답 자동완료(잠정). 마이그레이션 `20260713090000_lesson_confirm`(nullable 3컬럼).
-- ✅ **수정 8커밋** (`ad60145`~`11ef9ea`): 4역할 앱 알림 개방+학부모 팬아웃+딥링크, 학부모 미납 인지·앱 비대칭 해소·탈퇴, 수업 확인 제도, 인증 잠금 안내·모바일 rate-limit(보안), 어드민 confirm 가드·치프 서류 열람·CMS 검색, QnA 배지 회귀, 크로스커팅(다크 토큰·테이블 overflow·a11y·용어), 모바일 정산 화면·보강 실날짜·nextStep.
-- ✅ expo-image-picker·document-picker 설치, 강사 모바일 업로드 UI 연결(진행).
-- ⚠️ **push 차단 중**: 로컬 히스토리의 hourly 워크플로 커밋(3f89879) 때문에 PAT workflow scope 없이는 전체 push 거부. 동시 세션 활동으로 rebase는 회피. **오너 PAT 갱신이 배포+hourly cron+향후 push 모두의 유일 해소책.**
-- ✅ (같은 날 후속 완주) E-UPLOAD 업로드 UI 연결(`00671f1`), 만료 구독 D+3 자동 마감(`9d15fea`), 감사로그 이름 표시+반려 사유·SMS(`e532a53`), API_REFERENCE 173 라우트(`49ff10b`), 로컬 프로덕션 빌드 통과 확인. 잔여: 매니저 내부 화면 용어 통일(선택), 배포 후 프로덕션 스모크.
-
-### 세션 로그 · 2026-07-13 (오너 결정 12건 확정 + 즉시 반영 + biz-rounds 스킬)
-
-- **오너 결정 1~12 확정** (MASTER §5 확정 블록·메모리 `project_decisions_2026-07-13`): D+7=이월(기구현 확인, 수정 0) · 서사 B(대면·밀도·큐레이션) · 스토어 연기 · AI 질답 키 활성 방침 · PARENT 결제 기본화 · 강사 집중 배치 · 총량 수치 실측 교체(적용 시점 별도) · 차등시급 수동 프리셋 · 검증 요소 강조. 강사 계약·크레딧 상한 보류.
-- **코드**: `Teacher.hourlyRateKrw`(프리셋 32/34/40k, 정산 3경로+어드민 UI) · `PaymentCompletion.paidByUserId` 결제자 귀속(학생/학부모 라우트, 웹훅 무수정) · ai-answer 모델 claude-sonnet-4-6. 마이그레이션 SQL 2건 준비만(`20260713150000_teacher_hourly_rate`, `20260713160500_payment_paid_by_user`) — **프로덕션 선적용 후 배포**(추가 전용, 선적용 무해).
-- **검증**: tsc·lint·prisma validate 클린, 회귀 테스트 2종 PASS(신규 학생 단독 결제 6 + 정산·환불 8).
-- **문서**: MANAGER_GUIDELINES §6(검증 요소 능동 안내+서사 B) 신설. `.claude/skills/biz-rounds` 스킬 신설(R0~R6 라운드 루프 방법론+개선 10종).
-- **오너 대기**: ANTHROPIC_API_KEY 발급·env 등록, 마이그레이션 적용 지시, 결정 13~16. 잔여 AI 작업: IR·외부 문서 서사 B 스윕, 로그인 후 화면 검증 카피 실물 적용, 학부모 빌링키 등록 신설 여부(오너 결정 사안으로 이월).
-
-### 세션 로그 · 2026-07-14 (확장 라운드 통합 마스터)
-
-- ✅ **확장 라운드 통합** — 발굴 63건(ES·EI) → R2 판정 → 반박 재정 4건(ES-23·ES-11 수용, EI-18 유지, EI-2 증거 분해) → 최종 생존 4·조건부 47·기각 2·재탕 10, 실행체 39. 산출: `docs/BUSINESS_EXPANSION_MASTER_2026-07.md`(8절). 유일한 즉시 오너 결정 = EI-27 파일럿 단핵 집중.
+- ✅ Dribbble 레퍼런스 4종에서 에디토리얼 규칙 추출 → 디자인 시스템 v3 사양·`ds.css` 기반 → 영역별 7개 병렬 작업(랜딩·공개·전환·학생·학부모·선생님/매니저·관리자) → 부모 세션 통합·결함 수정.
+- ✅ 페이지 54/55 개편, 랜딩 전면 재구축, 데드코드 14파일 삭제, 구 CSS 6종 삭제.
+- ✅ API 전수조사 — `docs/internal/API_REFERENCE.md` 재작성, 이상 25항 보고(수정 안 함).
+- ✅ `docs/app-screenshots/**` 74장 재촬영, `docs/_html/`(낡은 생성물) 제거 + `.gitignore`.
+- 검증: `npm run build` 통과 · 프로덕션 빌드 로컬 구동 HTTP 200 · 눈 검증 1440·390 × 라이트·다크 · 기능 보존 집합 비교 누락 0.
+- 미해결: `main` 병합(오너 확인 대기), 오너 결정 3건, 재현 불가 화면 미확인 — `docs/design/REDESIGN_2026-09-30.md` §4·§5.
 
 ---
 
-**끝.** 이 문서를 갱신했다면 [세션 로그](#part-5)에 엔트리를 append하고, 논리 단위로 항상 커밋한다 (push는 오너 승인).
-
-
-## 2026-09-17 — 사업 소개 정합화
-
-- 오너 요청: 사업 정체성 요약을 기준으로 문서 전반 개선.
-- 정본: `docs/BUSINESS_DIRECTION.md` §1. 전담 매니저 중심의 프리미엄 1:1 방문 과외 큐레이션·학습관리 서비스. 학생에게 맞는 배정과 수업 이후 관리가 핵심이며, 앱·웹은 운영 도구.
-- 현행 소개·대외 문서·문서집을 정합화. 과거 전략·감사·세션 원문은 보존하며 현행 정책과 구분. 분당 시장 추산은 동탄 시장 수치로 전용하지 않음.
-- 기존 사용자 수정(`.gitignore`, `CLAUDE.md`, `OWNER_ORDERS.md`, PSST 일부) 보존. 가격·주요 재무 시나리오 숫자 보존.
-- 검증: `npm run build` 통과(대기 마이그레이션 없음). `OUT_DIR=/tmp/concord-docs-review-20260917 node docs/build-html.mjs` 통과. 사업 방향 문서 브라우저 렌더 확인. 실서비스 운영 상태 재검증 작업은 아님.
-- PDF는 HTML에서 파생되는 생성물. 생성물 커밋 금지 원칙을 따르며, 이번 원본 변경 후 재생성·배포 상태는 `docs/README.md`의 갱신 기록에서 확인.
-- 검증 문구 이력: 기존 대외 문서의 “면접·서류·범죄경력조회”는 과거 표현으로 보존한다. 현재 소개는 정본의 대표 직접 대면 면접(인품·학력·신원·수업 실력)으로 정합화했다. 범죄경력조회 실행 여부를 이번 작업에서 확인하지 않았으며, 이를 완료한 절차로 재게시하지 않는다.
-- 상담 안내의 기존 “대면 면접과 시강”, “범죄경력 회보서 확인 후 배정” 표현도 과거 문구로 기록한다. 현재 소개는 정본의 검증 범위로 맞추며, 채용 공고의 조회 동의 조건 등 별도 정책은 이번 편집으로 변경하지 않는다.
+**끝.** 이 문서를 갱신했다면 [세션 로그](#part-5)에 엔트리를 append 하고, 기능 하나 완성 = 커밋 / 목표 하나 완료 = 푸시 + 보고 ([ADR 0001](docs/adr/0001-commit-push-rhythm.md)).

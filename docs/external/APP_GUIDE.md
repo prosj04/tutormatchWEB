@@ -1,6 +1,9 @@
 # Concord — 앱 상세 설명 자료
 
 > 실제 구동 화면 기반 제품 설명서 · 2026-07 · 캡처 원본: `docs/app-screenshots/{역할}/{desktop|mobile}/`
+>
+> ⚠️ **2026-09-30**: UI 전면 개편(v3 Editorial, [ADR 0002](../adr/0002-editorial-redesign.md)) 후 캡처 98장 중 74장을 재촬영했다(같은 파일명 교체). 학생 여정 상태 3종·상담 예약·결제, 강사 상세, 선생님 전용 화면 24장은 **개편 전 화면 그대로**다(목록: [design/README.md](../design/README.md#스크린샷)). 본문 서술은 개편 전 기준이며, 잔여 캡처 교체 후 함께 갱신한다. PDF(`branding/Concord-App-Guide.pdf`)는 재생성 전이다.
+> (같은 날 이미지 상대경로 15건을 `app-screenshots/…` → `../app-screenshots/…` 로 정정했다 — `docs/external/` 기준으로 깨져 있었다. 본문 서술은 무수정.)
 > 모든 스크린샷은 로컬 시연 데이터(가상의 학생·강사)로 촬영되었으며, 실제 고객 개인정보는 포함되지 않습니다.
 > 요약 지표·재무 근거는 `IR_ONE_PAGER.md` · `FINANCIAL_PLAN.md` · `BUSINESS_PLAN_PSST.md`를 따릅니다.
 > ✅ **정책 반영 완료 (2026-07-12)**: 수락 버튼·"동의 기반 매칭" 강조 제거 — 추천 이유가 함께 안내되는 매니저 직접 배정 중심으로 수정, PDF 재생성됨.
@@ -28,28 +31,28 @@
 로그인 없이 접근하는 마케팅·전환 페이지입니다. 서사는 **"성적보다 습관이 먼저 바뀐다"**는 불안 해소 카피를 축으로 합니다.
 
 ### 1.1 홈 (랜딩)
-![홈](app-screenshots/public/desktop/home.png)
+![홈](../app-screenshots/public/desktop/home.png)
 
 히어로 → 문제 제기 → 검증/매칭/관리 3단 약속 → 프루프 카드 → 상담 CTA로 이어지는 단일 전환 퍼널. 우상단 **무료 상담** 버튼이 모든 페이지에 상주합니다.
 
 ### 1.2 요금제
-![요금제](app-screenshots/public/desktop/pricing.png)
+![요금제](../app-screenshots/public/desktop/pricing.png)
 
 4주 정액 선불 8개 플랜(38만~112만 원)을 과목·횟수 조합으로 제시. 강사 시급 30,000원 정산 구조 위에 평균 마진율 34.2%를 확보하는 단가 체계입니다.
 
 ### 1.3 강사진 / 강사 상세
-![강사진](app-screenshots/public/desktop/tutors.png)
-![강사 상세](app-screenshots/public/desktop/tutor-detail.png)
+![강사진](../app-screenshots/public/desktop/tutors.png)
+![강사 상세](../app-screenshots/public/desktop/tutor-detail.png)
 
 검증을 통과한(`approved`) 강사만 노출됩니다. 상세 페이지는 과목·경력·소개를 담아 "사전 검증된 강사"라는 핵심 가치를 시각화합니다.
 
 ### 1.4 후기
-![후기](app-screenshots/public/desktop/reviews.png)
+![후기](../app-screenshots/public/desktop/reviews.png)
 
 성적 수치가 아니라 **습관·태도 변화** 중심의 후기 카드. "대치동 학원을 옮겨다녔는데 매니저님이 직접 상담…", "모르는 문제를 밤에 올리면 AI가 바로 답을…" 등 제품 차별점이 그대로 사회적 증거가 됩니다.
 
 ### 1.5 FAQ · 약관 · 개인정보 · 환불정책
-![FAQ](app-screenshots/public/desktop/faq.png)
+![FAQ](../app-screenshots/public/desktop/faq.png)
 
 | 화면 | 캡처 |
 |---|---|
@@ -61,7 +64,7 @@
 법률·신뢰 문서가 이미 페이지로 편입되어 있어, 결제·분쟁 대응의 기본 골격을 갖췄습니다(정식 법률 검토는 별도 진행).
 
 ### 1.6 가입 · 로그인
-![로그인](app-screenshots/public/desktop/login.png)
+![로그인](../app-screenshots/public/desktop/login.png)
 
 | 화면 | 캡처 |
 |---|---|
@@ -78,22 +81,22 @@ Concord의 제품 북극성은 **"화면 너머가 아니라 옆자리에서"**�
 **단계: 상담대기 → 매니저 배정 → 매칭 진행 → 배정 확인 → 첫 수업 대기 → 수업 진행(ACTIVE)**
 
 ### 2.1 ① 매칭 진행 (상담 완료)
-![매칭 진행](app-screenshots/student/desktop/state-matching.png)
+![매칭 진행](../app-screenshots/student/desktop/state-matching.png)
 
 대면 상담이 끝나면 "곧 맞춤 선생님을 추천해 드릴게요" 상태 카드가 뜨고, 상담 메모(예: "수학 내신 대비, 주 2회 대면 희망")가 그대로 이어집니다.
 
 ### 2.2 ② 배정 안내 — **핵심 차별점: 성향·공부 방식과 교육 철학에 맞춘 배정**
-![배정 확인](app-screenshots/student/desktop/state-pending-accept.png)
+![배정 확인](../app-screenshots/student/desktop/state-pending-accept.png)
 
 매니저가 배정한 강사가 **배정 이유**("학생 성향(차분한 설명 선호)에 맞춰 배정했습니다")와 함께 안내됩니다. 학부모가 후보를 비교·선택하는 구조가 아니라, 전담 매니저가 학생의 성향·공부 방식과 선생님의 교육 철학이 맞는지 판단하고 그 근거를 설명하는 큐레이션입니다. 맞지 않을 경우 매니저가 무료로 다시 배정합니다.
 
 ### 2.3 ③ 첫 수업 일정 대기
-![첫 수업 대기](app-screenshots/student/desktop/state-first-lesson.png)
+![첫 수업 대기](../app-screenshots/student/desktop/state-first-lesson.png)
 
 배정이 확정되면 강사가 첫 수업 날짜를 설정하고, 그 전까지 "첫 수업 일정 조율 중" 상태를 유지합니다.
 
 ### 2.4 ④ 수업 진행 대시보드 (ACTIVE) — 제품의 심장
-![학생 대시보드](app-screenshots/student/desktop/dashboard.png)
+![학생 대시보드](../app-screenshots/student/desktop/dashboard.png)
 
 수업이 시작되면 학생은 통합 학습 대시보드를 받습니다. 한 화면에:
 
@@ -103,7 +106,7 @@ Concord의 제품 북극성은 **"화면 너머가 아니라 옆자리에서"**�
 - **질문(Q&A) 스레드** — 아래 2.5
 
 ### 2.5 ⑤ AI + 강사 질답 (Q&A) — 두 번째 차별점
-![질문 목록](app-screenshots/student/desktop/questions.png)
+![질문 목록](../app-screenshots/student/desktop/questions.png)
 
 학생이 모르는 문제를 올리면 **Claude AI가 즉시 1차 답변**하고, **담당 강사가 이어서 확인·보강**합니다. 대시보드 하단(2.4)에서도 동일 스레드가 보이며, "해결됨" 플래그로 관리됩니다.
 
@@ -126,7 +129,7 @@ Concord의 제품 북극성은 **"화면 너머가 아니라 옆자리에서"**�
 강사는 별도 포털(`/teacher-portal`)에서 승인·학생·수업을 관리합니다.
 
 ### 3.1 강사 대시보드
-![강사 대시보드](app-screenshots/teacher/desktop/tp-dashboard.png)
+![강사 대시보드](../app-screenshots/teacher/desktop/tp-dashboard.png)
 
 승인 상태(**승인 완료 → 수업을 시작하실 수 있습니다**)와 등록 정보(이름·담당 과목·연락처)를 노출. 상단 탭으로 프로필/학생 관리 이동.
 
@@ -147,7 +150,7 @@ Concord의 제품 북극성은 **"화면 너머가 아니라 옆자리에서"**�
 매니저는 배정된 학생을 상담하고, 강사를 매칭하고, 진행을 모니터링합니다. 최고매니저(Chief)는 강사 승인 권한을 추가로 가집니다.
 
 ### 4.1 매칭 관리 — **운영 차별점**
-![매칭 관리](app-screenshots/manager/desktop/tp-matching.png)
+![매칭 관리](../app-screenshots/manager/desktop/tp-matching.png)
 
 상담이 끝난 학생(예: 박유나, 고3, 물리·수학)을 좌측에서 선택 → **강사 후보 카드**(김도현·박준호, 각 담당 학생 수 표시) → **담당 과목 매칭** → **매칭 이유(학생에게 표시)** 입력 → 매칭 등록. 이 이유가 학생 화면(2.2)의 "매니저의 추천 이유"로 그대로 전달됩니다.
 
@@ -171,7 +174,7 @@ Concord의 제품 북극성은 **"화면 너머가 아니라 옆자리에서"**�
 
 `/admin`은 사업 운영 전반을 통제하는 백오피스입니다.
 
-![관리자 홈](app-screenshots/admin/desktop/admin-home.png)
+![관리자 홈](../app-screenshots/admin/desktop/admin-home.png)
 
 | 콘솔 | 역할 | 캡처 |
 |---|---|---|

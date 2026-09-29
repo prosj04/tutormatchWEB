@@ -8,6 +8,24 @@ Concord는 전담 매니저가 학생에게 맞는 선생님을 배정하고, �
 
 Live: https://tutormatch-web.vercel.app
 
+## 어디를 먼저 읽나
+
+| 목적 | 문서 |
+|---|---|
+| 문서 전체 지도 (읽는 순서·용도·상태) | [`docs/README.md`](docs/README.md) |
+| 지금 상태 한눈에 | [`docs/00-현재상태.md`](docs/00-현재상태.md) |
+| 사업 정의·원칙 (정본) | [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md) |
+| AI 세션 진입점 (운영 하네스·시스템 지도·백로그) | [`HANDOFF.md`](HANDOFF.md) |
+| 구현 규칙 | [`CLAUDE.md`](CLAUDE.md) · [`AGENTS.md`](AGENTS.md) |
+| 결정 이력 (번복된 결정) | [`docs/adr/`](docs/adr/README.md) |
+| 디자인 시스템 | [`docs/design/README.md`](docs/design/README.md) |
+
+## Design system
+
+UI 는 2026-09-30 부터 **디자인 시스템 v3 "Editorial"** 을 씁니다 — 인쇄 지면 문법(종이 바탕·잉크 글자·세리프 헤드라인·헤어라인·넓은 여백)으로 카드 그리드·컬러 배지를 대체했습니다. 사양은 [`docs/design/DESIGN_SYSTEM_V3.md`](docs/design/DESIGN_SYSTEM_V3.md), 구현 정본은 `src/app/ds.css`(전역 단일 스타일시트), 결정 배경과 롤백 방법은 [ADR 0002](docs/adr/0002-editorial-redesign.md) 에 있습니다. 색은 반드시 CSS 변수 토큰을 경유합니다 — 하드코딩 색은 다크모드를 깨뜨립니다.
+
+대체된 v2 핸드오프 패키지(시안 HTML·토큰·아이콘)는 롤백 자산으로 [`docs/archive/design-handoff-v2/`](docs/archive/design-handoff-v2/) 에 보존돼 있습니다.
+
 ## Claude / Anthropic API features
 
 Concord uses the Anthropic API (`@anthropic-ai/sdk`) in two places, both designed to degrade gracefully when the API is unavailable or unconfigured rather than fail the user-facing flow.

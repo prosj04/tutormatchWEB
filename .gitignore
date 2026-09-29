@@ -61,3 +61,6 @@ mobile/.hermes/
 tools/team-office/events.log
 tools/team-office/slack.json
 tools/team-office/stats.json
+
+# build-html.mjs 산출물 (OUT_DIR 로 따로 생성)
+docs/_html/

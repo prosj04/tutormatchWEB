@@ -1,4 +1,4 @@
-// Single source of truth — paths copied verbatim from design handoff/app/icons.js
+// Single source of truth — paths copied verbatim from docs/archive/design-handoff-v2/app/icons.js
 // Do not edit paths. Add new icons only with designer approval (24×24, stroke 2, round cap/join).
 
 type IconDef =

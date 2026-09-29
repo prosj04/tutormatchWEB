@@ -7,7 +7,7 @@ interface IconProps {
 }
 
 /**
- * 선생님 앱 전용 아이콘 — design handoff/app/icons.js 의 path를 그대로 이식.
+ * 선생님 앱 전용 아이콘 — docs/archive/design-handoff-v2/app/icons.js 의 path를 그대로 이식.
  * 기존 components/ui/Icons.tsx 는 수정하지 않는다(계약).
  * 24×24 · currentColor(=color) · stroke 2 round cap/join.
  */

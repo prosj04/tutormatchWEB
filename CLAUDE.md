@@ -49,8 +49,11 @@ If requirements are unclear, ask for clarification instead of making assumptions
 ## 문서 체계
 
 - **실행 규칙**: 이 파일 + [`docs/BUSINESS_DIRECTION.md`](docs/BUSINESS_DIRECTION.md)(세계관·카피·미학 단일 출처) + `.claude/rules/`(경로 조건부, 빌드·커밋 규칙).
-- **결정 이력**: [`docs/adr/`](docs/adr/) — 번복된 결정은 여기서 추적. 기존 문서를 고치지 말고 새 번호로 대체.
-- **과거 기록(수동 참조, 규칙 아님)**: `docs/session-instructions.md`(세션 지시문 원본), `CLAUDE_HANDOFF.md`·`HANDOFF.md`(2026-07-14 시점 핸드오프). 분량이 커서 자동 로드되지 않는다 — 특정 구현의 배경을 찾을 때만 grep해 볼 것. 여기 적힌 내용이 위 실행 규칙과 어긋나면 **실행 규칙이 우선**한다.
+- **문서 지도**: [`docs/README.md`](docs/README.md) — 읽는 순서·문서별 용도·상태·**이동 금지 경로**. 문서를 찾거나 옮기기 전에 여기를 본다.
+- **현행 상태**: [`docs/00-현재상태.md`](docs/00-현재상태.md), AI 세션 진입점은 [`HANDOFF.md`](HANDOFF.md).
+- **디자인**: 2026-09-30 부터 v3 "Editorial" — 사양 [`docs/design/DESIGN_SYSTEM_V3.md`](docs/design/DESIGN_SYSTEM_V3.md), 구현 정본 `src/app/ds.css`, 결정 [ADR 0002](docs/adr/0002-editorial-redesign.md). 적용 범위는 공개 페이지 포함 전면(구 "공개 페이지 수정 금지"는 해제).
+- **결정 이력**: [`docs/adr/`](docs/adr/README.md) — 번복된 결정은 여기서 추적. 기존 문서를 고치지 말고 새 번호로 대체.
+- **과거 기록(수동 참조, 규칙 아님)**: `docs/session-instructions.md`(세션 지시문 원본), `CLAUDE_HANDOFF.md`(§25~26 세션 로그·이연 스펙), `docs/archive/`(전·후 경로표는 `docs/archive/README.md`). 분량이 커서 자동 로드되지 않는다 — 특정 구현의 배경을 찾을 때만 grep해 볼 것. 여기 적힌 내용이 위 실행 규칙과 어긋나면 **실행 규칙이 우선**한다.
 
 ## 오너 원칙 (매 세션 필수 적용 — 상세: docs/BUSINESS_DIRECTION.md §11–14)
 

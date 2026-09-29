@@ -7,3 +7,4 @@
 | 번호 | 결정 | 상태 |
 |---|---|---|
 | [0001](0001-commit-push-rhythm.md) | 커밋·푸시 승인 대기 폐지 | 채택 2026-07-26 |
+| [0002](0002-editorial-redesign.md) | 디자인 시스템 v3 "Editorial" 도입 — v2 핸드오프 대체, 공개 페이지 포함 전면 개편 | 채택 2026-09-30 (`feat/editorial-redesign`, main 미병합) |
